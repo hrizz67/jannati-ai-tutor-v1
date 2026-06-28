@@ -9,49 +9,54 @@ export const subjects = [
       {
         "id": "kata_nama_am",
         "title": "Kata Nama Am",
-        "note": "Nama umum bagi orang, haiwan, benda dan tempat.",
+        "note": "Kata nama am ialah nama umum bagi orang, haiwan, benda dan tempat.",
         "questions": [
           {
+            "id": "BM-KNA-001",
             "q": "Ibu membeli seekor ________.",
             "answer": "kucing",
             "accepted": [
               "anak kucing"
             ],
             "hint": "Seekor biasanya untuk haiwan.",
-            "explanation": "Kucing ialah kata nama am.",
+            "explanation": "Kucing ialah kata nama am bagi haiwan.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-002",
             "q": "Ayah memandu sebuah ________.",
             "answer": "kereta",
             "accepted": [
               "motokar"
             ],
-            "hint": "Sebuah sesuai untuk kenderaan.",
-            "explanation": "Kereta ialah kata nama am.",
+            "hint": "Sebuah biasanya untuk kenderaan.",
+            "explanation": "Kereta ialah kata nama am bagi benda.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-003",
             "q": "Saya menulis menggunakan ________.",
             "answer": "pensel",
             "accepted": [
               "pensil"
             ],
             "hint": "Alat untuk menulis.",
-            "explanation": "Pensel ialah kata nama am.",
+            "explanation": "Pensel ialah kata nama am bagi benda.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-004",
             "q": "Doktor bekerja di ________.",
             "answer": "hospital",
             "accepted": [
               "klinik"
             ],
             "hint": "Tempat merawat pesakit.",
-            "explanation": "Hospital ialah kata nama am.",
+            "explanation": "Hospital ialah kata nama am bagi tempat.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-005",
             "q": "Adik bermain ________ di padang.",
             "answer": "bola",
             "accepted": [
@@ -62,6 +67,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-006",
             "q": "Murid membaca ________ cerita.",
             "answer": "buku",
             "accepted": [
@@ -72,14 +78,16 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-007",
             "q": "Ibu memasak nasi di ________.",
             "answer": "dapur",
             "accepted": [],
             "hint": "Tempat memasak.",
-            "explanation": "Dapur ialah kata nama am.",
+            "explanation": "Dapur ialah kata nama am bagi tempat.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-008",
             "q": "Nelayan menangkap ________ di laut.",
             "answer": "ikan",
             "accepted": [],
@@ -88,6 +96,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-009",
             "q": "Guru mengajar di dalam ________.",
             "answer": "kelas",
             "accepted": [
@@ -98,6 +107,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNA-010",
             "q": "Ayah duduk di atas ________.",
             "answer": "kerusi",
             "accepted": [
@@ -106,28 +116,346 @@ export const subjects = [
             "hint": "Benda untuk duduk.",
             "explanation": "Kerusi ialah kata nama am.",
             "difficulty": "mudah"
+          },
+          {
+            "id": "BM-KNA-011",
+            "q": "Ibu membeli seekor ______.",
+            "answer": "kucing",
+            "accepted": [
+              "anak kucing"
+            ],
+            "hint": "Seekor biasanya untuk haiwan.",
+            "explanation": "Kucing ialah kata nama am bagi haiwan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-012",
+            "q": "Ayah memandu sebuah ______.",
+            "answer": "kereta",
+            "accepted": [
+              "motokar"
+            ],
+            "hint": "Sebuah biasanya untuk kenderaan.",
+            "explanation": "Kereta ialah kata nama am bagi benda.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-013",
+            "q": "Saya menulis menggunakan ______.",
+            "answer": "pensel",
+            "accepted": [
+              "pensil"
+            ],
+            "hint": "Alat untuk menulis.",
+            "explanation": "Pensel ialah kata nama am bagi benda.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-014",
+            "q": "Doktor bekerja di ______.",
+            "answer": "hospital",
+            "accepted": [
+              "klinik"
+            ],
+            "hint": "Tempat merawat pesakit.",
+            "explanation": "Hospital ialah kata nama am bagi tempat.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-015",
+            "q": "Adik bermain ______ di padang.",
+            "answer": "bola",
+            "accepted": [
+              "bola sepak"
+            ],
+            "hint": "Benda bulat yang dimainkan.",
+            "explanation": "Bola ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-016",
+            "q": "Murid membaca ______ cerita.",
+            "answer": "buku",
+            "accepted": [
+              "buku cerita"
+            ],
+            "hint": "Benda yang dibaca.",
+            "explanation": "Buku ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-017",
+            "q": "Ibu memasak nasi di ______.",
+            "answer": "dapur",
+            "accepted": [],
+            "hint": "Tempat memasak.",
+            "explanation": "Dapur ialah kata nama am bagi tempat.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-018",
+            "q": "Nelayan menangkap ______ di laut.",
+            "answer": "ikan",
+            "accepted": [],
+            "hint": "Haiwan yang hidup di air.",
+            "explanation": "Ikan ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-019",
+            "q": "Guru mengajar di dalam ______.",
+            "answer": "kelas",
+            "accepted": [
+              "bilik kelas"
+            ],
+            "hint": "Tempat murid belajar.",
+            "explanation": "Kelas ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-020",
+            "q": "Ayah duduk di atas ______.",
+            "answer": "kerusi",
+            "accepted": [
+              "bangku"
+            ],
+            "hint": "Benda untuk duduk.",
+            "explanation": "Kerusi ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-021",
+            "q": "Ibu membeli seekor ______.",
+            "answer": "kucing",
+            "accepted": [
+              "anak kucing"
+            ],
+            "hint": "Seekor biasanya untuk haiwan.",
+            "explanation": "Kucing ialah kata nama am bagi haiwan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-022",
+            "q": "Ayah memandu sebuah ______.",
+            "answer": "kereta",
+            "accepted": [
+              "motokar"
+            ],
+            "hint": "Sebuah biasanya untuk kenderaan.",
+            "explanation": "Kereta ialah kata nama am bagi benda.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-023",
+            "q": "Saya menulis menggunakan ______.",
+            "answer": "pensel",
+            "accepted": [
+              "pensil"
+            ],
+            "hint": "Alat untuk menulis.",
+            "explanation": "Pensel ialah kata nama am bagi benda.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-024",
+            "q": "Doktor bekerja di ______.",
+            "answer": "hospital",
+            "accepted": [
+              "klinik"
+            ],
+            "hint": "Tempat merawat pesakit.",
+            "explanation": "Hospital ialah kata nama am bagi tempat.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-025",
+            "q": "Adik bermain ______ di padang.",
+            "answer": "bola",
+            "accepted": [
+              "bola sepak"
+            ],
+            "hint": "Benda bulat yang dimainkan.",
+            "explanation": "Bola ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-026",
+            "q": "Murid membaca ______ cerita.",
+            "answer": "buku",
+            "accepted": [
+              "buku cerita"
+            ],
+            "hint": "Benda yang dibaca.",
+            "explanation": "Buku ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-027",
+            "q": "Ibu memasak nasi di ______.",
+            "answer": "dapur",
+            "accepted": [],
+            "hint": "Tempat memasak.",
+            "explanation": "Dapur ialah kata nama am bagi tempat.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-028",
+            "q": "Nelayan menangkap ______ di laut.",
+            "answer": "ikan",
+            "accepted": [],
+            "hint": "Haiwan yang hidup di air.",
+            "explanation": "Ikan ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-029",
+            "q": "Guru mengajar di dalam ______.",
+            "answer": "kelas",
+            "accepted": [
+              "bilik kelas"
+            ],
+            "hint": "Tempat murid belajar.",
+            "explanation": "Kelas ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-030",
+            "q": "Ayah duduk di atas ______.",
+            "answer": "kerusi",
+            "accepted": [
+              "bangku"
+            ],
+            "hint": "Benda untuk duduk.",
+            "explanation": "Kerusi ialah kata nama am.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNA-031",
+            "q": "Ibu membeli seekor ______.",
+            "answer": "kucing",
+            "accepted": [
+              "anak kucing"
+            ],
+            "hint": "Seekor biasanya untuk haiwan.",
+            "explanation": "Kucing ialah kata nama am bagi haiwan.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-032",
+            "q": "Ayah memandu sebuah ______.",
+            "answer": "kereta",
+            "accepted": [
+              "motokar"
+            ],
+            "hint": "Sebuah biasanya untuk kenderaan.",
+            "explanation": "Kereta ialah kata nama am bagi benda.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-033",
+            "q": "Saya menulis menggunakan ______.",
+            "answer": "pensel",
+            "accepted": [
+              "pensil"
+            ],
+            "hint": "Alat untuk menulis.",
+            "explanation": "Pensel ialah kata nama am bagi benda.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-034",
+            "q": "Doktor bekerja di ______.",
+            "answer": "hospital",
+            "accepted": [
+              "klinik"
+            ],
+            "hint": "Tempat merawat pesakit.",
+            "explanation": "Hospital ialah kata nama am bagi tempat.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-035",
+            "q": "Adik bermain ______ di padang.",
+            "answer": "bola",
+            "accepted": [
+              "bola sepak"
+            ],
+            "hint": "Benda bulat yang dimainkan.",
+            "explanation": "Bola ialah kata nama am.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-036",
+            "q": "Murid membaca ______ cerita.",
+            "answer": "buku",
+            "accepted": [
+              "buku cerita"
+            ],
+            "hint": "Benda yang dibaca.",
+            "explanation": "Buku ialah kata nama am.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-037",
+            "q": "Ibu memasak nasi di ______.",
+            "answer": "dapur",
+            "accepted": [],
+            "hint": "Tempat memasak.",
+            "explanation": "Dapur ialah kata nama am bagi tempat.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-038",
+            "q": "Nelayan menangkap ______ di laut.",
+            "answer": "ikan",
+            "accepted": [],
+            "hint": "Haiwan yang hidup di air.",
+            "explanation": "Ikan ialah kata nama am.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-039",
+            "q": "Guru mengajar di dalam ______.",
+            "answer": "kelas",
+            "accepted": [
+              "bilik kelas"
+            ],
+            "hint": "Tempat murid belajar.",
+            "explanation": "Kelas ialah kata nama am.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNA-040",
+            "q": "Ayah duduk di atas ______.",
+            "answer": "kerusi",
+            "accepted": [
+              "bangku"
+            ],
+            "hint": "Benda untuk duduk.",
+            "explanation": "Kerusi ialah kata nama am.",
+            "difficulty": "sukar"
           }
         ]
       },
       {
         "id": "kata_nama_khas",
         "title": "Kata Nama Khas",
-        "note": "Nama khusus. Huruf pertama biasanya huruf besar.",
+        "note": "Kata nama khas ialah nama khusus. Huruf pertama biasanya huruf besar.",
         "questions": [
           {
+            "id": "BM-KNK-001",
             "q": "Saya minum ________ setiap pagi.",
             "answer": "Milo",
             "accepted": [
               "air milo",
-              "minuman milo",
-              "milo panas",
-              "milo ais"
+              "milo panas"
             ],
             "hint": "Nama jenama minuman coklat.",
-            "explanation": "Milo ialah kata nama khas.",
+            "explanation": "Milo ialah kata nama khas kerana nama jenama.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-002",
             "q": "Saya berasal dari ________.",
             "answer": "Kedah",
             "accepted": [
@@ -138,110 +466,451 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-003",
             "q": "Kami bercuti di ________.",
             "answer": "Pulau Langkawi",
             "accepted": [
-              "langkawi"
+              "Langkawi"
             ],
             "hint": "Nama tempat peranginan.",
             "explanation": "Pulau Langkawi ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-004",
             "q": "Ayah memandu ________.",
             "answer": "Proton X70",
             "accepted": [
-              "x70",
-              "proton x70"
+              "X70",
+              "Proton"
             ],
             "hint": "Nama model kereta.",
             "explanation": "Proton X70 ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-005",
             "q": "Nama guru saya ialah ________.",
             "answer": "Puan Salmah",
             "accepted": [
-              "cikgu salmah"
+              "Cikgu Salmah"
             ],
             "hint": "Nama orang.",
             "explanation": "Puan Salmah ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-006",
             "q": "Kami tinggal di ________.",
             "answer": "Sungai Petani",
             "accepted": [
-              "sp"
+              "SP"
             ],
             "hint": "Nama bandar.",
             "explanation": "Sungai Petani ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-007",
             "q": "Ibu membeli roti ________.",
             "answer": "Gardenia",
             "accepted": [
-              "roti gardenia"
+              "roti Gardenia"
             ],
             "hint": "Nama jenama roti.",
             "explanation": "Gardenia ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-008",
             "q": "Adik suka menonton ________.",
             "answer": "BoBoiBoy",
             "accepted": [
-              "boboiboy"
+              "Boboiboy"
             ],
             "hint": "Nama rancangan kartun.",
             "explanation": "BoBoiBoy ialah kata nama khas.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KNK-009",
             "q": "Kami melawat ________.",
             "answer": "Zoo Negara",
             "accepted": [],
             "hint": "Nama tempat.",
             "explanation": "Zoo Negara ialah kata nama khas.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KNK-010",
             "q": "Saya membeli pensel ________.",
             "answer": "Faber-Castell",
             "accepted": [
-              "faber castell"
+              "Faber Castell"
             ],
             "hint": "Nama jenama pensel.",
             "explanation": "Faber-Castell ialah kata nama khas.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-011",
+            "q": "Saya minum ______ setiap pagi.",
+            "answer": "Milo",
+            "accepted": [
+              "air milo",
+              "milo panas"
+            ],
+            "hint": "Nama jenama minuman coklat.",
+            "explanation": "Milo ialah kata nama khas kerana nama jenama.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-012",
+            "q": "Saya berasal dari ______.",
+            "answer": "Kedah",
+            "accepted": [
+              "negeri kedah"
+            ],
+            "hint": "Nama negeri.",
+            "explanation": "Kedah ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-013",
+            "q": "Kami bercuti di ______.",
+            "answer": "Pulau Langkawi",
+            "accepted": [
+              "Langkawi"
+            ],
+            "hint": "Nama tempat peranginan.",
+            "explanation": "Pulau Langkawi ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-014",
+            "q": "Ayah memandu ______.",
+            "answer": "Proton X70",
+            "accepted": [
+              "X70",
+              "Proton"
+            ],
+            "hint": "Nama model kereta.",
+            "explanation": "Proton X70 ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-015",
+            "q": "Nama guru saya ialah ______.",
+            "answer": "Puan Salmah",
+            "accepted": [
+              "Cikgu Salmah"
+            ],
+            "hint": "Nama orang.",
+            "explanation": "Puan Salmah ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-016",
+            "q": "Kami tinggal di ______.",
+            "answer": "Sungai Petani",
+            "accepted": [
+              "SP"
+            ],
+            "hint": "Nama bandar.",
+            "explanation": "Sungai Petani ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-017",
+            "q": "Ibu membeli roti ______.",
+            "answer": "Gardenia",
+            "accepted": [
+              "roti Gardenia"
+            ],
+            "hint": "Nama jenama roti.",
+            "explanation": "Gardenia ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-018",
+            "q": "Adik suka menonton ______.",
+            "answer": "BoBoiBoy",
+            "accepted": [
+              "Boboiboy"
+            ],
+            "hint": "Nama rancangan kartun.",
+            "explanation": "BoBoiBoy ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-019",
+            "q": "Kami melawat ______.",
+            "answer": "Zoo Negara",
+            "accepted": [],
+            "hint": "Nama tempat.",
+            "explanation": "Zoo Negara ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-020",
+            "q": "Saya membeli pensel ______.",
+            "answer": "Faber-Castell",
+            "accepted": [
+              "Faber Castell"
+            ],
+            "hint": "Nama jenama pensel.",
+            "explanation": "Faber-Castell ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-021",
+            "q": "Saya minum ______ setiap pagi.",
+            "answer": "Milo",
+            "accepted": [
+              "air milo",
+              "milo panas"
+            ],
+            "hint": "Nama jenama minuman coklat.",
+            "explanation": "Milo ialah kata nama khas kerana nama jenama.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-022",
+            "q": "Saya berasal dari ______.",
+            "answer": "Kedah",
+            "accepted": [
+              "negeri kedah"
+            ],
+            "hint": "Nama negeri.",
+            "explanation": "Kedah ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-023",
+            "q": "Kami bercuti di ______.",
+            "answer": "Pulau Langkawi",
+            "accepted": [
+              "Langkawi"
+            ],
+            "hint": "Nama tempat peranginan.",
+            "explanation": "Pulau Langkawi ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-024",
+            "q": "Ayah memandu ______.",
+            "answer": "Proton X70",
+            "accepted": [
+              "X70",
+              "Proton"
+            ],
+            "hint": "Nama model kereta.",
+            "explanation": "Proton X70 ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-025",
+            "q": "Nama guru saya ialah ______.",
+            "answer": "Puan Salmah",
+            "accepted": [
+              "Cikgu Salmah"
+            ],
+            "hint": "Nama orang.",
+            "explanation": "Puan Salmah ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-026",
+            "q": "Kami tinggal di ______.",
+            "answer": "Sungai Petani",
+            "accepted": [
+              "SP"
+            ],
+            "hint": "Nama bandar.",
+            "explanation": "Sungai Petani ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-027",
+            "q": "Ibu membeli roti ______.",
+            "answer": "Gardenia",
+            "accepted": [
+              "roti Gardenia"
+            ],
+            "hint": "Nama jenama roti.",
+            "explanation": "Gardenia ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-028",
+            "q": "Adik suka menonton ______.",
+            "answer": "BoBoiBoy",
+            "accepted": [
+              "Boboiboy"
+            ],
+            "hint": "Nama rancangan kartun.",
+            "explanation": "BoBoiBoy ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-029",
+            "q": "Kami melawat ______.",
+            "answer": "Zoo Negara",
+            "accepted": [],
+            "hint": "Nama tempat.",
+            "explanation": "Zoo Negara ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-030",
+            "q": "Saya membeli pensel ______.",
+            "answer": "Faber-Castell",
+            "accepted": [
+              "Faber Castell"
+            ],
+            "hint": "Nama jenama pensel.",
+            "explanation": "Faber-Castell ialah kata nama khas.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KNK-031",
+            "q": "Saya minum ______ setiap pagi.",
+            "answer": "Milo",
+            "accepted": [
+              "air milo",
+              "milo panas"
+            ],
+            "hint": "Nama jenama minuman coklat.",
+            "explanation": "Milo ialah kata nama khas kerana nama jenama.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-032",
+            "q": "Saya berasal dari ______.",
+            "answer": "Kedah",
+            "accepted": [
+              "negeri kedah"
+            ],
+            "hint": "Nama negeri.",
+            "explanation": "Kedah ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-033",
+            "q": "Kami bercuti di ______.",
+            "answer": "Pulau Langkawi",
+            "accepted": [
+              "Langkawi"
+            ],
+            "hint": "Nama tempat peranginan.",
+            "explanation": "Pulau Langkawi ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-034",
+            "q": "Ayah memandu ______.",
+            "answer": "Proton X70",
+            "accepted": [
+              "X70",
+              "Proton"
+            ],
+            "hint": "Nama model kereta.",
+            "explanation": "Proton X70 ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-035",
+            "q": "Nama guru saya ialah ______.",
+            "answer": "Puan Salmah",
+            "accepted": [
+              "Cikgu Salmah"
+            ],
+            "hint": "Nama orang.",
+            "explanation": "Puan Salmah ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-036",
+            "q": "Kami tinggal di ______.",
+            "answer": "Sungai Petani",
+            "accepted": [
+              "SP"
+            ],
+            "hint": "Nama bandar.",
+            "explanation": "Sungai Petani ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-037",
+            "q": "Ibu membeli roti ______.",
+            "answer": "Gardenia",
+            "accepted": [
+              "roti Gardenia"
+            ],
+            "hint": "Nama jenama roti.",
+            "explanation": "Gardenia ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-038",
+            "q": "Adik suka menonton ______.",
+            "answer": "BoBoiBoy",
+            "accepted": [
+              "Boboiboy"
+            ],
+            "hint": "Nama rancangan kartun.",
+            "explanation": "BoBoiBoy ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-039",
+            "q": "Kami melawat ______.",
+            "answer": "Zoo Negara",
+            "accepted": [],
+            "hint": "Nama tempat.",
+            "explanation": "Zoo Negara ialah kata nama khas.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KNK-040",
+            "q": "Saya membeli pensel ______.",
+            "answer": "Faber-Castell",
+            "accepted": [
+              "Faber Castell"
+            ],
+            "hint": "Nama jenama pensel.",
+            "explanation": "Faber-Castell ialah kata nama khas.",
+            "difficulty": "sukar"
           }
         ]
       },
       {
         "id": "kata_ganti_nama",
         "title": "Kata Ganti Nama",
-        "note": "Perkataan yang menggantikan nama orang.",
+        "note": "Kata ganti nama menggantikan nama orang.",
         "questions": [
           {
+            "id": "BM-KGN-001",
             "q": "Kata ganti nama untuk diri sendiri ialah ________.",
             "answer": "saya",
             "accepted": [
               "aku"
             ],
-            "hint": "Bercakap tentang diri sendiri.",
+            "hint": "Digunakan apabila bercakap tentang diri sendiri.",
             "explanation": "Saya ialah kata ganti nama diri pertama.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-002",
             "q": "Ali sedang makan. Ali boleh diganti dengan ________.",
             "answer": "dia",
             "accepted": [],
-            "hint": "Seorang sahaja.",
+            "hint": "Ali seorang sahaja.",
             "explanation": "Dia digunakan untuk seorang.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-003",
             "q": "Siti dan Aina membaca buku. Mereka boleh diganti dengan ________.",
             "answer": "mereka",
             "accepted": [],
@@ -250,6 +919,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-004",
             "q": "Saya dan kamu belajar bersama. Boleh diganti dengan ________.",
             "answer": "kita",
             "accepted": [],
@@ -258,56 +928,350 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-005",
             "q": "Amir dan saya pergi ke perpustakaan. Boleh diganti dengan ________.",
             "answer": "kami",
             "accepted": [],
-            "hint": "Tidak termasuk orang yang mendengar.",
-            "explanation": "Kami tidak termasuk pendengar.",
+            "hint": "Tidak termasuk pendengar.",
+            "explanation": "Kami tidak termasuk orang yang mendengar.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-006",
             "q": "“________ hendak ke mana?” tanya Ali kepada rakannya.",
             "answer": "awak",
             "accepted": [
               "kamu"
             ],
-            "hint": "Orang yang diajak bercakap.",
+            "hint": "Digunakan kepada orang yang diajak bercakap.",
             "explanation": "Awak ialah kata ganti nama diri kedua.",
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KGN-007",
             "q": "Guru besar itu baik. ________ memberi ucapan.",
             "answer": "beliau",
             "accepted": [
               "dia"
             ],
-            "hint": "Orang yang dihormati.",
-            "explanation": "Beliau digunakan untuk orang dihormati.",
-            "difficulty": "mudah"
+            "hint": "Digunakan untuk orang yang dihormati.",
+            "explanation": "Beliau digunakan untuk orang yang dihormati.",
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KGN-008",
             "q": "Murid-murid beratur. ________ hendak masuk kelas.",
             "answer": "mereka",
             "accepted": [],
             "hint": "Murid-murid ramai.",
             "explanation": "Mereka digunakan untuk kumpulan.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KGN-009",
             "q": "Aina rajin. ________ selalu menyiapkan kerja.",
             "answer": "dia",
             "accepted": [],
             "hint": "Aina seorang sahaja.",
             "explanation": "Dia menggantikan nama Aina.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KGN-010",
             "q": "Saya dan adik membantu ibu. ________ menyapu rumah.",
             "answer": "kami",
             "accepted": [],
             "hint": "Saya dan adik sahaja.",
             "explanation": "Kami sesuai digunakan.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-011",
+            "q": "Kata ganti nama untuk diri sendiri ialah ______.",
+            "answer": "saya",
+            "accepted": [
+              "aku"
+            ],
+            "hint": "Digunakan apabila bercakap tentang diri sendiri.",
+            "explanation": "Saya ialah kata ganti nama diri pertama.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-012",
+            "q": "Ali sedang makan. Ali boleh diganti dengan ______.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Ali seorang sahaja.",
+            "explanation": "Dia digunakan untuk seorang.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-013",
+            "q": "Siti dan Aina membaca buku. Mereka boleh diganti dengan ______.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Lebih daripada seorang.",
+            "explanation": "Mereka digunakan untuk ramai orang.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-014",
+            "q": "Saya dan kamu belajar bersama. Boleh diganti dengan ______.",
+            "answer": "kita",
+            "accepted": [],
+            "hint": "Termasuk orang yang mendengar.",
+            "explanation": "Kita termasuk saya dan kamu.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-015",
+            "q": "Amir dan saya pergi ke perpustakaan. Boleh diganti dengan ______.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Tidak termasuk pendengar.",
+            "explanation": "Kami tidak termasuk orang yang mendengar.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-016",
+            "q": "“______ hendak ke mana?” tanya Ali kepada rakannya.",
+            "answer": "awak",
+            "accepted": [
+              "kamu"
+            ],
+            "hint": "Digunakan kepada orang yang diajak bercakap.",
+            "explanation": "Awak ialah kata ganti nama diri kedua.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-017",
+            "q": "Guru besar itu baik. ______ memberi ucapan.",
+            "answer": "beliau",
+            "accepted": [
+              "dia"
+            ],
+            "hint": "Digunakan untuk orang yang dihormati.",
+            "explanation": "Beliau digunakan untuk orang yang dihormati.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-018",
+            "q": "Murid-murid beratur. ______ hendak masuk kelas.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Murid-murid ramai.",
+            "explanation": "Mereka digunakan untuk kumpulan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-019",
+            "q": "Aina rajin. ______ selalu menyiapkan kerja.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Aina seorang sahaja.",
+            "explanation": "Dia menggantikan nama Aina.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-020",
+            "q": "Saya dan adik membantu ibu. ______ menyapu rumah.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Saya dan adik sahaja.",
+            "explanation": "Kami sesuai digunakan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-021",
+            "q": "Kata ganti nama untuk diri sendiri ialah ______.",
+            "answer": "saya",
+            "accepted": [
+              "aku"
+            ],
+            "hint": "Digunakan apabila bercakap tentang diri sendiri.",
+            "explanation": "Saya ialah kata ganti nama diri pertama.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-022",
+            "q": "Ali sedang makan. Ali boleh diganti dengan ______.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Ali seorang sahaja.",
+            "explanation": "Dia digunakan untuk seorang.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-023",
+            "q": "Siti dan Aina membaca buku. Mereka boleh diganti dengan ______.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Lebih daripada seorang.",
+            "explanation": "Mereka digunakan untuk ramai orang.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-024",
+            "q": "Saya dan kamu belajar bersama. Boleh diganti dengan ______.",
+            "answer": "kita",
+            "accepted": [],
+            "hint": "Termasuk orang yang mendengar.",
+            "explanation": "Kita termasuk saya dan kamu.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-025",
+            "q": "Amir dan saya pergi ke perpustakaan. Boleh diganti dengan ______.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Tidak termasuk pendengar.",
+            "explanation": "Kami tidak termasuk orang yang mendengar.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-026",
+            "q": "“______ hendak ke mana?” tanya Ali kepada rakannya.",
+            "answer": "awak",
+            "accepted": [
+              "kamu"
+            ],
+            "hint": "Digunakan kepada orang yang diajak bercakap.",
+            "explanation": "Awak ialah kata ganti nama diri kedua.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-027",
+            "q": "Guru besar itu baik. ______ memberi ucapan.",
+            "answer": "beliau",
+            "accepted": [
+              "dia"
+            ],
+            "hint": "Digunakan untuk orang yang dihormati.",
+            "explanation": "Beliau digunakan untuk orang yang dihormati.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-028",
+            "q": "Murid-murid beratur. ______ hendak masuk kelas.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Murid-murid ramai.",
+            "explanation": "Mereka digunakan untuk kumpulan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-029",
+            "q": "Aina rajin. ______ selalu menyiapkan kerja.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Aina seorang sahaja.",
+            "explanation": "Dia menggantikan nama Aina.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-030",
+            "q": "Saya dan adik membantu ibu. ______ menyapu rumah.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Saya dan adik sahaja.",
+            "explanation": "Kami sesuai digunakan.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KGN-031",
+            "q": "Kata ganti nama untuk diri sendiri ialah ______.",
+            "answer": "saya",
+            "accepted": [
+              "aku"
+            ],
+            "hint": "Digunakan apabila bercakap tentang diri sendiri.",
+            "explanation": "Saya ialah kata ganti nama diri pertama.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-032",
+            "q": "Ali sedang makan. Ali boleh diganti dengan ______.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Ali seorang sahaja.",
+            "explanation": "Dia digunakan untuk seorang.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-033",
+            "q": "Siti dan Aina membaca buku. Mereka boleh diganti dengan ______.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Lebih daripada seorang.",
+            "explanation": "Mereka digunakan untuk ramai orang.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-034",
+            "q": "Saya dan kamu belajar bersama. Boleh diganti dengan ______.",
+            "answer": "kita",
+            "accepted": [],
+            "hint": "Termasuk orang yang mendengar.",
+            "explanation": "Kita termasuk saya dan kamu.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-035",
+            "q": "Amir dan saya pergi ke perpustakaan. Boleh diganti dengan ______.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Tidak termasuk pendengar.",
+            "explanation": "Kami tidak termasuk orang yang mendengar.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-036",
+            "q": "“______ hendak ke mana?” tanya Ali kepada rakannya.",
+            "answer": "awak",
+            "accepted": [
+              "kamu"
+            ],
+            "hint": "Digunakan kepada orang yang diajak bercakap.",
+            "explanation": "Awak ialah kata ganti nama diri kedua.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-037",
+            "q": "Guru besar itu baik. ______ memberi ucapan.",
+            "answer": "beliau",
+            "accepted": [
+              "dia"
+            ],
+            "hint": "Digunakan untuk orang yang dihormati.",
+            "explanation": "Beliau digunakan untuk orang yang dihormati.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-038",
+            "q": "Murid-murid beratur. ______ hendak masuk kelas.",
+            "answer": "mereka",
+            "accepted": [],
+            "hint": "Murid-murid ramai.",
+            "explanation": "Mereka digunakan untuk kumpulan.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-039",
+            "q": "Aina rajin. ______ selalu menyiapkan kerja.",
+            "answer": "dia",
+            "accepted": [],
+            "hint": "Aina seorang sahaja.",
+            "explanation": "Dia menggantikan nama Aina.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KGN-040",
+            "q": "Saya dan adik membantu ibu. ______ menyapu rumah.",
+            "answer": "kami",
+            "accepted": [],
+            "hint": "Saya dan adik sahaja.",
+            "explanation": "Kami sesuai digunakan.",
+            "difficulty": "sukar"
           }
         ]
       },
@@ -317,6 +1281,7 @@ export const subjects = [
         "note": "Kata kerja menunjukkan perbuatan.",
         "questions": [
           {
+            "id": "BM-KK-001",
             "q": "Ibu sedang ________ nasi.",
             "answer": "memasak",
             "accepted": [
@@ -328,6 +1293,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-002",
             "q": "Ayah ________ kereta ke tempat kerja.",
             "answer": "memandu",
             "accepted": [
@@ -338,6 +1304,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-003",
             "q": "Ali suka ________ buku cerita.",
             "answer": "membaca",
             "accepted": [
@@ -348,6 +1315,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-004",
             "q": "Burung ________ di udara.",
             "answer": "terbang",
             "accepted": [],
@@ -356,6 +1324,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-005",
             "q": "Ikan ________ di dalam kolam.",
             "answer": "berenang",
             "accepted": [
@@ -366,6 +1335,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-006",
             "q": "Kakak ________ surat kepada rakannya.",
             "answer": "menulis",
             "accepted": [
@@ -376,6 +1346,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-007",
             "q": "Adik ________ susu setiap pagi.",
             "answer": "minum",
             "accepted": [
@@ -386,6 +1357,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-008",
             "q": "Ibu ________ lantai yang kotor.",
             "answer": "menyapu",
             "accepted": [
@@ -396,6 +1368,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KK-009",
             "q": "Doktor ________ pesakit.",
             "answer": "merawat",
             "accepted": [
@@ -403,9 +1376,10 @@ export const subjects = [
             ],
             "hint": "Tugas doktor.",
             "explanation": "Merawat ialah kata kerja.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KK-010",
             "q": "Cikgu ________ murid di kelas.",
             "answer": "mengajar",
             "accepted": [
@@ -413,16 +1387,344 @@ export const subjects = [
             ],
             "hint": "Tugas guru.",
             "explanation": "Mengajar ialah kata kerja.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-011",
+            "q": "Ibu sedang ______ nasi.",
+            "answer": "memasak",
+            "accepted": [
+              "masak",
+              "menanak"
+            ],
+            "hint": "Perbuatan menyediakan makanan.",
+            "explanation": "Memasak ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-012",
+            "q": "Ayah ______ kereta ke tempat kerja.",
+            "answer": "memandu",
+            "accepted": [
+              "pandu"
+            ],
+            "hint": "Perbuatan membawa kereta.",
+            "explanation": "Memandu ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-013",
+            "q": "Ali suka ______ buku cerita.",
+            "answer": "membaca",
+            "accepted": [
+              "baca"
+            ],
+            "hint": "Perbuatan melihat tulisan.",
+            "explanation": "Membaca ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-014",
+            "q": "Burung ______ di udara.",
+            "answer": "terbang",
+            "accepted": [],
+            "hint": "Burung bergerak di udara.",
+            "explanation": "Terbang ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-015",
+            "q": "Ikan ______ di dalam kolam.",
+            "answer": "berenang",
+            "accepted": [
+              "renang"
+            ],
+            "hint": "Ikan bergerak di air.",
+            "explanation": "Berenang ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-016",
+            "q": "Kakak ______ surat kepada rakannya.",
+            "answer": "menulis",
+            "accepted": [
+              "tulis"
+            ],
+            "hint": "Perbuatan menggunakan pen.",
+            "explanation": "Menulis ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-017",
+            "q": "Adik ______ susu setiap pagi.",
+            "answer": "minum",
+            "accepted": [
+              "meminum"
+            ],
+            "hint": "Susu diminum.",
+            "explanation": "Minum ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-018",
+            "q": "Ibu ______ lantai yang kotor.",
+            "answer": "menyapu",
+            "accepted": [
+              "sapu"
+            ],
+            "hint": "Gunakan penyapu.",
+            "explanation": "Menyapu ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-019",
+            "q": "Doktor ______ pesakit.",
+            "answer": "merawat",
+            "accepted": [
+              "rawat"
+            ],
+            "hint": "Tugas doktor.",
+            "explanation": "Merawat ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-020",
+            "q": "Cikgu ______ murid di kelas.",
+            "answer": "mengajar",
+            "accepted": [
+              "ajar"
+            ],
+            "hint": "Tugas guru.",
+            "explanation": "Mengajar ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-021",
+            "q": "Ibu sedang ______ nasi.",
+            "answer": "memasak",
+            "accepted": [
+              "masak",
+              "menanak"
+            ],
+            "hint": "Perbuatan menyediakan makanan.",
+            "explanation": "Memasak ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-022",
+            "q": "Ayah ______ kereta ke tempat kerja.",
+            "answer": "memandu",
+            "accepted": [
+              "pandu"
+            ],
+            "hint": "Perbuatan membawa kereta.",
+            "explanation": "Memandu ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-023",
+            "q": "Ali suka ______ buku cerita.",
+            "answer": "membaca",
+            "accepted": [
+              "baca"
+            ],
+            "hint": "Perbuatan melihat tulisan.",
+            "explanation": "Membaca ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-024",
+            "q": "Burung ______ di udara.",
+            "answer": "terbang",
+            "accepted": [],
+            "hint": "Burung bergerak di udara.",
+            "explanation": "Terbang ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-025",
+            "q": "Ikan ______ di dalam kolam.",
+            "answer": "berenang",
+            "accepted": [
+              "renang"
+            ],
+            "hint": "Ikan bergerak di air.",
+            "explanation": "Berenang ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-026",
+            "q": "Kakak ______ surat kepada rakannya.",
+            "answer": "menulis",
+            "accepted": [
+              "tulis"
+            ],
+            "hint": "Perbuatan menggunakan pen.",
+            "explanation": "Menulis ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-027",
+            "q": "Adik ______ susu setiap pagi.",
+            "answer": "minum",
+            "accepted": [
+              "meminum"
+            ],
+            "hint": "Susu diminum.",
+            "explanation": "Minum ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-028",
+            "q": "Ibu ______ lantai yang kotor.",
+            "answer": "menyapu",
+            "accepted": [
+              "sapu"
+            ],
+            "hint": "Gunakan penyapu.",
+            "explanation": "Menyapu ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-029",
+            "q": "Doktor ______ pesakit.",
+            "answer": "merawat",
+            "accepted": [
+              "rawat"
+            ],
+            "hint": "Tugas doktor.",
+            "explanation": "Merawat ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-030",
+            "q": "Cikgu ______ murid di kelas.",
+            "answer": "mengajar",
+            "accepted": [
+              "ajar"
+            ],
+            "hint": "Tugas guru.",
+            "explanation": "Mengajar ialah kata kerja.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KK-031",
+            "q": "Ibu sedang ______ nasi.",
+            "answer": "memasak",
+            "accepted": [
+              "masak",
+              "menanak"
+            ],
+            "hint": "Perbuatan menyediakan makanan.",
+            "explanation": "Memasak ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-032",
+            "q": "Ayah ______ kereta ke tempat kerja.",
+            "answer": "memandu",
+            "accepted": [
+              "pandu"
+            ],
+            "hint": "Perbuatan membawa kereta.",
+            "explanation": "Memandu ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-033",
+            "q": "Ali suka ______ buku cerita.",
+            "answer": "membaca",
+            "accepted": [
+              "baca"
+            ],
+            "hint": "Perbuatan melihat tulisan.",
+            "explanation": "Membaca ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-034",
+            "q": "Burung ______ di udara.",
+            "answer": "terbang",
+            "accepted": [],
+            "hint": "Burung bergerak di udara.",
+            "explanation": "Terbang ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-035",
+            "q": "Ikan ______ di dalam kolam.",
+            "answer": "berenang",
+            "accepted": [
+              "renang"
+            ],
+            "hint": "Ikan bergerak di air.",
+            "explanation": "Berenang ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-036",
+            "q": "Kakak ______ surat kepada rakannya.",
+            "answer": "menulis",
+            "accepted": [
+              "tulis"
+            ],
+            "hint": "Perbuatan menggunakan pen.",
+            "explanation": "Menulis ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-037",
+            "q": "Adik ______ susu setiap pagi.",
+            "answer": "minum",
+            "accepted": [
+              "meminum"
+            ],
+            "hint": "Susu diminum.",
+            "explanation": "Minum ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-038",
+            "q": "Ibu ______ lantai yang kotor.",
+            "answer": "menyapu",
+            "accepted": [
+              "sapu"
+            ],
+            "hint": "Gunakan penyapu.",
+            "explanation": "Menyapu ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-039",
+            "q": "Doktor ______ pesakit.",
+            "answer": "merawat",
+            "accepted": [
+              "rawat"
+            ],
+            "hint": "Tugas doktor.",
+            "explanation": "Merawat ialah kata kerja.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KK-040",
+            "q": "Cikgu ______ murid di kelas.",
+            "answer": "mengajar",
+            "accepted": [
+              "ajar"
+            ],
+            "hint": "Tugas guru.",
+            "explanation": "Mengajar ialah kata kerja.",
+            "difficulty": "sukar"
           }
         ]
       },
       {
         "id": "kata_adjektif",
         "title": "Kata Adjektif",
-        "note": "Menerangkan sifat atau keadaan sesuatu.",
+        "note": "Kata adjektif menerangkan sifat atau keadaan sesuatu.",
         "questions": [
           {
+            "id": "BM-KA-001",
             "q": "Gajah ialah haiwan yang ________.",
             "answer": "besar",
             "accepted": [],
@@ -431,6 +1733,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-002",
             "q": "Ais berasa ________.",
             "answer": "sejuk",
             "accepted": [
@@ -441,6 +1744,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-003",
             "q": "Bunga itu sangat ________.",
             "answer": "cantik",
             "accepted": [
@@ -451,6 +1755,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-004",
             "q": "Kereta itu bergerak sangat ________.",
             "answer": "laju",
             "accepted": [
@@ -462,6 +1767,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-005",
             "q": "Kelas kami sentiasa ________.",
             "answer": "bersih",
             "accepted": [
@@ -472,6 +1778,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-006",
             "q": "Semut ialah haiwan yang ________.",
             "answer": "kecil",
             "accepted": [],
@@ -480,6 +1787,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-007",
             "q": "Pokok kelapa itu sangat ________.",
             "answer": "tinggi",
             "accepted": [],
@@ -488,6 +1796,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-008",
             "q": "Air kopi itu masih ________.",
             "answer": "panas",
             "accepted": [
@@ -498,527 +1807,325 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "BM-KA-009",
             "q": "Gula itu berasa ________.",
             "answer": "manis",
             "accepted": [],
             "hint": "Rasa gula.",
             "explanation": "Manis ialah kata adjektif.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
+            "id": "BM-KA-010",
             "q": "Batu itu sangat ________.",
             "answer": "keras",
             "accepted": [],
             "hint": "Lawan lembut.",
             "explanation": "Keras ialah kata adjektif.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "penjodoh_bilangan",
-        "title": "Penjodoh Bilangan",
-        "note": "Digunakan bersama bilangan.",
-        "questions": [
-          {
-            "q": "Ayah membeli ________ epal.",
-            "answer": "sebiji",
-            "accepted": [
-              "satu biji"
-            ],
-            "hint": "Epal menggunakan biji.",
-            "explanation": "Sebiji sesuai untuk epal.",
-            "difficulty": "mudah"
+            "difficulty": "sederhana"
           },
           {
-            "q": "Di padang ada ________ kuda.",
-            "answer": "seekor",
-            "accepted": [
-              "satu ekor"
-            ],
-            "hint": "Kuda ialah haiwan.",
-            "explanation": "Seekor sesuai untuk haiwan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ibu memakai ________ selipar.",
-            "answer": "sepasang",
-            "accepted": [
-              "satu pasang"
-            ],
-            "hint": "Selipar biasanya berpasangan.",
-            "explanation": "Sepasang sesuai untuk selipar.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Saya menulis menggunakan ________ pensel.",
-            "answer": "sebatang",
-            "accepted": [
-              "satu batang"
-            ],
-            "hint": "Pensel berbentuk panjang.",
-            "explanation": "Sebatang sesuai untuk pensel.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Kakak makan ________ roti.",
-            "answer": "sekeping",
-            "accepted": [
-              "satu keping"
-            ],
-            "hint": "Roti boleh sekeping.",
-            "explanation": "Sekeping sesuai untuk roti.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "________ doktor memeriksa pesakit.",
-            "answer": "seorang",
-            "accepted": [
-              "satu orang"
-            ],
-            "hint": "Doktor ialah manusia.",
-            "explanation": "Seorang untuk manusia.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "________ baju digantung.",
-            "answer": "sehelai",
-            "accepted": [
-              "satu helai"
-            ],
-            "hint": "Baju menggunakan helai.",
-            "explanation": "Sehelai sesuai untuk baju.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ayah memandu ________ kereta.",
-            "answer": "sebuah",
-            "accepted": [
-              "satu buah"
-            ],
-            "hint": "Kereta menggunakan buah.",
-            "explanation": "Sebuah sesuai untuk kereta.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "________ bola berada di bawah meja.",
-            "answer": "sebiji",
-            "accepted": [
-              "satu biji"
-            ],
-            "hint": "Bola menggunakan biji.",
-            "explanation": "Sebiji sesuai untuk bola.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "________ ikan berenang di dalam akuarium.",
-            "answer": "seekor",
-            "accepted": [
-              "satu ekor"
-            ],
-            "hint": "Ikan ialah haiwan.",
-            "explanation": "Seekor sesuai untuk ikan.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "kata_sendi",
-        "title": "Kata Sendi Nama",
-        "note": "Menghubungkan perkataan seperti di, ke, dari, pada, kepada dan untuk.",
-        "questions": [
-          {
-            "q": "Kakak belajar ________ perpustakaan.",
-            "answer": "di",
+            "id": "BM-KA-011",
+            "q": "Gajah ialah haiwan yang ______.",
+            "answer": "besar",
             "accepted": [],
-            "hint": "Menunjukkan tempat berada.",
-            "explanation": "Di digunakan untuk tempat.",
-            "difficulty": "mudah"
+            "hint": "Lawan kecil.",
+            "explanation": "Besar ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Ayah pergi ________ pejabat.",
-            "answer": "ke",
+            "id": "BM-KA-012",
+            "q": "Ais berasa ______.",
+            "answer": "sejuk",
+            "accepted": [
+              "dingin"
+            ],
+            "hint": "Lawan panas.",
+            "explanation": "Sejuk ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-013",
+            "q": "Bunga itu sangat ______.",
+            "answer": "cantik",
+            "accepted": [
+              "indah"
+            ],
+            "hint": "Sedap dipandang.",
+            "explanation": "Cantik ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-014",
+            "q": "Kereta itu bergerak sangat ______.",
+            "answer": "laju",
+            "accepted": [
+              "pantas",
+              "cepat"
+            ],
+            "hint": "Lawan perlahan.",
+            "explanation": "Laju ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-015",
+            "q": "Kelas kami sentiasa ______.",
+            "answer": "bersih",
+            "accepted": [
+              "kemas"
+            ],
+            "hint": "Tidak kotor.",
+            "explanation": "Bersih ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-016",
+            "q": "Semut ialah haiwan yang ______.",
+            "answer": "kecil",
             "accepted": [],
-            "hint": "Menunjukkan arah tujuan.",
-            "explanation": "Ke digunakan untuk arah.",
-            "difficulty": "mudah"
+            "hint": "Lawan besar.",
+            "explanation": "Kecil ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Kami pulang ________ sekolah.",
-            "answer": "dari",
-            "accepted": [
-              "daripada"
-            ],
-            "hint": "Menunjukkan tempat asal.",
-            "explanation": "Dari digunakan untuk tempat asal.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Hadiah ini ________ adik.",
-            "answer": "untuk",
+            "id": "BM-KA-017",
+            "q": "Pokok kelapa itu sangat ______.",
+            "answer": "tinggi",
             "accepted": [],
-            "hint": "Menunjukkan tujuan pemberian.",
-            "explanation": "Untuk menunjukkan tujuan.",
-            "difficulty": "mudah"
+            "hint": "Lawan rendah.",
+            "explanation": "Tinggi ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Perhimpunan diadakan ________ hari Isnin.",
-            "answer": "pada",
+            "id": "BM-KA-018",
+            "q": "Air kopi itu masih ______.",
+            "answer": "panas",
+            "accepted": [
+              "hangat"
+            ],
+            "hint": "Lawan sejuk.",
+            "explanation": "Panas ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-019",
+            "q": "Gula itu berasa ______.",
+            "answer": "manis",
             "accepted": [],
-            "hint": "Digunakan untuk masa atau hari.",
-            "explanation": "Pada digunakan untuk masa.",
-            "difficulty": "mudah"
+            "hint": "Rasa gula.",
+            "explanation": "Manis ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Saya memberikan buku itu ________ Ali.",
-            "answer": "kepada",
+            "id": "BM-KA-020",
+            "q": "Batu itu sangat ______.",
+            "answer": "keras",
             "accepted": [],
-            "hint": "Digunakan untuk penerima.",
-            "explanation": "Kepada digunakan untuk penerima.",
-            "difficulty": "mudah"
+            "hint": "Lawan lembut.",
+            "explanation": "Keras ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Ibu membeli sayur ________ pasar.",
-            "answer": "di",
+            "id": "BM-KA-021",
+            "q": "Gajah ialah haiwan yang ______.",
+            "answer": "besar",
             "accepted": [],
-            "hint": "Tempat ibu membeli.",
-            "explanation": "Di digunakan untuk tempat.",
-            "difficulty": "mudah"
+            "hint": "Lawan kecil.",
+            "explanation": "Besar ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Kami berjalan ________ taman.",
-            "answer": "ke",
+            "id": "BM-KA-022",
+            "q": "Ais berasa ______.",
+            "answer": "sejuk",
+            "accepted": [
+              "dingin"
+            ],
+            "hint": "Lawan panas.",
+            "explanation": "Sejuk ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-023",
+            "q": "Bunga itu sangat ______.",
+            "answer": "cantik",
+            "accepted": [
+              "indah"
+            ],
+            "hint": "Sedap dipandang.",
+            "explanation": "Cantik ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-024",
+            "q": "Kereta itu bergerak sangat ______.",
+            "answer": "laju",
+            "accepted": [
+              "pantas",
+              "cepat"
+            ],
+            "hint": "Lawan perlahan.",
+            "explanation": "Laju ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-025",
+            "q": "Kelas kami sentiasa ______.",
+            "answer": "bersih",
+            "accepted": [
+              "kemas"
+            ],
+            "hint": "Tidak kotor.",
+            "explanation": "Bersih ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-026",
+            "q": "Semut ialah haiwan yang ______.",
+            "answer": "kecil",
             "accepted": [],
-            "hint": "Menuju tempat.",
-            "explanation": "Ke digunakan untuk arah.",
-            "difficulty": "mudah"
+            "hint": "Lawan besar.",
+            "explanation": "Kecil ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Ayah balik ________ kerja.",
-            "answer": "dari",
-            "accepted": [
-              "daripada"
-            ],
-            "hint": "Tempat asal balik.",
-            "explanation": "Dari digunakan untuk tempat asal.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Buku itu berada ________ atas meja.",
-            "answer": "di",
+            "id": "BM-KA-027",
+            "q": "Pokok kelapa itu sangat ______.",
+            "answer": "tinggi",
             "accepted": [],
-            "hint": "Menunjukkan tempat.",
-            "explanation": "Di digunakan untuk tempat.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "kata_hubung",
-        "title": "Kata Hubung",
-        "note": "Menghubungkan perkataan atau ayat.",
-        "questions": [
+            "hint": "Lawan rendah.",
+            "explanation": "Tinggi ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
           {
-            "q": "Ali ________ Abu bermain bola.",
-            "answer": "dan",
+            "id": "BM-KA-028",
+            "q": "Air kopi itu masih ______.",
+            "answer": "panas",
+            "accepted": [
+              "hangat"
+            ],
+            "hint": "Lawan sejuk.",
+            "explanation": "Panas ialah kata adjektif.",
+            "difficulty": "sederhana"
+          },
+          {
+            "id": "BM-KA-029",
+            "q": "Gula itu berasa ______.",
+            "answer": "manis",
             "accepted": [],
-            "hint": "Menggabungkan dua orang.",
-            "explanation": "Dan menggabungkan perkataan.",
-            "difficulty": "mudah"
+            "hint": "Rasa gula.",
+            "explanation": "Manis ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Kamu mahu air sirap ________ air kosong?",
-            "answer": "atau",
+            "id": "BM-KA-030",
+            "q": "Batu itu sangat ______.",
+            "answer": "keras",
             "accepted": [],
-            "hint": "Menunjukkan pilihan.",
-            "explanation": "Atau menunjukkan pilihan.",
-            "difficulty": "mudah"
+            "hint": "Lawan lembut.",
+            "explanation": "Keras ialah kata adjektif.",
+            "difficulty": "sederhana"
           },
           {
-            "q": "Aina rajin ________ adiknya malas.",
-            "answer": "tetapi",
-            "accepted": [
-              "namun"
-            ],
-            "hint": "Menunjukkan perbezaan.",
-            "explanation": "Tetapi menunjukkan pertentangan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Saya membawa payung ________ hari hujan.",
-            "answer": "kerana",
-            "accepted": [
-              "sebab"
-            ],
-            "hint": "Menunjukkan sebab.",
-            "explanation": "Kerana menunjukkan sebab.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Adik bangun ________ mandi.",
-            "answer": "lalu",
-            "accepted": [
-              "kemudian"
-            ],
-            "hint": "Tindakan seterusnya.",
-            "explanation": "Lalu menunjukkan urutan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ibu membeli ikan ________ sayur.",
-            "answer": "dan",
+            "id": "BM-KA-031",
+            "q": "Gajah ialah haiwan yang ______.",
+            "answer": "besar",
             "accepted": [],
-            "hint": "Menggabungkan dua benda.",
-            "explanation": "Dan menggabungkan perkataan.",
-            "difficulty": "mudah"
+            "hint": "Lawan kecil.",
+            "explanation": "Besar ialah kata adjektif.",
+            "difficulty": "sukar"
           },
           {
-            "q": "Awak hendak membaca buku ________ melukis?",
-            "answer": "atau",
+            "id": "BM-KA-032",
+            "q": "Ais berasa ______.",
+            "answer": "sejuk",
+            "accepted": [
+              "dingin"
+            ],
+            "hint": "Lawan panas.",
+            "explanation": "Sejuk ialah kata adjektif.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KA-033",
+            "q": "Bunga itu sangat ______.",
+            "answer": "cantik",
+            "accepted": [
+              "indah"
+            ],
+            "hint": "Sedap dipandang.",
+            "explanation": "Cantik ialah kata adjektif.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KA-034",
+            "q": "Kereta itu bergerak sangat ______.",
+            "answer": "laju",
+            "accepted": [
+              "pantas",
+              "cepat"
+            ],
+            "hint": "Lawan perlahan.",
+            "explanation": "Laju ialah kata adjektif.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KA-035",
+            "q": "Kelas kami sentiasa ______.",
+            "answer": "bersih",
+            "accepted": [
+              "kemas"
+            ],
+            "hint": "Tidak kotor.",
+            "explanation": "Bersih ialah kata adjektif.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KA-036",
+            "q": "Semut ialah haiwan yang ______.",
+            "answer": "kecil",
             "accepted": [],
-            "hint": "Menunjukkan pilihan.",
-            "explanation": "Atau menunjukkan pilihan.",
-            "difficulty": "mudah"
+            "hint": "Lawan besar.",
+            "explanation": "Kecil ialah kata adjektif.",
+            "difficulty": "sukar"
           },
           {
-            "q": "Dia menangis ________ terjatuh.",
-            "answer": "kerana",
-            "accepted": [
-              "sebab"
-            ],
-            "hint": "Sebab menangis.",
-            "explanation": "Kerana menunjukkan sebab.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Rumah itu kecil ________ bersih.",
-            "answer": "tetapi",
-            "accepted": [
-              "namun"
-            ],
-            "hint": "Dua sifat berbeza.",
-            "explanation": "Tetapi menunjukkan pertentangan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Saya makan nasi ________ minum air.",
-            "answer": "lalu",
-            "accepted": [
-              "kemudian"
-            ],
-            "hint": "Perbuatan seterusnya.",
-            "explanation": "Lalu menunjukkan urutan.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "tanda_baca",
-        "title": "Tanda Baca",
-        "note": "Tanda baca membantu ayat menjadi jelas.",
-        "questions": [
-          {
-            "q": "Ayat tanya perlu diakhiri dengan tanda ________.",
-            "answer": "soal",
-            "accepted": [
-              "tanda soal",
-              "?"
-            ],
-            "hint": "Ayat tanya menggunakan ?.",
-            "explanation": "Tanda soal digunakan untuk soalan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ayat seruan perlu diakhiri dengan tanda ________.",
-            "answer": "seru",
-            "accepted": [
-              "tanda seru",
-              "!"
-            ],
-            "hint": "Ayat seruan menggunakan !.",
-            "explanation": "Tanda seru menunjukkan seruan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ayat penyata biasa diakhiri dengan tanda ________.",
-            "answer": "noktah",
-            "accepted": [
-              "."
-            ],
-            "hint": "Ayat biasa menggunakan titik.",
-            "explanation": "Noktah menamatkan ayat penyata.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Pilih tanda baca betul: Siapakah nama kamu ________",
-            "answer": "?",
-            "accepted": [
-              "tanda soal"
-            ],
-            "hint": "Ini ayat tanya.",
-            "explanation": "Ayat tanya menggunakan tanda soal.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Pilih tanda baca betul: Aduh, sakitnya kaki saya ________",
-            "answer": "!",
-            "accepted": [
-              "tanda seru"
-            ],
-            "hint": "Ini ayat seruan.",
-            "explanation": "Ayat seruan menggunakan tanda seru.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Pilih tanda baca betul: Ibu memasak nasi ________",
-            "answer": ".",
-            "accepted": [
-              "noktah"
-            ],
-            "hint": "Ini ayat penyata.",
-            "explanation": "Ayat penyata diakhiri noktah.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tanda koma ialah ________.",
-            "answer": "koma",
-            "accepted": [
-              ","
-            ],
-            "hint": "Koma digunakan untuk berhenti seketika.",
-            "explanation": "Koma memisahkan unsur dalam ayat.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tanda noktah ditulis sebagai ________.",
-            "answer": ".",
-            "accepted": [
-              "noktah"
-            ],
-            "hint": "Simbol titik.",
-            "explanation": "Noktah ialah titik.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tanda soal ditulis sebagai ________.",
-            "answer": "?",
-            "accepted": [
-              "tanda soal"
-            ],
-            "hint": "Simbol untuk soalan.",
-            "explanation": "Tanda soal ialah ?.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tanda seru ditulis sebagai ________.",
-            "answer": "!",
-            "accepted": [
-              "tanda seru"
-            ],
-            "hint": "Simbol untuk seruan.",
-            "explanation": "Tanda seru ialah !.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "pemahaman",
-        "title": "Pemahaman Pendek",
-        "note": "Baca petikan ringkas dan jawab soalan.",
-        "questions": [
-          {
-            "q": "Petikan: Aiman bermain bola. Apakah yang dimainkan Aiman?",
-            "answer": "bola",
-            "accepted": [
-              "bola sepak"
-            ],
-            "hint": "Cari benda yang dimainkan.",
-            "explanation": "Aiman bermain bola.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Sara membaca di perpustakaan. Di manakah Sara membaca?",
-            "answer": "perpustakaan",
-            "accepted": [
-              "di perpustakaan"
-            ],
-            "hint": "Cari tempat dalam petikan.",
-            "explanation": "Sara membaca di perpustakaan.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Ibu membeli ikan di pasar. Di manakah ibu membeli ikan?",
-            "answer": "pasar",
-            "accepted": [
-              "di pasar"
-            ],
-            "hint": "Cari tempat ibu membeli ikan.",
-            "explanation": "Ibu membeli ikan di pasar.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Abu sakit lalu ke klinik. Ke manakah Abu pergi?",
-            "answer": "klinik",
-            "accepted": [
-              "ke klinik"
-            ],
-            "hint": "Cari tempat Abu pergi.",
-            "explanation": "Abu pergi ke klinik.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Ayah mencuci kereta. Apakah yang dicuci ayah?",
-            "answer": "kereta",
+            "id": "BM-KA-037",
+            "q": "Pokok kelapa itu sangat ______.",
+            "answer": "tinggi",
             "accepted": [],
-            "hint": "Cari benda yang dicuci.",
-            "explanation": "Ayah mencuci kereta.",
-            "difficulty": "mudah"
+            "hint": "Lawan rendah.",
+            "explanation": "Tinggi ialah kata adjektif.",
+            "difficulty": "sukar"
           },
           {
-            "q": "Petikan: Kucing putih tidur di bawah meja. Apakah warna kucing itu?",
-            "answer": "putih",
+            "id": "BM-KA-038",
+            "q": "Air kopi itu masih ______.",
+            "answer": "panas",
+            "accepted": [
+              "hangat"
+            ],
+            "hint": "Lawan sejuk.",
+            "explanation": "Panas ialah kata adjektif.",
+            "difficulty": "sukar"
+          },
+          {
+            "id": "BM-KA-039",
+            "q": "Gula itu berasa ______.",
+            "answer": "manis",
             "accepted": [],
-            "hint": "Cari warna kucing.",
-            "explanation": "Kucing itu berwarna putih.",
-            "difficulty": "mudah"
+            "hint": "Rasa gula.",
+            "explanation": "Manis ialah kata adjektif.",
+            "difficulty": "sukar"
           },
           {
-            "q": "Petikan: Adik minum susu sebelum tidur. Apakah yang diminum adik?",
-            "answer": "susu",
+            "id": "BM-KA-040",
+            "q": "Batu itu sangat ______.",
+            "answer": "keras",
             "accepted": [],
-            "hint": "Cari minuman dalam petikan.",
-            "explanation": "Adik minum susu.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Cikgu Lina mengajar Bahasa Melayu. Siapakah yang mengajar?",
-            "answer": "Cikgu Lina",
-            "accepted": [
-              "lina"
-            ],
-            "hint": "Cari nama guru.",
-            "explanation": "Cikgu Lina yang mengajar.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Amir menyiram pokok bunga setiap petang. Bilakah Amir menyiram pokok?",
-            "answer": "petang",
-            "accepted": [
-              "setiap petang"
-            ],
-            "hint": "Cari masa dalam petikan.",
-            "explanation": "Amir menyiram pada waktu petang.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Petikan: Keluarga Rina berkelah di pantai. Di manakah mereka berkelah?",
-            "answer": "pantai",
-            "accepted": [
-              "di pantai"
-            ],
-            "hint": "Cari tempat berkelah.",
-            "explanation": "Mereka berkelah di pantai.",
-            "difficulty": "mudah"
+            "hint": "Lawan lembut.",
+            "explanation": "Keras ialah kata adjektif.",
+            "difficulty": "sukar"
           }
         ]
       }
@@ -1037,6 +2144,7 @@ export const subjects = [
         "note": "Latihan nombor dan nilai tempat.",
         "questions": [
           {
+            "id": "MATH-001",
             "q": "Apakah nombor selepas 245?",
             "answer": "246",
             "accepted": [],
@@ -1045,6 +2153,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "MATH-002",
             "q": "Apakah nombor sebelum 500?",
             "answer": "499",
             "accepted": [],
@@ -1053,76 +2162,12 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "MATH-003",
             "q": "600 + 30 + 5 = ________.",
             "answer": "635",
             "accepted": [],
             "hint": "Gabungkan ratus, puluh dan sa.",
             "explanation": "600 + 30 + 5 = 635.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Nilai digit 4 dalam 456 ialah ________.",
-            "answer": "400",
-            "accepted": [
-              "empat ratus"
-            ],
-            "hint": "Digit 4 berada di tempat ratus.",
-            "explanation": "Nilai digit 4 ialah 400.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Nombor genap selepas 28 ialah ________.",
-            "answer": "30",
-            "accepted": [],
-            "hint": "Nombor genap seterusnya.",
-            "explanation": "Selepas 28 ialah 30.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "tambah_tolak",
-        "title": "Tambah dan Tolak",
-        "note": "Latihan operasi tambah dan tolak.",
-        "questions": [
-          {
-            "q": "25 + 14 = ________.",
-            "answer": "39",
-            "accepted": [],
-            "hint": "Tambah 25 dengan 14.",
-            "explanation": "25 + 14 = 39.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "60 - 25 = ________.",
-            "answer": "35",
-            "accepted": [],
-            "hint": "Tolak 25 daripada 60.",
-            "explanation": "60 - 25 = 35.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "120 + 30 = ________.",
-            "answer": "150",
-            "accepted": [],
-            "hint": "Tambah puluh.",
-            "explanation": "120 + 30 = 150.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "90 - 18 = ________.",
-            "answer": "72",
-            "accepted": [],
-            "hint": "Tolak 18 daripada 90.",
-            "explanation": "90 - 18 = 72.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ali ada 12 gula-gula. Ibu beri 8 lagi. Jumlah ialah ________.",
-            "answer": "20",
-            "accepted": [],
-            "hint": "Tambah 12 dan 8.",
-            "explanation": "12 + 8 = 20.",
             "difficulty": "mudah"
           }
         ]
@@ -1142,6 +2187,7 @@ export const subjects = [
         "note": "A noun is a name of a person, animal, place or thing.",
         "questions": [
           {
+            "id": "ENG-001",
             "q": "A cat is an ________.",
             "answer": "animal",
             "accepted": [],
@@ -1150,6 +2196,7 @@ export const subjects = [
             "difficulty": "easy"
           },
           {
+            "id": "ENG-002",
             "q": "A school is a ________.",
             "answer": "place",
             "accepted": [],
@@ -1158,74 +2205,12 @@ export const subjects = [
             "difficulty": "easy"
           },
           {
-            "q": "A pencil is a ________.",
-            "answer": "thing",
-            "accepted": [],
-            "hint": "You can hold it.",
-            "explanation": "A pencil is a thing.",
-            "difficulty": "easy"
-          },
-          {
-            "q": "Ali is a name of a ________.",
-            "answer": "person",
-            "accepted": [],
-            "hint": "Ali is a boy's name.",
-            "explanation": "Ali is a person.",
-            "difficulty": "easy"
-          },
-          {
+            "id": "ENG-003",
             "q": "Choose the noun: run, book, happy.",
             "answer": "book",
             "accepted": [],
             "hint": "A noun names a thing.",
             "explanation": "Book is a noun.",
-            "difficulty": "easy"
-          }
-        ]
-      },
-      {
-        "id": "verbs",
-        "title": "Verbs",
-        "note": "A verb is an action word.",
-        "questions": [
-          {
-            "q": "Birds can ________.",
-            "answer": "fly",
-            "accepted": [],
-            "hint": "Birds move in the air.",
-            "explanation": "Fly is an action word.",
-            "difficulty": "easy"
-          },
-          {
-            "q": "Fish can ________.",
-            "answer": "swim",
-            "accepted": [],
-            "hint": "Fish move in water.",
-            "explanation": "Swim is an action word.",
-            "difficulty": "easy"
-          },
-          {
-            "q": "I ________ water.",
-            "answer": "drink",
-            "accepted": [],
-            "hint": "Water is something we drink.",
-            "explanation": "Drink is a verb.",
-            "difficulty": "easy"
-          },
-          {
-            "q": "We ________ football.",
-            "answer": "play",
-            "accepted": [],
-            "hint": "Football is a game.",
-            "explanation": "Play is a verb.",
-            "difficulty": "easy"
-          },
-          {
-            "q": "Ali can ________ fast.",
-            "answer": "run",
-            "accepted": [],
-            "hint": "Fast movement using legs.",
-            "explanation": "Run is a verb.",
             "difficulty": "easy"
           }
         ]
@@ -1245,6 +2230,7 @@ export const subjects = [
         "note": "Kenali haiwan dan ciri-cirinya.",
         "questions": [
           {
+            "id": "SAINS-001",
             "q": "Kucing mempunyai ________ kaki.",
             "answer": "empat",
             "accepted": [
@@ -1255,6 +2241,7 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "SAINS-002",
             "q": "Ikan hidup di dalam ________.",
             "answer": "air",
             "accepted": [],
@@ -1263,78 +2250,12 @@ export const subjects = [
             "difficulty": "mudah"
           },
           {
+            "id": "SAINS-003",
             "q": "Burung boleh ________.",
             "answer": "terbang",
             "accepted": [],
             "hint": "Burung menggunakan sayap.",
             "explanation": "Burung boleh terbang.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Ayam bertelur. Ayam ialah haiwan yang ________.",
-            "answer": "bertelur",
-            "accepted": [],
-            "hint": "Ayam menghasilkan telur.",
-            "explanation": "Ayam ialah haiwan bertelur.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Lembu memberi kita ________.",
-            "answer": "susu",
-            "accepted": [],
-            "hint": "Kita minum susu lembu.",
-            "explanation": "Lembu memberi susu.",
-            "difficulty": "mudah"
-          }
-        ]
-      },
-      {
-        "id": "tumbuhan",
-        "title": "Tumbuhan",
-        "note": "Bahagian tumbuhan dan keperluannya.",
-        "questions": [
-          {
-            "q": "Bahagian tumbuhan yang menyerap air ialah ________.",
-            "answer": "akar",
-            "accepted": [],
-            "hint": "Bahagian ini berada di dalam tanah.",
-            "explanation": "Akar menyerap air.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tumbuhan memerlukan air, udara dan ________.",
-            "answer": "cahaya matahari",
-            "accepted": [
-              "matahari"
-            ],
-            "hint": "Tumbuhan perlukan cahaya.",
-            "explanation": "Tumbuhan memerlukan cahaya matahari.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Bahagian tumbuhan yang berwarna hijau ialah ________.",
-            "answer": "daun",
-            "accepted": [],
-            "hint": "Bahagian ini biasanya hijau.",
-            "explanation": "Daun biasanya berwarna hijau.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Pokok perlu disiram dengan ________.",
-            "answer": "air",
-            "accepted": [],
-            "hint": "Tumbuhan perlukan air.",
-            "explanation": "Pokok perlu disiram dengan air.",
-            "difficulty": "mudah"
-          },
-          {
-            "q": "Tumbuhan tumbuh daripada ________.",
-            "answer": "biji benih",
-            "accepted": [
-              "benih"
-            ],
-            "hint": "Benih menjadi pokok.",
-            "explanation": "Tumbuhan tumbuh daripada biji benih.",
             "difficulty": "mudah"
           }
         ]
