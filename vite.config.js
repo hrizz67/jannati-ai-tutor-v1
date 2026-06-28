@@ -1,7 +1,3 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  base: '/jannati-ai-tutor-v1/'
-})
+export default defineConfig({plugins:[react()],base:'/jannati-ai-tutor-v1/'})

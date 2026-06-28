@@ -1,11 +1,1 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-<rect width="512" height="512" rx="112" fill="#087A3B"/>
-<circle cx="256" cy="230" r="128" fill="#EFFFF4"/>
-<rect x="150" y="190" width="212" height="145" rx="48" fill="#FFFFFF"/>
-<circle cx="215" cy="255" r="20" fill="#087A3B"/>
-<circle cx="297" cy="255" r="20" fill="#087A3B"/>
-<path d="M216 300C238 320 274 320 296 300" stroke="#087A3B" stroke-width="18" stroke-linecap="round"/>
-<path d="M256 120V90" stroke="#F4C542" stroke-width="22" stroke-linecap="round"/>
-<circle cx="256" cy="74" r="22" fill="#F4C542"/>
-<text x="256" y="432" text-anchor="middle" font-family="Arial" font-size="34" font-weight="800" fill="#FFFFFF">JANNATI</text>
-</svg>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#087A3B"/><circle cx="256" cy="230" r="128" fill="#EFFFF4"/><rect x="150" y="190" width="212" height="145" rx="48" fill="#FFFFFF"/><circle cx="215" cy="255" r="20" fill="#087A3B"/><circle cx="297" cy="255" r="20" fill="#087A3B"/><path d="M216 300C238 320 274 320 296 300" stroke="#087A3B" stroke-width="18" stroke-linecap="round"/><text x="256" y="432" text-anchor="middle" font-family="Arial" font-size="34" font-weight="800" fill="#FFFFFF">JANNATI</text></svg>
