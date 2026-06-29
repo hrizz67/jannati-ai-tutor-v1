@@ -1,9 +1,14 @@
-# CHANGELOG - V1.3.0 Learning Path
+# CHANGELOG - V1.4.0 Package 1
 
 Added:
-- Learning Path
-- Path node setiap topik
-- Unlock selepas 80%
-- Trophy tamat subjek
-- Reading Coach AI
-- BM Pack 2 asas
+- Resume Latihan
+- Auto Save latihan
+- Sambung dari soalan terakhir
+- Mula semula latihan
+- Daily Challenge asas
+- History Belajar
+- Smart Revision card
+- UASA metadata asas
+- BM diperluaskan
+- Matematik asas diperluaskan
+- English dan Sains asas

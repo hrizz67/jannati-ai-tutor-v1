@@ -1,20 +1,26 @@
-# INSTALL - Jannati AI Tutor V1.3.0 Learning Path Full
+# INSTALL - Jannati AI Tutor V1.4.0 Package 1
 
-1. Backup folder projek lama.
-2. Extract ZIP ini.
-3. Buka folder dalam VS Code.
-4. Jalankan:
-
+## Test
 ```bash
 npm install
 npm run dev
 ```
 
-Deploy:
+Buka `http://localhost:5173/`.
 
+## Ujian utama
+1. Mula latihan.
+2. Jawab beberapa soalan.
+3. Kembali ke dashboard.
+4. Pastikan kad **Sambung Latihan** muncul.
+5. Tekan **Sambung** dan pastikan tidak mula dari soalan pertama.
+6. Cuba **Daily Challenge**.
+7. Tamatkan topik dan semak **History Belajar**.
+
+## Deploy
 ```bash
 git add .
-git commit -m "Release V1.3.0 Learning Path"
+git commit -m "Release V1.4.0 Package 1 Resume Daily"
 git push
 npm run deploy
 ```
