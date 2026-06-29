@@ -1,11 +1,12 @@
-# RELEASE NOTES - V1.4.0 Package 1
+# RELEASE NOTES - V1.4.0 Package 2
 
-Fokus release:
-- Murid tidak perlu mula latihan dari awal.
-- Latihan disimpan automatik dalam localStorage.
-- Dashboard menunjukkan latihan yang belum siap.
-- Daily Challenge memberi bonus XP dan Coins.
+Package ini fokus kepada kandungan.
+
+Kelebihan:
+- Risiko rendah kerana hanya menggantikan src/data/subjects.js.
+- Sesuai dipasang di atas V1.4.0 Package 1.
+- Menambah metadata UASA/DSKP asas untuk analisis masa depan.
 
 Batasan:
-- Resume belum sync antara peranti kerana belum menggunakan Firebase.
-- Daily Challenge asas belum semak bilangan soalan sebenar.
+- Ini belum UASA Simulator penuh.
+- Parent Dashboard dan Firebase belum dimasukkan.
