@@ -18,7 +18,8 @@ const defaultProfile = {
   history: [],
   daily: {},
   bookmarks: [],
-  favourites: []
+  favourites: [],
+  uasaHistory: []
 };
 
 function loadProfile() {
@@ -54,6 +55,14 @@ function getStars(score = 0) {
   return '☆☆☆';
 }
 
+function getGrade(score = 0) {
+  if (score >= 80) return 'A';
+  if (score >= 65) return 'B';
+  if (score >= 50) return 'C';
+  if (score >= 40) return 'D';
+  return 'E';
+}
+
 function todayKey() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -65,42 +74,19 @@ function isTopicUnlocked(profile, subject, topicIndex) {
   return (previousProgress?.best || 0) >= 80;
 }
 
-function getRecommendedTopic(profile, subject) {
-  return subject.topics.find((topic, index) => {
-    const progress = profile.progress?.[progressKey(subject.id, topic.id)];
-    return isTopicUnlocked(profile, subject, index) && (progress?.best || 0) < 80;
-  }) || subject.topics[0];
-}
-
-function autoBadges(profile) {
-  const badges = new Set(profile.badges || []);
-  const completed = Object.values(profile.progress || {}).filter(p => p.best >= 80).length;
-
-  if ((profile.xp || 0) >= 100) badges.add('100 XP Pertama');
-  if ((profile.xp || 0) >= 500) badges.add('Pejuang 500 XP');
-  if ((profile.streak || 0) >= 3) badges.add('Streak 3 Hari');
-  if (completed >= 1) badges.add('Topik Pertama Siap');
-  if (completed >= 5) badges.add('BM Champion');
-  if (profile.daily?.[todayKey()]?.completed) badges.add('Daily Challenge');
-
-  return [...badges];
-}
-
-function buildDailyChallenge() {
-  return [
-    { subjectId: 'bm', count: 5, label: '5 soalan BM' },
-    { subjectId: 'math', count: 5, label: '5 soalan Matematik' },
-    { subjectId: 'english', count: 3, label: '3 soalan English' },
-    { subjectId: 'sains', count: 2, label: '2 soalan Sains' }
-  ];
-}
-
 function getSubjectAverage(profile, subject) {
   if (!subject?.topics?.length) return 0;
   const total = subject.topics.reduce((sum, topic) => {
     return sum + (profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0);
   }, 0);
   return Math.round(total / subject.topics.length);
+}
+
+function getRecommendedTopic(profile, subject) {
+  return subject.topics.find((topic, index) => {
+    const progress = profile.progress?.[progressKey(subject.id, topic.id)];
+    return isTopicUnlocked(profile, subject, index) && (progress?.best || 0) < 80;
+  }) || subject.topics[0];
 }
 
 function getAllTopicStats(profile) {
@@ -126,6 +112,66 @@ function getAllTopicStats(profile) {
   return rows;
 }
 
+function autoBadges(profile) {
+  const badges = new Set(profile.badges || []);
+  const completed = Object.values(profile.progress || {}).filter(p => p.best >= 80).length;
+
+  if ((profile.xp || 0) >= 100) badges.add('100 XP Pertama');
+  if ((profile.xp || 0) >= 500) badges.add('Pejuang 500 XP');
+  if ((profile.streak || 0) >= 3) badges.add('Streak 3 Hari');
+  if (completed >= 1) badges.add('Topik Pertama Siap');
+  if (completed >= 5) badges.add('BM Champion');
+  if (profile.daily?.[todayKey()]?.completed) badges.add('Daily Challenge');
+  if ((profile.uasaHistory || []).some(x => x.score >= 80)) badges.add('UASA A');
+
+  return [...badges];
+}
+
+function buildDailyChallenge() {
+  return [
+    { subjectId: 'bm', count: 5, label: '5 soalan BM' },
+    { subjectId: 'math', count: 5, label: '5 soalan Matematik' },
+    { subjectId: 'english', count: 3, label: '3 soalan English' },
+    { subjectId: 'sains', count: 2, label: '2 soalan Sains' }
+  ];
+}
+
+function buildUasaSet(subject, count = 20) {
+  const all = [];
+  subject.topics.forEach(topic => {
+    topic.questions.forEach(question => {
+      all.push({ ...question, topicId: topic.id, topicTitle: topic.title, subjectId: subject.id, subjectTitle: subject.title });
+    });
+  });
+  return shuffleArray(all).slice(0, Math.min(count, all.length));
+}
+
+function aiReply(message, profile, selectedSubject) {
+  const text = message.toLowerCase();
+  const avg = getSubjectAverage(profile, selectedSubject);
+  const recommended = getRecommendedTopic(profile, selectedSubject);
+  const weak = getAllTopicStats(profile).filter(t => t.best > 0 && t.best < 80).sort((a,b) => a.best - b.best)[0];
+
+  if (text.includes('lemah') || text.includes('ulang') || text.includes('revision')) {
+    if (weak) return `Saya cadangkan ulang topik ${weak.subject} - ${weak.topic}. Markah terbaik sekarang ${weak.best}%. Cuba buat 10 soalan dan sasarkan 80%.`;
+    return `Belum ada topik lemah direkodkan. Mula dengan ${recommended.title} dahulu.`;
+  }
+
+  if (text.includes('uasa') || text.includes('exam') || text.includes('peperiksaan')) {
+    return `Untuk persediaan UASA, mula dengan latihan topik dahulu. Purata ${selectedSubject.short} sekarang ${avg}%. Selepas capai 70% ke atas, cuba UASA Simulator.`;
+  }
+
+  if (text.includes('mula') || text.includes('belajar') || text.includes('apa')) {
+    return `Hari ini saya cadangkan belajar ${recommended.title}. Siapkan latihan dan cuba capai sekurang-kurangnya 80%.`;
+  }
+
+  if (text.includes('semangat') || text.includes('motivasi')) {
+    return `Kamu boleh buat. Belajar sedikit setiap hari lebih baik daripada belajar banyak tetapi jarang-jarang. Jom cuba satu topik dahulu.`;
+  }
+
+  return `Saya faham. Cadangan saya: sambung topik ${recommended.title}. Jika susah, gunakan Hint dan baca penerangan AI selepas menjawab.`;
+}
+
 function printReport() {
   window.print();
 }
@@ -141,6 +187,7 @@ export default function App() {
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -300,7 +347,9 @@ export default function App() {
       questionId: question.id,
       answer,
       status: result.status,
-      correctAnswer: question.answer
+      correctAnswer: question.answer,
+      topic: activeTopic.title,
+      subject: activeSubject.short
     });
 
     setSession(nextSession);
@@ -404,6 +453,30 @@ export default function App() {
     });
   }
 
+  function saveUasaResult(result) {
+    setProfile(prev => {
+      const badges = new Set(prev.badges || []);
+      if (result.score >= 80) badges.add('UASA A');
+
+      const updatedProfile = {
+        ...prev,
+        xp: (prev.xp || 0) + Math.round(result.score / 2),
+        coins: (prev.coins || 0) + Math.round(result.score / 10),
+        badges: [...badges],
+        uasaHistory: [result, ...(prev.uasaHistory || [])].slice(0, 20),
+        history: [{
+          date: result.date,
+          subject: result.subjectShort,
+          topic: 'UASA Simulator',
+          percent: result.score,
+          stars: getStars(result.score)
+        }, ...(prev.history || [])].slice(0, 50)
+      };
+
+      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    });
+  }
+
   function finishReading(score, spoken, targetText) {
     const today = todayKey();
 
@@ -433,6 +506,10 @@ export default function App() {
     setScreen('dashboard');
   }
 
+  const chatWidget = chatOpen ? (
+    <AiTutorChat profile={profile} selectedSubject={selectedSubject} onClose={() => setChatOpen(false)} />
+  ) : null;
+
   if (screen === 'login') return <Login onStart={startProfile} />;
 
   if (screen === 'quiz') {
@@ -441,49 +518,60 @@ export default function App() {
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
 
     return (
-      <Quiz
-        subject={activeSubject}
-        topic={activeTopic}
-        questionIndex={questionIndex}
-        answer={answer}
-        feedback={feedback}
-        isBookmarked={isBookmarked}
-        onAnswerChange={setAnswer}
-        onCheckAnswer={checkAnswer}
-        onNextQuestion={nextQuestion}
-        onBack={() => setScreen('dashboard')}
-        onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })}
-        onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))}
-        onBookmark={toggleBookmark}
-      />
+      <>
+        <Quiz
+          subject={activeSubject}
+          topic={activeTopic}
+          questionIndex={questionIndex}
+          answer={answer}
+          feedback={feedback}
+          isBookmarked={isBookmarked}
+          onAnswerChange={setAnswer}
+          onCheckAnswer={checkAnswer}
+          onNextQuestion={nextQuestion}
+          onBack={() => setScreen('dashboard')}
+          onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })}
+          onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))}
+          onBookmark={toggleBookmark}
+          onOpenAi={() => setChatOpen(true)}
+        />
+        {chatWidget}
+      </>
     );
   }
 
-  if (screen === 'finish') return <Finish profile={profile} session={session} onDashboard={() => setScreen('dashboard')} />;
+  if (screen === 'finish') return <Finish profile={profile} session={session} onDashboard={() => setScreen('dashboard')} onOpenAi={() => setChatOpen(true)} />;
 
   if (screen === 'reading') return <ReadingCoach profile={profile} onBack={() => setScreen('dashboard')} onFinish={finishReading} />;
 
   if (screen === 'parent') return <ParentDashboard profile={profile} onBack={() => setScreen('dashboard')} />;
 
+  if (screen === 'uasa') return <UasaSimulator profile={profile} subject={selectedSubject} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} />;
+
   return (
-    <Dashboard
-      profile={profile}
-      subjects={subjects}
-      selectedSubject={selectedSubject}
-      selectedSubjectId={selectedSubjectId}
-      totalQuestions={totalQuestions}
-      resume={resume}
-      dailyChallenge={buildDailyChallenge()}
-      onSelectSubject={setSelectedSubjectId}
-      onStartTopic={(topic) => startTopic(topic, selectedSubject)}
-      onStartReading={() => setScreen('reading')}
-      onOpenParent={() => setScreen('parent')}
-      onReset={resetProfile}
-      onResume={startResume}
-      onRestartResume={restartResume}
-      onCompleteDaily={completeDailyChallenge}
-      onToggleFavourite={toggleFavourite}
-    />
+    <>
+      <Dashboard
+        profile={profile}
+        subjects={subjects}
+        selectedSubject={selectedSubject}
+        selectedSubjectId={selectedSubjectId}
+        totalQuestions={totalQuestions}
+        resume={resume}
+        dailyChallenge={buildDailyChallenge()}
+        onSelectSubject={setSelectedSubjectId}
+        onStartTopic={(topic) => startTopic(topic, selectedSubject)}
+        onStartReading={() => setScreen('reading')}
+        onOpenParent={() => setScreen('parent')}
+        onOpenUasa={() => setScreen('uasa')}
+        onOpenAi={() => setChatOpen(true)}
+        onReset={resetProfile}
+        onResume={startResume}
+        onRestartResume={restartResume}
+        onCompleteDaily={completeDailyChallenge}
+        onToggleFavourite={toggleFavourite}
+      />
+      {chatWidget}
+    </>
   );
 }
 
@@ -531,6 +619,8 @@ function Dashboard({
   onStartTopic,
   onStartReading,
   onOpenParent,
+  onOpenUasa,
+  onOpenAi,
   onReset,
   onResume,
   onRestartResume,
@@ -558,17 +648,17 @@ function Dashboard({
       <aside className="sidebar">
         <div className="brand">
           <div className="bot medium">🤖</div>
-          <div><h2>Jannati</h2><p>AI Tutor V1.4 P3A</p></div>
+          <div><h2>Jannati</h2><p>AI Tutor V1.4 P3B</p></div>
         </div>
 
         <button className="nav active">🏠 Dashboard</button>
-        <button className="nav">📚 Subjek</button>
+        <button className="nav" onClick={onOpenAi}>🤖 AI Tutor</button>
+        <button className="nav" onClick={onOpenUasa}>🏆 UASA</button>
         <button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Parent</button>
-        <button className="nav">🏅 Lencana</button>
 
         <div className="sidebar-note">
-          <b>📊 Parent Dashboard</b>
-          <p>Lihat topik kuat, lemah dan sejarah belajar.</p>
+          <b>🤖 AI + UASA</b>
+          <p>Cuba UASA Simulator dan tanya AI Tutor.</p>
         </div>
       </aside>
 
@@ -576,7 +666,7 @@ function Dashboard({
         <section className="profile hero-card">
           <div className="avatar-large">{profile.avatar || '👦'}</div>
           <div>
-            <p className="eyebrow">Parent Analytics Edition</p>
+            <p className="eyebrow">AI Tutor + UASA Edition</p>
             <h1>Assalamualaikum, {profile.name} 😊</h1>
             <p>AI cadangkan belajar <b>{recommended?.title}</b> hari ini.</p>
             <div className="level-line">
@@ -597,8 +687,10 @@ function Dashboard({
 
         <section className="quick-actions">
           <button onClick={() => recommended && onStartTopic(recommended)}>▶ Sambung Belajar</button>
-          <button className="secondary" onClick={onStartReading}>🎤 Reading Coach</button>
-          <button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Parent Dashboard</button>
+          <button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button>
+          <button className="secondary" onClick={onOpenUasa}>🏆 UASA Simulator</button>
+          <button className="secondary" onClick={onStartReading}>🎤 Reading</button>
+          <button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Parent</button>
         </section>
 
         {resume && resumeTopic && (
@@ -654,6 +746,13 @@ function Dashboard({
             <div className="insight"><b>{completed}</b><span>Topik Siap</span></div>
             <div className="insight"><b>{totalQuestions}</b><span>Soalan</span></div>
           </div>
+        </section>
+
+        <section className="card uasa-card">
+          <p className="eyebrow">UASA Practice</p>
+          <h2>🏆 UASA Simulator {selectedSubject.short}</h2>
+          <p>Latihan campuran mengikut topik. Selepas tamat, AI beri analisis topik lemah.</p>
+          <button onClick={onOpenUasa}>Mula UASA Simulator</button>
         </section>
 
         <section className="card learning-path-card">
@@ -723,6 +822,198 @@ function Dashboard({
   );
 }
 
+function AiTutorChat({ profile, selectedSubject, onClose }) {
+  const [messages, setMessages] = useState([
+    { role: 'ai', text: `Assalamualaikum ${profile.name || 'Anak'} 😊 Saya AI Tutor. Kamu boleh tanya saya apa perlu belajar hari ini.` }
+  ]);
+  const [input, setInput] = useState('');
+
+  function sendMessage(text = input) {
+    if (!text.trim()) return;
+    const userMsg = { role: 'user', text };
+    const aiMsg = { role: 'ai', text: aiReply(text, profile, selectedSubject) };
+    setMessages(prev => [...prev, userMsg, aiMsg]);
+    setInput('');
+  }
+
+  return (
+    <div className="ai-chat-overlay">
+      <section className="ai-chat">
+        <div className="ai-chat-head">
+          <div><b>🤖 Jannati AI Tutor</b><span>Offline smart tutor asas</span></div>
+          <button className="ghost" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="ai-chat-body">
+          {messages.map((msg, index) => (
+            <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai' : 'user'}`}>
+              {msg.text}
+            </div>
+          ))}
+        </div>
+
+        <div className="quick-prompts">
+          <button onClick={() => sendMessage('Apa saya perlu belajar hari ini?')}>Apa nak belajar?</button>
+          <button onClick={() => sendMessage('Topik mana saya lemah?')}>Topik lemah</button>
+          <button onClick={() => sendMessage('Saya nak persediaan UASA')}>UASA</button>
+        </div>
+
+        <div className="ai-chat-input">
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Tanya AI Tutor..." />
+          <button onClick={() => sendMessage()}>Hantar</button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function UasaSimulator({ profile, subject, onBack, onSave }) {
+  const [questions] = useState(() => buildUasaSet(subject, 20));
+  const [index, setIndex] = useState(0);
+  const [answer, setAnswer] = useState('');
+  const [answers, setAnswers] = useState([]);
+  const [finished, setFinished] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const question = questions[index];
+
+  function submitAnswer() {
+    if (!question) return;
+    const result = smartCheck(answer, question);
+    const row = {
+      questionId: question.id,
+      topicId: question.topicId,
+      topic: question.topicTitle,
+      question: question.q,
+      answer,
+      correctAnswer: question.answer,
+      status: result.status
+    };
+    const next = [...answers, row];
+    setAnswers(next);
+    setAnswer('');
+
+    if (index + 1 >= questions.length) {
+      setFinished(true);
+    } else {
+      setIndex(index + 1);
+    }
+  }
+
+  const correctCount = answers.filter(a => a.status === 'correct').length;
+  const almostCount = answers.filter(a => a.status === 'almost').length;
+  const score = questions.length ? Math.round(((correctCount + almostCount * 0.5) / questions.length) * 100) : 0;
+  const grade = getGrade(score);
+
+  const topicSummary = {};
+  answers.forEach(item => {
+    if (!topicSummary[item.topic]) topicSummary[item.topic] = { total: 0, correct: 0 };
+    topicSummary[item.topic].total += 1;
+    if (item.status === 'correct') topicSummary[item.topic].correct += 1;
+  });
+
+  const weakTopics = Object.entries(topicSummary)
+    .map(([topic, data]) => ({ topic, score: Math.round((data.correct / data.total) * 100) }))
+    .filter(x => x.score < 80)
+    .sort((a, b) => a.score - b.score);
+
+  function saveResult() {
+    if (saved) return;
+    onSave({
+      date: todayKey(),
+      subjectId: subject.id,
+      subjectShort: subject.short,
+      subjectTitle: subject.title,
+      score,
+      grade,
+      total: questions.length,
+      correct: correctCount,
+      weakTopics
+    });
+    setSaved(true);
+  }
+
+  if (!questions.length) {
+    return (
+      <main className="app">
+        <button className="ghost" onClick={onBack}>← Dashboard</button>
+        <section className="card">
+          <h1>Tiada soalan UASA</h1>
+          <p>Subjek ini belum mempunyai soalan.</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (finished) {
+    return (
+      <main className="app uasa-page">
+        <div className="topbar">
+          <button className="ghost" onClick={onBack}>← Dashboard</button>
+          <span className="pill">UASA {subject.short}</span>
+        </div>
+
+        <section className="card reward-card">
+          <div className="big">🏆</div>
+          <p className="eyebrow">Keputusan UASA Simulator</p>
+          <h1>{subject.title}</h1>
+          <div className="result-score">
+            <b>{score}%</b>
+            <span>Gred {grade} • {getStars(score)}</span>
+          </div>
+
+          <div className="reward-grid">
+            <div className="reward-box"><span>✅</span><b>{correctCount}</b><small>Betul</small></div>
+            <div className="reward-box"><span>🟡</span><b>{almostCount}</b><small>Hampir</small></div>
+            <div className="reward-box"><span>📄</span><b>{questions.length}</b><small>Soalan</small></div>
+          </div>
+
+          <div className="explain-box">
+            <b>🤖 Analisis AI</b>
+            {weakTopics.length === 0
+              ? <p>Hebat! Tiada topik lemah yang jelas dalam set ini.</p>
+              : <p>Topik perlu ulang: {weakTopics.map(t => `${t.topic} (${t.score}%)`).join(', ')}.</p>}
+          </div>
+
+          <div className="actions">
+            <button disabled={saved} onClick={saveResult}>{saved ? '✅ Disimpan' : 'Simpan Keputusan'}</button>
+            <button className="secondary" onClick={onBack}>Kembali</button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="app uasa-page">
+      <div className="topbar">
+        <button className="ghost" onClick={onBack}>← Dashboard</button>
+        <span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span>
+      </div>
+
+      <section className="card tutor-card">
+        <div className="bot small">🏆</div>
+        <div>
+          <p className="eyebrow">UASA Simulator</p>
+          <h2>{subject.title}</h2>
+          <p>Jawab set campuran. Markah dan analisis keluar selepas tamat.</p>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="progress-wrap"><div className="progress" style={{ width: `${Math.round(((index + 1) / questions.length) * 100)}%` }} /></div>
+        <span className="pill">{question.topicTitle}</span>
+        <h1 className="question">{question.q}</h1>
+        <input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitAnswer()} placeholder="Tulis jawapan" autoFocus />
+        <div className="actions">
+          <button className="secondary" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>🔊 Baca Soalan</button>
+          <button onClick={submitAnswer}>Jawab</button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function ParentDashboard({ profile, onBack }) {
   const topicStats = getAllTopicStats(profile);
   const attempted = topicStats.filter(t => t.attempts > 0);
@@ -761,7 +1052,7 @@ function ParentDashboard({ profile, onBack }) {
         <Stat label="Purata" value={`${average}%`} icon="📊" />
         <Stat label="Topik Siap" value={totalCompleted} icon="✅" />
         <Stat label="Bookmark" value={(profile.bookmarks || []).length} icon="🔖" />
-        <Stat label="Favourite" value={(profile.favourites || []).length} icon="❤️" />
+        <Stat label="UASA" value={(profile.uasaHistory || []).length} icon="🏆" />
       </section>
 
       <section className="card">
@@ -801,6 +1092,17 @@ function ParentDashboard({ profile, onBack }) {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="card">
+        <p className="eyebrow">UASA History</p>
+        <h2>🏆 Rekod UASA</h2>
+        {(profile.uasaHistory || []).length === 0 ? <p>Belum ada rekod UASA.</p> : profile.uasaHistory.slice(0, 8).map((item, index) => (
+          <div className="report-row" key={index}>
+            <b>{item.subjectShort} - Gred {item.grade}</b>
+            <span>{item.score}%</span>
+          </div>
+        ))}
       </section>
 
       <section className="card">
@@ -877,7 +1179,8 @@ function Quiz({
   onBack,
   onHint,
   onSpeak,
-  onBookmark
+  onBookmark,
+  onOpenAi
 }) {
   const question = topic.questions[questionIndex];
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
@@ -919,10 +1222,11 @@ function Quiz({
         </div>
 
         <div className="actions">
-          <button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark Soalan'}</button>
-          <button className="full" onClick={onCheckAnswer}>Semak Jawapan</button>
+          <button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}</button>
+          <button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button>
         </div>
 
+        <button className="full" onClick={onCheckAnswer}>Semak Jawapan</button>
         <p className="autosave-note">💾 Auto Save aktif. Latihan boleh disambung kemudian.</p>
       </section>
 
@@ -940,7 +1244,7 @@ function Quiz({
   );
 }
 
-function Finish({ profile, session, onDashboard }) {
+function Finish({ profile, session, onDashboard, onOpenAi }) {
   const level = Math.floor((profile.xp || 0) / 100) + 1;
   const passed = (session.percent || 0) >= 80;
 
@@ -963,12 +1267,10 @@ function Finish({ profile, session, onDashboard }) {
           <div className="reward-box"><span>🏆</span><b>{level}</b><small>Level</small></div>
         </div>
 
-        <div className="explain-box">
-          <b>🤖 AI Tutor</b>
-          <p>{passed ? 'Hebat! Teruskan ke topik seterusnya dalam Learning Path.' : 'Jangan risau. Ulang sekali lagi dan cuba guna Hint apabila perlu.'}</p>
+        <div className="actions">
+          <button onClick={onDashboard}>Kembali ke Dashboard</button>
+          <button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button>
         </div>
-
-        <button onClick={onDashboard}>Kembali ke Dashboard</button>
       </section>
     </main>
   );
