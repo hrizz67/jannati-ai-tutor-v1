@@ -3,7 +3,11 @@ import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { speakText, beep } from './utils/speech';
 import AIExplainModal from './components/ai/AIExplainModal';
+import AITeacherModal from './components/ai/AITeacherModal';
 import { explainAnswer } from './ai/explainEngine';
+import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
+import { teachAnswer } from './ai/teacherEngine';
+import { formatStudyTime, loadAIMemory, saveQuizMemory } from './ai/memoryEngine';
 
 const PROFILE_KEY = 'jannati_v140_profile';
 const RESUME_KEY = 'jannati_v140_resume';
@@ -21,6 +25,7 @@ const defaultProfile = {
   daily: {},
   bookmarks: [],
   favourites: [],
+  recommendations: {},
   uasaHistory: []
 };
 
@@ -176,6 +181,9 @@ export default function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [explainOpen, setExplainOpen] = useState(false);
   const [explainData, setExplainData] = useState(null);
+  const [teacherOpen, setTeacherOpen] = useState(false);
+  const [teacherData, setTeacherData] = useState(null);
+  const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
 
   useEffect(() => {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -227,6 +235,9 @@ export default function App() {
     setFeedback(null);
     setExplainOpen(false);
     setExplainData(null);
+    setTeacherOpen(false);
+    setTeacherData(null);
+    setQuizStartedAt(Date.now());
     setSession(startSession);
     setScreen('quiz');
 
@@ -339,11 +350,22 @@ export default function App() {
     setExplainOpen(true);
   }
 
+  function openTeacher() {
+    const question = currentQuestion();
+    if (!question) return;
+    const nextExplainData = explainData || explainAnswer({ question, topic: activeTopic, result: feedback || {}, userAnswer: answer });
+    setExplainData(nextExplainData);
+    setTeacherData(teachAnswer({ question, topic: activeTopic, explanationData: nextExplainData }));
+    setTeacherOpen(true);
+  }
+
   function tryAgainQuestion() {
     setAnswer('');
     setFeedback(null);
     setExplainOpen(false);
     setExplainData(null);
+    setTeacherOpen(false);
+    setTeacherData(null);
   }
 
   function nextQuestion() {
@@ -357,6 +379,8 @@ export default function App() {
     setFeedback(null);
     setExplainOpen(false);
     setExplainData(null);
+    setTeacherOpen(false);
+    setTeacherData(null);
     autoSave(nextIndex, session);
   }
 
@@ -367,13 +391,14 @@ export default function App() {
     const stars = getStars(percent);
     const today = todayKey();
     const key = progressKey(activeSubject.id, activeTopic.id);
+    const studySeconds = Math.max(1, Math.round((Date.now() - quizStartedAt) / 1000));
 
     setProfile(prev => {
       const badges = new Set(prev.badges || []);
       if (percent >= 80) badges.add(`${activeSubject.short}: ${activeTopic.title}`);
       if (percent >= 100) badges.add(`Skor Penuh: ${activeTopic.title}`);
       const oldProgress = prev.progress?.[key] || {};
-      const updatedProfile = {
+      const updatedProfile = updateStoredRecommendation({
         ...prev,
         xp: (prev.xp || 0) + session.xp,
         coins: (prev.coins || 0) + session.coins,
@@ -382,7 +407,8 @@ export default function App() {
         badges: [...badges],
         history: [{ date: today, subjectId: activeSubject.id, subject: activeSubject.short, topicId: activeTopic.id, topic: activeTopic.title, percent, stars }, ...(prev.history || [])].slice(0, 50),
         progress: { ...prev.progress, [key]: { subjectId: activeSubject.id, topicId: activeTopic.id, best: Math.max(oldProgress.best || 0, percent), last: percent, stars, attempts: (oldProgress.attempts || 0) + 1, lastDate: today } }
-      };
+      }, activeSubject);
+      saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session, studySeconds });
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
 
@@ -436,7 +462,7 @@ export default function App() {
     const question = currentQuestion();
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} onClose={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} />{chatWidget}</>;
+    return <><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} onClose={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} onClose={() => setTeacherOpen(false)} onPractice={tryAgainQuestion} />{chatWidget}</>;
   }
 
   if (screen === 'finish') {
@@ -466,12 +492,16 @@ function Dashboard({ profile, subjectList, selectedSubject, selectedSubjectId, t
   const dailyDone = profile.daily?.[today]?.completed;
   const completed = topics.filter(topic => (profile.progress?.[progressKey(selectedSubject.id, topic.id)]?.best || 0) >= 80).length;
   const averageScore = getSubjectAverage(profile, selectedSubject);
+  const aiRecommendation = profile.recommendations?.[selectedSubject.id] || buildRecommendation(profile, selectedSubject);
+  const recommendedPracticeTopic = topics.find(topic => topic.id === aiRecommendation.recommendedTopicId) || recommended;
+  const aiMemory = loadAIMemory();
 
   return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><div className="bot medium">🤖</div><div><h2>Jannati</h2><p>AI Tutor Split</p></div></div><button className="nav active">🏠 Dashboard</button><button className="nav" onClick={onOpenAi}>🤖 AI Tutor</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Parent</button><div className="sidebar-note"><b>⚡ Split Data</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">
     <section className="profile hero-card"><div className="avatar-large">{profile.avatar || '👦'}</div><div><p className="eyebrow">Subject Split Edition</p><h1>Assalamualaikum, {profile.name} 😊</h1><p>AI cadangkan belajar <b>{recommended?.title}</b> hari ini.</p><div className="level-line"><span>Level {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div><button className="ghost" onClick={onReset}>Reset</button></section>
     <section className="stats"><Stat label="XP" value={profile.xp || 0} icon="⭐" /><Stat label="Level" value={level} icon="🏆" /><Stat label="Coins" value={profile.coins || 0} icon="💰" /><Stat label="Streak" value={profile.streak || 0} icon="🔥" /></section>
     <section className="quick-actions"><button onClick={() => recommended && onStartTopic(recommended)}>▶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button><button className="secondary" onClick={onOpenUasa}>🏆 UASA Simulator</button><button className="secondary" onClick={onStartReading}>🎤 Reading</button><button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Parent</button></section>
     {resume && <section className="card resume-card"><p className="eyebrow">Auto Resume</p><h2>▶ Sambung Latihan</h2><p>Subjek: <b>{resume.subjectId}</b><br/>Soalan: <b>{resume.questionIndex + 1}</b></p><div className="actions"><button onClick={onResume}>▶ Sambung</button><button className="secondary" onClick={onRestartResume}>🔄 Mula Semula</button></div></section>}
+    <section className="card ai-recommend-card"><p className="eyebrow">AI Recommendation</p><h2>🤖 Cadangan Belajar</h2><p>{aiRecommendation.reason}</p>{aiMemory.lastLesson && <p className="memory-last">Last lesson: <b>{aiMemory.lastLesson.title}</b> • {aiMemory.lastLesson.score}%</p>}<div className="recommend-meta"><span>{aiMemory.weakTopics.length || aiRecommendation.weakTopics.length} weak topics</span><span>{aiMemory.strongTopics.length} strong topics</span><span>Mastery {aiMemory.mastery}%</span><span>Study {formatStudyTime(aiMemory.studyTime)}</span><span>Streak {aiMemory.studyStreak}</span><span>{recommendedPracticeTopic?.title || 'Semua topik selesai'}</span></div><button onClick={() => recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic)}>Practice Again</button></section>
     <section className="card daily-card"><p className="eyebrow">Daily Challenge</p><h2>🎯 Cabaran Hari Ini</h2><div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}>✅ {item.label}</span>)}</div><button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? '✅ Daily Challenge Selesai' : '🎁 Claim Bonus +50 XP +20 Coins'}</button></section>
     <section className="card"><p className="eyebrow">Pilih Subjek</p><h2>📚 Subjek Tahun 2</h2><div className="subject-grid">{subjectList.map(subject => <button key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''}`} onClick={() => onSelectSubject(subject.id)}><span>{subject.icon}</span><b>{subject.title}</b><small>{subject.questionCount} soalan</small></button>)}</div></section>
     <section className="card stats-panel"><p className="eyebrow">Statistik {selectedSubject.short}</p><h2>📊 Ringkasan Kemajuan</h2><div className="insight-grid"><div className="insight"><b>{averageScore}%</b><span>Purata</span></div><div className="insight"><b>{completed}</b><span>Topik Siap</span></div><div className="insight"><b>{totalQuestions}</b><span>Soalan</span></div></div></section>
@@ -492,7 +522,7 @@ function LearningPath({ profile, subject, totalQuestions, completed, resume, onS
     setCollapsedSections(prev => ({ ...prev, [sectionTitle]: !prev[sectionTitle] }));
   }
 
-  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Learning Path</p><h2>{subject.icon} {subject.title}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const done = best >= 80; const unlocked = isTopicUnlocked(profile, subject, index); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || (best > 0 && best < 80); const status = done ? 'Siap' : unlocked ? 'Unlocked' : 'Locked'; return <div className="path-row" key={topic.id}><article className={`path-node ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Remove favourite' : 'Add favourite'} aria-pressed={isFav}>{isFav ? '❤️' : '♡'}</button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert('Dapatkan 80% pada topik sebelumnya.')}><span className="path-icon">{unlocked ? (done ? '🏅' : index + 1) : '🔒'}</span><span className="path-copy"><b>{topic.title}</b><small>{best}% • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${done ? 'done' : unlocked ? 'open' : 'locked'}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{inProgress ? 'Continue' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line">↓</div>}</div> })}</div>}</section> })}<div className="path-trophy">🏆 Tamat {subject.short}</div></div></section>;
+  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Learning Path</p><h2>{subject.icon} {subject.title}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const done = best >= 80; const needRevision = isWeakTopic(profile, subject, topic); const unlocked = isTopicUnlocked(profile, subject, index); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || (best > 0 && best < 80); const status = done ? 'Siap' : unlocked ? 'Unlocked' : 'Locked'; return <div className="path-row" key={topic.id}><article className={`path-node ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''} ${needRevision ? 'path-revision' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Remove favourite' : 'Add favourite'} aria-pressed={isFav}>{isFav ? '❤️' : '♡'}</button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert('Dapatkan 80% pada topik sebelumnya.')}><span className="path-icon">{unlocked ? (done ? '🏅' : index + 1) : '🔒'}</span><span className="path-copy"><b>{topic.title}</b>{needRevision && <em className="revision-badge">Need Revision</em>}<small>{best}% • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${done ? 'done' : unlocked ? 'open' : 'locked'}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{needRevision ? 'Practice Again' : inProgress ? 'Continue' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line">↓</div>}</div> })}</div>}</section> })}<div className="path-trophy">🏆 Tamat {subject.short}</div></div></section>;
 }
 
 function AiTutorChat({ profile, selectedSubject, onClose }) {
@@ -534,9 +564,34 @@ function UasaSimulator({ subject, onBack, onSave }) {
   return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span></div><section className="card"><h1 className="question">{question.q}</h1><input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitAnswer()} placeholder="Tulis jawapan" autoFocus /><div className="actions"><button className="secondary" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>🔊 Baca Soalan</button><button onClick={submitAnswer}>Jawab</button></div></section></main>;
 }
 
+function summarizeHistory(history = [], days = 7) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days + 1);
+  const rows = history.filter(item => item.date && new Date(item.date) >= cutoff);
+  const average = rows.length ? Math.round(rows.reduce((sum, item) => sum + (item.percent || 0), 0) / rows.length) : 0;
+  return { count: rows.length, average };
+}
+
+function buildParentRecommendation(memory, profile) {
+  if (memory.weakTopics?.length) {
+    return `Fokus ulang kaji ${memory.weakTopics[0].title}. Topik ini masih perlukan latihan kerana skor terbaik belum mencapai 80%.`;
+  }
+  if ((profile.history || []).length === 0) {
+    return 'Mulakan dengan satu sesi pendek hari ini. Sasarkan 5 hingga 10 soalan dahulu.';
+  }
+  return 'Kemajuan stabil. Teruskan rutin latihan harian dan cuba UASA Simulator sekali seminggu.';
+}
+
 function ParentDashboard({ profile, allSubjects, onBack }) {
+  const memory = loadAIMemory();
+  const weekly = summarizeHistory(profile.history, 7);
+  const monthly = summarizeHistory(profile.history, 30);
   const subjectRows = allSubjects.map(subject => ({ id: subject.id, title: subject.title, short: subject.short, icon: subject.icon, average: getSubjectAverage(profile, subject), completed: subject.topics.filter(t => (profile.progress?.[progressKey(subject.id, t.id)]?.best || 0) >= 80).length, total: subject.topics.length }));
-  return <main className="app parent-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><button onClick={printReport}>🖨️ Cetak / Save PDF</button></div><section className="card parent-hero"><div className="bot medium">👨‍👩‍👧</div><div><p className="eyebrow">Parent Dashboard</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1></div></section><section className="card"><h2>📚 Kemajuan Mengikut Subjek</h2><div className="subject-report-grid">{subjectRows.map(row => <div className="report-box" key={row.id}><h3>{row.icon} {row.short}</h3><b>{row.average}%</b><div className="mini-progress"><div style={{ width: `${row.average}%` }} /></div><span>{row.completed}/{row.total} topik siap</span></div>)}</div></section><section className="card"><h2>📅 Aktiviti Terkini</h2><div className="timeline">{(profile.history || []).length === 0 ? <p>Belum ada aktiviti.</p> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subject} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}</div></section></main>;
+  const weakTopics = memory.weakTopics?.length ? memory.weakTopics : subjectRows.flatMap(subject => []).slice(0, 0);
+  const strongTopics = memory.strongTopics || [];
+  const recommendation = buildParentRecommendation(memory, profile);
+
+  return <main className="app parent-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><button onClick={printReport}>🖨️ Cetak / Save PDF</button></div><section className="card parent-hero"><div className="bot medium">👨‍👩‍👧</div><div><p className="eyebrow">Parent Dashboard Pro</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1><p>Ringkasan kemajuan, topik lemah, topik kuat dan cadangan AI offline.</p></div></section><section className="parent-summary-grid"><div className="parent-metric"><span>Minggu Ini</span><b>{weekly.average}%</b><small>{weekly.count} aktiviti</small></div><div className="parent-metric"><span>Bulan Ini</span><b>{monthly.average}%</b><small>{monthly.count} aktiviti</small></div><div className="parent-metric"><span>Mastery</span><b>{memory.mastery || 0}%</b><small>{strongTopics.length} topik kuat</small></div><div className="parent-metric"><span>Study Time</span><b>{formatStudyTime(memory.studyTime || 0)}</b><small>Direkod offline</small></div></section><section className="card parent-ai-card"><p className="eyebrow">AI Recommendation for Parent</p><h2>🤖 Cadangan Ibu Bapa</h2><p>{recommendation}</p><div className="recommend-meta"><span>XP {profile.xp || 0}</span><span>Coins {profile.coins || 0}</span><span>Streak {profile.streak || 0}</span></div></section><section className="card"><h2>📚 Kemajuan Mengikut Subjek</h2><div className="subject-report-grid">{subjectRows.map(row => <div className="report-box" key={row.id}><h3>{row.icon} {row.short}</h3><b>{row.average}%</b><div className="mini-progress"><div style={{ width: `${row.average}%` }} /></div><span>{row.completed}/{row.total} topik siap</span></div>)}</div></section><section className="parent-two-col"><section className="card"><h2>⚠️ Weak Topics</h2><div className="parent-topic-list">{weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} • {topic.best}%</span></div>) : <p>Tiada topik lemah direkod.</p>}</div></section><section className="card"><h2>🌟 Strong Topics</h2><div className="parent-topic-list">{strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} • {topic.best}%</span></div>) : <p>Belum ada topik kuat direkod.</p>}</div></section></section><section className="card"><h2>🏆 UASA History</h2><div className="timeline">{(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subjectShort || item.subjectId} - Gred {item.grade}</b><em>{item.score}% • {item.total} soalan</em></div>) : <p>Belum ada rekod UASA.</p>}</div></section><section className="card"><h2>📅 Aktiviti Terkini</h2><div className="timeline">{(profile.history || []).length === 0 ? <p>Belum ada aktiviti.</p> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subject} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}</div></section></main>;
 }
 
 function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onHint, onSpeak, onBookmark, onOpenAi }) {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function AIExplainModal({ open, data, question, onClose, onTryAgain }) {
+export default function AIExplainModal({ open, data, question, onClose, onTryAgain, onTeach }) {
   if (!open || !data) return null;
 
   return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="AI Explain">
@@ -30,6 +30,7 @@ export default function AIExplainModal({ open, data, question, onClose, onTryAga
       </div>
       <p className="explain-encouragement">{data.encouragement}</p>
       <div className="actions">
+        <button className="secondary" onClick={onTeach}>📖 Teach Me</button>
         <button onClick={onTryAgain}>Cuba Lagi</button>
         <button className="secondary" onClick={onClose}>Tutup</button>
       </div>
