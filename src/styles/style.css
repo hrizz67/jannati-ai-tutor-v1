@@ -1004,6 +1004,7 @@ button:active {
 }
 
 .path-node {
+  position: relative;
   width: 100%;
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
@@ -1078,6 +1079,7 @@ button:active {
   gap: 8px;
   justify-items: end;
   align-content: center;
+  padding-right: 34px;
 }
 
 .path-status {
@@ -1117,6 +1119,79 @@ button:active {
   border-color: rgba(244,197,66,.65) !important;
 }
 
+.fav-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px !important;
+  padding: 0 !important;
+  background: rgba(255,255,255,.94) !important;
+  color: #516058 !important;
+  border: 1px solid rgba(8,122,59,.14) !important;
+  box-shadow: 0 8px 16px rgba(8,122,59,.08);
+  font-size: 17px !important;
+}
+
+.fav-icon.active {
+  background: #fff8d8 !important;
+  border-color: rgba(244,197,66,.75) !important;
+}
+
+.path-cta {
+  min-width: 92px;
+  border-radius: 999px !important;
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, var(--green), var(--green2)) !important;
+  font-size: 13px !important;
+  line-height: 1;
+}
+
+.path-locked .path-cta {
+  display: none;
+}
+
+.path-new-unlock {
+  animation: jannatiUnlockPulse 1.2s ease both;
+}
+
+.path-new-unlock .path-icon {
+  animation: jannatiUnlockIcon .85s ease both;
+}
+
+.finish-rewards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.finish-rewards div {
+  background: #f8fff8;
+  border: 1px solid rgba(8,122,59,.12);
+  border-radius: 18px;
+  padding: 13px;
+}
+
+.finish-rewards b {
+  display: block;
+  color: #087a3b;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.finish-rewards span {
+  display: block;
+  margin-top: 5px;
+  color: #5b6b62;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 @media(max-width:650px) {
   .path-card-head {
     display: grid;
@@ -1147,10 +1222,31 @@ button:active {
     grid-template-columns: auto 1fr;
     justify-items: stretch;
     align-items: center;
+    padding-right: 0;
   }
 
   .path-status {
     text-align: center;
   }
+
+  .path-cta {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .finish-rewards {
+    grid-template-columns: 1fr;
+  }
 }
 
+@keyframes jannatiUnlockPulse {
+  0% { box-shadow: 0 0 0 0 rgba(244,197,66,.42); }
+  70% { box-shadow: 0 0 0 12px rgba(244,197,66,0); }
+  100% { box-shadow: 0 10px 24px rgba(8,122,59,.08); }
+}
+
+@keyframes jannatiUnlockIcon {
+  0% { transform: scale(.82) rotate(-5deg); }
+  60% { transform: scale(1.08) rotate(4deg); }
+  100% { transform: none; }
+}

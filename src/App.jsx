@@ -119,6 +119,27 @@ function buildUasaSet(subject, count = 20) {
   return shuffleArray(all).slice(0, Math.min(count, all.length));
 }
 
+const PATH_CATEGORIES = ['Tatabahasa', 'Pemahaman', 'Penulisan'];
+
+function buildLearningPathSections(topics) {
+  const size = Math.ceil(topics.length / PATH_CATEGORIES.length);
+  return PATH_CATEGORIES.map((title, index) => {
+    const start = index * size;
+    const sectionTopics = topics.slice(start, start + size);
+    return { title, start, topics: sectionTopics };
+  }).filter(section => section.topics.length);
+}
+
+function getTopicQuestionsCompleted(topic, best = 0) {
+  return Math.round((topic.questions.length * best) / 100);
+}
+
+function getNextTopic(subject, topic) {
+  if (!subject || !topic) return null;
+  const currentIndex = subject.topics.findIndex(item => item.id === topic.id);
+  return currentIndex >= 0 ? subject.topics[currentIndex + 1] || null : null;
+}
+
 function aiReply(message, profile, selectedSubject) {
   const text = message.toLowerCase();
   const avg = getSubjectAverage(profile, selectedSubject);
@@ -395,7 +416,10 @@ export default function App() {
     return <><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onBack={() => setScreen('dashboard')} onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} />{chatWidget}</>;
   }
 
-  if (screen === 'finish') return <Finish profile={profile} session={session} onDashboard={() => setScreen('dashboard')} onOpenAi={() => setChatOpen(true)} />;
+  if (screen === 'finish') {
+    const nextTopic = getNextTopic(activeSubject, activeTopic);
+    return <Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} />;
+  }
   if (screen === 'reading') return <ReadingCoach profile={profile} onBack={() => setScreen('dashboard')} onFinish={finishReading} />;
   if (screen === 'parent') return <ParentDashboard profile={profile} allSubjects={allSubjects} onBack={() => setScreen('dashboard')} />;
   if (screen === 'uasa') return <UasaSimulator profile={profile} subject={selectedSubject} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} />;
@@ -419,15 +443,6 @@ function Dashboard({ profile, subjectList, selectedSubject, selectedSubjectId, t
   const dailyDone = profile.daily?.[today]?.completed;
   const completed = topics.filter(topic => (profile.progress?.[progressKey(selectedSubject.id, topic.id)]?.best || 0) >= 80).length;
   const averageScore = getSubjectAverage(profile, selectedSubject);
-  const [collapsedPathSections, setCollapsedPathSections] = useState({});
-  const pathSections = [];
-  for (let index = 0; index < topics.length; index += 4) {
-    pathSections.push(topics.slice(index, index + 4));
-  }
-
-  function togglePathSection(sectionIndex) {
-    setCollapsedPathSections(prev => ({ ...prev, [sectionIndex]: !prev[sectionIndex] }));
-  }
 
   return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><div className="bot medium">🤖</div><div><h2>Jannati</h2><p>AI Tutor Split</p></div></div><button className="nav active">🏠 Dashboard</button><button className="nav" onClick={onOpenAi}>🤖 AI Tutor</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Parent</button><div className="sidebar-note"><b>⚡ Split Data</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">
     <section className="profile hero-card"><div className="avatar-large">{profile.avatar || '👦'}</div><div><p className="eyebrow">Subject Split Edition</p><h1>Assalamualaikum, {profile.name} 😊</h1><p>AI cadangkan belajar <b>{recommended?.title}</b> hari ini.</p><div className="level-line"><span>Level {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div><button className="ghost" onClick={onReset}>Reset</button></section>
@@ -438,8 +453,23 @@ function Dashboard({ profile, subjectList, selectedSubject, selectedSubjectId, t
     <section className="card"><p className="eyebrow">Pilih Subjek</p><h2>📚 Subjek Tahun 2</h2><div className="subject-grid">{subjectList.map(subject => <button key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''}`} onClick={() => onSelectSubject(subject.id)}><span>{subject.icon}</span><b>{subject.title}</b><small>{subject.questionCount} soalan</small></button>)}</div></section>
     <section className="card stats-panel"><p className="eyebrow">Statistik {selectedSubject.short}</p><h2>📊 Ringkasan Kemajuan</h2><div className="insight-grid"><div className="insight"><b>{averageScore}%</b><span>Purata</span></div><div className="insight"><b>{completed}</b><span>Topik Siap</span></div><div className="insight"><b>{totalQuestions}</b><span>Soalan</span></div></div></section>
     <section className="card uasa-card"><p className="eyebrow">UASA Practice</p><h2>🏆 UASA Simulator {selectedSubject.short}</h2><p>Latihan campuran mengikut topik.</p><button onClick={onOpenUasa}>Mula UASA Simulator</button></section>
-    <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Learning Path</p><h2>{selectedSubject.icon} {selectedSubject.title}</h2><p>{topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{topics.length} siap</span></div><div className="learning-path">{pathSections.map((sectionTopics, sectionIndex) => { const startNumber = sectionIndex * 4 + 1; const isCollapsed = collapsedPathSections[sectionIndex]; return <section className="path-section" key={`${selectedSubject.id}-path-${sectionIndex}`}><button type="button" className="path-section-toggle" onClick={() => togglePathSection(sectionIndex)} aria-expanded={!isCollapsed}><span>Bahagian {sectionIndex + 1}</span><small>Topik {startNumber}-{startNumber + sectionTopics.length - 1}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{sectionTopics.map((topic, topicOffset) => { const index = sectionIndex * 4 + topicOffset; const best = profile.progress?.[progressKey(selectedSubject.id, topic.id)]?.best || 0; const done = best >= 80; const unlocked = isTopicUnlocked(profile, selectedSubject, index); const favId = `${selectedSubject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const status = done ? 'Siap' : unlocked ? 'Terbuka' : 'Terkunci'; return <div className="path-row" key={topic.id}><article className={`path-node ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''}`}><button type="button" className="path-main" onClick={() => unlocked ? onStartTopic(topic) : alert('Dapatkan 80% pada topik sebelumnya.')}><span className="path-icon">{unlocked ? (done ? '🏅' : index + 1) : '🔒'}</span><span className="path-copy"><b>{topic.title}</b><small>{topic.questions.length} soalan • {best}% • {getStars(best)}</small><span className="mini-progress"><span style={{ width: `${best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${done ? 'done' : unlocked ? 'open' : 'locked'}`}>{status}</span><button type="button" className={`fav-btn ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(selectedSubject.id, topic.id, topic.title)} aria-pressed={isFav}>{isFav ? '❤️ Favourite' : '🤍 Favourite'}</button></div></article>{index < topics.length - 1 && <div className="path-line">↓</div>}</div> })}</div>}</section> })}<div className="path-trophy">🏆 Tamat {selectedSubject.short}</div></div></section>
+    <LearningPath profile={profile} subject={selectedSubject} totalQuestions={totalQuestions} completed={completed} resume={resume} onStartTopic={onStartTopic} onResume={onResume} onToggleFavourite={onToggleFavourite} />
   </section></main>;
+}
+
+function LearningPath({ profile, subject, totalQuestions, completed, resume, onStartTopic, onResume, onToggleFavourite }) {
+  const [collapsedSections, setCollapsedSections] = useState({});
+  const sections = buildLearningPathSections(subject.topics);
+  const nextUnlockedIndex = subject.topics.findIndex((topic, index) => {
+    const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0;
+    return isTopicUnlocked(profile, subject, index) && best < 80;
+  });
+
+  function toggleSection(sectionTitle) {
+    setCollapsedSections(prev => ({ ...prev, [sectionTitle]: !prev[sectionTitle] }));
+  }
+
+  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Learning Path</p><h2>{subject.icon} {subject.title}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const done = best >= 80; const unlocked = isTopicUnlocked(profile, subject, index); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || (best > 0 && best < 80); const status = done ? 'Siap' : unlocked ? 'Unlocked' : 'Locked'; return <div className="path-row" key={topic.id}><article className={`path-node ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Remove favourite' : 'Add favourite'} aria-pressed={isFav}>{isFav ? '❤️' : '♡'}</button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert('Dapatkan 80% pada topik sebelumnya.')}><span className="path-icon">{unlocked ? (done ? '🏅' : index + 1) : '🔒'}</span><span className="path-copy"><b>{topic.title}</b><small>{best}% • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${done ? 'done' : unlocked ? 'open' : 'locked'}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{inProgress ? 'Continue' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line">↓</div>}</div> })}</div>}</section> })}<div className="path-trophy">🏆 Tamat {subject.short}</div></div></section>;
 }
 
 function AiTutorChat({ profile, selectedSubject, onClose }) {
@@ -492,9 +522,9 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, o
   return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><div className="bot small">🤖</div><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>🔊 Baca Soalan</button><button className="secondary" onClick={onHint}>💡 Hint</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">💾 Auto Save aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? '🟢' : feedback.status === 'almost' ? '🟡' : feedback.status === 'hint' ? '💡' : '🔴'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <button onClick={onNextQuestion}>Seterusnya</button>}</section>}</main>;
 }
 
-function Finish({ session, onDashboard, onOpenAi }) {
+function Finish({ session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {
   const passed = (session.percent || 0) >= 80;
-  return <main className="app reward-page"><section className="card finish reward-card"><div className="big bounce">{passed ? '🎉' : '💪'}</div><h1>{passed ? 'Tahniah!' : 'Bagus mencuba!'}</h1><div className="result-score"><b>{session.percent || 0}%</b><span>{session.stars || '☆☆☆'}</span></div><div className="actions"><button onClick={onDashboard}>Dashboard</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button></div></section></main>;
+  return <main className="app reward-page"><section className="card finish reward-card"><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{topic?.title || 'Topic Complete'}</p><h1>{passed ? 'Tahniah!' : 'Bagus mencuba!'}</h1><div className="result-score"><b>{session.percent || 0}%</b><span>{session.stars || '☆☆☆'}</span></div><div className="finish-rewards"><div><b>{session.xp || 0}</b><span>XP gained</span></div><div><b>{session.coins || 0}</b><span>Coins gained</span></div><div><b>{passed ? 'Unlocked' : 'Locked'}</b><span>{passed && nextTopic ? nextTopic.title : passed ? 'Semua topik siap' : 'Cuba capai 80%'}</span></div></div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Next Topic' : 'Ulang Topik'}</button><button className="secondary" onClick={onDashboard}>Dashboard</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button></div></section></main>;
 }
 
 function ReadingCoach({ profile, onBack, onFinish }) {
