@@ -1250,3 +1250,105 @@ button:active {
   60% { transform: scale(1.08) rotate(4deg); }
   100% { transform: none; }
 }
+
+.ai-explain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15,23,42,.42);
+}
+
+.ai-explain-modal {
+  width: min(620px, 100%);
+  max-height: min(760px, calc(100vh - 36px));
+  overflow: auto;
+  background: #fff;
+  border: 1px solid rgba(8,122,59,.16);
+  border-radius: 28px;
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.22);
+}
+
+.ai-explain-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.ai-explain-head h2 {
+  margin-top: 2px;
+}
+
+.explain-answer-box,
+.explain-section,
+.explain-encouragement {
+  border-radius: 18px;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid rgba(8,122,59,.12);
+  background: #f8fff8;
+}
+
+.explain-answer-box {
+  background: #fff8d8;
+  border-color: rgba(244,197,66,.65);
+}
+
+.explain-answer-box span {
+  display: block;
+  color: #6b5300;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.explain-answer-box b {
+  display: block;
+  margin-top: 4px;
+  color: #123;
+  font-size: 24px;
+}
+
+.explain-section h3 {
+  margin: 0 0 6px;
+  color: #087a3b;
+}
+
+.explain-section p,
+.explain-section ul,
+.explain-encouragement {
+  color: #26352d;
+}
+
+.explain-section ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.explain-section li {
+  margin: 6px 0;
+}
+
+.explain-encouragement {
+  font-weight: 900;
+  background: #eafff0;
+}
+
+@media(max-width:650px) {
+  .ai-explain-overlay {
+    padding: 10px;
+    align-items: end;
+  }
+
+  .ai-explain-modal {
+    max-height: calc(100vh - 20px);
+    border-radius: 24px 24px 18px 18px;
+    padding: 15px;
+  }
+}

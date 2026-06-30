@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { speakText, beep } from './utils/speech';
+import AIExplainModal from './components/ai/AIExplainModal';
+import { explainAnswer } from './ai/explainEngine';
 
 const PROFILE_KEY = 'jannati_v140_profile';
 const RESUME_KEY = 'jannati_v140_resume';
@@ -172,6 +174,8 @@ export default function App() {
   const [feedback, setFeedback] = useState(null);
   const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
   const [chatOpen, setChatOpen] = useState(false);
+  const [explainOpen, setExplainOpen] = useState(false);
+  const [explainData, setExplainData] = useState(null);
 
   useEffect(() => {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -221,6 +225,8 @@ export default function App() {
     setQuestionIndex(startIndex);
     setAnswer('');
     setFeedback(null);
+    setExplainOpen(false);
+    setExplainData(null);
     setSession(startSession);
     setScreen('quiz');
 
@@ -322,7 +328,22 @@ export default function App() {
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
+    setExplainData(explainAnswer({ question, topic: activeTopic, result, userAnswer: answer }));
     setFeedback({ ...result, xp, coins, correctAnswer: question.answer, explanation: question.explanation || question.hint });
+  }
+
+  function openExplain() {
+    const question = currentQuestion();
+    if (!question || !feedback) return;
+    setExplainData(explainAnswer({ question, topic: activeTopic, result: feedback, userAnswer: answer }));
+    setExplainOpen(true);
+  }
+
+  function tryAgainQuestion() {
+    setAnswer('');
+    setFeedback(null);
+    setExplainOpen(false);
+    setExplainData(null);
   }
 
   function nextQuestion() {
@@ -334,6 +355,8 @@ export default function App() {
     setQuestionIndex(nextIndex);
     setAnswer('');
     setFeedback(null);
+    setExplainOpen(false);
+    setExplainData(null);
     autoSave(nextIndex, session);
   }
 
@@ -413,7 +436,7 @@ export default function App() {
     const question = currentQuestion();
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onBack={() => setScreen('dashboard')} onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} />{chatWidget}</>;
+    return <><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onHint={() => setFeedback({ status: 'hint', title: 'Hint', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} onClose={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} />{chatWidget}</>;
   }
 
   if (screen === 'finish') {
@@ -516,10 +539,10 @@ function ParentDashboard({ profile, allSubjects, onBack }) {
   return <main className="app parent-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><button onClick={printReport}>🖨️ Cetak / Save PDF</button></div><section className="card parent-hero"><div className="bot medium">👨‍👩‍👧</div><div><p className="eyebrow">Parent Dashboard</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1></div></section><section className="card"><h2>📚 Kemajuan Mengikut Subjek</h2><div className="subject-report-grid">{subjectRows.map(row => <div className="report-box" key={row.id}><h3>{row.icon} {row.short}</h3><b>{row.average}%</b><div className="mini-progress"><div style={{ width: `${row.average}%` }} /></div><span>{row.completed}/{row.total} topik siap</span></div>)}</div></section><section className="card"><h2>📅 Aktiviti Terkini</h2><div className="timeline">{(profile.history || []).length === 0 ? <p>Belum ada aktiviti.</p> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subject} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}</div></section></main>;
 }
 
-function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, onAnswerChange, onCheckAnswer, onNextQuestion, onBack, onHint, onSpeak, onBookmark, onOpenAi }) {
+function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onHint, onSpeak, onBookmark, onOpenAi }) {
   const question = topic.questions[questionIndex];
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
-  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><div className="bot small">🤖</div><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>🔊 Baca Soalan</button><button className="secondary" onClick={onHint}>💡 Hint</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">💾 Auto Save aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? '🟢' : feedback.status === 'almost' ? '🟡' : feedback.status === 'hint' ? '💡' : '🔴'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <button onClick={onNextQuestion}>Seterusnya</button>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>← Dashboard</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><div className="bot small">🤖</div><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>🔊 Baca Soalan</button><button className="secondary" onClick={onHint}>💡 Hint</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">💾 Auto Save aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? '🟢' : feedback.status === 'almost' ? '🟡' : feedback.status === 'hint' ? '💡' : '🔴'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>🤖 Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {
