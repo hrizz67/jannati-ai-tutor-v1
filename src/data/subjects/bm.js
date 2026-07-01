@@ -14,551 +14,701 @@ export const bmSubject = {
           "id": "BM-KATA_NAMA_AM-001",
           "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
           "answer": "buku",
-          "accepted": [],
+          "accepted": [
+            "buku"
+          ],
           "hint": "Cari nama benda dalam ayat.",
           "explanation": "buku ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu."
         },
         {
           "id": "BM-KATA_NAMA_AM-002",
           "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
           "answer": "ikan",
-          "accepted": [],
+          "accepted": [
+            "ikan"
+          ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar."
         },
         {
           "id": "BM-KATA_NAMA_AM-003",
           "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
           "answer": "kantin",
-          "accepted": [],
+          "accepted": [
+            "kantin"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "kantin ialah kata nama am bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin."
         },
         {
           "id": "BM-KATA_NAMA_AM-004",
           "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
           "answer": "guru",
-          "accepted": [],
+          "accepted": [
+            "guru"
+          ],
           "hint": "Cari nama orang dalam ayat.",
           "explanation": "guru ialah kata nama am bagi orang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih."
         },
         {
           "id": "BM-KATA_NAMA_AM-005",
           "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
           "answer": "kucing",
-          "accepted": [],
+          "accepted": [
+            "kucing"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "kucing ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja."
         },
         {
           "id": "BM-KATA_NAMA_AM-006",
           "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
           "answer": "kasut",
-          "accepted": [],
+          "accepted": [
+            "kasut"
+          ],
           "hint": "Cari nama benda yang dipakai.",
           "explanation": "kasut ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak."
         },
         {
           "id": "BM-KATA_NAMA_AM-007",
           "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
           "answer": "taman",
-          "accepted": [],
+          "accepted": [
+            "taman"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "taman ialah kata nama am bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Kami bermain di taman."
         },
         {
           "id": "BM-KATA_NAMA_AM-008",
           "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
           "answer": "doktor",
-          "accepted": [],
+          "accepted": [
+            "doktor"
+          ],
           "hint": "Cari nama pekerjaan orang.",
           "explanation": "doktor ialah kata nama am bagi orang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu."
         },
         {
           "id": "BM-KATA_NAMA_AM-009",
           "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
           "answer": "burung",
-          "accepted": [],
+          "accepted": [
+            "burung"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "burung ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan."
         },
         {
           "id": "BM-KATA_NAMA_AM-010",
           "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
           "answer": "lantai",
-          "accepted": [],
+          "accepted": [
+            "lantai"
+          ],
           "hint": "Cari nama benda atau bahagian rumah.",
           "explanation": "lantai ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai."
         },
         {
           "id": "BM-KATA_NAMA_AM-011",
-          "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
+          "q": "Dalam ayat \"Siti membaca buku di ruang tamu.\", apakah kata nama am?",
           "answer": "buku",
-          "accepted": [],
+          "accepted": [
+            "buku"
+          ],
           "hint": "Cari nama benda dalam ayat.",
           "explanation": "buku ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Siti membaca buku di ruang tamu.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-012",
-          "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
+          "q": "Dalam ayat \"Ayah membeli ikan di pasar.\", apakah kata nama am?",
           "answer": "ikan",
-          "accepted": [],
+          "accepted": [
+            "ikan"
+          ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Ayah membeli ikan di pasar.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-013",
-          "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
+          "q": "Dalam ayat \"Murid beratur di kantin.\", apakah kata nama am?",
           "answer": "kantin",
-          "accepted": [],
+          "accepted": [
+            "kantin"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "kantin ialah kata nama am bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Murid beratur di kantin.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-014",
-          "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
+          "q": "Dalam ayat \"Guru menulis di papan putih.\", apakah kata nama am?",
           "answer": "guru",
-          "accepted": [],
+          "accepted": [
+            "guru"
+          ],
           "hint": "Cari nama orang dalam ayat.",
           "explanation": "guru ialah kata nama am bagi orang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Guru menulis di papan putih.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-015",
-          "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
+          "q": "Dalam ayat \"Kucing itu tidur di bawah meja.\", apakah kata nama am?",
           "answer": "kucing",
-          "accepted": [],
+          "accepted": [
+            "kucing"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "kucing ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kucing itu tidur di bawah meja.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-016",
-          "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
+          "q": "Dalam ayat \"Adik menyimpan kasut di rak.\", apakah kata nama am?",
           "answer": "kasut",
-          "accepted": [],
+          "accepted": [
+            "kasut"
+          ],
           "hint": "Cari nama benda yang dipakai.",
           "explanation": "kasut ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Adik menyimpan kasut di rak.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-017",
-          "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
+          "q": "Dalam ayat \"Kami bermain di taman.\", apakah kata nama am?",
           "answer": "taman",
-          "accepted": [],
+          "accepted": [
+            "taman"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "taman ialah kata nama am bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kami bermain di taman.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-018",
-          "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
+          "q": "Dalam ayat \"Doktor memeriksa pesakit itu.\", apakah kata nama am?",
           "answer": "doktor",
-          "accepted": [],
+          "accepted": [
+            "doktor"
+          ],
           "hint": "Cari nama pekerjaan orang.",
           "explanation": "doktor ialah kata nama am bagi orang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Doktor memeriksa pesakit itu.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-019",
-          "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
+          "q": "Dalam ayat \"Burung hinggap di dahan.\", apakah kata nama am?",
           "answer": "burung",
-          "accepted": [],
+          "accepted": [
+            "burung"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "burung ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Burung hinggap di dahan.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-020",
-          "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
+          "q": "Dalam ayat \"Emak menyapu lantai.\", apakah kata nama am?",
           "answer": "lantai",
-          "accepted": [],
+          "accepted": [
+            "lantai"
+          ],
           "hint": "Cari nama benda atau bahagian rumah.",
           "explanation": "lantai ialah kata nama am bagi benda.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Emak menyapu lantai.\", apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-021",
-          "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Siti membaca buku di ruang tamu.",
           "answer": "buku",
-          "accepted": [],
+          "accepted": [
+            "buku"
+          ],
           "hint": "Cari nama benda dalam ayat.",
           "explanation": "buku ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Siti membaca buku di ruang tamu."
         },
         {
           "id": "BM-KATA_NAMA_AM-022",
-          "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Ayah membeli ikan di pasar.",
           "answer": "ikan",
-          "accepted": [],
+          "accepted": [
+            "ikan"
+          ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Ayah membeli ikan di pasar."
         },
         {
           "id": "BM-KATA_NAMA_AM-023",
-          "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Murid beratur di kantin.",
           "answer": "kantin",
-          "accepted": [],
+          "accepted": [
+            "kantin"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "kantin ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Murid beratur di kantin."
         },
         {
           "id": "BM-KATA_NAMA_AM-024",
-          "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Guru menulis di papan putih.",
           "answer": "guru",
-          "accepted": [],
+          "accepted": [
+            "guru"
+          ],
           "hint": "Cari nama orang dalam ayat.",
           "explanation": "guru ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Guru menulis di papan putih."
         },
         {
           "id": "BM-KATA_NAMA_AM-025",
-          "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Kucing itu tidur di bawah meja.",
           "answer": "kucing",
-          "accepted": [],
+          "accepted": [
+            "kucing"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "kucing ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Kucing itu tidur di bawah meja."
         },
         {
           "id": "BM-KATA_NAMA_AM-026",
-          "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Adik menyimpan kasut di rak.",
           "answer": "kasut",
-          "accepted": [],
+          "accepted": [
+            "kasut"
+          ],
           "hint": "Cari nama benda yang dipakai.",
           "explanation": "kasut ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Adik menyimpan kasut di rak."
         },
         {
           "id": "BM-KATA_NAMA_AM-027",
-          "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Kami bermain di taman.",
           "answer": "taman",
-          "accepted": [],
+          "accepted": [
+            "taman"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "taman ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Kami bermain di taman."
         },
         {
           "id": "BM-KATA_NAMA_AM-028",
-          "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Doktor memeriksa pesakit itu.",
           "answer": "doktor",
-          "accepted": [],
+          "accepted": [
+            "doktor"
+          ],
           "hint": "Cari nama pekerjaan orang.",
           "explanation": "doktor ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Doktor memeriksa pesakit itu."
         },
         {
           "id": "BM-KATA_NAMA_AM-029",
-          "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Burung hinggap di dahan.",
           "answer": "burung",
-          "accepted": [],
+          "accepted": [
+            "burung"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "burung ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Burung hinggap di dahan."
         },
         {
           "id": "BM-KATA_NAMA_AM-030",
-          "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
+          "q": "Pilih kata nama am yang terdapat dalam ayat: Emak menyapu lantai.",
           "answer": "lantai",
-          "accepted": [],
+          "accepted": [
+            "lantai"
+          ],
           "hint": "Cari nama benda atau bahagian rumah.",
           "explanation": "lantai ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama am yang terdapat dalam ayat: Emak menyapu lantai."
         },
         {
           "id": "BM-KATA_NAMA_AM-031",
-          "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
+          "q": "Baca ayat ini: Siti membaca buku di ruang tamu. Apakah kata nama am?",
           "answer": "buku",
-          "accepted": [],
+          "accepted": [
+            "buku"
+          ],
           "hint": "Cari nama benda dalam ayat.",
           "explanation": "buku ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Siti membaca buku di ruang tamu. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-032",
-          "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
+          "q": "Baca ayat ini: Ayah membeli ikan di pasar. Apakah kata nama am?",
           "answer": "ikan",
-          "accepted": [],
+          "accepted": [
+            "ikan"
+          ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Ayah membeli ikan di pasar. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-033",
-          "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
+          "q": "Baca ayat ini: Murid beratur di kantin. Apakah kata nama am?",
           "answer": "kantin",
-          "accepted": [],
+          "accepted": [
+            "kantin"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "kantin ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Murid beratur di kantin. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-034",
-          "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
+          "q": "Baca ayat ini: Guru menulis di papan putih. Apakah kata nama am?",
           "answer": "guru",
-          "accepted": [],
+          "accepted": [
+            "guru"
+          ],
           "hint": "Cari nama orang dalam ayat.",
           "explanation": "guru ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Guru menulis di papan putih. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-035",
-          "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
+          "q": "Baca ayat ini: Kucing itu tidur di bawah meja. Apakah kata nama am?",
           "answer": "kucing",
-          "accepted": [],
+          "accepted": [
+            "kucing"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "kucing ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kucing itu tidur di bawah meja. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-036",
-          "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
+          "q": "Baca ayat ini: Adik menyimpan kasut di rak. Apakah kata nama am?",
           "answer": "kasut",
-          "accepted": [],
+          "accepted": [
+            "kasut"
+          ],
           "hint": "Cari nama benda yang dipakai.",
           "explanation": "kasut ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Adik menyimpan kasut di rak. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-037",
-          "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
+          "q": "Baca ayat ini: Kami bermain di taman. Apakah kata nama am?",
           "answer": "taman",
-          "accepted": [],
+          "accepted": [
+            "taman"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "taman ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kami bermain di taman. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-038",
-          "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
+          "q": "Baca ayat ini: Doktor memeriksa pesakit itu. Apakah kata nama am?",
           "answer": "doktor",
-          "accepted": [],
+          "accepted": [
+            "doktor"
+          ],
           "hint": "Cari nama pekerjaan orang.",
           "explanation": "doktor ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Doktor memeriksa pesakit itu. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-039",
-          "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
+          "q": "Baca ayat ini: Burung hinggap di dahan. Apakah kata nama am?",
           "answer": "burung",
-          "accepted": [],
+          "accepted": [
+            "burung"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "burung ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Burung hinggap di dahan. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-040",
-          "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
+          "q": "Baca ayat ini: Emak menyapu lantai. Apakah kata nama am?",
           "answer": "lantai",
-          "accepted": [],
+          "accepted": [
+            "lantai"
+          ],
           "hint": "Cari nama benda atau bahagian rumah.",
           "explanation": "lantai ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Emak menyapu lantai. Apakah kata nama am?"
         },
         {
           "id": "BM-KATA_NAMA_AM-041",
-          "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
+          "q": "Soalan ulang kaji Kata Nama Am: Siti membaca buku di ruang tamu. Jawapan bagi kata nama am ialah ________.",
           "answer": "buku",
-          "accepted": [],
+          "accepted": [
+            "buku"
+          ],
           "hint": "Cari nama benda dalam ayat.",
           "explanation": "buku ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Siti membaca buku di ruang tamu. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-042",
-          "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
+          "q": "Soalan ulang kaji Kata Nama Am: Ayah membeli ikan di pasar. Jawapan bagi kata nama am ialah ________.",
           "answer": "ikan",
-          "accepted": [],
+          "accepted": [
+            "ikan"
+          ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Ayah membeli ikan di pasar. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-043",
-          "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
+          "q": "Soalan ulang kaji Kata Nama Am: Murid beratur di kantin. Jawapan bagi kata nama am ialah ________.",
           "answer": "kantin",
-          "accepted": [],
+          "accepted": [
+            "kantin"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "kantin ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Murid beratur di kantin. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-044",
-          "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
+          "q": "Soalan ulang kaji Kata Nama Am: Guru menulis di papan putih. Jawapan bagi kata nama am ialah ________.",
           "answer": "guru",
-          "accepted": [],
+          "accepted": [
+            "guru"
+          ],
           "hint": "Cari nama orang dalam ayat.",
           "explanation": "guru ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Guru menulis di papan putih. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-045",
-          "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
+          "q": "Soalan ulang kaji Kata Nama Am: Kucing itu tidur di bawah meja. Jawapan bagi kata nama am ialah ________.",
           "answer": "kucing",
-          "accepted": [],
+          "accepted": [
+            "kucing"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "kucing ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Kucing itu tidur di bawah meja. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-046",
-          "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
+          "q": "Soalan ulang kaji Kata Nama Am: Adik menyimpan kasut di rak. Jawapan bagi kata nama am ialah ________.",
           "answer": "kasut",
-          "accepted": [],
+          "accepted": [
+            "kasut"
+          ],
           "hint": "Cari nama benda yang dipakai.",
           "explanation": "kasut ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Adik menyimpan kasut di rak. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-047",
-          "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
+          "q": "Soalan ulang kaji Kata Nama Am: Kami bermain di taman. Jawapan bagi kata nama am ialah ________.",
           "answer": "taman",
-          "accepted": [],
+          "accepted": [
+            "taman"
+          ],
           "hint": "Cari nama tempat dalam ayat.",
           "explanation": "taman ialah kata nama am bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Kami bermain di taman. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-048",
-          "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
+          "q": "Soalan ulang kaji Kata Nama Am: Doktor memeriksa pesakit itu. Jawapan bagi kata nama am ialah ________.",
           "answer": "doktor",
-          "accepted": [],
+          "accepted": [
+            "doktor"
+          ],
           "hint": "Cari nama pekerjaan orang.",
           "explanation": "doktor ialah kata nama am bagi orang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Doktor memeriksa pesakit itu. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-049",
-          "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
+          "q": "Soalan ulang kaji Kata Nama Am: Burung hinggap di dahan. Jawapan bagi kata nama am ialah ________.",
           "answer": "burung",
-          "accepted": [],
+          "accepted": [
+            "burung"
+          ],
           "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "burung ialah kata nama am bagi haiwan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Burung hinggap di dahan. Jawapan bagi kata nama am ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_AM-050",
-          "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
+          "q": "Soalan ulang kaji Kata Nama Am: Emak menyapu lantai. Jawapan bagi kata nama am ialah ________.",
           "answer": "lantai",
-          "accepted": [],
+          "accepted": [
+            "lantai"
+          ],
           "hint": "Cari nama benda atau bahagian rumah.",
           "explanation": "lantai ialah kata nama am bagi benda.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Am: Emak menyapu lantai. Jawapan bagi kata nama am ialah ________."
         }
       ]
     },
@@ -572,650 +722,700 @@ export const bmSubject = {
           "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Aina ialah kata nama khas kerana merujuk kepada nama seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-002",
           "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
           "answer": "Hana",
           "accepted": [
-            "hana"
+            "Hana"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Hana ialah nama khusus bagi seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-003",
           "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
           "answer": "Zoo Negara",
           "accepted": [
-            "zoo negara"
+            "Zoo Negara"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Zoo Negara ialah nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-004",
           "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
           "answer": "Kuala Lumpur",
           "accepted": [
-            "kuala lumpur"
+            "Kuala Lumpur"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Kuala Lumpur ialah kata nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-005",
           "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
           "answer": "Dutch Lady",
           "accepted": [
-            "dutch lady"
+            "Dutch Lady"
           ],
           "hint": "Cari nama jenama.",
           "explanation": "Dutch Lady ialah nama khas bagi jenama.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-006",
           "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
-            "sekolah kebangsaan jaya"
+            "Sekolah Kebangsaan Jaya"
           ],
           "hint": "Cari nama khusus bagi sekolah.",
           "explanation": "Sekolah Kebangsaan Jaya ialah kata nama khas.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-007",
           "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
           "answer": "Salmah",
           "accepted": [
-            "salmah"
+            "Salmah"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Salmah ialah nama khas seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-008",
           "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
           "answer": "Upin Ipin",
           "accepted": [
-            "upin ipin"
+            "Upin Ipin"
           ],
           "hint": "Cari tajuk rancangan.",
           "explanation": "Upin Ipin ialah kata nama khas bagi tajuk rancangan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-009",
           "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
           "answer": "Pulau Langkawi",
           "accepted": [
-            "pulau langkawi"
+            "Pulau Langkawi"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Pulau Langkawi ialah kata nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-010",
           "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
           "answer": "Rahman",
           "accepted": [
-            "rahman"
+            "Rahman"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Rahman ialah kata nama khas bagi seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-011",
-          "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
+          "q": "Dalam ayat \"Aina membaca buku cerita.\", apakah kata nama khas?",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Aina ialah kata nama khas kerana merujuk kepada nama seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Aina membaca buku cerita.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-012",
-          "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Dalam ayat \"Cikgu Hana mengajar Bahasa Melayu.\", apakah kata nama khas?",
           "answer": "Hana",
           "accepted": [
-            "hana"
+            "Hana"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Hana ialah nama khusus bagi seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Cikgu Hana mengajar Bahasa Melayu.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-013",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
+          "q": "Dalam ayat \"Kami melawat Zoo Negara.\", apakah kata nama khas?",
           "answer": "Zoo Negara",
           "accepted": [
-            "zoo negara"
+            "Zoo Negara"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Zoo Negara ialah nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kami melawat Zoo Negara.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-014",
-          "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
+          "q": "Dalam ayat \"Ayah bekerja di Kuala Lumpur.\", apakah kata nama khas?",
           "answer": "Kuala Lumpur",
           "accepted": [
-            "kuala lumpur"
+            "Kuala Lumpur"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Kuala Lumpur ialah kata nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Ayah bekerja di Kuala Lumpur.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-015",
-          "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
+          "q": "Dalam ayat \"Sara minum susu Dutch Lady.\", apakah kata nama khas?",
           "answer": "Dutch Lady",
           "accepted": [
-            "dutch lady"
+            "Dutch Lady"
           ],
           "hint": "Cari nama jenama.",
           "explanation": "Dutch Lady ialah nama khas bagi jenama.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Sara minum susu Dutch Lady.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-016",
-          "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Dalam ayat \"Irfan pergi ke Sekolah Kebangsaan Jaya.\", apakah kata nama khas?",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
-            "sekolah kebangsaan jaya"
+            "Sekolah Kebangsaan Jaya"
           ],
           "hint": "Cari nama khusus bagi sekolah.",
           "explanation": "Sekolah Kebangsaan Jaya ialah kata nama khas.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Irfan pergi ke Sekolah Kebangsaan Jaya.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-017",
-          "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
+          "q": "Dalam ayat \"Puan Salmah menjual kuih.\", apakah kata nama khas?",
           "answer": "Salmah",
           "accepted": [
-            "salmah"
+            "Salmah"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Salmah ialah nama khas seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Puan Salmah menjual kuih.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-018",
-          "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
+          "q": "Dalam ayat \"Adik menonton Upin Ipin.\", apakah kata nama khas?",
           "answer": "Upin Ipin",
           "accepted": [
-            "upin ipin"
+            "Upin Ipin"
           ],
           "hint": "Cari tajuk rancangan.",
           "explanation": "Upin Ipin ialah kata nama khas bagi tajuk rancangan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Adik menonton Upin Ipin.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-019",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
+          "q": "Dalam ayat \"Kami bercuti di Pulau Langkawi.\", apakah kata nama khas?",
           "answer": "Pulau Langkawi",
           "accepted": [
-            "pulau langkawi"
+            "Pulau Langkawi"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Pulau Langkawi ialah kata nama khas bagi tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kami bercuti di Pulau Langkawi.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-020",
-          "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
+          "q": "Dalam ayat \"Encik Rahman memandu kereta.\", apakah kata nama khas?",
           "answer": "Rahman",
           "accepted": [
-            "rahman"
+            "Rahman"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Rahman ialah kata nama khas bagi seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Encik Rahman memandu kereta.\", apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-021",
-          "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Aina membaca buku cerita.",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Aina ialah kata nama khas kerana merujuk kepada nama seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Aina membaca buku cerita."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-022",
-          "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Cikgu Hana mengajar Bahasa Melayu.",
           "answer": "Hana",
           "accepted": [
-            "hana"
+            "Hana"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Hana ialah nama khusus bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Cikgu Hana mengajar Bahasa Melayu."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-023",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Kami melawat Zoo Negara.",
           "answer": "Zoo Negara",
           "accepted": [
-            "zoo negara"
+            "Zoo Negara"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Zoo Negara ialah nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Kami melawat Zoo Negara."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-024",
-          "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Ayah bekerja di Kuala Lumpur.",
           "answer": "Kuala Lumpur",
           "accepted": [
-            "kuala lumpur"
+            "Kuala Lumpur"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Kuala Lumpur ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Ayah bekerja di Kuala Lumpur."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-025",
-          "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Sara minum susu Dutch Lady.",
           "answer": "Dutch Lady",
           "accepted": [
-            "dutch lady"
+            "Dutch Lady"
           ],
           "hint": "Cari nama jenama.",
           "explanation": "Dutch Lady ialah nama khas bagi jenama.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Sara minum susu Dutch Lady."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-026",
-          "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Irfan pergi ke Sekolah Kebangsaan Jaya.",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
-            "sekolah kebangsaan jaya"
+            "Sekolah Kebangsaan Jaya"
           ],
           "hint": "Cari nama khusus bagi sekolah.",
           "explanation": "Sekolah Kebangsaan Jaya ialah kata nama khas.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Irfan pergi ke Sekolah Kebangsaan Jaya."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-027",
-          "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Puan Salmah menjual kuih.",
           "answer": "Salmah",
           "accepted": [
-            "salmah"
+            "Salmah"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Salmah ialah nama khas seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Puan Salmah menjual kuih."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-028",
-          "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Adik menonton Upin Ipin.",
           "answer": "Upin Ipin",
           "accepted": [
-            "upin ipin"
+            "Upin Ipin"
           ],
           "hint": "Cari tajuk rancangan.",
           "explanation": "Upin Ipin ialah kata nama khas bagi tajuk rancangan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Adik menonton Upin Ipin."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-029",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Kami bercuti di Pulau Langkawi.",
           "answer": "Pulau Langkawi",
           "accepted": [
-            "pulau langkawi"
+            "Pulau Langkawi"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Pulau Langkawi ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Kami bercuti di Pulau Langkawi."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-030",
-          "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
+          "q": "Pilih kata nama khas yang terdapat dalam ayat: Encik Rahman memandu kereta.",
           "answer": "Rahman",
           "accepted": [
-            "rahman"
+            "Rahman"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Rahman ialah kata nama khas bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata nama khas yang terdapat dalam ayat: Encik Rahman memandu kereta."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-031",
-          "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
+          "q": "Baca ayat ini: Aina membaca buku cerita. Apakah kata nama khas?",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Aina ialah kata nama khas kerana merujuk kepada nama seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Aina membaca buku cerita. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-032",
-          "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Baca ayat ini: Cikgu Hana mengajar Bahasa Melayu. Apakah kata nama khas?",
           "answer": "Hana",
           "accepted": [
-            "hana"
+            "Hana"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Hana ialah nama khusus bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Cikgu Hana mengajar Bahasa Melayu. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-033",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
+          "q": "Baca ayat ini: Kami melawat Zoo Negara. Apakah kata nama khas?",
           "answer": "Zoo Negara",
           "accepted": [
-            "zoo negara"
+            "Zoo Negara"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Zoo Negara ialah nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kami melawat Zoo Negara. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-034",
-          "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
+          "q": "Baca ayat ini: Ayah bekerja di Kuala Lumpur. Apakah kata nama khas?",
           "answer": "Kuala Lumpur",
           "accepted": [
-            "kuala lumpur"
+            "Kuala Lumpur"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Kuala Lumpur ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Ayah bekerja di Kuala Lumpur. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-035",
-          "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
+          "q": "Baca ayat ini: Sara minum susu Dutch Lady. Apakah kata nama khas?",
           "answer": "Dutch Lady",
           "accepted": [
-            "dutch lady"
+            "Dutch Lady"
           ],
           "hint": "Cari nama jenama.",
           "explanation": "Dutch Lady ialah nama khas bagi jenama.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Sara minum susu Dutch Lady. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-036",
-          "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Baca ayat ini: Irfan pergi ke Sekolah Kebangsaan Jaya. Apakah kata nama khas?",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
-            "sekolah kebangsaan jaya"
+            "Sekolah Kebangsaan Jaya"
           ],
           "hint": "Cari nama khusus bagi sekolah.",
           "explanation": "Sekolah Kebangsaan Jaya ialah kata nama khas.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Irfan pergi ke Sekolah Kebangsaan Jaya. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-037",
-          "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
+          "q": "Baca ayat ini: Puan Salmah menjual kuih. Apakah kata nama khas?",
           "answer": "Salmah",
           "accepted": [
-            "salmah"
+            "Salmah"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Salmah ialah nama khas seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Puan Salmah menjual kuih. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-038",
-          "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
+          "q": "Baca ayat ini: Adik menonton Upin Ipin. Apakah kata nama khas?",
           "answer": "Upin Ipin",
           "accepted": [
-            "upin ipin"
+            "Upin Ipin"
           ],
           "hint": "Cari tajuk rancangan.",
           "explanation": "Upin Ipin ialah kata nama khas bagi tajuk rancangan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Adik menonton Upin Ipin. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-039",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
+          "q": "Baca ayat ini: Kami bercuti di Pulau Langkawi. Apakah kata nama khas?",
           "answer": "Pulau Langkawi",
           "accepted": [
-            "pulau langkawi"
+            "Pulau Langkawi"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Pulau Langkawi ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kami bercuti di Pulau Langkawi. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-040",
-          "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
+          "q": "Baca ayat ini: Encik Rahman memandu kereta. Apakah kata nama khas?",
           "answer": "Rahman",
           "accepted": [
-            "rahman"
+            "Rahman"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Rahman ialah kata nama khas bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Encik Rahman memandu kereta. Apakah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-041",
-          "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Aina membaca buku cerita. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Aina ialah kata nama khas kerana merujuk kepada nama seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Aina membaca buku cerita. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-042",
-          "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Cikgu Hana mengajar Bahasa Melayu. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Hana",
           "accepted": [
-            "hana"
+            "Hana"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Hana ialah nama khusus bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Cikgu Hana mengajar Bahasa Melayu. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-043",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Kami melawat Zoo Negara. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Zoo Negara",
           "accepted": [
-            "zoo negara"
+            "Zoo Negara"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Zoo Negara ialah nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Kami melawat Zoo Negara. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-044",
-          "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Ayah bekerja di Kuala Lumpur. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Kuala Lumpur",
           "accepted": [
-            "kuala lumpur"
+            "Kuala Lumpur"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Kuala Lumpur ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Ayah bekerja di Kuala Lumpur. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-045",
-          "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Sara minum susu Dutch Lady. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Dutch Lady",
           "accepted": [
-            "dutch lady"
+            "Dutch Lady"
           ],
           "hint": "Cari nama jenama.",
           "explanation": "Dutch Lady ialah nama khas bagi jenama.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Sara minum susu Dutch Lady. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-046",
-          "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Irfan pergi ke Sekolah Kebangsaan Jaya. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
-            "sekolah kebangsaan jaya"
+            "Sekolah Kebangsaan Jaya"
           ],
           "hint": "Cari nama khusus bagi sekolah.",
           "explanation": "Sekolah Kebangsaan Jaya ialah kata nama khas.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Irfan pergi ke Sekolah Kebangsaan Jaya. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-047",
-          "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Puan Salmah menjual kuih. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Salmah",
           "accepted": [
-            "salmah"
+            "Salmah"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Salmah ialah nama khas seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Puan Salmah menjual kuih. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-048",
-          "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Adik menonton Upin Ipin. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Upin Ipin",
           "accepted": [
-            "upin ipin"
+            "Upin Ipin"
           ],
           "hint": "Cari tajuk rancangan.",
           "explanation": "Upin Ipin ialah kata nama khas bagi tajuk rancangan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Adik menonton Upin Ipin. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-049",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Kami bercuti di Pulau Langkawi. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Pulau Langkawi",
           "accepted": [
-            "pulau langkawi"
+            "Pulau Langkawi"
           ],
           "hint": "Cari nama khusus bagi tempat.",
           "explanation": "Pulau Langkawi ialah kata nama khas bagi tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Kami bercuti di Pulau Langkawi. Jawapan bagi kata nama khas ialah ________."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-050",
-          "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
+          "q": "Soalan ulang kaji Kata Nama Khas: Encik Rahman memandu kereta. Jawapan bagi kata nama khas ialah ________.",
           "answer": "Rahman",
           "accepted": [
-            "rahman"
+            "Rahman"
           ],
           "hint": "Cari nama khusus bagi orang.",
           "explanation": "Rahman ialah kata nama khas bagi seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Nama Khas: Encik Rahman memandu kereta. Jawapan bagi kata nama khas ialah ________."
         }
       ]
     },
@@ -1229,640 +1429,700 @@ export const bmSubject = {
           "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
           "answer": "Saya",
           "accepted": [
-            "saya"
+            "Saya"
           ],
           "hint": "Gunakan kata ganti nama untuk diri sendiri.",
           "explanation": "Saya digunakan apabila bercakap tentang diri sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-002",
           "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
           "explanation": "Dia menggantikan nama Aina.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-003",
           "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
           "answer": "Mereka",
           "accepted": [
-            "mereka"
+            "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
           "explanation": "Mereka digunakan untuk Amir dan Badrul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-004",
           "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
           "explanation": "Kami merujuk kepada saya dan kawan saya.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-005",
           "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Gunakan kata ganti nama yang termasuk orang yang mendengar.",
           "explanation": "Kita merujuk kepada pembicara dan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-006",
           "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
           "answer": "Beliau",
           "accepted": [
-            "beliau"
+            "Beliau"
           ],
           "hint": "Gunakan kata ganti nama sopan untuk orang yang dihormati.",
           "explanation": "Beliau sesuai digunakan untuk guru atau orang yang dihormati.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-007",
           "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
           "answer": "dia",
-          "accepted": [],
+          "accepted": [
+            "dia"
+          ],
           "hint": "Gantikan nama Sara dengan kata ganti nama.",
           "explanation": "dia menggantikan nama Sara.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-008",
           "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
           "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-009",
           "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gantikan abang dengan kata ganti nama.",
           "explanation": "Dia menggantikan abang dalam ayat kedua.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-010",
           "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk saya dan kumpulan saya.",
           "explanation": "Kami merujuk kepada saya dan ahli kumpulan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-011",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
+          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 2)",
           "answer": "Saya",
           "accepted": [
-            "saya"
+            "Saya"
           ],
           "hint": "Gunakan kata ganti nama untuk diri sendiri.",
           "explanation": "Saya digunakan apabila bercakap tentang diri sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-012",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
+          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 2)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
           "explanation": "Dia menggantikan nama Aina.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-013",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
+          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 2)",
           "answer": "Mereka",
           "accepted": [
-            "mereka"
+            "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
           "explanation": "Mereka digunakan untuk Amir dan Badrul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-014",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
+          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 2)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
           "explanation": "Kami merujuk kepada saya dan kawan saya.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-015",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
+          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 2)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Gunakan kata ganti nama yang termasuk orang yang mendengar.",
           "explanation": "Kita merujuk kepada pembicara dan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-016",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
+          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 2)",
           "answer": "Beliau",
           "accepted": [
-            "beliau"
+            "Beliau"
           ],
           "hint": "Gunakan kata ganti nama sopan untuk orang yang dihormati.",
           "explanation": "Beliau sesuai digunakan untuk guru atau orang yang dihormati.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-017",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
+          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 2)",
           "answer": "dia",
-          "accepted": [],
+          "accepted": [
+            "dia"
+          ],
           "hint": "Gantikan nama Sara dengan kata ganti nama.",
           "explanation": "dia menggantikan nama Sara.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-018",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
+          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 2)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
           "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-019",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
+          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 2)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gantikan abang dengan kata ganti nama.",
           "explanation": "Dia menggantikan abang dalam ayat kedua.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-020",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
+          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 2)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk saya dan kumpulan saya.",
           "explanation": "Kami merujuk kepada saya dan ahli kumpulan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 2)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-021",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
+          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 3)",
           "answer": "Saya",
           "accepted": [
-            "saya"
+            "Saya"
           ],
           "hint": "Gunakan kata ganti nama untuk diri sendiri.",
           "explanation": "Saya digunakan apabila bercakap tentang diri sendiri.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-022",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
+          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 3)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
           "explanation": "Dia menggantikan nama Aina.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-023",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
+          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 3)",
           "answer": "Mereka",
           "accepted": [
-            "mereka"
+            "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
           "explanation": "Mereka digunakan untuk Amir dan Badrul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-024",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
+          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 3)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
           "explanation": "Kami merujuk kepada saya dan kawan saya.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-025",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
+          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 3)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Gunakan kata ganti nama yang termasuk orang yang mendengar.",
           "explanation": "Kita merujuk kepada pembicara dan pendengar.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-026",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
+          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 3)",
           "answer": "Beliau",
           "accepted": [
-            "beliau"
+            "Beliau"
           ],
           "hint": "Gunakan kata ganti nama sopan untuk orang yang dihormati.",
           "explanation": "Beliau sesuai digunakan untuk guru atau orang yang dihormati.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-027",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
+          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 3)",
           "answer": "dia",
-          "accepted": [],
+          "accepted": [
+            "dia"
+          ],
           "hint": "Gantikan nama Sara dengan kata ganti nama.",
           "explanation": "dia menggantikan nama Sara.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-028",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
+          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 3)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
           "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-029",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
+          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 3)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gantikan abang dengan kata ganti nama.",
           "explanation": "Dia menggantikan abang dalam ayat kedua.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-030",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
+          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 3)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk saya dan kumpulan saya.",
           "explanation": "Kami merujuk kepada saya dan ahli kumpulan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 3)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-031",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
+          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 4)",
           "answer": "Saya",
           "accepted": [
-            "saya"
+            "Saya"
           ],
           "hint": "Gunakan kata ganti nama untuk diri sendiri.",
           "explanation": "Saya digunakan apabila bercakap tentang diri sendiri.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-032",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
+          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 4)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
           "explanation": "Dia menggantikan nama Aina.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-033",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
+          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 4)",
           "answer": "Mereka",
           "accepted": [
-            "mereka"
+            "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
           "explanation": "Mereka digunakan untuk Amir dan Badrul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-034",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
+          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 4)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
           "explanation": "Kami merujuk kepada saya dan kawan saya.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-035",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
+          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 4)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Gunakan kata ganti nama yang termasuk orang yang mendengar.",
           "explanation": "Kita merujuk kepada pembicara dan pendengar.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-036",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
+          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 4)",
           "answer": "Beliau",
           "accepted": [
-            "beliau"
+            "Beliau"
           ],
           "hint": "Gunakan kata ganti nama sopan untuk orang yang dihormati.",
           "explanation": "Beliau sesuai digunakan untuk guru atau orang yang dihormati.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-037",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
+          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 4)",
           "answer": "dia",
-          "accepted": [],
+          "accepted": [
+            "dia"
+          ],
           "hint": "Gantikan nama Sara dengan kata ganti nama.",
           "explanation": "dia menggantikan nama Sara.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-038",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
+          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 4)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
           "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-039",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
+          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 4)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gantikan abang dengan kata ganti nama.",
           "explanation": "Dia menggantikan abang dalam ayat kedua.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-040",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
+          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 4)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk saya dan kumpulan saya.",
           "explanation": "Kami merujuk kepada saya dan ahli kumpulan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-041",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
+          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 5)",
           "answer": "Saya",
           "accepted": [
-            "saya"
+            "Saya"
           ],
           "hint": "Gunakan kata ganti nama untuk diri sendiri.",
           "explanation": "Saya digunakan apabila bercakap tentang diri sendiri.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-042",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
+          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 5)",
           "answer": "Dia",
           "accepted": [
-            "dia"
+            "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
           "explanation": "Dia menggantikan nama Aina.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-043",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
+          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 5)",
           "answer": "Mereka",
           "accepted": [
-            "mereka"
+            "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
           "explanation": "Mereka digunakan untuk Amir dan Badrul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-044",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
+          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 5)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
           "explanation": "Kami merujuk kepada saya dan kawan saya.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-045",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
+          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 5)",
           "answer": "Kita",
           "accepted": [
-            "kita"
+            "Kita"
           ],
           "hint": "Gunakan kata ganti nama yang termasuk orang yang mendengar.",
           "explanation": "Kita merujuk kepada pembicara dan pendengar.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-046",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
+          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 5)",
           "answer": "Beliau",
           "accepted": [
-            "beliau"
+            "Beliau"
           ],
           "hint": "Gunakan kata ganti nama sopan untuk orang yang dihormati.",
           "explanation": "Beliau sesuai digunakan untuk guru atau orang yang dihormati.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-047",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
+          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 5)",
           "answer": "dia",
-          "accepted": [],
-          "hint": "Gantikan nama Sara dengan kata ganti nama.",
-          "explanation": "dia menggantikan nama Sara.",
-          "difficulty": "mudah",
-          "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
-        },
-        {
-          "id": "BM-KATA_GANTI_NAMA-048",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
-          "answer": "Kita",
-          "accepted": [
-            "kita"
-          ],
-          "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
-          "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
-          "difficulty": "mudah",
-          "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
-        },
-        {
-          "id": "BM-KATA_GANTI_NAMA-049",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
-          "answer": "Dia",
           "accepted": [
             "dia"
           ],
+          "hint": "Gantikan nama Sara dengan kata ganti nama.",
+          "explanation": "dia menggantikan nama Sara.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 5)"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-048",
+          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 5)",
+          "answer": "Kita",
+          "accepted": [
+            "Kita"
+          ],
+          "hint": "Pilih kata ganti nama yang melibatkan semua orang.",
+          "explanation": "Kita sesuai kerana melibatkan pembicara dan pendengar.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 5)"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-049",
+          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 5)",
+          "answer": "Dia",
+          "accepted": [
+            "Dia"
+          ],
           "hint": "Gantikan abang dengan kata ganti nama.",
           "explanation": "Dia menggantikan abang dalam ayat kedua.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-050",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
+          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 5)",
           "answer": "Kami",
           "accepted": [
-            "kami"
+            "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk saya dan kumpulan saya.",
           "explanation": "Kami merujuk kepada saya dan ahli kumpulan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 5)"
         }
       ]
     },
@@ -1875,551 +2135,701 @@ export const bmSubject = {
           "id": "BM-KATA_KERJA-001",
           "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
           "answer": "menyanyi",
-          "accepted": [],
+          "accepted": [
+            "menyanyi"
+          ],
           "hint": "Cari perkataan yang menunjukkan perbuatan.",
           "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak."
         },
         {
           "id": "BM-KATA_KERJA-002",
           "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
           "answer": "memasak",
-          "accepted": [],
+          "accepted": [
+            "memasak"
+          ],
           "hint": "Cari perbuatan ibu.",
           "explanation": "memasak ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam."
         },
         {
           "id": "BM-KATA_KERJA-003",
           "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
           "answer": "membaca",
-          "accepted": [],
+          "accepted": [
+            "membaca"
+          ],
           "hint": "Cari perbuatan murid.",
           "explanation": "membaca ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas."
         },
         {
           "id": "BM-KATA_KERJA-004",
           "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
           "answer": "mencuci",
-          "accepted": [],
+          "accepted": [
+            "mencuci"
+          ],
           "hint": "Cari perbuatan ayah.",
           "explanation": "mencuci ialah perbuatan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta."
         },
         {
           "id": "BM-KATA_KERJA-005",
           "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
           "answer": "menulis",
-          "accepted": [],
+          "accepted": [
+            "menulis"
+          ],
           "hint": "Cari perbuatan kakak.",
           "explanation": "menulis ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Kakak menulis surat."
         },
         {
           "id": "BM-KATA_KERJA-006",
           "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
           "answer": "tidur",
-          "accepted": [],
+          "accepted": [
+            "tidur"
+          ],
           "hint": "Cari perbuatan haiwan itu.",
           "explanation": "tidur ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa."
         },
         {
           "id": "BM-KATA_KERJA-007",
           "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
           "answer": "menendang",
-          "accepted": [],
+          "accepted": [
+            "menendang"
+          ],
           "hint": "Cari aksi yang dilakukan.",
           "explanation": "menendang ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Abang menendang bola."
         },
         {
           "id": "BM-KATA_KERJA-008",
           "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
           "answer": "menyiram",
-          "accepted": [],
+          "accepted": [
+            "menyiram"
+          ],
           "hint": "Cari perbuatan nenek.",
           "explanation": "menyiram ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga."
         },
         {
           "id": "BM-KATA_KERJA-009",
           "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
           "answer": "melukis",
-          "accepted": [],
+          "accepted": [
+            "melukis"
+          ],
           "hint": "Cari perbuatan Danish.",
           "explanation": "melukis ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah."
         },
         {
           "id": "BM-KATA_KERJA-010",
           "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
           "answer": "mengemas",
-          "accepted": [],
+          "accepted": [
+            "mengemas"
+          ],
           "hint": "Cari perbuatan Farah.",
           "explanation": "mengemas ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur."
         },
         {
           "id": "BM-KATA_KERJA-011",
-          "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
+          "q": "Dalam ayat \"Adik menyanyi lagu kanak-kanak.\", apakah kata kerja?",
           "answer": "menyanyi",
-          "accepted": [],
+          "accepted": [
+            "menyanyi"
+          ],
           "hint": "Cari perkataan yang menunjukkan perbuatan.",
           "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Adik menyanyi lagu kanak-kanak.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-012",
-          "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
+          "q": "Dalam ayat \"Ibu memasak sup ayam.\", apakah kata kerja?",
           "answer": "memasak",
-          "accepted": [],
+          "accepted": [
+            "memasak"
+          ],
           "hint": "Cari perbuatan ibu.",
           "explanation": "memasak ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Ibu memasak sup ayam.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-013",
-          "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
+          "q": "Dalam ayat \"Murid membaca buku di kelas.\", apakah kata kerja?",
           "answer": "membaca",
-          "accepted": [],
+          "accepted": [
+            "membaca"
+          ],
           "hint": "Cari perbuatan murid.",
           "explanation": "membaca ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Murid membaca buku di kelas.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-014",
-          "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
+          "q": "Dalam ayat \"Ayah mencuci kereta.\", apakah kata kerja?",
           "answer": "mencuci",
-          "accepted": [],
+          "accepted": [
+            "mencuci"
+          ],
           "hint": "Cari perbuatan ayah.",
           "explanation": "mencuci ialah perbuatan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Ayah mencuci kereta.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-015",
-          "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
+          "q": "Dalam ayat \"Kakak menulis surat.\", apakah kata kerja?",
           "answer": "menulis",
-          "accepted": [],
+          "accepted": [
+            "menulis"
+          ],
           "hint": "Cari perbuatan kakak.",
           "explanation": "menulis ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kakak menulis surat.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-016",
-          "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
+          "q": "Dalam ayat \"Kucing itu tidur di sofa.\", apakah kata kerja?",
           "answer": "tidur",
-          "accepted": [],
+          "accepted": [
+            "tidur"
+          ],
           "hint": "Cari perbuatan haiwan itu.",
           "explanation": "tidur ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Kucing itu tidur di sofa.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-017",
-          "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
+          "q": "Dalam ayat \"Abang menendang bola.\", apakah kata kerja?",
           "answer": "menendang",
-          "accepted": [],
+          "accepted": [
+            "menendang"
+          ],
           "hint": "Cari aksi yang dilakukan.",
           "explanation": "menendang ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Abang menendang bola.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-018",
-          "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
+          "q": "Dalam ayat \"Nenek menyiram bunga.\", apakah kata kerja?",
           "answer": "menyiram",
-          "accepted": [],
+          "accepted": [
+            "menyiram"
+          ],
           "hint": "Cari perbuatan nenek.",
           "explanation": "menyiram ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Nenek menyiram bunga.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-019",
-          "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
+          "q": "Dalam ayat \"Danish melukis gambar rumah.\", apakah kata kerja?",
           "answer": "melukis",
-          "accepted": [],
+          "accepted": [
+            "melukis"
+          ],
           "hint": "Cari perbuatan Danish.",
           "explanation": "melukis ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Danish melukis gambar rumah.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-020",
-          "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
+          "q": "Dalam ayat \"Farah mengemas bilik tidur.\", apakah kata kerja?",
           "answer": "mengemas",
-          "accepted": [],
+          "accepted": [
+            "mengemas"
+          ],
           "hint": "Cari perbuatan Farah.",
           "explanation": "mengemas ialah kata kerja.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Farah mengemas bilik tidur.\", apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-021",
-          "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Adik menyanyi lagu kanak-kanak.",
           "answer": "menyanyi",
-          "accepted": [],
+          "accepted": [
+            "menyanyi"
+          ],
           "hint": "Cari perkataan yang menunjukkan perbuatan.",
           "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Adik menyanyi lagu kanak-kanak."
         },
         {
           "id": "BM-KATA_KERJA-022",
-          "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Ibu memasak sup ayam.",
           "answer": "memasak",
-          "accepted": [],
+          "accepted": [
+            "memasak"
+          ],
           "hint": "Cari perbuatan ibu.",
           "explanation": "memasak ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Ibu memasak sup ayam."
         },
         {
           "id": "BM-KATA_KERJA-023",
-          "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Murid membaca buku di kelas.",
           "answer": "membaca",
-          "accepted": [],
+          "accepted": [
+            "membaca"
+          ],
           "hint": "Cari perbuatan murid.",
           "explanation": "membaca ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Murid membaca buku di kelas."
         },
         {
           "id": "BM-KATA_KERJA-024",
-          "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Ayah mencuci kereta.",
           "answer": "mencuci",
-          "accepted": [],
+          "accepted": [
+            "mencuci"
+          ],
           "hint": "Cari perbuatan ayah.",
           "explanation": "mencuci ialah perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Ayah mencuci kereta."
         },
         {
           "id": "BM-KATA_KERJA-025",
-          "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Kakak menulis surat.",
           "answer": "menulis",
-          "accepted": [],
+          "accepted": [
+            "menulis"
+          ],
           "hint": "Cari perbuatan kakak.",
           "explanation": "menulis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Kakak menulis surat."
         },
         {
           "id": "BM-KATA_KERJA-026",
-          "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Kucing itu tidur di sofa.",
           "answer": "tidur",
-          "accepted": [],
+          "accepted": [
+            "tidur"
+          ],
           "hint": "Cari perbuatan haiwan itu.",
           "explanation": "tidur ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Kucing itu tidur di sofa."
         },
         {
           "id": "BM-KATA_KERJA-027",
-          "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Abang menendang bola.",
           "answer": "menendang",
-          "accepted": [],
+          "accepted": [
+            "menendang"
+          ],
           "hint": "Cari aksi yang dilakukan.",
           "explanation": "menendang ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Abang menendang bola."
         },
         {
           "id": "BM-KATA_KERJA-028",
-          "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Nenek menyiram bunga.",
           "answer": "menyiram",
-          "accepted": [],
+          "accepted": [
+            "menyiram"
+          ],
           "hint": "Cari perbuatan nenek.",
           "explanation": "menyiram ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Nenek menyiram bunga."
         },
         {
           "id": "BM-KATA_KERJA-029",
-          "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Danish melukis gambar rumah.",
           "answer": "melukis",
-          "accepted": [],
+          "accepted": [
+            "melukis"
+          ],
           "hint": "Cari perbuatan Danish.",
           "explanation": "melukis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Danish melukis gambar rumah."
         },
         {
           "id": "BM-KATA_KERJA-030",
-          "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
+          "q": "Pilih kata kerja yang terdapat dalam ayat: Farah mengemas bilik tidur.",
           "answer": "mengemas",
-          "accepted": [],
+          "accepted": [
+            "mengemas"
+          ],
           "hint": "Cari perbuatan Farah.",
           "explanation": "mengemas ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata kerja yang terdapat dalam ayat: Farah mengemas bilik tidur."
         },
         {
           "id": "BM-KATA_KERJA-031",
-          "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
+          "q": "Baca ayat ini: Adik menyanyi lagu kanak-kanak. Apakah kata kerja?",
           "answer": "menyanyi",
-          "accepted": [],
+          "accepted": [
+            "menyanyi"
+          ],
           "hint": "Cari perkataan yang menunjukkan perbuatan.",
           "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Adik menyanyi lagu kanak-kanak. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-032",
-          "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
+          "q": "Baca ayat ini: Ibu memasak sup ayam. Apakah kata kerja?",
           "answer": "memasak",
-          "accepted": [],
+          "accepted": [
+            "memasak"
+          ],
           "hint": "Cari perbuatan ibu.",
           "explanation": "memasak ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Ibu memasak sup ayam. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-033",
-          "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
+          "q": "Baca ayat ini: Murid membaca buku di kelas. Apakah kata kerja?",
           "answer": "membaca",
-          "accepted": [],
+          "accepted": [
+            "membaca"
+          ],
           "hint": "Cari perbuatan murid.",
           "explanation": "membaca ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Murid membaca buku di kelas. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-034",
-          "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
+          "q": "Baca ayat ini: Ayah mencuci kereta. Apakah kata kerja?",
           "answer": "mencuci",
-          "accepted": [],
+          "accepted": [
+            "mencuci"
+          ],
           "hint": "Cari perbuatan ayah.",
           "explanation": "mencuci ialah perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Ayah mencuci kereta. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-035",
-          "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
+          "q": "Baca ayat ini: Kakak menulis surat. Apakah kata kerja?",
           "answer": "menulis",
-          "accepted": [],
+          "accepted": [
+            "menulis"
+          ],
           "hint": "Cari perbuatan kakak.",
           "explanation": "menulis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kakak menulis surat. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-036",
-          "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
+          "q": "Baca ayat ini: Kucing itu tidur di sofa. Apakah kata kerja?",
           "answer": "tidur",
-          "accepted": [],
+          "accepted": [
+            "tidur"
+          ],
           "hint": "Cari perbuatan haiwan itu.",
           "explanation": "tidur ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Kucing itu tidur di sofa. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-037",
-          "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
+          "q": "Baca ayat ini: Abang menendang bola. Apakah kata kerja?",
           "answer": "menendang",
-          "accepted": [],
+          "accepted": [
+            "menendang"
+          ],
           "hint": "Cari aksi yang dilakukan.",
           "explanation": "menendang ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Abang menendang bola. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-038",
-          "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
+          "q": "Baca ayat ini: Nenek menyiram bunga. Apakah kata kerja?",
           "answer": "menyiram",
-          "accepted": [],
+          "accepted": [
+            "menyiram"
+          ],
           "hint": "Cari perbuatan nenek.",
           "explanation": "menyiram ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Nenek menyiram bunga. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-039",
-          "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
+          "q": "Baca ayat ini: Danish melukis gambar rumah. Apakah kata kerja?",
           "answer": "melukis",
-          "accepted": [],
+          "accepted": [
+            "melukis"
+          ],
           "hint": "Cari perbuatan Danish.",
           "explanation": "melukis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Danish melukis gambar rumah. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-040",
-          "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
+          "q": "Baca ayat ini: Farah mengemas bilik tidur. Apakah kata kerja?",
           "answer": "mengemas",
-          "accepted": [],
+          "accepted": [
+            "mengemas"
+          ],
           "hint": "Cari perbuatan Farah.",
           "explanation": "mengemas ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Farah mengemas bilik tidur. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-041",
-          "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
+          "q": "Soalan ulang kaji Kata Kerja: Adik menyanyi lagu kanak-kanak. Jawapan bagi kata kerja ialah ________.",
           "answer": "menyanyi",
-          "accepted": [],
+          "accepted": [
+            "menyanyi"
+          ],
           "hint": "Cari perkataan yang menunjukkan perbuatan.",
           "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Adik menyanyi lagu kanak-kanak. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-042",
-          "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
+          "q": "Soalan ulang kaji Kata Kerja: Ibu memasak sup ayam. Jawapan bagi kata kerja ialah ________.",
           "answer": "memasak",
-          "accepted": [],
+          "accepted": [
+            "memasak"
+          ],
           "hint": "Cari perbuatan ibu.",
           "explanation": "memasak ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Ibu memasak sup ayam. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-043",
-          "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
+          "q": "Soalan ulang kaji Kata Kerja: Murid membaca buku di kelas. Jawapan bagi kata kerja ialah ________.",
           "answer": "membaca",
-          "accepted": [],
+          "accepted": [
+            "membaca"
+          ],
           "hint": "Cari perbuatan murid.",
           "explanation": "membaca ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Murid membaca buku di kelas. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-044",
-          "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
+          "q": "Soalan ulang kaji Kata Kerja: Ayah mencuci kereta. Jawapan bagi kata kerja ialah ________.",
           "answer": "mencuci",
-          "accepted": [],
+          "accepted": [
+            "mencuci"
+          ],
           "hint": "Cari perbuatan ayah.",
           "explanation": "mencuci ialah perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Ayah mencuci kereta. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-045",
-          "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
+          "q": "Soalan ulang kaji Kata Kerja: Kakak menulis surat. Jawapan bagi kata kerja ialah ________.",
           "answer": "menulis",
-          "accepted": [],
+          "accepted": [
+            "menulis"
+          ],
           "hint": "Cari perbuatan kakak.",
           "explanation": "menulis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Kakak menulis surat. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-046",
-          "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
+          "q": "Soalan ulang kaji Kata Kerja: Kucing itu tidur di sofa. Jawapan bagi kata kerja ialah ________.",
           "answer": "tidur",
-          "accepted": [],
+          "accepted": [
+            "tidur"
+          ],
           "hint": "Cari perbuatan haiwan itu.",
           "explanation": "tidur ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Kucing itu tidur di sofa. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-047",
-          "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
+          "q": "Soalan ulang kaji Kata Kerja: Abang menendang bola. Jawapan bagi kata kerja ialah ________.",
           "answer": "menendang",
-          "accepted": [],
+          "accepted": [
+            "menendang"
+          ],
           "hint": "Cari aksi yang dilakukan.",
           "explanation": "menendang ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Abang menendang bola. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-048",
-          "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
+          "q": "Soalan ulang kaji Kata Kerja: Nenek menyiram bunga. Jawapan bagi kata kerja ialah ________.",
           "answer": "menyiram",
-          "accepted": [],
+          "accepted": [
+            "menyiram"
+          ],
           "hint": "Cari perbuatan nenek.",
           "explanation": "menyiram ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Nenek menyiram bunga. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-049",
-          "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
+          "q": "Soalan ulang kaji Kata Kerja: Danish melukis gambar rumah. Jawapan bagi kata kerja ialah ________.",
           "answer": "melukis",
-          "accepted": [],
+          "accepted": [
+            "melukis"
+          ],
           "hint": "Cari perbuatan Danish.",
           "explanation": "melukis ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Danish melukis gambar rumah. Jawapan bagi kata kerja ialah ________."
         },
         {
           "id": "BM-KATA_KERJA-050",
-          "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
+          "q": "Soalan ulang kaji Kata Kerja: Farah mengemas bilik tidur. Jawapan bagi kata kerja ialah ________.",
           "answer": "mengemas",
-          "accepted": [],
+          "accepted": [
+            "mengemas"
+          ],
           "hint": "Cari perbuatan Farah.",
           "explanation": "mengemas ialah kata kerja.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Kerja: Farah mengemas bilik tidur. Jawapan bagi kata kerja ialah ________."
         }
       ]
     },
@@ -2432,551 +2842,701 @@ export const bmSubject = {
           "id": "BM-KATA_ADJEKTIF-001",
           "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
           "answer": "merah",
-          "accepted": [],
+          "accepted": [
+            "merah"
+          ],
           "hint": "Cari perkataan yang menerangkan warna.",
           "explanation": "merah ialah kata adjektif warna.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah."
         },
         {
           "id": "BM-KATA_ADJEKTIF-002",
           "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
           "answer": "berat",
-          "accepted": [],
+          "accepted": [
+            "berat"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan beg.",
           "explanation": "berat ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat."
         },
         {
           "id": "BM-KATA_ADJEKTIF-003",
           "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
           "answer": "panas",
-          "accepted": [],
+          "accepted": [
+            "panas"
+          ],
           "hint": "Cari perkataan yang menerangkan suhu.",
           "explanation": "panas ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Air teh itu panas."
         },
         {
           "id": "BM-KATA_ADJEKTIF-004",
           "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
           "answer": "besar",
-          "accepted": [],
+          "accepted": [
+            "besar"
+          ],
           "hint": "Cari perkataan yang menerangkan saiz.",
           "explanation": "besar ialah kata adjektif ukuran.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Rumah itu besar."
         },
         {
           "id": "BM-KATA_ADJEKTIF-005",
           "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
           "answer": "manis",
-          "accepted": [],
+          "accepted": [
+            "manis"
+          ],
           "hint": "Cari perkataan yang menerangkan rasa.",
           "explanation": "manis ialah kata adjektif rasa.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis."
         },
         {
           "id": "BM-KATA_ADJEKTIF-006",
           "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
           "answer": "licin",
-          "accepted": [],
+          "accepted": [
+            "licin"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan lantai.",
           "explanation": "licin ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Lantai itu licin."
         },
         {
           "id": "BM-KATA_ADJEKTIF-007",
           "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
           "answer": "merdu",
-          "accepted": [],
+          "accepted": [
+            "merdu"
+          ],
           "hint": "Cari perkataan yang menerangkan bunyi.",
           "explanation": "merdu ialah kata adjektif pancaindera.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu."
         },
         {
           "id": "BM-KATA_ADJEKTIF-008",
           "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
           "answer": "dekat",
-          "accepted": [],
+          "accepted": [
+            "dekat"
+          ],
           "hint": "Cari perkataan yang menerangkan jarak.",
           "explanation": "dekat ialah kata adjektif jarak.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat."
         },
         {
           "id": "BM-KATA_ADJEKTIF-009",
           "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
           "answer": "gembira",
-          "accepted": [],
+          "accepted": [
+            "gembira"
+          ],
           "hint": "Cari perkataan yang menerangkan perasaan.",
           "explanation": "gembira ialah kata adjektif perasaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira."
         },
         {
           "id": "BM-KATA_ADJEKTIF-010",
           "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
           "answer": "tajam",
-          "accepted": [],
+          "accepted": [
+            "tajam"
+          ],
           "hint": "Cari perkataan yang menerangkan sifat benda.",
           "explanation": "tajam ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam."
         },
         {
           "id": "BM-KATA_ADJEKTIF-011",
-          "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
+          "q": "Dalam ayat \"Baju adik berwarna merah.\", apakah kata adjektif?",
           "answer": "merah",
-          "accepted": [],
+          "accepted": [
+            "merah"
+          ],
           "hint": "Cari perkataan yang menerangkan warna.",
           "explanation": "merah ialah kata adjektif warna.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Baju adik berwarna merah.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-012",
-          "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
+          "q": "Dalam ayat \"Beg sekolah itu berat.\", apakah kata adjektif?",
           "answer": "berat",
-          "accepted": [],
+          "accepted": [
+            "berat"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan beg.",
           "explanation": "berat ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Beg sekolah itu berat.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-013",
-          "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
+          "q": "Dalam ayat \"Air teh itu panas.\", apakah kata adjektif?",
           "answer": "panas",
-          "accepted": [],
+          "accepted": [
+            "panas"
+          ],
           "hint": "Cari perkataan yang menerangkan suhu.",
           "explanation": "panas ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Air teh itu panas.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-014",
-          "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
+          "q": "Dalam ayat \"Rumah itu besar.\", apakah kata adjektif?",
           "answer": "besar",
-          "accepted": [],
+          "accepted": [
+            "besar"
+          ],
           "hint": "Cari perkataan yang menerangkan saiz.",
           "explanation": "besar ialah kata adjektif ukuran.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Rumah itu besar.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-015",
-          "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
+          "q": "Dalam ayat \"Rasa mangga itu manis.\", apakah kata adjektif?",
           "answer": "manis",
-          "accepted": [],
+          "accepted": [
+            "manis"
+          ],
           "hint": "Cari perkataan yang menerangkan rasa.",
           "explanation": "manis ialah kata adjektif rasa.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Rasa mangga itu manis.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-016",
-          "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
+          "q": "Dalam ayat \"Lantai itu licin.\", apakah kata adjektif?",
           "answer": "licin",
-          "accepted": [],
+          "accepted": [
+            "licin"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan lantai.",
           "explanation": "licin ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Lantai itu licin.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-017",
-          "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
+          "q": "Dalam ayat \"Suara penyanyi itu merdu.\", apakah kata adjektif?",
           "answer": "merdu",
-          "accepted": [],
+          "accepted": [
+            "merdu"
+          ],
           "hint": "Cari perkataan yang menerangkan bunyi.",
           "explanation": "merdu ialah kata adjektif pancaindera.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Suara penyanyi itu merdu.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-018",
-          "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
+          "q": "Dalam ayat \"Jalan ke sekolah itu dekat.\", apakah kata adjektif?",
           "answer": "dekat",
-          "accepted": [],
+          "accepted": [
+            "dekat"
+          ],
           "hint": "Cari perkataan yang menerangkan jarak.",
           "explanation": "dekat ialah kata adjektif jarak.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Jalan ke sekolah itu dekat.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-019",
-          "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
+          "q": "Dalam ayat \"Adik berasa gembira.\", apakah kata adjektif?",
           "answer": "gembira",
-          "accepted": [],
+          "accepted": [
+            "gembira"
+          ],
           "hint": "Cari perkataan yang menerangkan perasaan.",
           "explanation": "gembira ialah kata adjektif perasaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Adik berasa gembira.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-020",
-          "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
+          "q": "Dalam ayat \"Pisau itu tajam.\", apakah kata adjektif?",
           "answer": "tajam",
-          "accepted": [],
+          "accepted": [
+            "tajam"
+          ],
           "hint": "Cari perkataan yang menerangkan sifat benda.",
           "explanation": "tajam ialah kata adjektif.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Pisau itu tajam.\", apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-021",
-          "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Baju adik berwarna merah.",
           "answer": "merah",
-          "accepted": [],
+          "accepted": [
+            "merah"
+          ],
           "hint": "Cari perkataan yang menerangkan warna.",
           "explanation": "merah ialah kata adjektif warna.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Baju adik berwarna merah."
         },
         {
           "id": "BM-KATA_ADJEKTIF-022",
-          "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Beg sekolah itu berat.",
           "answer": "berat",
-          "accepted": [],
+          "accepted": [
+            "berat"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan beg.",
           "explanation": "berat ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Beg sekolah itu berat."
         },
         {
           "id": "BM-KATA_ADJEKTIF-023",
-          "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Air teh itu panas.",
           "answer": "panas",
-          "accepted": [],
+          "accepted": [
+            "panas"
+          ],
           "hint": "Cari perkataan yang menerangkan suhu.",
           "explanation": "panas ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Air teh itu panas."
         },
         {
           "id": "BM-KATA_ADJEKTIF-024",
-          "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Rumah itu besar.",
           "answer": "besar",
-          "accepted": [],
+          "accepted": [
+            "besar"
+          ],
           "hint": "Cari perkataan yang menerangkan saiz.",
           "explanation": "besar ialah kata adjektif ukuran.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Rumah itu besar."
         },
         {
           "id": "BM-KATA_ADJEKTIF-025",
-          "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Rasa mangga itu manis.",
           "answer": "manis",
-          "accepted": [],
+          "accepted": [
+            "manis"
+          ],
           "hint": "Cari perkataan yang menerangkan rasa.",
           "explanation": "manis ialah kata adjektif rasa.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Rasa mangga itu manis."
         },
         {
           "id": "BM-KATA_ADJEKTIF-026",
-          "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Lantai itu licin.",
           "answer": "licin",
-          "accepted": [],
+          "accepted": [
+            "licin"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan lantai.",
           "explanation": "licin ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Lantai itu licin."
         },
         {
           "id": "BM-KATA_ADJEKTIF-027",
-          "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Suara penyanyi itu merdu.",
           "answer": "merdu",
-          "accepted": [],
+          "accepted": [
+            "merdu"
+          ],
           "hint": "Cari perkataan yang menerangkan bunyi.",
           "explanation": "merdu ialah kata adjektif pancaindera.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Suara penyanyi itu merdu."
         },
         {
           "id": "BM-KATA_ADJEKTIF-028",
-          "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Jalan ke sekolah itu dekat.",
           "answer": "dekat",
-          "accepted": [],
+          "accepted": [
+            "dekat"
+          ],
           "hint": "Cari perkataan yang menerangkan jarak.",
           "explanation": "dekat ialah kata adjektif jarak.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Jalan ke sekolah itu dekat."
         },
         {
           "id": "BM-KATA_ADJEKTIF-029",
-          "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Adik berasa gembira.",
           "answer": "gembira",
-          "accepted": [],
+          "accepted": [
+            "gembira"
+          ],
           "hint": "Cari perkataan yang menerangkan perasaan.",
           "explanation": "gembira ialah kata adjektif perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Adik berasa gembira."
         },
         {
           "id": "BM-KATA_ADJEKTIF-030",
-          "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
+          "q": "Pilih kata adjektif yang terdapat dalam ayat: Pisau itu tajam.",
           "answer": "tajam",
-          "accepted": [],
+          "accepted": [
+            "tajam"
+          ],
           "hint": "Cari perkataan yang menerangkan sifat benda.",
           "explanation": "tajam ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata adjektif yang terdapat dalam ayat: Pisau itu tajam."
         },
         {
           "id": "BM-KATA_ADJEKTIF-031",
-          "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
+          "q": "Baca ayat ini: Baju adik berwarna merah. Apakah kata adjektif?",
           "answer": "merah",
-          "accepted": [],
+          "accepted": [
+            "merah"
+          ],
           "hint": "Cari perkataan yang menerangkan warna.",
           "explanation": "merah ialah kata adjektif warna.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Baju adik berwarna merah. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-032",
-          "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
+          "q": "Baca ayat ini: Beg sekolah itu berat. Apakah kata adjektif?",
           "answer": "berat",
-          "accepted": [],
+          "accepted": [
+            "berat"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan beg.",
           "explanation": "berat ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Beg sekolah itu berat. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-033",
-          "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
+          "q": "Baca ayat ini: Air teh itu panas. Apakah kata adjektif?",
           "answer": "panas",
-          "accepted": [],
+          "accepted": [
+            "panas"
+          ],
           "hint": "Cari perkataan yang menerangkan suhu.",
           "explanation": "panas ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Air teh itu panas. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-034",
-          "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
+          "q": "Baca ayat ini: Rumah itu besar. Apakah kata adjektif?",
           "answer": "besar",
-          "accepted": [],
+          "accepted": [
+            "besar"
+          ],
           "hint": "Cari perkataan yang menerangkan saiz.",
           "explanation": "besar ialah kata adjektif ukuran.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Rumah itu besar. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-035",
-          "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
+          "q": "Baca ayat ini: Rasa mangga itu manis. Apakah kata adjektif?",
           "answer": "manis",
-          "accepted": [],
+          "accepted": [
+            "manis"
+          ],
           "hint": "Cari perkataan yang menerangkan rasa.",
           "explanation": "manis ialah kata adjektif rasa.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Rasa mangga itu manis. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-036",
-          "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
+          "q": "Baca ayat ini: Lantai itu licin. Apakah kata adjektif?",
           "answer": "licin",
-          "accepted": [],
+          "accepted": [
+            "licin"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan lantai.",
           "explanation": "licin ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Lantai itu licin. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-037",
-          "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
+          "q": "Baca ayat ini: Suara penyanyi itu merdu. Apakah kata adjektif?",
           "answer": "merdu",
-          "accepted": [],
+          "accepted": [
+            "merdu"
+          ],
           "hint": "Cari perkataan yang menerangkan bunyi.",
           "explanation": "merdu ialah kata adjektif pancaindera.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Suara penyanyi itu merdu. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-038",
-          "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
+          "q": "Baca ayat ini: Jalan ke sekolah itu dekat. Apakah kata adjektif?",
           "answer": "dekat",
-          "accepted": [],
+          "accepted": [
+            "dekat"
+          ],
           "hint": "Cari perkataan yang menerangkan jarak.",
           "explanation": "dekat ialah kata adjektif jarak.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Jalan ke sekolah itu dekat. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-039",
-          "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
+          "q": "Baca ayat ini: Adik berasa gembira. Apakah kata adjektif?",
           "answer": "gembira",
-          "accepted": [],
+          "accepted": [
+            "gembira"
+          ],
           "hint": "Cari perkataan yang menerangkan perasaan.",
           "explanation": "gembira ialah kata adjektif perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Adik berasa gembira. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-040",
-          "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
+          "q": "Baca ayat ini: Pisau itu tajam. Apakah kata adjektif?",
           "answer": "tajam",
-          "accepted": [],
+          "accepted": [
+            "tajam"
+          ],
           "hint": "Cari perkataan yang menerangkan sifat benda.",
           "explanation": "tajam ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Pisau itu tajam. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-041",
-          "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
+          "q": "Soalan ulang kaji Kata Adjektif: Baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________.",
           "answer": "merah",
-          "accepted": [],
+          "accepted": [
+            "merah"
+          ],
           "hint": "Cari perkataan yang menerangkan warna.",
           "explanation": "merah ialah kata adjektif warna.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-042",
-          "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
+          "q": "Soalan ulang kaji Kata Adjektif: Beg sekolah itu berat. Jawapan bagi kata adjektif ialah ________.",
           "answer": "berat",
-          "accepted": [],
+          "accepted": [
+            "berat"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan beg.",
           "explanation": "berat ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Beg sekolah itu berat. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-043",
-          "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
+          "q": "Soalan ulang kaji Kata Adjektif: Air teh itu panas. Jawapan bagi kata adjektif ialah ________.",
           "answer": "panas",
-          "accepted": [],
+          "accepted": [
+            "panas"
+          ],
           "hint": "Cari perkataan yang menerangkan suhu.",
           "explanation": "panas ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Air teh itu panas. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-044",
-          "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
+          "q": "Soalan ulang kaji Kata Adjektif: Rumah itu besar. Jawapan bagi kata adjektif ialah ________.",
           "answer": "besar",
-          "accepted": [],
+          "accepted": [
+            "besar"
+          ],
           "hint": "Cari perkataan yang menerangkan saiz.",
           "explanation": "besar ialah kata adjektif ukuran.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Rumah itu besar. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-045",
-          "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
+          "q": "Soalan ulang kaji Kata Adjektif: Rasa mangga itu manis. Jawapan bagi kata adjektif ialah ________.",
           "answer": "manis",
-          "accepted": [],
+          "accepted": [
+            "manis"
+          ],
           "hint": "Cari perkataan yang menerangkan rasa.",
           "explanation": "manis ialah kata adjektif rasa.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Rasa mangga itu manis. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-046",
-          "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
+          "q": "Soalan ulang kaji Kata Adjektif: Lantai itu licin. Jawapan bagi kata adjektif ialah ________.",
           "answer": "licin",
-          "accepted": [],
+          "accepted": [
+            "licin"
+          ],
           "hint": "Cari perkataan yang menerangkan keadaan lantai.",
           "explanation": "licin ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Lantai itu licin. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-047",
-          "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
+          "q": "Soalan ulang kaji Kata Adjektif: Suara penyanyi itu merdu. Jawapan bagi kata adjektif ialah ________.",
           "answer": "merdu",
-          "accepted": [],
+          "accepted": [
+            "merdu"
+          ],
           "hint": "Cari perkataan yang menerangkan bunyi.",
           "explanation": "merdu ialah kata adjektif pancaindera.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Suara penyanyi itu merdu. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-048",
-          "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
+          "q": "Soalan ulang kaji Kata Adjektif: Jalan ke sekolah itu dekat. Jawapan bagi kata adjektif ialah ________.",
           "answer": "dekat",
-          "accepted": [],
+          "accepted": [
+            "dekat"
+          ],
           "hint": "Cari perkataan yang menerangkan jarak.",
           "explanation": "dekat ialah kata adjektif jarak.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Jalan ke sekolah itu dekat. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-049",
-          "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
+          "q": "Soalan ulang kaji Kata Adjektif: Adik berasa gembira. Jawapan bagi kata adjektif ialah ________.",
           "answer": "gembira",
-          "accepted": [],
+          "accepted": [
+            "gembira"
+          ],
           "hint": "Cari perkataan yang menerangkan perasaan.",
           "explanation": "gembira ialah kata adjektif perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Adik berasa gembira. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-050",
-          "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
+          "q": "Soalan ulang kaji Kata Adjektif: Pisau itu tajam. Jawapan bagi kata adjektif ialah ________.",
           "answer": "tajam",
-          "accepted": [],
+          "accepted": [
+            "tajam"
+          ],
           "hint": "Cari perkataan yang menerangkan sifat benda.",
           "explanation": "tajam ialah kata adjektif.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Kata Adjektif: Pisau itu tajam. Jawapan bagi kata adjektif ialah ________."
         }
       ]
     },
@@ -2989,551 +3549,701 @@ export const bmSubject = {
           "id": "BM-KATA_SENDI-001",
           "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan untuk menunjukkan tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja."
         },
         {
           "id": "BM-KATA_SENDI-002",
           "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah atau tempat yang dituju.",
           "explanation": "ke digunakan untuk tempat yang dituju.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat."
         },
         {
           "id": "BM-KATA_SENDI-003",
           "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
           "answer": "dari",
-          "accepted": [],
+          "accepted": [
+            "dari"
+          ],
           "hint": "Gunakan kata sendi untuk tempat asal.",
           "explanation": "dari digunakan untuk tempat asal.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam."
         },
         {
           "id": "BM-KATA_SENDI-004",
           "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
           "answer": "kepada",
-          "accepted": [],
+          "accepted": [
+            "kepada"
+          ],
           "hint": "Gunakan kata sendi untuk penerima.",
           "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu."
         },
         {
           "id": "BM-KATA_SENDI-005",
           "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
           "answer": "daripada",
-          "accepted": [],
+          "accepted": [
+            "daripada"
+          ],
           "hint": "Gunakan kata sendi untuk bahan.",
           "explanation": "daripada digunakan untuk menunjukkan bahan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain."
         },
         {
           "id": "BM-KATA_SENDI-006",
           "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
           "answer": "pada",
-          "accepted": [],
+          "accepted": [
+            "pada"
+          ],
           "hint": "Gunakan kata sendi untuk masa.",
           "explanation": "pada digunakan untuk masa.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi."
         },
         {
           "id": "BM-KATA_SENDI-007",
           "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
           "answer": "dengan",
-          "accepted": [],
+          "accepted": [
+            "dengan"
+          ],
           "hint": "Gunakan kata sendi untuk alat.",
           "explanation": "dengan digunakan untuk menunjukkan alat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara menulis ________ pensel."
         },
         {
           "id": "BM-KATA_SENDI-008",
           "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
           "answer": "untuk",
-          "accepted": [],
+          "accepted": [
+            "untuk"
+          ],
           "hint": "Gunakan kata sendi yang menunjukkan tujuan atau penerima.",
           "explanation": "untuk menunjukkan sesuatu ditujukan kepada seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kuih ini ________ adik saya."
         },
         {
           "id": "BM-KATA_SENDI-009",
           "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah pergerakan.",
           "explanation": "ke menunjukkan arah bola jatuh.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang."
         },
         {
           "id": "BM-KATA_SENDI-010",
           "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan sebelum tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah."
         },
         {
           "id": "BM-KATA_SENDI-011",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
+          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 2)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan untuk menunjukkan tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-012",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
+          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 2)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah atau tempat yang dituju.",
           "explanation": "ke digunakan untuk tempat yang dituju.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-013",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
+          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 2)",
           "answer": "dari",
-          "accepted": [],
+          "accepted": [
+            "dari"
+          ],
           "hint": "Gunakan kata sendi untuk tempat asal.",
           "explanation": "dari digunakan untuk tempat asal.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-014",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
+          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 2)",
           "answer": "kepada",
-          "accepted": [],
+          "accepted": [
+            "kepada"
+          ],
           "hint": "Gunakan kata sendi untuk penerima.",
           "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-015",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
+          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 2)",
           "answer": "daripada",
-          "accepted": [],
+          "accepted": [
+            "daripada"
+          ],
           "hint": "Gunakan kata sendi untuk bahan.",
           "explanation": "daripada digunakan untuk menunjukkan bahan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-016",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
+          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 2)",
           "answer": "pada",
-          "accepted": [],
+          "accepted": [
+            "pada"
+          ],
           "hint": "Gunakan kata sendi untuk masa.",
           "explanation": "pada digunakan untuk masa.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-017",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
+          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 2)",
           "answer": "dengan",
-          "accepted": [],
+          "accepted": [
+            "dengan"
+          ],
           "hint": "Gunakan kata sendi untuk alat.",
           "explanation": "dengan digunakan untuk menunjukkan alat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-018",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
+          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 2)",
           "answer": "untuk",
-          "accepted": [],
+          "accepted": [
+            "untuk"
+          ],
           "hint": "Gunakan kata sendi yang menunjukkan tujuan atau penerima.",
           "explanation": "untuk menunjukkan sesuatu ditujukan kepada seseorang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-019",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
+          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 2)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah pergerakan.",
           "explanation": "ke menunjukkan arah bola jatuh.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-020",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
+          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 2)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan sebelum tempat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-021",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
+          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 3)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan untuk menunjukkan tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-022",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
+          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 3)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah atau tempat yang dituju.",
           "explanation": "ke digunakan untuk tempat yang dituju.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-023",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
+          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 3)",
           "answer": "dari",
-          "accepted": [],
+          "accepted": [
+            "dari"
+          ],
           "hint": "Gunakan kata sendi untuk tempat asal.",
           "explanation": "dari digunakan untuk tempat asal.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-024",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
+          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 3)",
           "answer": "kepada",
-          "accepted": [],
+          "accepted": [
+            "kepada"
+          ],
           "hint": "Gunakan kata sendi untuk penerima.",
           "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-025",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
+          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 3)",
           "answer": "daripada",
-          "accepted": [],
+          "accepted": [
+            "daripada"
+          ],
           "hint": "Gunakan kata sendi untuk bahan.",
           "explanation": "daripada digunakan untuk menunjukkan bahan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-026",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
+          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 3)",
           "answer": "pada",
-          "accepted": [],
+          "accepted": [
+            "pada"
+          ],
           "hint": "Gunakan kata sendi untuk masa.",
           "explanation": "pada digunakan untuk masa.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-027",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
+          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 3)",
           "answer": "dengan",
-          "accepted": [],
+          "accepted": [
+            "dengan"
+          ],
           "hint": "Gunakan kata sendi untuk alat.",
           "explanation": "dengan digunakan untuk menunjukkan alat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-028",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
+          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 3)",
           "answer": "untuk",
-          "accepted": [],
+          "accepted": [
+            "untuk"
+          ],
           "hint": "Gunakan kata sendi yang menunjukkan tujuan atau penerima.",
           "explanation": "untuk menunjukkan sesuatu ditujukan kepada seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-029",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
+          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 3)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah pergerakan.",
           "explanation": "ke menunjukkan arah bola jatuh.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-030",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
+          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 3)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan sebelum tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-031",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
+          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 4)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan untuk menunjukkan tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-032",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
+          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 4)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah atau tempat yang dituju.",
           "explanation": "ke digunakan untuk tempat yang dituju.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-033",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
+          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 4)",
           "answer": "dari",
-          "accepted": [],
+          "accepted": [
+            "dari"
+          ],
           "hint": "Gunakan kata sendi untuk tempat asal.",
           "explanation": "dari digunakan untuk tempat asal.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-034",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
+          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 4)",
           "answer": "kepada",
-          "accepted": [],
+          "accepted": [
+            "kepada"
+          ],
           "hint": "Gunakan kata sendi untuk penerima.",
           "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-035",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
+          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 4)",
           "answer": "daripada",
-          "accepted": [],
+          "accepted": [
+            "daripada"
+          ],
           "hint": "Gunakan kata sendi untuk bahan.",
           "explanation": "daripada digunakan untuk menunjukkan bahan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-036",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
+          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 4)",
           "answer": "pada",
-          "accepted": [],
+          "accepted": [
+            "pada"
+          ],
           "hint": "Gunakan kata sendi untuk masa.",
           "explanation": "pada digunakan untuk masa.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-037",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
+          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 4)",
           "answer": "dengan",
-          "accepted": [],
+          "accepted": [
+            "dengan"
+          ],
           "hint": "Gunakan kata sendi untuk alat.",
           "explanation": "dengan digunakan untuk menunjukkan alat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-038",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
+          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 4)",
           "answer": "untuk",
-          "accepted": [],
+          "accepted": [
+            "untuk"
+          ],
           "hint": "Gunakan kata sendi yang menunjukkan tujuan atau penerima.",
           "explanation": "untuk menunjukkan sesuatu ditujukan kepada seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-039",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
+          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 4)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah pergerakan.",
           "explanation": "ke menunjukkan arah bola jatuh.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-040",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
+          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 4)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan sebelum tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-041",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
+          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 5)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan untuk menunjukkan tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-042",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
+          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 5)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah atau tempat yang dituju.",
           "explanation": "ke digunakan untuk tempat yang dituju.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-043",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
+          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 5)",
           "answer": "dari",
-          "accepted": [],
+          "accepted": [
+            "dari"
+          ],
           "hint": "Gunakan kata sendi untuk tempat asal.",
           "explanation": "dari digunakan untuk tempat asal.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-044",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
+          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 5)",
           "answer": "kepada",
-          "accepted": [],
+          "accepted": [
+            "kepada"
+          ],
           "hint": "Gunakan kata sendi untuk penerima.",
           "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-045",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
+          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 5)",
           "answer": "daripada",
-          "accepted": [],
+          "accepted": [
+            "daripada"
+          ],
           "hint": "Gunakan kata sendi untuk bahan.",
           "explanation": "daripada digunakan untuk menunjukkan bahan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-046",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
+          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 5)",
           "answer": "pada",
-          "accepted": [],
+          "accepted": [
+            "pada"
+          ],
           "hint": "Gunakan kata sendi untuk masa.",
           "explanation": "pada digunakan untuk masa.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-047",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
+          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 5)",
           "answer": "dengan",
-          "accepted": [],
+          "accepted": [
+            "dengan"
+          ],
           "hint": "Gunakan kata sendi untuk alat.",
           "explanation": "dengan digunakan untuk menunjukkan alat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-048",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
+          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 5)",
           "answer": "untuk",
-          "accepted": [],
+          "accepted": [
+            "untuk"
+          ],
           "hint": "Gunakan kata sendi yang menunjukkan tujuan atau penerima.",
           "explanation": "untuk menunjukkan sesuatu ditujukan kepada seseorang.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-049",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
+          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 5)",
           "answer": "ke",
-          "accepted": [],
+          "accepted": [
+            "ke"
+          ],
           "hint": "Gunakan kata sendi untuk arah pergerakan.",
           "explanation": "ke menunjukkan arah bola jatuh.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 5)"
         },
         {
           "id": "BM-KATA_SENDI-050",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
+          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 5)",
           "answer": "di",
-          "accepted": [],
+          "accepted": [
+            "di"
+          ],
           "hint": "Gunakan kata sendi untuk tempat.",
           "explanation": "di digunakan sebelum tempat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 5)"
         }
       ]
     },
@@ -3546,551 +4256,701 @@ export const bmSubject = {
           "id": "BM-KATA_HUBUNG-001",
           "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menggabungkan dua perkara.",
           "explanation": "dan menghubungkan dua perbuatan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis."
         },
         {
           "id": "BM-KATA_HUBUNG-002",
           "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi menunjukkan keadaan yang berlawanan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun."
         },
         {
           "id": "BM-KATA_HUBUNG-003",
           "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan."
         },
         {
           "id": "BM-KATA_HUBUNG-004",
           "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
           "answer": "atau",
-          "accepted": [],
+          "accepted": [
+            "atau"
+          ],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu?"
         },
         {
           "id": "BM-KATA_HUBUNG-005",
           "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
           "answer": "sambil",
-          "accepted": [],
+          "accepted": [
+            "sambil"
+          ],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan."
         },
         {
           "id": "BM-KATA_HUBUNG-006",
           "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas."
         },
         {
           "id": "BM-KATA_HUBUNG-007",
           "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan."
         },
         {
           "id": "BM-KATA_HUBUNG-008",
           "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai kerana cantik dan mahal ialah dua keadaan berbeza.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal."
         },
         {
           "id": "BM-KATA_HUBUNG-009",
           "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana menyatakan sebab Farah tidak hadir.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam."
         },
         {
           "id": "BM-KATA_HUBUNG-010",
           "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk tindakan seterusnya.",
           "explanation": "lalu menunjukkan tindakan selepas membuka beg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku."
         },
         {
           "id": "BM-KATA_HUBUNG-011",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
+          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 2)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menggabungkan dua perkara.",
           "explanation": "dan menghubungkan dua perbuatan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-012",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
+          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 2)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi menunjukkan keadaan yang berlawanan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-013",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
+          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 2)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-014",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
+          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 2)",
           "answer": "atau",
-          "accepted": [],
+          "accepted": [
+            "atau"
+          ],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-015",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
+          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 2)",
           "answer": "sambil",
-          "accepted": [],
+          "accepted": [
+            "sambil"
+          ],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-016",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
+          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 2)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-017",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
+          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 2)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-018",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
+          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 2)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai kerana cantik dan mahal ialah dua keadaan berbeza.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-019",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
+          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 2)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana menyatakan sebab Farah tidak hadir.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-020",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
+          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 2)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk tindakan seterusnya.",
           "explanation": "lalu menunjukkan tindakan selepas membuka beg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-021",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
+          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 3)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menggabungkan dua perkara.",
           "explanation": "dan menghubungkan dua perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-022",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
+          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 3)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi menunjukkan keadaan yang berlawanan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-023",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
+          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 3)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-024",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
+          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 3)",
           "answer": "atau",
-          "accepted": [],
+          "accepted": [
+            "atau"
+          ],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-025",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
+          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 3)",
           "answer": "sambil",
-          "accepted": [],
+          "accepted": [
+            "sambil"
+          ],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-026",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
+          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 3)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-027",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
+          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 3)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-028",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
+          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 3)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai kerana cantik dan mahal ialah dua keadaan berbeza.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-029",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
+          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 3)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana menyatakan sebab Farah tidak hadir.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-030",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
+          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 3)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk tindakan seterusnya.",
           "explanation": "lalu menunjukkan tindakan selepas membuka beg.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-031",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
+          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 4)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menggabungkan dua perkara.",
           "explanation": "dan menghubungkan dua perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-032",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
+          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 4)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi menunjukkan keadaan yang berlawanan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-033",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
+          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 4)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-034",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
+          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 4)",
           "answer": "atau",
-          "accepted": [],
+          "accepted": [
+            "atau"
+          ],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-035",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
+          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 4)",
           "answer": "sambil",
-          "accepted": [],
+          "accepted": [
+            "sambil"
+          ],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-036",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
+          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 4)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-037",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
+          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 4)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-038",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
+          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 4)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai kerana cantik dan mahal ialah dua keadaan berbeza.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-039",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
+          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 4)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana menyatakan sebab Farah tidak hadir.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-040",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
+          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 4)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk tindakan seterusnya.",
           "explanation": "lalu menunjukkan tindakan selepas membuka beg.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-041",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
+          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 5)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menggabungkan dua perkara.",
           "explanation": "dan menghubungkan dua perbuatan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-042",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
+          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 5)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi menunjukkan keadaan yang berlawanan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-043",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
+          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 5)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-044",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
+          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 5)",
           "answer": "atau",
-          "accepted": [],
+          "accepted": [
+            "atau"
+          ],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-045",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
+          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 5)",
           "answer": "sambil",
-          "accepted": [],
+          "accepted": [
+            "sambil"
+          ],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-046",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
+          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 5)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-047",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
+          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 5)",
           "answer": "dan",
-          "accepted": [],
+          "accepted": [
+            "dan"
+          ],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-048",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
+          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 5)",
           "answer": "tetapi",
-          "accepted": [],
+          "accepted": [
+            "tetapi"
+          ],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai kerana cantik dan mahal ialah dua keadaan berbeza.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-049",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
+          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 5)",
           "answer": "kerana",
-          "accepted": [],
+          "accepted": [
+            "kerana"
+          ],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana menyatakan sebab Farah tidak hadir.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 5)"
         },
         {
           "id": "BM-KATA_HUBUNG-050",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
+          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 5)",
           "answer": "lalu",
-          "accepted": [],
+          "accepted": [
+            "lalu"
+          ],
           "hint": "Gunakan kata hubung untuk tindakan seterusnya.",
           "explanation": "lalu menunjukkan tindakan selepas membuka beg.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 5)"
         }
       ]
     },
@@ -4103,551 +4963,701 @@ export const bmSubject = {
           "id": "BM-PENJODOH_BILANGAN-001",
           "q": "Lengkapkan frasa. se________ pensel",
           "answer": "batang",
-          "accepted": [],
+          "accepted": [
+            "batang"
+          ],
           "hint": "Pensel menggunakan penjodoh bilangan batang.",
           "explanation": "Sebatang pensel ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pensel"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-002",
           "q": "Lengkapkan frasa. se________ rumah",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Rumah menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah rumah ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ rumah"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-003",
           "q": "Lengkapkan frasa. se________ kucing",
           "answer": "ekor",
-          "accepted": [],
+          "accepted": [
+            "ekor"
+          ],
           "hint": "Haiwan menggunakan penjodoh bilangan ekor.",
           "explanation": "Seekor kucing ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ kucing"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-004",
           "q": "Lengkapkan frasa. se________ baju",
           "answer": "helai",
-          "accepted": [],
+          "accepted": [
+            "helai"
+          ],
           "hint": "Baju menggunakan penjodoh bilangan helai.",
           "explanation": "Sehelai baju ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ baju"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-005",
           "q": "Lengkapkan frasa. se________ buku",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Buku biasanya menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah buku ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ buku"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-006",
           "q": "Lengkapkan frasa. se________ pisang",
           "answer": "sikat",
-          "accepted": [],
+          "accepted": [
+            "sikat"
+          ],
           "hint": "Pisang dalam satu gugus kecil menggunakan sikat.",
           "explanation": "Sesikat pisang ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pisang"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-007",
           "q": "Lengkapkan frasa. se________ bunga",
           "answer": "kuntum",
-          "accepted": [],
+          "accepted": [
+            "kuntum"
+          ],
           "hint": "Bunga menggunakan penjodoh bilangan kuntum.",
           "explanation": "Sekuntum bunga ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ bunga"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-008",
           "q": "Lengkapkan frasa. se________ surat",
           "answer": "pucuk",
-          "accepted": [],
+          "accepted": [
+            "pucuk"
+          ],
           "hint": "Surat menggunakan penjodoh bilangan pucuk.",
           "explanation": "Sepucuk surat ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ surat"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-009",
           "q": "Lengkapkan frasa. se________ roti",
           "answer": "keping",
-          "accepted": [],
+          "accepted": [
+            "keping"
+          ],
           "hint": "Roti yang nipis menggunakan keping.",
           "explanation": "Sekeping roti ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ roti"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-010",
           "q": "Lengkapkan frasa. se________ payung",
           "answer": "kaki",
-          "accepted": [],
+          "accepted": [
+            "kaki"
+          ],
           "hint": "Payung menggunakan penjodoh bilangan kaki.",
           "explanation": "Sekaki payung ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ payung"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-011",
-          "q": "Lengkapkan frasa. se________ pensel",
+          "q": "Lengkapkan frasa. se________ pensel (Latihan 2)",
           "answer": "batang",
-          "accepted": [],
+          "accepted": [
+            "batang"
+          ],
           "hint": "Pensel menggunakan penjodoh bilangan batang.",
           "explanation": "Sebatang pensel ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pensel (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-012",
-          "q": "Lengkapkan frasa. se________ rumah",
+          "q": "Lengkapkan frasa. se________ rumah (Latihan 2)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Rumah menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah rumah ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ rumah (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-013",
-          "q": "Lengkapkan frasa. se________ kucing",
+          "q": "Lengkapkan frasa. se________ kucing (Latihan 2)",
           "answer": "ekor",
-          "accepted": [],
+          "accepted": [
+            "ekor"
+          ],
           "hint": "Haiwan menggunakan penjodoh bilangan ekor.",
           "explanation": "Seekor kucing ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ kucing (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-014",
-          "q": "Lengkapkan frasa. se________ baju",
+          "q": "Lengkapkan frasa. se________ baju (Latihan 2)",
           "answer": "helai",
-          "accepted": [],
+          "accepted": [
+            "helai"
+          ],
           "hint": "Baju menggunakan penjodoh bilangan helai.",
           "explanation": "Sehelai baju ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ baju (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-015",
-          "q": "Lengkapkan frasa. se________ buku",
+          "q": "Lengkapkan frasa. se________ buku (Latihan 2)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Buku biasanya menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah buku ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ buku (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-016",
-          "q": "Lengkapkan frasa. se________ pisang",
+          "q": "Lengkapkan frasa. se________ pisang (Latihan 2)",
           "answer": "sikat",
-          "accepted": [],
+          "accepted": [
+            "sikat"
+          ],
           "hint": "Pisang dalam satu gugus kecil menggunakan sikat.",
           "explanation": "Sesikat pisang ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pisang (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-017",
-          "q": "Lengkapkan frasa. se________ bunga",
+          "q": "Lengkapkan frasa. se________ bunga (Latihan 2)",
           "answer": "kuntum",
-          "accepted": [],
+          "accepted": [
+            "kuntum"
+          ],
           "hint": "Bunga menggunakan penjodoh bilangan kuntum.",
           "explanation": "Sekuntum bunga ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ bunga (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-018",
-          "q": "Lengkapkan frasa. se________ surat",
+          "q": "Lengkapkan frasa. se________ surat (Latihan 2)",
           "answer": "pucuk",
-          "accepted": [],
+          "accepted": [
+            "pucuk"
+          ],
           "hint": "Surat menggunakan penjodoh bilangan pucuk.",
           "explanation": "Sepucuk surat ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ surat (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-019",
-          "q": "Lengkapkan frasa. se________ roti",
+          "q": "Lengkapkan frasa. se________ roti (Latihan 2)",
           "answer": "keping",
-          "accepted": [],
+          "accepted": [
+            "keping"
+          ],
           "hint": "Roti yang nipis menggunakan keping.",
           "explanation": "Sekeping roti ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ roti (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-020",
-          "q": "Lengkapkan frasa. se________ payung",
+          "q": "Lengkapkan frasa. se________ payung (Latihan 2)",
           "answer": "kaki",
-          "accepted": [],
+          "accepted": [
+            "kaki"
+          ],
           "hint": "Payung menggunakan penjodoh bilangan kaki.",
           "explanation": "Sekaki payung ialah frasa yang betul.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ payung (Latihan 2)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-021",
-          "q": "Lengkapkan frasa. se________ pensel",
+          "q": "Lengkapkan frasa. se________ pensel (Latihan 3)",
           "answer": "batang",
-          "accepted": [],
+          "accepted": [
+            "batang"
+          ],
           "hint": "Pensel menggunakan penjodoh bilangan batang.",
           "explanation": "Sebatang pensel ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pensel (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-022",
-          "q": "Lengkapkan frasa. se________ rumah",
+          "q": "Lengkapkan frasa. se________ rumah (Latihan 3)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Rumah menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah rumah ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ rumah (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-023",
-          "q": "Lengkapkan frasa. se________ kucing",
+          "q": "Lengkapkan frasa. se________ kucing (Latihan 3)",
           "answer": "ekor",
-          "accepted": [],
+          "accepted": [
+            "ekor"
+          ],
           "hint": "Haiwan menggunakan penjodoh bilangan ekor.",
           "explanation": "Seekor kucing ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ kucing (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-024",
-          "q": "Lengkapkan frasa. se________ baju",
+          "q": "Lengkapkan frasa. se________ baju (Latihan 3)",
           "answer": "helai",
-          "accepted": [],
+          "accepted": [
+            "helai"
+          ],
           "hint": "Baju menggunakan penjodoh bilangan helai.",
           "explanation": "Sehelai baju ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ baju (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-025",
-          "q": "Lengkapkan frasa. se________ buku",
+          "q": "Lengkapkan frasa. se________ buku (Latihan 3)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Buku biasanya menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah buku ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ buku (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-026",
-          "q": "Lengkapkan frasa. se________ pisang",
+          "q": "Lengkapkan frasa. se________ pisang (Latihan 3)",
           "answer": "sikat",
-          "accepted": [],
+          "accepted": [
+            "sikat"
+          ],
           "hint": "Pisang dalam satu gugus kecil menggunakan sikat.",
           "explanation": "Sesikat pisang ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pisang (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-027",
-          "q": "Lengkapkan frasa. se________ bunga",
+          "q": "Lengkapkan frasa. se________ bunga (Latihan 3)",
           "answer": "kuntum",
-          "accepted": [],
+          "accepted": [
+            "kuntum"
+          ],
           "hint": "Bunga menggunakan penjodoh bilangan kuntum.",
           "explanation": "Sekuntum bunga ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ bunga (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-028",
-          "q": "Lengkapkan frasa. se________ surat",
+          "q": "Lengkapkan frasa. se________ surat (Latihan 3)",
           "answer": "pucuk",
-          "accepted": [],
+          "accepted": [
+            "pucuk"
+          ],
           "hint": "Surat menggunakan penjodoh bilangan pucuk.",
           "explanation": "Sepucuk surat ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ surat (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-029",
-          "q": "Lengkapkan frasa. se________ roti",
+          "q": "Lengkapkan frasa. se________ roti (Latihan 3)",
           "answer": "keping",
-          "accepted": [],
+          "accepted": [
+            "keping"
+          ],
           "hint": "Roti yang nipis menggunakan keping.",
           "explanation": "Sekeping roti ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ roti (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-030",
-          "q": "Lengkapkan frasa. se________ payung",
+          "q": "Lengkapkan frasa. se________ payung (Latihan 3)",
           "answer": "kaki",
-          "accepted": [],
+          "accepted": [
+            "kaki"
+          ],
           "hint": "Payung menggunakan penjodoh bilangan kaki.",
           "explanation": "Sekaki payung ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ payung (Latihan 3)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-031",
-          "q": "Lengkapkan frasa. se________ pensel",
+          "q": "Lengkapkan frasa. se________ pensel (Latihan 4)",
           "answer": "batang",
-          "accepted": [],
+          "accepted": [
+            "batang"
+          ],
           "hint": "Pensel menggunakan penjodoh bilangan batang.",
           "explanation": "Sebatang pensel ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pensel (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-032",
-          "q": "Lengkapkan frasa. se________ rumah",
+          "q": "Lengkapkan frasa. se________ rumah (Latihan 4)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Rumah menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah rumah ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ rumah (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-033",
-          "q": "Lengkapkan frasa. se________ kucing",
+          "q": "Lengkapkan frasa. se________ kucing (Latihan 4)",
           "answer": "ekor",
-          "accepted": [],
+          "accepted": [
+            "ekor"
+          ],
           "hint": "Haiwan menggunakan penjodoh bilangan ekor.",
           "explanation": "Seekor kucing ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ kucing (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-034",
-          "q": "Lengkapkan frasa. se________ baju",
+          "q": "Lengkapkan frasa. se________ baju (Latihan 4)",
           "answer": "helai",
-          "accepted": [],
+          "accepted": [
+            "helai"
+          ],
           "hint": "Baju menggunakan penjodoh bilangan helai.",
           "explanation": "Sehelai baju ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ baju (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-035",
-          "q": "Lengkapkan frasa. se________ buku",
+          "q": "Lengkapkan frasa. se________ buku (Latihan 4)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Buku biasanya menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah buku ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ buku (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-036",
-          "q": "Lengkapkan frasa. se________ pisang",
+          "q": "Lengkapkan frasa. se________ pisang (Latihan 4)",
           "answer": "sikat",
-          "accepted": [],
+          "accepted": [
+            "sikat"
+          ],
           "hint": "Pisang dalam satu gugus kecil menggunakan sikat.",
           "explanation": "Sesikat pisang ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pisang (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-037",
-          "q": "Lengkapkan frasa. se________ bunga",
+          "q": "Lengkapkan frasa. se________ bunga (Latihan 4)",
           "answer": "kuntum",
-          "accepted": [],
+          "accepted": [
+            "kuntum"
+          ],
           "hint": "Bunga menggunakan penjodoh bilangan kuntum.",
           "explanation": "Sekuntum bunga ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ bunga (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-038",
-          "q": "Lengkapkan frasa. se________ surat",
+          "q": "Lengkapkan frasa. se________ surat (Latihan 4)",
           "answer": "pucuk",
-          "accepted": [],
+          "accepted": [
+            "pucuk"
+          ],
           "hint": "Surat menggunakan penjodoh bilangan pucuk.",
           "explanation": "Sepucuk surat ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ surat (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-039",
-          "q": "Lengkapkan frasa. se________ roti",
+          "q": "Lengkapkan frasa. se________ roti (Latihan 4)",
           "answer": "keping",
-          "accepted": [],
+          "accepted": [
+            "keping"
+          ],
           "hint": "Roti yang nipis menggunakan keping.",
           "explanation": "Sekeping roti ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ roti (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-040",
-          "q": "Lengkapkan frasa. se________ payung",
+          "q": "Lengkapkan frasa. se________ payung (Latihan 4)",
           "answer": "kaki",
-          "accepted": [],
+          "accepted": [
+            "kaki"
+          ],
           "hint": "Payung menggunakan penjodoh bilangan kaki.",
           "explanation": "Sekaki payung ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ payung (Latihan 4)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-041",
-          "q": "Lengkapkan frasa. se________ pensel",
+          "q": "Lengkapkan frasa. se________ pensel (Latihan 5)",
           "answer": "batang",
-          "accepted": [],
+          "accepted": [
+            "batang"
+          ],
           "hint": "Pensel menggunakan penjodoh bilangan batang.",
           "explanation": "Sebatang pensel ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pensel (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-042",
-          "q": "Lengkapkan frasa. se________ rumah",
+          "q": "Lengkapkan frasa. se________ rumah (Latihan 5)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Rumah menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah rumah ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ rumah (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-043",
-          "q": "Lengkapkan frasa. se________ kucing",
+          "q": "Lengkapkan frasa. se________ kucing (Latihan 5)",
           "answer": "ekor",
-          "accepted": [],
+          "accepted": [
+            "ekor"
+          ],
           "hint": "Haiwan menggunakan penjodoh bilangan ekor.",
           "explanation": "Seekor kucing ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ kucing (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-044",
-          "q": "Lengkapkan frasa. se________ baju",
+          "q": "Lengkapkan frasa. se________ baju (Latihan 5)",
           "answer": "helai",
-          "accepted": [],
+          "accepted": [
+            "helai"
+          ],
           "hint": "Baju menggunakan penjodoh bilangan helai.",
           "explanation": "Sehelai baju ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ baju (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-045",
-          "q": "Lengkapkan frasa. se________ buku",
+          "q": "Lengkapkan frasa. se________ buku (Latihan 5)",
           "answer": "buah",
-          "accepted": [],
+          "accepted": [
+            "buah"
+          ],
           "hint": "Buku biasanya menggunakan penjodoh bilangan buah.",
           "explanation": "Sebuah buku ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ buku (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-046",
-          "q": "Lengkapkan frasa. se________ pisang",
+          "q": "Lengkapkan frasa. se________ pisang (Latihan 5)",
           "answer": "sikat",
-          "accepted": [],
+          "accepted": [
+            "sikat"
+          ],
           "hint": "Pisang dalam satu gugus kecil menggunakan sikat.",
           "explanation": "Sesikat pisang ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ pisang (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-047",
-          "q": "Lengkapkan frasa. se________ bunga",
+          "q": "Lengkapkan frasa. se________ bunga (Latihan 5)",
           "answer": "kuntum",
-          "accepted": [],
+          "accepted": [
+            "kuntum"
+          ],
           "hint": "Bunga menggunakan penjodoh bilangan kuntum.",
           "explanation": "Sekuntum bunga ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ bunga (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-048",
-          "q": "Lengkapkan frasa. se________ surat",
+          "q": "Lengkapkan frasa. se________ surat (Latihan 5)",
           "answer": "pucuk",
-          "accepted": [],
+          "accepted": [
+            "pucuk"
+          ],
           "hint": "Surat menggunakan penjodoh bilangan pucuk.",
           "explanation": "Sepucuk surat ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ surat (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-049",
-          "q": "Lengkapkan frasa. se________ roti",
+          "q": "Lengkapkan frasa. se________ roti (Latihan 5)",
           "answer": "keping",
-          "accepted": [],
+          "accepted": [
+            "keping"
+          ],
           "hint": "Roti yang nipis menggunakan keping.",
           "explanation": "Sekeping roti ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ roti (Latihan 5)"
         },
         {
           "id": "BM-PENJODOH_BILANGAN-050",
-          "q": "Lengkapkan frasa. se________ payung",
+          "q": "Lengkapkan frasa. se________ payung (Latihan 5)",
           "answer": "kaki",
-          "accepted": [],
+          "accepted": [
+            "kaki"
+          ],
           "hint": "Payung menggunakan penjodoh bilangan kaki.",
           "explanation": "Sekaki payung ialah frasa yang betul.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan frasa. se________ payung (Latihan 5)"
         }
       ]
     },
@@ -4660,571 +5670,701 @@ export const bmSubject = {
           "id": "BM-AYAT-001",
           "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk menanyakan soalan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Siapakah nama kamu?"
         },
         {
           "id": "BM-AYAT-002",
           "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini menunjukkan perasaan kagum.",
           "explanation": "Ayat seruan meluahkan perasaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!"
         },
         {
           "id": "BM-AYAT-003",
           "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu."
         },
         {
           "id": "BM-AYAT-004",
           "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ada kata tanya bilakah.",
           "explanation": "Bilakah digunakan dalam ayat tanya.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?"
         },
         {
           "id": "BM-AYAT-005",
           "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini meluahkan rasa sakit.",
           "explanation": "Aduh menunjukkan ayat seruan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!"
         },
         {
           "id": "BM-AYAT-006",
           "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini memberi arahan dengan sopan.",
           "explanation": "Sila digunakan dalam ayat perintah.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas."
         },
         {
           "id": "BM-AYAT-007",
           "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
           "answer": "manakah",
-          "accepted": [],
+          "accepted": [
+            "manakah"
+          ],
           "hint": "Cari perkataan yang digunakan untuk bertanya tempat.",
           "explanation": "manakah ialah kata tanya dalam ayat itu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?"
         },
         {
           "id": "BM-AYAT-008",
           "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
           "answer": "mengapakah",
-          "accepted": [],
+          "accepted": [
+            "mengapakah"
+          ],
           "hint": "Cari perkataan yang bertanya sebab.",
           "explanation": "mengapakah digunakan untuk bertanya sebab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?"
         },
         {
           "id": "BM-AYAT-009",
           "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
           "answer": "Tolong",
           "accepted": [
-            "tolong"
+            "Tolong"
           ],
           "hint": "Gunakan kata perintah yang sopan.",
           "explanation": "Tolong sesuai untuk membuat permintaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu."
         },
         {
           "id": "BM-AYAT-010",
           "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
           "answer": "Wah",
           "accepted": [
-            "wah"
+            "Wah"
           ],
           "hint": "Gunakan kata seru untuk rasa kagum.",
           "explanation": "Wah digunakan untuk menunjukkan rasa kagum.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu!"
         },
         {
           "id": "BM-AYAT-011",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
+          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 2)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk menanyakan soalan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 2)"
         },
         {
           "id": "BM-AYAT-012",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
+          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 2)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini menunjukkan perasaan kagum.",
           "explanation": "Ayat seruan meluahkan perasaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-013",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
+          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 2)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-014",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
+          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 2)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ada kata tanya bilakah.",
           "explanation": "Bilakah digunakan dalam ayat tanya.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 2)"
         },
         {
           "id": "BM-AYAT-015",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
+          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 2)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini meluahkan rasa sakit.",
           "explanation": "Aduh menunjukkan ayat seruan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-016",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
+          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 2)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini memberi arahan dengan sopan.",
           "explanation": "Sila digunakan dalam ayat perintah.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-017",
-          "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
+          "q": "Dalam ayat \"Di manakah beg saya?\", apakah kata tanya?",
           "answer": "manakah",
-          "accepted": [],
+          "accepted": [
+            "manakah"
+          ],
           "hint": "Cari perkataan yang digunakan untuk bertanya tempat.",
           "explanation": "manakah ialah kata tanya dalam ayat itu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Di manakah beg saya?\", apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-018",
-          "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
+          "q": "Dalam ayat \"Mengapakah kamu menangis?\", apakah kata tanya?",
           "answer": "mengapakah",
-          "accepted": [],
+          "accepted": [
+            "mengapakah"
+          ],
           "hint": "Cari perkataan yang bertanya sebab.",
           "explanation": "mengapakah digunakan untuk bertanya sebab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam ayat \"Mengapakah kamu menangis?\", apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-019",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
+          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 2)",
           "answer": "Tolong",
           "accepted": [
-            "tolong"
+            "Tolong"
           ],
           "hint": "Gunakan kata perintah yang sopan.",
           "explanation": "Tolong sesuai untuk membuat permintaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-020",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
+          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 2)",
           "answer": "Wah",
           "accepted": [
-            "wah"
+            "Wah"
           ],
           "hint": "Gunakan kata seru untuk rasa kagum.",
           "explanation": "Wah digunakan untuk menunjukkan rasa kagum.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-021",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
+          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 3)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk menanyakan soalan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-022",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
+          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 3)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini menunjukkan perasaan kagum.",
           "explanation": "Ayat seruan meluahkan perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 3)"
         },
         {
           "id": "BM-AYAT-023",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
+          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 3)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 3)"
         },
         {
           "id": "BM-AYAT-024",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
+          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 3)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ada kata tanya bilakah.",
           "explanation": "Bilakah digunakan dalam ayat tanya.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-025",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
+          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 3)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini meluahkan rasa sakit.",
           "explanation": "Aduh menunjukkan ayat seruan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 3)"
         },
         {
           "id": "BM-AYAT-026",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
+          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 3)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini memberi arahan dengan sopan.",
           "explanation": "Sila digunakan dalam ayat perintah.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 3)"
         },
         {
           "id": "BM-AYAT-027",
-          "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
+          "q": "Pilih kata tanya yang terdapat dalam ayat: Di manakah beg saya?",
           "answer": "manakah",
-          "accepted": [],
+          "accepted": [
+            "manakah"
+          ],
           "hint": "Cari perkataan yang digunakan untuk bertanya tempat.",
           "explanation": "manakah ialah kata tanya dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata tanya yang terdapat dalam ayat: Di manakah beg saya?"
         },
         {
           "id": "BM-AYAT-028",
-          "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
+          "q": "Pilih kata tanya yang terdapat dalam ayat: Mengapakah kamu menangis?",
           "answer": "mengapakah",
-          "accepted": [],
+          "accepted": [
+            "mengapakah"
+          ],
           "hint": "Cari perkataan yang bertanya sebab.",
           "explanation": "mengapakah digunakan untuk bertanya sebab.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pilih kata tanya yang terdapat dalam ayat: Mengapakah kamu menangis?"
         },
         {
           "id": "BM-AYAT-029",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
+          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 3)",
           "answer": "Tolong",
           "accepted": [
-            "tolong"
+            "Tolong"
           ],
           "hint": "Gunakan kata perintah yang sopan.",
           "explanation": "Tolong sesuai untuk membuat permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 3)"
         },
         {
           "id": "BM-AYAT-030",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
+          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 3)",
           "answer": "Wah",
           "accepted": [
-            "wah"
+            "Wah"
           ],
           "hint": "Gunakan kata seru untuk rasa kagum.",
           "explanation": "Wah digunakan untuk menunjukkan rasa kagum.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 3)"
         },
         {
           "id": "BM-AYAT-031",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
+          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 4)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk menanyakan soalan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 4)"
         },
         {
           "id": "BM-AYAT-032",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
+          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 4)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini menunjukkan perasaan kagum.",
           "explanation": "Ayat seruan meluahkan perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 4)"
         },
         {
           "id": "BM-AYAT-033",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
+          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 4)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 4)"
         },
         {
           "id": "BM-AYAT-034",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
+          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 4)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ada kata tanya bilakah.",
           "explanation": "Bilakah digunakan dalam ayat tanya.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 4)"
         },
         {
           "id": "BM-AYAT-035",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
+          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 4)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini meluahkan rasa sakit.",
           "explanation": "Aduh menunjukkan ayat seruan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 4)"
         },
         {
           "id": "BM-AYAT-036",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
+          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 4)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini memberi arahan dengan sopan.",
           "explanation": "Sila digunakan dalam ayat perintah.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 4)"
         },
         {
           "id": "BM-AYAT-037",
-          "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
+          "q": "Baca ayat ini: Di manakah beg saya? Apakah kata tanya?",
           "answer": "manakah",
-          "accepted": [],
+          "accepted": [
+            "manakah"
+          ],
           "hint": "Cari perkataan yang digunakan untuk bertanya tempat.",
           "explanation": "manakah ialah kata tanya dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Di manakah beg saya? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-038",
-          "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
+          "q": "Baca ayat ini: Mengapakah kamu menangis? Apakah kata tanya?",
           "answer": "mengapakah",
-          "accepted": [],
+          "accepted": [
+            "mengapakah"
+          ],
           "hint": "Cari perkataan yang bertanya sebab.",
           "explanation": "mengapakah digunakan untuk bertanya sebab.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat ini: Mengapakah kamu menangis? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-039",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
+          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 4)",
           "answer": "Tolong",
           "accepted": [
-            "tolong"
+            "Tolong"
           ],
           "hint": "Gunakan kata perintah yang sopan.",
           "explanation": "Tolong sesuai untuk membuat permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 4)"
         },
         {
           "id": "BM-AYAT-040",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
+          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 4)",
           "answer": "Wah",
           "accepted": [
-            "wah"
+            "Wah"
           ],
           "hint": "Gunakan kata seru untuk rasa kagum.",
           "explanation": "Wah digunakan untuk menunjukkan rasa kagum.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 4)"
         },
         {
           "id": "BM-AYAT-041",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
+          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 5)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk menanyakan soalan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 5)"
         },
         {
           "id": "BM-AYAT-042",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
+          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 5)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini menunjukkan perasaan kagum.",
           "explanation": "Ayat seruan meluahkan perasaan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 5)"
         },
         {
           "id": "BM-AYAT-043",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
+          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 5)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-044",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
+          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 5)",
           "answer": "ayat tanya",
-          "accepted": [],
+          "accepted": [
+            "ayat tanya"
+          ],
           "hint": "Ada kata tanya bilakah.",
           "explanation": "Bilakah digunakan dalam ayat tanya.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 5)"
         },
         {
           "id": "BM-AYAT-045",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
+          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 5)",
           "answer": "ayat seruan",
-          "accepted": [],
+          "accepted": [
+            "ayat seruan"
+          ],
           "hint": "Ayat ini meluahkan rasa sakit.",
           "explanation": "Aduh menunjukkan ayat seruan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 5)"
         },
         {
           "id": "BM-AYAT-046",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
+          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 5)",
           "answer": "ayat perintah",
-          "accepted": [],
+          "accepted": [
+            "ayat perintah"
+          ],
           "hint": "Ayat ini memberi arahan dengan sopan.",
           "explanation": "Sila digunakan dalam ayat perintah.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-047",
-          "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
+          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Di manakah beg saya? Jawapan bagi kata tanya ialah ________.",
           "answer": "manakah",
-          "accepted": [],
+          "accepted": [
+            "manakah"
+          ],
           "hint": "Cari perkataan yang digunakan untuk bertanya tempat.",
           "explanation": "manakah ialah kata tanya dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Di manakah beg saya? Jawapan bagi kata tanya ialah ________."
         },
         {
           "id": "BM-AYAT-048",
-          "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
+          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________.",
           "answer": "mengapakah",
-          "accepted": [],
+          "accepted": [
+            "mengapakah"
+          ],
           "hint": "Cari perkataan yang bertanya sebab.",
           "explanation": "mengapakah digunakan untuk bertanya sebab.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________."
         },
         {
           "id": "BM-AYAT-049",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
+          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 5)",
           "answer": "Tolong",
           "accepted": [
-            "tolong"
+            "Tolong"
           ],
           "hint": "Gunakan kata perintah yang sopan.",
           "explanation": "Tolong sesuai untuk membuat permintaan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-050",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
+          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 5)",
           "answer": "Wah",
           "accepted": [
-            "wah"
+            "Wah"
           ],
           "hint": "Gunakan kata seru untuk rasa kagum.",
           "explanation": "Wah digunakan untuk menunjukkan rasa kagum.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 5)"
         }
       ]
     },
@@ -5238,600 +6378,700 @@ export const bmSubject = {
           "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama orang yang melakukan perbuatan.",
           "explanation": "Aina menyiram pokok bunga dalam ayat itu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-002",
           "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
           "answer": "kedai",
-          "accepted": [],
+          "accepted": [
+            "kedai"
+          ],
           "hint": "Cari tempat dalam ayat.",
           "explanation": "Danish membeli roti di kedai.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-003",
           "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
           "answer": "nasi goreng",
-          "accepted": [],
+          "accepted": [
+            "nasi goreng"
+          ],
           "hint": "Cari makanan yang dimasak.",
           "explanation": "Ibu memasak nasi goreng.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-004",
           "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
           "answer": "hari hujan",
           "accepted": [
-            "kerana hari hujan"
+            "hari hujan"
           ],
           "hint": "Cari sebab dalam ayat.",
           "explanation": "Hakim memakai baju hujan kerana hari hujan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-005",
           "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
           "answer": "buku cerita",
-          "accepted": [],
+          "accepted": [
+            "buku cerita"
+          ],
           "hint": "Cari benda yang dibaca.",
           "explanation": "Sara membaca buku cerita.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-006",
           "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
           "answer": "hari Jumaat",
           "accepted": [
-            "jumaat"
+            "hari Jumaat"
           ],
           "hint": "Cari masa dalam ayat.",
           "explanation": "Murid-murid membersihkan kelas pada hari Jumaat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-007",
           "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
           "answer": "pokok cili",
-          "accepted": [],
+          "accepted": [
+            "pokok cili"
+          ],
           "hint": "Cari tumbuhan yang ditanam.",
           "explanation": "Ayah menanam pokok cili.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-008",
           "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
           "answer": "Mira",
           "accepted": [
-            "mira"
+            "Mira"
           ],
           "hint": "Cari nama kawan Farah.",
           "explanation": "Farah berkongsi pensel dengan Mira.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-009",
           "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
           "answer": "bawah kerusi",
           "accepted": [
-            "di bawah kerusi"
+            "bawah kerusi"
           ],
           "hint": "Cari tempat kucing tidur.",
           "explanation": "Kucing itu tidur di bawah kerusi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-010",
           "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
           "answer": "kerja sekolah",
-          "accepted": [],
+          "accepted": [
+            "kerja sekolah"
+          ],
           "hint": "Cari tugasan yang dibuat oleh Iman.",
           "explanation": "Iman menyiapkan kerja sekolah.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-011",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
+          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama orang yang melakukan perbuatan.",
           "explanation": "Aina menyiram pokok bunga dalam ayat itu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-012",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
+          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 2)",
           "answer": "kedai",
-          "accepted": [],
+          "accepted": [
+            "kedai"
+          ],
           "hint": "Cari tempat dalam ayat.",
           "explanation": "Danish membeli roti di kedai.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-013",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
+          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 2)",
           "answer": "nasi goreng",
-          "accepted": [],
+          "accepted": [
+            "nasi goreng"
+          ],
           "hint": "Cari makanan yang dimasak.",
           "explanation": "Ibu memasak nasi goreng.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-014",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
+          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)",
           "answer": "hari hujan",
           "accepted": [
-            "kerana hari hujan"
+            "hari hujan"
           ],
           "hint": "Cari sebab dalam ayat.",
           "explanation": "Hakim memakai baju hujan kerana hari hujan.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-015",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
+          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 2)",
           "answer": "buku cerita",
-          "accepted": [],
+          "accepted": [
+            "buku cerita"
+          ],
           "hint": "Cari benda yang dibaca.",
           "explanation": "Sara membaca buku cerita.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-016",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
+          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 2)",
           "answer": "hari Jumaat",
           "accepted": [
-            "jumaat"
+            "hari Jumaat"
           ],
           "hint": "Cari masa dalam ayat.",
           "explanation": "Murid-murid membersihkan kelas pada hari Jumaat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-017",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
+          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 2)",
           "answer": "pokok cili",
-          "accepted": [],
+          "accepted": [
+            "pokok cili"
+          ],
           "hint": "Cari tumbuhan yang ditanam.",
           "explanation": "Ayah menanam pokok cili.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-018",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
+          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 2)",
           "answer": "Mira",
           "accepted": [
-            "mira"
+            "Mira"
           ],
           "hint": "Cari nama kawan Farah.",
           "explanation": "Farah berkongsi pensel dengan Mira.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-019",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
+          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 2)",
           "answer": "bawah kerusi",
           "accepted": [
-            "di bawah kerusi"
+            "bawah kerusi"
           ],
           "hint": "Cari tempat kucing tidur.",
           "explanation": "Kucing itu tidur di bawah kerusi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-020",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
+          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 2)",
           "answer": "kerja sekolah",
-          "accepted": [],
+          "accepted": [
+            "kerja sekolah"
+          ],
           "hint": "Cari tugasan yang dibuat oleh Iman.",
           "explanation": "Iman menyiapkan kerja sekolah.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-021",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
+          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama orang yang melakukan perbuatan.",
           "explanation": "Aina menyiram pokok bunga dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-022",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
+          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 3)",
           "answer": "kedai",
-          "accepted": [],
+          "accepted": [
+            "kedai"
+          ],
           "hint": "Cari tempat dalam ayat.",
           "explanation": "Danish membeli roti di kedai.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-023",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
+          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 3)",
           "answer": "nasi goreng",
-          "accepted": [],
+          "accepted": [
+            "nasi goreng"
+          ],
           "hint": "Cari makanan yang dimasak.",
           "explanation": "Ibu memasak nasi goreng.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-024",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
+          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
           "answer": "hari hujan",
           "accepted": [
-            "kerana hari hujan"
+            "hari hujan"
           ],
           "hint": "Cari sebab dalam ayat.",
           "explanation": "Hakim memakai baju hujan kerana hari hujan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-025",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
+          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 3)",
           "answer": "buku cerita",
-          "accepted": [],
+          "accepted": [
+            "buku cerita"
+          ],
           "hint": "Cari benda yang dibaca.",
           "explanation": "Sara membaca buku cerita.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-026",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
+          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
           "answer": "hari Jumaat",
           "accepted": [
-            "jumaat"
+            "hari Jumaat"
           ],
           "hint": "Cari masa dalam ayat.",
           "explanation": "Murid-murid membersihkan kelas pada hari Jumaat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-027",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
+          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 3)",
           "answer": "pokok cili",
-          "accepted": [],
+          "accepted": [
+            "pokok cili"
+          ],
           "hint": "Cari tumbuhan yang ditanam.",
           "explanation": "Ayah menanam pokok cili.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-028",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
+          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 3)",
           "answer": "Mira",
           "accepted": [
-            "mira"
+            "Mira"
           ],
           "hint": "Cari nama kawan Farah.",
           "explanation": "Farah berkongsi pensel dengan Mira.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-029",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
+          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 3)",
           "answer": "bawah kerusi",
           "accepted": [
-            "di bawah kerusi"
+            "bawah kerusi"
           ],
           "hint": "Cari tempat kucing tidur.",
           "explanation": "Kucing itu tidur di bawah kerusi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-030",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
+          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 3)",
           "answer": "kerja sekolah",
-          "accepted": [],
+          "accepted": [
+            "kerja sekolah"
+          ],
           "hint": "Cari tugasan yang dibuat oleh Iman.",
           "explanation": "Iman menyiapkan kerja sekolah.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-031",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
+          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama orang yang melakukan perbuatan.",
           "explanation": "Aina menyiram pokok bunga dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-032",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
+          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 4)",
           "answer": "kedai",
-          "accepted": [],
+          "accepted": [
+            "kedai"
+          ],
           "hint": "Cari tempat dalam ayat.",
           "explanation": "Danish membeli roti di kedai.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-033",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
+          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 4)",
           "answer": "nasi goreng",
-          "accepted": [],
+          "accepted": [
+            "nasi goreng"
+          ],
           "hint": "Cari makanan yang dimasak.",
           "explanation": "Ibu memasak nasi goreng.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-034",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
+          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)",
           "answer": "hari hujan",
           "accepted": [
-            "kerana hari hujan"
+            "hari hujan"
           ],
           "hint": "Cari sebab dalam ayat.",
           "explanation": "Hakim memakai baju hujan kerana hari hujan.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-035",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
+          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 4)",
           "answer": "buku cerita",
-          "accepted": [],
+          "accepted": [
+            "buku cerita"
+          ],
           "hint": "Cari benda yang dibaca.",
           "explanation": "Sara membaca buku cerita.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-036",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
+          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 4)",
           "answer": "hari Jumaat",
           "accepted": [
-            "jumaat"
+            "hari Jumaat"
           ],
           "hint": "Cari masa dalam ayat.",
           "explanation": "Murid-murid membersihkan kelas pada hari Jumaat.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-037",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
+          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 4)",
           "answer": "pokok cili",
-          "accepted": [],
+          "accepted": [
+            "pokok cili"
+          ],
           "hint": "Cari tumbuhan yang ditanam.",
           "explanation": "Ayah menanam pokok cili.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-038",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
+          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 4)",
           "answer": "Mira",
           "accepted": [
-            "mira"
+            "Mira"
           ],
           "hint": "Cari nama kawan Farah.",
           "explanation": "Farah berkongsi pensel dengan Mira.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-039",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
+          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 4)",
           "answer": "bawah kerusi",
           "accepted": [
-            "di bawah kerusi"
+            "bawah kerusi"
           ],
           "hint": "Cari tempat kucing tidur.",
           "explanation": "Kucing itu tidur di bawah kerusi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-040",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
+          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 4)",
           "answer": "kerja sekolah",
-          "accepted": [],
+          "accepted": [
+            "kerja sekolah"
+          ],
           "hint": "Cari tugasan yang dibuat oleh Iman.",
           "explanation": "Iman menyiapkan kerja sekolah.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-041",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
+          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)",
           "answer": "Aina",
           "accepted": [
-            "aina"
+            "Aina"
           ],
           "hint": "Cari nama orang yang melakukan perbuatan.",
           "explanation": "Aina menyiram pokok bunga dalam ayat itu.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-042",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
+          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 5)",
           "answer": "kedai",
-          "accepted": [],
+          "accepted": [
+            "kedai"
+          ],
           "hint": "Cari tempat dalam ayat.",
           "explanation": "Danish membeli roti di kedai.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-043",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
+          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 5)",
           "answer": "nasi goreng",
-          "accepted": [],
+          "accepted": [
+            "nasi goreng"
+          ],
           "hint": "Cari makanan yang dimasak.",
           "explanation": "Ibu memasak nasi goreng.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-044",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
+          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)",
           "answer": "hari hujan",
           "accepted": [
-            "kerana hari hujan"
+            "hari hujan"
           ],
           "hint": "Cari sebab dalam ayat.",
           "explanation": "Hakim memakai baju hujan kerana hari hujan.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-045",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
+          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 5)",
           "answer": "buku cerita",
-          "accepted": [],
+          "accepted": [
+            "buku cerita"
+          ],
           "hint": "Cari benda yang dibaca.",
           "explanation": "Sara membaca buku cerita.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-046",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
+          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 5)",
           "answer": "hari Jumaat",
           "accepted": [
-            "jumaat"
+            "hari Jumaat"
           ],
           "hint": "Cari masa dalam ayat.",
           "explanation": "Murid-murid membersihkan kelas pada hari Jumaat.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-047",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
+          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 5)",
           "answer": "pokok cili",
-          "accepted": [],
+          "accepted": [
+            "pokok cili"
+          ],
           "hint": "Cari tumbuhan yang ditanam.",
           "explanation": "Ayah menanam pokok cili.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-048",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
+          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 5)",
           "answer": "Mira",
           "accepted": [
-            "mira"
+            "Mira"
           ],
           "hint": "Cari nama kawan Farah.",
           "explanation": "Farah berkongsi pensel dengan Mira.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-049",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
+          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 5)",
           "answer": "bawah kerusi",
           "accepted": [
-            "di bawah kerusi"
+            "bawah kerusi"
           ],
           "hint": "Cari tempat kucing tidur.",
           "explanation": "Kucing itu tidur di bawah kerusi.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-050",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
+          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 5)",
           "answer": "kerja sekolah",
-          "accepted": [],
+          "accepted": [
+            "kerja sekolah"
+          ],
           "hint": "Cari tugasan yang dibuat oleh Iman.",
           "explanation": "Iman menyiapkan kerja sekolah.",
-          "difficulty": "mudah",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 5)"
         }
       ]
     }

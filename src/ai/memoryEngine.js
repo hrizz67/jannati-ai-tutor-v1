@@ -1,4 +1,5 @@
-const MEMORY_KEY = 'jannati_v150_ai_memory';
+const MEMORY_KEY = 'jannati_v151_ai_memory';
+const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 
 function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
@@ -21,7 +22,17 @@ function emptyMemory() {
 export function loadAIMemory() {
   try {
     const saved = localStorage.getItem(MEMORY_KEY);
-    return saved ? { ...emptyMemory(), ...JSON.parse(saved) } : emptyMemory();
+    if (saved) return { ...emptyMemory(), ...JSON.parse(saved) };
+
+    for (const key of LEGACY_MEMORY_KEYS) {
+      const legacy = localStorage.getItem(key);
+      if (legacy) {
+        localStorage.setItem(MEMORY_KEY, legacy);
+        return { ...emptyMemory(), ...JSON.parse(legacy) };
+      }
+    }
+
+    return emptyMemory();
   } catch {
     return emptyMemory();
   }

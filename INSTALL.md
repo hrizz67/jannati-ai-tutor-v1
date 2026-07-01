@@ -1,30 +1,28 @@
-# INSTALL - V1.4.0 Package 2 UASA Content Pack
+# INSTALL - V1.5.1 Quality Release
 
-## Ganti fail ini sahaja
+## Requirements
 
-```text
-src/data/subjects.js
-```
+- Node.js
+- npm
 
-## Cara test
+## Local Test
 
 ```bash
+npm run build
 npm run dev
 ```
 
-Semak:
-1. BM ada 10 topik.
-2. Matematik ada 6 topik.
-3. English ada 3 topik.
-4. Sains ada 3 topik.
-5. Learning Path masih berfungsi.
-6. Resume/Auto Save dari Package 1 masih kekal kerana App.jsx tidak diganti.
+Open:
+
+```text
+http://127.0.0.1:5173/jannati-ai-tutor-v1/
+```
 
 ## Deploy
 
 ```bash
-git add .
-git commit -m "Release V1.4.0 Package 2 UASA Content"
-git push
+npm run build
 npm run deploy
 ```
+
+The GitHub Pages base path is configured as `/jannati-ai-tutor-v1/`.

@@ -9,8 +9,10 @@ import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './
 import { teachAnswer } from './ai/teacherEngine';
 import { formatStudyTime, loadAIMemory, saveQuizMemory } from './ai/memoryEngine';
 
-const PROFILE_KEY = 'jannati_v140_profile';
-const RESUME_KEY = 'jannati_v140_resume';
+const PROFILE_KEY = 'jannati_v151_profile';
+const RESUME_KEY = 'jannati_v151_resume';
+const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
+const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
 
 const defaultProfile = {
   name: '',
@@ -31,12 +33,32 @@ const defaultProfile = {
 
 function loadProfile() {
   const saved = localStorage.getItem(PROFILE_KEY);
-  return saved ? JSON.parse(saved) : defaultProfile;
+  if (saved) return JSON.parse(saved);
+
+  for (const key of LEGACY_PROFILE_KEYS) {
+    const legacy = localStorage.getItem(key);
+    if (legacy) {
+      localStorage.setItem(PROFILE_KEY, legacy);
+      return JSON.parse(legacy);
+    }
+  }
+
+  return defaultProfile;
 }
 
 function loadResume() {
   const saved = localStorage.getItem(RESUME_KEY);
-  return saved ? JSON.parse(saved) : null;
+  if (saved) return JSON.parse(saved);
+
+  for (const key of LEGACY_RESUME_KEYS) {
+    const legacy = localStorage.getItem(key);
+    if (legacy) {
+      localStorage.setItem(RESUME_KEY, legacy);
+      return JSON.parse(legacy);
+    }
+  }
+
+  return null;
 }
 
 function saveResume(data) {
@@ -45,6 +67,7 @@ function saveResume(data) {
 
 function clearResume() {
   localStorage.removeItem(RESUME_KEY);
+  LEGACY_RESUME_KEYS.forEach(key => localStorage.removeItem(key));
 }
 
 function shuffleArray(array) {
@@ -216,6 +239,7 @@ export default function App() {
   function resetProfile() {
     if (confirm('Reset semua rekod murid?')) {
       localStorage.removeItem(PROFILE_KEY);
+      LEGACY_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
       clearResume();
       setProfile(defaultProfile);
       setResume(null);

@@ -14,551 +14,701 @@ export const mathSubject = {
           "id": "MATH-NOMBOR-001",
           "q": "Apakah nombor selepas 113?",
           "answer": "114",
-          "accepted": [],
+          "accepted": [
+            "114"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "113 + 1 = 114.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 113?"
         },
         {
           "id": "MATH-NOMBOR-002",
           "q": "Apakah nombor sebelum 134?",
           "answer": "133",
-          "accepted": [],
+          "accepted": [
+            "133"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "134 - 1 = 133.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 134?"
         },
         {
           "id": "MATH-NOMBOR-003",
           "q": "100 + 30 + 9 = ________.",
           "answer": "139",
-          "accepted": [],
+          "accepted": [
+            "139"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "100 + 30 + 9 = 139.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "100 + 30 + 9 = ________."
         },
         {
           "id": "MATH-NOMBOR-004",
           "q": "Nombor manakah yang paling kecil: 152, 135, 161?",
           "answer": "135",
-          "accepted": [],
+          "accepted": [
+            "135"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "135 ialah nombor paling kecil.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 152, 135, 161?"
         },
         {
           "id": "MATH-NOMBOR-005",
           "q": "Apakah nilai digit puluh dalam nombor 165?",
           "answer": "60",
-          "accepted": [],
+          "accepted": [
+            "60"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 6, jadi nilainya 60.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 165?"
         },
         {
           "id": "MATH-NOMBOR-006",
           "q": "Apakah nombor selepas 178?",
           "answer": "179",
-          "accepted": [],
+          "accepted": [
+            "179"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "178 + 1 = 179.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 178?"
         },
         {
           "id": "MATH-NOMBOR-007",
           "q": "Apakah nombor sebelum 199?",
           "answer": "198",
-          "accepted": [],
+          "accepted": [
+            "198"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "199 - 1 = 198.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 199?"
         },
         {
           "id": "MATH-NOMBOR-008",
           "q": "200 + 0 + 4 = ________.",
           "answer": "204",
-          "accepted": [],
+          "accepted": [
+            "204"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "200 + 0 + 4 = 204.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "200 + 0 + 4 = ________."
         },
         {
           "id": "MATH-NOMBOR-009",
           "q": "Nombor manakah yang paling kecil: 217, 200, 226?",
           "answer": "200",
-          "accepted": [],
+          "accepted": [
+            "200"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "200 ialah nombor paling kecil.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 217, 200, 226?"
         },
         {
           "id": "MATH-NOMBOR-010",
           "q": "Apakah nilai digit puluh dalam nombor 230?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 3, jadi nilainya 30.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 230?"
         },
         {
           "id": "MATH-NOMBOR-011",
           "q": "Apakah nombor selepas 243?",
           "answer": "244",
-          "accepted": [],
+          "accepted": [
+            "244"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "243 + 1 = 244.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 243?"
         },
         {
           "id": "MATH-NOMBOR-012",
           "q": "Apakah nombor sebelum 264?",
           "answer": "263",
-          "accepted": [],
+          "accepted": [
+            "263"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "264 - 1 = 263.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 264?"
         },
         {
           "id": "MATH-NOMBOR-013",
           "q": "200 + 60 + 9 = ________.",
           "answer": "269",
-          "accepted": [],
+          "accepted": [
+            "269"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "200 + 60 + 9 = 269.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "200 + 60 + 9 = ________."
         },
         {
           "id": "MATH-NOMBOR-014",
           "q": "Nombor manakah yang paling kecil: 282, 265, 291?",
           "answer": "265",
-          "accepted": [],
+          "accepted": [
+            "265"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "265 ialah nombor paling kecil.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 282, 265, 291?"
         },
         {
           "id": "MATH-NOMBOR-015",
           "q": "Apakah nilai digit puluh dalam nombor 295?",
           "answer": "90",
-          "accepted": [],
+          "accepted": [
+            "90"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 9, jadi nilainya 90.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 295?"
         },
         {
           "id": "MATH-NOMBOR-016",
           "q": "Apakah nombor selepas 308?",
           "answer": "309",
-          "accepted": [],
+          "accepted": [
+            "309"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "308 + 1 = 309.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 308?"
         },
         {
           "id": "MATH-NOMBOR-017",
           "q": "Apakah nombor sebelum 329?",
           "answer": "328",
-          "accepted": [],
+          "accepted": [
+            "328"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "329 - 1 = 328.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 329?"
         },
         {
           "id": "MATH-NOMBOR-018",
           "q": "300 + 30 + 4 = ________.",
           "answer": "334",
-          "accepted": [],
+          "accepted": [
+            "334"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "300 + 30 + 4 = 334.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "300 + 30 + 4 = ________."
         },
         {
           "id": "MATH-NOMBOR-019",
           "q": "Nombor manakah yang paling kecil: 347, 330, 356?",
           "answer": "330",
-          "accepted": [],
+          "accepted": [
+            "330"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "330 ialah nombor paling kecil.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 347, 330, 356?"
         },
         {
           "id": "MATH-NOMBOR-020",
           "q": "Apakah nilai digit puluh dalam nombor 360?",
           "answer": "60",
-          "accepted": [],
+          "accepted": [
+            "60"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 6, jadi nilainya 60.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 360?"
         },
         {
           "id": "MATH-NOMBOR-021",
           "q": "Apakah nombor selepas 373?",
           "answer": "374",
-          "accepted": [],
+          "accepted": [
+            "374"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "373 + 1 = 374.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 373?"
         },
         {
           "id": "MATH-NOMBOR-022",
           "q": "Apakah nombor sebelum 394?",
           "answer": "393",
-          "accepted": [],
+          "accepted": [
+            "393"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "394 - 1 = 393.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 394?"
         },
         {
           "id": "MATH-NOMBOR-023",
           "q": "300 + 90 + 9 = ________.",
           "answer": "399",
-          "accepted": [],
+          "accepted": [
+            "399"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "300 + 90 + 9 = 399.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "300 + 90 + 9 = ________."
         },
         {
           "id": "MATH-NOMBOR-024",
           "q": "Nombor manakah yang paling kecil: 412, 395, 421?",
           "answer": "395",
-          "accepted": [],
+          "accepted": [
+            "395"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "395 ialah nombor paling kecil.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 412, 395, 421?"
         },
         {
           "id": "MATH-NOMBOR-025",
           "q": "Apakah nilai digit puluh dalam nombor 425?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 2, jadi nilainya 20.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 425?"
         },
         {
           "id": "MATH-NOMBOR-026",
           "q": "Apakah nombor selepas 438?",
           "answer": "439",
-          "accepted": [],
+          "accepted": [
+            "439"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "438 + 1 = 439.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 438?"
         },
         {
           "id": "MATH-NOMBOR-027",
           "q": "Apakah nombor sebelum 459?",
           "answer": "458",
-          "accepted": [],
+          "accepted": [
+            "458"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "459 - 1 = 458.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 459?"
         },
         {
           "id": "MATH-NOMBOR-028",
           "q": "400 + 60 + 4 = ________.",
           "answer": "464",
-          "accepted": [],
+          "accepted": [
+            "464"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "400 + 60 + 4 = 464.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "400 + 60 + 4 = ________."
         },
         {
           "id": "MATH-NOMBOR-029",
           "q": "Nombor manakah yang paling kecil: 477, 460, 486?",
           "answer": "460",
-          "accepted": [],
+          "accepted": [
+            "460"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "460 ialah nombor paling kecil.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 477, 460, 486?"
         },
         {
           "id": "MATH-NOMBOR-030",
           "q": "Apakah nilai digit puluh dalam nombor 490?",
           "answer": "90",
-          "accepted": [],
+          "accepted": [
+            "90"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 9, jadi nilainya 90.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 490?"
         },
         {
           "id": "MATH-NOMBOR-031",
           "q": "Apakah nombor selepas 503?",
           "answer": "504",
-          "accepted": [],
+          "accepted": [
+            "504"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "503 + 1 = 504.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 503?"
         },
         {
           "id": "MATH-NOMBOR-032",
           "q": "Apakah nombor sebelum 524?",
           "answer": "523",
-          "accepted": [],
+          "accepted": [
+            "523"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "524 - 1 = 523.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 524?"
         },
         {
           "id": "MATH-NOMBOR-033",
           "q": "500 + 20 + 9 = ________.",
           "answer": "529",
-          "accepted": [],
+          "accepted": [
+            "529"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "500 + 20 + 9 = 529.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "500 + 20 + 9 = ________."
         },
         {
           "id": "MATH-NOMBOR-034",
           "q": "Nombor manakah yang paling kecil: 542, 525, 551?",
           "answer": "525",
-          "accepted": [],
+          "accepted": [
+            "525"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "525 ialah nombor paling kecil.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 542, 525, 551?"
         },
         {
           "id": "MATH-NOMBOR-035",
           "q": "Apakah nilai digit puluh dalam nombor 555?",
           "answer": "50",
-          "accepted": [],
+          "accepted": [
+            "50"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 5, jadi nilainya 50.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 555?"
         },
         {
           "id": "MATH-NOMBOR-036",
           "q": "Apakah nombor selepas 568?",
           "answer": "569",
-          "accepted": [],
+          "accepted": [
+            "569"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "568 + 1 = 569.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 568?"
         },
         {
           "id": "MATH-NOMBOR-037",
           "q": "Apakah nombor sebelum 589?",
           "answer": "588",
-          "accepted": [],
+          "accepted": [
+            "588"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "589 - 1 = 588.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 589?"
         },
         {
           "id": "MATH-NOMBOR-038",
           "q": "500 + 90 + 4 = ________.",
           "answer": "594",
-          "accepted": [],
+          "accepted": [
+            "594"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "500 + 90 + 4 = 594.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "500 + 90 + 4 = ________."
         },
         {
           "id": "MATH-NOMBOR-039",
           "q": "Nombor manakah yang paling kecil: 607, 590, 616?",
           "answer": "590",
-          "accepted": [],
+          "accepted": [
+            "590"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "590 ialah nombor paling kecil.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 607, 590, 616?"
         },
         {
           "id": "MATH-NOMBOR-040",
           "q": "Apakah nilai digit puluh dalam nombor 620?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 2, jadi nilainya 20.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 620?"
         },
         {
           "id": "MATH-NOMBOR-041",
           "q": "Apakah nombor selepas 633?",
           "answer": "634",
-          "accepted": [],
+          "accepted": [
+            "634"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "633 + 1 = 634.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 633?"
         },
         {
           "id": "MATH-NOMBOR-042",
           "q": "Apakah nombor sebelum 654?",
           "answer": "653",
-          "accepted": [],
+          "accepted": [
+            "653"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "654 - 1 = 653.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 654?"
         },
         {
           "id": "MATH-NOMBOR-043",
           "q": "600 + 50 + 9 = ________.",
           "answer": "659",
-          "accepted": [],
+          "accepted": [
+            "659"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "600 + 50 + 9 = 659.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "600 + 50 + 9 = ________."
         },
         {
           "id": "MATH-NOMBOR-044",
           "q": "Nombor manakah yang paling kecil: 672, 655, 681?",
           "answer": "655",
-          "accepted": [],
+          "accepted": [
+            "655"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "655 ialah nombor paling kecil.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 672, 655, 681?"
         },
         {
           "id": "MATH-NOMBOR-045",
           "q": "Apakah nilai digit puluh dalam nombor 685?",
           "answer": "80",
-          "accepted": [],
+          "accepted": [
+            "80"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 8, jadi nilainya 80.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 685?"
         },
         {
           "id": "MATH-NOMBOR-046",
           "q": "Apakah nombor selepas 698?",
           "answer": "699",
-          "accepted": [],
+          "accepted": [
+            "699"
+          ],
           "hint": "Tambah 1 pada nombor itu.",
           "explanation": "698 + 1 = 699.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor selepas 698?"
         },
         {
           "id": "MATH-NOMBOR-047",
           "q": "Apakah nombor sebelum 719?",
           "answer": "718",
-          "accepted": [],
+          "accepted": [
+            "718"
+          ],
           "hint": "Tolak 1 daripada nombor itu.",
           "explanation": "719 - 1 = 718.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nombor sebelum 719?"
         },
         {
           "id": "MATH-NOMBOR-048",
           "q": "700 + 20 + 4 = ________.",
           "answer": "724",
-          "accepted": [],
+          "accepted": [
+            "724"
+          ],
           "hint": "Gabungkan ratus, puluh dan sa.",
           "explanation": "700 + 20 + 4 = 724.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "700 + 20 + 4 = ________."
         },
         {
           "id": "MATH-NOMBOR-049",
           "q": "Nombor manakah yang paling kecil: 737, 720, 746?",
           "answer": "720",
-          "accepted": [],
+          "accepted": [
+            "720"
+          ],
           "hint": "Bandingkan nilai ratus, puluh dan sa.",
           "explanation": "720 ialah nombor paling kecil.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Nombor manakah yang paling kecil: 737, 720, 746?"
         },
         {
           "id": "MATH-NOMBOR-050",
           "q": "Apakah nilai digit puluh dalam nombor 750?",
           "answer": "50",
-          "accepted": [],
+          "accepted": [
+            "50"
+          ],
           "hint": "Digit puluh bernilai sepuluh-sepuluh.",
           "explanation": "Digit puluh ialah 5, jadi nilainya 50.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Apakah nilai digit puluh dalam nombor 750?"
         }
       ]
     },
@@ -571,551 +721,701 @@ export const mathSubject = {
           "id": "MATH-TAMBAH-001",
           "q": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Berapakah jumlah pensel Danish?",
           "answer": "35",
-          "accepted": [],
+          "accepted": [
+            "35"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "25 + 10 = 35.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Berapakah jumlah pensel Danish?"
         },
         {
           "id": "MATH-TAMBAH-002",
           "q": "32 + 14 = ________.",
           "answer": "46",
-          "accepted": [],
+          "accepted": [
+            "46"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "32 + 14 = 46.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "32 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-003",
           "q": "Di rak ada 39 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "57",
-          "accepted": [],
+          "accepted": [
+            "57"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "39 + 18 = 57.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 39 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-004",
           "q": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Berapakah jumlah kad Sara?",
           "answer": "68",
-          "accepted": [],
+          "accepted": [
+            "68"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "46 + 22 = 68.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Berapakah jumlah kad Sara?"
         },
         {
           "id": "MATH-TAMBAH-005",
           "q": "53 + 26 = ________.",
           "answer": "79",
-          "accepted": [],
+          "accepted": [
+            "79"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "53 + 26 = 79.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "53 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-006",
           "q": "Di rak ada 60 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "90",
-          "accepted": [],
+          "accepted": [
+            "90"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "60 + 30 = 90.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 60 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-007",
           "q": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Berapakah jumlah kuih Iman?",
           "answer": "101",
-          "accepted": [],
+          "accepted": [
+            "101"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "67 + 34 = 101.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Berapakah jumlah kuih Iman?"
         },
         {
           "id": "MATH-TAMBAH-008",
           "q": "74 + 38 = ________.",
           "answer": "112",
-          "accepted": [],
+          "accepted": [
+            "112"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "74 + 38 = 112.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "74 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-009",
           "q": "Di rak ada 81 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "87",
-          "accepted": [],
+          "accepted": [
+            "87"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "81 + 6 = 87.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 81 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-010",
           "q": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Berapakah jumlah guli Aina?",
           "answer": "98",
-          "accepted": [],
+          "accepted": [
+            "98"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "88 + 10 = 98.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Berapakah jumlah guli Aina?"
         },
         {
           "id": "MATH-TAMBAH-011",
           "q": "95 + 14 = ________.",
           "answer": "109",
-          "accepted": [],
+          "accepted": [
+            "109"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "95 + 14 = 109.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "95 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-012",
           "q": "Di rak ada 102 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "120",
-          "accepted": [],
+          "accepted": [
+            "120"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "102 + 18 = 120.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 102 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-013",
           "q": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Berapakah jumlah pelekat Irfan?",
           "answer": "131",
-          "accepted": [],
+          "accepted": [
+            "131"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "109 + 22 = 131.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Berapakah jumlah pelekat Irfan?"
         },
         {
           "id": "MATH-TAMBAH-014",
           "q": "116 + 26 = ________.",
           "answer": "142",
-          "accepted": [],
+          "accepted": [
+            "142"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "116 + 26 = 142.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "116 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-015",
           "q": "Di rak ada 123 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "153",
-          "accepted": [],
+          "accepted": [
+            "153"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "123 + 30 = 153.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 123 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-016",
           "q": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Berapakah jumlah epal Farah?",
           "answer": "164",
-          "accepted": [],
+          "accepted": [
+            "164"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "130 + 34 = 164.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Berapakah jumlah epal Farah?"
         },
         {
           "id": "MATH-TAMBAH-017",
           "q": "137 + 38 = ________.",
           "answer": "175",
-          "accepted": [],
+          "accepted": [
+            "175"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "137 + 38 = 175.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "137 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-018",
           "q": "Di rak ada 144 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "150",
-          "accepted": [],
+          "accepted": [
+            "150"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "144 + 6 = 150.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 144 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-019",
           "q": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Berapakah jumlah kerang Rafiq?",
           "answer": "161",
-          "accepted": [],
+          "accepted": [
+            "161"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "151 + 10 = 161.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Berapakah jumlah kerang Rafiq?"
         },
         {
           "id": "MATH-TAMBAH-020",
           "q": "158 + 14 = ________.",
           "answer": "172",
-          "accepted": [],
+          "accepted": [
+            "172"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "158 + 14 = 172.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "158 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-021",
           "q": "Di rak ada 165 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "183",
-          "accepted": [],
+          "accepted": [
+            "183"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "165 + 18 = 183.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 165 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-022",
           "q": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Berapakah jumlah buku Mira?",
           "answer": "194",
-          "accepted": [],
+          "accepted": [
+            "194"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "172 + 22 = 194.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Berapakah jumlah buku Mira?"
         },
         {
           "id": "MATH-TAMBAH-023",
           "q": "179 + 26 = ________.",
           "answer": "205",
-          "accepted": [],
+          "accepted": [
+            "205"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "179 + 26 = 205.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "179 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-024",
           "q": "Di rak ada 186 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "216",
-          "accepted": [],
+          "accepted": [
+            "216"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "186 + 30 = 216.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 186 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-025",
           "q": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Berapakah jumlah manggis Hakim?",
           "answer": "227",
-          "accepted": [],
+          "accepted": [
+            "227"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "193 + 34 = 227.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Berapakah jumlah manggis Hakim?"
         },
         {
           "id": "MATH-TAMBAH-026",
           "q": "200 + 38 = ________.",
           "answer": "238",
-          "accepted": [],
+          "accepted": [
+            "238"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "200 + 38 = 238.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "200 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-027",
           "q": "Di rak ada 207 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "213",
-          "accepted": [],
+          "accepted": [
+            "213"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "207 + 6 = 213.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 207 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-028",
           "q": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Berapakah jumlah bunga Zara?",
           "answer": "224",
-          "accepted": [],
+          "accepted": [
+            "224"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "214 + 10 = 224.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Berapakah jumlah bunga Zara?"
         },
         {
           "id": "MATH-TAMBAH-029",
           "q": "221 + 14 = ________.",
           "answer": "235",
-          "accepted": [],
+          "accepted": [
+            "235"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "221 + 14 = 235.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "221 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-030",
           "q": "Di rak ada 228 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "246",
-          "accepted": [],
+          "accepted": [
+            "246"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "228 + 18 = 246.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 228 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-031",
           "q": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Berapakah jumlah pensel Danish?",
           "answer": "257",
-          "accepted": [],
+          "accepted": [
+            "257"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "235 + 22 = 257.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Berapakah jumlah pensel Danish?"
         },
         {
           "id": "MATH-TAMBAH-032",
           "q": "242 + 26 = ________.",
           "answer": "268",
-          "accepted": [],
+          "accepted": [
+            "268"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "242 + 26 = 268.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "242 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-033",
           "q": "Di rak ada 249 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "279",
-          "accepted": [],
+          "accepted": [
+            "279"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "249 + 30 = 279.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 249 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-034",
           "q": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Berapakah jumlah kad Sara?",
           "answer": "290",
-          "accepted": [],
+          "accepted": [
+            "290"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "256 + 34 = 290.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Berapakah jumlah kad Sara?"
         },
         {
           "id": "MATH-TAMBAH-035",
           "q": "263 + 38 = ________.",
           "answer": "301",
-          "accepted": [],
+          "accepted": [
+            "301"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "263 + 38 = 301.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "263 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-036",
           "q": "Di rak ada 270 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "276",
-          "accepted": [],
+          "accepted": [
+            "276"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "270 + 6 = 276.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 270 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-037",
           "q": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Berapakah jumlah kuih Iman?",
           "answer": "287",
-          "accepted": [],
+          "accepted": [
+            "287"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "277 + 10 = 287.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Berapakah jumlah kuih Iman?"
         },
         {
           "id": "MATH-TAMBAH-038",
           "q": "284 + 14 = ________.",
           "answer": "298",
-          "accepted": [],
+          "accepted": [
+            "298"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "284 + 14 = 298.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "284 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-039",
           "q": "Di rak ada 291 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "309",
-          "accepted": [],
+          "accepted": [
+            "309"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "291 + 18 = 309.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 291 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-040",
           "q": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Berapakah jumlah guli Aina?",
           "answer": "320",
-          "accepted": [],
+          "accepted": [
+            "320"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "298 + 22 = 320.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Berapakah jumlah guli Aina?"
         },
         {
           "id": "MATH-TAMBAH-041",
           "q": "305 + 26 = ________.",
           "answer": "331",
-          "accepted": [],
+          "accepted": [
+            "331"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "305 + 26 = 331.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "305 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-042",
           "q": "Di rak ada 312 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "342",
-          "accepted": [],
+          "accepted": [
+            "342"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "312 + 30 = 342.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 312 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-043",
           "q": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Berapakah jumlah pelekat Irfan?",
           "answer": "353",
-          "accepted": [],
+          "accepted": [
+            "353"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "319 + 34 = 353.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Berapakah jumlah pelekat Irfan?"
         },
         {
           "id": "MATH-TAMBAH-044",
           "q": "326 + 38 = ________.",
           "answer": "364",
-          "accepted": [],
+          "accepted": [
+            "364"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "326 + 38 = 364.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "326 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-045",
           "q": "Di rak ada 333 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "339",
-          "accepted": [],
+          "accepted": [
+            "339"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "333 + 6 = 339.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 333 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-046",
           "q": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Berapakah jumlah epal Farah?",
           "answer": "350",
-          "accepted": [],
+          "accepted": [
+            "350"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "340 + 10 = 350.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Berapakah jumlah epal Farah?"
         },
         {
           "id": "MATH-TAMBAH-047",
           "q": "347 + 14 = ________.",
           "answer": "361",
-          "accepted": [],
+          "accepted": [
+            "361"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "347 + 14 = 361.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "347 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-048",
           "q": "Di rak ada 354 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
           "answer": "372",
-          "accepted": [],
+          "accepted": [
+            "372"
+          ],
           "hint": "Jumlah bermaksud tambah.",
           "explanation": "354 + 18 = 372.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak ada 354 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-049",
           "q": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Berapakah jumlah kerang Rafiq?",
           "answer": "383",
-          "accepted": [],
+          "accepted": [
+            "383"
+          ],
           "hint": "Tambah bilangan asal dengan bilangan yang diberi.",
           "explanation": "361 + 22 = 383.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Berapakah jumlah kerang Rafiq?"
         },
         {
           "id": "MATH-TAMBAH-050",
           "q": "368 + 26 = ________.",
           "answer": "394",
-          "accepted": [],
+          "accepted": [
+            "394"
+          ],
           "hint": "Tambah sa dahulu, kemudian puluh.",
           "explanation": "368 + 26 = 394.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "368 + 26 = ________."
         }
       ]
     },
@@ -1128,551 +1428,701 @@ export const mathSubject = {
           "id": "MATH-TOLAK-001",
           "q": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Berapakah baki pelekat Danish?",
           "answer": "35",
-          "accepted": [],
+          "accepted": [
+            "35"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "46 - 11 = 35.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Berapakah baki pelekat Danish?"
         },
         {
           "id": "MATH-TOLAK-002",
           "q": "57 - 17 = ________.",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "57 - 17 = 40.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "57 - 17 = ________."
         },
         {
           "id": "MATH-TOLAK-003",
           "q": "Ada 68 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "45",
-          "accepted": [],
+          "accepted": [
+            "45"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "68 - 23 = 45.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 68 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-004",
           "q": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Berapakah baki epal Sara?",
           "answer": "50",
-          "accepted": [],
+          "accepted": [
+            "50"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "79 - 29 = 50.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Berapakah baki epal Sara?"
         },
         {
           "id": "MATH-TOLAK-005",
           "q": "90 - 35 = ________.",
           "answer": "55",
-          "accepted": [],
+          "accepted": [
+            "55"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "90 - 35 = 55.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "90 - 35 = ________."
         },
         {
           "id": "MATH-TOLAK-006",
           "q": "Ada 101 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "60",
-          "accepted": [],
+          "accepted": [
+            "60"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "101 - 41 = 60.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 101 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-007",
           "q": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Berapakah baki kerang Iman?",
           "answer": "65",
-          "accepted": [],
+          "accepted": [
+            "65"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "112 - 47 = 65.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Berapakah baki kerang Iman?"
         },
         {
           "id": "MATH-TOLAK-008",
           "q": "75 - 5 = ________.",
           "answer": "70",
-          "accepted": [],
+          "accepted": [
+            "70"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "75 - 5 = 70.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "75 - 5 = ________."
         },
         {
           "id": "MATH-TOLAK-009",
           "q": "Ada 86 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "75",
-          "accepted": [],
+          "accepted": [
+            "75"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "86 - 11 = 75.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 86 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-010",
           "q": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Berapakah baki buku Aina?",
           "answer": "80",
-          "accepted": [],
+          "accepted": [
+            "80"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "97 - 17 = 80.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Berapakah baki buku Aina?"
         },
         {
           "id": "MATH-TOLAK-011",
           "q": "108 - 23 = ________.",
           "answer": "85",
-          "accepted": [],
+          "accepted": [
+            "85"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "108 - 23 = 85.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "108 - 23 = ________."
         },
         {
           "id": "MATH-TOLAK-012",
           "q": "Ada 119 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "90",
-          "accepted": [],
+          "accepted": [
+            "90"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "119 - 29 = 90.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 119 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-013",
           "q": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Berapakah baki manggis Irfan?",
           "answer": "95",
-          "accepted": [],
+          "accepted": [
+            "95"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "130 - 35 = 95.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Berapakah baki manggis Irfan?"
         },
         {
           "id": "MATH-TOLAK-014",
           "q": "141 - 41 = ________.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "141 - 41 = 100.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "141 - 41 = ________."
         },
         {
           "id": "MATH-TOLAK-015",
           "q": "Ada 152 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "105",
-          "accepted": [],
+          "accepted": [
+            "105"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "152 - 47 = 105.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 152 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-016",
           "q": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Berapakah baki bunga Farah?",
           "answer": "110",
-          "accepted": [],
+          "accepted": [
+            "110"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "115 - 5 = 110.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Berapakah baki bunga Farah?"
         },
         {
           "id": "MATH-TOLAK-017",
           "q": "126 - 11 = ________.",
           "answer": "115",
-          "accepted": [],
+          "accepted": [
+            "115"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "126 - 11 = 115.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "126 - 11 = ________."
         },
         {
           "id": "MATH-TOLAK-018",
           "q": "Ada 137 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "120",
-          "accepted": [],
+          "accepted": [
+            "120"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "137 - 17 = 120.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 137 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-019",
           "q": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Berapakah baki pensel Rafiq?",
           "answer": "125",
-          "accepted": [],
+          "accepted": [
+            "125"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "148 - 23 = 125.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Berapakah baki pensel Rafiq?"
         },
         {
           "id": "MATH-TOLAK-020",
           "q": "159 - 29 = ________.",
           "answer": "130",
-          "accepted": [],
+          "accepted": [
+            "130"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "159 - 29 = 130.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "159 - 29 = ________."
         },
         {
           "id": "MATH-TOLAK-021",
           "q": "Ada 170 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "135",
-          "accepted": [],
+          "accepted": [
+            "135"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "170 - 35 = 135.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 170 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-022",
           "q": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Berapakah baki kad Mira?",
           "answer": "140",
-          "accepted": [],
+          "accepted": [
+            "140"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "181 - 41 = 140.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Berapakah baki kad Mira?"
         },
         {
           "id": "MATH-TOLAK-023",
           "q": "192 - 47 = ________.",
           "answer": "145",
-          "accepted": [],
+          "accepted": [
+            "145"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "192 - 47 = 145.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "192 - 47 = ________."
         },
         {
           "id": "MATH-TOLAK-024",
           "q": "Ada 155 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "150",
-          "accepted": [],
+          "accepted": [
+            "150"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "155 - 5 = 150.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 155 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-025",
           "q": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Berapakah baki kuih Hakim?",
           "answer": "155",
-          "accepted": [],
+          "accepted": [
+            "155"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "166 - 11 = 155.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Berapakah baki kuih Hakim?"
         },
         {
           "id": "MATH-TOLAK-026",
           "q": "177 - 17 = ________.",
           "answer": "160",
-          "accepted": [],
+          "accepted": [
+            "160"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "177 - 17 = 160.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "177 - 17 = ________."
         },
         {
           "id": "MATH-TOLAK-027",
           "q": "Ada 188 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "165",
-          "accepted": [],
+          "accepted": [
+            "165"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "188 - 23 = 165.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 188 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-028",
           "q": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Berapakah baki guli Zara?",
           "answer": "170",
-          "accepted": [],
+          "accepted": [
+            "170"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "199 - 29 = 170.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Berapakah baki guli Zara?"
         },
         {
           "id": "MATH-TOLAK-029",
           "q": "210 - 35 = ________.",
           "answer": "175",
-          "accepted": [],
+          "accepted": [
+            "175"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "210 - 35 = 175.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "210 - 35 = ________."
         },
         {
           "id": "MATH-TOLAK-030",
           "q": "Ada 221 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "180",
-          "accepted": [],
+          "accepted": [
+            "180"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "221 - 41 = 180.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 221 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-031",
           "q": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Berapakah baki pelekat Danish?",
           "answer": "185",
-          "accepted": [],
+          "accepted": [
+            "185"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "232 - 47 = 185.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Berapakah baki pelekat Danish?"
         },
         {
           "id": "MATH-TOLAK-032",
           "q": "195 - 5 = ________.",
           "answer": "190",
-          "accepted": [],
+          "accepted": [
+            "190"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "195 - 5 = 190.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "195 - 5 = ________."
         },
         {
           "id": "MATH-TOLAK-033",
           "q": "Ada 206 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "195",
-          "accepted": [],
+          "accepted": [
+            "195"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "206 - 11 = 195.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 206 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-034",
           "q": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Berapakah baki epal Sara?",
           "answer": "200",
-          "accepted": [],
+          "accepted": [
+            "200"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "217 - 17 = 200.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Berapakah baki epal Sara?"
         },
         {
           "id": "MATH-TOLAK-035",
           "q": "228 - 23 = ________.",
           "answer": "205",
-          "accepted": [],
+          "accepted": [
+            "205"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "228 - 23 = 205.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "228 - 23 = ________."
         },
         {
           "id": "MATH-TOLAK-036",
           "q": "Ada 239 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "210",
-          "accepted": [],
+          "accepted": [
+            "210"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "239 - 29 = 210.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 239 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-037",
           "q": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Berapakah baki kerang Iman?",
           "answer": "215",
-          "accepted": [],
+          "accepted": [
+            "215"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "250 - 35 = 215.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Berapakah baki kerang Iman?"
         },
         {
           "id": "MATH-TOLAK-038",
           "q": "261 - 41 = ________.",
           "answer": "220",
-          "accepted": [],
+          "accepted": [
+            "220"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "261 - 41 = 220.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "261 - 41 = ________."
         },
         {
           "id": "MATH-TOLAK-039",
           "q": "Ada 272 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "225",
-          "accepted": [],
+          "accepted": [
+            "225"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "272 - 47 = 225.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 272 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-040",
           "q": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Berapakah baki buku Aina?",
           "answer": "230",
-          "accepted": [],
+          "accepted": [
+            "230"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "235 - 5 = 230.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Berapakah baki buku Aina?"
         },
         {
           "id": "MATH-TOLAK-041",
           "q": "246 - 11 = ________.",
           "answer": "235",
-          "accepted": [],
+          "accepted": [
+            "235"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "246 - 11 = 235.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "246 - 11 = ________."
         },
         {
           "id": "MATH-TOLAK-042",
           "q": "Ada 257 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "240",
-          "accepted": [],
+          "accepted": [
+            "240"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "257 - 17 = 240.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 257 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-043",
           "q": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Berapakah baki manggis Irfan?",
           "answer": "245",
-          "accepted": [],
+          "accepted": [
+            "245"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "268 - 23 = 245.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Berapakah baki manggis Irfan?"
         },
         {
           "id": "MATH-TOLAK-044",
           "q": "279 - 29 = ________.",
           "answer": "250",
-          "accepted": [],
+          "accepted": [
+            "250"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "279 - 29 = 250.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "279 - 29 = ________."
         },
         {
           "id": "MATH-TOLAK-045",
           "q": "Ada 290 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "255",
-          "accepted": [],
+          "accepted": [
+            "255"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "290 - 35 = 255.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 290 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-046",
           "q": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Berapakah baki bunga Farah?",
           "answer": "260",
-          "accepted": [],
+          "accepted": [
+            "260"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "301 - 41 = 260.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Berapakah baki bunga Farah?"
         },
         {
           "id": "MATH-TOLAK-047",
           "q": "312 - 47 = ________.",
           "answer": "265",
-          "accepted": [],
+          "accepted": [
+            "265"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "312 - 47 = 265.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "312 - 47 = ________."
         },
         {
           "id": "MATH-TOLAK-048",
           "q": "Ada 275 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?",
           "answer": "270",
-          "accepted": [],
+          "accepted": [
+            "270"
+          ],
           "hint": "Cari bilangan yang tinggal.",
           "explanation": "275 - 5 = 270.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 275 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?"
         },
         {
           "id": "MATH-TOLAK-049",
           "q": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Berapakah baki pensel Rafiq?",
           "answer": "275",
-          "accepted": [],
+          "accepted": [
+            "275"
+          ],
           "hint": "Baki bermaksud tolak.",
           "explanation": "286 - 11 = 275.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Berapakah baki pensel Rafiq?"
         },
         {
           "id": "MATH-TOLAK-050",
           "q": "297 - 17 = ________.",
           "answer": "280",
-          "accepted": [],
+          "accepted": [
+            "280"
+          ],
           "hint": "Tolak bilangan yang diberi daripada bilangan asal.",
           "explanation": "297 - 17 = 280.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "297 - 17 = ________."
         }
       ]
     },
@@ -1685,551 +2135,701 @@ export const mathSubject = {
           "id": "MATH-DARAB-001",
           "q": "2 x 3 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "2 x 3 = 6.",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 3 = ________."
         },
         {
           "id": "MATH-DARAB-002",
           "q": "2 x 5 = ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "2 x 5 = 10.",
+          "explanation": "Jawapan yang tepat ialah 10 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 5 = ________."
         },
         {
           "id": "MATH-DARAB-003",
           "q": "3 x 4 = ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "3 x 4 = 12.",
+          "explanation": "Jawapan yang tepat ialah 12 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 x 4 = ________."
         },
         {
           "id": "MATH-DARAB-004",
           "q": "4 x 5 = ________.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "4 x 5 = 20.",
+          "explanation": "Jawapan yang tepat ialah 20 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x 5 = ________."
         },
         {
           "id": "MATH-DARAB-005",
           "q": "5 x 6 = ________.",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "5 x 6 = 30.",
+          "explanation": "Jawapan yang tepat ialah 30 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x 6 = ________."
         },
         {
           "id": "MATH-DARAB-006",
           "q": "10 x 3 = ________.",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darab ialah tambah berulang.",
           "explanation": "10 x 3 = 30.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "10 x 3 = ________."
         },
         {
           "id": "MATH-DARAB-007",
           "q": "3 x 7 = ________.",
           "answer": "21",
-          "accepted": [],
+          "accepted": [
+            "21"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "3 x 7 = 21.",
+          "explanation": "Jawapan yang tepat ialah 21 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 x 7 = ________."
         },
         {
           "id": "MATH-DARAB-008",
           "q": "4 x 6 = ________.",
           "answer": "24",
-          "accepted": [],
+          "accepted": [
+            "24"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "4 x 6 = 24.",
+          "explanation": "Jawapan yang tepat ialah 24 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x 6 = ________."
         },
         {
           "id": "MATH-DARAB-009",
           "q": "5 x 8 = ________.",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "5 x 8 = 40.",
+          "explanation": "Jawapan yang tepat ialah 40 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x 8 = ________."
         },
         {
           "id": "MATH-DARAB-010",
           "q": "2 x 9 = ________.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Darab ialah tambah berulang.",
-          "explanation": "2 x 9 = 18.",
+          "explanation": "Jawapan yang tepat ialah 18 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 9 = ________."
         },
         {
           "id": "MATH-DARAB-011",
           "q": "Ada 3 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "3 kumpulan 2 ialah 2 x 3 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 3 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-012",
           "q": "Ada 5 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "5 kumpulan 2 ialah 2 x 5 = 10.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 5 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-013",
           "q": "Ada 4 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "4 kumpulan 3 ialah 3 x 4 = 12.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 4 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-014",
           "q": "Ada 5 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "5 kumpulan 4 ialah 4 x 5 = 20.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 5 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-015",
           "q": "Ada 6 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "6 kumpulan 5 ialah 5 x 6 = 30.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 6 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-016",
           "q": "Ada 3 pinggan. Setiap pinggan ada 10 kuih. Berapakah jumlah kuih?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "3 kumpulan 10 ialah 10 x 3 = 30.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 3 pinggan. Setiap pinggan ada 10 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-017",
           "q": "Ada 7 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?",
           "answer": "21",
-          "accepted": [],
+          "accepted": [
+            "21"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "7 kumpulan 3 ialah 3 x 7 = 21.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 7 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-018",
           "q": "Ada 6 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?",
           "answer": "24",
-          "accepted": [],
+          "accepted": [
+            "24"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "6 kumpulan 4 ialah 4 x 6 = 24.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 6 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-019",
           "q": "Ada 8 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "8 kumpulan 5 ialah 5 x 8 = 40.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 8 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-020",
           "q": "Ada 9 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Kumpulan yang sama banyak boleh didarab.",
           "explanation": "9 kumpulan 2 ialah 2 x 9 = 18.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 9 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
         },
         {
           "id": "MATH-DARAB-021",
           "q": "3 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "3 x 2 = 6.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-022",
           "q": "5 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "5 x 2 = 10.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 10 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-023",
           "q": "4 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "4 x 3 = 12.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 12 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-024",
           "q": "5 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "5 x 4 = 20.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 20 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-025",
           "q": "6 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "6 x 5 = 30.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 30 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "6 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-026",
           "q": "3 kumpulan dengan 10 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
           "explanation": "3 x 10 = 30.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 kumpulan dengan 10 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-027",
           "q": "7 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "21",
-          "accepted": [],
+          "accepted": [
+            "21"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "7 x 3 = 21.",
+          "explanation": "Jawapan yang tepat ialah 21 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "7 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-028",
           "q": "6 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "24",
-          "accepted": [],
+          "accepted": [
+            "24"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "6 x 4 = 24.",
+          "explanation": "Jawapan yang tepat ialah 24 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "6 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-029",
           "q": "8 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "8 x 5 = 40.",
+          "explanation": "Jawapan yang tepat ialah 40 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "8 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-030",
           "q": "9 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
-          "explanation": "9 x 2 = 18.",
+          "explanation": "Jawapan yang tepat ialah 18 berdasarkan kemahiran dalam topik Darab.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "9 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
         },
         {
           "id": "MATH-DARAB-031",
           "q": "2 + 2 + 2 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "2 ditambah 4 kali menjadi 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 + 2 + 2 + 2 = ________."
         },
         {
           "id": "MATH-DARAB-032",
-          "q": "2 + 2 + 2 + 2 = ________.",
+          "q": "Kira dengan teliti: 2 + 2 + 2 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "2 ditambah 4 kali menjadi 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 2 + 2 + 2 + 2 = ________."
         },
         {
           "id": "MATH-DARAB-033",
           "q": "3 + 3 + 3 + 3 = ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "3 ditambah 4 kali menjadi 12.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 + 3 + 3 + 3 = ________."
         },
         {
           "id": "MATH-DARAB-034",
           "q": "4 + 4 + 4 + 4 = ________.",
           "answer": "16",
-          "accepted": [],
+          "accepted": [
+            "16"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "4 ditambah 4 kali menjadi 16.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 + 4 + 4 + 4 = ________."
         },
         {
           "id": "MATH-DARAB-035",
           "q": "5 + 5 + 5 + 5 = ________.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "5 ditambah 4 kali menjadi 20.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 + 5 + 5 + 5 = ________."
         },
         {
           "id": "MATH-DARAB-036",
           "q": "10 + 10 + 10 + 10 = ________.",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "10 ditambah 4 kali menjadi 40.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "10 + 10 + 10 + 10 = ________."
         },
         {
           "id": "MATH-DARAB-037",
-          "q": "3 + 3 + 3 + 3 = ________.",
+          "q": "Kira dengan teliti: 3 + 3 + 3 + 3 = ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "3 ditambah 4 kali menjadi 12.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 3 + 3 + 3 + 3 = ________."
         },
         {
           "id": "MATH-DARAB-038",
-          "q": "4 + 4 + 4 + 4 = ________.",
+          "q": "Kira dengan teliti: 4 + 4 + 4 + 4 = ________.",
           "answer": "16",
-          "accepted": [],
+          "accepted": [
+            "16"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "4 ditambah 4 kali menjadi 16.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 4 + 4 + 4 + 4 = ________."
         },
         {
           "id": "MATH-DARAB-039",
-          "q": "5 + 5 + 5 + 5 = ________.",
+          "q": "Kira dengan teliti: 5 + 5 + 5 + 5 = ________.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "5 ditambah 4 kali menjadi 20.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 5 + 5 + 5 + 5 = ________."
         },
         {
           "id": "MATH-DARAB-040",
-          "q": "2 + 2 + 2 + 2 = ________.",
+          "q": "Soalan ulang kaji Darab: 2 + 2 + 2 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah berulang boleh ditukar kepada darab.",
           "explanation": "2 ditambah 4 kali menjadi 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Darab: 2 + 2 + 2 + 2 = ________."
         },
         {
           "id": "MATH-DARAB-041",
           "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 3 kotak?",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "2 x 3 = 6.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 3 kotak?"
         },
         {
           "id": "MATH-DARAB-042",
           "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 5 kotak?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "2 x 5 = 10.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 10 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 5 kotak?"
         },
         {
           "id": "MATH-DARAB-043",
           "q": "Satu kotak ada 3 pensel. Berapakah pensel dalam 4 kotak?",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "3 x 4 = 12.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 12 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 3 pensel. Berapakah pensel dalam 4 kotak?"
         },
         {
           "id": "MATH-DARAB-044",
           "q": "Satu kotak ada 4 pensel. Berapakah pensel dalam 5 kotak?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "4 x 5 = 20.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 20 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 4 pensel. Berapakah pensel dalam 5 kotak?"
         },
         {
           "id": "MATH-DARAB-045",
           "q": "Satu kotak ada 5 pensel. Berapakah pensel dalam 6 kotak?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "5 x 6 = 30.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 30 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 5 pensel. Berapakah pensel dalam 6 kotak?"
         },
         {
           "id": "MATH-DARAB-046",
           "q": "Satu kotak ada 10 pensel. Berapakah pensel dalam 3 kotak?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
           "explanation": "10 x 3 = 30.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 10 pensel. Berapakah pensel dalam 3 kotak?"
         },
         {
           "id": "MATH-DARAB-047",
           "q": "Satu kotak ada 3 pensel. Berapakah pensel dalam 7 kotak?",
           "answer": "21",
-          "accepted": [],
+          "accepted": [
+            "21"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "3 x 7 = 21.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 21 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 3 pensel. Berapakah pensel dalam 7 kotak?"
         },
         {
           "id": "MATH-DARAB-048",
           "q": "Satu kotak ada 4 pensel. Berapakah pensel dalam 6 kotak?",
           "answer": "24",
-          "accepted": [],
+          "accepted": [
+            "24"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "4 x 6 = 24.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 24 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 4 pensel. Berapakah pensel dalam 6 kotak?"
         },
         {
           "id": "MATH-DARAB-049",
           "q": "Satu kotak ada 5 pensel. Berapakah pensel dalam 8 kotak?",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "5 x 8 = 40.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 40 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 5 pensel. Berapakah pensel dalam 8 kotak?"
         },
         {
           "id": "MATH-DARAB-050",
           "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 9 kotak?",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Darabkan pensel dalam satu kotak dengan bilangan kotak.",
-          "explanation": "2 x 9 = 18.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 18 berdasarkan kemahiran dalam topik Darab.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 9 kotak?"
         }
       ]
     },
@@ -2242,551 +2842,701 @@ export const mathSubject = {
           "id": "MATH-BAHAGI-001",
           "q": "12 bahagi 2 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "12 bahagi 2 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "12 bahagi 2 = ________."
         },
         {
           "id": "MATH-BAHAGI-002",
           "q": "15 bahagi 3 = ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "15 bahagi 3 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "15 bahagi 3 = ________."
         },
         {
           "id": "MATH-BAHAGI-003",
           "q": "20 bahagi 4 = ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "20 bahagi 4 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "20 bahagi 4 = ________."
         },
         {
           "id": "MATH-BAHAGI-004",
           "q": "25 bahagi 5 = ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "25 bahagi 5 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "25 bahagi 5 = ________."
         },
         {
           "id": "MATH-BAHAGI-005",
           "q": "30 bahagi 5 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "30 bahagi 5 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "30 bahagi 5 = ________."
         },
         {
           "id": "MATH-BAHAGI-006",
           "q": "18 bahagi 3 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "18 bahagi 3 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "18 bahagi 3 = ________."
         },
         {
           "id": "MATH-BAHAGI-007",
           "q": "24 bahagi 4 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "24 bahagi 4 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "24 bahagi 4 = ________."
         },
         {
           "id": "MATH-BAHAGI-008",
           "q": "40 bahagi 10 = ________.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "40 bahagi 10 = 4.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "40 bahagi 10 = ________."
         },
         {
           "id": "MATH-BAHAGI-009",
           "q": "16 bahagi 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "16 bahagi 2 = 8.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "16 bahagi 2 = ________."
         },
         {
           "id": "MATH-BAHAGI-010",
           "q": "36 bahagi 6 = ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan kepada kumpulan sama banyak.",
           "explanation": "36 bahagi 6 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "36 bahagi 6 = ________."
         },
         {
           "id": "MATH-BAHAGI-011",
           "q": "12 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "12 bahagi 2 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "12 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-012",
           "q": "15 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "15 bahagi 3 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "15 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-013",
           "q": "20 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "20 bahagi 4 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "20 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-014",
           "q": "25 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "25 bahagi 5 = 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "25 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-015",
           "q": "30 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "30 bahagi 5 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "30 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-016",
           "q": "18 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "18 bahagi 3 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "18 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-017",
           "q": "24 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "24 bahagi 4 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "24 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-018",
           "q": "40 gula-gula dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "40 bahagi 10 = 4.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "40 gula-gula dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-019",
           "q": "16 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "16 bahagi 2 = 8.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "16 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-020",
           "q": "36 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kongsi sama rata bermaksud bahagi.",
           "explanation": "36 bahagi 6 = 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "36 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-021",
           "q": "Ada 12 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "12 bahagi 2 = 6.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 12 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-022",
           "q": "Ada 15 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "15 bahagi 3 = 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 15 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-023",
           "q": "Ada 20 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "20 bahagi 4 = 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 20 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-024",
           "q": "Ada 25 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "25 bahagi 5 = 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 25 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-025",
           "q": "Ada 30 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "30 bahagi 5 = 6.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 30 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-026",
           "q": "Ada 18 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "18 bahagi 3 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 18 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-027",
           "q": "Ada 24 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "24 bahagi 4 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 24 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-028",
           "q": "Ada 40 biji epal. Epal itu dimasukkan sama banyak ke dalam 10 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "40 bahagi 10 = 4.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 40 biji epal. Epal itu dimasukkan sama banyak ke dalam 10 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-029",
           "q": "Ada 16 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "16 bahagi 2 = 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 16 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-030",
           "q": "Ada 36 biji epal. Epal itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji epal.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bahagikan jumlah epal dengan bilangan bakul.",
           "explanation": "36 bahagi 6 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 36 biji epal. Epal itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-031",
           "q": "Jika 12 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "12 bahagi 2 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 12 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-032",
           "q": "Jika 15 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "15 bahagi 3 = 5.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 15 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-033",
           "q": "Jika 20 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "20 bahagi 4 = 5.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 20 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-034",
           "q": "Jika 25 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "25 bahagi 5 = 5.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 25 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-035",
           "q": "Jika 30 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "30 bahagi 5 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 30 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-036",
           "q": "Jika 18 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "18 bahagi 3 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 18 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-037",
           "q": "Jika 24 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "24 bahagi 4 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 24 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-038",
           "q": "Jika 40 objek dibahagi kepada kumpulan 10, setiap kumpulan ada ________ objek.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "40 bahagi 10 = 4.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 40 objek dibahagi kepada kumpulan 10, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-039",
           "q": "Jika 16 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "16 bahagi 2 = 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 16 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-040",
           "q": "Jika 36 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Cari bilangan dalam setiap kumpulan.",
           "explanation": "36 bahagi 6 = 6.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 36 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek."
         },
         {
           "id": "MATH-BAHAGI-041",
           "q": "2 x ________ = 12.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "2 x 6 = 12.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x ________ = 12."
         },
         {
           "id": "MATH-BAHAGI-042",
           "q": "3 x ________ = 15.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "3 x 5 = 15.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 5 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 x ________ = 15."
         },
         {
           "id": "MATH-BAHAGI-043",
           "q": "4 x ________ = 20.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "4 x 5 = 20.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 5 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x ________ = 20."
         },
         {
           "id": "MATH-BAHAGI-044",
           "q": "5 x ________ = 25.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "5 x 5 = 25.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 5 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x ________ = 25."
         },
         {
           "id": "MATH-BAHAGI-045",
           "q": "5 x ________ = 30.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "5 x 6 = 30.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x ________ = 30."
         },
         {
           "id": "MATH-BAHAGI-046",
           "q": "3 x ________ = 18.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "3 x 6 = 18.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "3 x ________ = 18."
         },
         {
           "id": "MATH-BAHAGI-047",
           "q": "4 x ________ = 24.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "4 x 6 = 24.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x ________ = 24."
         },
         {
           "id": "MATH-BAHAGI-048",
           "q": "10 x ________ = 40.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Gunakan fakta darab songsang.",
           "explanation": "10 x 4 = 40.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "10 x ________ = 40."
         },
         {
           "id": "MATH-BAHAGI-049",
           "q": "2 x ________ = 16.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "2 x 8 = 16.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 8 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x ________ = 16."
         },
         {
           "id": "MATH-BAHAGI-050",
           "q": "6 x ________ = 36.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Gunakan fakta darab songsang.",
-          "explanation": "6 x 6 = 36.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 6 berdasarkan kemahiran dalam topik Bahagi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x ________ = 36."
         }
       ]
     },
@@ -2799,551 +3549,701 @@ export const mathSubject = {
           "id": "MATH-WANG-001",
           "q": "Aina ada RM3. Ibu memberi RM2. Berapakah jumlah wang Aina? RM ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM3 + RM2 = RM5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM3. Ibu memberi RM2. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-002",
           "q": "Danish ada RM7. Dia membeli buku berharga RM3. Berapakah baki wangnya? RM ________.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM7 - RM3 = RM4.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM7. Dia membeli buku berharga RM3. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-003",
           "q": "40 sen + 10 sen = ________ sen.",
           "answer": "50",
-          "accepted": [],
+          "accepted": [
+            "50"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "40 sen + 10 sen = 50 sen.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "40 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-004",
           "q": "Harga sebatang pensel ialah RM7. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "14",
-          "accepted": [],
+          "accepted": [
+            "14"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM7 x 2 = RM14.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM7. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-005",
           "q": "Manakah lebih besar, RM7 atau RM6?",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM7 lebih besar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM7 atau RM6?"
         },
         {
           "id": "MATH-WANG-006",
           "q": "Aina ada RM8. Ibu memberi RM7. Berapakah jumlah wang Aina? RM ________.",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM8 + RM7 = RM15.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM8. Ibu memberi RM7. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-007",
           "q": "Danish ada RM10. Dia membeli buku berharga RM1. Berapakah baki wangnya? RM ________.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM10 - RM1 = RM9.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM10. Dia membeli buku berharga RM1. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-008",
           "q": "10 sen + 10 sen = ________ sen.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "10 sen + 10 sen = 20 sen.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "10 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-009",
           "q": "Harga sebatang pensel ialah RM3. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM3 x 2 = RM6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM3. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-010",
           "q": "Manakah lebih besar, RM12 atau RM4?",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM12 lebih besar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM12 atau RM4?"
         },
         {
           "id": "MATH-WANG-011",
           "q": "Aina ada RM13. Ibu memberi RM5. Berapakah jumlah wang Aina? RM ________.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM13 + RM5 = RM18.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM13. Ibu memberi RM5. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-012",
           "q": "Danish ada RM8. Dia membeli buku berharga RM6. Berapakah baki wangnya? RM ________.",
           "answer": "2",
-          "accepted": [],
+          "accepted": [
+            "2"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM8 - RM6 = RM2.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM8. Dia membeli buku berharga RM6. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-013",
           "q": "60 sen + 10 sen = ________ sen.",
           "answer": "70",
-          "accepted": [],
+          "accepted": [
+            "70"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "60 sen + 10 sen = 70 sen.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "60 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-014",
           "q": "Harga sebatang pensel ialah RM8. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "16",
-          "accepted": [],
+          "accepted": [
+            "16"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM8 x 2 = RM16.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM8. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-015",
           "q": "Manakah lebih besar, RM5 atau RM2?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM5 lebih besar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM5 atau RM2?"
         },
         {
           "id": "MATH-WANG-016",
           "q": "Aina ada RM6. Ibu memberi RM3. Berapakah jumlah wang Aina? RM ________.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM6 + RM3 = RM9.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM6. Ibu memberi RM3. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-017",
           "q": "Danish ada RM11. Dia membeli buku berharga RM4. Berapakah baki wangnya? RM ________.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM11 - RM4 = RM7.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM11. Dia membeli buku berharga RM4. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-018",
           "q": "30 sen + 10 sen = ________ sen.",
           "answer": "40",
-          "accepted": [],
+          "accepted": [
+            "40"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "30 sen + 10 sen = 40 sen.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "30 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-019",
           "q": "Harga sebatang pensel ialah RM4. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM4 x 2 = RM8.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM4. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-020",
           "q": "Manakah lebih besar, RM10 atau RM7?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM10 lebih besar.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM10 atau RM7?"
         },
         {
           "id": "MATH-WANG-021",
           "q": "Aina ada RM11. Ibu memberi RM1. Berapakah jumlah wang Aina? RM ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM11 + RM1 = RM12.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM11. Ibu memberi RM1. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-022",
           "q": "Danish ada RM14. Dia membeli buku berharga RM2. Berapakah baki wangnya? RM ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM14 - RM2 = RM12.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM14. Dia membeli buku berharga RM2. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-023",
           "q": "80 sen + 10 sen = ________ sen.",
           "answer": "90",
-          "accepted": [],
+          "accepted": [
+            "90"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "80 sen + 10 sen = 90 sen.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "80 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-024",
           "q": "Harga sebatang pensel ialah RM9. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM9 x 2 = RM18.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM9. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-025",
           "q": "Manakah lebih besar, RM3 atau RM5?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM5 lebih besar.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM3 atau RM5?"
         },
         {
           "id": "MATH-WANG-026",
           "q": "Aina ada RM4. Ibu memberi RM6. Berapakah jumlah wang Aina? RM ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM4 + RM6 = RM10.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM4. Ibu memberi RM6. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-027",
           "q": "Danish ada RM12. Dia membeli buku berharga RM7. Berapakah baki wangnya? RM ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM12 - RM7 = RM5.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM12. Dia membeli buku berharga RM7. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-028",
           "q": "50 sen + 10 sen = ________ sen.",
           "answer": "60",
-          "accepted": [],
+          "accepted": [
+            "60"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "50 sen + 10 sen = 60 sen.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "50 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-029",
           "q": "Harga sebatang pensel ialah RM5. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM5 x 2 = RM10.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM5. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-030",
           "q": "Manakah lebih besar, RM8 atau RM3?",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM8 lebih besar.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM8 atau RM3?"
         },
         {
           "id": "MATH-WANG-031",
           "q": "Aina ada RM9. Ibu memberi RM4. Berapakah jumlah wang Aina? RM ________.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM9 + RM4 = RM13.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM9. Ibu memberi RM4. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-032",
           "q": "Danish ada RM15. Dia membeli buku berharga RM5. Berapakah baki wangnya? RM ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM15 - RM5 = RM10.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM15. Dia membeli buku berharga RM5. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-033",
           "q": "20 sen + 10 sen = ________ sen.",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "20 sen + 10 sen = 30 sen.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "20 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-034",
           "q": "Harga sebatang pensel ialah RM10. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM10 x 2 = RM20.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM10. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-035",
           "q": "Manakah lebih besar, RM13 atau RM1?",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM13 lebih besar.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM13 atau RM1?"
         },
         {
           "id": "MATH-WANG-036",
           "q": "Aina ada RM2. Ibu memberi RM2. Berapakah jumlah wang Aina? RM ________.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM2 + RM2 = RM4.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM2. Ibu memberi RM2. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-037",
           "q": "Danish ada RM6. Dia membeli buku berharga RM3. Berapakah baki wangnya? RM ________.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM6 - RM3 = RM3.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM6. Dia membeli buku berharga RM3. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-038",
           "q": "70 sen + 10 sen = ________ sen.",
           "answer": "80",
-          "accepted": [],
+          "accepted": [
+            "80"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "70 sen + 10 sen = 80 sen.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "70 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-039",
           "q": "Harga sebatang pensel ialah RM6. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM6 x 2 = RM12.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM6. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-040",
           "q": "Manakah lebih besar, RM6 atau RM6?",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM6 lebih besar.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM6 atau RM6?"
         },
         {
           "id": "MATH-WANG-041",
           "q": "Aina ada RM7. Ibu memberi RM7. Berapakah jumlah wang Aina? RM ________.",
           "answer": "14",
-          "accepted": [],
+          "accepted": [
+            "14"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM7 + RM7 = RM14.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM7. Ibu memberi RM7. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-042",
           "q": "Danish ada RM9. Dia membeli buku berharga RM1. Berapakah baki wangnya? RM ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM9 - RM1 = RM8.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM9. Dia membeli buku berharga RM1. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-043",
-          "q": "40 sen + 10 sen = ________ sen.",
+          "q": "Kira dengan teliti: 40 sen + 10 sen = ________ sen.",
           "answer": "50",
-          "accepted": [],
+          "accepted": [
+            "50"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "40 sen + 10 sen = 50 sen.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 40 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-044",
           "q": "Harga sebatang pensel ialah RM11. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "22",
-          "accepted": [],
+          "accepted": [
+            "22"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM11 x 2 = RM22.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Harga sebatang pensel ialah RM11. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-045",
           "q": "Manakah lebih besar, RM11 atau RM4?",
           "answer": "11",
-          "accepted": [],
+          "accepted": [
+            "11"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM11 lebih besar.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM11 atau RM4?"
         },
         {
           "id": "MATH-WANG-046",
           "q": "Aina ada RM12. Ibu memberi RM5. Berapakah jumlah wang Aina? RM ________.",
           "answer": "17",
-          "accepted": [],
+          "accepted": [
+            "17"
+          ],
           "hint": "Tambah jumlah ringgit.",
           "explanation": "RM12 + RM5 = RM17.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina ada RM12. Ibu memberi RM5. Berapakah jumlah wang Aina? RM ________."
         },
         {
           "id": "MATH-WANG-047",
           "q": "Danish ada RM19. Dia membeli buku berharga RM6. Berapakah baki wangnya? RM ________.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Baki wang bermaksud tolak.",
           "explanation": "RM19 - RM6 = RM13.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Danish ada RM19. Dia membeli buku berharga RM6. Berapakah baki wangnya? RM ________."
         },
         {
           "id": "MATH-WANG-048",
-          "q": "10 sen + 10 sen = ________ sen.",
+          "q": "Kira dengan teliti: 10 sen + 10 sen = ________ sen.",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Tambah nilai sen.",
           "explanation": "10 sen + 10 sen = 20 sen.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 10 sen + 10 sen = ________ sen."
         },
         {
           "id": "MATH-WANG-049",
-          "q": "Harga sebatang pensel ialah RM7. Berapakah harga 2 batang pensel? RM ________.",
+          "q": "Kira dengan teliti: Harga sebatang pensel ialah RM7. Berapakah harga 2 batang pensel? RM ________.",
           "answer": "14",
-          "accepted": [],
+          "accepted": [
+            "14"
+          ],
           "hint": "Darab harga satu barang dengan 2.",
           "explanation": "RM7 x 2 = RM14.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Harga sebatang pensel ialah RM7. Berapakah harga 2 batang pensel? RM ________."
         },
         {
           "id": "MATH-WANG-050",
           "q": "Manakah lebih besar, RM4 atau RM2?",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Bandingkan nilai ringgit.",
           "explanation": "RM4 lebih besar.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih besar, RM4 atau RM2?"
         }
       ]
     },
@@ -3357,590 +4257,700 @@ export const mathSubject = {
           "q": "Hari selepas Selasa ialah hari ________.",
           "answer": "Rabu",
           "accepted": [
-            "rabu"
+            "Rabu"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Selasa ialah Rabu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Selasa ialah hari ________."
         },
         {
           "id": "MATH-MASA-002",
           "q": "Hari sebelum Rabu ialah hari ________.",
           "answer": "Selasa",
           "accepted": [
-            "selasa"
+            "Selasa"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Rabu ialah Selasa.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Rabu ialah hari ________."
         },
         {
           "id": "MATH-MASA-003",
           "q": "Jam menunjukkan pukul 4. Satu jam kemudian ialah pukul ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 4 ialah pukul 5.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 4. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-004",
           "q": "Kelas bermula pukul 5 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 5 tambah 2 jam ialah pukul 7.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 5 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-005",
           "q": "Dalam satu minggu ada ________ hari.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam satu minggu ada ________ hari."
         },
         {
           "id": "MATH-MASA-006",
           "q": "Hari selepas Ahad ialah hari ________.",
           "answer": "Isnin",
           "accepted": [
-            "isnin"
+            "Isnin"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Ahad ialah Isnin.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Ahad ialah hari ________."
         },
         {
           "id": "MATH-MASA-007",
           "q": "Hari sebelum Isnin ialah hari ________.",
           "answer": "Ahad",
           "accepted": [
-            "ahad"
+            "Ahad"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Isnin ialah Ahad.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Isnin ialah hari ________."
         },
         {
           "id": "MATH-MASA-008",
           "q": "Jam menunjukkan pukul 9. Satu jam kemudian ialah pukul ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 9 ialah pukul 10.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 9. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-009",
           "q": "Kelas bermula pukul 10 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 10 tambah 2 jam ialah pukul 12.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 10 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-010",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari."
         },
         {
           "id": "MATH-MASA-011",
           "q": "Hari selepas Jumaat ialah hari ________.",
           "answer": "Sabtu",
           "accepted": [
-            "sabtu"
+            "Sabtu"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Jumaat ialah Sabtu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Jumaat ialah hari ________."
         },
         {
           "id": "MATH-MASA-012",
           "q": "Hari sebelum Sabtu ialah hari ________.",
           "answer": "Jumaat",
           "accepted": [
-            "jumaat"
+            "Jumaat"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Sabtu ialah Jumaat.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Sabtu ialah hari ________."
         },
         {
           "id": "MATH-MASA-013",
           "q": "Jam menunjukkan pukul 3. Satu jam kemudian ialah pukul ________.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 3 ialah pukul 4.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 3. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-014",
           "q": "Kelas bermula pukul 4 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 4 tambah 2 jam ialah pukul 6.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 4 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-015",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari."
         },
         {
           "id": "MATH-MASA-016",
           "q": "Hari selepas Rabu ialah hari ________.",
           "answer": "Khamis",
           "accepted": [
-            "khamis"
+            "Khamis"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Rabu ialah Khamis.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Rabu ialah hari ________."
         },
         {
           "id": "MATH-MASA-017",
           "q": "Hari sebelum Khamis ialah hari ________.",
           "answer": "Rabu",
           "accepted": [
-            "rabu"
+            "Rabu"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Khamis ialah Rabu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Khamis ialah hari ________."
         },
         {
           "id": "MATH-MASA-018",
           "q": "Jam menunjukkan pukul 8. Satu jam kemudian ialah pukul ________.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 8 ialah pukul 9.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 8. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-019",
           "q": "Kelas bermula pukul 9 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "11",
-          "accepted": [],
+          "accepted": [
+            "11"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 9 tambah 2 jam ialah pukul 11.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 9 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-020",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari."
         },
         {
           "id": "MATH-MASA-021",
           "q": "Hari selepas Isnin ialah hari ________.",
           "answer": "Selasa",
           "accepted": [
-            "selasa"
+            "Selasa"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Isnin ialah Selasa.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Isnin ialah hari ________."
         },
         {
           "id": "MATH-MASA-022",
           "q": "Hari sebelum Selasa ialah hari ________.",
           "answer": "Isnin",
           "accepted": [
-            "isnin"
+            "Isnin"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Selasa ialah Isnin.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Selasa ialah hari ________."
         },
         {
           "id": "MATH-MASA-023",
           "q": "Jam menunjukkan pukul 2. Satu jam kemudian ialah pukul ________.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 2 ialah pukul 3.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 2. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-024",
           "q": "Kelas bermula pukul 3 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 3 tambah 2 jam ialah pukul 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 3 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-025",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari."
         },
         {
           "id": "MATH-MASA-026",
           "q": "Hari selepas Sabtu ialah hari ________.",
           "answer": "Ahad",
           "accepted": [
-            "ahad"
+            "Ahad"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Sabtu ialah Ahad.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Sabtu ialah hari ________."
         },
         {
           "id": "MATH-MASA-027",
           "q": "Hari sebelum Ahad ialah hari ________.",
           "answer": "Sabtu",
           "accepted": [
-            "sabtu"
+            "Sabtu"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Ahad ialah Sabtu.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Ahad ialah hari ________."
         },
         {
           "id": "MATH-MASA-028",
           "q": "Jam menunjukkan pukul 7. Satu jam kemudian ialah pukul ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 7 ialah pukul 8.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 7. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-029",
           "q": "Kelas bermula pukul 8 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 8 tambah 2 jam ialah pukul 10.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 8 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-030",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 6)",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 6)"
         },
         {
           "id": "MATH-MASA-031",
           "q": "Hari selepas Khamis ialah hari ________.",
           "answer": "Jumaat",
           "accepted": [
-            "jumaat"
+            "Jumaat"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Khamis ialah Jumaat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari selepas Khamis ialah hari ________."
         },
         {
           "id": "MATH-MASA-032",
           "q": "Hari sebelum Jumaat ialah hari ________.",
           "answer": "Khamis",
           "accepted": [
-            "khamis"
+            "Khamis"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Jumaat ialah Khamis.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Hari sebelum Jumaat ialah hari ________."
         },
         {
           "id": "MATH-MASA-033",
           "q": "Jam menunjukkan pukul 1. Satu jam kemudian ialah pukul ________.",
           "answer": "2",
-          "accepted": [],
+          "accepted": [
+            "2"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 1 ialah pukul 2.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 1. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-034",
           "q": "Kelas bermula pukul 2 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 2 tambah 2 jam ialah pukul 4.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 2 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-035",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari. (Latihan 7)",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari. (Latihan 7)"
         },
         {
           "id": "MATH-MASA-036",
-          "q": "Hari selepas Selasa ialah hari ________.",
+          "q": "Kira dengan teliti: Hari selepas Selasa ialah hari ________.",
           "answer": "Rabu",
           "accepted": [
-            "rabu"
+            "Rabu"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Selasa ialah Rabu.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari selepas Selasa ialah hari ________."
         },
         {
           "id": "MATH-MASA-037",
-          "q": "Hari sebelum Rabu ialah hari ________.",
+          "q": "Kira dengan teliti: Hari sebelum Rabu ialah hari ________.",
           "answer": "Selasa",
           "accepted": [
-            "selasa"
+            "Selasa"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Rabu ialah Selasa.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari sebelum Rabu ialah hari ________."
         },
         {
           "id": "MATH-MASA-038",
           "q": "Jam menunjukkan pukul 6. Satu jam kemudian ialah pukul ________.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 6 ialah pukul 7.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 6. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-039",
           "q": "Kelas bermula pukul 7 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 7 tambah 2 jam ialah pukul 9.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 7 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-040",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari. (Latihan 8)",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari. (Latihan 8)"
         },
         {
           "id": "MATH-MASA-041",
-          "q": "Hari selepas Ahad ialah hari ________.",
+          "q": "Kira dengan teliti: Hari selepas Ahad ialah hari ________.",
           "answer": "Isnin",
           "accepted": [
-            "isnin"
+            "Isnin"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Ahad ialah Isnin.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari selepas Ahad ialah hari ________."
         },
         {
           "id": "MATH-MASA-042",
-          "q": "Hari sebelum Isnin ialah hari ________.",
+          "q": "Kira dengan teliti: Hari sebelum Isnin ialah hari ________.",
           "answer": "Ahad",
           "accepted": [
-            "ahad"
+            "Ahad"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Isnin ialah Ahad.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari sebelum Isnin ialah hari ________."
         },
         {
           "id": "MATH-MASA-043",
           "q": "Jam menunjukkan pukul 11. Satu jam kemudian ialah pukul ________.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 11 ialah pukul 12.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 11. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-044",
           "q": "Kelas bermula pukul 1 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 1 tambah 2 jam ialah pukul 3.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 1 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-045",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari. (Latihan 9)",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari. (Latihan 9)"
         },
         {
           "id": "MATH-MASA-046",
-          "q": "Hari selepas Jumaat ialah hari ________.",
+          "q": "Kira dengan teliti: Hari selepas Jumaat ialah hari ________.",
           "answer": "Sabtu",
           "accepted": [
-            "sabtu"
+            "Sabtu"
           ],
           "hint": "Lihat susunan hari dalam seminggu.",
           "explanation": "Selepas Jumaat ialah Sabtu.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari selepas Jumaat ialah hari ________."
         },
         {
           "id": "MATH-MASA-047",
-          "q": "Hari sebelum Sabtu ialah hari ________.",
+          "q": "Kira dengan teliti: Hari sebelum Sabtu ialah hari ________.",
           "answer": "Jumaat",
           "accepted": [
-            "jumaat"
+            "Jumaat"
           ],
           "hint": "Undur satu hari.",
           "explanation": "Sebelum Sabtu ialah Jumaat.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Hari sebelum Sabtu ialah hari ________."
         },
         {
           "id": "MATH-MASA-048",
           "q": "Jam menunjukkan pukul 5. Satu jam kemudian ialah pukul ________.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tambah 1 jam.",
           "explanation": "Satu jam selepas pukul 5 ialah pukul 6.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Jam menunjukkan pukul 5. Satu jam kemudian ialah pukul ________."
         },
         {
           "id": "MATH-MASA-049",
           "q": "Kelas bermula pukul 6 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah 2 jam pada waktu mula.",
           "explanation": "Pukul 6 tambah 2 jam ialah pukul 8.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kelas bermula pukul 6 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
         },
         {
           "id": "MATH-MASA-050",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 10)",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Kira bilangan hari dari Isnin hingga Ahad.",
           "explanation": "Satu minggu mempunyai 7 hari.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 10)"
         }
       ]
     },
@@ -3953,571 +4963,701 @@ export const mathSubject = {
           "id": "MATH-PANJANG-001",
           "q": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "11 cm + 4 cm = 15 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-002",
           "q": "Tali sepanjang 17 cm dipotong 5 cm. Baki tali ialah ________ cm.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "17 cm - 5 cm = 12 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 17 cm dipotong 5 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-003",
           "q": "Manakah lebih panjang, 13 cm atau 19 cm?",
           "answer": "19",
-          "accepted": [],
+          "accepted": [
+            "19"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "19 cm lebih panjang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 13 cm atau 19 cm?"
         },
         {
           "id": "MATH-PANJANG-004",
           "q": "1 meter bersamaan ________ cm.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "1 meter bersamaan ________ cm."
         },
         {
           "id": "MATH-PANJANG-005",
           "q": "Pembaris sesuai digunakan untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Pembaris sesuai digunakan untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-006",
           "q": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "25",
-          "accepted": [],
+          "accepted": [
+            "25"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "16 cm + 9 cm = 25 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-007",
           "q": "Tali sepanjang 27 cm dipotong 10 cm. Baki tali ialah ________ cm.",
           "answer": "17",
-          "accepted": [],
+          "accepted": [
+            "17"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "27 cm - 10 cm = 17 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 27 cm dipotong 10 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-008",
           "q": "Manakah lebih panjang, 18 cm atau 29 cm?",
           "answer": "29",
-          "accepted": [],
+          "accepted": [
+            "29"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "29 cm lebih panjang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 18 cm atau 29 cm?"
         },
         {
           "id": "MATH-PANJANG-009",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm."
         },
         {
           "id": "MATH-PANJANG-010",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-011",
           "q": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "26",
-          "accepted": [],
+          "accepted": [
+            "26"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "21 cm + 5 cm = 26 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-012",
           "q": "Tali sepanjang 28 cm dipotong 6 cm. Baki tali ialah ________ cm.",
           "answer": "22",
-          "accepted": [],
+          "accepted": [
+            "22"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "28 cm - 6 cm = 22 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 28 cm dipotong 6 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-013",
           "q": "Manakah lebih panjang, 23 cm atau 30 cm?",
           "answer": "30",
-          "accepted": [],
+          "accepted": [
+            "30"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "30 cm lebih panjang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 23 cm atau 30 cm?"
         },
         {
           "id": "MATH-PANJANG-014",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm."
         },
         {
           "id": "MATH-PANJANG-015",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-016",
           "q": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "36",
-          "accepted": [],
+          "accepted": [
+            "36"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "26 cm + 10 cm = 36 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-017",
           "q": "Tali sepanjang 38 cm dipotong 11 cm. Baki tali ialah ________ cm.",
           "answer": "27",
-          "accepted": [],
+          "accepted": [
+            "27"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "38 cm - 11 cm = 27 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 38 cm dipotong 11 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-018",
           "q": "Manakah lebih panjang, 28 cm atau 31 cm?",
           "answer": "31",
-          "accepted": [],
+          "accepted": [
+            "31"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "31 cm lebih panjang.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 28 cm atau 31 cm?"
         },
         {
           "id": "MATH-PANJANG-019",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm."
         },
         {
           "id": "MATH-PANJANG-020",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-021",
           "q": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "37",
-          "accepted": [],
+          "accepted": [
+            "37"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "31 cm + 6 cm = 37 cm.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-022",
           "q": "Tali sepanjang 39 cm dipotong 7 cm. Baki tali ialah ________ cm.",
           "answer": "32",
-          "accepted": [],
+          "accepted": [
+            "32"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "39 cm - 7 cm = 32 cm.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 39 cm dipotong 7 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-023",
           "q": "Manakah lebih panjang, 33 cm atau 41 cm?",
           "answer": "41",
-          "accepted": [],
+          "accepted": [
+            "41"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "41 cm lebih panjang.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 33 cm atau 41 cm?"
         },
         {
           "id": "MATH-PANJANG-024",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm.",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm."
         },
         {
           "id": "MATH-PANJANG-025",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-026",
           "q": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "47",
-          "accepted": [],
+          "accepted": [
+            "47"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "36 cm + 11 cm = 47 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-027",
           "q": "Tali sepanjang 40 cm dipotong 3 cm. Baki tali ialah ________ cm.",
           "answer": "37",
-          "accepted": [],
+          "accepted": [
+            "37"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "40 cm - 3 cm = 37 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 40 cm dipotong 3 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-028",
           "q": "Manakah lebih panjang, 38 cm atau 42 cm?",
           "answer": "42",
-          "accepted": [],
+          "accepted": [
+            "42"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "42 cm lebih panjang.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 38 cm atau 42 cm?"
         },
         {
           "id": "MATH-PANJANG-029",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 6)",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 6)"
         },
         {
           "id": "MATH-PANJANG-030",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 6)",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 6)"
         },
         {
           "id": "MATH-PANJANG-031",
           "q": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "48",
-          "accepted": [],
+          "accepted": [
+            "48"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "41 cm + 7 cm = 48 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-032",
           "q": "Tali sepanjang 50 cm dipotong 8 cm. Baki tali ialah ________ cm.",
           "answer": "42",
-          "accepted": [],
+          "accepted": [
+            "42"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "50 cm - 8 cm = 42 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 50 cm dipotong 8 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-033",
           "q": "Manakah lebih panjang, 43 cm atau 52 cm?",
           "answer": "52",
-          "accepted": [],
+          "accepted": [
+            "52"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "52 cm lebih panjang.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 43 cm atau 52 cm?"
         },
         {
           "id": "MATH-PANJANG-034",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm. (Latihan 7)",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm. (Latihan 7)"
         },
         {
           "id": "MATH-PANJANG-035",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 7)",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 7)"
         },
         {
           "id": "MATH-PANJANG-036",
           "q": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "49",
-          "accepted": [],
+          "accepted": [
+            "49"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "46 cm + 3 cm = 49 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-037",
           "q": "Tali sepanjang 51 cm dipotong 4 cm. Baki tali ialah ________ cm.",
           "answer": "47",
-          "accepted": [],
+          "accepted": [
+            "47"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "51 cm - 4 cm = 47 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 51 cm dipotong 4 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-038",
           "q": "Manakah lebih panjang, 48 cm atau 53 cm?",
           "answer": "53",
-          "accepted": [],
+          "accepted": [
+            "53"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "53 cm lebih panjang.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 48 cm atau 53 cm?"
         },
         {
           "id": "MATH-PANJANG-039",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm. (Latihan 8)",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm. (Latihan 8)"
         },
         {
           "id": "MATH-PANJANG-040",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 8)",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 8)"
         },
         {
           "id": "MATH-PANJANG-041",
           "q": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "59",
-          "accepted": [],
+          "accepted": [
+            "59"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "51 cm + 8 cm = 59 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-042",
           "q": "Tali sepanjang 61 cm dipotong 9 cm. Baki tali ialah ________ cm.",
           "answer": "52",
-          "accepted": [],
+          "accepted": [
+            "52"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "61 cm - 9 cm = 52 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 61 cm dipotong 9 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-043",
           "q": "Manakah lebih panjang, 53 cm atau 63 cm?",
           "answer": "63",
-          "accepted": [],
+          "accepted": [
+            "63"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "63 cm lebih panjang.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 53 cm atau 63 cm?"
         },
         {
           "id": "MATH-PANJANG-044",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm. (Latihan 9)",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm. (Latihan 9)"
         },
         {
           "id": "MATH-PANJANG-045",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 9)",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 9)"
         },
         {
           "id": "MATH-PANJANG-046",
           "q": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
           "answer": "60",
-          "accepted": [],
+          "accepted": [
+            "60"
+          ],
           "hint": "Tambah kedua-dua ukuran.",
           "explanation": "56 cm + 4 cm = 60 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-047",
           "q": "Tali sepanjang 62 cm dipotong 5 cm. Baki tali ialah ________ cm.",
           "answer": "57",
-          "accepted": [],
+          "accepted": [
+            "57"
+          ],
           "hint": "Tolak panjang yang dipotong.",
           "explanation": "62 cm - 5 cm = 57 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tali sepanjang 62 cm dipotong 5 cm. Baki tali ialah ________ cm."
         },
         {
           "id": "MATH-PANJANG-048",
           "q": "Manakah lebih panjang, 58 cm atau 64 cm?",
           "answer": "64",
-          "accepted": [],
+          "accepted": [
+            "64"
+          ],
           "hint": "Bandingkan nombor ukuran.",
           "explanation": "64 cm lebih panjang.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Manakah lebih panjang, 58 cm atau 64 cm?"
         },
         {
           "id": "MATH-PANJANG-049",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 10)",
           "answer": "100",
-          "accepted": [],
+          "accepted": [
+            "100"
+          ],
           "hint": "Ingat hubungan meter dan sentimeter.",
           "explanation": "1 meter = 100 cm.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 10)"
         },
         {
           "id": "MATH-PANJANG-050",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 10)",
           "answer": "panjang",
           "accepted": [
-            "Panjang"
+            "panjang"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 10)"
         }
       ]
     },
@@ -4530,571 +5670,701 @@ export const mathSubject = {
           "id": "MATH-JISIM_ISI_PADU-001",
           "q": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "3 kg + 2 kg = 5 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-002",
           "q": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "7 kg - 3 kg = 4 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-003",
           "q": "Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "5 L + 4 L = 9 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-004",
           "q": "Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "11 L - 5 L = 6 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-005",
           "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-006",
           "q": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "8 kg + 2 kg = 10 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-007",
           "q": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "12 kg - 3 kg = 9 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-008",
           "q": "Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "2 L + 4 L = 6 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-009",
           "q": "Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "8 L - 5 L = 3 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-010",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-011",
           "q": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "5 kg + 2 kg = 7 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-012",
           "q": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "9 kg - 3 kg = 6 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-013",
           "q": "Botol A berisi 7 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "11",
-          "accepted": [],
+          "accepted": [
+            "11"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "7 L + 4 L = 11 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 7 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-014",
           "q": "Bekas berisi 13 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "13 L - 5 L = 8 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 13 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-015",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-016",
           "q": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "2 kg + 2 kg = 4 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-017",
           "q": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "6 kg - 3 kg = 3 kg.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-018",
           "q": "Botol A berisi 4 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "4 L + 4 L = 8 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 4 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-019",
           "q": "Bekas berisi 10 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "10 L - 5 L = 5 L.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 10 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-020",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-021",
           "q": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "7 kg + 2 kg = 9 kg.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-022",
           "q": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "11 kg - 3 kg = 8 kg.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-023",
           "q": "Botol A berisi 9 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "9 L + 4 L = 13 L.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 9 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-024",
           "q": "Bekas berisi 7 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "2",
-          "accepted": [],
+          "accepted": [
+            "2"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "7 L - 5 L = 2 L.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 7 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-025",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-026",
           "q": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "4 kg + 2 kg = 6 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-027",
           "q": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "8 kg - 3 kg = 5 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-028",
           "q": "Botol A berisi 6 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "6 L + 4 L = 10 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 6 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-029",
           "q": "Bekas berisi 12 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "12 L - 5 L = 7 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 12 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-030",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 6)",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 6)"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-031",
           "q": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "11",
-          "accepted": [],
+          "accepted": [
+            "11"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "9 kg + 2 kg = 11 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-032",
           "q": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "2",
-          "accepted": [],
+          "accepted": [
+            "2"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "5 kg - 3 kg = 2 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-033",
           "q": "Botol A berisi 3 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "3 L + 4 L = 7 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 3 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-034",
           "q": "Bekas berisi 9 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "9 L - 5 L = 4 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 9 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-035",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 7)",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 7)"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-036",
           "q": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "6 kg + 2 kg = 8 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-037",
           "q": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "7",
-          "accepted": [],
+          "accepted": [
+            "7"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "10 kg - 3 kg = 7 kg.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-038",
           "q": "Botol A berisi 8 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "12",
-          "accepted": [],
+          "accepted": [
+            "12"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "8 L + 4 L = 12 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Botol A berisi 8 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-039",
           "q": "Bekas berisi 14 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "14 L - 5 L = 9 L.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bekas berisi 14 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-040",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 8)",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 8)"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-041",
-          "q": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "3 kg + 2 kg = 5 kg.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-042",
-          "q": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "7 kg - 3 kg = 4 kg.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-043",
-          "q": "Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "5 L + 4 L = 9 L.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-044",
-          "q": "Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "11 L - 5 L = 6 L.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-045",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 9)",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 9)"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-046",
-          "q": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Tambah jisim kedua-dua bakul.",
           "explanation": "8 kg + 2 kg = 10 kg.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-047",
-          "q": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
           "answer": "9",
-          "accepted": [],
+          "accepted": [
+            "9"
+          ],
           "hint": "Tolak jisim yang digunakan.",
           "explanation": "12 kg - 3 kg = 9 kg.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-048",
-          "q": "Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Tambah isi padu air.",
           "explanation": "2 L + 4 L = 6 L.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-049",
-          "q": "Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Tolak isi padu yang dituang keluar.",
           "explanation": "8 L - 5 L = 3 L.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-050",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 10)",
           "answer": "penimbang",
           "accepted": [
-            "alat penimbang"
+            "penimbang"
           ],
           "hint": "Fikirkan alat untuk mengukur berat atau jisim.",
           "explanation": "Penimbang digunakan untuk menimbang jisim.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 10)"
         }
       ]
     },
@@ -5107,561 +6377,701 @@ export const mathSubject = {
           "id": "MATH-BENTUK-001",
           "q": "Segi tiga mempunyai ________ sisi.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Kira sisi bentuk segi tiga.",
           "explanation": "Segi tiga mempunyai 3 sisi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Segi tiga mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-002",
           "q": "Segi empat sama mempunyai ________ sisi.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kira sisi bentuk segi empat sama.",
           "explanation": "Segi empat sama mempunyai 4 sisi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Segi empat sama mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-003",
           "q": "Bulatan mempunyai ________ sisi lurus.",
           "answer": "0",
-          "accepted": [],
+          "accepted": [
+            "0"
+          ],
           "hint": "Bulatan tidak mempunyai sisi lurus.",
           "explanation": "Bulatan mempunyai 0 sisi lurus.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bulatan mempunyai ________ sisi lurus."
         },
         {
           "id": "MATH-BENTUK-004",
           "q": "Kubus mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kira permukaan pada kubus.",
           "explanation": "Kubus mempunyai 6 permukaan rata.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kubus mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-005",
           "q": "Bentuk bola mempunyai permukaan ________.",
           "answer": "melengkung",
-          "accepted": [],
+          "accepted": [
+            "melengkung"
+          ],
           "hint": "Fikirkan bentuk permukaan bola.",
           "explanation": "Bola mempunyai permukaan melengkung.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bentuk bola mempunyai permukaan ________."
         },
         {
           "id": "MATH-BENTUK-006",
           "q": "Tin susu berbentuk ________.",
           "answer": "silinder",
-          "accepted": [],
+          "accepted": [
+            "silinder"
+          ],
           "hint": "Tin mempunyai dua permukaan bulat dan satu permukaan melengkung.",
           "explanation": "Tin susu ialah contoh silinder.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Tin susu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-007",
           "q": "Dadu berbentuk ________.",
           "answer": "kubus",
-          "accepted": [],
+          "accepted": [
+            "kubus"
+          ],
           "hint": "Semua permukaan dadu sama besar.",
           "explanation": "Dadu ialah contoh kubus.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Dadu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-008",
           "q": "Kon mempunyai ________ bucu.",
           "answer": "1",
-          "accepted": [],
+          "accepted": [
+            "1"
+          ],
           "hint": "Lihat hujung tajam pada kon.",
           "explanation": "Kon mempunyai 1 bucu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kon mempunyai ________ bucu."
         },
         {
           "id": "MATH-BENTUK-009",
           "q": "Kuboid mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kotak kasut ialah contoh kuboid.",
           "explanation": "Kuboid mempunyai 6 permukaan rata.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kuboid mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-010",
           "q": "Bentuk yang mempunyai tiga sisi ialah ________.",
           "answer": "segi tiga",
           "accepted": [
-            "segitiga"
+            "segi tiga"
           ],
           "hint": "Cari nama bentuk dengan 3 sisi.",
           "explanation": "Bentuk dengan 3 sisi ialah segi tiga.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Bentuk yang mempunyai tiga sisi ialah ________."
         },
         {
           "id": "MATH-BENTUK-011",
-          "q": "Segi tiga mempunyai ________ sisi.",
+          "q": "Kira dengan teliti: Segi tiga mempunyai ________ sisi.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Kira sisi bentuk segi tiga.",
           "explanation": "Segi tiga mempunyai 3 sisi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Segi tiga mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-012",
-          "q": "Segi empat sama mempunyai ________ sisi.",
+          "q": "Kira dengan teliti: Segi empat sama mempunyai ________ sisi.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kira sisi bentuk segi empat sama.",
           "explanation": "Segi empat sama mempunyai 4 sisi.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Segi empat sama mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-013",
-          "q": "Bulatan mempunyai ________ sisi lurus.",
+          "q": "Kira dengan teliti: Bulatan mempunyai ________ sisi lurus.",
           "answer": "0",
-          "accepted": [],
+          "accepted": [
+            "0"
+          ],
           "hint": "Bulatan tidak mempunyai sisi lurus.",
           "explanation": "Bulatan mempunyai 0 sisi lurus.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Bulatan mempunyai ________ sisi lurus."
         },
         {
           "id": "MATH-BENTUK-014",
-          "q": "Kubus mempunyai ________ permukaan rata.",
+          "q": "Kira dengan teliti: Kubus mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kira permukaan pada kubus.",
           "explanation": "Kubus mempunyai 6 permukaan rata.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Kubus mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-015",
-          "q": "Bentuk bola mempunyai permukaan ________.",
+          "q": "Kira dengan teliti: Bentuk bola mempunyai permukaan ________.",
           "answer": "melengkung",
-          "accepted": [],
+          "accepted": [
+            "melengkung"
+          ],
           "hint": "Fikirkan bentuk permukaan bola.",
           "explanation": "Bola mempunyai permukaan melengkung.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Bentuk bola mempunyai permukaan ________."
         },
         {
           "id": "MATH-BENTUK-016",
-          "q": "Tin susu berbentuk ________.",
+          "q": "Kira dengan teliti: Tin susu berbentuk ________.",
           "answer": "silinder",
-          "accepted": [],
+          "accepted": [
+            "silinder"
+          ],
           "hint": "Tin mempunyai dua permukaan bulat dan satu permukaan melengkung.",
           "explanation": "Tin susu ialah contoh silinder.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Tin susu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-017",
-          "q": "Dadu berbentuk ________.",
+          "q": "Kira dengan teliti: Dadu berbentuk ________.",
           "answer": "kubus",
-          "accepted": [],
+          "accepted": [
+            "kubus"
+          ],
           "hint": "Semua permukaan dadu sama besar.",
           "explanation": "Dadu ialah contoh kubus.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Dadu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-018",
-          "q": "Kon mempunyai ________ bucu.",
+          "q": "Kira dengan teliti: Kon mempunyai ________ bucu.",
           "answer": "1",
-          "accepted": [],
+          "accepted": [
+            "1"
+          ],
           "hint": "Lihat hujung tajam pada kon.",
           "explanation": "Kon mempunyai 1 bucu.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Kon mempunyai ________ bucu."
         },
         {
           "id": "MATH-BENTUK-019",
-          "q": "Kuboid mempunyai ________ permukaan rata.",
+          "q": "Kira dengan teliti: Kuboid mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kotak kasut ialah contoh kuboid.",
           "explanation": "Kuboid mempunyai 6 permukaan rata.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Kuboid mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-020",
-          "q": "Bentuk yang mempunyai tiga sisi ialah ________.",
+          "q": "Kira dengan teliti: Bentuk yang mempunyai tiga sisi ialah ________.",
           "answer": "segi tiga",
           "accepted": [
-            "segitiga"
+            "segi tiga"
           ],
           "hint": "Cari nama bentuk dengan 3 sisi.",
           "explanation": "Bentuk dengan 3 sisi ialah segi tiga.",
           "difficulty": "mudah",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: Bentuk yang mempunyai tiga sisi ialah ________."
         },
         {
           "id": "MATH-BENTUK-021",
-          "q": "Segi tiga mempunyai ________ sisi.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Segi tiga mempunyai ________ sisi.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Kira sisi bentuk segi tiga.",
           "explanation": "Segi tiga mempunyai 3 sisi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Segi tiga mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-022",
-          "q": "Segi empat sama mempunyai ________ sisi.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Segi empat sama mempunyai ________ sisi.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kira sisi bentuk segi empat sama.",
           "explanation": "Segi empat sama mempunyai 4 sisi.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Segi empat sama mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-023",
-          "q": "Bulatan mempunyai ________ sisi lurus.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Bulatan mempunyai ________ sisi lurus.",
           "answer": "0",
-          "accepted": [],
+          "accepted": [
+            "0"
+          ],
           "hint": "Bulatan tidak mempunyai sisi lurus.",
           "explanation": "Bulatan mempunyai 0 sisi lurus.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Bulatan mempunyai ________ sisi lurus."
         },
         {
           "id": "MATH-BENTUK-024",
-          "q": "Kubus mempunyai ________ permukaan rata.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Kubus mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kira permukaan pada kubus.",
           "explanation": "Kubus mempunyai 6 permukaan rata.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Kubus mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-025",
-          "q": "Bentuk bola mempunyai permukaan ________.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Bentuk bola mempunyai permukaan ________.",
           "answer": "melengkung",
-          "accepted": [],
+          "accepted": [
+            "melengkung"
+          ],
           "hint": "Fikirkan bentuk permukaan bola.",
           "explanation": "Bola mempunyai permukaan melengkung.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Bentuk bola mempunyai permukaan ________."
         },
         {
           "id": "MATH-BENTUK-026",
-          "q": "Tin susu berbentuk ________.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Tin susu berbentuk ________.",
           "answer": "silinder",
-          "accepted": [],
+          "accepted": [
+            "silinder"
+          ],
           "hint": "Tin mempunyai dua permukaan bulat dan satu permukaan melengkung.",
           "explanation": "Tin susu ialah contoh silinder.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Tin susu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-027",
-          "q": "Dadu berbentuk ________.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Dadu berbentuk ________.",
           "answer": "kubus",
-          "accepted": [],
+          "accepted": [
+            "kubus"
+          ],
           "hint": "Semua permukaan dadu sama besar.",
           "explanation": "Dadu ialah contoh kubus.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Dadu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-028",
-          "q": "Kon mempunyai ________ bucu.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Kon mempunyai ________ bucu.",
           "answer": "1",
-          "accepted": [],
+          "accepted": [
+            "1"
+          ],
           "hint": "Lihat hujung tajam pada kon.",
           "explanation": "Kon mempunyai 1 bucu.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Kon mempunyai ________ bucu."
         },
         {
           "id": "MATH-BENTUK-029",
-          "q": "Kuboid mempunyai ________ permukaan rata.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Kuboid mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kotak kasut ialah contoh kuboid.",
           "explanation": "Kuboid mempunyai 6 permukaan rata.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Kuboid mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-030",
-          "q": "Bentuk yang mempunyai tiga sisi ialah ________.",
+          "q": "Soalan ulang kaji Bentuk 2D dan 3D: Bentuk yang mempunyai tiga sisi ialah ________.",
           "answer": "segi tiga",
           "accepted": [
-            "segitiga"
+            "segi tiga"
           ],
           "hint": "Cari nama bentuk dengan 3 sisi.",
           "explanation": "Bentuk dengan 3 sisi ialah segi tiga.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Bentuk 2D dan 3D: Bentuk yang mempunyai tiga sisi ialah ________."
         },
         {
           "id": "MATH-BENTUK-031",
-          "q": "Segi tiga mempunyai ________ sisi.",
+          "q": "Cari jawapan bagi ayat matematik ini: Segi tiga mempunyai ________ sisi.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Kira sisi bentuk segi tiga.",
           "explanation": "Segi tiga mempunyai 3 sisi.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Segi tiga mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-032",
-          "q": "Segi empat sama mempunyai ________ sisi.",
+          "q": "Cari jawapan bagi ayat matematik ini: Segi empat sama mempunyai ________ sisi.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kira sisi bentuk segi empat sama.",
           "explanation": "Segi empat sama mempunyai 4 sisi.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Segi empat sama mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-033",
-          "q": "Bulatan mempunyai ________ sisi lurus.",
+          "q": "Cari jawapan bagi ayat matematik ini: Bulatan mempunyai ________ sisi lurus.",
           "answer": "0",
-          "accepted": [],
+          "accepted": [
+            "0"
+          ],
           "hint": "Bulatan tidak mempunyai sisi lurus.",
           "explanation": "Bulatan mempunyai 0 sisi lurus.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Bulatan mempunyai ________ sisi lurus."
         },
         {
           "id": "MATH-BENTUK-034",
-          "q": "Kubus mempunyai ________ permukaan rata.",
+          "q": "Cari jawapan bagi ayat matematik ini: Kubus mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kira permukaan pada kubus.",
           "explanation": "Kubus mempunyai 6 permukaan rata.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Kubus mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-035",
-          "q": "Bentuk bola mempunyai permukaan ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Bentuk bola mempunyai permukaan ________.",
           "answer": "melengkung",
-          "accepted": [],
+          "accepted": [
+            "melengkung"
+          ],
           "hint": "Fikirkan bentuk permukaan bola.",
           "explanation": "Bola mempunyai permukaan melengkung.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Bentuk bola mempunyai permukaan ________."
         },
         {
           "id": "MATH-BENTUK-036",
-          "q": "Tin susu berbentuk ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Tin susu berbentuk ________.",
           "answer": "silinder",
-          "accepted": [],
+          "accepted": [
+            "silinder"
+          ],
           "hint": "Tin mempunyai dua permukaan bulat dan satu permukaan melengkung.",
           "explanation": "Tin susu ialah contoh silinder.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Tin susu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-037",
-          "q": "Dadu berbentuk ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Dadu berbentuk ________.",
           "answer": "kubus",
-          "accepted": [],
+          "accepted": [
+            "kubus"
+          ],
           "hint": "Semua permukaan dadu sama besar.",
           "explanation": "Dadu ialah contoh kubus.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Dadu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-038",
-          "q": "Kon mempunyai ________ bucu.",
+          "q": "Cari jawapan bagi ayat matematik ini: Kon mempunyai ________ bucu.",
           "answer": "1",
-          "accepted": [],
+          "accepted": [
+            "1"
+          ],
           "hint": "Lihat hujung tajam pada kon.",
           "explanation": "Kon mempunyai 1 bucu.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Kon mempunyai ________ bucu."
         },
         {
           "id": "MATH-BENTUK-039",
-          "q": "Kuboid mempunyai ________ permukaan rata.",
+          "q": "Cari jawapan bagi ayat matematik ini: Kuboid mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kotak kasut ialah contoh kuboid.",
           "explanation": "Kuboid mempunyai 6 permukaan rata.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Kuboid mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-040",
-          "q": "Bentuk yang mempunyai tiga sisi ialah ________.",
+          "q": "Cari jawapan bagi ayat matematik ini: Bentuk yang mempunyai tiga sisi ialah ________.",
           "answer": "segi tiga",
           "accepted": [
-            "segitiga"
+            "segi tiga"
           ],
           "hint": "Cari nama bentuk dengan 3 sisi.",
           "explanation": "Bentuk dengan 3 sisi ialah segi tiga.",
           "difficulty": "sederhana",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Cari jawapan bagi ayat matematik ini: Bentuk yang mempunyai tiga sisi ialah ________."
         },
         {
           "id": "MATH-BENTUK-041",
-          "q": "Segi tiga mempunyai ________ sisi.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Segi tiga mempunyai ________ sisi.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Kira sisi bentuk segi tiga.",
           "explanation": "Segi tiga mempunyai 3 sisi.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Segi tiga mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-042",
-          "q": "Segi empat sama mempunyai ________ sisi.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Segi empat sama mempunyai ________ sisi.",
           "answer": "4",
-          "accepted": [],
+          "accepted": [
+            "4"
+          ],
           "hint": "Kira sisi bentuk segi empat sama.",
           "explanation": "Segi empat sama mempunyai 4 sisi.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Segi empat sama mempunyai ________ sisi."
         },
         {
           "id": "MATH-BENTUK-043",
-          "q": "Bulatan mempunyai ________ sisi lurus.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bulatan mempunyai ________ sisi lurus.",
           "answer": "0",
-          "accepted": [],
+          "accepted": [
+            "0"
+          ],
           "hint": "Bulatan tidak mempunyai sisi lurus.",
           "explanation": "Bulatan mempunyai 0 sisi lurus.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bulatan mempunyai ________ sisi lurus."
         },
         {
           "id": "MATH-BENTUK-044",
-          "q": "Kubus mempunyai ________ permukaan rata.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kubus mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kira permukaan pada kubus.",
           "explanation": "Kubus mempunyai 6 permukaan rata.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kubus mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-045",
-          "q": "Bentuk bola mempunyai permukaan ________.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bentuk bola mempunyai permukaan ________.",
           "answer": "melengkung",
-          "accepted": [],
+          "accepted": [
+            "melengkung"
+          ],
           "hint": "Fikirkan bentuk permukaan bola.",
           "explanation": "Bola mempunyai permukaan melengkung.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bentuk bola mempunyai permukaan ________."
         },
         {
           "id": "MATH-BENTUK-046",
-          "q": "Tin susu berbentuk ________.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Tin susu berbentuk ________.",
           "answer": "silinder",
-          "accepted": [],
+          "accepted": [
+            "silinder"
+          ],
           "hint": "Tin mempunyai dua permukaan bulat dan satu permukaan melengkung.",
           "explanation": "Tin susu ialah contoh silinder.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Tin susu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-047",
-          "q": "Dadu berbentuk ________.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Dadu berbentuk ________.",
           "answer": "kubus",
-          "accepted": [],
+          "accepted": [
+            "kubus"
+          ],
           "hint": "Semua permukaan dadu sama besar.",
           "explanation": "Dadu ialah contoh kubus.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Dadu berbentuk ________."
         },
         {
           "id": "MATH-BENTUK-048",
-          "q": "Kon mempunyai ________ bucu.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kon mempunyai ________ bucu.",
           "answer": "1",
-          "accepted": [],
+          "accepted": [
+            "1"
+          ],
           "hint": "Lihat hujung tajam pada kon.",
           "explanation": "Kon mempunyai 1 bucu.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kon mempunyai ________ bucu."
         },
         {
           "id": "MATH-BENTUK-049",
-          "q": "Kuboid mempunyai ________ permukaan rata.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kuboid mempunyai ________ permukaan rata.",
           "answer": "6",
-          "accepted": [],
+          "accepted": [
+            "6"
+          ],
           "hint": "Kotak kasut ialah contoh kuboid.",
           "explanation": "Kuboid mempunyai 6 permukaan rata.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Kuboid mempunyai ________ permukaan rata."
         },
         {
           "id": "MATH-BENTUK-050",
-          "q": "Bentuk yang mempunyai tiga sisi ialah ________.",
+          "q": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bentuk yang mempunyai tiga sisi ialah ________.",
           "answer": "segi tiga",
           "accepted": [
-            "segitiga"
+            "segi tiga"
           ],
           "hint": "Cari nama bentuk dengan 3 sisi.",
           "explanation": "Bentuk dengan 3 sisi ialah segi tiga.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "UASA",
-          "dskp": "KSSR Tahun 2"
+          "dskp": "KSSR Tahun 2",
+          "question": "Lengkapkan latihan Bentuk 2D dan 3D ini: Bentuk yang mempunyai tiga sisi ialah ________."
         }
       ]
     }

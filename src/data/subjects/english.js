@@ -14,551 +14,701 @@ export const englishSubject = {
           "id": "ENG-NOUNS-001",
           "q": "A ________ is swimming in the pond.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that can swim.",
           "explanation": "A fish can swim in a pond.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ is swimming in the pond."
         },
         {
           "id": "ENG-NOUNS-002",
           "q": "My ________ writes on the board.",
           "answer": "teacher",
-          "accepted": [],
+          "accepted": [
+            "teacher"
+          ],
           "hint": "Choose the person in school.",
           "explanation": "A teacher writes on the board.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "My ________ writes on the board."
         },
         {
           "id": "ENG-NOUNS-003",
           "q": "I put my book in my ________.",
           "answer": "bag",
-          "accepted": [],
+          "accepted": [
+            "bag"
+          ],
           "hint": "Choose the thing used to carry books.",
           "explanation": "A bag is used to carry books.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "I put my book in my ________."
         },
         {
           "id": "ENG-NOUNS-004",
           "q": "We play football at the ________.",
           "answer": "field",
-          "accepted": [],
+          "accepted": [
+            "field"
+          ],
           "hint": "Choose the place for playing football.",
           "explanation": "A field is a place.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "We play football at the ________."
         },
         {
           "id": "ENG-NOUNS-005",
           "q": "The ________ is on the table.",
           "answer": "pencil",
-          "accepted": [],
+          "accepted": [
+            "pencil"
+          ],
           "hint": "Choose a classroom object.",
           "explanation": "A pencil is a thing.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The ________ is on the table."
         },
         {
           "id": "ENG-NOUNS-006",
           "q": "A ________ says meow.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal that says meow.",
           "explanation": "A cat says meow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ says meow."
         },
         {
           "id": "ENG-NOUNS-007",
           "q": "Mother cuts the apple with a ________.",
           "answer": "knife",
-          "accepted": [],
+          "accepted": [
+            "knife"
+          ],
           "hint": "Choose the thing used for cutting.",
           "explanation": "A knife is used for cutting.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Mother cuts the apple with a ________."
         },
         {
           "id": "ENG-NOUNS-008",
           "q": "The ________ is reading a story.",
           "answer": "girl",
-          "accepted": [],
+          "accepted": [
+            "girl"
+          ],
           "hint": "Choose the person in the sentence.",
           "explanation": "A girl is a person.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The ________ is reading a story."
         },
         {
           "id": "ENG-NOUNS-009",
           "q": "We borrow books from the ________.",
           "answer": "library",
-          "accepted": [],
+          "accepted": [
+            "library"
+          ],
           "hint": "Choose the place with many books.",
           "explanation": "A library is a place.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "We borrow books from the ________."
         },
         {
           "id": "ENG-NOUNS-010",
           "q": "The ________ is under the chair.",
           "answer": "ball",
-          "accepted": [],
+          "accepted": [
+            "ball"
+          ],
           "hint": "Choose the thing used for playing.",
           "explanation": "A ball is a thing.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The ________ is under the chair."
         },
         {
           "id": "ENG-NOUNS-011",
-          "q": "A ________ is swimming in the pond.",
+          "q": "Choose the correct word to complete this sentence: A ________ is swimming in the pond.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that can swim.",
           "explanation": "A fish can swim in a pond.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ is swimming in the pond."
         },
         {
           "id": "ENG-NOUNS-012",
-          "q": "My ________ writes on the board.",
+          "q": "Choose the correct word to complete this sentence: My ________ writes on the board.",
           "answer": "teacher",
-          "accepted": [],
+          "accepted": [
+            "teacher"
+          ],
           "hint": "Choose the person in school.",
           "explanation": "A teacher writes on the board.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: My ________ writes on the board."
         },
         {
           "id": "ENG-NOUNS-013",
-          "q": "I put my book in my ________.",
+          "q": "Choose the correct word to complete this sentence: I put my book in my ________.",
           "answer": "bag",
-          "accepted": [],
+          "accepted": [
+            "bag"
+          ],
           "hint": "Choose the thing used to carry books.",
           "explanation": "A bag is used to carry books.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: I put my book in my ________."
         },
         {
           "id": "ENG-NOUNS-014",
-          "q": "We play football at the ________.",
+          "q": "Choose the correct word to complete this sentence: We play football at the ________.",
           "answer": "field",
-          "accepted": [],
+          "accepted": [
+            "field"
+          ],
           "hint": "Choose the place for playing football.",
           "explanation": "A field is a place.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: We play football at the ________."
         },
         {
           "id": "ENG-NOUNS-015",
-          "q": "The ________ is on the table.",
+          "q": "Choose the correct word to complete this sentence: The ________ is on the table.",
           "answer": "pencil",
-          "accepted": [],
+          "accepted": [
+            "pencil"
+          ],
           "hint": "Choose a classroom object.",
           "explanation": "A pencil is a thing.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The ________ is on the table."
         },
         {
           "id": "ENG-NOUNS-016",
-          "q": "A ________ says meow.",
+          "q": "Choose the correct word to complete this sentence: A ________ says meow.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal that says meow.",
           "explanation": "A cat says meow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ says meow."
         },
         {
           "id": "ENG-NOUNS-017",
-          "q": "Mother cuts the apple with a ________.",
+          "q": "Choose the correct word to complete this sentence: Mother cuts the apple with a ________.",
           "answer": "knife",
-          "accepted": [],
+          "accepted": [
+            "knife"
+          ],
           "hint": "Choose the thing used for cutting.",
           "explanation": "A knife is used for cutting.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Mother cuts the apple with a ________."
         },
         {
           "id": "ENG-NOUNS-018",
-          "q": "The ________ is reading a story.",
+          "q": "Choose the correct word to complete this sentence: The ________ is reading a story.",
           "answer": "girl",
-          "accepted": [],
+          "accepted": [
+            "girl"
+          ],
           "hint": "Choose the person in the sentence.",
           "explanation": "A girl is a person.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The ________ is reading a story."
         },
         {
           "id": "ENG-NOUNS-019",
-          "q": "We borrow books from the ________.",
+          "q": "Choose the correct word to complete this sentence: We borrow books from the ________.",
           "answer": "library",
-          "accepted": [],
+          "accepted": [
+            "library"
+          ],
           "hint": "Choose the place with many books.",
           "explanation": "A library is a place.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: We borrow books from the ________."
         },
         {
           "id": "ENG-NOUNS-020",
-          "q": "The ________ is under the chair.",
+          "q": "Choose the correct word to complete this sentence: The ________ is under the chair.",
           "answer": "ball",
-          "accepted": [],
+          "accepted": [
+            "ball"
+          ],
           "hint": "Choose the thing used for playing.",
           "explanation": "A ball is a thing.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The ________ is under the chair."
         },
         {
           "id": "ENG-NOUNS-021",
-          "q": "A ________ is swimming in the pond.",
+          "q": "Complete the sentence with the best word: A ________ is swimming in the pond.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that can swim.",
           "explanation": "A fish can swim in a pond.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ is swimming in the pond."
         },
         {
           "id": "ENG-NOUNS-022",
-          "q": "My ________ writes on the board.",
+          "q": "Complete the sentence with the best word: My ________ writes on the board.",
           "answer": "teacher",
-          "accepted": [],
+          "accepted": [
+            "teacher"
+          ],
           "hint": "Choose the person in school.",
           "explanation": "A teacher writes on the board.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: My ________ writes on the board."
         },
         {
           "id": "ENG-NOUNS-023",
-          "q": "I put my book in my ________.",
+          "q": "Complete the sentence with the best word: I put my book in my ________.",
           "answer": "bag",
-          "accepted": [],
+          "accepted": [
+            "bag"
+          ],
           "hint": "Choose the thing used to carry books.",
           "explanation": "A bag is used to carry books.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: I put my book in my ________."
         },
         {
           "id": "ENG-NOUNS-024",
-          "q": "We play football at the ________.",
+          "q": "Complete the sentence with the best word: We play football at the ________.",
           "answer": "field",
-          "accepted": [],
+          "accepted": [
+            "field"
+          ],
           "hint": "Choose the place for playing football.",
           "explanation": "A field is a place.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: We play football at the ________."
         },
         {
           "id": "ENG-NOUNS-025",
-          "q": "The ________ is on the table.",
+          "q": "Complete the sentence with the best word: The ________ is on the table.",
           "answer": "pencil",
-          "accepted": [],
+          "accepted": [
+            "pencil"
+          ],
           "hint": "Choose a classroom object.",
           "explanation": "A pencil is a thing.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The ________ is on the table."
         },
         {
           "id": "ENG-NOUNS-026",
-          "q": "A ________ says meow.",
+          "q": "Complete the sentence with the best word: A ________ says meow.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal that says meow.",
           "explanation": "A cat says meow.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ says meow."
         },
         {
           "id": "ENG-NOUNS-027",
-          "q": "Mother cuts the apple with a ________.",
+          "q": "Complete the sentence with the best word: Mother cuts the apple with a ________.",
           "answer": "knife",
-          "accepted": [],
+          "accepted": [
+            "knife"
+          ],
           "hint": "Choose the thing used for cutting.",
           "explanation": "A knife is used for cutting.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Mother cuts the apple with a ________."
         },
         {
           "id": "ENG-NOUNS-028",
-          "q": "The ________ is reading a story.",
+          "q": "Complete the sentence with the best word: The ________ is reading a story.",
           "answer": "girl",
-          "accepted": [],
+          "accepted": [
+            "girl"
+          ],
           "hint": "Choose the person in the sentence.",
           "explanation": "A girl is a person.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The ________ is reading a story."
         },
         {
           "id": "ENG-NOUNS-029",
-          "q": "We borrow books from the ________.",
+          "q": "Complete the sentence with the best word: We borrow books from the ________.",
           "answer": "library",
-          "accepted": [],
+          "accepted": [
+            "library"
+          ],
           "hint": "Choose the place with many books.",
           "explanation": "A library is a place.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: We borrow books from the ________."
         },
         {
           "id": "ENG-NOUNS-030",
-          "q": "The ________ is under the chair.",
+          "q": "Complete the sentence with the best word: The ________ is under the chair.",
           "answer": "ball",
-          "accepted": [],
+          "accepted": [
+            "ball"
+          ],
           "hint": "Choose the thing used for playing.",
           "explanation": "A ball is a thing.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The ________ is under the chair."
         },
         {
           "id": "ENG-NOUNS-031",
-          "q": "A ________ is swimming in the pond.",
+          "q": "Read and fill in the blank: A ________ is swimming in the pond.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that can swim.",
           "explanation": "A fish can swim in a pond.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ is swimming in the pond."
         },
         {
           "id": "ENG-NOUNS-032",
-          "q": "My ________ writes on the board.",
+          "q": "Read and fill in the blank: My ________ writes on the board.",
           "answer": "teacher",
-          "accepted": [],
+          "accepted": [
+            "teacher"
+          ],
           "hint": "Choose the person in school.",
           "explanation": "A teacher writes on the board.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: My ________ writes on the board."
         },
         {
           "id": "ENG-NOUNS-033",
-          "q": "I put my book in my ________.",
+          "q": "Read and fill in the blank: I put my book in my ________.",
           "answer": "bag",
-          "accepted": [],
+          "accepted": [
+            "bag"
+          ],
           "hint": "Choose the thing used to carry books.",
           "explanation": "A bag is used to carry books.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: I put my book in my ________."
         },
         {
           "id": "ENG-NOUNS-034",
-          "q": "We play football at the ________.",
+          "q": "Read and fill in the blank: We play football at the ________.",
           "answer": "field",
-          "accepted": [],
+          "accepted": [
+            "field"
+          ],
           "hint": "Choose the place for playing football.",
           "explanation": "A field is a place.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: We play football at the ________."
         },
         {
           "id": "ENG-NOUNS-035",
-          "q": "The ________ is on the table.",
+          "q": "Read and fill in the blank: The ________ is on the table.",
           "answer": "pencil",
-          "accepted": [],
+          "accepted": [
+            "pencil"
+          ],
           "hint": "Choose a classroom object.",
           "explanation": "A pencil is a thing.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The ________ is on the table."
         },
         {
           "id": "ENG-NOUNS-036",
-          "q": "A ________ says meow.",
+          "q": "Read and fill in the blank: A ________ says meow.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal that says meow.",
           "explanation": "A cat says meow.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ says meow."
         },
         {
           "id": "ENG-NOUNS-037",
-          "q": "Mother cuts the apple with a ________.",
+          "q": "Read and fill in the blank: Mother cuts the apple with a ________.",
           "answer": "knife",
-          "accepted": [],
+          "accepted": [
+            "knife"
+          ],
           "hint": "Choose the thing used for cutting.",
           "explanation": "A knife is used for cutting.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Mother cuts the apple with a ________."
         },
         {
           "id": "ENG-NOUNS-038",
-          "q": "The ________ is reading a story.",
+          "q": "Read and fill in the blank: The ________ is reading a story.",
           "answer": "girl",
-          "accepted": [],
+          "accepted": [
+            "girl"
+          ],
           "hint": "Choose the person in the sentence.",
           "explanation": "A girl is a person.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The ________ is reading a story."
         },
         {
           "id": "ENG-NOUNS-039",
-          "q": "We borrow books from the ________.",
+          "q": "Read and fill in the blank: We borrow books from the ________.",
           "answer": "library",
-          "accepted": [],
+          "accepted": [
+            "library"
+          ],
           "hint": "Choose the place with many books.",
           "explanation": "A library is a place.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: We borrow books from the ________."
         },
         {
           "id": "ENG-NOUNS-040",
-          "q": "The ________ is under the chair.",
+          "q": "Read and fill in the blank: The ________ is under the chair.",
           "answer": "ball",
-          "accepted": [],
+          "accepted": [
+            "ball"
+          ],
           "hint": "Choose the thing used for playing.",
           "explanation": "A ball is a thing.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The ________ is under the chair."
         },
         {
           "id": "ENG-NOUNS-041",
-          "q": "A ________ is swimming in the pond.",
+          "q": "In Nouns, choose one word: A ________ is swimming in the pond.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that can swim.",
           "explanation": "A fish can swim in a pond.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: A ________ is swimming in the pond."
         },
         {
           "id": "ENG-NOUNS-042",
-          "q": "My ________ writes on the board.",
+          "q": "In Nouns, choose one word: My ________ writes on the board.",
           "answer": "teacher",
-          "accepted": [],
+          "accepted": [
+            "teacher"
+          ],
           "hint": "Choose the person in school.",
           "explanation": "A teacher writes on the board.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: My ________ writes on the board."
         },
         {
           "id": "ENG-NOUNS-043",
-          "q": "I put my book in my ________.",
+          "q": "In Nouns, choose one word: I put my book in my ________.",
           "answer": "bag",
-          "accepted": [],
+          "accepted": [
+            "bag"
+          ],
           "hint": "Choose the thing used to carry books.",
           "explanation": "A bag is used to carry books.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: I put my book in my ________."
         },
         {
           "id": "ENG-NOUNS-044",
-          "q": "We play football at the ________.",
+          "q": "In Nouns, choose one word: We play football at the ________.",
           "answer": "field",
-          "accepted": [],
+          "accepted": [
+            "field"
+          ],
           "hint": "Choose the place for playing football.",
           "explanation": "A field is a place.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: We play football at the ________."
         },
         {
           "id": "ENG-NOUNS-045",
-          "q": "The ________ is on the table.",
+          "q": "In Nouns, choose one word: The ________ is on the table.",
           "answer": "pencil",
-          "accepted": [],
+          "accepted": [
+            "pencil"
+          ],
           "hint": "Choose a classroom object.",
           "explanation": "A pencil is a thing.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: The ________ is on the table."
         },
         {
           "id": "ENG-NOUNS-046",
-          "q": "A ________ says meow.",
+          "q": "In Nouns, choose one word: A ________ says meow.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal that says meow.",
           "explanation": "A cat says meow.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: A ________ says meow."
         },
         {
           "id": "ENG-NOUNS-047",
-          "q": "Mother cuts the apple with a ________.",
+          "q": "In Nouns, choose one word: Mother cuts the apple with a ________.",
           "answer": "knife",
-          "accepted": [],
+          "accepted": [
+            "knife"
+          ],
           "hint": "Choose the thing used for cutting.",
           "explanation": "A knife is used for cutting.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: Mother cuts the apple with a ________."
         },
         {
           "id": "ENG-NOUNS-048",
-          "q": "The ________ is reading a story.",
+          "q": "In Nouns, choose one word: The ________ is reading a story.",
           "answer": "girl",
-          "accepted": [],
+          "accepted": [
+            "girl"
+          ],
           "hint": "Choose the person in the sentence.",
           "explanation": "A girl is a person.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: The ________ is reading a story."
         },
         {
           "id": "ENG-NOUNS-049",
-          "q": "We borrow books from the ________.",
+          "q": "In Nouns, choose one word: We borrow books from the ________.",
           "answer": "library",
-          "accepted": [],
+          "accepted": [
+            "library"
+          ],
           "hint": "Choose the place with many books.",
           "explanation": "A library is a place.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: We borrow books from the ________."
         },
         {
           "id": "ENG-NOUNS-050",
-          "q": "The ________ is under the chair.",
+          "q": "In Nouns, choose one word: The ________ is under the chair.",
           "answer": "ball",
-          "accepted": [],
+          "accepted": [
+            "ball"
+          ],
           "hint": "Choose the thing used for playing.",
           "explanation": "A ball is a thing.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Nouns, choose one word: The ________ is under the chair."
         }
       ]
     },
@@ -571,551 +721,701 @@ export const englishSubject = {
           "id": "ENG-VERBS-001",
           "q": "The boys ________ football after school.",
           "answer": "play",
-          "accepted": [],
+          "accepted": [
+            "play"
+          ],
           "hint": "Choose an action word.",
           "explanation": "play is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The boys ________ football after school."
         },
         {
           "id": "ENG-VERBS-002",
           "q": "Aina can ________ a song.",
           "answer": "sing",
-          "accepted": [],
+          "accepted": [
+            "sing"
+          ],
           "hint": "Choose what Aina can do with her voice.",
           "explanation": "sing is an action.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Aina can ________ a song."
         },
         {
           "id": "ENG-VERBS-003",
           "q": "I ________ my teeth every morning.",
           "answer": "brush",
-          "accepted": [],
+          "accepted": [
+            "brush"
+          ],
           "hint": "Choose the action for cleaning teeth.",
           "explanation": "brush is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "I ________ my teeth every morning."
         },
         {
           "id": "ENG-VERBS-004",
           "q": "The baby can ________ on the mat.",
           "answer": "crawl",
-          "accepted": [],
+          "accepted": [
+            "crawl"
+          ],
           "hint": "Choose an action a baby can do.",
           "explanation": "crawl is an action.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The baby can ________ on the mat."
         },
         {
           "id": "ENG-VERBS-005",
           "q": "We ________ water after running.",
           "answer": "drink",
-          "accepted": [],
+          "accepted": [
+            "drink"
+          ],
           "hint": "Choose the action for taking water.",
           "explanation": "drink is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "We ________ water after running."
         },
         {
           "id": "ENG-VERBS-006",
           "q": "Mira will ________ a picture.",
           "answer": "draw",
-          "accepted": [],
+          "accepted": [
+            "draw"
+          ],
           "hint": "Choose the action for making a picture.",
           "explanation": "draw is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Mira will ________ a picture."
         },
         {
           "id": "ENG-VERBS-007",
           "q": "The bird can ________ in the sky.",
           "answer": "fly",
-          "accepted": [],
+          "accepted": [
+            "fly"
+          ],
           "hint": "Choose what a bird can do.",
           "explanation": "fly is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The bird can ________ in the sky."
         },
         {
           "id": "ENG-VERBS-008",
           "q": "Please ________ the door.",
           "answer": "open",
-          "accepted": [],
+          "accepted": [
+            "open"
+          ],
           "hint": "Choose the action for the door.",
           "explanation": "open is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Please ________ the door."
         },
         {
           "id": "ENG-VERBS-009",
           "q": "Father will ________ the car.",
           "answer": "wash",
-          "accepted": [],
+          "accepted": [
+            "wash"
+          ],
           "hint": "Choose the action for cleaning a car.",
           "explanation": "wash is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Father will ________ the car."
         },
         {
           "id": "ENG-VERBS-010",
           "q": "The pupils ________ English books.",
           "answer": "read",
-          "accepted": [],
+          "accepted": [
+            "read"
+          ],
           "hint": "Choose the action for books.",
           "explanation": "read is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The pupils ________ English books."
         },
         {
           "id": "ENG-VERBS-011",
-          "q": "The boys ________ football after school.",
+          "q": "Choose the correct word to complete this sentence: The boys ________ football after school.",
           "answer": "play",
-          "accepted": [],
+          "accepted": [
+            "play"
+          ],
           "hint": "Choose an action word.",
           "explanation": "play is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The boys ________ football after school."
         },
         {
           "id": "ENG-VERBS-012",
-          "q": "Aina can ________ a song.",
+          "q": "Choose the correct word to complete this sentence: Aina can ________ a song.",
           "answer": "sing",
-          "accepted": [],
+          "accepted": [
+            "sing"
+          ],
           "hint": "Choose what Aina can do with her voice.",
           "explanation": "sing is an action.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Aina can ________ a song."
         },
         {
           "id": "ENG-VERBS-013",
-          "q": "I ________ my teeth every morning.",
+          "q": "Choose the correct word to complete this sentence: I ________ my teeth every morning.",
           "answer": "brush",
-          "accepted": [],
+          "accepted": [
+            "brush"
+          ],
           "hint": "Choose the action for cleaning teeth.",
           "explanation": "brush is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: I ________ my teeth every morning."
         },
         {
           "id": "ENG-VERBS-014",
-          "q": "The baby can ________ on the mat.",
+          "q": "Choose the correct word to complete this sentence: The baby can ________ on the mat.",
           "answer": "crawl",
-          "accepted": [],
+          "accepted": [
+            "crawl"
+          ],
           "hint": "Choose an action a baby can do.",
           "explanation": "crawl is an action.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The baby can ________ on the mat."
         },
         {
           "id": "ENG-VERBS-015",
-          "q": "We ________ water after running.",
+          "q": "Choose the correct word to complete this sentence: We ________ water after running.",
           "answer": "drink",
-          "accepted": [],
+          "accepted": [
+            "drink"
+          ],
           "hint": "Choose the action for taking water.",
           "explanation": "drink is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: We ________ water after running."
         },
         {
           "id": "ENG-VERBS-016",
-          "q": "Mira will ________ a picture.",
+          "q": "Choose the correct word to complete this sentence: Mira will ________ a picture.",
           "answer": "draw",
-          "accepted": [],
+          "accepted": [
+            "draw"
+          ],
           "hint": "Choose the action for making a picture.",
           "explanation": "draw is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Mira will ________ a picture."
         },
         {
           "id": "ENG-VERBS-017",
-          "q": "The bird can ________ in the sky.",
+          "q": "Choose the correct word to complete this sentence: The bird can ________ in the sky.",
           "answer": "fly",
-          "accepted": [],
+          "accepted": [
+            "fly"
+          ],
           "hint": "Choose what a bird can do.",
           "explanation": "fly is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The bird can ________ in the sky."
         },
         {
           "id": "ENG-VERBS-018",
-          "q": "Please ________ the door.",
+          "q": "Choose the correct word to complete this sentence: Please ________ the door.",
           "answer": "open",
-          "accepted": [],
+          "accepted": [
+            "open"
+          ],
           "hint": "Choose the action for the door.",
           "explanation": "open is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Please ________ the door."
         },
         {
           "id": "ENG-VERBS-019",
-          "q": "Father will ________ the car.",
+          "q": "Choose the correct word to complete this sentence: Father will ________ the car.",
           "answer": "wash",
-          "accepted": [],
+          "accepted": [
+            "wash"
+          ],
           "hint": "Choose the action for cleaning a car.",
           "explanation": "wash is the correct verb.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Father will ________ the car."
         },
         {
           "id": "ENG-VERBS-020",
-          "q": "The pupils ________ English books.",
+          "q": "Choose the correct word to complete this sentence: The pupils ________ English books.",
           "answer": "read",
-          "accepted": [],
+          "accepted": [
+            "read"
+          ],
           "hint": "Choose the action for books.",
           "explanation": "read is an action word.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The pupils ________ English books."
         },
         {
           "id": "ENG-VERBS-021",
-          "q": "The boys ________ football after school.",
+          "q": "Complete the sentence with the best word: The boys ________ football after school.",
           "answer": "play",
-          "accepted": [],
+          "accepted": [
+            "play"
+          ],
           "hint": "Choose an action word.",
           "explanation": "play is an action word.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The boys ________ football after school."
         },
         {
           "id": "ENG-VERBS-022",
-          "q": "Aina can ________ a song.",
+          "q": "Complete the sentence with the best word: Aina can ________ a song.",
           "answer": "sing",
-          "accepted": [],
+          "accepted": [
+            "sing"
+          ],
           "hint": "Choose what Aina can do with her voice.",
           "explanation": "sing is an action.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Aina can ________ a song."
         },
         {
           "id": "ENG-VERBS-023",
-          "q": "I ________ my teeth every morning.",
+          "q": "Complete the sentence with the best word: I ________ my teeth every morning.",
           "answer": "brush",
-          "accepted": [],
+          "accepted": [
+            "brush"
+          ],
           "hint": "Choose the action for cleaning teeth.",
           "explanation": "brush is the correct verb.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: I ________ my teeth every morning."
         },
         {
           "id": "ENG-VERBS-024",
-          "q": "The baby can ________ on the mat.",
+          "q": "Complete the sentence with the best word: The baby can ________ on the mat.",
           "answer": "crawl",
-          "accepted": [],
+          "accepted": [
+            "crawl"
+          ],
           "hint": "Choose an action a baby can do.",
           "explanation": "crawl is an action.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The baby can ________ on the mat."
         },
         {
           "id": "ENG-VERBS-025",
-          "q": "We ________ water after running.",
+          "q": "Complete the sentence with the best word: We ________ water after running.",
           "answer": "drink",
-          "accepted": [],
+          "accepted": [
+            "drink"
+          ],
           "hint": "Choose the action for taking water.",
           "explanation": "drink is the correct verb.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: We ________ water after running."
         },
         {
           "id": "ENG-VERBS-026",
-          "q": "Mira will ________ a picture.",
+          "q": "Complete the sentence with the best word: Mira will ________ a picture.",
           "answer": "draw",
-          "accepted": [],
+          "accepted": [
+            "draw"
+          ],
           "hint": "Choose the action for making a picture.",
           "explanation": "draw is an action word.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Mira will ________ a picture."
         },
         {
           "id": "ENG-VERBS-027",
-          "q": "The bird can ________ in the sky.",
+          "q": "Complete the sentence with the best word: The bird can ________ in the sky.",
           "answer": "fly",
-          "accepted": [],
+          "accepted": [
+            "fly"
+          ],
           "hint": "Choose what a bird can do.",
           "explanation": "fly is the correct verb.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The bird can ________ in the sky."
         },
         {
           "id": "ENG-VERBS-028",
-          "q": "Please ________ the door.",
+          "q": "Complete the sentence with the best word: Please ________ the door.",
           "answer": "open",
-          "accepted": [],
+          "accepted": [
+            "open"
+          ],
           "hint": "Choose the action for the door.",
           "explanation": "open is an action word.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Please ________ the door."
         },
         {
           "id": "ENG-VERBS-029",
-          "q": "Father will ________ the car.",
+          "q": "Complete the sentence with the best word: Father will ________ the car.",
           "answer": "wash",
-          "accepted": [],
+          "accepted": [
+            "wash"
+          ],
           "hint": "Choose the action for cleaning a car.",
           "explanation": "wash is the correct verb.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Father will ________ the car."
         },
         {
           "id": "ENG-VERBS-030",
-          "q": "The pupils ________ English books.",
+          "q": "Complete the sentence with the best word: The pupils ________ English books.",
           "answer": "read",
-          "accepted": [],
+          "accepted": [
+            "read"
+          ],
           "hint": "Choose the action for books.",
           "explanation": "read is an action word.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The pupils ________ English books."
         },
         {
           "id": "ENG-VERBS-031",
-          "q": "The boys ________ football after school.",
+          "q": "Read and fill in the blank: The boys ________ football after school.",
           "answer": "play",
-          "accepted": [],
+          "accepted": [
+            "play"
+          ],
           "hint": "Choose an action word.",
           "explanation": "play is an action word.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The boys ________ football after school."
         },
         {
           "id": "ENG-VERBS-032",
-          "q": "Aina can ________ a song.",
+          "q": "Read and fill in the blank: Aina can ________ a song.",
           "answer": "sing",
-          "accepted": [],
+          "accepted": [
+            "sing"
+          ],
           "hint": "Choose what Aina can do with her voice.",
           "explanation": "sing is an action.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Aina can ________ a song."
         },
         {
           "id": "ENG-VERBS-033",
-          "q": "I ________ my teeth every morning.",
+          "q": "Read and fill in the blank: I ________ my teeth every morning.",
           "answer": "brush",
-          "accepted": [],
+          "accepted": [
+            "brush"
+          ],
           "hint": "Choose the action for cleaning teeth.",
           "explanation": "brush is the correct verb.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: I ________ my teeth every morning."
         },
         {
           "id": "ENG-VERBS-034",
-          "q": "The baby can ________ on the mat.",
+          "q": "Read and fill in the blank: The baby can ________ on the mat.",
           "answer": "crawl",
-          "accepted": [],
+          "accepted": [
+            "crawl"
+          ],
           "hint": "Choose an action a baby can do.",
           "explanation": "crawl is an action.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The baby can ________ on the mat."
         },
         {
           "id": "ENG-VERBS-035",
-          "q": "We ________ water after running.",
+          "q": "Read and fill in the blank: We ________ water after running.",
           "answer": "drink",
-          "accepted": [],
+          "accepted": [
+            "drink"
+          ],
           "hint": "Choose the action for taking water.",
           "explanation": "drink is the correct verb.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: We ________ water after running."
         },
         {
           "id": "ENG-VERBS-036",
-          "q": "Mira will ________ a picture.",
+          "q": "Read and fill in the blank: Mira will ________ a picture.",
           "answer": "draw",
-          "accepted": [],
+          "accepted": [
+            "draw"
+          ],
           "hint": "Choose the action for making a picture.",
           "explanation": "draw is an action word.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Mira will ________ a picture."
         },
         {
           "id": "ENG-VERBS-037",
-          "q": "The bird can ________ in the sky.",
+          "q": "Read and fill in the blank: The bird can ________ in the sky.",
           "answer": "fly",
-          "accepted": [],
+          "accepted": [
+            "fly"
+          ],
           "hint": "Choose what a bird can do.",
           "explanation": "fly is the correct verb.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The bird can ________ in the sky."
         },
         {
           "id": "ENG-VERBS-038",
-          "q": "Please ________ the door.",
+          "q": "Read and fill in the blank: Please ________ the door.",
           "answer": "open",
-          "accepted": [],
+          "accepted": [
+            "open"
+          ],
           "hint": "Choose the action for the door.",
           "explanation": "open is an action word.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Please ________ the door."
         },
         {
           "id": "ENG-VERBS-039",
-          "q": "Father will ________ the car.",
+          "q": "Read and fill in the blank: Father will ________ the car.",
           "answer": "wash",
-          "accepted": [],
+          "accepted": [
+            "wash"
+          ],
           "hint": "Choose the action for cleaning a car.",
           "explanation": "wash is the correct verb.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Father will ________ the car."
         },
         {
           "id": "ENG-VERBS-040",
-          "q": "The pupils ________ English books.",
+          "q": "Read and fill in the blank: The pupils ________ English books.",
           "answer": "read",
-          "accepted": [],
+          "accepted": [
+            "read"
+          ],
           "hint": "Choose the action for books.",
           "explanation": "read is an action word.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The pupils ________ English books."
         },
         {
           "id": "ENG-VERBS-041",
-          "q": "The boys ________ football after school.",
+          "q": "In Verbs, choose one word: The boys ________ football after school.",
           "answer": "play",
-          "accepted": [],
+          "accepted": [
+            "play"
+          ],
           "hint": "Choose an action word.",
           "explanation": "play is an action word.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: The boys ________ football after school."
         },
         {
           "id": "ENG-VERBS-042",
-          "q": "Aina can ________ a song.",
+          "q": "In Verbs, choose one word: Aina can ________ a song.",
           "answer": "sing",
-          "accepted": [],
+          "accepted": [
+            "sing"
+          ],
           "hint": "Choose what Aina can do with her voice.",
           "explanation": "sing is an action.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: Aina can ________ a song."
         },
         {
           "id": "ENG-VERBS-043",
-          "q": "I ________ my teeth every morning.",
+          "q": "In Verbs, choose one word: I ________ my teeth every morning.",
           "answer": "brush",
-          "accepted": [],
+          "accepted": [
+            "brush"
+          ],
           "hint": "Choose the action for cleaning teeth.",
           "explanation": "brush is the correct verb.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: I ________ my teeth every morning."
         },
         {
           "id": "ENG-VERBS-044",
-          "q": "The baby can ________ on the mat.",
+          "q": "In Verbs, choose one word: The baby can ________ on the mat.",
           "answer": "crawl",
-          "accepted": [],
+          "accepted": [
+            "crawl"
+          ],
           "hint": "Choose an action a baby can do.",
           "explanation": "crawl is an action.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: The baby can ________ on the mat."
         },
         {
           "id": "ENG-VERBS-045",
-          "q": "We ________ water after running.",
+          "q": "In Verbs, choose one word: We ________ water after running.",
           "answer": "drink",
-          "accepted": [],
+          "accepted": [
+            "drink"
+          ],
           "hint": "Choose the action for taking water.",
           "explanation": "drink is the correct verb.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: We ________ water after running."
         },
         {
           "id": "ENG-VERBS-046",
-          "q": "Mira will ________ a picture.",
+          "q": "In Verbs, choose one word: Mira will ________ a picture.",
           "answer": "draw",
-          "accepted": [],
+          "accepted": [
+            "draw"
+          ],
           "hint": "Choose the action for making a picture.",
           "explanation": "draw is an action word.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: Mira will ________ a picture."
         },
         {
           "id": "ENG-VERBS-047",
-          "q": "The bird can ________ in the sky.",
+          "q": "In Verbs, choose one word: The bird can ________ in the sky.",
           "answer": "fly",
-          "accepted": [],
+          "accepted": [
+            "fly"
+          ],
           "hint": "Choose what a bird can do.",
           "explanation": "fly is the correct verb.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: The bird can ________ in the sky."
         },
         {
           "id": "ENG-VERBS-048",
-          "q": "Please ________ the door.",
+          "q": "In Verbs, choose one word: Please ________ the door.",
           "answer": "open",
-          "accepted": [],
+          "accepted": [
+            "open"
+          ],
           "hint": "Choose the action for the door.",
           "explanation": "open is an action word.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: Please ________ the door."
         },
         {
           "id": "ENG-VERBS-049",
-          "q": "Father will ________ the car.",
+          "q": "In Verbs, choose one word: Father will ________ the car.",
           "answer": "wash",
-          "accepted": [],
+          "accepted": [
+            "wash"
+          ],
           "hint": "Choose the action for cleaning a car.",
           "explanation": "wash is the correct verb.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: Father will ________ the car."
         },
         {
           "id": "ENG-VERBS-050",
-          "q": "The pupils ________ English books.",
+          "q": "In Verbs, choose one word: The pupils ________ English books.",
           "answer": "read",
-          "accepted": [],
+          "accepted": [
+            "read"
+          ],
           "hint": "Choose the action for books.",
           "explanation": "read is an action word.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Verbs, choose one word: The pupils ________ English books."
         }
       ]
     },
@@ -1128,551 +1428,701 @@ export const englishSubject = {
           "id": "ENG-ADJECTIVES-001",
           "q": "The elephant is very ________.",
           "answer": "big",
-          "accepted": [],
+          "accepted": [
+            "big"
+          ],
           "hint": "Choose a word that describes size.",
           "explanation": "big describes the elephant.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The elephant is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-002",
           "q": "The ice cream is ________.",
           "answer": "cold",
-          "accepted": [],
+          "accepted": [
+            "cold"
+          ],
           "hint": "Choose a word that describes temperature.",
           "explanation": "cold describes the ice cream.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The ice cream is ________."
         },
         {
           "id": "ENG-ADJECTIVES-003",
           "q": "The pillow is ________.",
           "answer": "soft",
-          "accepted": [],
+          "accepted": [
+            "soft"
+          ],
           "hint": "Choose a word that describes how it feels.",
           "explanation": "soft describes the pillow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The pillow is ________."
         },
         {
           "id": "ENG-ADJECTIVES-004",
           "q": "The chilli is ________.",
           "answer": "hot",
-          "accepted": [],
+          "accepted": [
+            "hot"
+          ],
           "hint": "Choose a word that describes taste.",
           "explanation": "hot describes the chilli.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-005",
           "q": "The rabbit is ________.",
           "answer": "fast",
-          "accepted": [],
+          "accepted": [
+            "fast"
+          ],
           "hint": "Choose a word that describes speed.",
           "explanation": "fast describes the rabbit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The rabbit is ________."
         },
         {
           "id": "ENG-ADJECTIVES-006",
           "q": "The bag is ________. I cannot carry it.",
           "answer": "heavy",
-          "accepted": [],
+          "accepted": [
+            "heavy"
+          ],
           "hint": "Choose a word that describes weight.",
           "explanation": "heavy describes the bag.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The bag is ________. I cannot carry it."
         },
         {
           "id": "ENG-ADJECTIVES-007",
           "q": "The flower is ________.",
           "answer": "pretty",
-          "accepted": [],
+          "accepted": [
+            "pretty"
+          ],
           "hint": "Choose a word that describes the flower.",
           "explanation": "pretty describes the flower.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The flower is ________."
         },
         {
           "id": "ENG-ADJECTIVES-008",
           "q": "The road is ________ after the rain.",
           "answer": "wet",
-          "accepted": [],
+          "accepted": [
+            "wet"
+          ],
           "hint": "Choose a word that describes the road.",
           "explanation": "wet describes the road.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The road is ________ after the rain."
         },
         {
           "id": "ENG-ADJECTIVES-009",
           "q": "The room is ________ at night.",
           "answer": "dark",
-          "accepted": [],
+          "accepted": [
+            "dark"
+          ],
           "hint": "Choose a word that describes light.",
           "explanation": "dark describes the room.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The room is ________ at night."
         },
         {
           "id": "ENG-ADJECTIVES-010",
           "q": "The soup is ________. I like it.",
           "answer": "tasty",
-          "accepted": [],
+          "accepted": [
+            "tasty"
+          ],
           "hint": "Choose a word that describes flavour.",
           "explanation": "tasty describes the soup.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The soup is ________. I like it."
         },
         {
           "id": "ENG-ADJECTIVES-011",
-          "q": "The elephant is very ________.",
+          "q": "Choose the correct word to complete this sentence: The elephant is very ________.",
           "answer": "big",
-          "accepted": [],
+          "accepted": [
+            "big"
+          ],
           "hint": "Choose a word that describes size.",
           "explanation": "big describes the elephant.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The elephant is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-012",
-          "q": "The ice cream is ________.",
+          "q": "Choose the correct word to complete this sentence: The ice cream is ________.",
           "answer": "cold",
-          "accepted": [],
+          "accepted": [
+            "cold"
+          ],
           "hint": "Choose a word that describes temperature.",
           "explanation": "cold describes the ice cream.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The ice cream is ________."
         },
         {
           "id": "ENG-ADJECTIVES-013",
-          "q": "The pillow is ________.",
+          "q": "Choose the correct word to complete this sentence: The pillow is ________.",
           "answer": "soft",
-          "accepted": [],
+          "accepted": [
+            "soft"
+          ],
           "hint": "Choose a word that describes how it feels.",
           "explanation": "soft describes the pillow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The pillow is ________."
         },
         {
           "id": "ENG-ADJECTIVES-014",
-          "q": "The chilli is ________.",
+          "q": "Choose the correct word to complete this sentence: The chilli is ________.",
           "answer": "hot",
-          "accepted": [],
+          "accepted": [
+            "hot"
+          ],
           "hint": "Choose a word that describes taste.",
           "explanation": "hot describes the chilli.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-015",
-          "q": "The rabbit is ________.",
+          "q": "Choose the correct word to complete this sentence: The rabbit is ________.",
           "answer": "fast",
-          "accepted": [],
+          "accepted": [
+            "fast"
+          ],
           "hint": "Choose a word that describes speed.",
           "explanation": "fast describes the rabbit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The rabbit is ________."
         },
         {
           "id": "ENG-ADJECTIVES-016",
-          "q": "The bag is ________. I cannot carry it.",
+          "q": "Choose the correct word to complete this sentence: The bag is ________. I cannot carry it.",
           "answer": "heavy",
-          "accepted": [],
+          "accepted": [
+            "heavy"
+          ],
           "hint": "Choose a word that describes weight.",
           "explanation": "heavy describes the bag.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The bag is ________. I cannot carry it."
         },
         {
           "id": "ENG-ADJECTIVES-017",
-          "q": "The flower is ________.",
+          "q": "Choose the correct word to complete this sentence: The flower is ________.",
           "answer": "pretty",
-          "accepted": [],
+          "accepted": [
+            "pretty"
+          ],
           "hint": "Choose a word that describes the flower.",
           "explanation": "pretty describes the flower.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The flower is ________."
         },
         {
           "id": "ENG-ADJECTIVES-018",
-          "q": "The road is ________ after the rain.",
+          "q": "Choose the correct word to complete this sentence: The road is ________ after the rain.",
           "answer": "wet",
-          "accepted": [],
+          "accepted": [
+            "wet"
+          ],
           "hint": "Choose a word that describes the road.",
           "explanation": "wet describes the road.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The road is ________ after the rain."
         },
         {
           "id": "ENG-ADJECTIVES-019",
-          "q": "The room is ________ at night.",
+          "q": "Choose the correct word to complete this sentence: The room is ________ at night.",
           "answer": "dark",
-          "accepted": [],
+          "accepted": [
+            "dark"
+          ],
           "hint": "Choose a word that describes light.",
           "explanation": "dark describes the room.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The room is ________ at night."
         },
         {
           "id": "ENG-ADJECTIVES-020",
-          "q": "The soup is ________. I like it.",
+          "q": "Choose the correct word to complete this sentence: The soup is ________. I like it.",
           "answer": "tasty",
-          "accepted": [],
+          "accepted": [
+            "tasty"
+          ],
           "hint": "Choose a word that describes flavour.",
           "explanation": "tasty describes the soup.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The soup is ________. I like it."
         },
         {
           "id": "ENG-ADJECTIVES-021",
-          "q": "The elephant is very ________.",
+          "q": "Complete the sentence with the best word: The elephant is very ________.",
           "answer": "big",
-          "accepted": [],
+          "accepted": [
+            "big"
+          ],
           "hint": "Choose a word that describes size.",
           "explanation": "big describes the elephant.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The elephant is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-022",
-          "q": "The ice cream is ________.",
+          "q": "Complete the sentence with the best word: The ice cream is ________.",
           "answer": "cold",
-          "accepted": [],
+          "accepted": [
+            "cold"
+          ],
           "hint": "Choose a word that describes temperature.",
           "explanation": "cold describes the ice cream.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The ice cream is ________."
         },
         {
           "id": "ENG-ADJECTIVES-023",
-          "q": "The pillow is ________.",
+          "q": "Complete the sentence with the best word: The pillow is ________.",
           "answer": "soft",
-          "accepted": [],
+          "accepted": [
+            "soft"
+          ],
           "hint": "Choose a word that describes how it feels.",
           "explanation": "soft describes the pillow.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The pillow is ________."
         },
         {
           "id": "ENG-ADJECTIVES-024",
-          "q": "The chilli is ________.",
+          "q": "Complete the sentence with the best word: The chilli is ________.",
           "answer": "hot",
-          "accepted": [],
+          "accepted": [
+            "hot"
+          ],
           "hint": "Choose a word that describes taste.",
           "explanation": "hot describes the chilli.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-025",
-          "q": "The rabbit is ________.",
+          "q": "Complete the sentence with the best word: The rabbit is ________.",
           "answer": "fast",
-          "accepted": [],
+          "accepted": [
+            "fast"
+          ],
           "hint": "Choose a word that describes speed.",
           "explanation": "fast describes the rabbit.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The rabbit is ________."
         },
         {
           "id": "ENG-ADJECTIVES-026",
-          "q": "The bag is ________. I cannot carry it.",
+          "q": "Complete the sentence with the best word: The bag is ________. I cannot carry it.",
           "answer": "heavy",
-          "accepted": [],
+          "accepted": [
+            "heavy"
+          ],
           "hint": "Choose a word that describes weight.",
           "explanation": "heavy describes the bag.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The bag is ________. I cannot carry it."
         },
         {
           "id": "ENG-ADJECTIVES-027",
-          "q": "The flower is ________.",
+          "q": "Complete the sentence with the best word: The flower is ________.",
           "answer": "pretty",
-          "accepted": [],
+          "accepted": [
+            "pretty"
+          ],
           "hint": "Choose a word that describes the flower.",
           "explanation": "pretty describes the flower.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The flower is ________."
         },
         {
           "id": "ENG-ADJECTIVES-028",
-          "q": "The road is ________ after the rain.",
+          "q": "Complete the sentence with the best word: The road is ________ after the rain.",
           "answer": "wet",
-          "accepted": [],
+          "accepted": [
+            "wet"
+          ],
           "hint": "Choose a word that describes the road.",
           "explanation": "wet describes the road.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The road is ________ after the rain."
         },
         {
           "id": "ENG-ADJECTIVES-029",
-          "q": "The room is ________ at night.",
+          "q": "Complete the sentence with the best word: The room is ________ at night.",
           "answer": "dark",
-          "accepted": [],
+          "accepted": [
+            "dark"
+          ],
           "hint": "Choose a word that describes light.",
           "explanation": "dark describes the room.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The room is ________ at night."
         },
         {
           "id": "ENG-ADJECTIVES-030",
-          "q": "The soup is ________. I like it.",
+          "q": "Complete the sentence with the best word: The soup is ________. I like it.",
           "answer": "tasty",
-          "accepted": [],
+          "accepted": [
+            "tasty"
+          ],
           "hint": "Choose a word that describes flavour.",
           "explanation": "tasty describes the soup.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The soup is ________. I like it."
         },
         {
           "id": "ENG-ADJECTIVES-031",
-          "q": "The elephant is very ________.",
+          "q": "Read and fill in the blank: The elephant is very ________.",
           "answer": "big",
-          "accepted": [],
+          "accepted": [
+            "big"
+          ],
           "hint": "Choose a word that describes size.",
           "explanation": "big describes the elephant.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The elephant is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-032",
-          "q": "The ice cream is ________.",
+          "q": "Read and fill in the blank: The ice cream is ________.",
           "answer": "cold",
-          "accepted": [],
+          "accepted": [
+            "cold"
+          ],
           "hint": "Choose a word that describes temperature.",
           "explanation": "cold describes the ice cream.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The ice cream is ________."
         },
         {
           "id": "ENG-ADJECTIVES-033",
-          "q": "The pillow is ________.",
+          "q": "Read and fill in the blank: The pillow is ________.",
           "answer": "soft",
-          "accepted": [],
+          "accepted": [
+            "soft"
+          ],
           "hint": "Choose a word that describes how it feels.",
           "explanation": "soft describes the pillow.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The pillow is ________."
         },
         {
           "id": "ENG-ADJECTIVES-034",
-          "q": "The chilli is ________.",
+          "q": "Read and fill in the blank: The chilli is ________.",
           "answer": "hot",
-          "accepted": [],
+          "accepted": [
+            "hot"
+          ],
           "hint": "Choose a word that describes taste.",
           "explanation": "hot describes the chilli.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-035",
-          "q": "The rabbit is ________.",
+          "q": "Read and fill in the blank: The rabbit is ________.",
           "answer": "fast",
-          "accepted": [],
+          "accepted": [
+            "fast"
+          ],
           "hint": "Choose a word that describes speed.",
           "explanation": "fast describes the rabbit.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The rabbit is ________."
         },
         {
           "id": "ENG-ADJECTIVES-036",
-          "q": "The bag is ________. I cannot carry it.",
+          "q": "Read and fill in the blank: The bag is ________. I cannot carry it.",
           "answer": "heavy",
-          "accepted": [],
+          "accepted": [
+            "heavy"
+          ],
           "hint": "Choose a word that describes weight.",
           "explanation": "heavy describes the bag.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The bag is ________. I cannot carry it."
         },
         {
           "id": "ENG-ADJECTIVES-037",
-          "q": "The flower is ________.",
+          "q": "Read and fill in the blank: The flower is ________.",
           "answer": "pretty",
-          "accepted": [],
+          "accepted": [
+            "pretty"
+          ],
           "hint": "Choose a word that describes the flower.",
           "explanation": "pretty describes the flower.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The flower is ________."
         },
         {
           "id": "ENG-ADJECTIVES-038",
-          "q": "The road is ________ after the rain.",
+          "q": "Read and fill in the blank: The road is ________ after the rain.",
           "answer": "wet",
-          "accepted": [],
+          "accepted": [
+            "wet"
+          ],
           "hint": "Choose a word that describes the road.",
           "explanation": "wet describes the road.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The road is ________ after the rain."
         },
         {
           "id": "ENG-ADJECTIVES-039",
-          "q": "The room is ________ at night.",
+          "q": "Read and fill in the blank: The room is ________ at night.",
           "answer": "dark",
-          "accepted": [],
+          "accepted": [
+            "dark"
+          ],
           "hint": "Choose a word that describes light.",
           "explanation": "dark describes the room.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The room is ________ at night."
         },
         {
           "id": "ENG-ADJECTIVES-040",
-          "q": "The soup is ________. I like it.",
+          "q": "Read and fill in the blank: The soup is ________. I like it.",
           "answer": "tasty",
-          "accepted": [],
+          "accepted": [
+            "tasty"
+          ],
           "hint": "Choose a word that describes flavour.",
           "explanation": "tasty describes the soup.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The soup is ________. I like it."
         },
         {
           "id": "ENG-ADJECTIVES-041",
-          "q": "The elephant is very ________.",
+          "q": "In Adjectives, choose one word: The elephant is very ________.",
           "answer": "big",
-          "accepted": [],
+          "accepted": [
+            "big"
+          ],
           "hint": "Choose a word that describes size.",
           "explanation": "big describes the elephant.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The elephant is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-042",
-          "q": "The ice cream is ________.",
+          "q": "In Adjectives, choose one word: The ice cream is ________.",
           "answer": "cold",
-          "accepted": [],
+          "accepted": [
+            "cold"
+          ],
           "hint": "Choose a word that describes temperature.",
           "explanation": "cold describes the ice cream.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The ice cream is ________."
         },
         {
           "id": "ENG-ADJECTIVES-043",
-          "q": "The pillow is ________.",
+          "q": "In Adjectives, choose one word: The pillow is ________.",
           "answer": "soft",
-          "accepted": [],
+          "accepted": [
+            "soft"
+          ],
           "hint": "Choose a word that describes how it feels.",
           "explanation": "soft describes the pillow.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The pillow is ________."
         },
         {
           "id": "ENG-ADJECTIVES-044",
-          "q": "The chilli is ________.",
+          "q": "In Adjectives, choose one word: The chilli is ________.",
           "answer": "hot",
-          "accepted": [],
+          "accepted": [
+            "hot"
+          ],
           "hint": "Choose a word that describes taste.",
           "explanation": "hot describes the chilli.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-045",
-          "q": "The rabbit is ________.",
+          "q": "In Adjectives, choose one word: The rabbit is ________.",
           "answer": "fast",
-          "accepted": [],
+          "accepted": [
+            "fast"
+          ],
           "hint": "Choose a word that describes speed.",
           "explanation": "fast describes the rabbit.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The rabbit is ________."
         },
         {
           "id": "ENG-ADJECTIVES-046",
-          "q": "The bag is ________. I cannot carry it.",
+          "q": "In Adjectives, choose one word: The bag is ________. I cannot carry it.",
           "answer": "heavy",
-          "accepted": [],
+          "accepted": [
+            "heavy"
+          ],
           "hint": "Choose a word that describes weight.",
           "explanation": "heavy describes the bag.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The bag is ________. I cannot carry it."
         },
         {
           "id": "ENG-ADJECTIVES-047",
-          "q": "The flower is ________.",
+          "q": "In Adjectives, choose one word: The flower is ________.",
           "answer": "pretty",
-          "accepted": [],
+          "accepted": [
+            "pretty"
+          ],
           "hint": "Choose a word that describes the flower.",
           "explanation": "pretty describes the flower.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The flower is ________."
         },
         {
           "id": "ENG-ADJECTIVES-048",
-          "q": "The road is ________ after the rain.",
+          "q": "In Adjectives, choose one word: The road is ________ after the rain.",
           "answer": "wet",
-          "accepted": [],
+          "accepted": [
+            "wet"
+          ],
           "hint": "Choose a word that describes the road.",
           "explanation": "wet describes the road.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The road is ________ after the rain."
         },
         {
           "id": "ENG-ADJECTIVES-049",
-          "q": "The room is ________ at night.",
+          "q": "In Adjectives, choose one word: The room is ________ at night.",
           "answer": "dark",
-          "accepted": [],
+          "accepted": [
+            "dark"
+          ],
           "hint": "Choose a word that describes light.",
           "explanation": "dark describes the room.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The room is ________ at night."
         },
         {
           "id": "ENG-ADJECTIVES-050",
-          "q": "The soup is ________. I like it.",
+          "q": "In Adjectives, choose one word: The soup is ________. I like it.",
           "answer": "tasty",
-          "accepted": [],
+          "accepted": [
+            "tasty"
+          ],
           "hint": "Choose a word that describes flavour.",
           "explanation": "tasty describes the soup.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Adjectives, choose one word: The soup is ________. I like it."
         }
       ]
     },
@@ -1685,551 +2135,701 @@ export const englishSubject = {
           "id": "ENG-COLOURS-001",
           "q": "A ripe banana is ________.",
           "answer": "yellow",
-          "accepted": [],
+          "accepted": [
+            "yellow"
+          ],
           "hint": "Think of the colour of a ripe banana.",
           "explanation": "A ripe banana is yellow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ripe banana is ________."
         },
         {
           "id": "ENG-COLOURS-002",
           "q": "The sky is ________ on a sunny day.",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Think of the colour of the sky.",
           "explanation": "The sky is blue.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The sky is ________ on a sunny day."
         },
         {
           "id": "ENG-COLOURS-003",
           "q": "Grass is usually ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of the colour of grass.",
           "explanation": "Grass is green.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Grass is usually ________."
         },
         {
           "id": "ENG-COLOURS-004",
           "q": "A strawberry is ________.",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Think of the colour of a strawberry.",
           "explanation": "A strawberry is red.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A strawberry is ________."
         },
         {
           "id": "ENG-COLOURS-005",
           "q": "Milk is ________.",
           "answer": "white",
-          "accepted": [],
+          "accepted": [
+            "white"
+          ],
           "hint": "Think of the colour of milk.",
           "explanation": "Milk is white.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Milk is ________."
         },
         {
           "id": "ENG-COLOURS-006",
           "q": "A crow is ________.",
           "answer": "black",
-          "accepted": [],
+          "accepted": [
+            "black"
+          ],
           "hint": "Think of the colour of a crow.",
           "explanation": "A crow is black.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A crow is ________."
         },
         {
           "id": "ENG-COLOURS-007",
           "q": "An orange is ________.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "The fruit name is also the colour.",
           "explanation": "An orange is orange.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "An orange is ________."
         },
         {
           "id": "ENG-COLOURS-008",
           "q": "A fresh leaf is ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of a fresh leaf.",
           "explanation": "A fresh leaf is green.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A fresh leaf is ________."
         },
         {
           "id": "ENG-COLOURS-009",
           "q": "Chocolate is usually ________.",
           "answer": "brown",
-          "accepted": [],
+          "accepted": [
+            "brown"
+          ],
           "hint": "Think of the colour of chocolate.",
           "explanation": "Chocolate is brown.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Chocolate is usually ________."
         },
         {
           "id": "ENG-COLOURS-010",
           "q": "A flamingo is ________.",
           "answer": "pink",
-          "accepted": [],
+          "accepted": [
+            "pink"
+          ],
           "hint": "Think of the bird flamingo.",
           "explanation": "A flamingo is pink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A flamingo is ________."
         },
         {
           "id": "ENG-COLOURS-011",
-          "q": "A ripe banana is ________.",
+          "q": "Choose the correct word to complete this sentence: A ripe banana is ________.",
           "answer": "yellow",
-          "accepted": [],
+          "accepted": [
+            "yellow"
+          ],
           "hint": "Think of the colour of a ripe banana.",
           "explanation": "A ripe banana is yellow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ripe banana is ________."
         },
         {
           "id": "ENG-COLOURS-012",
-          "q": "The sky is ________ on a sunny day.",
+          "q": "Choose the correct word to complete this sentence: The sky is ________ on a sunny day.",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Think of the colour of the sky.",
           "explanation": "The sky is blue.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The sky is ________ on a sunny day."
         },
         {
           "id": "ENG-COLOURS-013",
-          "q": "Grass is usually ________.",
+          "q": "Choose the correct word to complete this sentence: Grass is usually ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of the colour of grass.",
           "explanation": "Grass is green.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Grass is usually ________."
         },
         {
           "id": "ENG-COLOURS-014",
-          "q": "A strawberry is ________.",
+          "q": "Choose the correct word to complete this sentence: A strawberry is ________.",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Think of the colour of a strawberry.",
           "explanation": "A strawberry is red.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A strawberry is ________."
         },
         {
           "id": "ENG-COLOURS-015",
-          "q": "Milk is ________.",
+          "q": "Choose the correct word to complete this sentence: Milk is ________.",
           "answer": "white",
-          "accepted": [],
+          "accepted": [
+            "white"
+          ],
           "hint": "Think of the colour of milk.",
           "explanation": "Milk is white.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Milk is ________."
         },
         {
           "id": "ENG-COLOURS-016",
-          "q": "A crow is ________.",
+          "q": "Choose the correct word to complete this sentence: A crow is ________.",
           "answer": "black",
-          "accepted": [],
+          "accepted": [
+            "black"
+          ],
           "hint": "Think of the colour of a crow.",
           "explanation": "A crow is black.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A crow is ________."
         },
         {
           "id": "ENG-COLOURS-017",
-          "q": "An orange is ________.",
+          "q": "Choose the correct word to complete this sentence: An orange is ________.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "The fruit name is also the colour.",
           "explanation": "An orange is orange.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: An orange is ________."
         },
         {
           "id": "ENG-COLOURS-018",
-          "q": "A fresh leaf is ________.",
+          "q": "Choose the correct word to complete this sentence: A fresh leaf is ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of a fresh leaf.",
           "explanation": "A fresh leaf is green.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A fresh leaf is ________."
         },
         {
           "id": "ENG-COLOURS-019",
-          "q": "Chocolate is usually ________.",
+          "q": "Choose the correct word to complete this sentence: Chocolate is usually ________.",
           "answer": "brown",
-          "accepted": [],
+          "accepted": [
+            "brown"
+          ],
           "hint": "Think of the colour of chocolate.",
           "explanation": "Chocolate is brown.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Chocolate is usually ________."
         },
         {
           "id": "ENG-COLOURS-020",
-          "q": "A flamingo is ________.",
+          "q": "Choose the correct word to complete this sentence: A flamingo is ________.",
           "answer": "pink",
-          "accepted": [],
+          "accepted": [
+            "pink"
+          ],
           "hint": "Think of the bird flamingo.",
           "explanation": "A flamingo is pink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A flamingo is ________."
         },
         {
           "id": "ENG-COLOURS-021",
-          "q": "A ripe banana is ________.",
+          "q": "Complete the sentence with the best word: A ripe banana is ________.",
           "answer": "yellow",
-          "accepted": [],
+          "accepted": [
+            "yellow"
+          ],
           "hint": "Think of the colour of a ripe banana.",
           "explanation": "A ripe banana is yellow.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ripe banana is ________."
         },
         {
           "id": "ENG-COLOURS-022",
-          "q": "The sky is ________ on a sunny day.",
+          "q": "Complete the sentence with the best word: The sky is ________ on a sunny day.",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Think of the colour of the sky.",
           "explanation": "The sky is blue.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The sky is ________ on a sunny day."
         },
         {
           "id": "ENG-COLOURS-023",
-          "q": "Grass is usually ________.",
+          "q": "Complete the sentence with the best word: Grass is usually ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of the colour of grass.",
           "explanation": "Grass is green.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Grass is usually ________."
         },
         {
           "id": "ENG-COLOURS-024",
-          "q": "A strawberry is ________.",
+          "q": "Complete the sentence with the best word: A strawberry is ________.",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Think of the colour of a strawberry.",
           "explanation": "A strawberry is red.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A strawberry is ________."
         },
         {
           "id": "ENG-COLOURS-025",
-          "q": "Milk is ________.",
+          "q": "Complete the sentence with the best word: Milk is ________.",
           "answer": "white",
-          "accepted": [],
+          "accepted": [
+            "white"
+          ],
           "hint": "Think of the colour of milk.",
           "explanation": "Milk is white.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Milk is ________."
         },
         {
           "id": "ENG-COLOURS-026",
-          "q": "A crow is ________.",
+          "q": "Complete the sentence with the best word: A crow is ________.",
           "answer": "black",
-          "accepted": [],
+          "accepted": [
+            "black"
+          ],
           "hint": "Think of the colour of a crow.",
           "explanation": "A crow is black.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A crow is ________."
         },
         {
           "id": "ENG-COLOURS-027",
-          "q": "An orange is ________.",
+          "q": "Complete the sentence with the best word: An orange is ________.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "The fruit name is also the colour.",
           "explanation": "An orange is orange.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: An orange is ________."
         },
         {
           "id": "ENG-COLOURS-028",
-          "q": "A fresh leaf is ________.",
+          "q": "Complete the sentence with the best word: A fresh leaf is ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of a fresh leaf.",
           "explanation": "A fresh leaf is green.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A fresh leaf is ________."
         },
         {
           "id": "ENG-COLOURS-029",
-          "q": "Chocolate is usually ________.",
+          "q": "Complete the sentence with the best word: Chocolate is usually ________.",
           "answer": "brown",
-          "accepted": [],
+          "accepted": [
+            "brown"
+          ],
           "hint": "Think of the colour of chocolate.",
           "explanation": "Chocolate is brown.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Chocolate is usually ________."
         },
         {
           "id": "ENG-COLOURS-030",
-          "q": "A flamingo is ________.",
+          "q": "Complete the sentence with the best word: A flamingo is ________.",
           "answer": "pink",
-          "accepted": [],
+          "accepted": [
+            "pink"
+          ],
           "hint": "Think of the bird flamingo.",
           "explanation": "A flamingo is pink.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A flamingo is ________."
         },
         {
           "id": "ENG-COLOURS-031",
-          "q": "A ripe banana is ________.",
+          "q": "Read and fill in the blank: A ripe banana is ________.",
           "answer": "yellow",
-          "accepted": [],
+          "accepted": [
+            "yellow"
+          ],
           "hint": "Think of the colour of a ripe banana.",
           "explanation": "A ripe banana is yellow.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ripe banana is ________."
         },
         {
           "id": "ENG-COLOURS-032",
-          "q": "The sky is ________ on a sunny day.",
+          "q": "Read and fill in the blank: The sky is ________ on a sunny day.",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Think of the colour of the sky.",
           "explanation": "The sky is blue.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The sky is ________ on a sunny day."
         },
         {
           "id": "ENG-COLOURS-033",
-          "q": "Grass is usually ________.",
+          "q": "Read and fill in the blank: Grass is usually ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of the colour of grass.",
           "explanation": "Grass is green.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Grass is usually ________."
         },
         {
           "id": "ENG-COLOURS-034",
-          "q": "A strawberry is ________.",
+          "q": "Read and fill in the blank: A strawberry is ________.",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Think of the colour of a strawberry.",
           "explanation": "A strawberry is red.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A strawberry is ________."
         },
         {
           "id": "ENG-COLOURS-035",
-          "q": "Milk is ________.",
+          "q": "Read and fill in the blank: Milk is ________.",
           "answer": "white",
-          "accepted": [],
+          "accepted": [
+            "white"
+          ],
           "hint": "Think of the colour of milk.",
           "explanation": "Milk is white.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Milk is ________."
         },
         {
           "id": "ENG-COLOURS-036",
-          "q": "A crow is ________.",
+          "q": "Read and fill in the blank: A crow is ________.",
           "answer": "black",
-          "accepted": [],
+          "accepted": [
+            "black"
+          ],
           "hint": "Think of the colour of a crow.",
           "explanation": "A crow is black.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A crow is ________."
         },
         {
           "id": "ENG-COLOURS-037",
-          "q": "An orange is ________.",
+          "q": "Read and fill in the blank: An orange is ________.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "The fruit name is also the colour.",
           "explanation": "An orange is orange.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: An orange is ________."
         },
         {
           "id": "ENG-COLOURS-038",
-          "q": "A fresh leaf is ________.",
+          "q": "Read and fill in the blank: A fresh leaf is ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of a fresh leaf.",
           "explanation": "A fresh leaf is green.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A fresh leaf is ________."
         },
         {
           "id": "ENG-COLOURS-039",
-          "q": "Chocolate is usually ________.",
+          "q": "Read and fill in the blank: Chocolate is usually ________.",
           "answer": "brown",
-          "accepted": [],
+          "accepted": [
+            "brown"
+          ],
           "hint": "Think of the colour of chocolate.",
           "explanation": "Chocolate is brown.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Chocolate is usually ________."
         },
         {
           "id": "ENG-COLOURS-040",
-          "q": "A flamingo is ________.",
+          "q": "Read and fill in the blank: A flamingo is ________.",
           "answer": "pink",
-          "accepted": [],
+          "accepted": [
+            "pink"
+          ],
           "hint": "Think of the bird flamingo.",
           "explanation": "A flamingo is pink.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A flamingo is ________."
         },
         {
           "id": "ENG-COLOURS-041",
-          "q": "A ripe banana is ________.",
+          "q": "In Colours, choose one word: A ripe banana is ________.",
           "answer": "yellow",
-          "accepted": [],
+          "accepted": [
+            "yellow"
+          ],
           "hint": "Think of the colour of a ripe banana.",
           "explanation": "A ripe banana is yellow.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: A ripe banana is ________."
         },
         {
           "id": "ENG-COLOURS-042",
-          "q": "The sky is ________ on a sunny day.",
+          "q": "In Colours, choose one word: The sky is ________ on a sunny day.",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Think of the colour of the sky.",
           "explanation": "The sky is blue.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: The sky is ________ on a sunny day."
         },
         {
           "id": "ENG-COLOURS-043",
-          "q": "Grass is usually ________.",
+          "q": "In Colours, choose one word: Grass is usually ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of the colour of grass.",
           "explanation": "Grass is green.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: Grass is usually ________."
         },
         {
           "id": "ENG-COLOURS-044",
-          "q": "A strawberry is ________.",
+          "q": "In Colours, choose one word: A strawberry is ________.",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Think of the colour of a strawberry.",
           "explanation": "A strawberry is red.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: A strawberry is ________."
         },
         {
           "id": "ENG-COLOURS-045",
-          "q": "Milk is ________.",
+          "q": "In Colours, choose one word: Milk is ________.",
           "answer": "white",
-          "accepted": [],
+          "accepted": [
+            "white"
+          ],
           "hint": "Think of the colour of milk.",
           "explanation": "Milk is white.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: Milk is ________."
         },
         {
           "id": "ENG-COLOURS-046",
-          "q": "A crow is ________.",
+          "q": "In Colours, choose one word: A crow is ________.",
           "answer": "black",
-          "accepted": [],
+          "accepted": [
+            "black"
+          ],
           "hint": "Think of the colour of a crow.",
           "explanation": "A crow is black.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: A crow is ________."
         },
         {
           "id": "ENG-COLOURS-047",
-          "q": "An orange is ________.",
+          "q": "In Colours, choose one word: An orange is ________.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "The fruit name is also the colour.",
           "explanation": "An orange is orange.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: An orange is ________."
         },
         {
           "id": "ENG-COLOURS-048",
-          "q": "A fresh leaf is ________.",
+          "q": "In Colours, choose one word: A fresh leaf is ________.",
           "answer": "green",
-          "accepted": [],
+          "accepted": [
+            "green"
+          ],
           "hint": "Think of a fresh leaf.",
           "explanation": "A fresh leaf is green.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: A fresh leaf is ________."
         },
         {
           "id": "ENG-COLOURS-049",
-          "q": "Chocolate is usually ________.",
+          "q": "In Colours, choose one word: Chocolate is usually ________.",
           "answer": "brown",
-          "accepted": [],
+          "accepted": [
+            "brown"
+          ],
           "hint": "Think of the colour of chocolate.",
           "explanation": "Chocolate is brown.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: Chocolate is usually ________."
         },
         {
           "id": "ENG-COLOURS-050",
-          "q": "A flamingo is ________.",
+          "q": "In Colours, choose one word: A flamingo is ________.",
           "answer": "pink",
-          "accepted": [],
+          "accepted": [
+            "pink"
+          ],
           "hint": "Think of the bird flamingo.",
           "explanation": "A flamingo is pink.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Colours, choose one word: A flamingo is ________."
         }
       ]
     },
@@ -2242,551 +2842,701 @@ export const englishSubject = {
           "id": "ENG-NUMBERS-001",
           "q": "Write 2 in words: ________.",
           "answer": "two",
-          "accepted": [],
+          "accepted": [
+            "two"
+          ],
           "hint": "Write the number word.",
           "explanation": "2 is written as two.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write 2 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-002",
           "q": "How many legs do two cats have? ________",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "How many legs do two cats have? ________"
         },
         {
           "id": "ENG-NUMBERS-003",
           "q": "What number comes after 4?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 4 is 5.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes after 4?"
         },
         {
           "id": "ENG-NUMBERS-004",
           "q": "What number comes before 6?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 6 is 5.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes before 6?"
         },
         {
           "id": "ENG-NUMBERS-005",
           "q": "6 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Add two.",
-          "explanation": "6 + 2 = 8.",
+          "explanation": "Jawapan yang tepat ialah 8 berdasarkan kemahiran dalam topik Numbers.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "6 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-006",
           "q": "Write 7 in words: ________.",
           "answer": "seven",
-          "accepted": [],
+          "accepted": [
+            "seven"
+          ],
           "hint": "Write the number word.",
           "explanation": "7 is written as seven.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write 7 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-007",
-          "q": "How many legs do two cats have? ________",
+          "q": "Choose the correct word to complete this sentence: How many legs do two cats have? ________",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: How many legs do two cats have? ________"
         },
         {
           "id": "ENG-NUMBERS-008",
           "q": "What number comes after 9?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 9 is 10.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes after 9?"
         },
         {
           "id": "ENG-NUMBERS-009",
           "q": "What number comes before 11?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 11 is 10.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes before 11?"
         },
         {
           "id": "ENG-NUMBERS-010",
           "q": "11 + 2 = ________.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Add two.",
           "explanation": "11 + 2 = 13.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "11 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-011",
           "q": "Write 12 in words: ________.",
           "answer": "twelve",
-          "accepted": [],
+          "accepted": [
+            "twelve"
+          ],
           "hint": "Write the number word.",
           "explanation": "12 is written as twelve.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write 12 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-012",
-          "q": "How many legs do two cats have? ________",
+          "q": "Complete the sentence with the best word: How many legs do two cats have? ________",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: How many legs do two cats have? ________"
         },
         {
           "id": "ENG-NUMBERS-013",
           "q": "What number comes after 14?",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 14 is 15.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes after 14?"
         },
         {
           "id": "ENG-NUMBERS-014",
           "q": "What number comes before 16?",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 16 is 15.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes before 16?"
         },
         {
           "id": "ENG-NUMBERS-015",
           "q": "16 + 2 = ________.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Add two.",
           "explanation": "16 + 2 = 18.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "16 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-016",
           "q": "Write 17 in words: ________.",
           "answer": "seventeen",
-          "accepted": [],
+          "accepted": [
+            "seventeen"
+          ],
           "hint": "Write the number word.",
           "explanation": "17 is written as seventeen.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write 17 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-017",
-          "q": "How many legs do two cats have? ________",
+          "q": "Read and fill in the blank: How many legs do two cats have? ________",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: How many legs do two cats have? ________"
         },
         {
           "id": "ENG-NUMBERS-018",
           "q": "What number comes after 19?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 19 is 20.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes after 19?"
         },
         {
           "id": "ENG-NUMBERS-019",
           "q": "What number comes before 21?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 21 is 20.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "What number comes before 21?"
         },
         {
           "id": "ENG-NUMBERS-020",
           "q": "1 + 2 = ________.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Add two.",
-          "explanation": "1 + 2 = 3.",
+          "explanation": "Jawapan yang tepat ialah 3 berdasarkan kemahiran dalam topik Numbers.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "1 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-021",
-          "q": "Write 2 in words: ________.",
+          "q": "Choose the correct word to complete this sentence: Write 2 in words: ________.",
           "answer": "two",
-          "accepted": [],
+          "accepted": [
+            "two"
+          ],
           "hint": "Write the number word.",
           "explanation": "2 is written as two.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Write 2 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-022",
-          "q": "How many legs do two cats have? ________",
+          "q": "In Numbers, choose one word: How many legs do two cats have? ________",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Numbers, choose one word: How many legs do two cats have? ________"
         },
         {
           "id": "ENG-NUMBERS-023",
-          "q": "What number comes after 4?",
+          "q": "Choose the correct word to complete this sentence: What number comes after 4?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 4 is 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes after 4?"
         },
         {
           "id": "ENG-NUMBERS-024",
-          "q": "What number comes before 6?",
+          "q": "Choose the correct word to complete this sentence: What number comes before 6?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 6 is 5.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes before 6?"
         },
         {
           "id": "ENG-NUMBERS-025",
-          "q": "6 + 2 = ________.",
+          "q": "Choose the correct word to complete this sentence: 6 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Add two.",
-          "explanation": "6 + 2 = 8.",
-          "difficulty": "mudah",
+          "explanation": "Jawapan yang tepat ialah 8 berdasarkan kemahiran dalam topik Numbers.",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: 6 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-026",
-          "q": "Write 7 in words: ________.",
+          "q": "Choose the correct word to complete this sentence: Write 7 in words: ________.",
           "answer": "seven",
-          "accepted": [],
+          "accepted": [
+            "seven"
+          ],
           "hint": "Write the number word.",
           "explanation": "7 is written as seven.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Write 7 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-027",
-          "q": "How many legs do two cats have? ________",
+          "q": "Choose the correct word to complete this sentence: How many legs do two cats have? ________ Practice 6.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: How many legs do two cats have? ________ Practice 6."
         },
         {
           "id": "ENG-NUMBERS-028",
-          "q": "What number comes after 9?",
+          "q": "Choose the correct word to complete this sentence: What number comes after 9?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 9 is 10.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes after 9?"
         },
         {
           "id": "ENG-NUMBERS-029",
-          "q": "What number comes before 11?",
+          "q": "Choose the correct word to complete this sentence: What number comes before 11?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 11 is 10.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes before 11?"
         },
         {
           "id": "ENG-NUMBERS-030",
-          "q": "11 + 2 = ________.",
+          "q": "Choose the correct word to complete this sentence: 11 + 2 = ________.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Add two.",
           "explanation": "11 + 2 = 13.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: 11 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-031",
-          "q": "Write 12 in words: ________.",
+          "q": "Choose the correct word to complete this sentence: Write 12 in words: ________.",
           "answer": "twelve",
-          "accepted": [],
+          "accepted": [
+            "twelve"
+          ],
           "hint": "Write the number word.",
           "explanation": "12 is written as twelve.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Write 12 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-032",
-          "q": "How many legs do two cats have? ________",
+          "q": "Complete the sentence with the best word: How many legs do two cats have? ________ Practice 7.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: How many legs do two cats have? ________ Practice 7."
         },
         {
           "id": "ENG-NUMBERS-033",
-          "q": "What number comes after 14?",
+          "q": "Choose the correct word to complete this sentence: What number comes after 14?",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 14 is 15.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes after 14?"
         },
         {
           "id": "ENG-NUMBERS-034",
-          "q": "What number comes before 16?",
+          "q": "Choose the correct word to complete this sentence: What number comes before 16?",
           "answer": "15",
-          "accepted": [],
+          "accepted": [
+            "15"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 16 is 15.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes before 16?"
         },
         {
           "id": "ENG-NUMBERS-035",
-          "q": "16 + 2 = ________.",
+          "q": "Choose the correct word to complete this sentence: 16 + 2 = ________.",
           "answer": "18",
-          "accepted": [],
+          "accepted": [
+            "18"
+          ],
           "hint": "Add two.",
           "explanation": "16 + 2 = 18.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: 16 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-036",
-          "q": "Write 17 in words: ________.",
+          "q": "Choose the correct word to complete this sentence: Write 17 in words: ________.",
           "answer": "seventeen",
-          "accepted": [],
+          "accepted": [
+            "seventeen"
+          ],
           "hint": "Write the number word.",
           "explanation": "17 is written as seventeen.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Write 17 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-037",
-          "q": "How many legs do two cats have? ________",
+          "q": "Read and fill in the blank: How many legs do two cats have? ________ Practice 8.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: How many legs do two cats have? ________ Practice 8."
         },
         {
           "id": "ENG-NUMBERS-038",
-          "q": "What number comes after 19?",
+          "q": "Choose the correct word to complete this sentence: What number comes after 19?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 19 is 20.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes after 19?"
         },
         {
           "id": "ENG-NUMBERS-039",
-          "q": "What number comes before 21?",
+          "q": "Choose the correct word to complete this sentence: What number comes before 21?",
           "answer": "20",
-          "accepted": [],
+          "accepted": [
+            "20"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 21 is 20.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: What number comes before 21?"
         },
         {
           "id": "ENG-NUMBERS-040",
-          "q": "1 + 2 = ________.",
+          "q": "Choose the correct word to complete this sentence: 1 + 2 = ________.",
           "answer": "3",
-          "accepted": [],
+          "accepted": [
+            "3"
+          ],
           "hint": "Add two.",
-          "explanation": "1 + 2 = 3.",
+          "explanation": "Jawapan yang tepat ialah 3 berdasarkan kemahiran dalam topik Numbers.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: 1 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-041",
-          "q": "Write 2 in words: ________.",
+          "q": "Complete the sentence with the best word: Write 2 in words: ________.",
           "answer": "two",
-          "accepted": [],
+          "accepted": [
+            "two"
+          ],
           "hint": "Write the number word.",
           "explanation": "2 is written as two.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Write 2 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-042",
-          "q": "How many legs do two cats have? ________",
+          "q": "In Numbers, choose one word: How many legs do two cats have? ________ Practice 9.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Numbers, choose one word: How many legs do two cats have? ________ Practice 9."
         },
         {
           "id": "ENG-NUMBERS-043",
-          "q": "What number comes after 4?",
+          "q": "Complete the sentence with the best word: What number comes after 4?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 4 is 5.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: What number comes after 4?"
         },
         {
           "id": "ENG-NUMBERS-044",
-          "q": "What number comes before 6?",
+          "q": "Complete the sentence with the best word: What number comes before 6?",
           "answer": "5",
-          "accepted": [],
+          "accepted": [
+            "5"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 6 is 5.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: What number comes before 6?"
         },
         {
           "id": "ENG-NUMBERS-045",
-          "q": "6 + 2 = ________.",
+          "q": "Complete the sentence with the best word: 6 + 2 = ________.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "Add two.",
-          "explanation": "6 + 2 = 8.",
-          "difficulty": "sederhana",
+          "explanation": "Jawapan yang tepat ialah 8 berdasarkan kemahiran dalam topik Numbers.",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: 6 + 2 = ________."
         },
         {
           "id": "ENG-NUMBERS-046",
-          "q": "Write 7 in words: ________.",
+          "q": "Complete the sentence with the best word: Write 7 in words: ________.",
           "answer": "seven",
-          "accepted": [],
+          "accepted": [
+            "seven"
+          ],
           "hint": "Write the number word.",
           "explanation": "7 is written as seven.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Write 7 in words: ________."
         },
         {
           "id": "ENG-NUMBERS-047",
-          "q": "How many legs do two cats have? ________",
+          "q": "Choose the correct word to complete this sentence: How many legs do two cats have? ________ Practice 10.",
           "answer": "8",
-          "accepted": [],
+          "accepted": [
+            "8"
+          ],
           "hint": "One cat has 4 legs.",
           "explanation": "Two cats have 4 + 4 = 8 legs.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: How many legs do two cats have? ________ Practice 10."
         },
         {
           "id": "ENG-NUMBERS-048",
-          "q": "What number comes after 9?",
+          "q": "Complete the sentence with the best word: What number comes after 9?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one more.",
           "explanation": "The number after 9 is 10.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: What number comes after 9?"
         },
         {
           "id": "ENG-NUMBERS-049",
-          "q": "What number comes before 11?",
+          "q": "Complete the sentence with the best word: What number comes before 11?",
           "answer": "10",
-          "accepted": [],
+          "accepted": [
+            "10"
+          ],
           "hint": "Count one less.",
           "explanation": "The number before 11 is 10.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: What number comes before 11?"
         },
         {
           "id": "ENG-NUMBERS-050",
-          "q": "11 + 2 = ________.",
+          "q": "Complete the sentence with the best word: 11 + 2 = ________.",
           "answer": "13",
-          "accepted": [],
+          "accepted": [
+            "13"
+          ],
           "hint": "Add two.",
           "explanation": "11 + 2 = 13.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: 11 + 2 = ________."
         }
       ]
     },
@@ -2799,551 +3549,701 @@ export const englishSubject = {
           "id": "ENG-ANIMALS-001",
           "q": "A ________ says woof.",
           "answer": "dog",
-          "accepted": [],
+          "accepted": [
+            "dog"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A dog says woof.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ says woof."
         },
         {
           "id": "ENG-ANIMALS-002",
-          "q": "A ________ says meow.",
+          "q": "Choose the correct word to complete this sentence: A ________ says meow. Practice 6.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A cat says meow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ says meow. Practice 6."
         },
         {
           "id": "ENG-ANIMALS-003",
           "q": "A ________ gives us milk.",
           "answer": "cow",
-          "accepted": [],
+          "accepted": [
+            "cow"
+          ],
           "hint": "Choose the farm animal.",
           "explanation": "A cow gives us milk.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ gives us milk."
         },
         {
           "id": "ENG-ANIMALS-004",
           "q": "A ________ has a long trunk.",
           "answer": "elephant",
-          "accepted": [],
+          "accepted": [
+            "elephant"
+          ],
           "hint": "Choose the animal with a trunk.",
           "explanation": "An elephant has a long trunk.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ has a long trunk."
         },
         {
           "id": "ENG-ANIMALS-005",
           "q": "A ________ can swim in water.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that lives in water.",
           "explanation": "A fish can swim.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ can swim in water."
         },
         {
           "id": "ENG-ANIMALS-006",
           "q": "A ________ has a long neck.",
           "answer": "giraffe",
-          "accepted": [],
+          "accepted": [
+            "giraffe"
+          ],
           "hint": "Choose the animal with a long neck.",
           "explanation": "A giraffe has a long neck.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ has a long neck."
         },
         {
           "id": "ENG-ANIMALS-007",
           "q": "A ________ can hop.",
           "answer": "rabbit",
-          "accepted": [],
+          "accepted": [
+            "rabbit"
+          ],
           "hint": "Choose the animal that hops.",
           "explanation": "A rabbit can hop.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ can hop."
         },
         {
           "id": "ENG-ANIMALS-008",
           "q": "A ________ lays eggs.",
           "answer": "hen",
-          "accepted": [],
+          "accepted": [
+            "hen"
+          ],
           "hint": "Choose the farm bird.",
           "explanation": "A hen lays eggs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ lays eggs."
         },
         {
           "id": "ENG-ANIMALS-009",
           "q": "A ________ has stripes.",
           "answer": "tiger",
-          "accepted": [],
+          "accepted": [
+            "tiger"
+          ],
           "hint": "Choose the animal with stripes.",
           "explanation": "A tiger has stripes.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ has stripes."
         },
         {
           "id": "ENG-ANIMALS-010",
           "q": "A ________ can fly.",
           "answer": "bird",
-          "accepted": [],
+          "accepted": [
+            "bird"
+          ],
           "hint": "Choose the animal with wings.",
           "explanation": "A bird can fly.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ can fly."
         },
         {
           "id": "ENG-ANIMALS-011",
-          "q": "A ________ says woof.",
+          "q": "Choose the correct word to complete this sentence: A ________ says woof.",
           "answer": "dog",
-          "accepted": [],
+          "accepted": [
+            "dog"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A dog says woof.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ says woof."
         },
         {
           "id": "ENG-ANIMALS-012",
-          "q": "A ________ says meow.",
+          "q": "Complete the sentence with the best word: A ________ says meow. Practice 7.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A cat says meow.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ says meow. Practice 7."
         },
         {
           "id": "ENG-ANIMALS-013",
-          "q": "A ________ gives us milk.",
+          "q": "Choose the correct word to complete this sentence: A ________ gives us milk.",
           "answer": "cow",
-          "accepted": [],
+          "accepted": [
+            "cow"
+          ],
           "hint": "Choose the farm animal.",
           "explanation": "A cow gives us milk.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ gives us milk."
         },
         {
           "id": "ENG-ANIMALS-014",
-          "q": "A ________ has a long trunk.",
+          "q": "Choose the correct word to complete this sentence: A ________ has a long trunk.",
           "answer": "elephant",
-          "accepted": [],
+          "accepted": [
+            "elephant"
+          ],
           "hint": "Choose the animal with a trunk.",
           "explanation": "An elephant has a long trunk.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ has a long trunk."
         },
         {
           "id": "ENG-ANIMALS-015",
-          "q": "A ________ can swim in water.",
+          "q": "Choose the correct word to complete this sentence: A ________ can swim in water.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that lives in water.",
           "explanation": "A fish can swim.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ can swim in water."
         },
         {
           "id": "ENG-ANIMALS-016",
-          "q": "A ________ has a long neck.",
+          "q": "Choose the correct word to complete this sentence: A ________ has a long neck.",
           "answer": "giraffe",
-          "accepted": [],
+          "accepted": [
+            "giraffe"
+          ],
           "hint": "Choose the animal with a long neck.",
           "explanation": "A giraffe has a long neck.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ has a long neck."
         },
         {
           "id": "ENG-ANIMALS-017",
-          "q": "A ________ can hop.",
+          "q": "Choose the correct word to complete this sentence: A ________ can hop.",
           "answer": "rabbit",
-          "accepted": [],
+          "accepted": [
+            "rabbit"
+          ],
           "hint": "Choose the animal that hops.",
           "explanation": "A rabbit can hop.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ can hop."
         },
         {
           "id": "ENG-ANIMALS-018",
-          "q": "A ________ lays eggs.",
+          "q": "Choose the correct word to complete this sentence: A ________ lays eggs.",
           "answer": "hen",
-          "accepted": [],
+          "accepted": [
+            "hen"
+          ],
           "hint": "Choose the farm bird.",
           "explanation": "A hen lays eggs.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ lays eggs."
         },
         {
           "id": "ENG-ANIMALS-019",
-          "q": "A ________ has stripes.",
+          "q": "Choose the correct word to complete this sentence: A ________ has stripes.",
           "answer": "tiger",
-          "accepted": [],
+          "accepted": [
+            "tiger"
+          ],
           "hint": "Choose the animal with stripes.",
           "explanation": "A tiger has stripes.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ has stripes."
         },
         {
           "id": "ENG-ANIMALS-020",
-          "q": "A ________ can fly.",
+          "q": "Choose the correct word to complete this sentence: A ________ can fly.",
           "answer": "bird",
-          "accepted": [],
+          "accepted": [
+            "bird"
+          ],
           "hint": "Choose the animal with wings.",
           "explanation": "A bird can fly.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ can fly."
         },
         {
           "id": "ENG-ANIMALS-021",
-          "q": "A ________ says woof.",
+          "q": "Complete the sentence with the best word: A ________ says woof.",
           "answer": "dog",
-          "accepted": [],
+          "accepted": [
+            "dog"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A dog says woof.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ says woof."
         },
         {
           "id": "ENG-ANIMALS-022",
-          "q": "A ________ says meow.",
+          "q": "Read and fill in the blank: A ________ says meow. Practice 8.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A cat says meow.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ says meow. Practice 8."
         },
         {
           "id": "ENG-ANIMALS-023",
-          "q": "A ________ gives us milk.",
+          "q": "Complete the sentence with the best word: A ________ gives us milk.",
           "answer": "cow",
-          "accepted": [],
+          "accepted": [
+            "cow"
+          ],
           "hint": "Choose the farm animal.",
           "explanation": "A cow gives us milk.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ gives us milk."
         },
         {
           "id": "ENG-ANIMALS-024",
-          "q": "A ________ has a long trunk.",
+          "q": "Complete the sentence with the best word: A ________ has a long trunk.",
           "answer": "elephant",
-          "accepted": [],
+          "accepted": [
+            "elephant"
+          ],
           "hint": "Choose the animal with a trunk.",
           "explanation": "An elephant has a long trunk.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ has a long trunk."
         },
         {
           "id": "ENG-ANIMALS-025",
-          "q": "A ________ can swim in water.",
+          "q": "Complete the sentence with the best word: A ________ can swim in water.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that lives in water.",
           "explanation": "A fish can swim.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ can swim in water."
         },
         {
           "id": "ENG-ANIMALS-026",
-          "q": "A ________ has a long neck.",
+          "q": "Complete the sentence with the best word: A ________ has a long neck.",
           "answer": "giraffe",
-          "accepted": [],
+          "accepted": [
+            "giraffe"
+          ],
           "hint": "Choose the animal with a long neck.",
           "explanation": "A giraffe has a long neck.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ has a long neck."
         },
         {
           "id": "ENG-ANIMALS-027",
-          "q": "A ________ can hop.",
+          "q": "Complete the sentence with the best word: A ________ can hop.",
           "answer": "rabbit",
-          "accepted": [],
+          "accepted": [
+            "rabbit"
+          ],
           "hint": "Choose the animal that hops.",
           "explanation": "A rabbit can hop.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ can hop."
         },
         {
           "id": "ENG-ANIMALS-028",
-          "q": "A ________ lays eggs.",
+          "q": "Complete the sentence with the best word: A ________ lays eggs.",
           "answer": "hen",
-          "accepted": [],
+          "accepted": [
+            "hen"
+          ],
           "hint": "Choose the farm bird.",
           "explanation": "A hen lays eggs.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ lays eggs."
         },
         {
           "id": "ENG-ANIMALS-029",
-          "q": "A ________ has stripes.",
+          "q": "Complete the sentence with the best word: A ________ has stripes.",
           "answer": "tiger",
-          "accepted": [],
+          "accepted": [
+            "tiger"
+          ],
           "hint": "Choose the animal with stripes.",
           "explanation": "A tiger has stripes.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ has stripes."
         },
         {
           "id": "ENG-ANIMALS-030",
-          "q": "A ________ can fly.",
+          "q": "Complete the sentence with the best word: A ________ can fly.",
           "answer": "bird",
-          "accepted": [],
+          "accepted": [
+            "bird"
+          ],
           "hint": "Choose the animal with wings.",
           "explanation": "A bird can fly.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ can fly."
         },
         {
           "id": "ENG-ANIMALS-031",
-          "q": "A ________ says woof.",
+          "q": "Read and fill in the blank: A ________ says woof.",
           "answer": "dog",
-          "accepted": [],
+          "accepted": [
+            "dog"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A dog says woof.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ says woof."
         },
         {
           "id": "ENG-ANIMALS-032",
-          "q": "A ________ says meow.",
+          "q": "In Animals, choose one word: A ________ says meow. Practice 9.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A cat says meow.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ says meow. Practice 9."
         },
         {
           "id": "ENG-ANIMALS-033",
-          "q": "A ________ gives us milk.",
+          "q": "Read and fill in the blank: A ________ gives us milk.",
           "answer": "cow",
-          "accepted": [],
+          "accepted": [
+            "cow"
+          ],
           "hint": "Choose the farm animal.",
           "explanation": "A cow gives us milk.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ gives us milk."
         },
         {
           "id": "ENG-ANIMALS-034",
-          "q": "A ________ has a long trunk.",
+          "q": "Read and fill in the blank: A ________ has a long trunk.",
           "answer": "elephant",
-          "accepted": [],
+          "accepted": [
+            "elephant"
+          ],
           "hint": "Choose the animal with a trunk.",
           "explanation": "An elephant has a long trunk.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ has a long trunk."
         },
         {
           "id": "ENG-ANIMALS-035",
-          "q": "A ________ can swim in water.",
+          "q": "Read and fill in the blank: A ________ can swim in water.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that lives in water.",
           "explanation": "A fish can swim.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ can swim in water."
         },
         {
           "id": "ENG-ANIMALS-036",
-          "q": "A ________ has a long neck.",
+          "q": "Read and fill in the blank: A ________ has a long neck.",
           "answer": "giraffe",
-          "accepted": [],
+          "accepted": [
+            "giraffe"
+          ],
           "hint": "Choose the animal with a long neck.",
           "explanation": "A giraffe has a long neck.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ has a long neck."
         },
         {
           "id": "ENG-ANIMALS-037",
-          "q": "A ________ can hop.",
+          "q": "Read and fill in the blank: A ________ can hop.",
           "answer": "rabbit",
-          "accepted": [],
+          "accepted": [
+            "rabbit"
+          ],
           "hint": "Choose the animal that hops.",
           "explanation": "A rabbit can hop.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ can hop."
         },
         {
           "id": "ENG-ANIMALS-038",
-          "q": "A ________ lays eggs.",
+          "q": "Read and fill in the blank: A ________ lays eggs.",
           "answer": "hen",
-          "accepted": [],
+          "accepted": [
+            "hen"
+          ],
           "hint": "Choose the farm bird.",
           "explanation": "A hen lays eggs.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ lays eggs."
         },
         {
           "id": "ENG-ANIMALS-039",
-          "q": "A ________ has stripes.",
+          "q": "Read and fill in the blank: A ________ has stripes.",
           "answer": "tiger",
-          "accepted": [],
+          "accepted": [
+            "tiger"
+          ],
           "hint": "Choose the animal with stripes.",
           "explanation": "A tiger has stripes.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ has stripes."
         },
         {
           "id": "ENG-ANIMALS-040",
-          "q": "A ________ can fly.",
+          "q": "Read and fill in the blank: A ________ can fly.",
           "answer": "bird",
-          "accepted": [],
+          "accepted": [
+            "bird"
+          ],
           "hint": "Choose the animal with wings.",
           "explanation": "A bird can fly.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ can fly."
         },
         {
           "id": "ENG-ANIMALS-041",
-          "q": "A ________ says woof.",
+          "q": "In Animals, choose one word: A ________ says woof.",
           "answer": "dog",
-          "accepted": [],
+          "accepted": [
+            "dog"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A dog says woof.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ says woof."
         },
         {
           "id": "ENG-ANIMALS-042",
-          "q": "A ________ says meow.",
+          "q": "Choose the correct word to complete this sentence: A ________ says meow. Practice 10.",
           "answer": "cat",
-          "accepted": [],
+          "accepted": [
+            "cat"
+          ],
           "hint": "Choose the animal sound.",
           "explanation": "A cat says meow.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ says meow. Practice 10."
         },
         {
           "id": "ENG-ANIMALS-043",
-          "q": "A ________ gives us milk.",
+          "q": "In Animals, choose one word: A ________ gives us milk.",
           "answer": "cow",
-          "accepted": [],
+          "accepted": [
+            "cow"
+          ],
           "hint": "Choose the farm animal.",
           "explanation": "A cow gives us milk.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ gives us milk."
         },
         {
           "id": "ENG-ANIMALS-044",
-          "q": "A ________ has a long trunk.",
+          "q": "In Animals, choose one word: A ________ has a long trunk.",
           "answer": "elephant",
-          "accepted": [],
+          "accepted": [
+            "elephant"
+          ],
           "hint": "Choose the animal with a trunk.",
           "explanation": "An elephant has a long trunk.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ has a long trunk."
         },
         {
           "id": "ENG-ANIMALS-045",
-          "q": "A ________ can swim in water.",
+          "q": "In Animals, choose one word: A ________ can swim in water.",
           "answer": "fish",
-          "accepted": [],
+          "accepted": [
+            "fish"
+          ],
           "hint": "Choose the animal that lives in water.",
           "explanation": "A fish can swim.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ can swim in water."
         },
         {
           "id": "ENG-ANIMALS-046",
-          "q": "A ________ has a long neck.",
+          "q": "In Animals, choose one word: A ________ has a long neck.",
           "answer": "giraffe",
-          "accepted": [],
+          "accepted": [
+            "giraffe"
+          ],
           "hint": "Choose the animal with a long neck.",
           "explanation": "A giraffe has a long neck.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ has a long neck."
         },
         {
           "id": "ENG-ANIMALS-047",
-          "q": "A ________ can hop.",
+          "q": "In Animals, choose one word: A ________ can hop.",
           "answer": "rabbit",
-          "accepted": [],
+          "accepted": [
+            "rabbit"
+          ],
           "hint": "Choose the animal that hops.",
           "explanation": "A rabbit can hop.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ can hop."
         },
         {
           "id": "ENG-ANIMALS-048",
-          "q": "A ________ lays eggs.",
+          "q": "In Animals, choose one word: A ________ lays eggs.",
           "answer": "hen",
-          "accepted": [],
+          "accepted": [
+            "hen"
+          ],
           "hint": "Choose the farm bird.",
           "explanation": "A hen lays eggs.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ lays eggs."
         },
         {
           "id": "ENG-ANIMALS-049",
-          "q": "A ________ has stripes.",
+          "q": "In Animals, choose one word: A ________ has stripes.",
           "answer": "tiger",
-          "accepted": [],
+          "accepted": [
+            "tiger"
+          ],
           "hint": "Choose the animal with stripes.",
           "explanation": "A tiger has stripes.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ has stripes."
         },
         {
           "id": "ENG-ANIMALS-050",
-          "q": "A ________ can fly.",
+          "q": "In Animals, choose one word: A ________ can fly.",
           "answer": "bird",
-          "accepted": [],
+          "accepted": [
+            "bird"
+          ],
           "hint": "Choose the animal with wings.",
           "explanation": "A bird can fly.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Animals, choose one word: A ________ can fly."
         }
       ]
     },
@@ -3356,551 +4256,701 @@ export const englishSubject = {
           "id": "ENG-FOOD-001",
           "q": "I eat ________ for breakfast. It is made from rice.",
           "answer": "nasi lemak",
-          "accepted": [],
+          "accepted": [
+            "nasi lemak"
+          ],
           "hint": "Choose a Malaysian food made from rice.",
           "explanation": "Nasi lemak is a food made from rice.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "I eat ________ for breakfast. It is made from rice."
         },
         {
           "id": "ENG-FOOD-002",
           "q": "A ________ is a yellow fruit.",
           "answer": "banana",
-          "accepted": [],
+          "accepted": [
+            "banana"
+          ],
           "hint": "Choose the yellow fruit.",
           "explanation": "A banana is a yellow fruit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ is a yellow fruit."
         },
         {
           "id": "ENG-FOOD-003",
           "q": "We drink ________ when we are thirsty.",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Choose a drink.",
           "explanation": "Water is a drink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "We drink ________ when we are thirsty."
         },
         {
           "id": "ENG-FOOD-004",
           "q": "A ________ is red and sweet.",
           "answer": "strawberry",
-          "accepted": [],
+          "accepted": [
+            "strawberry"
+          ],
           "hint": "Choose the red fruit.",
           "explanation": "A strawberry is red and sweet.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ is red and sweet."
         },
         {
           "id": "ENG-FOOD-005",
           "q": "I spread butter on my ________.",
           "answer": "bread",
-          "accepted": [],
+          "accepted": [
+            "bread"
+          ],
           "hint": "Choose the food for butter.",
           "explanation": "We can spread butter on bread.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "I spread butter on my ________."
         },
         {
           "id": "ENG-FOOD-006",
           "q": "A ________ is a round fruit.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "Choose the round fruit.",
           "explanation": "An orange is a round fruit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ is a round fruit."
         },
         {
           "id": "ENG-FOOD-007",
           "q": "We eat ________ with soup.",
           "answer": "noodles",
-          "accepted": [],
+          "accepted": [
+            "noodles"
+          ],
           "hint": "Choose the food often eaten with soup.",
           "explanation": "Noodles can be eaten with soup.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "We eat ________ with soup."
         },
         {
           "id": "ENG-FOOD-008",
           "q": "A ________ is cold and sweet.",
           "answer": "ice cream",
-          "accepted": [],
+          "accepted": [
+            "ice cream"
+          ],
           "hint": "Choose the dessert.",
           "explanation": "Ice cream is cold and sweet.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "A ________ is cold and sweet."
         },
         {
           "id": "ENG-FOOD-009",
           "q": "Mother cooks ________ in the pot.",
           "answer": "rice",
-          "accepted": [],
+          "accepted": [
+            "rice"
+          ],
           "hint": "Choose the staple food.",
           "explanation": "Rice is cooked in a pot.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Mother cooks ________ in the pot."
         },
         {
           "id": "ENG-FOOD-010",
           "q": "I drink ________ every morning.",
           "answer": "milk",
-          "accepted": [],
+          "accepted": [
+            "milk"
+          ],
           "hint": "Choose the drink.",
           "explanation": "Milk is a drink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "I drink ________ every morning."
         },
         {
           "id": "ENG-FOOD-011",
-          "q": "I eat ________ for breakfast. It is made from rice.",
+          "q": "Choose the correct word to complete this sentence: I eat ________ for breakfast. It is made from rice.",
           "answer": "nasi lemak",
-          "accepted": [],
+          "accepted": [
+            "nasi lemak"
+          ],
           "hint": "Choose a Malaysian food made from rice.",
           "explanation": "Nasi lemak is a food made from rice.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: I eat ________ for breakfast. It is made from rice."
         },
         {
           "id": "ENG-FOOD-012",
-          "q": "A ________ is a yellow fruit.",
+          "q": "Choose the correct word to complete this sentence: A ________ is a yellow fruit.",
           "answer": "banana",
-          "accepted": [],
+          "accepted": [
+            "banana"
+          ],
           "hint": "Choose the yellow fruit.",
           "explanation": "A banana is a yellow fruit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ is a yellow fruit."
         },
         {
           "id": "ENG-FOOD-013",
-          "q": "We drink ________ when we are thirsty.",
+          "q": "Choose the correct word to complete this sentence: We drink ________ when we are thirsty.",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Choose a drink.",
           "explanation": "Water is a drink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: We drink ________ when we are thirsty."
         },
         {
           "id": "ENG-FOOD-014",
-          "q": "A ________ is red and sweet.",
+          "q": "Choose the correct word to complete this sentence: A ________ is red and sweet.",
           "answer": "strawberry",
-          "accepted": [],
+          "accepted": [
+            "strawberry"
+          ],
           "hint": "Choose the red fruit.",
           "explanation": "A strawberry is red and sweet.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ is red and sweet."
         },
         {
           "id": "ENG-FOOD-015",
-          "q": "I spread butter on my ________.",
+          "q": "Choose the correct word to complete this sentence: I spread butter on my ________.",
           "answer": "bread",
-          "accepted": [],
+          "accepted": [
+            "bread"
+          ],
           "hint": "Choose the food for butter.",
           "explanation": "We can spread butter on bread.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: I spread butter on my ________."
         },
         {
           "id": "ENG-FOOD-016",
-          "q": "A ________ is a round fruit.",
+          "q": "Choose the correct word to complete this sentence: A ________ is a round fruit.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "Choose the round fruit.",
           "explanation": "An orange is a round fruit.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ is a round fruit."
         },
         {
           "id": "ENG-FOOD-017",
-          "q": "We eat ________ with soup.",
+          "q": "Choose the correct word to complete this sentence: We eat ________ with soup.",
           "answer": "noodles",
-          "accepted": [],
+          "accepted": [
+            "noodles"
+          ],
           "hint": "Choose the food often eaten with soup.",
           "explanation": "Noodles can be eaten with soup.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: We eat ________ with soup."
         },
         {
           "id": "ENG-FOOD-018",
-          "q": "A ________ is cold and sweet.",
+          "q": "Choose the correct word to complete this sentence: A ________ is cold and sweet.",
           "answer": "ice cream",
-          "accepted": [],
+          "accepted": [
+            "ice cream"
+          ],
           "hint": "Choose the dessert.",
           "explanation": "Ice cream is cold and sweet.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: A ________ is cold and sweet."
         },
         {
           "id": "ENG-FOOD-019",
-          "q": "Mother cooks ________ in the pot.",
+          "q": "Choose the correct word to complete this sentence: Mother cooks ________ in the pot.",
           "answer": "rice",
-          "accepted": [],
+          "accepted": [
+            "rice"
+          ],
           "hint": "Choose the staple food.",
           "explanation": "Rice is cooked in a pot.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Mother cooks ________ in the pot."
         },
         {
           "id": "ENG-FOOD-020",
-          "q": "I drink ________ every morning.",
+          "q": "Choose the correct word to complete this sentence: I drink ________ every morning.",
           "answer": "milk",
-          "accepted": [],
+          "accepted": [
+            "milk"
+          ],
           "hint": "Choose the drink.",
           "explanation": "Milk is a drink.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: I drink ________ every morning."
         },
         {
           "id": "ENG-FOOD-021",
-          "q": "I eat ________ for breakfast. It is made from rice.",
+          "q": "Complete the sentence with the best word: I eat ________ for breakfast. It is made from rice.",
           "answer": "nasi lemak",
-          "accepted": [],
+          "accepted": [
+            "nasi lemak"
+          ],
           "hint": "Choose a Malaysian food made from rice.",
           "explanation": "Nasi lemak is a food made from rice.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: I eat ________ for breakfast. It is made from rice."
         },
         {
           "id": "ENG-FOOD-022",
-          "q": "A ________ is a yellow fruit.",
+          "q": "Complete the sentence with the best word: A ________ is a yellow fruit.",
           "answer": "banana",
-          "accepted": [],
+          "accepted": [
+            "banana"
+          ],
           "hint": "Choose the yellow fruit.",
           "explanation": "A banana is a yellow fruit.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ is a yellow fruit."
         },
         {
           "id": "ENG-FOOD-023",
-          "q": "We drink ________ when we are thirsty.",
+          "q": "Complete the sentence with the best word: We drink ________ when we are thirsty.",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Choose a drink.",
           "explanation": "Water is a drink.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: We drink ________ when we are thirsty."
         },
         {
           "id": "ENG-FOOD-024",
-          "q": "A ________ is red and sweet.",
+          "q": "Complete the sentence with the best word: A ________ is red and sweet.",
           "answer": "strawberry",
-          "accepted": [],
+          "accepted": [
+            "strawberry"
+          ],
           "hint": "Choose the red fruit.",
           "explanation": "A strawberry is red and sweet.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ is red and sweet."
         },
         {
           "id": "ENG-FOOD-025",
-          "q": "I spread butter on my ________.",
+          "q": "Complete the sentence with the best word: I spread butter on my ________.",
           "answer": "bread",
-          "accepted": [],
+          "accepted": [
+            "bread"
+          ],
           "hint": "Choose the food for butter.",
           "explanation": "We can spread butter on bread.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: I spread butter on my ________."
         },
         {
           "id": "ENG-FOOD-026",
-          "q": "A ________ is a round fruit.",
+          "q": "Complete the sentence with the best word: A ________ is a round fruit.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "Choose the round fruit.",
           "explanation": "An orange is a round fruit.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ is a round fruit."
         },
         {
           "id": "ENG-FOOD-027",
-          "q": "We eat ________ with soup.",
+          "q": "Complete the sentence with the best word: We eat ________ with soup.",
           "answer": "noodles",
-          "accepted": [],
+          "accepted": [
+            "noodles"
+          ],
           "hint": "Choose the food often eaten with soup.",
           "explanation": "Noodles can be eaten with soup.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: We eat ________ with soup."
         },
         {
           "id": "ENG-FOOD-028",
-          "q": "A ________ is cold and sweet.",
+          "q": "Complete the sentence with the best word: A ________ is cold and sweet.",
           "answer": "ice cream",
-          "accepted": [],
+          "accepted": [
+            "ice cream"
+          ],
           "hint": "Choose the dessert.",
           "explanation": "Ice cream is cold and sweet.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: A ________ is cold and sweet."
         },
         {
           "id": "ENG-FOOD-029",
-          "q": "Mother cooks ________ in the pot.",
+          "q": "Complete the sentence with the best word: Mother cooks ________ in the pot.",
           "answer": "rice",
-          "accepted": [],
+          "accepted": [
+            "rice"
+          ],
           "hint": "Choose the staple food.",
           "explanation": "Rice is cooked in a pot.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Mother cooks ________ in the pot."
         },
         {
           "id": "ENG-FOOD-030",
-          "q": "I drink ________ every morning.",
+          "q": "Complete the sentence with the best word: I drink ________ every morning.",
           "answer": "milk",
-          "accepted": [],
+          "accepted": [
+            "milk"
+          ],
           "hint": "Choose the drink.",
           "explanation": "Milk is a drink.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: I drink ________ every morning."
         },
         {
           "id": "ENG-FOOD-031",
-          "q": "I eat ________ for breakfast. It is made from rice.",
+          "q": "Read and fill in the blank: I eat ________ for breakfast. It is made from rice.",
           "answer": "nasi lemak",
-          "accepted": [],
+          "accepted": [
+            "nasi lemak"
+          ],
           "hint": "Choose a Malaysian food made from rice.",
           "explanation": "Nasi lemak is a food made from rice.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: I eat ________ for breakfast. It is made from rice."
         },
         {
           "id": "ENG-FOOD-032",
-          "q": "A ________ is a yellow fruit.",
+          "q": "Read and fill in the blank: A ________ is a yellow fruit.",
           "answer": "banana",
-          "accepted": [],
+          "accepted": [
+            "banana"
+          ],
           "hint": "Choose the yellow fruit.",
           "explanation": "A banana is a yellow fruit.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ is a yellow fruit."
         },
         {
           "id": "ENG-FOOD-033",
-          "q": "We drink ________ when we are thirsty.",
+          "q": "Read and fill in the blank: We drink ________ when we are thirsty.",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Choose a drink.",
           "explanation": "Water is a drink.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: We drink ________ when we are thirsty."
         },
         {
           "id": "ENG-FOOD-034",
-          "q": "A ________ is red and sweet.",
+          "q": "Read and fill in the blank: A ________ is red and sweet.",
           "answer": "strawberry",
-          "accepted": [],
+          "accepted": [
+            "strawberry"
+          ],
           "hint": "Choose the red fruit.",
           "explanation": "A strawberry is red and sweet.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ is red and sweet."
         },
         {
           "id": "ENG-FOOD-035",
-          "q": "I spread butter on my ________.",
+          "q": "Read and fill in the blank: I spread butter on my ________.",
           "answer": "bread",
-          "accepted": [],
+          "accepted": [
+            "bread"
+          ],
           "hint": "Choose the food for butter.",
           "explanation": "We can spread butter on bread.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: I spread butter on my ________."
         },
         {
           "id": "ENG-FOOD-036",
-          "q": "A ________ is a round fruit.",
+          "q": "Read and fill in the blank: A ________ is a round fruit.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "Choose the round fruit.",
           "explanation": "An orange is a round fruit.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ is a round fruit."
         },
         {
           "id": "ENG-FOOD-037",
-          "q": "We eat ________ with soup.",
+          "q": "Read and fill in the blank: We eat ________ with soup.",
           "answer": "noodles",
-          "accepted": [],
+          "accepted": [
+            "noodles"
+          ],
           "hint": "Choose the food often eaten with soup.",
           "explanation": "Noodles can be eaten with soup.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: We eat ________ with soup."
         },
         {
           "id": "ENG-FOOD-038",
-          "q": "A ________ is cold and sweet.",
+          "q": "Read and fill in the blank: A ________ is cold and sweet.",
           "answer": "ice cream",
-          "accepted": [],
+          "accepted": [
+            "ice cream"
+          ],
           "hint": "Choose the dessert.",
           "explanation": "Ice cream is cold and sweet.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: A ________ is cold and sweet."
         },
         {
           "id": "ENG-FOOD-039",
-          "q": "Mother cooks ________ in the pot.",
+          "q": "Read and fill in the blank: Mother cooks ________ in the pot.",
           "answer": "rice",
-          "accepted": [],
+          "accepted": [
+            "rice"
+          ],
           "hint": "Choose the staple food.",
           "explanation": "Rice is cooked in a pot.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Mother cooks ________ in the pot."
         },
         {
           "id": "ENG-FOOD-040",
-          "q": "I drink ________ every morning.",
+          "q": "Read and fill in the blank: I drink ________ every morning.",
           "answer": "milk",
-          "accepted": [],
+          "accepted": [
+            "milk"
+          ],
           "hint": "Choose the drink.",
           "explanation": "Milk is a drink.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: I drink ________ every morning."
         },
         {
           "id": "ENG-FOOD-041",
-          "q": "I eat ________ for breakfast. It is made from rice.",
+          "q": "In Food, choose one word: I eat ________ for breakfast. It is made from rice.",
           "answer": "nasi lemak",
-          "accepted": [],
+          "accepted": [
+            "nasi lemak"
+          ],
           "hint": "Choose a Malaysian food made from rice.",
           "explanation": "Nasi lemak is a food made from rice.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: I eat ________ for breakfast. It is made from rice."
         },
         {
           "id": "ENG-FOOD-042",
-          "q": "A ________ is a yellow fruit.",
+          "q": "In Food, choose one word: A ________ is a yellow fruit.",
           "answer": "banana",
-          "accepted": [],
+          "accepted": [
+            "banana"
+          ],
           "hint": "Choose the yellow fruit.",
           "explanation": "A banana is a yellow fruit.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: A ________ is a yellow fruit."
         },
         {
           "id": "ENG-FOOD-043",
-          "q": "We drink ________ when we are thirsty.",
+          "q": "In Food, choose one word: We drink ________ when we are thirsty.",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Choose a drink.",
           "explanation": "Water is a drink.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: We drink ________ when we are thirsty."
         },
         {
           "id": "ENG-FOOD-044",
-          "q": "A ________ is red and sweet.",
+          "q": "In Food, choose one word: A ________ is red and sweet.",
           "answer": "strawberry",
-          "accepted": [],
+          "accepted": [
+            "strawberry"
+          ],
           "hint": "Choose the red fruit.",
           "explanation": "A strawberry is red and sweet.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: A ________ is red and sweet."
         },
         {
           "id": "ENG-FOOD-045",
-          "q": "I spread butter on my ________.",
+          "q": "In Food, choose one word: I spread butter on my ________.",
           "answer": "bread",
-          "accepted": [],
+          "accepted": [
+            "bread"
+          ],
           "hint": "Choose the food for butter.",
           "explanation": "We can spread butter on bread.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: I spread butter on my ________."
         },
         {
           "id": "ENG-FOOD-046",
-          "q": "A ________ is a round fruit.",
+          "q": "In Food, choose one word: A ________ is a round fruit.",
           "answer": "orange",
-          "accepted": [],
+          "accepted": [
+            "orange"
+          ],
           "hint": "Choose the round fruit.",
           "explanation": "An orange is a round fruit.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: A ________ is a round fruit."
         },
         {
           "id": "ENG-FOOD-047",
-          "q": "We eat ________ with soup.",
+          "q": "In Food, choose one word: We eat ________ with soup.",
           "answer": "noodles",
-          "accepted": [],
+          "accepted": [
+            "noodles"
+          ],
           "hint": "Choose the food often eaten with soup.",
           "explanation": "Noodles can be eaten with soup.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: We eat ________ with soup."
         },
         {
           "id": "ENG-FOOD-048",
-          "q": "A ________ is cold and sweet.",
+          "q": "In Food, choose one word: A ________ is cold and sweet.",
           "answer": "ice cream",
-          "accepted": [],
+          "accepted": [
+            "ice cream"
+          ],
           "hint": "Choose the dessert.",
           "explanation": "Ice cream is cold and sweet.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: A ________ is cold and sweet."
         },
         {
           "id": "ENG-FOOD-049",
-          "q": "Mother cooks ________ in the pot.",
+          "q": "In Food, choose one word: Mother cooks ________ in the pot.",
           "answer": "rice",
-          "accepted": [],
+          "accepted": [
+            "rice"
+          ],
           "hint": "Choose the staple food.",
           "explanation": "Rice is cooked in a pot.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: Mother cooks ________ in the pot."
         },
         {
           "id": "ENG-FOOD-050",
-          "q": "I drink ________ every morning.",
+          "q": "In Food, choose one word: I drink ________ every morning.",
           "answer": "milk",
-          "accepted": [],
+          "accepted": [
+            "milk"
+          ],
           "hint": "Choose the drink.",
           "explanation": "Milk is a drink.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Food, choose one word: I drink ________ every morning."
         }
       ]
     },
@@ -3913,561 +4963,701 @@ export const englishSubject = {
           "id": "ENG-PREPOSITIONS-001",
           "q": "The cat is ________ the table. It is below the table.",
           "answer": "under",
-          "accepted": [],
+          "accepted": [
+            "under"
+          ],
           "hint": "Below means under.",
           "explanation": "under shows the place below something.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The cat is ________ the table. It is below the table."
         },
         {
           "id": "ENG-PREPOSITIONS-002",
           "q": "The book is ________ the desk.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It touches the top of the desk.",
           "explanation": "on shows something is on top.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The book is ________ the desk."
         },
         {
           "id": "ENG-PREPOSITIONS-003",
           "q": "The ball is ________ the box.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the box.",
           "explanation": "in means inside.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The ball is ________ the box."
         },
         {
           "id": "ENG-PREPOSITIONS-004",
           "q": "The school is ________ the bank and the shop.",
           "answer": "between",
-          "accepted": [],
+          "accepted": [
+            "between"
+          ],
           "hint": "It is in the middle of two places.",
           "explanation": "between means in the middle.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The school is ________ the bank and the shop."
         },
         {
           "id": "ENG-PREPOSITIONS-005",
           "q": "The boy is standing ________ the door.",
           "answer": "near",
-          "accepted": [],
+          "accepted": [
+            "near"
+          ],
           "hint": "He is close to the door.",
           "explanation": "near means close to.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The boy is standing ________ the door."
         },
         {
           "id": "ENG-PREPOSITIONS-006",
           "q": "The picture is ________ the wall.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It is attached to the wall.",
           "explanation": "on is used for the wall here.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The picture is ________ the wall."
         },
         {
           "id": "ENG-PREPOSITIONS-007",
           "q": "The dog is ________ the chair. You cannot see it.",
           "answer": "behind",
-          "accepted": [],
+          "accepted": [
+            "behind"
+          ],
           "hint": "It is at the back of the chair.",
           "explanation": "behind means at the back.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The dog is ________ the chair. You cannot see it."
         },
         {
           "id": "ENG-PREPOSITIONS-008",
           "q": "The teacher stands ________ the class.",
           "answer": "in front of",
           "accepted": [
-            "in front"
+            "in front of"
           ],
           "hint": "The teacher is at the front.",
           "explanation": "in front of means before the class.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The teacher stands ________ the class."
         },
         {
           "id": "ENG-PREPOSITIONS-009",
           "q": "The pencil is ________ the pencil case.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the pencil case.",
           "explanation": "in means inside.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The pencil is ________ the pencil case."
         },
         {
           "id": "ENG-PREPOSITIONS-010",
           "q": "The lamp is ________ the table.",
           "answer": "above",
-          "accepted": [],
+          "accepted": [
+            "above"
+          ],
           "hint": "It is higher than the table.",
           "explanation": "above means higher than something.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "The lamp is ________ the table."
         },
         {
           "id": "ENG-PREPOSITIONS-011",
-          "q": "The cat is ________ the table. It is below the table.",
+          "q": "Choose the correct word to complete this sentence: The cat is ________ the table. It is below the table.",
           "answer": "under",
-          "accepted": [],
+          "accepted": [
+            "under"
+          ],
           "hint": "Below means under.",
           "explanation": "under shows the place below something.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The cat is ________ the table. It is below the table."
         },
         {
           "id": "ENG-PREPOSITIONS-012",
-          "q": "The book is ________ the desk.",
+          "q": "Choose the correct word to complete this sentence: The book is ________ the desk.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It touches the top of the desk.",
           "explanation": "on shows something is on top.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The book is ________ the desk."
         },
         {
           "id": "ENG-PREPOSITIONS-013",
-          "q": "The ball is ________ the box.",
+          "q": "Choose the correct word to complete this sentence: The ball is ________ the box.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the box.",
           "explanation": "in means inside.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The ball is ________ the box."
         },
         {
           "id": "ENG-PREPOSITIONS-014",
-          "q": "The school is ________ the bank and the shop.",
+          "q": "Choose the correct word to complete this sentence: The school is ________ the bank and the shop.",
           "answer": "between",
-          "accepted": [],
+          "accepted": [
+            "between"
+          ],
           "hint": "It is in the middle of two places.",
           "explanation": "between means in the middle.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The school is ________ the bank and the shop."
         },
         {
           "id": "ENG-PREPOSITIONS-015",
-          "q": "The boy is standing ________ the door.",
+          "q": "Choose the correct word to complete this sentence: The boy is standing ________ the door.",
           "answer": "near",
-          "accepted": [],
+          "accepted": [
+            "near"
+          ],
           "hint": "He is close to the door.",
           "explanation": "near means close to.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The boy is standing ________ the door."
         },
         {
           "id": "ENG-PREPOSITIONS-016",
-          "q": "The picture is ________ the wall.",
+          "q": "Choose the correct word to complete this sentence: The picture is ________ the wall.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It is attached to the wall.",
           "explanation": "on is used for the wall here.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The picture is ________ the wall."
         },
         {
           "id": "ENG-PREPOSITIONS-017",
-          "q": "The dog is ________ the chair. You cannot see it.",
+          "q": "Choose the correct word to complete this sentence: The dog is ________ the chair. You cannot see it.",
           "answer": "behind",
-          "accepted": [],
+          "accepted": [
+            "behind"
+          ],
           "hint": "It is at the back of the chair.",
           "explanation": "behind means at the back.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The dog is ________ the chair. You cannot see it."
         },
         {
           "id": "ENG-PREPOSITIONS-018",
-          "q": "The teacher stands ________ the class.",
+          "q": "Choose the correct word to complete this sentence: The teacher stands ________ the class.",
           "answer": "in front of",
           "accepted": [
-            "in front"
+            "in front of"
           ],
           "hint": "The teacher is at the front.",
           "explanation": "in front of means before the class.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The teacher stands ________ the class."
         },
         {
           "id": "ENG-PREPOSITIONS-019",
-          "q": "The pencil is ________ the pencil case.",
+          "q": "Choose the correct word to complete this sentence: The pencil is ________ the pencil case.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the pencil case.",
           "explanation": "in means inside.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The pencil is ________ the pencil case."
         },
         {
           "id": "ENG-PREPOSITIONS-020",
-          "q": "The lamp is ________ the table.",
+          "q": "Choose the correct word to complete this sentence: The lamp is ________ the table.",
           "answer": "above",
-          "accepted": [],
+          "accepted": [
+            "above"
+          ],
           "hint": "It is higher than the table.",
           "explanation": "above means higher than something.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: The lamp is ________ the table."
         },
         {
           "id": "ENG-PREPOSITIONS-021",
-          "q": "The cat is ________ the table. It is below the table.",
+          "q": "Complete the sentence with the best word: The cat is ________ the table. It is below the table.",
           "answer": "under",
-          "accepted": [],
+          "accepted": [
+            "under"
+          ],
           "hint": "Below means under.",
           "explanation": "under shows the place below something.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The cat is ________ the table. It is below the table."
         },
         {
           "id": "ENG-PREPOSITIONS-022",
-          "q": "The book is ________ the desk.",
+          "q": "Complete the sentence with the best word: The book is ________ the desk.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It touches the top of the desk.",
           "explanation": "on shows something is on top.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The book is ________ the desk."
         },
         {
           "id": "ENG-PREPOSITIONS-023",
-          "q": "The ball is ________ the box.",
+          "q": "Complete the sentence with the best word: The ball is ________ the box.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the box.",
           "explanation": "in means inside.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The ball is ________ the box."
         },
         {
           "id": "ENG-PREPOSITIONS-024",
-          "q": "The school is ________ the bank and the shop.",
+          "q": "Complete the sentence with the best word: The school is ________ the bank and the shop.",
           "answer": "between",
-          "accepted": [],
+          "accepted": [
+            "between"
+          ],
           "hint": "It is in the middle of two places.",
           "explanation": "between means in the middle.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The school is ________ the bank and the shop."
         },
         {
           "id": "ENG-PREPOSITIONS-025",
-          "q": "The boy is standing ________ the door.",
+          "q": "Complete the sentence with the best word: The boy is standing ________ the door.",
           "answer": "near",
-          "accepted": [],
+          "accepted": [
+            "near"
+          ],
           "hint": "He is close to the door.",
           "explanation": "near means close to.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The boy is standing ________ the door."
         },
         {
           "id": "ENG-PREPOSITIONS-026",
-          "q": "The picture is ________ the wall.",
+          "q": "Complete the sentence with the best word: The picture is ________ the wall.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It is attached to the wall.",
           "explanation": "on is used for the wall here.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The picture is ________ the wall."
         },
         {
           "id": "ENG-PREPOSITIONS-027",
-          "q": "The dog is ________ the chair. You cannot see it.",
+          "q": "Complete the sentence with the best word: The dog is ________ the chair. You cannot see it.",
           "answer": "behind",
-          "accepted": [],
+          "accepted": [
+            "behind"
+          ],
           "hint": "It is at the back of the chair.",
           "explanation": "behind means at the back.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The dog is ________ the chair. You cannot see it."
         },
         {
           "id": "ENG-PREPOSITIONS-028",
-          "q": "The teacher stands ________ the class.",
+          "q": "Complete the sentence with the best word: The teacher stands ________ the class.",
           "answer": "in front of",
           "accepted": [
-            "in front"
+            "in front of"
           ],
           "hint": "The teacher is at the front.",
           "explanation": "in front of means before the class.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The teacher stands ________ the class."
         },
         {
           "id": "ENG-PREPOSITIONS-029",
-          "q": "The pencil is ________ the pencil case.",
+          "q": "Complete the sentence with the best word: The pencil is ________ the pencil case.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the pencil case.",
           "explanation": "in means inside.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The pencil is ________ the pencil case."
         },
         {
           "id": "ENG-PREPOSITIONS-030",
-          "q": "The lamp is ________ the table.",
+          "q": "Complete the sentence with the best word: The lamp is ________ the table.",
           "answer": "above",
-          "accepted": [],
+          "accepted": [
+            "above"
+          ],
           "hint": "It is higher than the table.",
           "explanation": "above means higher than something.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: The lamp is ________ the table."
         },
         {
           "id": "ENG-PREPOSITIONS-031",
-          "q": "The cat is ________ the table. It is below the table.",
+          "q": "Read and fill in the blank: The cat is ________ the table. It is below the table.",
           "answer": "under",
-          "accepted": [],
+          "accepted": [
+            "under"
+          ],
           "hint": "Below means under.",
           "explanation": "under shows the place below something.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The cat is ________ the table. It is below the table."
         },
         {
           "id": "ENG-PREPOSITIONS-032",
-          "q": "The book is ________ the desk.",
+          "q": "Read and fill in the blank: The book is ________ the desk.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It touches the top of the desk.",
           "explanation": "on shows something is on top.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The book is ________ the desk."
         },
         {
           "id": "ENG-PREPOSITIONS-033",
-          "q": "The ball is ________ the box.",
+          "q": "Read and fill in the blank: The ball is ________ the box.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the box.",
           "explanation": "in means inside.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The ball is ________ the box."
         },
         {
           "id": "ENG-PREPOSITIONS-034",
-          "q": "The school is ________ the bank and the shop.",
+          "q": "Read and fill in the blank: The school is ________ the bank and the shop.",
           "answer": "between",
-          "accepted": [],
+          "accepted": [
+            "between"
+          ],
           "hint": "It is in the middle of two places.",
           "explanation": "between means in the middle.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The school is ________ the bank and the shop."
         },
         {
           "id": "ENG-PREPOSITIONS-035",
-          "q": "The boy is standing ________ the door.",
+          "q": "Read and fill in the blank: The boy is standing ________ the door.",
           "answer": "near",
-          "accepted": [],
+          "accepted": [
+            "near"
+          ],
           "hint": "He is close to the door.",
           "explanation": "near means close to.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The boy is standing ________ the door."
         },
         {
           "id": "ENG-PREPOSITIONS-036",
-          "q": "The picture is ________ the wall.",
+          "q": "Read and fill in the blank: The picture is ________ the wall.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It is attached to the wall.",
           "explanation": "on is used for the wall here.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The picture is ________ the wall."
         },
         {
           "id": "ENG-PREPOSITIONS-037",
-          "q": "The dog is ________ the chair. You cannot see it.",
+          "q": "Read and fill in the blank: The dog is ________ the chair. You cannot see it.",
           "answer": "behind",
-          "accepted": [],
+          "accepted": [
+            "behind"
+          ],
           "hint": "It is at the back of the chair.",
           "explanation": "behind means at the back.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The dog is ________ the chair. You cannot see it."
         },
         {
           "id": "ENG-PREPOSITIONS-038",
-          "q": "The teacher stands ________ the class.",
+          "q": "Read and fill in the blank: The teacher stands ________ the class.",
           "answer": "in front of",
           "accepted": [
-            "in front"
+            "in front of"
           ],
           "hint": "The teacher is at the front.",
           "explanation": "in front of means before the class.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The teacher stands ________ the class."
         },
         {
           "id": "ENG-PREPOSITIONS-039",
-          "q": "The pencil is ________ the pencil case.",
+          "q": "Read and fill in the blank: The pencil is ________ the pencil case.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the pencil case.",
           "explanation": "in means inside.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The pencil is ________ the pencil case."
         },
         {
           "id": "ENG-PREPOSITIONS-040",
-          "q": "The lamp is ________ the table.",
+          "q": "Read and fill in the blank: The lamp is ________ the table.",
           "answer": "above",
-          "accepted": [],
+          "accepted": [
+            "above"
+          ],
           "hint": "It is higher than the table.",
           "explanation": "above means higher than something.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: The lamp is ________ the table."
         },
         {
           "id": "ENG-PREPOSITIONS-041",
-          "q": "The cat is ________ the table. It is below the table.",
+          "q": "In Prepositions, choose one word: The cat is ________ the table. It is below the table.",
           "answer": "under",
-          "accepted": [],
+          "accepted": [
+            "under"
+          ],
           "hint": "Below means under.",
           "explanation": "under shows the place below something.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The cat is ________ the table. It is below the table."
         },
         {
           "id": "ENG-PREPOSITIONS-042",
-          "q": "The book is ________ the desk.",
+          "q": "In Prepositions, choose one word: The book is ________ the desk.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It touches the top of the desk.",
           "explanation": "on shows something is on top.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The book is ________ the desk."
         },
         {
           "id": "ENG-PREPOSITIONS-043",
-          "q": "The ball is ________ the box.",
+          "q": "In Prepositions, choose one word: The ball is ________ the box.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the box.",
           "explanation": "in means inside.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The ball is ________ the box."
         },
         {
           "id": "ENG-PREPOSITIONS-044",
-          "q": "The school is ________ the bank and the shop.",
+          "q": "In Prepositions, choose one word: The school is ________ the bank and the shop.",
           "answer": "between",
-          "accepted": [],
+          "accepted": [
+            "between"
+          ],
           "hint": "It is in the middle of two places.",
           "explanation": "between means in the middle.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The school is ________ the bank and the shop."
         },
         {
           "id": "ENG-PREPOSITIONS-045",
-          "q": "The boy is standing ________ the door.",
+          "q": "In Prepositions, choose one word: The boy is standing ________ the door.",
           "answer": "near",
-          "accepted": [],
+          "accepted": [
+            "near"
+          ],
           "hint": "He is close to the door.",
           "explanation": "near means close to.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The boy is standing ________ the door."
         },
         {
           "id": "ENG-PREPOSITIONS-046",
-          "q": "The picture is ________ the wall.",
+          "q": "In Prepositions, choose one word: The picture is ________ the wall.",
           "answer": "on",
-          "accepted": [],
+          "accepted": [
+            "on"
+          ],
           "hint": "It is attached to the wall.",
           "explanation": "on is used for the wall here.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The picture is ________ the wall."
         },
         {
           "id": "ENG-PREPOSITIONS-047",
-          "q": "The dog is ________ the chair. You cannot see it.",
+          "q": "In Prepositions, choose one word: The dog is ________ the chair. You cannot see it.",
           "answer": "behind",
-          "accepted": [],
+          "accepted": [
+            "behind"
+          ],
           "hint": "It is at the back of the chair.",
           "explanation": "behind means at the back.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The dog is ________ the chair. You cannot see it."
         },
         {
           "id": "ENG-PREPOSITIONS-048",
-          "q": "The teacher stands ________ the class.",
+          "q": "In Prepositions, choose one word: The teacher stands ________ the class.",
           "answer": "in front of",
           "accepted": [
-            "in front"
+            "in front of"
           ],
           "hint": "The teacher is at the front.",
           "explanation": "in front of means before the class.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The teacher stands ________ the class."
         },
         {
           "id": "ENG-PREPOSITIONS-049",
-          "q": "The pencil is ________ the pencil case.",
+          "q": "In Prepositions, choose one word: The pencil is ________ the pencil case.",
           "answer": "in",
-          "accepted": [],
+          "accepted": [
+            "in"
+          ],
           "hint": "It is inside the pencil case.",
           "explanation": "in means inside.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The pencil is ________ the pencil case."
         },
         {
           "id": "ENG-PREPOSITIONS-050",
-          "q": "The lamp is ________ the table.",
+          "q": "In Prepositions, choose one word: The lamp is ________ the table.",
           "answer": "above",
-          "accepted": [],
+          "accepted": [
+            "above"
+          ],
           "hint": "It is higher than the table.",
           "explanation": "above means higher than something.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Prepositions, choose one word: The lamp is ________ the table."
         }
       ]
     },
@@ -4480,551 +5670,701 @@ export const englishSubject = {
           "id": "ENG-SENTENCES-001",
           "q": "Complete the sentence. I ________ a pupil.",
           "answer": "am",
-          "accepted": [],
+          "accepted": [
+            "am"
+          ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. I ________ a pupil."
         },
         {
           "id": "ENG-SENTENCES-002",
           "q": "Complete the sentence. She ________ my friend.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is with she.",
           "explanation": "She is my friend.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-003",
           "q": "Complete the sentence. They ________ happy.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are with they.",
           "explanation": "They are happy.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-004",
           "q": "Complete the sentence. This is ________ apple.",
           "answer": "an",
-          "accepted": [],
+          "accepted": [
+            "an"
+          ],
           "hint": "Use an before a vowel sound.",
           "explanation": "an apple is correct.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-005",
           "q": "Complete the sentence. This is ________ book.",
           "answer": "a",
-          "accepted": [],
+          "accepted": [
+            "a"
+          ],
           "hint": "Use a before a consonant sound.",
           "explanation": "a book is correct.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-006",
           "q": "Complete the sentence. I ________ to school every day.",
           "answer": "go",
-          "accepted": [],
+          "accepted": [
+            "go"
+          ],
           "hint": "Choose the action word.",
           "explanation": "I go to school every day.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-007",
           "q": "Complete the sentence. He ________ a red cap.",
           "answer": "has",
-          "accepted": [],
+          "accepted": [
+            "has"
+          ],
           "hint": "Use has for he.",
           "explanation": "He has a red cap.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-008",
           "q": "Complete the sentence. We ________ English.",
           "answer": "like",
-          "accepted": [],
+          "accepted": [
+            "like"
+          ],
           "hint": "Choose the simple verb.",
           "explanation": "We like English.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-009",
           "q": "Complete the sentence. The cats ________ small.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are for more than one cat.",
           "explanation": "The cats are small.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-010",
           "q": "Complete the sentence. My mother ________ cooking.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is before an -ing action.",
           "explanation": "My mother is cooking.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence. My mother ________ cooking."
         },
         {
           "id": "ENG-SENTENCES-011",
-          "q": "Complete the sentence. I ________ a pupil.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. I ________ a pupil.",
           "answer": "am",
-          "accepted": [],
+          "accepted": [
+            "am"
+          ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. I ________ a pupil."
         },
         {
           "id": "ENG-SENTENCES-012",
-          "q": "Complete the sentence. She ________ my friend.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. She ________ my friend.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is with she.",
           "explanation": "She is my friend.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-013",
-          "q": "Complete the sentence. They ________ happy.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. They ________ happy.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are with they.",
           "explanation": "They are happy.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-014",
-          "q": "Complete the sentence. This is ________ apple.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ apple.",
           "answer": "an",
-          "accepted": [],
+          "accepted": [
+            "an"
+          ],
           "hint": "Use an before a vowel sound.",
           "explanation": "an apple is correct.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-015",
-          "q": "Complete the sentence. This is ________ book.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ book.",
           "answer": "a",
-          "accepted": [],
+          "accepted": [
+            "a"
+          ],
           "hint": "Use a before a consonant sound.",
           "explanation": "a book is correct.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-016",
-          "q": "Complete the sentence. I ________ to school every day.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. I ________ to school every day.",
           "answer": "go",
-          "accepted": [],
+          "accepted": [
+            "go"
+          ],
           "hint": "Choose the action word.",
           "explanation": "I go to school every day.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-017",
-          "q": "Complete the sentence. He ________ a red cap.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. He ________ a red cap.",
           "answer": "has",
-          "accepted": [],
+          "accepted": [
+            "has"
+          ],
           "hint": "Use has for he.",
           "explanation": "He has a red cap.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-018",
-          "q": "Complete the sentence. We ________ English.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. We ________ English.",
           "answer": "like",
-          "accepted": [],
+          "accepted": [
+            "like"
+          ],
           "hint": "Choose the simple verb.",
           "explanation": "We like English.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-019",
-          "q": "Complete the sentence. The cats ________ small.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. The cats ________ small.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are for more than one cat.",
           "explanation": "The cats are small.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-020",
-          "q": "Complete the sentence. My mother ________ cooking.",
+          "q": "Choose the correct word to complete this sentence: Complete the sentence. My mother ________ cooking.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is before an -ing action.",
           "explanation": "My mother is cooking.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Complete the sentence. My mother ________ cooking."
         },
         {
           "id": "ENG-SENTENCES-021",
-          "q": "Complete the sentence. I ________ a pupil.",
+          "q": "Complete the sentence with the best word: Complete the sentence. I ________ a pupil.",
           "answer": "am",
-          "accepted": [],
+          "accepted": [
+            "am"
+          ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. I ________ a pupil."
         },
         {
           "id": "ENG-SENTENCES-022",
-          "q": "Complete the sentence. She ________ my friend.",
+          "q": "Complete the sentence with the best word: Complete the sentence. She ________ my friend.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is with she.",
           "explanation": "She is my friend.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-023",
-          "q": "Complete the sentence. They ________ happy.",
+          "q": "Complete the sentence with the best word: Complete the sentence. They ________ happy.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are with they.",
           "explanation": "They are happy.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-024",
-          "q": "Complete the sentence. This is ________ apple.",
+          "q": "Complete the sentence with the best word: Complete the sentence. This is ________ apple.",
           "answer": "an",
-          "accepted": [],
+          "accepted": [
+            "an"
+          ],
           "hint": "Use an before a vowel sound.",
           "explanation": "an apple is correct.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-025",
-          "q": "Complete the sentence. This is ________ book.",
+          "q": "Complete the sentence with the best word: Complete the sentence. This is ________ book.",
           "answer": "a",
-          "accepted": [],
+          "accepted": [
+            "a"
+          ],
           "hint": "Use a before a consonant sound.",
           "explanation": "a book is correct.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-026",
-          "q": "Complete the sentence. I ________ to school every day.",
+          "q": "Complete the sentence with the best word: Complete the sentence. I ________ to school every day.",
           "answer": "go",
-          "accepted": [],
+          "accepted": [
+            "go"
+          ],
           "hint": "Choose the action word.",
           "explanation": "I go to school every day.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-027",
-          "q": "Complete the sentence. He ________ a red cap.",
+          "q": "Complete the sentence with the best word: Complete the sentence. He ________ a red cap.",
           "answer": "has",
-          "accepted": [],
+          "accepted": [
+            "has"
+          ],
           "hint": "Use has for he.",
           "explanation": "He has a red cap.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-028",
-          "q": "Complete the sentence. We ________ English.",
+          "q": "Complete the sentence with the best word: Complete the sentence. We ________ English.",
           "answer": "like",
-          "accepted": [],
+          "accepted": [
+            "like"
+          ],
           "hint": "Choose the simple verb.",
           "explanation": "We like English.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-029",
-          "q": "Complete the sentence. The cats ________ small.",
+          "q": "Complete the sentence with the best word: Complete the sentence. The cats ________ small.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are for more than one cat.",
           "explanation": "The cats are small.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-030",
-          "q": "Complete the sentence. My mother ________ cooking.",
+          "q": "Complete the sentence with the best word: Complete the sentence. My mother ________ cooking.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is before an -ing action.",
           "explanation": "My mother is cooking.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Complete the sentence. My mother ________ cooking."
         },
         {
           "id": "ENG-SENTENCES-031",
-          "q": "Complete the sentence. I ________ a pupil.",
+          "q": "Read and fill in the blank: Complete the sentence. I ________ a pupil.",
           "answer": "am",
-          "accepted": [],
+          "accepted": [
+            "am"
+          ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. I ________ a pupil."
         },
         {
           "id": "ENG-SENTENCES-032",
-          "q": "Complete the sentence. She ________ my friend.",
+          "q": "Read and fill in the blank: Complete the sentence. She ________ my friend.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is with she.",
           "explanation": "She is my friend.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-033",
-          "q": "Complete the sentence. They ________ happy.",
+          "q": "Read and fill in the blank: Complete the sentence. They ________ happy.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are with they.",
           "explanation": "They are happy.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-034",
-          "q": "Complete the sentence. This is ________ apple.",
+          "q": "Read and fill in the blank: Complete the sentence. This is ________ apple.",
           "answer": "an",
-          "accepted": [],
+          "accepted": [
+            "an"
+          ],
           "hint": "Use an before a vowel sound.",
           "explanation": "an apple is correct.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-035",
-          "q": "Complete the sentence. This is ________ book.",
+          "q": "Read and fill in the blank: Complete the sentence. This is ________ book.",
           "answer": "a",
-          "accepted": [],
+          "accepted": [
+            "a"
+          ],
           "hint": "Use a before a consonant sound.",
           "explanation": "a book is correct.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-036",
-          "q": "Complete the sentence. I ________ to school every day.",
+          "q": "Read and fill in the blank: Complete the sentence. I ________ to school every day.",
           "answer": "go",
-          "accepted": [],
+          "accepted": [
+            "go"
+          ],
           "hint": "Choose the action word.",
           "explanation": "I go to school every day.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-037",
-          "q": "Complete the sentence. He ________ a red cap.",
+          "q": "Read and fill in the blank: Complete the sentence. He ________ a red cap.",
           "answer": "has",
-          "accepted": [],
+          "accepted": [
+            "has"
+          ],
           "hint": "Use has for he.",
           "explanation": "He has a red cap.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-038",
-          "q": "Complete the sentence. We ________ English.",
+          "q": "Read and fill in the blank: Complete the sentence. We ________ English.",
           "answer": "like",
-          "accepted": [],
+          "accepted": [
+            "like"
+          ],
           "hint": "Choose the simple verb.",
           "explanation": "We like English.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-039",
-          "q": "Complete the sentence. The cats ________ small.",
+          "q": "Read and fill in the blank: Complete the sentence. The cats ________ small.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are for more than one cat.",
           "explanation": "The cats are small.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-040",
-          "q": "Complete the sentence. My mother ________ cooking.",
+          "q": "Read and fill in the blank: Complete the sentence. My mother ________ cooking.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is before an -ing action.",
           "explanation": "My mother is cooking.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Complete the sentence. My mother ________ cooking."
         },
         {
           "id": "ENG-SENTENCES-041",
-          "q": "Complete the sentence. I ________ a pupil.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. I ________ a pupil.",
           "answer": "am",
-          "accepted": [],
+          "accepted": [
+            "am"
+          ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. I ________ a pupil."
         },
         {
           "id": "ENG-SENTENCES-042",
-          "q": "Complete the sentence. She ________ my friend.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. She ________ my friend.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is with she.",
           "explanation": "She is my friend.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-043",
-          "q": "Complete the sentence. They ________ happy.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. They ________ happy.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are with they.",
           "explanation": "They are happy.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-044",
-          "q": "Complete the sentence. This is ________ apple.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. This is ________ apple.",
           "answer": "an",
-          "accepted": [],
+          "accepted": [
+            "an"
+          ],
           "hint": "Use an before a vowel sound.",
           "explanation": "an apple is correct.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-045",
-          "q": "Complete the sentence. This is ________ book.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. This is ________ book.",
           "answer": "a",
-          "accepted": [],
+          "accepted": [
+            "a"
+          ],
           "hint": "Use a before a consonant sound.",
           "explanation": "a book is correct.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-046",
-          "q": "Complete the sentence. I ________ to school every day.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. I ________ to school every day.",
           "answer": "go",
-          "accepted": [],
+          "accepted": [
+            "go"
+          ],
           "hint": "Choose the action word.",
           "explanation": "I go to school every day.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-047",
-          "q": "Complete the sentence. He ________ a red cap.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. He ________ a red cap.",
           "answer": "has",
-          "accepted": [],
+          "accepted": [
+            "has"
+          ],
           "hint": "Use has for he.",
           "explanation": "He has a red cap.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-048",
-          "q": "Complete the sentence. We ________ English.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. We ________ English.",
           "answer": "like",
-          "accepted": [],
+          "accepted": [
+            "like"
+          ],
           "hint": "Choose the simple verb.",
           "explanation": "We like English.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-049",
-          "q": "Complete the sentence. The cats ________ small.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. The cats ________ small.",
           "answer": "are",
-          "accepted": [],
+          "accepted": [
+            "are"
+          ],
           "hint": "Use are for more than one cat.",
           "explanation": "The cats are small.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-050",
-          "q": "Complete the sentence. My mother ________ cooking.",
+          "q": "In Simple Sentences, choose one word: Complete the sentence. My mother ________ cooking.",
           "answer": "is",
-          "accepted": [],
+          "accepted": [
+            "is"
+          ],
           "hint": "Use is before an -ing action.",
           "explanation": "My mother is cooking.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Simple Sentences, choose one word: Complete the sentence. My mother ________ cooking."
         }
       ]
     },
@@ -5037,601 +6377,701 @@ export const englishSubject = {
           "id": "ENG-READING-001",
           "q": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Look for the colour word.",
           "explanation": "The text says Aina has a red bag.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?"
         },
         {
           "id": "ENG-READING-002",
           "q": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
           "answer": "under the chair",
           "accepted": [
-            "under chair"
+            "under the chair"
           ],
           "hint": "Look for the place.",
           "explanation": "The cat sleeps under the chair.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?"
         },
         {
           "id": "ENG-READING-003",
           "q": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Look for the drink.",
           "explanation": "Sara drinks water.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?"
         },
         {
           "id": "ENG-READING-004",
           "q": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
           "answer": "bus",
-          "accepted": [],
+          "accepted": [
+            "bus"
+          ],
           "hint": "Look for the transport.",
           "explanation": "Ravi goes to school by bus.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?"
         },
         {
           "id": "ENG-READING-005",
           "q": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
           "answer": "three",
           "accepted": [
-            "3"
+            "three"
           ],
           "hint": "Look for the first number.",
           "explanation": "Mei has three pencils at first.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?"
         },
         {
           "id": "ENG-READING-006",
           "q": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
           "answer": "park",
-          "accepted": [],
+          "accepted": [
+            "park"
+          ],
           "hint": "Look for the place.",
           "explanation": "The dog runs in the park.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?"
         },
         {
           "id": "ENG-READING-007",
           "q": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
           "answer": "apples",
           "accepted": [
-            "apple"
+            "apples"
           ],
           "hint": "Look for the fruit.",
           "explanation": "Lina likes apples.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?"
         },
         {
           "id": "ENG-READING-008",
           "q": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Look for the colour.",
           "explanation": "His shirt is blue.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?"
         },
         {
           "id": "ENG-READING-009",
           "q": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
           "answer": "Mother",
           "accepted": [
-            "mother"
+            "Mother"
           ],
           "hint": "Look for the person who does the action.",
           "explanation": "Mother bakes a cake.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?"
         },
         {
           "id": "ENG-READING-010",
           "q": "Read: The bird is in the tree. It sings loudly. Where is the bird?",
           "answer": "in the tree",
           "accepted": [
-            "tree"
+            "in the tree"
           ],
           "hint": "Look for the place.",
           "explanation": "The bird is in the tree.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read: The bird is in the tree. It sings loudly. Where is the bird?"
         },
         {
           "id": "ENG-READING-011",
-          "q": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
+          "q": "Choose the correct word to complete this sentence: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Look for the colour word.",
           "explanation": "The text says Aina has a red bag.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?"
         },
         {
           "id": "ENG-READING-012",
-          "q": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
+          "q": "Choose the correct word to complete this sentence: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
           "answer": "under the chair",
           "accepted": [
-            "under chair"
+            "under the chair"
           ],
           "hint": "Look for the place.",
           "explanation": "The cat sleeps under the chair.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?"
         },
         {
           "id": "ENG-READING-013",
-          "q": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
+          "q": "Choose the correct word to complete this sentence: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Look for the drink.",
           "explanation": "Sara drinks water.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?"
         },
         {
           "id": "ENG-READING-014",
-          "q": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
+          "q": "Choose the correct word to complete this sentence: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
           "answer": "bus",
-          "accepted": [],
+          "accepted": [
+            "bus"
+          ],
           "hint": "Look for the transport.",
           "explanation": "Ravi goes to school by bus.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?"
         },
         {
           "id": "ENG-READING-015",
-          "q": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
+          "q": "Choose the correct word to complete this sentence: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
           "answer": "three",
           "accepted": [
-            "3"
+            "three"
           ],
           "hint": "Look for the first number.",
           "explanation": "Mei has three pencils at first.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?"
         },
         {
           "id": "ENG-READING-016",
-          "q": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
+          "q": "Choose the correct word to complete this sentence: Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
           "answer": "park",
-          "accepted": [],
+          "accepted": [
+            "park"
+          ],
           "hint": "Look for the place.",
           "explanation": "The dog runs in the park.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: The dog runs in the park. It plays with a ball. Where does the dog run?"
         },
         {
           "id": "ENG-READING-017",
-          "q": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
+          "q": "Choose the correct word to complete this sentence: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
           "answer": "apples",
           "accepted": [
-            "apple"
+            "apples"
           ],
           "hint": "Look for the fruit.",
           "explanation": "Lina likes apples.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?"
         },
         {
           "id": "ENG-READING-018",
-          "q": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
+          "q": "Choose the correct word to complete this sentence: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Look for the colour.",
           "explanation": "His shirt is blue.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?"
         },
         {
           "id": "ENG-READING-019",
-          "q": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
+          "q": "Choose the correct word to complete this sentence: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
           "answer": "Mother",
           "accepted": [
-            "mother"
+            "Mother"
           ],
           "hint": "Look for the person who does the action.",
           "explanation": "Mother bakes a cake.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?"
         },
         {
           "id": "ENG-READING-020",
-          "q": "Read: The bird is in the tree. It sings loudly. Where is the bird?",
+          "q": "Choose the correct word to complete this sentence: Read: The bird is in the tree. It sings loudly. Where is the bird?",
           "answer": "in the tree",
           "accepted": [
-            "tree"
+            "in the tree"
           ],
           "hint": "Look for the place.",
           "explanation": "The bird is in the tree.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word to complete this sentence: Read: The bird is in the tree. It sings loudly. Where is the bird?"
         },
         {
           "id": "ENG-READING-021",
-          "q": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
+          "q": "Complete the sentence with the best word: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Look for the colour word.",
           "explanation": "The text says Aina has a red bag.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?"
         },
         {
           "id": "ENG-READING-022",
-          "q": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
+          "q": "Complete the sentence with the best word: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
           "answer": "under the chair",
           "accepted": [
-            "under chair"
+            "under the chair"
           ],
           "hint": "Look for the place.",
           "explanation": "The cat sleeps under the chair.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?"
         },
         {
           "id": "ENG-READING-023",
-          "q": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
+          "q": "Complete the sentence with the best word: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Look for the drink.",
           "explanation": "Sara drinks water.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?"
         },
         {
           "id": "ENG-READING-024",
-          "q": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
+          "q": "Complete the sentence with the best word: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
           "answer": "bus",
-          "accepted": [],
+          "accepted": [
+            "bus"
+          ],
           "hint": "Look for the transport.",
           "explanation": "Ravi goes to school by bus.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?"
         },
         {
           "id": "ENG-READING-025",
-          "q": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
+          "q": "Complete the sentence with the best word: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
           "answer": "three",
           "accepted": [
-            "3"
+            "three"
           ],
           "hint": "Look for the first number.",
           "explanation": "Mei has three pencils at first.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?"
         },
         {
           "id": "ENG-READING-026",
-          "q": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
+          "q": "Complete the sentence with the best word: Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
           "answer": "park",
-          "accepted": [],
+          "accepted": [
+            "park"
+          ],
           "hint": "Look for the place.",
           "explanation": "The dog runs in the park.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: The dog runs in the park. It plays with a ball. Where does the dog run?"
         },
         {
           "id": "ENG-READING-027",
-          "q": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
+          "q": "Complete the sentence with the best word: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
           "answer": "apples",
           "accepted": [
-            "apple"
+            "apples"
           ],
           "hint": "Look for the fruit.",
           "explanation": "Lina likes apples.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?"
         },
         {
           "id": "ENG-READING-028",
-          "q": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
+          "q": "Complete the sentence with the best word: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Look for the colour.",
           "explanation": "His shirt is blue.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?"
         },
         {
           "id": "ENG-READING-029",
-          "q": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
+          "q": "Complete the sentence with the best word: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
           "answer": "Mother",
           "accepted": [
-            "mother"
+            "Mother"
           ],
           "hint": "Look for the person who does the action.",
           "explanation": "Mother bakes a cake.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?"
         },
         {
           "id": "ENG-READING-030",
-          "q": "Read: The bird is in the tree. It sings loudly. Where is the bird?",
+          "q": "Complete the sentence with the best word: Read: The bird is in the tree. It sings loudly. Where is the bird?",
           "answer": "in the tree",
           "accepted": [
-            "tree"
+            "in the tree"
           ],
           "hint": "Look for the place.",
           "explanation": "The bird is in the tree.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Complete the sentence with the best word: Read: The bird is in the tree. It sings loudly. Where is the bird?"
         },
         {
           "id": "ENG-READING-031",
-          "q": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
+          "q": "Read and fill in the blank: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Look for the colour word.",
           "explanation": "The text says Aina has a red bag.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?"
         },
         {
           "id": "ENG-READING-032",
-          "q": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
+          "q": "Read and fill in the blank: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
           "answer": "under the chair",
           "accepted": [
-            "under chair"
+            "under the chair"
           ],
           "hint": "Look for the place.",
           "explanation": "The cat sleeps under the chair.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?"
         },
         {
           "id": "ENG-READING-033",
-          "q": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
+          "q": "Read and fill in the blank: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Look for the drink.",
           "explanation": "Sara drinks water.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?"
         },
         {
           "id": "ENG-READING-034",
-          "q": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
+          "q": "Read and fill in the blank: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
           "answer": "bus",
-          "accepted": [],
+          "accepted": [
+            "bus"
+          ],
           "hint": "Look for the transport.",
           "explanation": "Ravi goes to school by bus.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?"
         },
         {
           "id": "ENG-READING-035",
-          "q": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
+          "q": "Read and fill in the blank: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
           "answer": "three",
           "accepted": [
-            "3"
+            "three"
           ],
           "hint": "Look for the first number.",
           "explanation": "Mei has three pencils at first.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?"
         },
         {
           "id": "ENG-READING-036",
-          "q": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
+          "q": "Read and fill in the blank: Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
           "answer": "park",
-          "accepted": [],
+          "accepted": [
+            "park"
+          ],
           "hint": "Look for the place.",
           "explanation": "The dog runs in the park.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: The dog runs in the park. It plays with a ball. Where does the dog run?"
         },
         {
           "id": "ENG-READING-037",
-          "q": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
+          "q": "Read and fill in the blank: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
           "answer": "apples",
           "accepted": [
-            "apple"
+            "apples"
           ],
           "hint": "Look for the fruit.",
           "explanation": "Lina likes apples.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?"
         },
         {
           "id": "ENG-READING-038",
-          "q": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
+          "q": "Read and fill in the blank: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Look for the colour.",
           "explanation": "His shirt is blue.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?"
         },
         {
           "id": "ENG-READING-039",
-          "q": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
+          "q": "Read and fill in the blank: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
           "answer": "Mother",
           "accepted": [
-            "mother"
+            "Mother"
           ],
           "hint": "Look for the person who does the action.",
           "explanation": "Mother bakes a cake.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?"
         },
         {
           "id": "ENG-READING-040",
-          "q": "Read: The bird is in the tree. It sings loudly. Where is the bird?",
+          "q": "Read and fill in the blank: Read: The bird is in the tree. It sings loudly. Where is the bird?",
           "answer": "in the tree",
           "accepted": [
-            "tree"
+            "in the tree"
           ],
           "hint": "Look for the place.",
           "explanation": "The bird is in the tree.",
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and fill in the blank: Read: The bird is in the tree. It sings loudly. Where is the bird?"
         },
         {
           "id": "ENG-READING-041",
-          "q": "Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
+          "q": "In Reading Comprehension, choose one word: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?",
           "answer": "red",
-          "accepted": [],
+          "accepted": [
+            "red"
+          ],
           "hint": "Look for the colour word.",
           "explanation": "The text says Aina has a red bag.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Aina has a red bag. She puts a book in it. What colour is Aina's bag?"
         },
         {
           "id": "ENG-READING-042",
-          "q": "Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
+          "q": "In Reading Comprehension, choose one word: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?",
           "answer": "under the chair",
           "accepted": [
-            "under chair"
+            "under the chair"
           ],
           "hint": "Look for the place.",
           "explanation": "The cat sleeps under the chair.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Ben has a cat. The cat sleeps under the chair. Where does the cat sleep?"
         },
         {
           "id": "ENG-READING-043",
-          "q": "Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
+          "q": "In Reading Comprehension, choose one word: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?",
           "answer": "water",
-          "accepted": [],
+          "accepted": [
+            "water"
+          ],
           "hint": "Look for the drink.",
           "explanation": "Sara drinks water.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Sara eats rice for lunch. She drinks water. What does Sara drink?"
         },
         {
           "id": "ENG-READING-044",
-          "q": "Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
+          "q": "In Reading Comprehension, choose one word: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?",
           "answer": "bus",
-          "accepted": [],
+          "accepted": [
+            "bus"
+          ],
           "hint": "Look for the transport.",
           "explanation": "Ravi goes to school by bus.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Ravi goes to school by bus. The bus is yellow. How does Ravi go to school?"
         },
         {
           "id": "ENG-READING-045",
-          "q": "Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
+          "q": "In Reading Comprehension, choose one word: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?",
           "answer": "three",
           "accepted": [
-            "3"
+            "three"
           ],
           "hint": "Look for the first number.",
           "explanation": "Mei has three pencils at first.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Mei has three pencils. She gives one pencil to Ali. How many pencils does Mei have at first?"
         },
         {
           "id": "ENG-READING-046",
-          "q": "Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
+          "q": "In Reading Comprehension, choose one word: Read: The dog runs in the park. It plays with a ball. Where does the dog run?",
           "answer": "park",
-          "accepted": [],
+          "accepted": [
+            "park"
+          ],
           "hint": "Look for the place.",
           "explanation": "The dog runs in the park.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: The dog runs in the park. It plays with a ball. Where does the dog run?"
         },
         {
           "id": "ENG-READING-047",
-          "q": "Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
+          "q": "In Reading Comprehension, choose one word: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?",
           "answer": "apples",
           "accepted": [
-            "apple"
+            "apples"
           ],
           "hint": "Look for the fruit.",
           "explanation": "Lina likes apples.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Lina likes apples. She eats one apple every day. What fruit does Lina like?"
         },
         {
           "id": "ENG-READING-048",
-          "q": "Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
+          "q": "In Reading Comprehension, choose one word: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?",
           "answer": "blue",
-          "accepted": [],
+          "accepted": [
+            "blue"
+          ],
           "hint": "Look for the colour.",
           "explanation": "His shirt is blue.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: The boy wears a blue shirt. He is going to the shop. What colour is his shirt?"
         },
         {
           "id": "ENG-READING-049",
-          "q": "Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
+          "q": "In Reading Comprehension, choose one word: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?",
           "answer": "Mother",
           "accepted": [
-            "mother"
+            "Mother"
           ],
           "hint": "Look for the person who does the action.",
           "explanation": "Mother bakes a cake.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: Mother bakes a cake. The cake is sweet. Who bakes a cake?"
         },
         {
           "id": "ENG-READING-050",
-          "q": "Read: The bird is in the tree. It sings loudly. Where is the bird?",
+          "q": "In Reading Comprehension, choose one word: Read: The bird is in the tree. It sings loudly. Where is the bird?",
           "answer": "in the tree",
           "accepted": [
-            "tree"
+            "in the tree"
           ],
           "hint": "Look for the place.",
           "explanation": "The bird is in the tree.",
-          "difficulty": "sederhana",
+          "difficulty": "sukar",
           "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR"
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "In Reading Comprehension, choose one word: Read: The bird is in the tree. It sings loudly. Where is the bird?"
         }
       ]
     }

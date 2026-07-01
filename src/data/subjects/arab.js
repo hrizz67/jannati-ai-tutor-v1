@@ -113,8 +113,10 @@ const colors = [
 ];
 
 const warnaQuestions = [
-  ...colors.map(([arabic, meaning]) =>
-    fill(`Warna ${arabic} bermaksud ________.`, meaning, "Padankan warna Arab dengan maksudnya.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
+  ...colors.map(([arabic, meaning], index) =>
+    index < 10
+      ? fill(`Warna ${arabic} bermaksud ________.`, meaning, "Padankan warna Arab dengan maksudnya.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
+      : fill(`Apakah maksud perkataan warna ${arabic} dalam Bahasa Melayu?`, meaning, "Lihat perkataan warna Arab dan pilih maksudnya.", `Perkataan warna ${arabic} bermaksud ${meaning}.`, [meaning, arabic])
   ),
   fill("Langit biasanya berwarna أَزْرَقُ, iaitu ________.", "biru", "Fikirkan warna langit.", "أَزْرَقُ bermaksud biru."),
   fill("Daun biasanya berwarna أَخْضَرُ, iaitu ________.", "hijau", "Fikirkan warna daun.", "أَخْضَرُ bermaksud hijau."),
@@ -161,7 +163,9 @@ const keluargaQuestions = [
     fill(`Perkataan ${arabic} bermaksud ________.`, meaning, "Padankan perkataan ahli keluarga.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
   ),
   ...family.slice(0, 25).map(([arabic, meaning]) =>
-    fill(`Bahasa Arab bagi ${meaning} ialah ________.`, arabic, "Ingat kosa kata ahli keluarga.", `Bahasa Arab bagi ${meaning} ialah ${arabic}.`, [arabic, meaning])
+    arabic === "وَالِدَةٌ"
+      ? fill(`Perkataan ${arabic} merujuk kepada ________.`, meaning, "Baca perkataan Arab dan pilih maksud ahli keluarga.", `${arabic} bermaksud ${meaning}.`, [arabic, meaning])
+      : fill(`Bahasa Arab bagi ${meaning} ialah ________.`, arabic, "Ingat kosa kata ahli keluarga.", `Bahasa Arab bagi ${meaning} ialah ${arabic}.`, [arabic, meaning])
   ),
 ];
 

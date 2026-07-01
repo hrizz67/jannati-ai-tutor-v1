@@ -1,20 +1,16 @@
-# CHANGELOG - V1.4.0 Package 2
+# CHANGELOG - V1.5.1 Quality Release
 
-Added:
-- UASA Content Pack
-- BM expanded to 10 topics
-- Matematik expanded to 6 topics
-- English expanded to 3 topics
-- Sains expanded to 3 topics
-- Metadata: difficulty, uasa, dskp
-- More explanation and hints
+## Fixed
 
-Question count:
-- BM: 365
-- Matematik: 22
-- English: 10
-- Sains: 9
+- Rebalanced BM, Math, English and Sains difficulty distribution to 40% mudah, 40% sederhana and 20% sukar.
+- Removed exact repeated stems from BM, Math, English and Sains while preserving IDs, answers and topic structure.
+- Filled accepted-answer arrays where older banks had empty values.
+- Migrated localStorage keys from older V1.4/V1.5 names to V1.5.1 names without wiping progress.
+- Updated app title and service worker cache labels to V1.5.1.
+- Changed service worker navigation handling to network-first for HTML to reduce stale app-shell risk.
+- Ignored local Vite dev-server log files.
 
-Notes:
-- This package updates content only.
-- Resume, Auto Save and Daily Challenge from Package 1 are preserved.
+## Verified
+
+- `npm run build` passes.
+- GitHub Pages base path remains `/jannati-ai-tutor-v1/`.

@@ -438,10 +438,10 @@ const hafazanItems = [
   ["اللهُ ________.", "الصَّمَدُ", "Lengkapkan ayat Surah al-Ikhlas.", "الصَّمَدُ bermaksud tempat bergantung segala makhluk."],
   ["لَمْ يَلِدْ وَلَمْ ________.", "يُولَدْ", "Lengkapkan ayat Surah al-Ikhlas.", "Ayat ini menegaskan Allah tidak beranak dan tidak diperanakkan."],
   ["وَلَمْ يَكُنْ لَهُ كُفُوًا ________.", "أَحَدٌ", "Lengkapkan akhir Surah al-Ikhlas.", "Tiada sesiapa yang setara dengan Allah."],
-  ["قُلْ أَعُوذُ بِرَبِّ ________.", "الْفَلَقِ", "Ingat ayat pertama Surah al-Falaq.", "Surah al-Falaq mengajar kita memohon perlindungan kepada Allah."],
+  ["Dalam Surah al-Falaq, lengkapkan ayat: قُلْ أَعُوذُ بِرَبِّ ________.", "الْفَلَقِ", "Ingat ayat pertama Surah al-Falaq.", "Surah al-Falaq bermula dengan memohon perlindungan kepada Tuhan waktu subuh."],
   ["مِنْ شَرِّ مَا ________.", "خَلَقَ", "Lengkapkan ayat Surah al-Falaq.", "Kita memohon perlindungan daripada kejahatan makhluk."],
   ["وَمِنْ شَرِّ غَاسِقٍ إِذَا ________.", "وَقَبَ", "Lengkapkan ayat Surah al-Falaq.", "Ayat ini memohon perlindungan daripada kejahatan malam."],
-  ["قُلْ أَعُوذُ بِرَبِّ ________.", "النَّاسِ", "Ingat ayat pertama Surah an-Nas.", "Surah an-Nas mengajar kita berlindung kepada Tuhan manusia."],
+  ["Dalam Surah an-Nas, lengkapkan ayat: قُلْ أَعُوذُ بِرَبِّ ________.", "النَّاسِ", "Ingat ayat pertama Surah an-Nas.", "Surah an-Nas bermula dengan memohon perlindungan kepada Tuhan manusia."],
   ["مَلِكِ ________.", "النَّاسِ", "Lengkapkan ayat Surah an-Nas.", "Allah ialah Raja manusia."],
   ["إِلَٰهِ ________.", "النَّاسِ", "Lengkapkan ayat Surah an-Nas.", "Allah ialah Tuhan manusia."],
   ["مِنْ شَرِّ الْوَسْوَاسِ ________.", "الْخَنَّاسِ", "Lengkapkan ayat Surah an-Nas.", "Kita memohon perlindungan daripada bisikan syaitan."],
@@ -483,19 +483,21 @@ const hafazanItems = [
 
 const jawiWords = [
   ["الله", "Allah"], ["محمد", "Muhammad"], ["اسلام", "Islam"], ["ايمان", "iman"], ["قرءان", "Quran"],
-  ["صلات", "solat"], ["دعا", "doa"], ["ادب", "adab"], ["علمو", "ilmu"], ["سلام", "salam"],
-  ["ساي", "saya"], ["ايبو", "ibu"], ["باڤ", "bapa"], ["ڬورو", "guru"], ["بوکو", "buku"],
+  ["صلاة", "solat"], ["دعاء", "doa"], ["ادب", "adab"], ["علمو", "ilmu"], ["سلام", "salam"],
+  ["ساي", "saya"], ["ايبو", "ibu"], ["باڤا", "bapa"], ["ڬورو", "guru"], ["بوکو", "buku"],
   ["رومه", "rumah"], ["سکوله", "sekolah"], ["مسجد", "masjid"], ["کاون", "kawan"], ["ماکن", "makan"],
-  ["مينوم", "minum"], ["هاتي", "hati"], ["مات", "mata"], ["تاڠن", "tangan"], ["کاکي", "kaki"],
+  ["مينوم", "minum"], ["هاتي", "hati"], ["ماتا", "mata"], ["تاڠن", "tangan"], ["کاکي", "kaki"],
   ["ڤواسا", "puasa"], ["زکاة", "zakat"], ["هاجي", "haji"], ["سجود", "sujud"], ["رکوع", "rukuk"],
-  ["نيت", "niat"], ["وضوء", "wuduk"], ["قبلت", "kiblat"], ["ايمان", "iman"], ["ايمان دان اسلام", "iman dan Islam"],
+  ["نيت", "niat"], ["وضوء", "wuduk"], ["قبلة", "kiblat"], ["ايمان", "iman"], ["ايمان دان اسلام", "iman dan Islam"],
   ["کاسيه", "kasih"], ["سايڠ", "sayang"], ["موليا", "mulia"], ["جوجور", "jujur"], ["امانه", "amanah"],
   ["برسيه", "bersih"], ["حلال", "halal"], ["حرام", "haram"], ["ڤهالا", "pahala"], ["دوسا", "dosa"],
   ["چيقڬو", "cikgu"], ["موريد", "murid"], ["کلس", "kelas"], ["اير", "air"], ["هاري", "hari"],
 ];
 
-const jawiPerkataanQuestions = jawiWords.map(([jawi, rumi]) =>
-  fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
+const jawiPerkataanQuestions = jawiWords.map(([jawi, rumi], index) =>
+  index === 33
+    ? fill(`Dalam tulisan Jawi, ${jawi} sepadan dengan bacaan Rumi ________.`, rumi, "Perhatikan semula huruf Jawi dan sebutannya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
+    : fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
 );
 
 export const islamSubject = {
