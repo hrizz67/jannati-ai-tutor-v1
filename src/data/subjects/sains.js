@@ -1,5581 +1,930 @@
+const difficultyFor = (index) => {
+  if (index <= 20) return "mudah";
+  if (index <= 40) return "sederhana";
+  return "sukar";
+};
+
+const makeQuestions = (topicCode, items) =>
+  items.map((item, index) => ({
+    id: `SAINS-${topicCode}-${String(index + 1).padStart(3, "0")}`,
+    q: item.q,
+    answer: item.answer,
+    accepted: item.accepted || [],
+    hint: item.hint,
+    explanation: item.explanation,
+    difficulty: difficultyFor(index + 1),
+    uasa: "Sains",
+    dskp: "KSSR",
+  }));
+
+const fill = (q, answer, hint, explanation, accepted) => ({
+  q,
+  answer,
+  hint,
+  explanation,
+  accepted,
+});
+
+const cap = (text) => text[0].toUpperCase() + text.slice(1);
+
+const needItems = [
+  ["kucing", "makanan", "Haiwan perlu makan untuk mendapat tenaga."],
+  ["ikan", "air", "Ikan hidup di dalam air."],
+  ["burung", "udara", "Burung bernafas seperti haiwan lain."],
+  ["arnab", "tempat perlindungan", "Tempat perlindungan melindungi haiwan daripada bahaya."],
+  ["ayam", "makanan", "Ayam memerlukan makanan untuk hidup."],
+  ["katak", "air", "Katak memerlukan air dan tempat yang lembap."],
+  ["kambing", "udara", "Kambing bernafas menggunakan udara."],
+  ["semut", "tempat perlindungan", "Semut tinggal di sarang sebagai tempat perlindungan."],
+  ["rama-rama", "makanan", "Rama-rama mendapatkan makanan daripada nektar bunga."],
+  ["penyu", "air", "Penyu memerlukan air kerana hidup di laut."],
+];
+
+const movementItems = [
+  ["ikan", "berenang", "Ikan mempunyai sirip untuk bergerak di dalam air."],
+  ["burung", "terbang", "Burung menggunakan sayap untuk terbang."],
+  ["ular", "menjalar", "Ular bergerak tanpa kaki dengan cara menjalar."],
+  ["katak", "melompat", "Kaki belakang katak kuat untuk melompat."],
+  ["kuda", "berlari", "Kuda bergerak laju dengan berlari."],
+  ["siput", "merayap", "Siput bergerak perlahan dengan merayap."],
+  ["itik", "berenang", "Itik boleh berenang di dalam air."],
+  ["rama-rama", "terbang", "Rama-rama mempunyai sayap."],
+  ["arnab", "melompat", "Arnab menggunakan kaki belakang untuk melompat."],
+  ["buaya", "merangkak", "Buaya bergerak di darat dengan merangkak."],
+];
+
+const coveringItems = [
+  ["kucing", "bulu", "Badan kucing dilitupi bulu."],
+  ["ikan", "sisik", "Badan ikan dilitupi sisik."],
+  ["burung", "bulu pelepah", "Burung mempunyai bulu pelepah pada sayap dan badan."],
+  ["penyu", "cangkerang", "Cangkerang melindungi badan penyu."],
+  ["siput", "cangkerang", "Siput mempunyai cangkerang keras."],
+  ["ular", "sisik", "Kulit ular bersisik."],
+  ["ayam", "bulu pelepah", "Ayam ialah burung dan mempunyai bulu pelepah."],
+  ["kura-kura", "cangkerang", "Kura-kura mempunyai cangkerang sebagai perlindungan."],
+  ["kambing", "bulu", "Kambing mempunyai bulu pada badannya."],
+  ["udang", "kulit keras", "Udang mempunyai kulit luar yang keras."],
+];
+
+const youngItems = [
+  ["kucing", "anak kucing", "Anak kucing ialah anak kepada kucing."],
+  ["ayam", "anak ayam", "Anak ayam menetas daripada telur ayam."],
+  ["lembu", "anak lembu", "Anak lembu akan membesar menjadi lembu dewasa."],
+  ["katak", "berudu", "Berudu ialah anak katak."],
+  ["rama-rama", "ulat beluncas", "Ulat beluncas ialah peringkat muda rama-rama."],
+  ["kambing", "anak kambing", "Anak kambing ialah anak kepada kambing."],
+  ["itik", "anak itik", "Anak itik menetas daripada telur itik."],
+  ["kuda", "anak kuda", "Anak kuda akan membesar menjadi kuda."],
+  ["ikan", "anak ikan", "Anak ikan hidup di dalam air."],
+  ["penyu", "anak penyu", "Anak penyu menetas daripada telur penyu."],
+];
+
+const animalClassItems = [
+  ["kucing", "beranak", "Kucing melahirkan anak."],
+  ["ayam", "bertelur", "Ayam membiak dengan bertelur."],
+  ["ikan", "bertelur", "Banyak ikan membiak dengan bertelur."],
+  ["lembu", "beranak", "Lembu melahirkan anak."],
+  ["itik", "bertelur", "Itik membiak dengan bertelur."],
+  ["kambing", "beranak", "Kambing melahirkan anak."],
+  ["burung", "bertelur", "Burung membiak dengan bertelur."],
+  ["arnab", "beranak", "Arnab melahirkan anak."],
+  ["katak", "bertelur", "Katak bertelur di tempat berair."],
+  ["ular", "bertelur", "Banyak ular membiak dengan bertelur."],
+];
+
+const haiwanQuestions = [
+  ...needItems.map(([animal, answer, explanation]) =>
+    fill(`${cap(animal)} memerlukan ________ untuk terus hidup.`, answer, "Ingat keperluan asas haiwan.", explanation)
+  ),
+  ...movementItems.map(([animal, answer, explanation]) =>
+    fill(`${cap(animal)} bergerak dengan cara ________.`, answer, "Perhatikan cara haiwan itu bergerak.", explanation)
+  ),
+  ...coveringItems.map(([animal, answer, explanation]) =>
+    fill(`Badan ${animal} dilitupi ________.`, answer, "Lihat bahagian luar badan haiwan.", explanation)
+  ),
+  ...youngItems.map(([animal, answer, explanation]) =>
+    fill(`Anak bagi ${animal} dipanggil ________.`, answer, "Fikirkan nama anak haiwan.", explanation)
+  ),
+  ...animalClassItems.map(([animal, answer, explanation]) =>
+    fill(`${cap(animal)} membiak dengan cara ________.`, answer, "Haiwan boleh beranak atau bertelur.", explanation)
+  ),
+];
+
+const plantPartItems = [
+  ["akar", "menyerap air", "Akar menyerap air daripada tanah."],
+  ["batang", "menyokong tumbuhan", "Batang membantu tumbuhan berdiri tegak."],
+  ["daun", "membuat makanan", "Daun membuat makanan dengan bantuan cahaya."],
+  ["bunga", "menjadi buah", "Bunga boleh bertukar menjadi buah."],
+  ["buah", "melindungi biji benih", "Buah melindungi biji benih di dalamnya."],
+  ["biji benih", "tumbuhan baharu", "Biji benih boleh tumbuh menjadi tumbuhan baharu."],
+  ["akar", "mencengkam tanah", "Akar membantu tumbuhan tidak mudah tumbang."],
+  ["batang", "mengangkut air", "Batang membawa air ke bahagian tumbuhan."],
+  ["daun", "membuat makanan", "Daun membuat makanan dengan bantuan cahaya."],
+  ["bunga", "menghasilkan buah", "Bunga boleh menghasilkan buah."],
+];
+
+const plantNeedItems = [
+  ["air", "Tumbuhan akan layu jika kekurangan air."],
+  ["cahaya matahari", "Tumbuhan memerlukan cahaya untuk membuat makanan."],
+  ["udara", "Tumbuhan memerlukan udara untuk hidup."],
+  ["ruang", "Tumbuhan memerlukan ruang untuk membesar."],
+  ["nutrien", "Nutrien membantu tumbuhan tumbuh subur."],
+  ["tanah", "Banyak tumbuhan hidup di dalam tanah."],
+  ["air", "Air diserap oleh akar tumbuhan."],
+  ["cahaya", "Cahaya membantu daun membuat makanan."],
+  ["udara", "Udara penting untuk benda hidup."],
+  ["penjagaan", "Tumbuhan yang dijaga akan tumbuh lebih baik."],
+];
+
+const plantGrowthItems = [
+  ["biji benih", "anak pokok", "Biji benih bercambah menjadi anak pokok."],
+  ["anak pokok", "pokok dewasa", "Anak pokok membesar menjadi pokok dewasa."],
+  ["pokok dewasa", "bunga", "Pokok dewasa boleh menghasilkan bunga."],
+  ["bunga", "buah", "Bunga boleh berkembang menjadi buah."],
+  ["buah", "biji benih", "Buah mempunyai biji benih."],
+  ["biji kacang", "anak pokok", "Biji kacang boleh bercambah menjadi anak pokok."],
+  ["tumbuhan", "besar", "Tumbuhan ialah benda hidup dan boleh membesar."],
+  ["daun muda", "lebih besar", "Daun muda akan membesar."],
+  ["akar", "panjang", "Akar boleh menjadi lebih panjang semasa tumbuhan membesar."],
+  ["batang", "tinggi", "Batang menjadi lebih tinggi apabila tumbuhan membesar."],
+];
+
+const plantExampleItems = [
+  ["padi", "biji benih", "Padi menghasilkan biji benih."],
+  ["mangga", "buah", "Pokok mangga menghasilkan buah mangga."],
+  ["bunga raya", "bunga", "Bunga raya ialah tumbuhan berbunga."],
+  ["rumput", "daun", "Rumput mempunyai daun yang banyak."],
+  ["kelapa", "akar", "Pokok kelapa mempunyai akar."],
+  ["pisang", "buah", "Pokok pisang menghasilkan buah pisang."],
+  ["jagung", "biji", "Jagung mempunyai biji."],
+  ["teratai", "air", "Teratai hidup di air."],
+  ["kaktus", "air", "Kaktus menyimpan air dalam batang."],
+  ["kangkung", "air", "Kangkung boleh hidup di tempat berair."],
+];
+
+const plantCareItems = [
+  ["menyiram", "air", "Menyiram membekalkan air kepada tumbuhan."],
+  ["meletakkan pokok di tempat cerah", "cahaya", "Tumbuhan memerlukan cahaya untuk hidup."],
+  ["membaja", "nutrien", "Baja membekalkan nutrien kepada tumbuhan."],
+  ["mencabut rumpai", "ruang", "Rumpai boleh berebut ruang dengan tumbuhan."],
+  ["menggembur tanah", "udara", "Tanah yang gembur mempunyai ruang udara."],
+  ["menyiram terlalu banyak", "lemas", "Terlalu banyak air boleh merosakkan akar."],
+  ["tidak menyiram", "layu", "Tumbuhan layu apabila kekurangan air."],
+  ["meletakkan di tempat gelap", "kurang cahaya", "Tempat gelap tidak cukup cahaya untuk tumbuhan."],
+  ["menjaga tumbuhan", "subur", "Tumbuhan yang dijaga boleh tumbuh subur."],
+  ["memotong daun kering", "kemas", "Daun kering dibuang supaya pokok lebih kemas."],
+];
+
+const tumbuhanQuestions = [
+  ...plantPartItems.map(([part, answer, explanation]) =>
+    fill(`Bahagian tumbuhan yang disebut ${part} berfungsi untuk ________.`, answer, "Ingat fungsi bahagian tumbuhan.", explanation)
+  ),
+  ...plantNeedItems.map(([answer, explanation]) =>
+    fill(`Tumbuhan memerlukan ________ untuk hidup.`, answer, "Fikirkan keperluan asas tumbuhan.", explanation)
+  ),
+  ...plantGrowthItems.map(([from, answer, explanation]) =>
+    fill(`${from[0].toUpperCase() + from.slice(1)} boleh menjadi ________.`, answer, "Fikirkan urutan pertumbuhan tumbuhan.", explanation)
+  ),
+  ...plantExampleItems.map(([plant, answer, explanation]) =>
+    fill(`${cap(plant)} berkaitan dengan ________.`, answer, "Perhatikan ciri tumbuhan tersebut.", explanation)
+  ),
+  ...plantCareItems.map(([action, answer, explanation]) =>
+    fill(`Perbuatan ${action} berkaitan dengan ________ tumbuhan.`, answer, "Fikirkan tujuan penjagaan tumbuhan.", explanation)
+  ),
+];
+
+const senseItems = [
+  ["mata", "melihat", "Mata digunakan untuk melihat."],
+  ["telinga", "mendengar", "Telinga digunakan untuk mendengar bunyi."],
+  ["hidung", "menghidu", "Hidung digunakan untuk menghidu bau."],
+  ["lidah", "merasa", "Lidah digunakan untuk merasa rasa makanan."],
+  ["kulit", "menyentuh", "Kulit digunakan untuk menyentuh dan merasa keadaan benda."],
+  ["mata", "warna", "Mata membantu kita mengenal warna."],
+  ["telinga", "bunyi", "Telinga membantu kita mendengar bunyi."],
+  ["hidung", "bau", "Hidung membantu kita mengenal bau."],
+  ["lidah", "rasa", "Lidah membantu kita mengenal rasa."],
+  ["kulit", "panas", "Kulit boleh merasa panas dan sejuk."],
+];
+
+const bodyPartItems = [
+  ["tangan", "memegang", "Tangan digunakan untuk memegang benda."],
+  ["kaki", "berjalan", "Kaki digunakan untuk berjalan."],
+  ["gigi", "mengunyah", "Gigi membantu mengunyah makanan."],
+  ["mulut", "makan", "Mulut digunakan untuk makan."],
+  ["hidung", "bernafas", "Hidung membantu kita bernafas."],
+  ["mata", "membaca", "Mata digunakan semasa membaca."],
+  ["telinga", "mendengar", "Telinga digunakan untuk mendengar."],
+  ["jari", "menulis", "Jari membantu memegang pensel semasa menulis."],
+  ["lutut", "membengkokkan kaki", "Lutut membantu kaki membengkok."],
+  ["bahu", "mengangkat lengan", "Bahu membantu lengan bergerak."],
+];
+
+const healthItems = [
+  ["membasuh tangan", "menghilangkan kuman", "Membasuh tangan membantu menghilangkan kuman."],
+  ["menggosok gigi", "membersihkan gigi", "Menggosok gigi menjaga kebersihan gigi."],
+  ["mandi", "membersihkan badan", "Mandi membersihkan badan."],
+  ["tidur cukup", "merehatkan badan", "Tidur cukup membantu badan berehat."],
+  ["makan sayur", "menyihatkan badan", "Sayur ialah makanan yang baik untuk badan."],
+  ["minum air", "menyihatkan badan", "Air membantu badan berfungsi dengan baik."],
+  ["bersenam", "menguatkan badan", "Bersenam membantu badan menjadi kuat."],
+  ["menutup mulut ketika batuk", "mengurangkan jangkitan", "Perbuatan ini mengurangkan penyebaran kuman."],
+  ["memakai kasut", "melindungi kaki", "Kasut melindungi kaki."],
+  ["membuang sampah ke dalam tong", "menjaga kebersihan", "Persekitaran bersih baik untuk kesihatan."],
+];
+
+const humanGrowthItems = [
+  ["Bayi akan membesar menjadi ________.", "kanak-kanak", "Bayi akan membesar menjadi kanak-kanak."],
+  ["Kanak-kanak akan membesar menjadi ________.", "remaja", "Kanak-kanak akan membesar menjadi remaja."],
+  ["Remaja akan membesar menjadi ________.", "dewasa", "Remaja akan membesar menjadi dewasa."],
+  ["Manusia ialah benda hidup yang boleh ________.", "membesar", "Manusia ialah benda hidup yang boleh membesar."],
+  ["Tinggi badan biasanya ________ apabila kita membesar.", "bertambah", "Tinggi badan bertambah apabila membesar."],
+  ["Berat badan biasanya ________ apabila kita membesar.", "bertambah", "Berat badan biasanya bertambah apabila membesar."],
+  ["Baju lama boleh menjadi ________ apabila badan membesar.", "kecil", "Baju lama boleh menjadi kecil apabila badan membesar."],
+  ["Kasut lama boleh menjadi ________ apabila kaki membesar.", "sempit", "Kaki membesar, jadi kasut lama boleh menjadi sempit."],
+  ["Makanan berkhasiat membantu ________.", "tumbesaran", "Makanan berkhasiat membantu tumbesaran."],
+  ["Air penting untuk ________ manusia.", "badan", "Air penting untuk badan manusia."],
+];
+
+const safetyItems = [
+  ["pisau", "tajam", "Pisau tajam dan boleh mencederakan tangan."],
+  ["ubat", "orang dewasa", "Ubat perlu diambil dengan bantuan orang dewasa."],
+  ["jalan raya", "berhati-hati", "Kita perlu berhati-hati di jalan raya."],
+  ["soket elektrik", "tangan basah", "Soket elektrik tidak boleh disentuh dengan tangan basah."],
+  ["air panas", "melecur", "Air panas boleh menyebabkan kulit melecur."],
+  ["lantai basah", "licin", "Lantai basah boleh menyebabkan kita tergelincir."],
+  ["topi keledar", "kepala", "Topi keledar melindungi kepala."],
+  ["tali kasut", "diikat", "Tali kasut perlu diikat supaya tidak tersandung."],
+  ["makanan basi", "sakit perut", "Makanan basi boleh menyebabkan sakit perut."],
+  ["bermain api", "kebakaran", "Api boleh menyebabkan kebakaran."],
+];
+
+const manusiaQuestions = [
+  ...senseItems.map(([organ, answer, explanation]) =>
+    fill(`${cap(organ)} digunakan untuk ________.`, answer, "Ingat organ deria manusia.", explanation)
+  ),
+  ...bodyPartItems.map(([part, answer, explanation]) =>
+    fill(`${cap(part)} membantu kita ________.`, answer, "Fikirkan kegunaan anggota badan.", explanation)
+  ),
+  ...healthItems.map(([action, answer, explanation]) =>
+    fill(`Amalan ${action} membantu ________.`, answer, "Fikirkan amalan menjaga kesihatan.", explanation)
+  ),
+  ...humanGrowthItems.map(([from, answer, explanation]) =>
+    fill(from, answer, "Fikirkan perubahan apabila manusia membesar.", explanation)
+  ),
+  ...safetyItems.map(([thing, answer, explanation]) =>
+    fill(`Untuk keselamatan, ${thing} perlu diingat kerana ________.`, answer, "Fikirkan keselamatan diri.", explanation)
+  ),
+];
+
+const waterPropertyItems = [
+  ["Air bersih biasanya ________.", "tidak berwarna", "Air bersih tidak mempunyai warna."],
+  ["Air bersih tidak mempunyai ________.", "bau", "Air bersih tidak mempunyai bau."],
+  ["Air bersih tidak mempunyai rasa, maka air bersih ________.", "tidak berasa", "Air bersih tidak mempunyai rasa."],
+  ["Air di dalam gelas mengikut bentuk ________.", "gelas", "Air mengikut bentuk bekasnya."],
+  ["Air mengalir dari tempat tinggi ke tempat ________.", "rendah", "Air mengalir dari tempat tinggi ke tempat rendah."],
+  ["Air yang dibekukan menjadi ________.", "ais", "Air menjadi ais apabila dibekukan."],
+  ["Air yang dipanaskan boleh menjadi ________.", "wap air", "Air boleh berubah menjadi wap air apabila dipanaskan."],
+  ["Air ialah cecair yang boleh ________.", "mengalir", "Air ialah cecair yang boleh mengalir."],
+  ["Air yang jernih kelihatan ________.", "bersih", "Air yang jernih kelihatan bersih."],
+  ["Air yang keruh mungkin mengandungi ________.", "kotoran", "Air keruh mungkin mengandungi kotoran."],
+];
+
+const waterUseItems = [
+  ["Manusia minum air untuk terus ________.", "hidup", "Manusia memerlukan air untuk hidup."],
+  ["Kita menggunakan air semasa mandi untuk ________.", "membersihkan badan", "Mandi menggunakan air untuk membersihkan badan."],
+  ["Air digunakan untuk membasuh ________.", "pinggan", "Air digunakan untuk mencuci pinggan."],
+  ["Pokok disiram dengan ________.", "air", "Tumbuhan memerlukan air."],
+  ["Pakaian yang kotor dibasuh menggunakan ________.", "air", "Air digunakan untuk membasuh pakaian."],
+  ["Air digunakan semasa ________ makanan.", "memasak", "Air digunakan semasa memasak."],
+  ["Api kecil boleh dipadamkan dengan ________ jika selamat.", "air", "Air boleh memadamkan api kecil dengan selamat."],
+  ["Ikan di dalam akuarium memerlukan ________.", "air", "Ikan memerlukan air untuk hidup."],
+  ["Lantai boleh dibersihkan menggunakan ________.", "air", "Air digunakan untuk mengemop lantai."],
+  ["Air boleh dibekukan untuk membuat ________.", "ais", "Air boleh membeku menjadi ais."],
+];
+
+const waterSourceItems = [
+  ["hujan", "awan", "Hujan turun daripada awan."],
+  ["sungai", "air", "Sungai ialah sumber air."],
+  ["tasik", "air", "Tasik mempunyai air yang banyak."],
+  ["laut", "masin", "Air laut berasa masin."],
+  ["telaga", "bawah tanah", "Telaga mendapatkan air dari bawah tanah."],
+  ["paip", "rumah", "Air paip digunakan di rumah."],
+  ["kolam", "air", "Kolam ialah tempat takungan air."],
+  ["air mineral", "minum", "Air mineral biasanya diminum."],
+  ["mata air", "semula jadi", "Mata air ialah sumber air semula jadi."],
+  ["empangan", "menakung air", "Empangan menakung air."],
+];
+
+const saveWaterItems = [
+  ["Menutup paip selepas digunakan dapat ________.", "menjimatkan air", "Paip yang terbuka membazirkan air."],
+  ["Paip bocor perlu dibaiki untuk mengelakkan ________.", "pembaziran", "Paip bocor menyebabkan air terbuang."],
+  ["Menggunakan baldi dapat mengawal penggunaan ________.", "air", "Baldi membantu mengawal penggunaan air."],
+  ["Mandi terlalu lama boleh ________ air.", "membazir", "Mandi terlalu lama menggunakan banyak air."],
+  ["Air hujan boleh dikumpulkan untuk ________.", "menyiram pokok", "Air hujan boleh digunakan untuk menyiram pokok."],
+  ["Mencuci kereta dengan baldi lebih ________ air.", "jimat", "Baldi menggunakan air dengan lebih terkawal."],
+  ["Pili perlu dimatikan selepas menggunakan ________.", "air", "Pili perlu dimatikan selepas digunakan."],
+  ["Kita perlu menggunakan air secara ________.", "berhemah", "Penggunaan berhemah mengelakkan pembaziran."],
+  ["Semasa membasuh tangan, gunakan air ________.", "secukupnya", "Gunakan air secukupnya ketika membasuh tangan."],
+  ["Air boleh ditadah di dalam ________.", "bekas", "Air boleh ditadah dalam bekas."],
+];
+
+const waterSafetyItems = [
+  ["Air mendidih sangat ________.", "panas", "Air mendidih sangat panas."],
+  ["Lantai basah menjadi ________.", "licin", "Lantai basah boleh menyebabkan tergelincir."],
+  ["Air kotor boleh membawa ________.", "kuman", "Air kotor boleh membawa kuman."],
+  ["Banjir ialah keadaan yang ________.", "bahaya", "Banjir boleh membahayakan manusia."],
+  ["Kolam yang dalam boleh menyebabkan ________.", "lemas", "Kolam yang dalam berbahaya tanpa pengawasan."],
+  ["Air sabun boleh menjadikan lantai ________.", "licin", "Air sabun boleh menjadikan lantai licin."],
+  ["Air bersih lebih selamat untuk ________.", "diminum", "Air bersih lebih selamat untuk diminum."],
+  ["Membuang sampah ke sungai menyebabkan ________.", "pencemaran", "Sampah mencemarkan air sungai."],
+  ["Menapis air membantu mengasingkan ________.", "kotoran", "Penapis membantu mengasingkan kotoran."],
+  ["Merebus air boleh membunuh banyak ________.", "kuman", "Merebus air boleh membunuh banyak kuman."],
+];
+
+const airQuestions = [
+  ...waterPropertyItems.map(([property, answer, explanation]) =>
+    fill(property, answer, "Fikirkan sifat air bersih.", explanation)
+  ),
+  ...waterUseItems.map(([use, answer, explanation]) =>
+    fill(use, answer, "Fikirkan kegunaan air.", explanation)
+  ),
+  ...waterSourceItems.map(([source, answer, explanation]) =>
+    fill(`${cap(source)} berkaitan dengan ________.`, answer, "Fikirkan sumber atau ciri air.", explanation)
+  ),
+  ...saveWaterItems.map(([action, answer, explanation]) =>
+    fill(action, answer, "Fikirkan cara menggunakan air dengan baik.", explanation)
+  ),
+  ...waterSafetyItems.map(([thing, answer, explanation]) =>
+    fill(thing, answer, "Fikirkan keselamatan berkaitan air.", explanation)
+  ),
+];
+
+const lightSourceItems = [
+  ["Matahari", "semula jadi", "Matahari ialah sumber cahaya semula jadi."],
+  ["lampu suluh", "buatan manusia", "Lampu suluh dibuat oleh manusia."],
+  ["lampu jalan", "buatan manusia", "Lampu jalan ialah sumber cahaya buatan manusia."],
+  ["lilin menyala", "buatan manusia", "Lilin yang menyala menghasilkan cahaya."],
+  ["api", "cahaya", "Api menghasilkan cahaya dan haba."],
+  ["bintang", "semula jadi", "Bintang ialah sumber cahaya semula jadi."],
+  ["lampu bilik", "cahaya", "Lampu bilik menerangi bilik."],
+  ["skrin telefon", "cahaya", "Skrin telefon mengeluarkan cahaya."],
+  ["lampu isyarat", "cahaya", "Lampu isyarat menggunakan cahaya berwarna."],
+  ["kunang-kunang", "cahaya", "Kunang-kunang boleh mengeluarkan cahaya."],
+];
+
+const lightUseItems = [
+  ["Cahaya membantu kita membaca dengan melihat ________.", "tulisan", "Cahaya membantu mata melihat tulisan."],
+  ["Cahaya membantu kita melihat ________ pada waktu malam.", "jalan", "Cahaya membantu kita melihat jalan."],
+  ["Lampu isyarat menggunakan cahaya untuk memberi ________.", "isyarat", "Lampu isyarat menggunakan cahaya untuk mengawal lalu lintas."],
+  ["Rumah api membantu ________ melihat arah.", "kapal", "Rumah api membantu kapal melihat arah."],
+  ["Lampu suluh digunakan di tempat yang ________.", "gelap", "Lampu suluh menerangi tempat gelap."],
+  ["Lampu meja memberi cahaya semasa ________.", "belajar", "Lampu meja memberi cahaya semasa belajar."],
+  ["Lampu kenderaan menerangi ________.", "jalan", "Lampu kenderaan menerangi jalan."],
+  ["Cahaya Matahari menerangi Bumi pada waktu ________.", "siang", "Cahaya matahari menerangi bumi pada waktu siang."],
+  ["Lampu kecemasan membantu kita ketika keadaan ________.", "gelap", "Lampu kecemasan membantu ketika gelap."],
+  ["Cermin mata hitam mengurangkan ________.", "silau", "Cermin mata hitam mengurangkan silau."],
+];
+
+const shadowItems = [
+  ["objek legap", "bayang-bayang", "Objek legap menghalang cahaya lalu membentuk bayang-bayang."],
+  ["cahaya", "dihalang", "Bayang-bayang terbentuk apabila cahaya dihalang."],
+  ["lampu suluh", "sumber cahaya", "Lampu suluh menjadi sumber cahaya dalam aktiviti bayang-bayang."],
+  ["bayang-bayang", "gelap", "Bayang-bayang kelihatan gelap."],
+  ["objek lutsinar", "cahaya", "Objek lutsinar membenarkan cahaya menembusinya."],
+  ["objek lut cahaya", "sebahagian cahaya", "Objek lut cahaya membenarkan sebahagian cahaya menembusi."],
+  ["objek legap", "tidak telus cahaya", "Objek legap tidak membenarkan cahaya menembusi."],
+  ["cahaya bergerak", "lurus", "Cahaya bergerak dalam garis lurus."],
+  ["bayang-bayang lebih jelas", "cahaya terang", "Cahaya terang menghasilkan bayang-bayang yang lebih jelas."],
+  ["bayang-bayang berubah", "kedudukan cahaya", "Kedudukan cahaya mempengaruhi bentuk bayang-bayang."],
+];
+
+const lightMaterialItems = [
+  ["kaca jernih", "lutsinar", "Kaca jernih membenarkan cahaya menembusi."],
+  ["kertas minyak", "lut cahaya", "Kertas minyak membenarkan sebahagian cahaya menembusi."],
+  ["kadbod", "legap", "Kadbod tidak membenarkan cahaya menembusi."],
+  ["plastik jernih", "lutsinar", "Plastik jernih membenarkan cahaya menembusi."],
+  ["kayu", "legap", "Kayu menghalang cahaya."],
+  ["air jernih", "lutsinar", "Air jernih membenarkan cahaya menembusi."],
+  ["batu", "legap", "Batu tidak membenarkan cahaya menembusi."],
+  ["kain nipis", "lut cahaya", "Kain nipis membenarkan sebahagian cahaya menembusi."],
+  ["cermin", "memantulkan cahaya", "Cermin memantulkan cahaya."],
+  ["dinding", "legap", "Dinding menghalang cahaya."],
+];
+
+const lightSafetyItems = [
+  ["melihat Matahari terus", "mata", "Melihat Matahari secara terus boleh merosakkan mata."],
+  ["lampu terlalu terang", "silau", "Cahaya terlalu terang menyebabkan silau."],
+  ["membaca di tempat gelap", "mata letih", "Cahaya yang cukup memudahkan mata membaca."],
+  ["menutup lampu tidak digunakan", "jimat elektrik", "Menutup lampu menjimatkan elektrik."],
+  ["menggunakan lampu malam", "melihat", "Lampu malam membantu melihat dalam gelap."],
+  ["api lilin", "berhati-hati", "Api lilin boleh menyebabkan kebakaran."],
+  ["lampu jalan", "keselamatan", "Lampu jalan membantu pengguna jalan melihat."],
+  ["lampu basikal", "dilihat", "Lampu basikal membantu orang lain melihat penunggang."],
+  ["cahaya skrin terlalu lama", "mata letih", "Melihat skrin terlalu lama boleh meletihkan mata."],
+  ["lampu rosak", "dibaiki orang dewasa", "Lampu rosak perlu dibaiki oleh orang dewasa."],
+];
+
+const cahayaQuestions = [
+  ...lightSourceItems.map(([source, answer, explanation]) =>
+    fill(answer === "cahaya" ? `${cap(source)} menghasilkan ________.` : `${cap(source)} ialah sumber cahaya ________.`, answer, "Kenal pasti sumber cahaya.", explanation)
+  ),
+  ...lightUseItems.map(([use, answer, explanation]) =>
+    fill(use, answer, "Fikirkan kegunaan cahaya.", explanation)
+  ),
+  ...shadowItems.map(([thing, answer, explanation]) =>
+    fill(`${cap(thing)} berkaitan dengan ________.`, answer, "Fikirkan cahaya dan bayang-bayang.", explanation)
+  ),
+  ...lightMaterialItems.map(([material, answer, explanation]) =>
+    fill(`${cap(material)} ialah bahan ________.`, answer, "Fikirkan sama ada cahaya boleh menembusi bahan.", explanation)
+  ),
+  ...lightSafetyItems.map(([action, answer, explanation]) =>
+    fill(`${cap(action)} berkaitan dengan ________.`, answer, "Fikirkan keselamatan dan penggunaan cahaya.", explanation)
+  ),
+];
+
+const soundSourceItems = [
+  ["loceng", "bunyi", "Loceng menghasilkan bunyi apabila dibunyikan."],
+  ["gitar", "bunyi", "Tali gitar bergetar untuk menghasilkan bunyi."],
+  ["dram", "bunyi", "Dram menghasilkan bunyi apabila dipukul."],
+  ["seruling", "bunyi", "Seruling menghasilkan bunyi apabila ditiup."],
+  ["radio", "bunyi", "Radio mengeluarkan bunyi."],
+  ["telefon", "bunyi", "Telefon boleh menghasilkan bunyi dering."],
+  ["kereta", "hon", "Hon kereta menghasilkan bunyi."],
+  ["jam loceng", "dering", "Jam loceng menghasilkan bunyi dering."],
+  ["suara manusia", "bunyi", "Suara manusia ialah bunyi."],
+  ["burung", "kicauan", "Burung menghasilkan bunyi kicauan."],
+];
+
+const soundActionItems = [
+  ["bertepuk tangan", "bunyi", "Tangan yang ditepuk menghasilkan bunyi."],
+  ["memetik tali gitar", "getaran", "Tali gitar bergetar apabila dipetik."],
+  ["meniup wisel", "bunyi kuat", "Wisel menghasilkan bunyi yang kuat."],
+  ["mengetuk pintu", "bunyi ketukan", "Pintu yang diketuk menghasilkan bunyi."],
+  ["menggoncang botol berisi biji", "bunyi", "Biji yang bergerak dalam botol menghasilkan bunyi."],
+  ["menepuk meja", "getaran", "Meja boleh bergetar apabila ditepuk."],
+  ["membunyikan loceng", "amaran", "Loceng boleh digunakan sebagai amaran."],
+  ["berbisik", "bunyi perlahan", "Berbisik menghasilkan bunyi yang perlahan."],
+  ["menjerit", "bunyi kuat", "Menjerit menghasilkan bunyi kuat."],
+  ["menutup telinga", "kurang bunyi", "Menutup telinga mengurangkan bunyi yang didengar."],
+];
+
+const soundQualityItems = [
+  ["bunyi hon", "kuat", "Hon biasanya menghasilkan bunyi kuat."],
+  ["bunyi bisikan", "perlahan", "Bisikan ialah bunyi perlahan."],
+  ["bunyi siren", "kuat", "Siren menghasilkan bunyi yang kuat untuk memberi amaran."],
+  ["bunyi daun ditiup angin", "perlahan", "Daun ditiup angin biasanya menghasilkan bunyi perlahan."],
+  ["bunyi dram", "kuat", "Dram menghasilkan bunyi kuat apabila dipukul kuat."],
+  ["bunyi jam berdetik", "perlahan", "Jam berdetik menghasilkan bunyi perlahan."],
+  ["bunyi guruh", "kuat", "Guruh menghasilkan bunyi yang kuat."],
+  ["bunyi air menitis", "perlahan", "Air menitis menghasilkan bunyi perlahan."],
+  ["bunyi pembesar suara", "kuat", "Pembesar suara boleh menghasilkan bunyi kuat."],
+  ["bunyi pensel jatuh", "perlahan", "Pensel jatuh menghasilkan bunyi yang tidak terlalu kuat."],
+];
+
+const hearingItems = [
+  ["telinga", "mendengar", "Telinga ialah organ untuk mendengar."],
+  ["bunyi kuat", "telinga", "Bunyi terlalu kuat boleh mengganggu telinga."],
+  ["bunyi amaran", "bahaya", "Bunyi amaran memberitahu kita tentang bahaya."],
+  ["muzik perlahan", "selesa", "Muzik perlahan lebih selesa didengar."],
+  ["fon telinga terlalu kuat", "tidak baik", "Bunyi terlalu kuat tidak baik untuk telinga."],
+  ["menjauh dari bunyi kuat", "melindungi telinga", "Menjauh boleh mengurangkan bunyi yang didengar."],
+  ["menutup telinga", "melindungi", "Menutup telinga membantu melindungi telinga."],
+  ["mendengar arahan guru", "telinga", "Kita menggunakan telinga untuk mendengar arahan."],
+  ["bunyi ambulans", "memberi laluan", "Bunyi siren ambulans meminta pengguna jalan memberi laluan."],
+  ["bunyi loceng sekolah", "masa", "Loceng sekolah menandakan masa tertentu."],
+];
+
+const soundScienceItems = [
+  ["Bunyi terhasil apabila objek ________.", "bergetar", "Bunyi terhasil apabila objek bergetar."],
+  ["Getaran yang kuat menghasilkan bunyi yang ________.", "kuat", "Getaran yang kuat boleh menghasilkan bunyi kuat."],
+  ["Getaran yang lemah menghasilkan bunyi yang ________.", "perlahan", "Getaran lemah menghasilkan bunyi perlahan."],
+  ["Kita mendengar bunyi kerana bunyi bergerak melalui ________.", "udara", "Kita mendengar bunyi kerana bunyi bergerak melalui udara."],
+  ["Jika objek tidak bergetar, bunyi ________ terhasil.", "tidak", "Tanpa getaran, bunyi tidak terhasil."],
+  ["Tali gitar yang bergetar menghasilkan ________.", "bunyi", "Getaran tali gitar menghasilkan bunyi."],
+  ["Kulit dram bergetar apabila ________.", "dipukul", "Kulit dram bergetar apabila dipukul."],
+  ["Udara dalam seruling bergetar apabila seruling ________.", "ditiup", "Udara dalam seruling bergetar apabila ditiup."],
+  ["Bunyi lebih jelas apabila sumber bunyi lebih ________.", "dekat", "Bunyi lebih jelas apabila sumber bunyi dekat."],
+  ["Bunyi menjadi kurang jelas apabila sumbernya lebih ________.", "jauh", "Bunyi menjadi kurang jelas apabila sumbernya jauh."],
+];
+
+const bunyiQuestions = [
+  ...soundSourceItems.map(([source, answer, explanation]) =>
+    fill(`${cap(source)} menghasilkan ________.`, answer, "Kenal pasti sumber bunyi.", explanation)
+  ),
+  ...soundActionItems.map(([action, answer, explanation]) =>
+    fill(`Perbuatan ${action} menghasilkan ________.`, answer, "Fikirkan cara bunyi dihasilkan.", explanation)
+  ),
+  ...soundQualityItems.map(([sound, answer, explanation]) =>
+    fill(`${sound[0].toUpperCase() + sound.slice(1)} biasanya ________.`, answer, "Bandingkan bunyi kuat dan perlahan.", explanation)
+  ),
+  ...hearingItems.map(([thing, answer, explanation]) =>
+    fill(`${thing[0].toUpperCase() + thing.slice(1)} berkaitan dengan ________.`, answer, "Fikirkan pendengaran dan keselamatan telinga.", explanation)
+  ),
+  ...soundScienceItems.map(([thing, answer, explanation]) =>
+    fill(thing, answer, "Ingat bahawa bunyi berkait dengan getaran.", explanation)
+  ),
+];
+
+const earthFeatureItems = [
+  ["gunung", "tinggi", "Gunung ialah bentuk muka bumi yang tinggi."],
+  ["sungai", "mengalir", "Air sungai mengalir."],
+  ["laut", "luas", "Laut mempunyai kawasan air yang luas."],
+  ["pantai", "pasir", "Pantai biasanya mempunyai pasir."],
+  ["bukit", "lebih rendah daripada gunung", "Bukit lebih rendah daripada gunung."],
+  ["tasik", "air", "Tasik ialah kawasan air yang dikelilingi daratan."],
+  ["hutan", "pokok", "Hutan mempunyai banyak pokok."],
+  ["pulau", "air", "Pulau dikelilingi air."],
+  ["gua", "batu", "Gua terbentuk dalam batu atau tanah."],
+  ["tanah pamah", "rata", "Tanah pamah ialah kawasan yang lebih rata."],
+];
+
+const weatherItems = [
+  ["Cuaca panas berlaku apabila cahaya ________ kuat.", "Matahari", "Cuaca panas berlaku apabila cahaya Matahari kuat."],
+  ["Kita boleh menggunakan ________ semasa hujan.", "payung", "Payung membantu melindungi daripada hujan."],
+  ["Cuaca berangin mempunyai tiupan ________.", "angin", "Cuaca berangin mempunyai tiupan angin."],
+  ["Langit mendung mempunyai banyak ________.", "awan", "Langit mendung mempunyai banyak awan."],
+  ["Pelangi boleh kelihatan selepas hujan apabila ada ________.", "cahaya", "Pelangi boleh kelihatan selepas hujan apabila ada cahaya."],
+  ["Ribut petir ialah cuaca yang ________.", "bahaya", "Ribut petir boleh membahayakan."],
+  ["Baju tebal sesuai dipakai ketika cuaca ________.", "sejuk", "Baju tebal membantu memanaskan badan."],
+  ["Cuaca cerah mempunyai cahaya ________.", "Matahari", "Cuaca cerah mempunyai cahaya Matahari."],
+  ["Awan kelihatan di ________.", "langit", "Awan kelihatan di langit."],
+  ["Hujan lebat boleh menyebabkan ________.", "banjir", "Hujan lebat boleh menyebabkan banjir."],
+];
+
+const earthMaterialItems = [
+  ["tanah", "menanam pokok", "Tanah digunakan untuk menanam pokok."],
+  ["pasir", "pantai", "Pasir banyak terdapat di pantai."],
+  ["batu", "keras", "Batu ialah bahan semula jadi yang keras."],
+  ["air", "sungai", "Sungai mengandungi air."],
+  ["udara", "bernafas", "Manusia dan haiwan memerlukan udara untuk bernafas."],
+  ["tanah liat", "licin", "Tanah liat terasa licin apabila basah."],
+  ["kerikil", "batu kecil", "Kerikil ialah batu yang kecil."],
+  ["humus", "subur", "Humus membantu tanah menjadi subur."],
+  ["pasir", "berbutir", "Pasir mempunyai butiran kecil."],
+  ["batu besar", "berat", "Batu besar biasanya berat."],
+];
+
+const environmentItems = [
+  ["Membuang sampah ke dalam tong menjaga persekitaran ________.", "bersih", "Tong sampah membantu menjaga kebersihan."],
+  ["Menanam pokok membantu udara menjadi lebih ________.", "bersih", "Pokok membantu menghasilkan udara yang lebih bersih."],
+  ["Membakar sampah menghasilkan ________.", "asap", "Membakar sampah menghasilkan asap."],
+  ["Mengitar semula dapat mengurangkan ________.", "sampah", "Kitar semula mengurangkan sampah."],
+  ["Longkang yang bersih membolehkan air ________.", "mengalir", "Longkang bersih membolehkan air mengalir."],
+  ["Pencemaran sungai boleh membahayakan ________.", "ikan", "Pencemaran sungai boleh membahayakan ikan."],
+  ["Bekas air perlu ditutup supaya nyamuk tidak ________.", "membiak", "Bekas air terbuka boleh menjadi tempat nyamuk membiak."],
+  ["Beg guna semula mengurangkan penggunaan ________.", "plastik", "Beg guna semula mengurangkan penggunaan plastik."],
+  ["Taman yang dijaga kelihatan ________.", "indah", "Taman yang dijaga kelihatan indah."],
+  ["Kita tidak patut memetik bunga sesuka hati kerana tumbuhan perlu ________.", "dijaga", "Tumbuhan perlu dijaga."],
+];
+
+const skyItems = [
+  ["Matahari biasanya kelihatan pada waktu ________.", "siang", "Matahari kelihatan pada waktu siang."],
+  ["Bulan biasanya kelihatan pada waktu ________.", "malam", "Bulan biasanya kelihatan pada waktu malam."],
+  ["Bintang kelihatan jelas pada waktu ________.", "malam", "Bintang kelihatan jelas pada waktu malam."],
+  ["Awan boleh diperhatikan di ________.", "langit", "Awan berada di langit."],
+  ["Hujan turun daripada ________.", "awan", "Hujan turun daripada awan."],
+  ["Angin ialah udara yang ________.", "bergerak", "Angin ialah udara yang bergerak."],
+  ["Bayang-bayang terbentuk apabila cahaya Matahari ________.", "dihalang", "Bayang-bayang terbentuk apabila cahaya dihalang."],
+  ["Cuaca boleh ________ dari semasa ke semasa.", "berubah", "Cuaca boleh berubah dari semasa ke semasa."],
+  ["Langit cerah sering kelihatan ________.", "biru", "Langit cerah sering kelihatan biru."],
+  ["Kilat boleh kelihatan semasa ________.", "ribut petir", "Kilat boleh kelihatan semasa ribut petir."],
+];
+
+const bumiQuestions = [
+  ...earthFeatureItems.map(([feature, answer, explanation]) =>
+    fill(`${cap(feature)} mempunyai ciri ________.`, answer, "Kenal pasti ciri permukaan Bumi.", explanation)
+  ),
+  ...weatherItems.map(([weather, answer, explanation]) =>
+    fill(weather, answer, "Fikirkan keadaan cuaca.", explanation)
+  ),
+  ...earthMaterialItems.map(([material, answer, explanation]) =>
+    fill(`${cap(material)} berkaitan dengan ________.`, answer, "Fikirkan bahan semula jadi di Bumi.", explanation)
+  ),
+  ...environmentItems.map(([action, answer, explanation]) =>
+    fill(action, answer, "Fikirkan cara menjaga alam sekitar.", explanation)
+  ),
+  ...skyItems.map(([thing, answer, explanation]) =>
+    fill(thing, answer, "Fikirkan pemerhatian langit dan cuaca.", explanation)
+  ),
+];
+
+const materialTypeItems = [
+  ["kayu", "keras", "Kayu ialah bahan yang keras."],
+  ["kain", "lembut", "Kain terasa lembut."],
+  ["getah", "kenyal", "Getah boleh kembali kepada bentuk asal selepas diregangkan."],
+  ["kaca", "lutsinar", "Kaca jernih membenarkan cahaya menembusi."],
+  ["logam", "kuat", "Logam biasanya kuat dan keras."],
+  ["plastik", "ringan", "Banyak plastik bersifat ringan."],
+  ["kertas", "mudah koyak", "Kertas mudah dikoyakkan."],
+  ["span", "menyerap air", "Span boleh menyerap air."],
+  ["kapas", "lembut", "Kapas terasa lembut."],
+  ["tanah liat", "boleh dibentuk", "Tanah liat boleh dibentuk apabila basah."],
+];
+
+const objectMaterialItems = [
+  ["meja", "kayu", "Meja boleh diperbuat daripada kayu."],
+  ["baju", "kain", "Baju biasanya diperbuat daripada kain."],
+  ["botol air", "plastik", "Botol air boleh diperbuat daripada plastik."],
+  ["tingkap", "kaca", "Tingkap menggunakan kaca supaya cahaya boleh masuk."],
+  ["periuk", "logam", "Periuk biasanya diperbuat daripada logam."],
+  ["pemadam", "getah", "Pemadam diperbuat daripada getah."],
+  ["buku", "kertas", "Buku mempunyai helaian kertas."],
+  ["tayar", "getah", "Tayar diperbuat daripada getah."],
+  ["cawan kaca", "kaca", "Cawan kaca diperbuat daripada kaca."],
+  ["kotak", "kadbod", "Kotak boleh diperbuat daripada kadbod."],
+];
+
+const materialPropertyItems = [
+  ["bahan kalis air", "tidak menyerap air", "Bahan kalis air tidak mudah menyerap air."],
+  ["bahan lut sinar", "cahaya", "Bahan lut sinar membenarkan cahaya menembusi."],
+  ["bahan legap", "menghalang cahaya", "Bahan legap tidak membenarkan cahaya menembusi."],
+  ["bahan magnet", "ditarik magnet", "Sesetengah logam boleh ditarik oleh magnet."],
+  ["bahan terapung", "ringan", "Bahan yang ringan boleh terapung di air."],
+  ["bahan tenggelam", "berat", "Bahan berat boleh tenggelam di air."],
+  ["bahan elastik", "boleh diregang", "Bahan elastik boleh diregangkan."],
+  ["bahan rapuh", "mudah pecah", "Bahan rapuh mudah pecah."],
+  ["bahan keras", "sukar dibengkok", "Bahan keras sukar dibengkokkan."],
+  ["bahan lembut", "mudah ditekan", "Bahan lembut mudah ditekan."],
+];
+
+const materialChoiceItems = [
+  ["payung", "kalis air", "Payung perlu kalis air supaya hujan tidak menembusi."],
+  ["tingkap", "lutsinar", "Tingkap perlu membenarkan cahaya masuk."],
+  ["kerusi", "kuat", "Kerusi perlu kuat untuk menampung badan."],
+  ["tuala", "menyerap air", "Tuala digunakan untuk mengeringkan badan."],
+  ["baju sejuk", "tebal", "Baju sejuk membantu memanaskan badan."],
+  ["beg sekolah", "kuat", "Beg sekolah perlu kuat untuk membawa buku."],
+  ["botol minuman", "tidak bocor", "Botol minuman perlu menahan air."],
+  ["kasut", "tahan lasak", "Kasut perlu tahan lasak untuk berjalan."],
+  ["sarung tangan getah", "kalis air", "Sarung tangan getah melindungi tangan daripada air."],
+  ["bekas makanan", "selamat", "Bekas makanan perlu selamat digunakan."],
+];
+
+const materialChangeItems = [
+  ["kertas dibasahkan", "lembik", "Kertas menjadi lembik apabila basah."],
+  ["ais dipanaskan", "mencair", "Ais mencair menjadi air apabila dipanaskan."],
+  ["tanah liat ditekan", "berubah bentuk", "Tanah liat boleh berubah bentuk apabila ditekan."],
+  ["kaca terjatuh", "pecah", "Kaca mudah pecah apabila terjatuh."],
+  ["getah diregang", "panjang", "Getah menjadi panjang apabila diregang."],
+  ["span ditekan", "kemek", "Span boleh kemek apabila ditekan."],
+  ["kayu dibakar", "arang", "Kayu boleh menjadi arang apabila terbakar."],
+  ["logam dipanaskan", "panas", "Logam boleh menjadi panas apabila dipanaskan."],
+  ["plastik nipis ditarik kuat", "koyak", "Plastik nipis boleh koyak."],
+  ["kain basah dijemur", "kering", "Kain basah menjadi kering apabila dijemur."],
+];
+
+const bahanQuestions = [
+  ...materialTypeItems.map(([material, answer, explanation]) =>
+    fill(`${material[0].toUpperCase() + material.slice(1)} mempunyai sifat ________.`, answer, "Perhatikan sifat bahan.", explanation)
+  ),
+  ...objectMaterialItems.map(([object, answer, explanation]) =>
+    fill(`${object[0].toUpperCase() + object.slice(1)} boleh diperbuat daripada ________.`, answer, "Fikirkan bahan bagi objek itu.", explanation)
+  ),
+  ...materialPropertyItems.map(([property, answer, explanation]) =>
+    fill(`${property[0].toUpperCase() + property.slice(1)} bermaksud ________.`, answer, "Fikirkan maksud sifat bahan.", explanation)
+  ),
+  ...materialChoiceItems.map(([object, answer, explanation]) =>
+    fill(`Bahan untuk ${object} sesuai jika bersifat ________.`, answer, "Pilih sifat bahan yang sesuai.", explanation)
+  ),
+  ...materialChangeItems.map(([action, answer, explanation]) =>
+    fill(`Apabila ${action}, bahan itu menjadi ________.`, answer, "Fikirkan perubahan pada bahan.", explanation)
+  ),
+];
+
+const technologyToolItems = [
+  ["gunting", "memotong", "Gunting digunakan untuk memotong kertas atau kain."],
+  ["pembaris", "mengukur panjang", "Pembaris digunakan untuk mengukur panjang."],
+  ["pensel", "menulis", "Pensel digunakan untuk menulis."],
+  ["pemadam", "memadam", "Pemadam digunakan untuk memadam tulisan pensel."],
+  ["jam", "menunjukkan masa", "Jam membantu kita mengetahui masa."],
+  ["lampu suluh", "menerangi", "Lampu suluh menerangi tempat gelap."],
+  ["payung", "melindungi", "Payung melindungi daripada hujan atau panas."],
+  ["telefon", "berkomunikasi", "Telefon digunakan untuk berkomunikasi."],
+  ["kipas", "menggerakkan udara", "Kipas menghasilkan angin."],
+  ["komputer", "mencari maklumat", "Komputer membantu mencari dan menyimpan maklumat."],
+];
+
+const technologyPurposeItems = [
+  ["basikal", "bergerak", "Basikal membantu kita bergerak dari satu tempat ke tempat lain."],
+  ["kereta", "pengangkutan", "Kereta ialah alat pengangkutan."],
+  ["peti sejuk", "menyejukkan makanan", "Peti sejuk menyimpan makanan supaya lebih tahan lama."],
+  ["mesin basuh", "mencuci pakaian", "Mesin basuh membantu mencuci pakaian."],
+  ["dapur gas", "memasak", "Dapur gas digunakan untuk memasak."],
+  ["kalkulator", "mengira", "Kalkulator membantu membuat pengiraan."],
+  ["kamera", "mengambil gambar", "Kamera digunakan untuk mengambil gambar."],
+  ["televisyen", "mendapat maklumat", "Televisyen boleh memberi maklumat dan hiburan."],
+  ["papan putih", "menulis", "Papan putih digunakan guru untuk menulis."],
+  ["penapis air", "menapis kotoran", "Penapis air membantu mengasingkan kotoran."],
+];
+
+const technologySafetyItems = [
+  ["gunting", "berhati-hati", "Gunting tajam dan perlu digunakan dengan berhati-hati."],
+  ["soket elektrik", "tangan kering", "Soket elektrik tidak boleh disentuh dengan tangan basah."],
+  ["telefon", "tidak terlalu lama", "Menggunakan telefon terlalu lama boleh meletihkan mata."],
+  ["kipas berputar", "jangan disentuh", "Bilah kipas yang berputar berbahaya."],
+  ["dapur panas", "jauhi", "Dapur panas boleh menyebabkan melecur."],
+  ["wayar rosak", "orang dewasa", "Wayar rosak perlu diperiksa oleh orang dewasa."],
+  ["komputer", "duduk betul", "Duduk dengan betul membantu menjaga badan."],
+  ["lampu rosak", "jangan dibaiki sendiri", "Lampu rosak perlu dibaiki oleh orang dewasa."],
+  ["alat tajam", "simpan selamat", "Alat tajam perlu disimpan di tempat selamat."],
+  ["alat elektrik", "matikan selepas guna", "Mematikan alat elektrik lebih selamat dan menjimatkan tenaga."],
+];
+
+const simpleMachineItems = [
+  ["roda", "memudahkan pergerakan", "Roda membantu objek bergerak dengan lebih mudah."],
+  ["tuas", "mengangkat", "Tuas membantu mengangkat atau mengumpil objek."],
+  ["takal", "menaikkan beban", "Takal membantu menaikkan beban."],
+  ["skru", "mengikat", "Skru digunakan untuk mengikat bahan."],
+  ["baji", "membelah", "Baji membantu membelah atau memotong."],
+  ["satah condong", "menaikkan barang", "Satah condong memudahkan barang dinaikkan."],
+  ["pemutar skru", "memasang skru", "Pemutar skru digunakan untuk memasang skru."],
+  ["kereta sorong", "mengangkut", "Kereta sorong membantu mengangkut barang."],
+  ["pembuka botol", "membuka penutup", "Pembuka botol menggunakan prinsip tuas."],
+  ["pisau", "memotong", "Pisau mempunyai bahagian baji untuk memotong."],
+];
+
+const designItems = [
+  ["model rumah", "kukuh", "Model perlu kukuh supaya tidak mudah runtuh."],
+  ["jambatan kertas", "menampung beban", "Jambatan perlu kuat untuk menampung beban."],
+  ["bot kertas", "terapung", "Bot perlu terapung di atas air."],
+  ["payung mini", "kalis air", "Payung perlu menghalang air."],
+  ["kereta mainan", "roda", "Roda membantu kereta bergerak."],
+  ["bekas pensel", "menyimpan", "Bekas pensel digunakan untuk menyimpan alat tulis."],
+  ["menara blok", "tapak luas", "Tapak luas membantu menara lebih stabil."],
+  ["kapal terbang kertas", "meluncur", "Bentuk sayap membantu kapal terbang kertas meluncur."],
+  ["penanda buku", "menanda halaman", "Penanda buku membantu mencari halaman."],
+  ["penyapu", "membersihkan", "Penyapu direka untuk membersihkan lantai."],
+];
+
+const teknologiQuestions = [
+  ...technologyToolItems.map(([tool, answer, explanation]) =>
+    fill(`${tool[0].toUpperCase() + tool.slice(1)} digunakan untuk ________.`, answer, "Fikirkan fungsi alat.", explanation)
+  ),
+  ...technologyPurposeItems.map(([tool, answer, explanation]) =>
+    fill(`${tool[0].toUpperCase() + tool.slice(1)} membantu manusia untuk ________.`, answer, "Fikirkan kegunaan teknologi harian.", explanation)
+  ),
+  ...technologySafetyItems.map(([tool, answer, explanation]) =>
+    fill(`Ketika menggunakan ${tool}, kita perlu ________.`, answer, "Fikirkan keselamatan menggunakan alat.", explanation)
+  ),
+  ...simpleMachineItems.map(([machine, answer, explanation]) =>
+    fill(`${machine[0].toUpperCase() + machine.slice(1)} membantu untuk ________.`, answer, "Fikirkan mesin ringkas dan fungsinya.", explanation)
+  ),
+  ...designItems.map(([model, answer, explanation]) =>
+    fill(`Reka bentuk ${model} perlu ________.`, answer, "Fikirkan tujuan reka bentuk.", explanation)
+  ),
+];
+
+const observeItems = [
+  ["Mata digunakan untuk ________ warna dan bentuk.", "melihat", "Mata digunakan untuk memerhati warna, bentuk dan saiz."],
+  ["Hidung digunakan untuk ________ bau.", "menghidu", "Hidung digunakan untuk memerhati bau."],
+  ["Telinga digunakan untuk ________ bunyi.", "mendengar", "Telinga digunakan untuk memerhati bunyi."],
+  ["Lidah digunakan untuk ________ rasa.", "merasa", "Lidah digunakan untuk memerhati rasa."],
+  ["Kulit digunakan untuk ________ permukaan benda.", "menyentuh", "Kulit digunakan untuk memerhati kasar, licin, panas atau sejuk."],
+  ["Warna daun yang biasa diperhatikan ialah ________.", "hijau", "Daun boleh diperhatikan melalui warna."],
+  ["Bunyi loceng yang nyaring biasanya ________.", "kuat", "Kekuatan bunyi boleh diperhatikan dengan telinga."],
+  ["Bau bunga yang menyenangkan disebut ________.", "harum", "Bau boleh diperhatikan dengan hidung."],
+  ["Permukaan batu biasanya terasa ________.", "kasar", "Permukaan boleh diperhatikan dengan sentuhan."],
+  ["Objek yang tidak kecil boleh disebut ________.", "besar", "Saiz ialah ciri yang boleh diperhatikan."],
+];
+
+const classifyItems = [
+  ["haiwan berkaki empat", "kucing", "Kucing mempunyai empat kaki."],
+  ["haiwan hidup di air", "ikan", "Ikan hidup di dalam air."],
+  ["objek berwarna merah", "bola merah", "Bola merah dikelaskan mengikut warna."],
+  ["bahan lutsinar", "kaca", "Kaca jernih membenarkan cahaya menembusi."],
+  ["bahan lembut", "kain", "Kain terasa lembut."],
+  ["objek terapung", "gabus", "Gabus boleh terapung di atas air."],
+  ["objek tenggelam", "batu", "Batu biasanya tenggelam di dalam air."],
+  ["tumbuhan berbunga", "bunga raya", "Bunga raya mempunyai bunga."],
+  ["alat menulis", "pensel", "Pensel digunakan untuk menulis."],
+  ["sumber cahaya", "lampu", "Lampu menghasilkan cahaya."],
+];
+
+const measureItems = [
+  ["pembaris", "panjang", "Pembaris digunakan untuk mengukur panjang."],
+  ["penimbang", "jisim", "Penimbang digunakan untuk mengukur jisim."],
+  ["jam", "masa", "Jam digunakan untuk mengukur masa."],
+  ["termometer", "suhu", "Termometer digunakan untuk mengukur suhu."],
+  ["silinder penyukat", "isipadu air", "Silinder penyukat boleh mengukur isipadu cecair."],
+  ["pita ukur", "panjang", "Pita ukur digunakan untuk mengukur panjang."],
+  ["cawan penyukat", "isipadu", "Cawan penyukat membantu menyukat cecair."],
+  ["jam randik", "masa", "Jam randik digunakan untuk mengukur masa aktiviti."],
+  ["neraca", "jisim", "Neraca digunakan untuk membandingkan jisim."],
+  ["unit sentimeter", "panjang", "Sentimeter ialah unit untuk panjang."],
+];
+
+const recordItems = [
+  ["Jadual digunakan untuk ________.", "mencatat data", "Jadual membantu menyusun data."],
+  ["Gambar boleh merekod ________.", "pemerhatian", "Gambar boleh merekod pemerhatian."],
+  ["Tanda palang boleh digunakan untuk mengira ________.", "bilangan", "Tanda palang boleh digunakan untuk mengira bilangan."],
+  ["Graf gambar membantu kita ________ data.", "membandingkan", "Graf gambar memudahkan perbandingan."],
+  ["Nota ringkas digunakan untuk mencatat ________.", "maklumat", "Nota ringkas mencatat maklumat penting."],
+  ["Tarikh menunjukkan masa ________ dibuat.", "pemerhatian", "Tarikh menunjukkan bila pemerhatian dibuat."],
+  ["Label membantu mengenal ________ objek.", "bahagian", "Label membantu mengenal bahagian objek."],
+  ["Lukisan boleh menunjukkan ________ objek.", "bentuk", "Lukisan boleh menunjukkan bentuk objek."],
+  ["Keputusan penyiasatan perlu ________.", "dicatat", "Keputusan penyiasatan perlu dicatat."],
+  ["Data yang teratur mudah ________.", "dibaca", "Data yang teratur mudah dibaca."],
+];
+
+const investigationItems = [
+  ["soalan", "penyiasatan", "Penyiasatan bermula dengan soalan yang jelas."],
+  ["ramalan", "sebelum ujian", "Ramalan dibuat sebelum menjalankan ujian."],
+  ["pemerhatian", "selepas ujian", "Pemerhatian dibuat semasa atau selepas ujian."],
+  ["adil", "satu perkara diubah", "Ujian lebih adil apabila satu perkara diubah pada satu masa."],
+  ["selamat", "ikut arahan guru", "Arahan guru membantu aktiviti dijalankan dengan selamat."],
+  ["membandingkan", "persamaan dan perbezaan", "Membandingkan mencari persamaan dan perbezaan."],
+  ["mengelas", "ciri yang sama", "Mengelas ialah mengumpulkan objek mengikut ciri."],
+  ["meramal", "jangkaan", "Meramal ialah membuat jangkaan berdasarkan pemerhatian."],
+  ["membuat kesimpulan", "keputusan", "Kesimpulan dibuat berdasarkan keputusan."],
+  ["berkomunikasi", "menyampaikan maklumat", "Berkomunikasi ialah menyampaikan maklumat dengan jelas."],
+];
+
+const kemahiranSaintifikQuestions = [
+  ...observeItems.map(([tool, answer, explanation]) =>
+    fill(tool, answer, "Fikirkan kemahiran memerhati.", explanation)
+  ),
+  ...classifyItems.map(([group, answer, explanation]) =>
+    fill(`Contoh bagi kumpulan ${group} ialah ________.`, answer, "Fikirkan ciri yang sama.", explanation)
+  ),
+  ...measureItems.map(([tool, answer, explanation]) =>
+    fill(`${tool[0].toUpperCase() + tool.slice(1)} digunakan untuk mengukur ________.`, answer, "Padankan alat dengan perkara yang diukur.", explanation)
+  ),
+  ...recordItems.map(([method, answer, explanation]) =>
+    fill(method, answer, "Fikirkan cara merekod maklumat.", explanation)
+  ),
+  ...investigationItems.map(([skill, answer, explanation]) =>
+    fill(`${skill[0].toUpperCase() + skill.slice(1)} berkaitan dengan ________.`, answer, "Fikirkan langkah penyiasatan saintifik.", explanation)
+  ),
+];
+
 export const sainsSubject = {
-  "id": "sains",
-  "title": "Sains Tahun 2",
-  "short": "Sains",
-  "icon": "🔬",
-  "color": "orange",
-  "topics": [
+  id: "sains",
+  title: "Sains Tahun 2",
+  short: "Sains",
+  icon: "🔬",
+  color: "orange",
+  topics: [
     {
-      "id": "haiwan",
-      "title": "Haiwan",
-      "note": "Ciri dan keperluan haiwan.",
-      "questions": [
-        {
-          "id": "SAINS-HAIWAN-001",
-          "q": "Sains 1 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-002",
-          "q": "Sains 2 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-003",
-          "q": "Sains 3 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-004",
-          "q": "Sains 4 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-005",
-          "q": "Sains 5 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-006",
-          "q": "Sains 6 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-007",
-          "q": "Sains 7 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-008",
-          "q": "Sains 8 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-009",
-          "q": "Sains 9 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-010",
-          "q": "Sains 10 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-011",
-          "q": "Sains 11 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-012",
-          "q": "Sains 12 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-013",
-          "q": "Sains 13 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-014",
-          "q": "Sains 14 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-015",
-          "q": "Sains 15 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-016",
-          "q": "Sains 16 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-017",
-          "q": "Sains 17 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-018",
-          "q": "Sains 18 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-019",
-          "q": "Sains 19 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-020",
-          "q": "Sains 20 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-021",
-          "q": "Sains 21 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-022",
-          "q": "Sains 22 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-023",
-          "q": "Sains 23 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-024",
-          "q": "Sains 24 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-025",
-          "q": "Sains 25 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-026",
-          "q": "Sains 26 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-027",
-          "q": "Sains 27 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-028",
-          "q": "Sains 28 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-029",
-          "q": "Sains 29 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-030",
-          "q": "Sains 30 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-031",
-          "q": "Sains 31 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-032",
-          "q": "Sains 32 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-033",
-          "q": "Sains 33 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-034",
-          "q": "Sains 34 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-035",
-          "q": "Sains 35 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-036",
-          "q": "Sains 36 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-037",
-          "q": "Sains 37 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-038",
-          "q": "Sains 38 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-039",
-          "q": "Sains 39 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-040",
-          "q": "Sains 40 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-041",
-          "q": "Sains 41 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-042",
-          "q": "Sains 42 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-043",
-          "q": "Sains 43 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-044",
-          "q": "Sains 44 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-045",
-          "q": "Sains 45 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-046",
-          "q": "Sains 46 (Haiwan): Kucing mempunyai ________ kaki.",
-          "answer": "empat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah empat.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-047",
-          "q": "Sains 47 (Haiwan): Ikan hidup di dalam ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-048",
-          "q": "Sains 48 (Haiwan): Burung boleh ________.",
-          "answer": "terbang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah terbang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-049",
-          "q": "Sains 49 (Haiwan): Haiwan memerlukan makanan dan ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-HAIWAN-050",
-          "q": "Sains 50 (Haiwan): Anak haiwan akan ________.",
-          "answer": "membesar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah membesar.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "haiwan",
+      title: "Haiwan",
+      note: "Ciri, keperluan, pergerakan dan pembiakan haiwan.",
+      questions: makeQuestions("HAIWAN", haiwanQuestions),
     },
     {
-      "id": "tumbuhan",
-      "title": "Tumbuhan",
-      "note": "Bahagian dan keperluan tumbuhan.",
-      "questions": [
-        {
-          "id": "SAINS-TUMBUHAN-001",
-          "q": "Sains 1 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-002",
-          "q": "Sains 2 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-003",
-          "q": "Sains 3 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-004",
-          "q": "Sains 4 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-005",
-          "q": "Sains 5 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-006",
-          "q": "Sains 6 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-007",
-          "q": "Sains 7 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-008",
-          "q": "Sains 8 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-009",
-          "q": "Sains 9 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-010",
-          "q": "Sains 10 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-011",
-          "q": "Sains 11 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-012",
-          "q": "Sains 12 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-013",
-          "q": "Sains 13 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-014",
-          "q": "Sains 14 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-015",
-          "q": "Sains 15 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-016",
-          "q": "Sains 16 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-017",
-          "q": "Sains 17 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-018",
-          "q": "Sains 18 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-019",
-          "q": "Sains 19 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-020",
-          "q": "Sains 20 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-021",
-          "q": "Sains 21 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-022",
-          "q": "Sains 22 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-023",
-          "q": "Sains 23 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-024",
-          "q": "Sains 24 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-025",
-          "q": "Sains 25 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-026",
-          "q": "Sains 26 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-027",
-          "q": "Sains 27 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-028",
-          "q": "Sains 28 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-029",
-          "q": "Sains 29 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-030",
-          "q": "Sains 30 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-031",
-          "q": "Sains 31 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-032",
-          "q": "Sains 32 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-033",
-          "q": "Sains 33 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-034",
-          "q": "Sains 34 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-035",
-          "q": "Sains 35 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-036",
-          "q": "Sains 36 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-037",
-          "q": "Sains 37 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-038",
-          "q": "Sains 38 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-039",
-          "q": "Sains 39 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-040",
-          "q": "Sains 40 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-041",
-          "q": "Sains 41 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-042",
-          "q": "Sains 42 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-043",
-          "q": "Sains 43 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-044",
-          "q": "Sains 44 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-045",
-          "q": "Sains 45 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-046",
-          "q": "Sains 46 (Tumbuhan): Akar menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-047",
-          "q": "Sains 47 (Tumbuhan): Daun biasanya berwarna ________.",
-          "answer": "hijau",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hijau.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-048",
-          "q": "Sains 48 (Tumbuhan): Tumbuhan memerlukan cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-049",
-          "q": "Sains 49 (Tumbuhan): Batang menyokong ________.",
-          "answer": "tumbuhan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tumbuhan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TUMBUHAN-050",
-          "q": "Sains 50 (Tumbuhan): Bunga boleh menjadi ________.",
-          "answer": "buah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah buah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "tumbuhan",
+      title: "Tumbuhan",
+      note: "Bahagian, keperluan, pertumbuhan dan penjagaan tumbuhan.",
+      questions: makeQuestions("TUMBUHAN", tumbuhanQuestions),
     },
     {
-      "id": "manusia",
-      "title": "Manusia",
-      "note": "Anggota badan dan deria.",
-      "questions": [
-        {
-          "id": "SAINS-MANUSIA-001",
-          "q": "Sains 1 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-002",
-          "q": "Sains 2 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-003",
-          "q": "Sains 3 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-004",
-          "q": "Sains 4 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-005",
-          "q": "Sains 5 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-006",
-          "q": "Sains 6 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-007",
-          "q": "Sains 7 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-008",
-          "q": "Sains 8 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-009",
-          "q": "Sains 9 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-010",
-          "q": "Sains 10 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-011",
-          "q": "Sains 11 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-012",
-          "q": "Sains 12 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-013",
-          "q": "Sains 13 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-014",
-          "q": "Sains 14 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-015",
-          "q": "Sains 15 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-016",
-          "q": "Sains 16 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-017",
-          "q": "Sains 17 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-018",
-          "q": "Sains 18 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-019",
-          "q": "Sains 19 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-020",
-          "q": "Sains 20 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-021",
-          "q": "Sains 21 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-022",
-          "q": "Sains 22 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-023",
-          "q": "Sains 23 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-024",
-          "q": "Sains 24 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-025",
-          "q": "Sains 25 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-026",
-          "q": "Sains 26 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-027",
-          "q": "Sains 27 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-028",
-          "q": "Sains 28 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-029",
-          "q": "Sains 29 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-030",
-          "q": "Sains 30 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-031",
-          "q": "Sains 31 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-032",
-          "q": "Sains 32 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-033",
-          "q": "Sains 33 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-034",
-          "q": "Sains 34 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-035",
-          "q": "Sains 35 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-036",
-          "q": "Sains 36 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-037",
-          "q": "Sains 37 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-038",
-          "q": "Sains 38 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-039",
-          "q": "Sains 39 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-040",
-          "q": "Sains 40 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-041",
-          "q": "Sains 41 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-042",
-          "q": "Sains 42 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-043",
-          "q": "Sains 43 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-044",
-          "q": "Sains 44 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-045",
-          "q": "Sains 45 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-046",
-          "q": "Sains 46 (Manusia): Kita melihat menggunakan ________.",
-          "answer": "mata",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mata.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-047",
-          "q": "Sains 47 (Manusia): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-048",
-          "q": "Sains 48 (Manusia): Kita menghidu menggunakan ________.",
-          "answer": "hidung",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah hidung.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-049",
-          "q": "Sains 49 (Manusia): Kita merasa menggunakan ________.",
-          "answer": "lidah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lidah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-MANUSIA-050",
-          "q": "Sains 50 (Manusia): Kita menyentuh menggunakan ________.",
-          "answer": "kulit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah kulit.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "manusia",
+      title: "Manusia",
+      note: "Deria, anggota badan, tumbesaran, kesihatan dan keselamatan.",
+      questions: makeQuestions("MANUSIA", manusiaQuestions),
     },
     {
-      "id": "air",
-      "title": "Air",
-      "note": "Sifat dan kegunaan air.",
-      "questions": [
-        {
-          "id": "SAINS-AIR-001",
-          "q": "Sains 1 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-002",
-          "q": "Sains 2 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-003",
-          "q": "Sains 3 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-004",
-          "q": "Sains 4 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-005",
-          "q": "Sains 5 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-006",
-          "q": "Sains 6 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-007",
-          "q": "Sains 7 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-008",
-          "q": "Sains 8 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-009",
-          "q": "Sains 9 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-010",
-          "q": "Sains 10 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-011",
-          "q": "Sains 11 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-012",
-          "q": "Sains 12 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-013",
-          "q": "Sains 13 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-014",
-          "q": "Sains 14 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-015",
-          "q": "Sains 15 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-016",
-          "q": "Sains 16 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-017",
-          "q": "Sains 17 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-018",
-          "q": "Sains 18 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-019",
-          "q": "Sains 19 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-020",
-          "q": "Sains 20 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-021",
-          "q": "Sains 21 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-022",
-          "q": "Sains 22 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-023",
-          "q": "Sains 23 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-024",
-          "q": "Sains 24 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-025",
-          "q": "Sains 25 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-026",
-          "q": "Sains 26 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-027",
-          "q": "Sains 27 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-028",
-          "q": "Sains 28 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-029",
-          "q": "Sains 29 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-030",
-          "q": "Sains 30 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-031",
-          "q": "Sains 31 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-032",
-          "q": "Sains 32 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-033",
-          "q": "Sains 33 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-034",
-          "q": "Sains 34 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-035",
-          "q": "Sains 35 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-036",
-          "q": "Sains 36 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-037",
-          "q": "Sains 37 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-038",
-          "q": "Sains 38 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-039",
-          "q": "Sains 39 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-040",
-          "q": "Sains 40 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-041",
-          "q": "Sains 41 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-042",
-          "q": "Sains 42 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-043",
-          "q": "Sains 43 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-044",
-          "q": "Sains 44 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-045",
-          "q": "Sains 45 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-046",
-          "q": "Sains 46 (Air): Air digunakan untuk ________.",
-          "answer": "minum",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah minum.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-047",
-          "q": "Sains 47 (Air): Air menjadi ais apabila ________.",
-          "answer": "disejukkan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah disejukkan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-048",
-          "q": "Sains 48 (Air): Air mengalir ke tempat ________.",
-          "answer": "rendah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah rendah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-049",
-          "q": "Sains 49 (Air): Air laut berasa ________.",
-          "answer": "masin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah masin.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-AIR-050",
-          "q": "Sains 50 (Air): Air digunakan untuk mencuci ________.",
-          "answer": "tangan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tangan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "air",
+      title: "Air",
+      note: "Sifat, sumber, kegunaan, penjimatan dan keselamatan air.",
+      questions: makeQuestions("AIR", airQuestions),
     },
     {
-      "id": "cahaya",
-      "title": "Cahaya",
-      "note": "Sumber dan kegunaan cahaya.",
-      "questions": [
-        {
-          "id": "SAINS-CAHAYA-001",
-          "q": "Sains 1 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-002",
-          "q": "Sains 2 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-003",
-          "q": "Sains 3 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-004",
-          "q": "Sains 4 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-005",
-          "q": "Sains 5 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-006",
-          "q": "Sains 6 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-007",
-          "q": "Sains 7 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-008",
-          "q": "Sains 8 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-009",
-          "q": "Sains 9 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-010",
-          "q": "Sains 10 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-011",
-          "q": "Sains 11 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-012",
-          "q": "Sains 12 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-013",
-          "q": "Sains 13 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-014",
-          "q": "Sains 14 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-015",
-          "q": "Sains 15 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-016",
-          "q": "Sains 16 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-017",
-          "q": "Sains 17 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-018",
-          "q": "Sains 18 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-019",
-          "q": "Sains 19 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-020",
-          "q": "Sains 20 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-021",
-          "q": "Sains 21 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-022",
-          "q": "Sains 22 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-023",
-          "q": "Sains 23 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-024",
-          "q": "Sains 24 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-025",
-          "q": "Sains 25 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-026",
-          "q": "Sains 26 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-027",
-          "q": "Sains 27 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-028",
-          "q": "Sains 28 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-029",
-          "q": "Sains 29 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-030",
-          "q": "Sains 30 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-031",
-          "q": "Sains 31 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-032",
-          "q": "Sains 32 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-033",
-          "q": "Sains 33 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-034",
-          "q": "Sains 34 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-035",
-          "q": "Sains 35 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-036",
-          "q": "Sains 36 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-037",
-          "q": "Sains 37 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-038",
-          "q": "Sains 38 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-039",
-          "q": "Sains 39 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-040",
-          "q": "Sains 40 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-041",
-          "q": "Sains 41 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-042",
-          "q": "Sains 42 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-043",
-          "q": "Sains 43 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-044",
-          "q": "Sains 44 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-045",
-          "q": "Sains 45 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-046",
-          "q": "Sains 46 (Cahaya): Matahari ialah sumber ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-047",
-          "q": "Sains 47 (Cahaya): Kita memerlukan cahaya untuk ________.",
-          "answer": "melihat",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah melihat.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-048",
-          "q": "Sains 48 (Cahaya): Bayang-bayang terbentuk apabila cahaya ________.",
-          "answer": "dihalang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dihalang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-049",
-          "q": "Sains 49 (Cahaya): Lampu suluh menghasilkan ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-CAHAYA-050",
-          "q": "Sains 50 (Cahaya): Bilik gelap memerlukan ________.",
-          "answer": "lampu",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah lampu.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "cahaya",
+      title: "Cahaya",
+      note: "Sumber cahaya, bayang-bayang, bahan dan keselamatan cahaya.",
+      questions: makeQuestions("CAHAYA", cahayaQuestions),
     },
     {
-      "id": "bunyi",
-      "title": "Bunyi",
-      "note": "Sumber dan kekuatan bunyi.",
-      "questions": [
-        {
-          "id": "SAINS-BUNYI-001",
-          "q": "Sains 1 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-002",
-          "q": "Sains 2 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-003",
-          "q": "Sains 3 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-004",
-          "q": "Sains 4 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-005",
-          "q": "Sains 5 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-006",
-          "q": "Sains 6 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-007",
-          "q": "Sains 7 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-008",
-          "q": "Sains 8 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-009",
-          "q": "Sains 9 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-010",
-          "q": "Sains 10 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-011",
-          "q": "Sains 11 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-012",
-          "q": "Sains 12 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-013",
-          "q": "Sains 13 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-014",
-          "q": "Sains 14 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-015",
-          "q": "Sains 15 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-016",
-          "q": "Sains 16 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-017",
-          "q": "Sains 17 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-018",
-          "q": "Sains 18 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-019",
-          "q": "Sains 19 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-020",
-          "q": "Sains 20 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-021",
-          "q": "Sains 21 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-022",
-          "q": "Sains 22 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-023",
-          "q": "Sains 23 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-024",
-          "q": "Sains 24 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-025",
-          "q": "Sains 25 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-026",
-          "q": "Sains 26 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-027",
-          "q": "Sains 27 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-028",
-          "q": "Sains 28 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-029",
-          "q": "Sains 29 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-030",
-          "q": "Sains 30 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-031",
-          "q": "Sains 31 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-032",
-          "q": "Sains 32 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-033",
-          "q": "Sains 33 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-034",
-          "q": "Sains 34 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-035",
-          "q": "Sains 35 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-036",
-          "q": "Sains 36 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-037",
-          "q": "Sains 37 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-038",
-          "q": "Sains 38 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-039",
-          "q": "Sains 39 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-040",
-          "q": "Sains 40 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-041",
-          "q": "Sains 41 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-042",
-          "q": "Sains 42 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-043",
-          "q": "Sains 43 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-044",
-          "q": "Sains 44 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-045",
-          "q": "Sains 45 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-046",
-          "q": "Sains 46 (Bunyi): Kita mendengar menggunakan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-047",
-          "q": "Sains 47 (Bunyi): Loceng menghasilkan ________.",
-          "answer": "bunyi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah bunyi.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-048",
-          "q": "Sains 48 (Bunyi): Bunyi kuat boleh menyakitkan ________.",
-          "answer": "telinga",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah telinga.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-049",
-          "q": "Sains 49 (Bunyi): Gitar berbunyi apabila tali ________.",
-          "answer": "dipetik",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah dipetik.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUNYI-050",
-          "q": "Sains 50 (Bunyi): Kita tidak patut ________ terlalu kuat.",
-          "answer": "menjerit",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah menjerit.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "bunyi",
+      title: "Bunyi",
+      note: "Sumber bunyi, getaran, kekuatan bunyi dan pendengaran.",
+      questions: makeQuestions("BUNYI", bunyiQuestions),
     },
     {
-      "id": "bumi",
-      "title": "Bumi",
-      "note": "Bumi, cuaca dan alam sekitar.",
-      "questions": [
-        {
-          "id": "SAINS-BUMI-001",
-          "q": "Sains 1 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-002",
-          "q": "Sains 2 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-003",
-          "q": "Sains 3 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-004",
-          "q": "Sains 4 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-005",
-          "q": "Sains 5 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-006",
-          "q": "Sains 6 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-007",
-          "q": "Sains 7 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-008",
-          "q": "Sains 8 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-009",
-          "q": "Sains 9 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-010",
-          "q": "Sains 10 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-011",
-          "q": "Sains 11 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-012",
-          "q": "Sains 12 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-013",
-          "q": "Sains 13 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-014",
-          "q": "Sains 14 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-015",
-          "q": "Sains 15 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-016",
-          "q": "Sains 16 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-017",
-          "q": "Sains 17 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-018",
-          "q": "Sains 18 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-019",
-          "q": "Sains 19 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-020",
-          "q": "Sains 20 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-021",
-          "q": "Sains 21 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-022",
-          "q": "Sains 22 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-023",
-          "q": "Sains 23 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-024",
-          "q": "Sains 24 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-025",
-          "q": "Sains 25 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-026",
-          "q": "Sains 26 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-027",
-          "q": "Sains 27 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-028",
-          "q": "Sains 28 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-029",
-          "q": "Sains 29 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-030",
-          "q": "Sains 30 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-031",
-          "q": "Sains 31 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-032",
-          "q": "Sains 32 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-033",
-          "q": "Sains 33 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-034",
-          "q": "Sains 34 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-035",
-          "q": "Sains 35 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-036",
-          "q": "Sains 36 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-037",
-          "q": "Sains 37 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-038",
-          "q": "Sains 38 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-039",
-          "q": "Sains 39 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-040",
-          "q": "Sains 40 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-041",
-          "q": "Sains 41 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-042",
-          "q": "Sains 42 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-043",
-          "q": "Sains 43 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-044",
-          "q": "Sains 44 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-045",
-          "q": "Sains 45 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-046",
-          "q": "Sains 46 (Bumi): Kita tinggal di planet ________.",
-          "answer": "Bumi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah Bumi.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-047",
-          "q": "Sains 47 (Bumi): Hujan turun daripada ________.",
-          "answer": "awan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah awan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-048",
-          "q": "Sains 48 (Bumi): Cuaca panas ada cahaya ________.",
-          "answer": "matahari",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah matahari.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-049",
-          "q": "Sains 49 (Bumi): Sampah perlu dibuang ke dalam ________.",
-          "answer": "tong sampah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah tong sampah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BUMI-050",
-          "q": "Sains 50 (Bumi): Pokok membantu udara lebih ________.",
-          "answer": "segar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah segar.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "bumi",
+      title: "Bumi",
+      note: "Permukaan Bumi, cuaca, bahan semula jadi dan alam sekitar.",
+      questions: makeQuestions("BUMI", bumiQuestions),
     },
     {
-      "id": "bahan",
-      "title": "Bahan",
-      "note": "Ciri bahan di sekeliling kita.",
-      "questions": [
-        {
-          "id": "SAINS-BAHAN-001",
-          "q": "Sains 1 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-002",
-          "q": "Sains 2 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-003",
-          "q": "Sains 3 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-004",
-          "q": "Sains 4 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-005",
-          "q": "Sains 5 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-006",
-          "q": "Sains 6 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-007",
-          "q": "Sains 7 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-008",
-          "q": "Sains 8 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-009",
-          "q": "Sains 9 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-010",
-          "q": "Sains 10 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-011",
-          "q": "Sains 11 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-012",
-          "q": "Sains 12 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-013",
-          "q": "Sains 13 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-014",
-          "q": "Sains 14 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-015",
-          "q": "Sains 15 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-016",
-          "q": "Sains 16 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-017",
-          "q": "Sains 17 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-018",
-          "q": "Sains 18 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-019",
-          "q": "Sains 19 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-020",
-          "q": "Sains 20 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-021",
-          "q": "Sains 21 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-022",
-          "q": "Sains 22 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-023",
-          "q": "Sains 23 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-024",
-          "q": "Sains 24 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-025",
-          "q": "Sains 25 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-026",
-          "q": "Sains 26 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-027",
-          "q": "Sains 27 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-028",
-          "q": "Sains 28 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-029",
-          "q": "Sains 29 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-030",
-          "q": "Sains 30 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-031",
-          "q": "Sains 31 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-032",
-          "q": "Sains 32 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-033",
-          "q": "Sains 33 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-034",
-          "q": "Sains 34 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-035",
-          "q": "Sains 35 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-036",
-          "q": "Sains 36 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-037",
-          "q": "Sains 37 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-038",
-          "q": "Sains 38 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-039",
-          "q": "Sains 39 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-040",
-          "q": "Sains 40 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-041",
-          "q": "Sains 41 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-042",
-          "q": "Sains 42 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-043",
-          "q": "Sains 43 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-044",
-          "q": "Sains 44 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-045",
-          "q": "Sains 45 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-046",
-          "q": "Sains 46 (Bahan): Kertas mudah ________.",
-          "answer": "koyak",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah koyak.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-047",
-          "q": "Sains 47 (Bahan): Besi lebih ________ daripada kertas.",
-          "answer": "keras",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah keras.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-048",
-          "q": "Sains 48 (Bahan): Kaca mudah ________.",
-          "answer": "pecah",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah pecah.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-049",
-          "q": "Sains 49 (Bahan): Span menyerap ________.",
-          "answer": "air",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah air.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-BAHAN-050",
-          "q": "Sains 50 (Bahan): Kayu boleh dibuat ________.",
-          "answer": "meja",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meja.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "bahan",
+      title: "Bahan",
+      note: "Jenis bahan, sifat bahan, kegunaan dan perubahan bahan.",
+      questions: makeQuestions("BAHAN", bahanQuestions),
     },
     {
-      "id": "teknologi",
-      "title": "Teknologi",
-      "note": "Alat teknologi di rumah dan sekolah.",
-      "questions": [
-        {
-          "id": "SAINS-TEKNOLOGI-001",
-          "q": "Sains 1 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-002",
-          "q": "Sains 2 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-003",
-          "q": "Sains 3 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-004",
-          "q": "Sains 4 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-005",
-          "q": "Sains 5 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-006",
-          "q": "Sains 6 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-007",
-          "q": "Sains 7 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-008",
-          "q": "Sains 8 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-009",
-          "q": "Sains 9 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-010",
-          "q": "Sains 10 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-011",
-          "q": "Sains 11 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-012",
-          "q": "Sains 12 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-013",
-          "q": "Sains 13 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-014",
-          "q": "Sains 14 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-015",
-          "q": "Sains 15 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-016",
-          "q": "Sains 16 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-017",
-          "q": "Sains 17 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-018",
-          "q": "Sains 18 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-019",
-          "q": "Sains 19 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-020",
-          "q": "Sains 20 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-021",
-          "q": "Sains 21 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-022",
-          "q": "Sains 22 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-023",
-          "q": "Sains 23 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-024",
-          "q": "Sains 24 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-025",
-          "q": "Sains 25 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-026",
-          "q": "Sains 26 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-027",
-          "q": "Sains 27 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-028",
-          "q": "Sains 28 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-029",
-          "q": "Sains 29 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-030",
-          "q": "Sains 30 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-031",
-          "q": "Sains 31 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-032",
-          "q": "Sains 32 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-033",
-          "q": "Sains 33 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-034",
-          "q": "Sains 34 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-035",
-          "q": "Sains 35 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-036",
-          "q": "Sains 36 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-037",
-          "q": "Sains 37 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-038",
-          "q": "Sains 38 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-039",
-          "q": "Sains 39 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-040",
-          "q": "Sains 40 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-041",
-          "q": "Sains 41 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-042",
-          "q": "Sains 42 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-043",
-          "q": "Sains 43 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-044",
-          "q": "Sains 44 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-045",
-          "q": "Sains 45 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-046",
-          "q": "Sains 46 (Teknologi): Komputer digunakan untuk ________.",
-          "answer": "belajar",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah belajar.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-047",
-          "q": "Sains 47 (Teknologi): Telefon digunakan untuk ________.",
-          "answer": "berkomunikasi",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah berkomunikasi.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-048",
-          "q": "Sains 48 (Teknologi): Kipas menghasilkan ________.",
-          "answer": "angin",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah angin.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-049",
-          "q": "Sains 49 (Teknologi): Lampu memberi ________.",
-          "answer": "cahaya",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah cahaya.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-TEKNOLOGI-050",
-          "q": "Sains 50 (Teknologi): Peti sejuk menyejukkan ________.",
-          "answer": "makanan",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah makanan.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
+      id: "teknologi",
+      title: "Teknologi",
+      note: "Alat, fungsi, keselamatan, mesin ringkas dan reka bentuk.",
+      questions: makeQuestions("TEKNOLOGI", teknologiQuestions),
     },
     {
-      "id": "kemahiran_saintifik",
-      "title": "Kemahiran Saintifik",
-      "note": "Memerhati, mengelas dan meramal.",
-      "questions": [
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-001",
-          "q": "Sains 1 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-002",
-          "q": "Sains 2 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-003",
-          "q": "Sains 3 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-004",
-          "q": "Sains 4 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-005",
-          "q": "Sains 5 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-006",
-          "q": "Sains 6 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-007",
-          "q": "Sains 7 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-008",
-          "q": "Sains 8 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-009",
-          "q": "Sains 9 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-010",
-          "q": "Sains 10 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-011",
-          "q": "Sains 11 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-012",
-          "q": "Sains 12 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-013",
-          "q": "Sains 13 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-014",
-          "q": "Sains 14 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-015",
-          "q": "Sains 15 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-016",
-          "q": "Sains 16 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-017",
-          "q": "Sains 17 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-018",
-          "q": "Sains 18 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-019",
-          "q": "Sains 19 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-020",
-          "q": "Sains 20 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-021",
-          "q": "Sains 21 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-022",
-          "q": "Sains 22 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-023",
-          "q": "Sains 23 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-024",
-          "q": "Sains 24 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-025",
-          "q": "Sains 25 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-026",
-          "q": "Sains 26 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-027",
-          "q": "Sains 27 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "mudah",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-028",
-          "q": "Sains 28 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-029",
-          "q": "Sains 29 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-030",
-          "q": "Sains 30 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-031",
-          "q": "Sains 31 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-032",
-          "q": "Sains 32 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-033",
-          "q": "Sains 33 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-034",
-          "q": "Sains 34 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-035",
-          "q": "Sains 35 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-036",
-          "q": "Sains 36 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-037",
-          "q": "Sains 37 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-038",
-          "q": "Sains 38 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-039",
-          "q": "Sains 39 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-040",
-          "q": "Sains 40 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-041",
-          "q": "Sains 41 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-042",
-          "q": "Sains 42 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "sederhana",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-043",
-          "q": "Sains 43 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-044",
-          "q": "Sains 44 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-045",
-          "q": "Sains 45 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-046",
-          "q": "Sains 46 (Kemahiran Saintifik): Menggunakan mata untuk melihat disebut ________.",
-          "answer": "memerhati",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah memerhati.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-047",
-          "q": "Sains 47 (Kemahiran Saintifik): Mengumpulkan benda mengikut ciri disebut ________.",
-          "answer": "mengelas",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah mengelas.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-048",
-          "q": "Sains 48 (Kemahiran Saintifik): Meneka berdasarkan pemerhatian disebut ________.",
-          "answer": "meramal",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah meramal.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-049",
-          "q": "Sains 49 (Kemahiran Saintifik): Keputusan boleh dicatat dalam ________.",
-          "answer": "jadual",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah jadual.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        },
-        {
-          "id": "SAINS-KEMAHIRAN_SAINTIFIK-050",
-          "q": "Sains 50 (Kemahiran Saintifik): Pembaris mengukur ________.",
-          "answer": "panjang",
-          "accepted": [],
-          "hint": "Fikirkan konsep Sains Tahun 2.",
-          "explanation": "Jawapan yang sesuai ialah panjang.",
-          "difficulty": "sukar",
-          "uasa": "Sains",
-          "dskp": "KSSR"
-        }
-      ]
-    }
-  ]
+      id: "kemahiran_saintifik",
+      title: "Kemahiran Saintifik",
+      note: "Memerhati, mengelas, mengukur, merekod dan menjalankan penyiasatan.",
+      questions: makeQuestions("KEMAHIRAN_SAINTIFIK", kemahiranSaintifikQuestions),
+    },
+  ],
 };
 
 export default sainsSubject;
