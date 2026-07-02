@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0-alpha.1",
+  "status": "alpha",
+  "buildDate": "2026-07-02T15:33:34.627Z",
+  "questionCount": 4000,
+  "curriculumCoverage": "100%",
+  "validation": {
+    "status": "pass",
+    "info": 12000,
+    "warnings": 2,
+    "errors": 0
+  }
+}

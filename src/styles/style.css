@@ -1186,6 +1186,234 @@ button:active {
   z-index: 1;
 }
 
+.smart-lesson-card {
+  border-color: rgba(14,167,90,.36) !important;
+  background: linear-gradient(135deg, #ffffff, #eafff0 62%, #fff8d8) !important;
+}
+
+.smart-lesson-card h2 {
+  color: #075f34;
+}
+
+.smart-lesson-card button {
+  margin-top: 4px;
+}
+
+.journey-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.journey-steps div {
+  background: #ffffff;
+  border: 1px solid rgba(8,122,59,.12);
+  border-radius: 18px;
+  padding: 13px;
+}
+
+.journey-steps span,
+.journey-steps small {
+  display: block;
+  color: #5b6b62;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.journey-steps b {
+  display: block;
+  color: #075f34;
+  margin: 4px 0;
+}
+
+.dependency-arrow {
+  color: #5b6b62;
+  font-size: 12px;
+  font-weight: 900;
+  margin: 0 0 7px 84px;
+  text-align: left;
+}
+
+.reading-coach-page textarea,
+.speaking-coach-page textarea,
+.writing-coach-page textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 14px;
+  border: 1px solid #ccd3cf;
+  border-radius: 16px;
+  font: inherit;
+  resize: vertical;
+}
+
+.reading-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.reading-target {
+  background: #f8fff8;
+  border: 1px solid rgba(8,122,59,.14);
+  border-radius: 18px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.5;
+  padding: 18px;
+}
+
+.reading-target.rtl {
+  direction: rtl;
+  text-align: right;
+  font-size: 28px;
+}
+
+.reading-result h2 {
+  font-size: 48px;
+  margin: 0;
+}
+
+.reading-word-check {
+  align-items: center;
+}
+
+.listening-progress-card {
+  background: linear-gradient(135deg, #ffffff, #eef7ff 62%, #eafff0) !important;
+}
+
+.speaking-progress-card {
+  background: linear-gradient(135deg, #ffffff, #fff7d6 58%, #eef7ff) !important;
+}
+
+.writing-progress-card {
+  background: linear-gradient(135deg, #ffffff, #f8fff8 58%, #fff7d6) !important;
+}
+
+.curriculum-coverage-card {
+  background: linear-gradient(135deg, #ffffff, #eef7ff 58%, #fff8d8) !important;
+}
+
+.speaking-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.writing-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.listening-lab-page audio {
+  width: 100%;
+  margin: 10px 0 12px;
+}
+
+.listening-options,
+.listening-arrange {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.listening-arrange {
+  min-height: 58px;
+  padding: 10px;
+  border: 1px dashed rgba(8,122,59,.28);
+  border-radius: 18px;
+  background: #f8fff8;
+}
+
+.mastery-summary-card {
+  background: linear-gradient(135deg, #ffffff, #f8fff8) !important;
+}
+
+.mastery-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mastery-summary-grid div {
+  background: #ffffff;
+  border: 1px solid rgba(8,122,59,.12);
+  border-radius: 18px;
+  padding: 14px;
+  text-align: center;
+}
+
+.mastery-summary-grid b {
+  display: block;
+  color: #087a3b;
+  font-size: 26px;
+}
+
+.mastery-summary-grid span {
+  color: #5b6b62;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mastery-not-started {
+  background: linear-gradient(135deg, #f3f4f6, #ffffff) !important;
+  border-color: rgba(107,114,128,.25) !important;
+}
+
+.mastery-learning {
+  background: linear-gradient(135deg, #eef7ff, #ffffff) !important;
+  border-color: rgba(37,99,235,.26) !important;
+}
+
+.mastery-learning .path-icon,
+.path-status.learning {
+  color: #1d4ed8;
+}
+
+.mastery-needs-practice {
+  background: linear-gradient(135deg, #fff7d6, #ffffff) !important;
+  border-color: rgba(244,197,66,.8) !important;
+}
+
+.mastery-needs-practice .path-icon,
+.path-status.needs-practice {
+  color: #8a5d00;
+}
+
+.mastery-mastered {
+  background: linear-gradient(135deg, #eafff0, #ffffff) !important;
+  border-color: rgba(14,167,90,.55) !important;
+}
+
+.mastery-mastered .path-icon,
+.path-status.mastered {
+  color: #087a3b;
+}
+
+.path-status.not-started {
+  background: #eef2ee;
+  color: #5b6160;
+}
+
+.path-status.learning {
+  background: #eef7ff;
+}
+
+.path-status.needs-practice {
+  background: #fff7d6;
+}
+
+.path-status.mastered {
+  background: #eafff0;
+}
+
 .recommend-meta {
   display: flex;
   gap: 8px;

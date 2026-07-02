@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    name: Build and validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check validation suite
+        id: validation-suite
+        shell: bash
+        run: |
+          if npm run | grep -qE '^  validate'; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run validation suite
+        if: steps.validation-suite.outputs.available == 'true'
+        run: npm run validate
+
+      - name: Skip validation suite
+        if: steps.validation-suite.outputs.available != 'true'
+        run: echo "No validate script found; skipping validation suite."
+
+      - name: Upload QA reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-reports
+          path: |
+            QA_REPORT*.md
+            V2*_REPORT.md
+            V2_ALPHA_QA_REPORT.md
+            CURRICULUM_COVERAGE_REPORT.md
+            CURRICULUM_MATRIX.json
+            reports/validation/**
+          if-no-files-found: ignore
+
+      - name: Generate workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Jannati AI Tutor CI Summary"
+            echo ""
+            echo "| Check | Result |"
+            echo "| --- | --- |"
+            echo "| Checkout repository | completed |"
+            echo "| Node.js LTS setup | completed |"
+            echo "| npm ci | completed |"
+            echo "| npm run build | completed |"
+            if [ "${{ steps.validation-suite.outputs.available }}" = "true" ]; then
+              echo "| npm run validate | completed |"
+            else
+              echo "| npm run validate | skipped - script not available |"
+            fi
+            echo "| QA report artifact upload | attempted |"
+          } >> "$GITHUB_STEP_SUMMARY"

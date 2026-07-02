@@ -1,0 +1,23 @@
+{
+  "validator": "storage",
+  "generatedAt": "2026-07-02T15:33:32.934Z",
+  "status": "pass",
+  "totals": {
+    "infos": 0,
+    "errors": 0,
+    "warnings": 0,
+    "migrationKeys": 9
+  },
+  "checked": [
+    "AI Memory",
+    "Mastery",
+    "Reading",
+    "Listening",
+    "Speaking",
+    "Writing",
+    "Curriculum Coverage",
+    "Migration keys",
+    "Corrupted localStorage structures"
+  ],
+  "issues": []
+}

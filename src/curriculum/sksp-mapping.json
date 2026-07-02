@@ -1,0 +1,67 @@
+{
+  "version": "2.0.0-sprint12",
+  "status": "explicit_topic_mapping_unverified",
+  "note": "Sprint 12 starts explicit topic-level SK/SP mapping for BM, Math, English, and Sains. These mappings replace fallback inference for mapped topics, but are not marked as verified DSKP completion until reviewed against official DSKP documents.",
+  "subjects": {
+    "bm": {
+      "status": "mapped_unverified",
+      "topics": {
+        "kata_nama_am": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.1", "strand": "Tatabahasa - Kata Nama Am", "verified": false },
+        "kata_nama_khas": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.2", "strand": "Tatabahasa - Kata Nama Khas", "verified": false },
+        "kata_ganti_nama": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.3", "strand": "Tatabahasa - Kata Ganti Nama", "verified": false },
+        "kata_kerja": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.4", "strand": "Tatabahasa - Kata Kerja", "verified": false },
+        "kata_adjektif": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.5", "strand": "Tatabahasa - Kata Adjektif", "verified": false },
+        "kata_sendi": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.6", "strand": "Tatabahasa - Kata Sendi Nama", "verified": false },
+        "kata_hubung": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.7", "strand": "Tatabahasa - Kata Hubung", "verified": false },
+        "penjodoh_bilangan": { "SK": "BM.SK.5.1", "SP": "BM.SP.5.1.8", "strand": "Tatabahasa - Penjodoh Bilangan", "verified": false },
+        "ayat": { "SK": "BM.SK.5.3", "SP": "BM.SP.5.3.1", "strand": "Sintaksis - Jenis Ayat", "verified": false },
+        "pemahaman_penulisan": { "SK": "BM.SK.2.1", "SP": "BM.SP.2.1.1", "strand": "Pemahaman dan Penulisan", "verified": false }
+      }
+    },
+    "math": {
+      "status": "mapped_unverified",
+      "topics": {
+        "nombor": { "SK": "MATH.SK.1.1", "SP": "MATH.SP.1.1.1", "strand": "Nombor Hingga 1000", "verified": false },
+        "tambah": { "SK": "MATH.SK.2.1", "SP": "MATH.SP.2.1.1", "strand": "Operasi Tambah", "verified": false },
+        "tolak": { "SK": "MATH.SK.2.2", "SP": "MATH.SP.2.2.1", "strand": "Operasi Tolak", "verified": false },
+        "darab": { "SK": "MATH.SK.2.3", "SP": "MATH.SP.2.3.1", "strand": "Operasi Darab", "verified": false },
+        "bahagi": { "SK": "MATH.SK.2.4", "SP": "MATH.SP.2.4.1", "strand": "Operasi Bahagi", "verified": false },
+        "wang": { "SK": "MATH.SK.4.1", "SP": "MATH.SP.4.1.1", "strand": "Wang", "verified": false },
+        "masa": { "SK": "MATH.SK.5.1", "SP": "MATH.SP.5.1.1", "strand": "Masa dan Waktu", "verified": false },
+        "panjang": { "SK": "MATH.SK.6.1", "SP": "MATH.SP.6.1.1", "strand": "Ukuran Panjang", "verified": false },
+        "jisim_isi_padu": { "SK": "MATH.SK.6.2", "SP": "MATH.SP.6.2.1", "strand": "Jisim dan Isi Padu", "verified": false },
+        "bentuk": { "SK": "MATH.SK.7.1", "SP": "MATH.SP.7.1.1", "strand": "Ruang - Bentuk 2D dan 3D", "verified": false }
+      }
+    },
+    "english": {
+      "status": "mapped_unverified",
+      "topics": {
+        "nouns": { "SK": "ENG.SK.4.2", "SP": "ENG.SP.4.2.1", "strand": "Language Awareness - Nouns", "verified": false },
+        "verbs": { "SK": "ENG.SK.4.2", "SP": "ENG.SP.4.2.2", "strand": "Language Awareness - Verbs", "verified": false },
+        "adjectives": { "SK": "ENG.SK.4.2", "SP": "ENG.SP.4.2.3", "strand": "Language Awareness - Adjectives", "verified": false },
+        "colours": { "SK": "ENG.SK.3.2", "SP": "ENG.SP.3.2.1", "strand": "Vocabulary - Colours", "verified": false },
+        "numbers": { "SK": "ENG.SK.3.2", "SP": "ENG.SP.3.2.2", "strand": "Vocabulary - Numbers", "verified": false },
+        "animals": { "SK": "ENG.SK.3.2", "SP": "ENG.SP.3.2.3", "strand": "Vocabulary - Animals", "verified": false },
+        "food": { "SK": "ENG.SK.3.2", "SP": "ENG.SP.3.2.4", "strand": "Vocabulary - Food", "verified": false },
+        "prepositions": { "SK": "ENG.SK.4.2", "SP": "ENG.SP.4.2.4", "strand": "Language Awareness - Prepositions", "verified": false },
+        "sentences": { "SK": "ENG.SK.4.3", "SP": "ENG.SP.4.3.1", "strand": "Simple Sentence Construction", "verified": false },
+        "reading": { "SK": "ENG.SK.3.2", "SP": "ENG.SP.3.2.5", "strand": "Reading Comprehension", "verified": false }
+      }
+    },
+    "sains": {
+      "status": "mapped_unverified",
+      "topics": {
+        "haiwan": { "SK": "SAINS.SK.3.1", "SP": "SAINS.SP.3.1.1", "strand": "Sains Hayat - Haiwan", "verified": false },
+        "tumbuhan": { "SK": "SAINS.SK.4.1", "SP": "SAINS.SP.4.1.1", "strand": "Sains Hayat - Tumbuhan", "verified": false },
+        "manusia": { "SK": "SAINS.SK.2.1", "SP": "SAINS.SP.2.1.1", "strand": "Sains Hayat - Manusia", "verified": false },
+        "air": { "SK": "SAINS.SK.9.1", "SP": "SAINS.SP.9.1.1", "strand": "Sains Fizikal - Air", "verified": false },
+        "cahaya": { "SK": "SAINS.SK.6.1", "SP": "SAINS.SP.6.1.1", "strand": "Sains Fizikal - Cahaya", "verified": false },
+        "bunyi": { "SK": "SAINS.SK.7.1", "SP": "SAINS.SP.7.1.1", "strand": "Sains Fizikal - Bunyi", "verified": false },
+        "bumi": { "SK": "SAINS.SK.10.1", "SP": "SAINS.SP.10.1.1", "strand": "Bumi dan Angkasa", "verified": false },
+        "bahan": { "SK": "SAINS.SK.8.1", "SP": "SAINS.SP.8.1.1", "strand": "Sains Bahan", "verified": false },
+        "teknologi": { "SK": "SAINS.SK.12.1", "SP": "SAINS.SP.12.1.1", "strand": "Teknologi dan Kehidupan Lestari", "verified": false },
+        "kemahiran_saintifik": { "SK": "SAINS.SK.1.1", "SP": "SAINS.SP.1.1.1", "strand": "Kemahiran Saintifik", "verified": false }
+      }
+    }
+  }
+}

@@ -1,3 +1,6 @@
+import { buildMasteryMap, summarizeMastery } from './adaptive/masteryEngine';
+import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
+
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 
@@ -15,6 +18,13 @@ function emptyMemory() {
     xp: 0,
     coins: 0,
     mastery: 0,
+    topicMastery: {},
+    masterySummary: null,
+    readingHistory: [],
+    listeningHistory: [],
+    speakingHistory: [],
+    writingHistory: [],
+    curriculumCoverage: null,
     updatedAt: ''
   };
 }
@@ -62,7 +72,13 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
   const attempted = rows.filter(row => row.attempts > 0);
   const weakTopics = attempted.filter(row => row.best < 80).sort((a, b) => a.best - b.best).slice(0, 12);
   const strongTopics = attempted.filter(row => row.best >= 80).sort((a, b) => b.best - a.best).slice(0, 12);
-  const mastery = rows.length ? Math.round((strongTopics.length / rows.length) * 100) : previousMemory.mastery || 0;
+  const topicMastery = {
+    ...(previousMemory.topicMastery || {}),
+    ...buildMasteryMap(profile, subjects, previousMemory)
+  };
+  const masterySummary = summarizeMastery(topicMastery);
+  const mastery = masterySummary.total ? masterySummary.masteryScore : previousMemory.mastery || 0;
+  const curriculumCoverage = buildCurriculumCoverage(profile, subjects);
 
   return {
     ...previousMemory,
@@ -71,7 +87,10 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
     studyStreak: profile.streak || 0,
     xp: profile.xp || 0,
     coins: profile.coins || 0,
-    mastery
+    mastery,
+    topicMastery,
+    masterySummary,
+    curriculumCoverage
   };
 }
 
@@ -93,6 +112,92 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
     ...next,
     lastLesson: lesson,
     studyTime: Math.max(0, previous.studyTime || 0) + Math.max(0, studySeconds || 0)
+  });
+}
+
+function refreshMemoryBase(profile, subjects, previous) {
+  return profile ? buildAIMemory(profile, subjects || [], previous) : previous;
+}
+
+export function saveReadingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const readingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Reading Coach',
+    score: result.score || 0,
+    correct: result.correct || 0,
+    missed: result.missed || 0,
+    incorrect: result.incorrect || 0,
+    targetText: result.targetText || '',
+    transcript: result.transcript || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    readingHistory: [readingResult, ...(base.readingHistory || [])].slice(0, 20)
+  });
+}
+
+export function saveListeningMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const listeningResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Listening Lab',
+    mode: result.mode || 'choose',
+    score: result.score || 0,
+    correct: result.correct || 0,
+    total: result.total || 0,
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    listeningHistory: [listeningResult, ...(base.listeningHistory || [])].slice(0, 20)
+  });
+}
+
+export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const speakingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Speaking Coach',
+    mode: result.mode || 'intro',
+    score: result.score || 0,
+    matchedKeywords: result.matchedKeywords || 0,
+    totalKeywords: result.totalKeywords || 0,
+    transcript: result.transcript || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    speakingHistory: [speakingResult, ...(base.speakingHistory || [])].slice(0, 20)
+  });
+}
+
+export function saveWritingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const writingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Writing Coach',
+    mode: result.mode || 'short',
+    score: result.score || 0,
+    matchedKeywords: result.matchedKeywords || 0,
+    totalKeywords: result.totalKeywords || 0,
+    spellingIssues: result.spellingIssues || 0,
+    grammarHints: result.grammarHints || [],
+    answer: result.answer || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    writingHistory: [writingResult, ...(base.writingHistory || [])].slice(0, 20)
   });
 }
 

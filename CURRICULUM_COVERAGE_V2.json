@@ -1,0 +1,434 @@
+{
+  "generatedAt": "2026-07-02T16:04:24.735Z",
+  "note": "Inferred metadata is reported separately and is not counted as explicit DSKP SK/SP completion.",
+  "totals": {
+    "subjects": 8,
+    "topics": 80,
+    "questions": 4000,
+    "difficulty": {
+      "mudah": 1600,
+      "sederhana": 1600,
+      "sukar": 800
+    }
+  },
+  "coverageSummary": {
+    "metadataCoverage": 100,
+    "learningOutcomeCoverage": 100,
+    "dskpSkCoverage": 0,
+    "dskpSpCoverage": 0,
+    "mappedSkCoverage": 50,
+    "mappedSpCoverage": 50,
+    "inferredSkCoverage": 50,
+    "inferredSpCoverage": 50,
+    "verifiedSkSpCoverage": 0,
+    "uasaReadiness": 100,
+    "readingCoverage": 38,
+    "listeningCoverage": 38,
+    "speakingCoverage": 38,
+    "writingCoverage": 38
+  },
+  "coverageBySubject": [
+    {
+      "subjectId": "bm",
+      "title": "Bahasa Melayu Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 500,
+      "mappedSP": 500,
+      "inferredSK": 0,
+      "inferredSP": 0,
+      "missingSK": 0,
+      "missingSP": 0,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 100,
+        "mappedSpCoverage": 100,
+        "inferredSkCoverage": 0,
+        "inferredSpCoverage": 0,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "math",
+      "title": "Matematik Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 500,
+      "mappedSP": 500,
+      "inferredSK": 0,
+      "inferredSP": 0,
+      "missingSK": 0,
+      "missingSP": 0,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 100,
+        "mappedSpCoverage": 100,
+        "inferredSkCoverage": 0,
+        "inferredSpCoverage": 0,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "english",
+      "title": "English Year 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 500,
+      "mappedSP": 500,
+      "inferredSK": 0,
+      "inferredSP": 0,
+      "missingSK": 0,
+      "missingSP": 0,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 100,
+        "mappedSpCoverage": 100,
+        "inferredSkCoverage": 0,
+        "inferredSpCoverage": 0,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "sains",
+      "title": "Sains Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 500,
+      "mappedSP": 500,
+      "inferredSK": 0,
+      "inferredSP": 0,
+      "missingSK": 0,
+      "missingSP": 0,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 100,
+        "mappedSpCoverage": 100,
+        "inferredSkCoverage": 0,
+        "inferredSpCoverage": 0,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "arab",
+      "title": "Bahasa Arab Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 0,
+      "mappedSP": 0,
+      "inferredSK": 500,
+      "inferredSP": 500,
+      "missingSK": 500,
+      "missingSP": 500,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 0,
+        "mappedSpCoverage": 0,
+        "inferredSkCoverage": 100,
+        "inferredSpCoverage": 100,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "islam",
+      "title": "Pendidikan Islam Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 0,
+      "mappedSP": 0,
+      "inferredSK": 500,
+      "inferredSP": 500,
+      "missingSK": 500,
+      "missingSP": 500,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 0,
+        "mappedSpCoverage": 0,
+        "inferredSkCoverage": 100,
+        "inferredSpCoverage": 100,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "pj",
+      "title": "Pendidikan Jasmani Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 0,
+      "mappedSP": 0,
+      "inferredSK": 500,
+      "inferredSP": 500,
+      "missingSK": 500,
+      "missingSP": 500,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 0,
+        "mappedSpCoverage": 0,
+        "inferredSkCoverage": 100,
+        "inferredSpCoverage": 100,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    },
+    {
+      "subjectId": "pk",
+      "title": "Pendidikan Kesihatan Tahun 2",
+      "topics": 10,
+      "questions": 500,
+      "metadataComplete": 500,
+      "learningOutcome": 500,
+      "explicitSK": 0,
+      "explicitSP": 0,
+      "mappedSK": 0,
+      "mappedSP": 0,
+      "inferredSK": 500,
+      "inferredSP": 500,
+      "missingSK": 500,
+      "missingSP": 500,
+      "verifiedSKSP": 0,
+      "uasaReady": 500,
+      "missingOutcomes": [],
+      "coverage": {
+        "metadataCoverage": 100,
+        "learningOutcomeCoverage": 100,
+        "dskpSkCoverage": 0,
+        "dskpSpCoverage": 0,
+        "mappedSkCoverage": 0,
+        "mappedSpCoverage": 0,
+        "inferredSkCoverage": 100,
+        "inferredSpCoverage": 100,
+        "verifiedSkSpCoverage": 0,
+        "uasaReadiness": 100
+      }
+    }
+  ],
+  "coverageByModule": {
+    "reading": {
+      "items": 3,
+      "subjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "coveredSubjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "missingSubjects": [
+        "math",
+        "sains",
+        "islam",
+        "pj",
+        "pk"
+      ],
+      "subjectCoverage": 38
+    },
+    "listening": {
+      "items": 3,
+      "modesPerSet": 4,
+      "subjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "coveredSubjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "missingSubjects": [
+        "math",
+        "sains",
+        "islam",
+        "pj",
+        "pk"
+      ],
+      "subjectCoverage": 38
+    },
+    "speaking": {
+      "items": 3,
+      "modesPerSet": 4,
+      "subjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "coveredSubjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "missingSubjects": [
+        "math",
+        "sains",
+        "islam",
+        "pj",
+        "pk"
+      ],
+      "subjectCoverage": 38
+    },
+    "writing": {
+      "items": 3,
+      "modesPerSet": 5,
+      "subjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "coveredSubjects": [
+        "bm",
+        "english",
+        "arab"
+      ],
+      "missingSubjects": [
+        "math",
+        "sains",
+        "islam",
+        "pj",
+        "pk"
+      ],
+      "subjectCoverage": 38
+    }
+  },
+  "coverageBySkill": {
+    "metadata": 4000,
+    "learningOutcomes": 4000,
+    "dskpSK": 0,
+    "dskpSP": 0,
+    "mappedSK": 2000,
+    "mappedSP": 2000,
+    "inferredSK": 2000,
+    "inferredSP": 2000,
+    "verifiedSKSP": 0,
+    "uasa": 4000,
+    "reading": 3,
+    "listening": 12,
+    "speaking": 12,
+    "writing": 15,
+    "percentages": {
+      "metadata": 100,
+      "learningOutcomes": 100,
+      "dskpSK": 0,
+      "dskpSP": 0,
+      "mappedSK": 50,
+      "mappedSP": 50,
+      "inferredSK": 50,
+      "inferredSP": 50,
+      "verifiedSKSP": 0,
+      "uasa": 100,
+      "readingSubjectCoverage": 38,
+      "listeningSubjectCoverage": 38,
+      "speakingSubjectCoverage": 38,
+      "writingSubjectCoverage": 38
+    }
+  },
+  "missingOutcomes": [],
+  "skspMappingStatus": {
+    "mappedSubjects": [
+      "bm",
+      "math",
+      "english",
+      "sains"
+    ],
+    "mappedSK": 2000,
+    "mappedSP": 2000,
+    "inferredSK": 2000,
+    "inferredSP": 2000,
+    "missingSK": 2000,
+    "missingSP": 2000,
+    "verifiedSKSP": 0,
+    "note": "Mapped rows are explicit mappings but are not counted as verified DSKP completion until reviewed."
+  },
+  "suggestedImprovements": [
+    "Verify the BM, Math, English, and Sains SK/SP mapping against official DSKP documents before claiming DSKP completion.",
+    "Extend explicit SK/SP mapping to Arab, Islam, PJ, and PK.",
+    "Add explicit learningOutcome fields where current coverage relies on topic notes or generic DSKP labels.",
+    "Add explicit estimatedTime fields to support more accurate lesson planning.",
+    "Expand Reading, Listening, Speaking, and Writing coverage for: math, sains, islam, pj, pk.",
+    "Map UASA readiness by paper section, cognitive level, and item type in addition to the existing UASA tag."
+  ],
+  "overallReadiness": {
+    "status": "ALPHA_READY_WITH_CURRICULUM_GAPS",
+    "blockingGaps": [
+      "mapped SK/SP not yet verified against official DSKP",
+      "language coach subject coverage below 50%"
+    ],
+    "sprint11Recommendation": "Prioritize explicit SK/SP mapping and broaden coach module subject coverage."
+  }
+}
