@@ -44,12 +44,18 @@ export function loadAIMemory() {
 
     return emptyMemory();
   } catch {
+    localStorage.removeItem(MEMORY_KEY);
+    LEGACY_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
     return emptyMemory();
   }
 }
 
 export function saveAIMemory(memory) {
-  localStorage.setItem(MEMORY_KEY, JSON.stringify({ ...emptyMemory(), ...memory, updatedAt: new Date().toISOString() }));
+  try {
+    localStorage.setItem(MEMORY_KEY, JSON.stringify({ ...emptyMemory(), ...memory, updatedAt: new Date().toISOString() }));
+  } catch {
+    localStorage.removeItem(MEMORY_KEY);
+  }
 }
 
 function buildTopicRows(profile = {}, subjects = []) {

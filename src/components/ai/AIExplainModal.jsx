@@ -1,16 +1,16 @@
 import React from 'react';
 
-export default function AIExplainModal({ open, data, question, onClose, onTryAgain, onTeach }) {
+export default function AIExplainModal({ open, data, question, onTutup, onTryAgain, onTeach }) {
   if (!open || !data) return null;
 
-  return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="AI Explain">
+  return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
     <section className="ai-explain-modal">
       <div className="ai-explain-head">
         <div>
-          <p className="eyebrow">Offline AI Explain</p>
+          <p className="eyebrow">Penerangan AI Luar Talian</p>
           <h2>🤖 Terangkan</h2>
         </div>
-        <button className="ghost" onClick={onClose}>✕</button>
+        <button className="ghost" onClick={onTutup}>✕</button>
       </div>
       <div className="explain-answer-box">
         <span>Jawapan betul</span>
@@ -21,7 +21,7 @@ export default function AIExplainModal({ open, data, question, onClose, onTryAga
         <p>{data.explanation}</p>
       </div>
       <div className="explain-section">
-        <h3>Hint</h3>
+        <h3>Petunjuk</h3>
         <p>{data.hint}</p>
       </div>
       <div className="explain-section">
@@ -30,9 +30,9 @@ export default function AIExplainModal({ open, data, question, onClose, onTryAga
       </div>
       <p className="explain-encouragement">{data.encouragement}</p>
       <div className="actions">
-        <button className="secondary" onClick={onTeach}>📖 Teach Me</button>
+        <button className="secondary" onClick={onTeach}>📖 Ajar Saya</button>
         <button onClick={onTryAgain}>Cuba Lagi</button>
-        <button className="secondary" onClick={onClose}>Tutup</button>
+        <button className="secondary" onClick={onTutup}>Tutup</button>
       </div>
     </section>
   </div>;

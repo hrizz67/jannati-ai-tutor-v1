@@ -23,6 +23,6 @@ export function recommendMissingSkSp(curriculumCoverage = {}) {
     subjectId: target.subjectId,
     SK: target.SK,
     SP: target.SP,
-    reason: `Focus ${target.SK} / ${target.SP} because coverage is ${target.coverage}% and mastery is ${target.mastery}%.`
+    reason: `Fokus ${target.SK} / ${target.SP} kerana liputan ialah ${target.coverage}% dan penguasaan ialah ${target.mastery}%.`
   };
 }
