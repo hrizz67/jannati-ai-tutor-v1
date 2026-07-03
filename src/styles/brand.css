@@ -1,0 +1,112 @@
+:root {
+  --brand-primary-green: #087A3B;
+  --brand-secondary-green: #0EA75A;
+  --brand-accent-gold: #F4C542;
+  --brand-white: #FFFFFF;
+  --brand-dark-gray: #1F2937;
+  --brand-muted-gray: #6B7280;
+  --brand-soft-green: #EAFFF0;
+  --brand-background: #F8FFF8;
+  --brand-border: #DFE8E2;
+  --brand-font-heading: Arial, Helvetica, sans-serif;
+  --brand-font-body: Arial, Helvetica, sans-serif;
+  --brand-font-button: Arial, Helvetica, sans-serif;
+  --brand-space-xs: 4px;
+  --brand-space-sm: 8px;
+  --brand-space-md: 16px;
+  --brand-space-lg: 24px;
+  --brand-space-xl: 32px;
+  --brand-logo-min-icon: 32px;
+  --brand-logo-min-horizontal: 140px;
+  --green: var(--brand-primary-green);
+  --green2: var(--brand-secondary-green);
+  --light: var(--brand-soft-green);
+  --yellow: var(--brand-accent-gold);
+  --text: var(--brand-dark-gray);
+  --muted: var(--brand-muted-gray);
+  --white: var(--brand-white);
+  --border: var(--brand-border);
+  --jannati-primary: var(--brand-primary-green);
+  --jannati-primary-2: var(--brand-secondary-green);
+  --jannati-gold: var(--brand-accent-gold);
+  --jannati-soft: var(--brand-soft-green);
+  --jannati-background: var(--brand-background);
+  --jannati-ink: var(--brand-dark-gray);
+  --jannati-muted: var(--brand-muted-gray);
+  --jannati-border-color: var(--brand-border);
+}
+
+body {
+  font-family: var(--brand-font-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--brand-font-heading);
+  font-weight: 800;
+}
+
+button,
+input,
+textarea {
+  font-family: var(--brand-font-button);
+}
+
+.brand-logo {
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.brand-logo-xs {
+  width: 34px;
+  height: 34px;
+}
+
+.brand-logo-sm {
+  width: 150px;
+  max-width: 48vw;
+  height: auto;
+}
+
+.brand-logo-md {
+  width: 56px;
+  height: 56px;
+}
+
+.brand-logo-lg {
+  width: 220px;
+  max-width: 70vw;
+  height: auto;
+}
+
+.brand-logo-icon {
+  min-width: var(--brand-logo-min-icon);
+  border-radius: 16px;
+  filter: drop-shadow(0 8px 16px rgba(8,122,59,.14));
+}
+
+.brand-logo-full,
+.brand-logo-horizontal {
+  width: min(360px, 82vw);
+  min-width: var(--brand-logo-min-horizontal);
+  height: auto;
+}
+
+.brand-logo-light {
+  filter: brightness(0) invert(1);
+}
+
+.brand-logo-dark {
+  filter: brightness(0) saturate(100%) invert(13%) sepia(11%) saturate(1875%) hue-rotate(176deg) brightness(92%) contrast(89%);
+}
+
+.hero-brand-logo {
+  margin: 0 auto 10px;
+}
+
+.footer-brand-logo {
+  width: 128px;
+  max-width: 100%;
+}

@@ -1,10 +1,12 @@
 # Jannati Brand Assets
 
-This folder contains the Sprint Branding 2 official app identity assets.
+This folder contains the official Jannati AI Tutor app identity assets.
 
-- `logos/jannati-logo.svg`: primary horizontal logo.
-- `logos/jannati-icon.svg`: square logo with wordmark for app surfaces.
-- `icons/icon.svg`: manifest icon.
-- `icons/favicon.svg`: browser favicon.
+- `logo/logo-full.svg`: full primary logo.
+- `logo/logo-horizontal.svg`: compact horizontal logo.
+- `logo/logo-icon.svg`: app icon logo.
+- `logo/logo-monochrome.svg`: single-colour logo.
+- `favicon.ico`: browser favicon.
+- `icons/icon-*.png`: install and PWA icons.
 - `mascots/janna`: placeholder folder for the Janna mascot.
 - `mascots/jati`: placeholder folder for the Jati mascot.

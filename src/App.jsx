@@ -4,6 +4,7 @@ import { smartCheck } from './utils/smartCheck';
 import { speakText, beep } from './utils/speech';
 import AIExplainModal from './components/ai/AIExplainModal';
 import AITeacherModal from './components/ai/AITeacherModal';
+import BrandLogo from './components/BrandLogo';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -24,9 +25,6 @@ const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
 const BETA_STATUS = 'Persediaan Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
-const BRAND_ASSET_BASE = import.meta.env.BASE_URL || '/';
-const BRAND_LOGO_SRC = `${BRAND_ASSET_BASE}brand/logos/jannati-logo.svg`;
-const BRAND_ICON_SRC = `${BRAND_ASSET_BASE}brand/logos/jannati-icon.svg`;
 const storageRecoveryEvents = [];
 
 const defaultProfile = {
@@ -237,12 +235,6 @@ function aiReply(message, profile, selectedSubject) {
 
 function printReport() {
   window.print();
-}
-
-function BrandLogo({ variant = 'icon', className = '' }) {
-  const src = variant === 'full' ? BRAND_LOGO_SRC : BRAND_ICON_SRC;
-  const label = variant === 'full' ? 'Jannati AI Tutor' : 'Jannati';
-  return <img className={`brand-logo brand-logo-${variant} ${className}`.trim()} src={src} alt={label} />;
 }
 
 export default function App() {
@@ -633,6 +625,7 @@ function AppVersiFooter() {
   const buildDate = new Date(APP_BUILD_DATE);
   const displayDate = Number.isNaN(buildDate.getTime()) ? APP_BUILD_DATE : buildDate.toLocaleString();
   return <footer className="app-version-footer" aria-label="Maklumat versi aplikasi">
+    <BrandLogo horizontal size="sm" className="footer-brand-logo" />
     <span><b>Versi</b> {APP_VERSION}</span>
     <span><b>Status</b> {BETA_STATUS}</span>
     <span><b>Tarikh Binaan</b> {displayDate}</span>
@@ -690,13 +683,14 @@ function BetaFeedbackButton() {
 
 function LoadingSkeleton() {
   return <main className="dashboard-shell skeleton-shell">
-    <aside className="sidebar"><div className="jannati-skeleton skeleton-card" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /></aside>
+    <aside className="sidebar"><BrandLogo horizontal size="sm" /><div className="jannati-skeleton skeleton-card" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /></aside>
     <section className="dashboard-main"><section className="profile hero-card"><div className="jannati-skeleton skeleton-avatar" /><div><div className="jannati-skeleton skeleton-line wide" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div></section><section className="stats">{[1, 2, 3, 4].map(item => <div className="stat" key={item}><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div>)}</section><section className="card"><div className="jannati-skeleton skeleton-card" /></section></section>
   </main>;
 }
 
 function EmptyState({ title, message, actionLabel, onAction }) {
   return <div className="empty-state">
+    <BrandLogo iconOnly size="xs" />
     <b>{title}</b>
     <p>{message}</p>
     {actionLabel && onAction && <button type="button" className="secondary" onClick={onAction}>{actionLabel}</button>}
@@ -707,7 +701,7 @@ function Login({ onStart }) {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('👦');
   const avatars = ['👦', '👧', '🧒', '👩‍🎓', '👨‍🎓'];
-  return <main className="app login"><section className="hero"><BrandLogo variant="full" className="hero-brand-logo" /><h1>Jannati AI Tutor</h1><p>Belajar Macam Bermain</p></section><section className="card"><label>Nama anak</label><input value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: Fayyadh" /><label>Pilih avatar</label><div className="avatar-row">{avatars.map(item => <button key={item} className={`avatar-choice ${avatar === item ? 'selected' : ''}`} onClick={() => setAvatar(item)}>{item}</button>)}</div><button className="full" onClick={() => onStart(name, avatar)}>Mula Belajar</button></section></main>;
+  return <main className="app login"><section className="hero"><BrandLogo full className="hero-brand-logo" /><h1>Jannati AI Tutor</h1><p>Belajar Macam Bermain</p></section><section className="card"><label>Nama anak</label><input value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: Fayyadh" /><label>Pilih avatar</label><div className="avatar-row">{avatars.map(item => <button key={item} className={`avatar-choice ${avatar === item ? 'selected' : ''}`} onClick={() => setAvatar(item)}>{item}</button>)}</div><button className="full" onClick={() => onStart(name, avatar)}>Mula Belajar</button></section></main>;
 }
 
 function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selectedSubjectId, totalQuestions, resume, dailyChallenge, onSelectSubject, onStartTopic, onStartAdaptiveLesson, onStartBacaan, onStartMendengar, onStartBertutur, onStartMenulis, onOpenParent, onOpenUasa, onOpenAi, onReset, onResume, onRestartResume, onCompleteDaily, onToggleFavourite }) {
@@ -745,7 +739,7 @@ function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selecte
   const writingPurata = writingHistory.length ? Math.round(writingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / writingHistory.length) : 0;
   const hasDashboardActivity = (profile.history || []).length > 0 || Object.keys(profile.progress || {}).length > 0 || readingHistory.length > 0 || listeningHistory.length > 0 || speakingHistory.length > 0 || writingHistory.length > 0;
 
-  return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><BrandLogo /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div><button className="nav active">🏠 Papan Utama</button><button className="nav" onClick={onOpenAi}>🤖 Tutor AI</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button><div className="sidebar-note"><b>⚡ Data Ringan</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">
+  return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div><button className="nav active">🏠 Papan Utama</button><button className="nav" onClick={onOpenAi}>🤖 Tutor AI</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button><div className="sidebar-note"><b>⚡ Data Ringan</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">
     <section className="profile hero-card"><div className="avatar-large">{profile.avatar || '👦'}</div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name} 😊</h1><p>AI cadangkan belajar <b>{recommended?.title}</b> hari ini.</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div><button className="ghost" onClick={onReset}>Tetap Semula</button></section>
     <section className="stats"><Stat label="XP" value={profile.xp || 0} icon="⭐" /><Stat label="Level" value={level} icon="🏆" /><Stat label="Syiling" value={profile.coins || 0} icon="💰" /><Stat label="Streak" value={profile.streak || 0} icon="🔥" /></section>
     {!hasDashboardActivity && <section className="card"><EmptyState title="Belum ada aktiviti pembelajaran" message="Mulakan satu latihan ringkas untuk membina rekod kemajuan, sejarah dan laporan ibu bapa." actionLabel="Mula Latihan Cadangan" onAction={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} /></section>}
@@ -790,7 +784,7 @@ function AiTutorChat({ profile, selectedSubject, onTutup }) {
     setMessages(prev => [...prev, { role: 'user', text }, { role: 'ai', text: aiReply(text, profile, selectedSubject) }]);
     setInput('');
   }
-  return <div className="ai-chat-overlay"><section className="ai-chat"><div className="ai-chat-head"><div className="ai-chat-brand"><BrandLogo /><div><b>Jannati AI Tutor</b><span>Tutor pintar luar talian asas</span></div></div><button className="ghost" onClick={onTutup}>✕</button></div><div className="ai-chat-body">{messages.map((msg, index) => <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai' : 'user'}`}>{msg.text}</div>)}</div><div className="quick-prompts"><button onClick={() => sendMessage('Apa saya perlu belajar hari ini?')}>Apa nak belajar?</button><button onClick={() => sendMessage('Topik mana saya lemah?')}>Topik lemah</button><button onClick={() => sendMessage('Saya nak persediaan UASA')}>UASA</button></div><div className="ai-chat-input"><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Tanya Tutor AI..." /><button onClick={() => sendMessage()}>Hantar</button></div></section></div>;
+  return <div className="ai-chat-overlay"><section className="ai-chat"><div className="ai-chat-head"><div className="ai-chat-brand"><BrandLogo iconOnly /><div><b>Jannati AI Tutor</b><span>Tutor pintar luar talian asas</span></div></div><button className="ghost" onClick={onTutup}>✕</button></div><div className="ai-chat-body">{messages.map((msg, index) => <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai' : 'user'}`}>{msg.text}</div>)}</div><div className="quick-prompts"><button onClick={() => sendMessage('Apa saya perlu belajar hari ini?')}>Apa nak belajar?</button><button onClick={() => sendMessage('Topik mana saya lemah?')}>Topik lemah</button><button onClick={() => sendMessage('Saya nak persediaan UASA')}>UASA</button></div><div className="ai-chat-input"><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Tanya Tutor AI..." /><button onClick={() => sendMessage()}>Hantar</button></div></section></div>;
 }
 
 function UasaSimulator({ subject, onBack, onSave }) {
@@ -857,7 +851,7 @@ function ParentDashboard({ profile, allSubjects, onBack }) {
 
   return <main className="app parent-page">
     <div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><button onClick={printReport}>🖨️ Cetak / Simpan PDF</button></div>
-    <section className="card parent-hero"><div className="bot medium">👨‍👩‍👧</div><div><p className="eyebrow">Laporan Ibu Bapa</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1><p>Ringkasan kemajuan, topik lemah, topik kuat dan cadangan AI luar talian.</p></div></section>
+    <section className="card parent-hero"><BrandLogo iconOnly /><div><p className="eyebrow">Laporan Ibu Bapa</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1><p>Ringkasan kemajuan, topik lemah, topik kuat dan cadangan AI luar talian.</p></div></section>
     <section className="parent-summary-grid"><div className="parent-metric"><span>Minggu Ini</span><b>{weekly.average}%</b><small>{weekly.count} aktiviti</small></div><div className="parent-metric"><span>Bulan Ini</span><b>{monthly.average}%</b><small>{monthly.count} aktiviti</small></div><div className="parent-metric"><span>Penguasaan</span><b>{memory.mastery || 0}%</b><small>{strongTopics.length} topik kuat</small></div><div className="parent-metric"><span>Masa Belajar</span><b>{formatStudyTime(memory.studyTime || 0)}</b><small>Direkod luar talian</small></div></section>
     <section className="card"><p className="eyebrow">Penguasaan SK/SP</p><h2>Analisis Kurikulum</h2><div className="mastery-summary-grid"><div><b>{curriculumCoverage.summary.coveragePercent}%</b><span>Liputan</span></div><div><b>{curriculumCoverage.summary.masteryPercent}%</b><span>Penguasaan</span></div><div><b>{uasaCoverage.uasaQuestions}</b><span>Item UASA</span></div><div><b>{curriculumCoverage.summary.missing}</b><span>Belum Cukup</span></div></div><div className="timeline">{curriculumCoverage.missingSkSp.slice(0, 6).map((item, index) => <div className="timeline-item" key={`${item.subjectId}-${item.SK}-${item.SP}-${index}`}><span>{item.subject}</span><b>{item.SK} / {item.SP}</b><em>{item.coverage}% diliputi • {item.mastery}% dikuasai</em></div>)}</div></section>
     <section className="card teacher-snapshot-card"><p className="eyebrow">Ringkasan Guru</p><h2>Paparan Kelas</h2><div className="mastery-summary-grid"><div><b>{teacherSnapshot.subjects.length}</b><span>Subjek</span></div><div><b>{teacherSnapshot.subjects.reduce((sum, subject) => sum + subject.topics, 0)}</b><span>Topik</span></div><div><b>{teacherSnapshot.subjects.reduce((sum, subject) => sum + subject.questions, 0)}</b><span>Soalan</span></div><div><b>{teacherSnapshot.skSpRows.length}</b><span>Baris SK/SP</span></div></div><p className="memory-last">Dijana {teacherSnapshot.generatedAt.slice(0, 10)} untuk semakan guru.</p></section>
@@ -876,7 +870,7 @@ function ParentDashboard({ profile, allSubjects, onBack }) {
 function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {
   const question = topic.questions[questionIndex];
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
-  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>🔊 Baca Soalan</button><button className="secondary" onClick={onPetunjuk}>💡 Petunjuk</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Ditanda' : '🔖 Tanda Soalan'}</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya Tutor AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">💾 Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? '🟢' : feedback.status === 'almost' ? '🟡' : feedback.status === 'hint' ? '💡' : '🔴'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>🤖 Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>🔊 Baca Soalan</button><button className="secondary" onClick={onPetunjuk}>💡 Petunjuk</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? '🔖 Ditanda' : '🔖 Tanda Soalan'}</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya Tutor AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">💾 Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? '🟢' : feedback.status === 'almost' ? '🟡' : feedback.status === 'hint' ? '💡' : '🔴'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>🤖 Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {

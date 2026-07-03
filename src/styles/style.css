@@ -640,29 +640,6 @@ textarea {
   --border: var(--jannati-border-color);
 }
 
-.brand-logo {
-  display: block;
-  flex: 0 0 auto;
-  object-fit: contain;
-}
-
-.brand-logo-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  filter: drop-shadow(0 8px 16px rgba(8,122,59,.14));
-}
-
-.brand-logo-full {
-  width: min(360px, 82vw);
-  height: auto;
-  margin: 0 auto 12px;
-}
-
-.hero-brand-logo {
-  margin-bottom: 10px;
-}
-
 .ai-chat-brand {
   display: flex;
   align-items: center;
