@@ -1,43 +1,18 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-07-03T11:36:21.839Z",
+  "generatedAt": "2026-07-03T13:13:10.407Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
     "questions": 4000,
     "infos": 0,
     "errors": 0,
-    "warnings": 2
+    "warnings": 0
   },
   "difficultyCounts": {
     "mudah": 1600,
     "sederhana": 1600,
     "sukar": 800
   },
-  "issues": [
-    {
-      "severity": "warning",
-      "code": "DUPLICATE_STEM",
-      "message": "Duplicate question stem found.",
-      "context": {
-        "subjectId": "islam",
-        "topicId": "quran",
-        "questionId": "ISLAM-QURAN-048",
-        "questionIndex": 47,
-        "duplicateOf": "arab:ARAB-HURUF_HIJAIYAH-029"
-      }
-    },
-    {
-      "severity": "warning",
-      "code": "DUPLICATE_STEM",
-      "message": "Duplicate question stem found.",
-      "context": {
-        "subjectId": "islam",
-        "topicId": "quran",
-        "questionId": "ISLAM-QURAN-049",
-        "questionIndex": 48,
-        "duplicateOf": "arab:ARAB-HURUF_HIJAIYAH-030"
-      }
-    }
-  ]
+  "issues": []
 }

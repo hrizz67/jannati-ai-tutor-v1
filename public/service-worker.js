@@ -1,9 +1,13 @@
-const CACHE_NAME = 'jannati-ai-tutor-v20-alpha-qa';
+const CACHE_NAME = 'jannati-ai-tutor-branding-v2';
 const BASE = '/jannati-ai-tutor-v1/';
 const APP_SHELL = [
   BASE,
   `${BASE}index.html`,
   `${BASE}manifest.webmanifest`,
+  `${BASE}brand/logos/jannati-logo.svg`,
+  `${BASE}brand/logos/jannati-icon.svg`,
+  `${BASE}brand/icons/icon.svg`,
+  `${BASE}brand/icons/favicon.svg`,
   `${BASE}logo.svg`,
   `${BASE}favicon.svg`,
 ];

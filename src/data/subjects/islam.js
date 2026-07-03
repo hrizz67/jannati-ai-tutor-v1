@@ -317,8 +317,8 @@ const quranItems = [
   ["Al-Quran perlu dibaca di tempat yang ________.", "sesuai", "Fikirkan adab membaca.", "Tempat yang sesuai membantu kita membaca dengan tenang."],
   ["Ayat Al-Quran tidak boleh dipersendakan kerana ia kalam ________.", "Allah", "Fikirkan kemuliaan Al-Quran.", "Al-Quran ialah kalam Allah dan wajib dimuliakan."],
   ["Belajar membaca Al-Quran memerlukan latihan yang ________.", "berterusan", "Fikirkan cara menjadi lancar.", "Latihan berterusan membantu bacaan menjadi lebih baik."],
-  ["Huruf hijaiyah pertama ialah ________.", "ا", "Fikirkan huruf pertama.", "Huruf hijaiyah pertama ialah alif, ا."],
-  ["Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.", "ي", "Fikirkan huruf ya.", "Huruf ya, ي, ialah huruf terakhir dalam susunan hijaiyah biasa."],
+  ["Dalam bacaan Al-Quran, huruf hijaiyah yang pertama ialah ________.", "ا", "Fikirkan huruf pertama.", "Huruf hijaiyah pertama ialah alif, ا."],
+  ["Dalam susunan hijaiyah bacaan Al-Quran, huruf terakhir yang biasa dipelajari ialah ________.", "ي", "Fikirkan huruf ya.", "Huruf ya, ي, ialah huruf terakhir dalam susunan hijaiyah biasa."],
   ["Al-Quran diturunkan sebagai petunjuk kepada ________.", "manusia", "Fikirkan tujuan Al-Quran.", "Al-Quran menjadi petunjuk kepada manusia."],
 ];
 

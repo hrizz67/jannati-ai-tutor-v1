@@ -1,11 +1,11 @@
 {
   "validator": "master",
-  "generatedAt": "2026-07-03T11:36:22.461Z",
+  "generatedAt": "2026-07-03T13:13:10.914Z",
   "status": "pass",
   "totals": {
     "infos": 12000,
     "errors": 0,
-    "warnings": 2
+    "warnings": 0
   },
   "validators": [
     {
@@ -13,7 +13,7 @@
       "status": "pass",
       "infos": 0,
       "errors": 0,
-      "warnings": 2,
+      "warnings": 0,
       "reportFile": "reports/validation/question-report.json"
     },
     {

@@ -1,4 +1,4 @@
-# INSTALL - V1.5.1 Quality Release
+# INSTALL - Jannati AI Tutor
 
 ## Requirements
 

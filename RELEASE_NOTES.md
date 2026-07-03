@@ -1,4 +1,8 @@
-# RELEASE NOTES - V1.5.1 Quality Release
+# RELEASE NOTES - Jannati AI Tutor
+
+## Branding V2 - Final Brand Identity
+
+Jannati AI Tutor now uses the official brand identity across the app shell, runtime UI, manifest icons and favicon.
 
 V1.5.1 is a quality release for the V1.5 Stable app.
 

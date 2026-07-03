@@ -1,4 +1,11 @@
-# CHANGELOG - V1.5.1 Quality Release
+# CHANGELOG - Jannati AI Tutor
+
+## Branding V2 - Final Brand Identity
+
+- Added official Jannati brand asset structure.
+- Updated app shell, manifest icons, favicon and service-worker asset cache.
+- Standardised runtime logo usage and official palette variables.
+- Added mascot placeholder folders for Janna and Jati.
 
 ## Fixed
 
