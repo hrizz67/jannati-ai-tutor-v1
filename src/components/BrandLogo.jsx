@@ -1,33 +1,57 @@
-const BASE_URL = import.meta.env.BASE_URL || '/';
+import React from "react";
 
-const LOGO_SOURCES = {
-  full: 'brand/logo/logo-full.svg',
-  horizontal: 'brand/logo/logo-horizontal.svg',
-  icon: 'brand/logo/logo-icon.svg',
-  monochrome: 'brand/logo/logo-monochrome.svg',
+const brandBase = `${import.meta.env.BASE_URL}brand/logo/`;
+
+const logoMap = {
+  full: `${brandBase}logo-full.svg`,
+  horizontal: `${brandBase}logo-horizontal.svg`,
+  icon: `${brandBase}logo-icon.svg`,
+  monochrome: `${brandBase}logo-monochrome.svg`,
+};
+
+const sizeMap = {
+  sm: 40,
+  md: 72,
+  lg: 120,
+  xl: 180,
 };
 
 export default function BrandLogo({
-  size = 'md',
-  variant = 'icon',
+  variant = "horizontal",
+  size = "md",
+  className = "",
+  alt = "Jannati AI Tutor",
   light = false,
   dark = false,
   horizontal = false,
   iconOnly = false,
   full = false,
-  className = '',
 }) {
-  const resolvedVariant = full ? 'full' : iconOnly ? 'icon' : horizontal ? 'horizontal' : variant;
-  const sourceVariant = light || dark ? 'monochrome' : resolvedVariant;
-  const src = `${BASE_URL}${LOGO_SOURCES[sourceVariant] || LOGO_SOURCES.icon}`;
-  const classes = [
-    'brand-logo',
-    `brand-logo-${resolvedVariant}`,
-    `brand-logo-${size}`,
-    light ? 'brand-logo-light' : '',
-    dark ? 'brand-logo-dark' : '',
-    className,
-  ].filter(Boolean).join(' ');
+  const resolvedVariant = iconOnly
+    ? "icon"
+    : full
+      ? "full"
+      : horizontal
+        ? "horizontal"
+        : light || dark
+          ? "monochrome"
+          : variant;
+  const src = logoMap[resolvedVariant] || logoMap.horizontal;
+  const resolvedSize = typeof size === "number" ? size : sizeMap[size] || sizeMap.md;
 
-  return <img className={classes} src={src} alt="Jannati AI Tutor" loading="eager" decoding="async" />;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`brand-logo brand-logo-${resolvedVariant} ${className}`}
+      style={{
+        width: resolvedVariant === "horizontal" ? resolvedSize * 2.8 : resolvedSize,
+        maxWidth: "100%",
+        height: "auto",
+        display: "block",
+      }}
+      loading="eager"
+      decoding="async"
+    />
+  );
 }

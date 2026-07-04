@@ -1,4 +1,5 @@
-import React from 'react';
+﻿import React from 'react';
+import BrandLogo from '../BrandLogo';
 
 export default function AIExplainModal({ open, data, question, onTutup, onTryAgain, onTeach }) {
   if (!open || !data) return null;
@@ -6,11 +7,14 @@ export default function AIExplainModal({ open, data, question, onTutup, onTryAga
   return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
     <section className="ai-explain-modal">
       <div className="ai-explain-head">
-        <div>
+        <div className="modal-brand-title">
+          <BrandLogo iconOnly size="sm" />
+          <div>
           <p className="eyebrow">Penerangan AI Luar Talian</p>
-          <h2>🤖 Terangkan</h2>
+          <h2>ðŸ¤– Terangkan</h2>
+                  </div>
         </div>
-        <button className="ghost" onClick={onTutup}>✕</button>
+        <button className="ghost" onClick={onTutup}>âœ•</button>
       </div>
       <div className="explain-answer-box">
         <span>Jawapan betul</span>
@@ -30,10 +34,11 @@ export default function AIExplainModal({ open, data, question, onTutup, onTryAga
       </div>
       <p className="explain-encouragement">{data.encouragement}</p>
       <div className="actions">
-        <button className="secondary" onClick={onTeach}>📖 Ajar Saya</button>
+        <button className="secondary" onClick={onTeach}>ðŸ“– Ajar Saya</button>
         <button onClick={onTryAgain}>Cuba Lagi</button>
         <button className="secondary" onClick={onTutup}>Tutup</button>
       </div>
     </section>
   </div>;
 }
+

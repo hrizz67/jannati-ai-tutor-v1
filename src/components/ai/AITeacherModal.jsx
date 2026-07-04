@@ -1,4 +1,5 @@
-import React from 'react';
+﻿import React from 'react';
+import BrandLogo from '../BrandLogo';
 
 export default function AITeacherModal({ open, data, onTutup, onLatih }) {
   if (!open || !data) return null;
@@ -6,11 +7,14 @@ export default function AITeacherModal({ open, data, onTutup, onLatih }) {
   return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Guru AI">
     <section className="ai-explain-modal ai-teacher-modal">
       <div className="ai-explain-head">
-        <div>
+        <div className="modal-brand-title">
+          <BrandLogo iconOnly size="sm" />
+          <div>
           <p className="eyebrow">Guru AI Luar Talian</p>
-          <h2>📖 Ajar Saya</h2>
+          <h2>ðŸ“– Ajar Saya</h2>
+                  </div>
         </div>
-        <button className="ghost" onClick={onTutup}>✕</button>
+        <button className="ghost" onClick={onTutup}>âœ•</button>
       </div>
       <div className="explain-section">
         <h3>Penerangan</h3>
@@ -36,3 +40,4 @@ export default function AITeacherModal({ open, data, onTutup, onLatih }) {
     </section>
   </div>;
 }
+

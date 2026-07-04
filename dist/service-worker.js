@@ -9,15 +9,17 @@ const APP_SHELL = [
   `${BASE}brand/logo/logo-horizontal.svg`,
   `${BASE}brand/logo/logo-icon.svg`,
   `${BASE}brand/logo/logo-monochrome.svg`,
-  `${BASE}brand/favicon.ico`,
+  `${BASE}brand/icons/favicon.ico`,
   `${BASE}brand/icons/icon-48.png`,
   `${BASE}brand/icons/icon-72.png`,
   `${BASE}brand/icons/icon-96.png`,
   `${BASE}brand/icons/icon-144.png`,
+  `${BASE}brand/icons/apple-touch-icon.png`,
   `${BASE}brand/icons/icon-192.png`,
   `${BASE}brand/icons/icon-512.png`,
-  `${BASE}logo.svg`,
-  `${BASE}favicon.svg`,
+  `${BASE}brand/brand/brand-tokens.css`,
+  `${BASE}brand/brand/brand-colors.json`,
+  `${BASE}brand/brand/manifest-snippet.json`,
 ];
 
 self.addEventListener('install', event => {
