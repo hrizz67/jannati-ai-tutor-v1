@@ -5,6 +5,8 @@ import { speakText, beep } from './utils/speech';
 import AIExplainModal from './components/ai/AIExplainModal';
 import AITeacherModal from './components/ai/AITeacherModal';
 import BrandLogo from './components/BrandLogo';
+import Mascot from './components/Mascot';
+import MascotCard from './components/MascotCard';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -12,14 +14,18 @@ import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from './ai/adaptive
 import { buildLessonPlan } from './ai/adaptive/lessonPlanner';
 import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
 import { teachAnswer } from './ai/teacherEngine';
-import { formatStudyTime, loadAIMemory, saveQuizMemory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
+import { formatStudyTime, loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
+import { buildQuestionSession } from './ai/question/questionEngine';
 import { buildTeacherPortalSnapshot } from './curriculum/curriculumEngine';
 import { buildCurriculumCoverage } from './curriculum/coverageEngine';
 import { recommendMissingSkSp, summarizeUasaCoverage } from './curriculum/uasaEngine';
+import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const RESUME_KEY = 'jannati_v151_resume';
 const FEEDBACK_KEY = 'jannati_beta_feedback';
+const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
+const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
 const BETA_STATUS = 'Persediaan Beta Tertutup';
@@ -29,7 +35,9 @@ const storageRecoveryEvents = [];
 
 const defaultProfile = {
   name: '',
-  avatar: 'ðŸ‘¦',
+  avatar: '👦',
+  year: 'Tahun 2',
+  isDemo: false,
   xp: 0,
   coins: 0,
   streak: 0,
@@ -43,6 +51,17 @@ const defaultProfile = {
   recommendations: {},
   uasaHistory: []
 };
+
+function createDemoProfile() {
+  return {
+    ...defaultProfile,
+    name: 'Demo Murid',
+    avatar: '👦',
+    year: 'Tahun 2',
+    isDemo: true,
+    createdAt: new Date().toISOString()
+  };
+}
 
 function loadProfile() {
   try {
@@ -63,7 +82,13 @@ function loadProfile() {
     LEGACY_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
   }
 
-  return defaultProfile;
+  const demoProfile = createDemoProfile();
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(demoProfile));
+  } catch {
+    storageRecoveryEvents.push('Profil demo beta tidak dapat disimpan pada peranti ini.');
+  }
+  return demoProfile;
 }
 
 function loadResume() {
@@ -129,10 +154,10 @@ function progressKey(subjectId, topicId) {
 }
 
 function getStars(score = 0) {
-  if (score >= 90) return 'â­â­â­';
-  if (score >= 70) return 'â­â­';
-  if (score >= 50) return 'â­';
-  return 'â˜†â˜†â˜†';
+  if (score >= 90) return '⭐⭐⭐';
+  if (score >= 70) return '⭐⭐';
+  if (score >= 50) return '⭐';
+  return '☆☆☆';
 }
 
 function getGrade(score = 0) {
@@ -190,13 +215,13 @@ function buildDailyChallenge() {
 }
 
 function buildUasaSet(subject, count = 20) {
-  const all = [];
-  subject.topics.forEach(topic => {
-    topic.questions.forEach(question => {
-      all.push({ ...question, topicId: topic.id, topicTitle: topic.title, subjectId: subject.id, subjectTitle: subject.title });
-    });
-  });
-  return shuffleArray(all).slice(0, Math.min(count, all.length));
+  return buildQuestionSession({
+    subject,
+    topics: subject.topics,
+    count,
+    memory: loadAIMemory(),
+    sessionSeed: Date.now()
+  }).questions;
 }
 
 const PATH_CATEGORIES = ['Tatabahasa', 'Pemahaman', 'Penulisan'];
@@ -242,6 +267,13 @@ export default function App() {
   const [resume, setResume] = useState(loadResume);
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    try {
+      return localStorage.getItem(ONBOARDING_KEY) !== 'done';
+    } catch {
+      return true;
+    }
+  });
   const [selectedSubjectId, setSelectedSubjectId] = useState('bm');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
@@ -251,7 +283,7 @@ export default function App() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
-  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: 'â˜†â˜†â˜†', answers: [] });
+  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
   const [chatOpen, setChatOpen] = useState(false);
   const [explainOpen, setExplainOpen] = useState(false);
   const [explainData, setExplainData] = useState(null);
@@ -287,28 +319,117 @@ export default function App() {
   }, [selectedSubject]);
 
   async function startProfile(name, avatar) {
-    setProfile({ ...defaultProfile, name: name || 'Anak', avatar });
+    setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
+    setScreen('dashboard');
+  }
+
+  function completeOnboarding({ name, year }) {
+    const nextName = name?.trim() || profile.name || 'Demo Murid';
+    const nextYear = year || profile.year || 'Tahun 2';
+    setProfile(prev => ({ ...prev, name: nextName, year: nextYear, isDemo: false }));
+    try {
+      localStorage.setItem(ONBOARDING_KEY, 'done');
+    } catch {
+      setRecoveryMessages(prev => [...prev, 'Status permulaan pertama tidak dapat disimpan pada peranti ini.']);
+    }
+    setShowOnboarding(false);
     setScreen('dashboard');
   }
 
   function resetProfile() {
-    if (confirm('Tetap Semula semua rekod murid?')) {
-      localStorage.removeItem(PROFILE_KEY);
-      LEGACY_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
-      clearResume();
-      setProfile(defaultProfile);
+    if (confirm('Reset semua data beta pada peranti ini? Tindakan ini tidak boleh dibatalkan.')) {
+      try {
+        localStorage.removeItem(PROFILE_KEY);
+        LEGACY_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
+        clearResume();
+        localStorage.removeItem(FEEDBACK_KEY);
+        localStorage.removeItem(ONBOARDING_KEY);
+        AI_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
+      } catch {
+        setRecoveryMessages(prev => [...prev, 'Sebahagian data tidak dapat dipadam kerana simpanan peranti tidak tersedia.']);
+      }
+      const demoProfile = createDemoProfile();
+      try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(demoProfile));
+      } catch {
+        setRecoveryMessages(prev => [...prev, 'Profil demo beta tidak dapat disimpan selepas reset.']);
+      }
+      setProfile(demoProfile);
       setResume(null);
-      setScreen('login');
+      setShowOnboarding(true);
+      setScreen('dashboard');
     }
   }
 
+  function exportBetaReport() {
+    const aiMemory = loadAIMemory();
+    const subjects = allSubjects?.length ? allSubjects : (selectedSubject ? [selectedSubject] : []);
+    const topicMastery = {
+      ...(aiMemory.topicMastery || {}),
+      ...buildMasteryMap(profile, subjects, aiMemory)
+    };
+    const masterySummary = summarizeMastery(topicMastery);
+    const report = {
+      metadata: {
+        app: 'Jannati AI Tutor',
+        status: 'CLOSED BETA',
+        version: APP_VERSION,
+        buildDate: APP_BUILD_DATE,
+        generatedAt: new Date().toISOString()
+      },
+      profile: {
+        name: profile.name,
+        year: profile.year || 'Tahun 2',
+        isDemo: Boolean(profile.isDemo),
+        xp: profile.xp || 0,
+        coins: profile.coins || 0,
+        streak: profile.streak || 0
+      },
+      progress: profile.progress || {},
+      mastery: {
+        summary: masterySummary,
+        topics: topicMastery,
+        weakTopics: aiMemory.weakTopics || [],
+        strongTopics: aiMemory.strongTopics || []
+      },
+      history: profile.history || [],
+      feedback: loadFeedbackItems(),
+      reading: aiMemory.readingHistory || [],
+      listening: aiMemory.listeningHistory || [],
+      speaking: aiMemory.speakingHistory || [],
+      writing: aiMemory.writingHistory || []
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `jannati-closed-beta-report-${todayKey()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   function startTopic(topic, subject = selectedSubject, options = {}) {
-    const questions = options.questions || shuffleArray(topic.questions);
+    const sourceQuestions = options.questions || topic.questions;
+    const diversity = options.preserveQuestions
+      ? { questions: sourceQuestions, score: null, debug: [], duplicateIssues: [] }
+      : buildQuestionSession({
+        subject,
+        topic,
+        questions: sourceQuestions,
+        count: sourceQuestions.length,
+        memory: loadAIMemory(),
+        allowReinforcement: Boolean(options.allowReinforcement),
+        allowAdaptiveOverride: Boolean(options.allowAdaptiveOverride),
+        sessionSeed: Date.now()
+      });
+    const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
-    const startSession = options.session || { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: 'â˜†â˜†â˜†', answers: [] };
+    const startSession = options.session || { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug };
 
     setActiveSubject(subject);
-    setActiveTopic({ ...topic, questions });
+    setActiveTopic({ ...topic, questions, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
     setQuestionIndex(startIndex);
     setAnswer('');
     setFeedback(null);
@@ -340,7 +461,8 @@ export default function App() {
     startTopic(topic, subject, {
       questions: resume.questions,
       questionIndex: resume.questionIndex,
-      session: resume.session
+      session: resume.session,
+      preserveQuestions: true
     });
   }
 
@@ -365,7 +487,7 @@ export default function App() {
     const targetQuestion = topic.questions.find(question => question.id === questionId);
     const remainingSoalan = topic.questions.filter(question => question.id !== questionId);
     const questions = targetQuestion ? [targetQuestion, ...shuffleArray(remainingSoalan)] : shuffleArray(topic.questions);
-    startTopic(topic, subject, { questions });
+    startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true });
   }
 
   function currentQuestion() {
@@ -430,6 +552,8 @@ export default function App() {
     nextSession.xp += xp;
     nextSession.coins += coins;
     nextSession.answers.push({ questionId: question.id, answer, status: result.status, correctAnswer: question.answer });
+    nextSession.questions = [...(nextSession.questions || []), question];
+    saveQuestionHistory(question);
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
@@ -587,6 +711,8 @@ export default function App() {
 
   const chatWidget = chatOpen && selectedSubject ? <AiTutorChat profile={profile} selectedSubject={selectedSubject} onTutup={() => setChatOpen(false)} /> : null;
 
+  if (showOnboarding) return <BetaChrome recoveryMessages={recoveryMessages}><FirstRunWizard profile={profile} onComplete={completeOnboarding} /></BetaChrome>;
+
   if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages}><Login onStart={startProfile} /></BetaChrome>;
 
   if (loadingSubject || !selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages}><LoadingSkeleton /></BetaChrome>;
@@ -595,7 +721,7 @@ export default function App() {
     const question = currentQuestion();
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} />{chatWidget}</BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -609,7 +735,7 @@ export default function App() {
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ParentDashboard profile={profile} allSubjects={allSubjects} onBack={() => setScreen('dashboard')} /></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
-  return <BetaChrome recoveryMessages={recoveryMessages}><Dashboard profile={profile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} onSelectSubject={setSelectedSubjectId} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+  return <BetaChrome recoveryMessages={recoveryMessages}><Dashboard profile={profile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} onSelectSubject={setSelectedSubjectId} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
 }
 
 function BetaChrome({ children, recoveryMessages = [] }) {
@@ -626,7 +752,7 @@ function AppVersiFooter() {
   const buildDate = new Date(APP_BUILD_DATE);
   const displayDate = Number.isNaN(buildDate.getTime()) ? APP_BUILD_DATE : buildDate.toLocaleString();
   return <footer className="app-version-footer" aria-label="Maklumat versi aplikasi">
-    <BrandLogo horizontal size="sm" className="footer-brand-logo" />    <span><b>Versi</b> {APP_VERSION}</span>    <span><b>Build</b> {displayDate}</span>    <span><b>Status</b> {BETA_STATUS}</span>    <span><b>Maklum Balas</b> Butang beta tersedia</span>    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
+    <BrandLogo horizontal size="sm" className="footer-brand-logo" />    <span className="closed-beta-badge">CLOSED BETA</span>    <span><b>Versi</b> {APP_VERSION}</span>    <span><b>Build</b> {displayDate}</span>    <span><b>Maklum Balas</b> Butang beta tersedia</span>    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
   </footer>;
 }
 
@@ -638,42 +764,116 @@ function StorageRecoveryNotice({ messages }) {
   </aside>;
 }
 
+function FirstRunWizard({ profile, onComplete }) {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState(profile.name || 'Demo Murid');
+  const [year, setYear] = useState(profile.year || 'Tahun 2');
+  const years = ['Tahun 1', 'Tahun 2', 'Tahun 3'];
+  const steps = [
+    'Selamat datang ke Jannati AI Tutor.',
+    'Pilih nama murid.',
+    'Pilih Tahun.',
+    'Jom mula belajar!'
+  ];
+  const canContinue = step !== 2 || name.trim().length > 0;
+
+  return <main className="first-run-shell">
+    <section className="first-run-card" aria-labelledby="first-run-title">
+      <BrandLogo full size="lg" />
+      <div className="wizard-progress" aria-label="Langkah permulaan pertama">
+        {steps.map((item, index) => <span key={item} className={step === index + 1 ? 'active' : step > index + 1 ? 'done' : ''}>{index + 1}</span>)}
+      </div>
+      {step === 1 && <div className="wizard-panel">
+        <p className="eyebrow">Permulaan Beta</p>
+        <h1 id="first-run-title">Selamat datang ke Jannati AI Tutor.</h1>
+        <p>Pembelajaran kamu sudah sedia. Profil demo juga tersedia supaya aplikasi boleh terus diuji.</p>
+      </div>}
+      {step === 2 && <div className="wizard-panel">
+        <p className="eyebrow">Profil Murid</p>
+        <h1>Pilih nama murid.</h1>
+        <label htmlFor="onboarding-name">Nama murid</label>
+        <input id="onboarding-name" value={name} onChange={event => setName(event.target.value)} placeholder="Contoh: Fayyadh" autoFocus />
+      </div>}
+      {step === 3 && <div className="wizard-panel">
+        <p className="eyebrow">Tahun Pembelajaran</p>
+        <h1>Pilih Tahun.</h1>
+        <div className="wizard-choice-grid">
+          {years.map(item => <button key={item} type="button" className={year === item ? '' : 'secondary'} onClick={() => setYear(item)}>{item}</button>)}
+        </div>
+      </div>}
+      {step === 4 && <div className="wizard-panel">
+        <p className="eyebrow">Sedia</p>
+        <h1>Jom mula belajar!</h1>
+        <p>{name.trim() || 'Demo Murid'} akan menggunakan {year}. Kamu boleh reset data beta dari tetapan bila perlu.</p>
+      </div>}
+      <div className="wizard-actions">
+        <button type="button" className="secondary" onClick={() => setStep(current => Math.max(1, current - 1))} disabled={step === 1}>Kembali</button>
+        {step < 4
+          ? <button type="button" onClick={() => setStep(current => Math.min(4, current + 1))} disabled={!canContinue}>Seterusnya</button>
+          : <button type="button" onClick={() => onComplete({ name, year })}>Mula Belajar</button>}
+      </div>
+    </section>
+  </main>;
+}
+
 function BetaFeedbackButton() {
   const categories = ['Pepijat', 'Cadangan', 'Kandungan', 'AI', 'Pengalaman'];
   const [open, setOpen] = useState(false);
-  const [category, setKategori] = useState('Bug');
-  const [message, setMessage] = useState('');
+  const [category, setKategori] = useState('Pepijat');
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [screenshotDescription, setScreenshotDescription] = useState('');
   const [saved, setSaved] = useState(false);
+  const closeRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    closeRef.current?.focus();
+    function onKeyDown(event) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open]);
 
   function submitFeedback() {
-    const trimmed = message.trim();
+    const trimmed = comment.trim();
     if (!trimmed) return;
     saveFeedbackItem({
       id: `feedback_${Date.now()}`,
       category,
+      rating: Number(rating),
+      comment: trimmed,
       message: trimmed,
+      screenshotDescription: screenshotDescription.trim(),
       status: BETA_STATUS,
       version: APP_VERSION,
       buildDate: APP_BUILD_DATE,
       screen: window.location.hash || window.location.pathname,
       createdAt: new Date().toISOString()
     });
-    setMessage('');
+    setComment('');
+    setScreenshotDescription('');
+    setRating(5);
     setSaved(true);
     setTimeout(() => setOpen(false), 900);
   }
 
   return <>
     <button type="button" className="beta-feedback-fab" onClick={() => { setSaved(false); setOpen(true); }}>Maklum Balas Beta</button>
-    {open && <div className="beta-feedback-overlay" role="dialog" aria-modal="true" aria-label="Maklum balas beta">
+    {open && <div className="beta-feedback-overlay" role="dialog" aria-modal="true" aria-labelledby="beta-feedback-title">
       <section className="beta-feedback-panel">
-        <div className="beta-feedback-head"><div className="modal-brand-title"><BrandLogo iconOnly size="sm" /><div><p className="eyebrow">Beta Tertutup</p><h2>Maklum Balas</h2></div></div><button className="ghost" onClick={() => setOpen(false)}>Tutup</button></div>
-        <label>Kategori</label>
-        <div className="feedback-category-grid">{categories.map(item => <button type="button" key={item} className={category === item ? '' : 'secondary'} onClick={() => setKategori(item)}>{item}</button>)}</div>
-        <label>Butiran</label>
-        <textarea value={message} onChange={event => setMessage(event.target.value)} placeholder="Apa yang berlaku? Apa yang patut diperbaiki?" />
+        <div className="beta-feedback-head"><div className="modal-brand-title"><BrandLogo iconOnly size="sm" /><div><p className="eyebrow">Beta Tertutup</p><h2 id="beta-feedback-title">Maklum Balas</h2></div></div><button ref={closeRef} type="button" className="ghost" onClick={() => setOpen(false)}>Tutup</button></div>
+        <label id="feedback-category-label">Kategori</label>
+        <div className="feedback-category-grid" role="group" aria-labelledby="feedback-category-label">{categories.map(item => <button type="button" key={item} className={category === item ? '' : 'secondary'} aria-pressed={category === item} onClick={() => setKategori(item)}>{item}</button>)}</div>
+        <label id="feedback-rating-label">Rating</label>
+        <div className="feedback-rating-grid" role="group" aria-labelledby="feedback-rating-label">{[1, 2, 3, 4, 5].map(item => <button type="button" key={item} className={rating === item ? '' : 'secondary'} aria-pressed={rating === item} onClick={() => setRating(item)}>{item}</button>)}</div>
+        <label htmlFor="feedback-comment">Komen</label>
+        <textarea id="feedback-comment" value={comment} onChange={event => setComment(event.target.value)} placeholder="Apa yang berlaku? Apa yang patut diperbaiki?" />
+        <label htmlFor="feedback-screenshot-description">Deskripsi screenshot</label>
+        <textarea id="feedback-screenshot-description" value={screenshotDescription} onChange={event => setScreenshotDescription(event.target.value)} placeholder="Terangkan apa yang kelihatan dalam screenshot, jika ada." />
         {saved && <p className="autosave-note">Maklum balas disimpan pada peranti ini.</p>}
-        <button className="full" onClick={submitFeedback} disabled={!message.trim()}>Simpan Maklum Balas</button>
+        <button type="button" className="full" onClick={submitFeedback} disabled={!comment.trim()}>Simpan Maklum Balas</button>
       </section>
     </div>}
   </>;
@@ -682,13 +882,13 @@ function BetaFeedbackButton() {
 function LoadingSkeleton() {
   return <main className="dashboard-shell skeleton-shell">
     <aside className="sidebar"><BrandLogo horizontal size="sm" /><div className="jannati-skeleton skeleton-card" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /></aside>
-    <section className="dashboard-main"><section className="profile hero-card"><div className="jannati-skeleton skeleton-avatar" /><div><div className="jannati-skeleton skeleton-line wide" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div></section><section className="stats">{[1, 2, 3, 4].map(item => <div className="stat" key={item}><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div>)}</section><section className="card"><div className="jannati-skeleton skeleton-card" /></section></section>
+    <section className="dashboard-main"><section className="profile hero-card"><MascotCard character="janna" mood="waiting" size="md" animation="pulse" message={PERSONALITY_MESSAGES.loading} /><div><div className="jannati-skeleton skeleton-line wide" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div></section><section className="stats">{[1, 2, 3, 4].map(item => <div className="stat" key={item}><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line short" /></div>)}</section><section className="card"><div className="jannati-skeleton skeleton-card" /></section></section>
   </main>;
 }
 
 function EmptyState({ title, message, actionLabel, onAction }) {
   return <div className="empty-state">
-    <MascotPlaceholder name="Janna" size="sm" />
+    <MascotCard character="janna" mood="encouraging" size="sm" message="Belum ada rekod lagi. Jom mula sedikit demi sedikit." />
     <b>{title}</b>
     <p>{message}</p>
     {actionLabel && onAction && <button type="button" className="secondary" onClick={onAction}>{actionLabel}</button>}
@@ -705,20 +905,13 @@ function BrandSplash() {
   </div>;
 }
 
-function MascotPlaceholder({ name = 'Janna', size = 'md' }) {
-  const initial = name === 'Jati' ? 'Jt' : 'Jn';
-  return <div className={`mascot-placeholder mascot-${name.toLowerCase()} mascot-${size}`} aria-label={`${name} mascot placeholder`}>
-    <span>{initial}</span>
-    <small>{name}</small>
-  </div>;
-}
-
 function DashboardHeader({ profile, level, levelProgress }) {
+  const studentYear = profile.year || 'Tahun 2';
   return <header className="brand-app-header">
-    <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">Tahun 2</p><h1>Jannati AI Tutor</h1></div></div>
+    <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">{studentYear}</p><h1>Jannati AI Tutor</h1></div></div>
     <div className="brand-student-strip">
       <span className="student-avatar">{profile.avatar || '👦'}</span>
-      <div><b>{profile.name || 'Anak'}</b><small>Tahun 2</small></div>
+      <div><b>{profile.name || 'Anak'}</b><small>{studentYear}</small></div>
       <span className="achievement-chip">Tahap {level}</span>
       <span className="achievement-chip">Bintang {getStars(levelProgress)}</span>
       <span className="achievement-chip">Streak {profile.streak || 0}</span>
@@ -733,12 +926,24 @@ function SubjectIllustration({ subject }) {
 }
 function Login({ onStart }) {
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('ðŸ‘¦');
-  const avatars = ['ðŸ‘¦', 'ðŸ‘§', 'ðŸ§’', 'ðŸ‘©â€ðŸŽ“', 'ðŸ‘¨â€ðŸŽ“'];
+  const [avatar, setAvatar] = useState('👦');
+  const avatars = ['👦', '👧', '🧒', '👩‍🎓', '👨‍🎓'];
   return <main className="app login"><section className="hero"><BrandLogo full className="hero-brand-logo" /><h1>Jannati AI Tutor</h1><p>Belajar Macam Bermain</p></section><section className="card"><label>Nama anak</label><input value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: Fayyadh" /><label>Pilih avatar</label><div className="avatar-row">{avatars.map(item => <button key={item} className={`avatar-choice ${avatar === item ? 'selected' : ''}`} onClick={() => setAvatar(item)}>{item}</button>)}</div><button className="full" onClick={() => onStart(name, avatar)}>Mula Belajar</button></section></main>;
 }
 
-function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selectedSubjectId, totalQuestions, resume, dailyChallenge, onSelectSubject, onStartTopic, onStartAdaptiveLesson, onStartBacaan, onStartMendengar, onStartBertutur, onStartMenulis, onOpenParent, onOpenUasa, onOpenAi, onReset, onResume, onRestartResume, onCompleteDaily, onToggleFavourite }) {
+function SettingsPanel({ onExportBetaReport, onReset }) {
+  return <section className="card settings-card">
+    <p className="eyebrow">Tetapan Beta</p>
+    <h2>Kesediaan Beta Tertutup</h2>
+    <p>Eksport laporan ujian atau reset semua data pada peranti ini sebelum sesi ujian baharu.</p>
+    <div className="settings-actions">
+      <button type="button" className="secondary" onClick={onExportBetaReport}>Eksport Beta Report JSON</button>
+      <button type="button" className="danger-action" onClick={onReset}>Reset Semua Data</button>
+    </div>
+  </section>;
+}
+
+function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selectedSubjectId, totalQuestions, resume, dailyChallenge, onSelectSubject, onStartTopic, onStartAdaptiveLesson, onStartBacaan, onStartMendengar, onStartBertutur, onStartMenulis, onOpenParent, onOpenUasa, onOpenAi, onReset, onExportBetaReport, onResume, onRestartResume, onCompleteDaily, onToggleFavourite }) {
   const topics = selectedSubject.topics;
   const level = Math.floor((profile.xp || 0) / 100) + 1;
   const levelProgress = (profile.xp || 0) % 100;
@@ -749,20 +954,22 @@ function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selecte
   const averageScore = getSubjectAverage(profile, selectedSubject);
   const aiRecommendation = profile.recommendations?.[selectedSubject.id] || buildRecommendation(profile, selectedSubject);
   const recommendedPracticeTopic = topics.find(topic => topic.id === aiRecommendation.recommendedTopicId) || recommended;
-  const aiMemory = loadAIMemory();
-  const adaptiveSubjects = allSubjects?.length ? allSubjects : [selectedSubject];
-  const topicMastery = {
+  const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp]);
+  const adaptiveSubjects = useMemo(() => allSubjects?.length ? allSubjects : [selectedSubject], [allSubjects, selectedSubject]);
+  const topicMastery = useMemo(() => ({
     ...(aiMemory.topicMastery || {}),
     ...buildMasteryMap(profile, adaptiveSubjects, aiMemory)
-  };
-  const curriculumCoverage = buildCurriculumCoverage(profile, adaptiveSubjects);
-  const missingSkSpRecommendation = recommendMissingSkSp(curriculumCoverage);
-  const masterySummary = summarizeMastery(topicMastery);
-  const effectiveMemory = { ...aiMemory, topicMastery, masterySummary, mastery: masterySummary.masteryScore, curriculumCoverage };
-  const smartLesson = buildAdaptiveRecommendation({ profile, memory: effectiveMemory, subjects: adaptiveSubjects });
-  const learningJourney = buildLessonPlan({ subjects: adaptiveSubjects, topicMastery });
+  }), [profile, adaptiveSubjects, aiMemory]);
+  const curriculumCoverage = useMemo(() => buildCurriculumCoverage(profile, adaptiveSubjects), [profile, adaptiveSubjects]);
+  const missingSkSpRecommendation = useMemo(() => recommendMissingSkSp(curriculumCoverage), [curriculumCoverage]);
+  const masterySummary = useMemo(() => summarizeMastery(topicMastery), [topicMastery]);
+  const effectiveMemory = useMemo(() => ({ ...aiMemory, topicMastery, masterySummary, mastery: masterySummary.masteryScore, curriculumCoverage }), [aiMemory, topicMastery, masterySummary, curriculumCoverage]);
+  const smartLesson = useMemo(() => buildAdaptiveRecommendation({ profile, memory: effectiveMemory, subjects: adaptiveSubjects }), [profile, effectiveMemory, adaptiveSubjects]);
+  const learningJourney = useMemo(() => buildLessonPlan({ subjects: adaptiveSubjects, topicMastery }), [adaptiveSubjects, topicMastery]);
   const smartSubject = adaptiveSubjects.find(subject => subject.id === smartLesson.nextSubject) || selectedSubject;
   const smartTopic = smartSubject?.topics?.find(topic => topic.id === smartLesson.nextTopic);
+  const dashboardCharacter = getPersonalityForSubject(selectedSubject);
+  const welcomeTopic = recommended?.title || learningJourney.todayLesson?.title || smartTopic?.title || 'topik pilihan';
   const readingHistory = aiMemory.readingHistory || [];
   const readingPurata = readingHistory.length ? Math.round(readingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / readingHistory.length) : 0;
   const listeningHistory = aiMemory.listeningHistory || [];
@@ -773,23 +980,24 @@ function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selecte
   const writingPurata = writingHistory.length ? Math.round(writingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / writingHistory.length) : 0;
   const hasDashboardActivity = (profile.history || []).length > 0 || Object.keys(profile.progress || {}).length > 0 || readingHistory.length > 0 || listeningHistory.length > 0 || speakingHistory.length > 0 || writingHistory.length > 0;
 
-  return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div><button className="nav active">ðŸ  Papan Utama</button><button className="nav" onClick={onOpenAi}>ðŸ¤– Tutor AI</button><button className="nav" onClick={onOpenUasa}>ðŸ† UASA</button><button className="nav" onClick={onOpenParent}>ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Ibu Bapa</button><div className="sidebar-note"><b>âš¡ Data Ringan</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">    <DashboardHeader profile={profile} level={level} levelProgress={levelProgress} />    <section className="profile hero-card"><MascotPlaceholder name="Janna" /><div className="avatar-large">{profile.avatar || 'ðŸ‘¦'}</div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name} ðŸ˜Š</h1><p>AI cadangkan belajar <b>{recommended?.title}</b> hari ini.</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div><button className="ghost" onClick={onReset}>Tetap Semula</button></section>
-    <section className="stats"><Stat label="XP" value={profile.xp || 0} icon="â­" /><Stat label="Level" value={level} icon="ðŸ†" /><Stat label="Syiling" value={profile.coins || 0} icon="ðŸ’°" /><Stat label="Streak" value={profile.streak || 0} icon="ðŸ”¥" /></section>
+  return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div><button className="nav active">🏠 Papan Utama</button><button className="nav" onClick={onOpenAi}>🤖 Tutor AI</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button><div className="sidebar-note"><b>⚡ Data Ringan</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">    <DashboardHeader profile={profile} level={level} levelProgress={levelProgress} />    <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood="happy" size="md" animation="gentle" message={`Assalamualaikum, ${profile.name || 'Anak'}. Hari ini kita akan belajar ${welcomeTopic}. Jom mulakan!`} /><div className="avatar-large">{profile.avatar || '\u{1F466}'}</div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name || 'Anak'}</h1><p>Hari ini kita akan belajar <b>{welcomeTopic}</b>. Jom mulakan!</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
+    <section className="stats"><Stat label="XP" value={profile.xp || 0} icon="⭐" /><Stat label="Level" value={level} icon="🏆" /><Stat label="Syiling" value={profile.coins || 0} icon="💰" /><Stat label="Streak" value={profile.streak || 0} icon="🔥" /></section>
     {!hasDashboardActivity && <section className="card"><EmptyState title="Belum ada aktiviti pembelajaran" message="Mulakan satu latihan ringkas untuk membina rekod kemajuan, sejarah dan laporan ibu bapa." actionLabel="Mula Latihan Cadangan" onAction={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} /></section>}
-    <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>â–¶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>ðŸ¤– Tanya Tutor AI</button><button className="secondary" onClick={onOpenUasa}>ðŸ† Simulator UASA</button><button className="secondary" onClick={onStartBacaan}>ðŸŽ¤ Bacaan</button><button className="secondary" onClick={onStartMendengar}>ðŸŽ§ Mendengar</button><button className="secondary" onClick={onStartBertutur}>ðŸ—£ï¸ Bertutur</button><button className="secondary" onClick={onStartMenulis}>âœï¸ Menulis</button><button className="secondary" onClick={onOpenParent}>ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Ibu Bapa</button></section>
-    {resume && <section className="card resume-card"><p className="eyebrow">Sambung Automatik</p><h2>â–¶ Sambung Latihan</h2><p>Subjek: <b>{resume.subjectId}</b><br/>Soalan: <b>{resume.questionIndex + 1}</b></p><div className="actions"><button onClick={onResume}>â–¶ Sambung</button><button className="secondary" onClick={onRestartResume}>ðŸ”„ Mula Semula</button></div></section>}
+    <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>▶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya Tutor AI</button><button className="secondary" onClick={onOpenUasa}>🏆 Simulator UASA</button><button className="secondary" onClick={onStartBacaan}>🎤 Bacaan</button><button className="secondary" onClick={onStartMendengar}>🎧 Mendengar</button><button className="secondary" onClick={onStartBertutur}>🗣️ Bertutur</button><button className="secondary" onClick={onStartMenulis}>✍️ Menulis</button><button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button></section>
+    {resume && <section className="card resume-card"><p className="eyebrow">Sambung Automatik</p><h2>▶ Sambung Latihan</h2><p>Subjek: <b>{resume.subjectId}</b><br/>Soalan: <b>{resume.questionIndex + 1}</b></p><div className="actions"><button onClick={onResume}>▶ Sambung</button><button className="secondary" onClick={onRestartResume}>🔄 Mula Semula</button></div></section>}
     <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><div className="mastery-summary-grid"><div><b>{masterySummary.masteryScore}%</b><span>Skor Penguasaan</span></div><div><b>{masterySummary.dikuasai}</b><span>Dikuasai</span></div><div><b>{masterySummary.learning}</b><span>Sedang Belajar</span></div><div><b>{masterySummary.needsPractice}</b><span>Perlu Latihan</span></div></div></section>
     <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + UASA</h2><div className="mastery-summary-grid"><div><b>{curriculumCoverage.summary.coveragePercent}%</b><span>SK/SP Diliputi</span></div><div><b>{curriculumCoverage.summary.masteryPercent}%</b><span>Penguasaan SK/SP</span></div><div><b>{curriculumCoverage.summary.missing}</b><span>SK/SP Belum Cukup</span></div><div><b>{curriculumCoverage.summary.estimatedMinutes}</b><span>Anggaran Minit</span></div></div>{missingSkSpRecommendation && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</section>
     <section className="card smart-lesson-card"><p className="eyebrow">Laluan Belajar Hari Ini</p><h2>{learningJourney.todayLesson?.title || smartTopic?.title || 'Enjin Pembelajaran Adaptif'}</h2><p>{learningJourney.reason || smartLesson.reason}</p><div className="journey-steps"><div><span>Hari Ini</span><b>{learningJourney.todayLesson?.subject || smartSubject?.short}</b><small>{learningJourney.todayLesson?.masteryStatus || 'READY'}</small></div><div><span>Seterusnya</span><b>{learningJourney.nextLesson?.title || 'Selepas dikuasai'}</b><small>{learningJourney.nextLesson?.masteryStatus || 'LOCKED'}</small></div><div><span>Ulang Kaji</span><b>{learningJourney.recommendedReview?.title || 'Tiada ulang kaji'}</b><small>{learningJourney.recommendedReview?.masteryStatus || 'CLEAR'}</small></div></div><div className="recommend-meta"><span>{learningJourney.blockedTopics.length} topik terkunci</span><span>AI: {smartLesson.priority}</span><span>{learningJourney.recommendedReview?.title || 'Ulang kaji stabil'}</span></div><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!learningJourney.todayLesson && !smartLesson.nextQuestionId}>Mula Laluan</button></section>
-    <section className="card ai-recommend-card"><p className="eyebrow">Cadangan AI</p><h2>ðŸ¤– Cadangan Belajar</h2><p>{aiRecommendation.reason}</p>{aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> â€¢ {aiMemory.lastLesson.score}%</p>}<div className="recommend-meta"><span>{aiMemory.weakTopics.length || aiRecommendation.weakTopics.length} topik lemah</span><span>{aiMemory.strongTopics.length} topik kuat</span><span>Penguasaan {aiMemory.mastery}%</span><span>Masa belajar {formatStudyTime(aiMemory.studyTime)}</span><span>Hari berturut {aiMemory.studyStreak}</span><span>{recommendedPracticeTopic?.title || 'Semua topik selesai'}</span></div><button onClick={() => recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic)}>Latih Semula</button></section>
+    <section className="card ai-recommend-card"><p className="eyebrow">Cadangan Guru AI</p><h2>Cadangan Guru AI</h2><p>{aiRecommendation.reason}</p>{aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> • {aiMemory.lastLesson.score}%</p>}<div className="recommend-meta"><span>{aiMemory.weakTopics.length || aiRecommendation.weakTopics.length} topik lemah</span><span>{aiMemory.strongTopics.length} topik kuat</span><span>Penguasaan {aiMemory.mastery}%</span><span>Masa belajar {formatStudyTime(aiMemory.studyTime)}</span><span>Hari berturut {aiMemory.studyStreak}</span><span>{recommendedPracticeTopic?.title || 'Semua topik selesai'}</span></div><button onClick={() => recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic)}>Latih Semula</button></section>
     <section className="card reading-progress-card"><p className="eyebrow">Kemajuan Bacaan</p><h2>Jurulatih Bacaan</h2><div className="mastery-summary-grid"><div><b>{readingPurata}%</b><span>Purata</span></div><div><b>{readingHistory.length}</b><span>Sesi</span></div><div><b>{readingHistory[0]?.score || 0}%</b><span>Terkini</span></div><div><b>{readingHistory[0]?.language || '-'}</b><span>Bahasa Terakhir</span></div></div><button onClick={onStartBacaan}>Mula Latihan Bacaan</button></section>
     <section className="card listening-progress-card"><p className="eyebrow">Kemajuan Mendengar</p><h2>Makmal Mendengar</h2><div className="mastery-summary-grid"><div><b>{listeningPurata}%</b><span>Purata</span></div><div><b>{listeningHistory.length}</b><span>Sesi</span></div><div><b>{listeningHistory[0]?.score || 0}%</b><span>Terkini</span></div><div><b>{listeningHistory[0]?.language || '-'}</b><span>Bahasa Terakhir</span></div></div><button onClick={onStartMendengar}>Mula Latihan Mendengar</button></section>
     <section className="card speaking-progress-card"><p className="eyebrow">Kemajuan Bertutur</p><h2>Jurulatih Bertutur</h2><div className="mastery-summary-grid"><div><b>{speakingPurata}%</b><span>Purata</span></div><div><b>{speakingHistory.length}</b><span>Sesi</span></div><div><b>{speakingHistory[0]?.score || 0}%</b><span>Terkini</span></div><div><b>{speakingHistory[0]?.language || '-'}</b><span>Bahasa Terakhir</span></div></div><button onClick={onStartBertutur}>Mula Latihan Bertutur</button></section>
     <section className="card writing-progress-card"><p className="eyebrow">Kemajuan Menulis</p><h2>Jurulatih Menulis</h2><div className="mastery-summary-grid"><div><b>{writingPurata}%</b><span>Purata</span></div><div><b>{writingHistory.length}</b><span>Sesi</span></div><div><b>{writingHistory[0]?.score || 0}%</b><span>Terkini</span></div><div><b>{writingHistory[0]?.language || '-'}</b><span>Bahasa Terakhir</span></div></div><button onClick={onStartMenulis}>Mula Latihan Menulis</button></section>
-    <section className="card daily-card"><p className="eyebrow">Cabaran Harian</p><h2>ðŸŽ¯ Cabaran Hari Ini</h2><div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}>âœ… {item.label}</span>)}</div><button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? 'âœ… Cabaran Harian Selesai' : 'ðŸŽ Tebus Bonus +50 XP +20 Syiling'}</button></section>
-    <section className="card"><p className="eyebrow">Pilih Subjek</p><h2>ðŸ“š Subjek Tahun 2</h2><div className="subject-grid">{subjectList.map(subject => { const loadedSubject = allSubjects.find(item => item.id === subject.id); const progress = loadedSubject ? getSubjectAverage(profile, loadedSubject) : 0; const completedTopics = loadedSubject ? loadedSubject.topics.filter(topic => (profile.progress?.[progressKey(loadedSubject.id, topic.id)]?.best || 0) >= 80).length : 0; return <button key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''} ${progress >= 80 ? 'subject-complete' : ''}`} onClick={() => onSelectSubject(subject.id)}><SubjectIllustration subject={subject} /><b>{subject.title}</b><small>{completedTopics}/{loadedSubject?.topics?.length || 0} topik siap</small><span className="subject-progress"><span style={{ width: `${progress}%` }} /></span><em>{progress}% penguasaan</em><strong>Mula</strong></button> })}</div></section>
-    <section className="card stats-panel"><p className="eyebrow">Statistik {selectedSubject.short}</p><h2>ðŸ“Š Ringkasan Kemajuan</h2><div className="insight-grid"><div className="insight"><b>{averageScore}%</b><span>Purata</span></div><div className="insight"><b>{completed}</b><span>Topik Siap</span></div><div className="insight"><b>{totalQuestions}</b><span>Soalan</span></div></div></section>
-    <section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h2>ðŸ† Simulator UASA {selectedSubject.short}</h2><p>Latihan campuran mengikut topik.</p><button onClick={onOpenUasa}>Mula Simulator UASA</button></section>
+    <section className="card daily-card"><p className="eyebrow">Cabaran Harian</p><h2>🎯 Cabaran Hari Ini</h2><div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}>✅ {item.label}</span>)}</div><button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? '✅ Cabaran Harian Selesai' : '🎁 Tebus Bonus +50 XP +20 Syiling'}</button></section>
+    <section className="card"><p className="eyebrow">Pilih Subjek</p><h2>📚 Subjek Tahun 2</h2><div className="subject-grid">{subjectList.map(subject => { const loadedSubject = allSubjects.find(item => item.id === subject.id); const progress = loadedSubject ? getSubjectAverage(profile, loadedSubject) : 0; const completedTopics = loadedSubject ? loadedSubject.topics.filter(topic => (profile.progress?.[progressKey(loadedSubject.id, topic.id)]?.best || 0) >= 80).length : 0; return <button key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''} ${progress >= 80 ? 'subject-complete' : ''}`} onClick={() => onSelectSubject(subject.id)}><SubjectIllustration subject={subject} /><b>{subject.title}</b><small>{completedTopics}/{loadedSubject?.topics?.length || 0} topik siap</small><span className="subject-progress"><span style={{ width: `${progress}%` }} /></span><em>{progress}% penguasaan</em><strong>Mula</strong></button> })}</div></section>
+    <section className="card stats-panel"><p className="eyebrow">Statistik {selectedSubject.short}</p><h2>📊 Ringkasan Kemajuan</h2><div className="insight-grid"><div className="insight"><b>{averageScore}%</b><span>Purata</span></div><div className="insight"><b>{completed}</b><span>Topik Siap</span></div><div className="insight"><b>{totalQuestions}</b><span>Soalan</span></div></div></section>
+    <SettingsPanel onExportBetaReport={onExportBetaReport} onReset={onReset} />
+    <section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h2>🏆 Simulator UASA {selectedSubject.short}</h2><p>Latihan campuran mengikut topik.</p><button onClick={onOpenUasa}>Mula Simulator UASA</button></section>
     <LearningPath profile={profile} subject={selectedSubject} topicMastery={topicMastery} totalQuestions={totalQuestions} completed={completed} resume={resume} onStartTopic={onStartTopic} onResume={onResume} onToggleFavourite={onToggleFavourite} />
   </section></main>;
 }
@@ -806,18 +1014,18 @@ function LearningPath({ profile, subject, topicMastery, totalQuestions, complete
     setCollapsedSections(prev => ({ ...prev, [sectionTitle]: !prev[sectionTitle] }));
   }
 
-  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Laluan Belajar</p><h2>{subject.icon} {subject.title}</h2><p>{subject.topics.length} topik â€¢ {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const mastery = topicMastery?.[progressKey(subject.id, topic.id)]; const masteryStatus = mastery?.status || MASTERY_STATUS.NOT_STARTED; const done = masteryStatus === MASTERY_STATUS.MASTERED; const needRevision = masteryStatus === MASTERY_STATUS.NEEDS_PRACTICE || isWeakTopic(profile, subject, topic); const blockedBy = getBlockedPrerequisites(subject, topic.id, topicMastery); const unlocked = isTopicUnlockedByGraph(subject, topic.id, topicMastery); const dependencyArrow = getDependencyArrow(subject, topic.id); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || masteryStatus === MASTERY_STATUS.LEARNING; const status = masteryStatus.replaceAll('_', ' '); const masteryClass = `mastery-${masteryStatus.toLowerCase().replaceAll('_', '-')}`; return <div className="path-row" key={topic.id}>{dependencyArrow && <div className="dependency-arrow">{dependencyArrow}</div>}<article className={`path-node ${masteryClass} ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''} ${needRevision ? 'path-revision' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Buang kegemaran' : 'Tambah kegemaran'} aria-pressed={isFav}>{isFav ? 'â¤ï¸' : 'â™¡'}</button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert(`Kuasai prasyarat dahulu: ${blockedBy.join(', ')}`)}><span className="path-icon">{unlocked ? (done ? 'ðŸ…' : index + 1) : 'ðŸ”’'}</span><span className="path-copy"><b>{topic.title}</b>{needRevision && <em className="revision-badge">Perlu Ulang Kaji</em>}<small>{mastery?.masteryScore || best}% penguasaan â€¢ {getStars(best)} â€¢ {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${mastery?.masteryScore || best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${masteryStatus.toLowerCase().replaceAll('_', '-')}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{needRevision ? 'Latih Semula' : inProgress ? 'Sambung' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line">â†“</div>}</div> })}</div>}</section> })}<div className="path-trophy">ðŸ† Tamat {subject.short}</div></div></section>;
+  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Laluan Belajar</p><h2>{subject.icon} {subject.title}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const mastery = topicMastery?.[progressKey(subject.id, topic.id)]; const masteryStatus = mastery?.status || MASTERY_STATUS.NOT_STARTED; const done = masteryStatus === MASTERY_STATUS.MASTERED; const needRevision = masteryStatus === MASTERY_STATUS.NEEDS_PRACTICE || isWeakTopic(profile, subject, topic); const blockedBy = getBlockedPrerequisites(subject, topic.id, topicMastery); const unlocked = isTopicUnlockedByGraph(subject, topic.id, topicMastery); const dependencyArrow = getDependencyArrow(subject, topic.id); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || masteryStatus === MASTERY_STATUS.LEARNING; const status = masteryStatus.replaceAll('_', ' '); const masteryClass = `mastery-${masteryStatus.toLowerCase().replaceAll('_', '-')}`; return <div className="path-row" key={topic.id}>{dependencyArrow && <div className="dependency-arrow">{dependencyArrow}</div>}<article className={`path-node ${masteryClass} ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''} ${needRevision ? 'path-revision' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Buang kegemaran' : 'Tambah kegemaran'} aria-pressed={isFav}>{isFav ? '❤️' : '♡'}</button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert(`Kuasai prasyarat dahulu: ${blockedBy.join(', ')}`)}><span className="path-icon">{unlocked ? (done ? '🏅' : index + 1) : '🔒'}</span><span className="path-copy"><b>{topic.title}</b>{needRevision && <em className="revision-badge">Perlu Ulang Kaji</em>}<small>{mastery?.masteryScore || best}% penguasaan • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${mastery?.masteryScore || best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${masteryStatus.toLowerCase().replaceAll('_', '-')}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{needRevision ? 'Latih Semula' : inProgress ? 'Sambung' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line">↓</div>}</div> })}</div>}</section> })}<div className="path-trophy">🏆 Tamat {subject.short}</div></div></section>;
 }
 
 function AiTutorChat({ profile, selectedSubject, onTutup }) {
-  const [messages, setMessages] = useState([{ role: 'ai', text: `Assalamualaikum ${profile.name || 'Anak'} ðŸ˜Š Saya Tutor AI.` }]);
+  const [messages, setMessages] = useState([{ role: 'ai', text: `Assalamualaikum ${profile.name || 'Anak'}. Saya Guru AI. Saya akan bantu kamu belajar dengan tenang.` }]);
   const [input, setInput] = useState('');
   function sendMessage(text = input) {
     if (!text.trim()) return;
     setMessages(prev => [...prev, { role: 'user', text }, { role: 'ai', text: aiReply(text, profile, selectedSubject) }]);
     setInput('');
   }
-  return <div className="ai-chat-overlay"><section className="ai-chat"><div className="ai-chat-head"><div className="ai-chat-brand"><MascotPlaceholder name="Jati" size="sm" /><BrandLogo iconOnly /><div><b>Jannati AI Tutor</b><span>Tutor pintar luar talian asas</span></div></div><button className="ghost" onClick={onTutup}>âœ•</button></div><div className="ai-chat-body">{messages.map((msg, index) => <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai' : 'user'}`}>{msg.text}</div>)}</div><div className="quick-prompts"><button onClick={() => sendMessage('Apa saya perlu belajar hari ini?')}>Apa nak belajar?</button><button onClick={() => sendMessage('Topik mana saya lemah?')}>Topik lemah</button><button onClick={() => sendMessage('Saya nak persediaan UASA')}>UASA</button></div><div className="ai-chat-input"><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Tanya Tutor AI..." /><button onClick={() => sendMessage()}>Hantar</button></div></section></div>;
+  return <div className="ai-chat-overlay"><section className="ai-chat"><div className="ai-chat-head"><div className="ai-chat-brand"><Mascot character="jati" mood="teaching" size="sm" /><BrandLogo iconOnly /><div><b>Jannati AI Tutor</b><span>Tutor pintar luar talian asas</span></div></div><button className="ghost" onClick={onTutup}>✕</button></div><div className="ai-chat-body">{messages.map((msg, index) => <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai' : 'user'}`}>{msg.text}</div>)}</div><div className="quick-prompts"><button onClick={() => sendMessage('Apa saya perlu belajar hari ini?')}>Apa nak belajar?</button><button onClick={() => sendMessage('Topik mana saya lemah?')}>Topik lemah</button><button onClick={() => sendMessage('Saya nak persediaan UASA')}>UASA</button></div><div className="ai-chat-input"><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Tanya Tutor AI..." /><button onClick={() => sendMessage()}>Hantar</button></div></section></div>;
 }
 
 function UasaSimulator({ subject, onBack, onSave }) {
@@ -844,8 +1052,8 @@ function UasaSimulator({ subject, onBack, onSave }) {
     onSave({ date: todayKey(), subjectId: subject.id, subjectShort: subject.short, subjectTitle: subject.title, score, grade, total: questions.length, correct: correctCount, weakTopics: [] });
     setSaved(true);
   }
-  if (finished) return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">UASA {subject.short}</span></div><section className="card reward-card"><div className="big">ðŸ†</div><h1>Keputusan UASA</h1><div className="result-score"><b>{score}%</b><span>Gred {grade} â€¢ {getStars(score)}</span></div><div className="actions"><button disabled={saved} onClick={saveResult}>{saved ? 'âœ… Disimpan' : 'Simpan Keputusan'}</button><button className="secondary" onClick={onBack}>Kembali</button></div></section></main>;
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span></div><section className="card"><h1 className="question">{question.q}</h1><input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitAnswer()} placeholder="Tulis jawapan" autoFocus /><div className="actions"><button className="secondary" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>ðŸ”Š Baca Soalan</button><button onClick={submitAnswer}>Jawab</button></div></section></main>;
+  if (finished) return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>Papan Utama</button><span className="pill">UASA {subject.short}</span></div><section className="card reward-card"><MascotCard character={getPersonalityForSubject(subject)} mood="celebrating" size="lg" animation="bounce" message={`Syabas! Kamu berjaya menjawab ${correctCount} daripada ${questions.length} soalan.`} /><div className="big">UASA</div><h1>Keputusan UASA</h1><div className="result-score"><b>{score}%</b><span>Gred {grade} - {getStars(score)}</span></div><div className="actions"><button disabled={saved} onClick={saveResult}>{saved ? 'Disimpan' : 'Simpan Keputusan'}</button><button className="secondary" onClick={onBack}>Kembali</button></div></section></main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span></div><section className="card"><h1 className="question">{question.q}</h1><input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitAnswer()} placeholder="Tulis jawapan" autoFocus /><div className="actions"><button className="secondary" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>🔊 Baca Soalan</button><button onClick={submitAnswer}>Jawab</button></div></section></main>;
 }
 
 function summarizeHistory(history = [], days = 7) {
@@ -883,32 +1091,46 @@ function ParentDashboard({ profile, allSubjects, onBack }) {
   const writingHistory = (memory.writingHistory || []).slice(0, 6);
 
   return <main className="app parent-page">
-    <div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><button onClick={printReport}>ðŸ–¨ï¸ Cetak / Simpan PDF</button></div>
+    <div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><button onClick={printReport}>🖨️ Cetak / Simpan PDF</button></div>
     <section className="card parent-hero"><BrandLogo iconOnly /><div><p className="eyebrow">Laporan Ibu Bapa</p><h1>Laporan Pembelajaran {profile.name || 'Anak'}</h1><p>Ringkasan kemajuan, topik lemah, topik kuat dan cadangan AI luar talian.</p></div></section>
     <section className="parent-summary-grid"><div className="parent-metric"><span>Minggu Ini</span><b>{weekly.average}%</b><small>{weekly.count} aktiviti</small></div><div className="parent-metric"><span>Bulan Ini</span><b>{monthly.average}%</b><small>{monthly.count} aktiviti</small></div><div className="parent-metric"><span>Penguasaan</span><b>{memory.mastery || 0}%</b><small>{strongTopics.length} topik kuat</small></div><div className="parent-metric"><span>Masa Belajar</span><b>{formatStudyTime(memory.studyTime || 0)}</b><small>Direkod luar talian</small></div></section>
-    <section className="card"><p className="eyebrow">Penguasaan SK/SP</p><h2>Analisis Kurikulum</h2><div className="mastery-summary-grid"><div><b>{curriculumCoverage.summary.coveragePercent}%</b><span>Liputan</span></div><div><b>{curriculumCoverage.summary.masteryPercent}%</b><span>Penguasaan</span></div><div><b>{uasaCoverage.uasaQuestions}</b><span>Item UASA</span></div><div><b>{curriculumCoverage.summary.missing}</b><span>Belum Cukup</span></div></div><div className="timeline">{curriculumCoverage.missingSkSp.slice(0, 6).map((item, index) => <div className="timeline-item" key={`${item.subjectId}-${item.SK}-${item.SP}-${index}`}><span>{item.subject}</span><b>{item.SK} / {item.SP}</b><em>{item.coverage}% diliputi â€¢ {item.mastery}% dikuasai</em></div>)}</div></section>
+    <section className="card"><p className="eyebrow">Penguasaan SK/SP</p><h2>Analisis Kurikulum</h2><div className="mastery-summary-grid"><div><b>{curriculumCoverage.summary.coveragePercent}%</b><span>Liputan</span></div><div><b>{curriculumCoverage.summary.masteryPercent}%</b><span>Penguasaan</span></div><div><b>{uasaCoverage.uasaQuestions}</b><span>Item UASA</span></div><div><b>{curriculumCoverage.summary.missing}</b><span>Belum Cukup</span></div></div><div className="timeline">{curriculumCoverage.missingSkSp.slice(0, 6).map((item, index) => <div className="timeline-item" key={`${item.subjectId}-${item.SK}-${item.SP}-${index}`}><span>{item.subject}</span><b>{item.SK} / {item.SP}</b><em>{item.coverage}% diliputi • {item.mastery}% dikuasai</em></div>)}</div></section>
     <section className="card teacher-snapshot-card"><p className="eyebrow">Ringkasan Guru</p><h2>Paparan Kelas</h2><div className="mastery-summary-grid"><div><b>{teacherSnapshot.subjects.length}</b><span>Subjek</span></div><div><b>{teacherSnapshot.subjects.reduce((sum, subject) => sum + subject.topics, 0)}</b><span>Topik</span></div><div><b>{teacherSnapshot.subjects.reduce((sum, subject) => sum + subject.questions, 0)}</b><span>Soalan</span></div><div><b>{teacherSnapshot.skSpRows.length}</b><span>Baris SK/SP</span></div></div><p className="memory-last">Dijana {teacherSnapshot.generatedAt.slice(0, 10)} untuk semakan guru.</p></section>
-    <section className="card parent-ai-card"><p className="eyebrow">Cadangan AI untuk Ibu Bapa</p><h2>ðŸ¤– Cadangan Ibu Bapa</h2><p>{recommendation}</p><div className="recommend-meta"><span>XP {profile.xp || 0}</span><span>Syiling {profile.coins || 0}</span><span>Hari berturut {profile.streak || 0}</span></div></section>
-    <section className="card"><h2>ðŸŽ¤ Sejarah Bacaan</h2><div className="timeline">{readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct} correct â€¢ {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}</div></section>
-    <section className="card"><h2>ðŸŽ§ Sejarah Mendengar</h2><div className="timeline">{listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct}/{item.total} â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}</div></section>
-    <section className="card"><h2>ðŸ—£ï¸ Sejarah Bertutur</h2><div className="timeline">{speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}</div></section>
-    <section className="card"><h2>âœï¸ Sejarah Menulis</h2><div className="timeline">{writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}</div></section>
-    <section className="card"><h2>ðŸ“š Kemajuan Mengikut Subjek</h2><div className="subject-report-grid">{subjectRows.map(row => <div className="report-box" key={row.id}><h3>{row.icon} {row.short}</h3><b>{row.average}%</b><div className="mini-progress"><div style={{ width: `${row.average}%` }} /></div><span>{row.completed}/{row.total} topik siap</span></div>)}</div></section>
-    <section className="parent-two-col"><section className="card"><h2>âš ï¸ Topik Lemah</h2><div className="parent-topic-list">{weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}</div></section><section className="card"><h2>ðŸŒŸ Topik Kuat</h2><div className="parent-topic-list">{strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}</div></section></section>
-    <section className="card"><h2>ðŸ† Sejarah UASA</h2><div className="timeline">{(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subjectShort || item.subjectId} - Gred {item.grade}</b><em>{item.score}% â€¢ {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}</div></section>
-    <section className="card"><h2>ðŸ“… Aktiviti Terkini</h2><div className="timeline">{(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subject} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}</div></section>
+    <section className="card parent-ai-card"><p className="eyebrow">Cadangan Guru AI untuk Ibu Bapa</p><h2>🤖 Cadangan Ibu Bapa</h2><p>{recommendation}</p><div className="recommend-meta"><span>XP {profile.xp || 0}</span><span>Syiling {profile.coins || 0}</span><span>Hari berturut {profile.streak || 0}</span></div></section>
+    <section className="card"><h2>🎤 Sejarah Bacaan</h2><div className="timeline">{readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct} correct • {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}</div></section>
+    <section className="card"><h2>🎧 Sejarah Mendengar</h2><div className="timeline">{listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct}/{item.total} • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}</div></section>
+    <section className="card"><h2>🗣️ Sejarah Bertutur</h2><div className="timeline">{speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}</div></section>
+    <section className="card"><h2>✍️ Sejarah Menulis</h2><div className="timeline">{writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}</div></section>
+    <section className="card"><h2>📚 Kemajuan Mengikut Subjek</h2><div className="subject-report-grid">{subjectRows.map(row => <div className="report-box" key={row.id}><h3>{row.icon} {row.short}</h3><b>{row.average}%</b><div className="mini-progress"><div style={{ width: `${row.average}%` }} /></div><span>{row.completed}/{row.total} topik siap</span></div>)}</div></section>
+    <section className="parent-two-col"><section className="card"><h2>⚠️ Topik Lemah</h2><div className="parent-topic-list">{weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}</div></section><section className="card"><h2>🌟 Topik Kuat</h2><div className="parent-topic-list">{strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{topic.title}</b><span>{topic.subject} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}</div></section></section>
+    <section className="card"><h2>🏆 Sejarah UASA</h2><div className="timeline">{(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subjectShort || item.subjectId} - Gred {item.grade}</b><em>{item.score}% • {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}</div></section>
+    <section className="card"><h2>📅 Aktiviti Terkini</h2><div className="timeline">{(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{item.subject} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}</div></section>
   </main>;
 }
 
 function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {
   const question = topic.questions[questionIndex];
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
-  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>ðŸ”Š Baca Soalan</button><button className="secondary" onClick={onPetunjuk}>ðŸ’¡ Petunjuk</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? 'ðŸ”– Ditanda' : 'ðŸ”– Tanda Soalan'}</button><button className="secondary" onClick={onOpenAi}>ðŸ¤– Tanya Tutor AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><p className="autosave-note">ðŸ’¾ Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><h2>{feedback.status === 'correct' ? 'ðŸŸ¢' : feedback.status === 'almost' ? 'ðŸŸ¡' : feedback.status === 'hint' ? 'ðŸ’¡' : 'ðŸ”´'} {feedback.title}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>ðŸ¤– Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  const debugRow = question?.qde || {};
+  const qipRow = question?.qip || {};
+  const diversityScore = topic.qdeScore || {};
+  const quizCharacter = getPersonalityForSubject(subject);
+  const feedbackMood = feedback?.status === 'correct' ? 'celebrating' : feedback?.status === 'hint' ? 'thinking' : 'encouraging';
+  const feedbackMessage = feedback?.status === 'correct'
+    ? 'Syabas! Kamu berjaya menjawab soalan ini.'
+    : feedback?.status === 'almost'
+      ? 'Hampir betul. Jom kemaskan jawapan sedikit lagi.'
+      : feedback?.status === 'hint'
+        ? 'Fikir perlahan-lahan. Kamu boleh cuba.'
+        : 'Tak mengapa. Mari kita cuba sekali lagi.';
+  const feedbackTitle = feedback?.status === 'correct' ? 'Syabas!' : feedback?.status === 'almost' ? 'Hampir betul' : feedback?.status === 'hint' ? 'Petunjuk lembut' : 'Tak mengapa.';
+  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>Baca Soalan</button><button className="secondary" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Developer Debug</summary><dl><dt>Selected Question</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Selection Reason</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>History Result</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Duplicate Result</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Diversity Score</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Original Stem</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Selected Stem</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Variation Group</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Stem Reason</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Stem Reuse</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Original Context</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Selected Context</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Context Group</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Context Reason</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Context Reuse</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Context Diversity</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Template</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Difficulty</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
-function Finish({ session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {
+function Finish({ profile, session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {
   const passed = (session.percent || 0) >= 80;
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotPlaceholder name="Janna" /><div className="big bounce">{passed ? 'ðŸŽ‰' : 'ðŸ’ª'}</div><p className="eyebrow">{topic?.title || 'Topik Selesai'}</p><h1>{passed ? 'Tahniah!' : 'Bagus mencuba!'}</h1><div className="result-score"><b>{session.percent || 0}%</b><span>{session.stars || 'â˜†â˜†â˜†'}</span></div><div className="finish-rewards"><div><b>{session.xp || 0}</b><span>XP diterima</span></div><div><b>{session.coins || 0}</b><span>Syiling diterima</span></div><div><b>{passed ? 'Dibuka' : 'Terkunci'}</b><span>{passed && nextTopic ? nextTopic.title : passed ? 'Semua topik siap' : 'Cuba capai 80%'}</span></div></div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Topik Seterusnya' : 'Ulang Topik'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>ðŸ¤– Tanya Tutor AI</button></div></section></main>;
+  const finishMessage = passed ? PERSONALITY_MESSAGES.completed : PERSONALITY_MESSAGES.retry;
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={passed ? 'celebrating' : 'encouraging'} size="lg" animation="bounce" message={finishMessage} /><div className="big bounce">{passed ? '\u{1F389}' : '\u{1F4AA}'}</div><p className="eyebrow">{topic?.title || 'Topik Selesai'}</p><h1>{passed ? 'Hebat!' : 'Tak mengapa.'}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : 'Mari kita cuba sekali lagi dengan tenang.'}</p><div className="result-score"><b>{session.percent || 0}%</b><span>{session.stars || '\u2606\u2606\u2606'}</span></div><div className="finish-rewards"><div><b>{session.stars || '\u2606\u2606\u2606'}</b><span>Bintang</span></div><div><b>{session.xp || 0}</b><span>XP diterima</span></div><div><b>{profile?.streak || 0}</b><span>Streak</span></div></div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
 }
 
 const readingPassages = [
@@ -933,8 +1155,8 @@ const readingPassages = [
     language: 'arab',
     label: 'Bahasa Arab',
     speechLang: 'ar-SA',
-    title: 'Ø£Ø³Ø±ØªÙŠ',
-    text: 'Ù‡Ø°Ù‡ Ø£Ø³Ø±ØªÙŠ. Ø£Ø¨ÙŠ ÙˆØ£Ù…ÙŠ ÙÙŠ Ø§Ù„Ø¨ÙŠØª. Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø£Ø³Ø±ØªÙŠ ÙƒØ«ÙŠØ±Ø§.'
+    title: 'أسرتي',
+    text: 'هذه أسرتي. أبي وأمي في البيت. أنا أحب أسرتي كثيرا.'
   }
 ];
 
@@ -1048,13 +1270,13 @@ function BacaanCoach({ profile, onBack, onFinish }) {
     });
   }
 
-  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">ðŸŽ¤</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{passage.text}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{result.score}%</h2><div className="word-check reading-word-check">{result.words.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{result.incorrectWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{result.incorrectWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{result.correct} betul</span><span>{result.missed} tertinggal</span><span>{result.incorrect} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
+  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🎤</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{passage.text}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{result.score}%</h2><div className="word-check reading-word-check">{result.words.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{result.incorrectWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{result.incorrectWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{result.correct} betul</span><span>{result.missed} tertinggal</span><span>{result.incorrect} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
 }
 
 const listeningSets = [
   { id: 'bm', language: 'BM', speechLang: 'ms-MY', title: 'BM Mendengar', prompt: 'Ibu beli roti dan susu di kedai.', choose: { question: 'Apa yang ibu beli?', options: ['Roti dan susu', 'Buku dan pensel', 'Ikan dan nasi'], answer: 'Roti dan susu' }, arrange: ['Ibu', 'beli', 'roti'], spell: 'susu', answer: { question: 'Di mana ibu membeli barang?', accepted: ['kedai', 'di kedai'] } },
   { id: 'english', language: 'English', speechLang: 'en-US', title: 'English Mendengar', prompt: 'The boy reads a book under the tree.', choose: { question: 'What does the boy read?', options: ['A book', 'A letter', 'A menu'], answer: 'A book' }, arrange: ['The', 'boy', 'reads'], spell: 'tree', answer: { question: 'Where is the boy?', accepted: ['under the tree', 'tree'] } },
-  { id: 'arab', language: 'Arabic', speechLang: 'ar-SA', title: 'Arabic Mendengar', prompt: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø£Ù…ÙŠ ÙˆØ£Ø¨ÙŠ.', choose: { question: 'Siapa yang disebut?', options: ['Ø£Ù…ÙŠ ÙˆØ£Ø¨ÙŠ', 'Ù‚Ø·ØªÙŠ', 'ØµØ¯ÙŠÙ‚ÙŠ'], answer: 'Ø£Ù…ÙŠ ÙˆØ£Ø¨ÙŠ' }, arrange: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø£Ù…ÙŠ'], spell: 'Ø£Ø¨ÙŠ', answer: { question: 'Tulis satu perkataan yang didengar.', accepted: ['Ø£Ù…ÙŠ', 'Ø£Ø¨ÙŠ', 'Ø§Ø­Ø¨', 'Ø£Ø­Ø¨'] } }
+  { id: 'arab', language: 'Arabic', speechLang: 'ar-SA', title: 'Arabic Mendengar', prompt: 'أنا أحب أمي وأبي.', choose: { question: 'Siapa yang disebut?', options: ['أمي وأبي', 'قطتي', 'صديقي'], answer: 'أمي وأبي' }, arrange: ['أنا', 'أحب', 'أمي'], spell: 'أبي', answer: { question: 'Tulis satu perkataan yang didengar.', accepted: ['أمي', 'أبي', 'احب', 'أحب'] } }
 ];
 
 function normalizeMendengar(text = '') {
@@ -1131,7 +1353,7 @@ function MendengarLab({ onBack, onFinish }) {
 
   const availableWords = item.arrange.filter(word => !arranged.includes(word));
 
-  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">ðŸŽ§</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Mesra luar talian. Audio HTML5 sedia untuk klip tempatan, dengan suara pelayar sebagai pilihan gantian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(set => <button key={set.id} className={set.id === setId ? '' : 'secondary'} onClick={() => setSetId(set.id)}>{set.language}</button>)}</div><audio ref={audioRef} controls preload="tiada" /><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <div><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></div>}{mode === 'arrange' && <div><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></div>}{mode === 'spell' && <div><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></div>}{mode === 'answer' && <div><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></div>}<div className="actions"><button onClick={submitMendengar}>Semak Jawapan</button><button className="secondary" onClick={saveMendengar}>Simpan Skor Latihan</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section></main>;
+  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🎧</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Mesra luar talian. Audio HTML5 sedia untuk klip tempatan, dengan suara pelayar sebagai pilihan gantian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(set => <button key={set.id} className={set.id === setId ? '' : 'secondary'} onClick={() => setSetId(set.id)}>{set.language}</button>)}</div><audio ref={audioRef} controls preload="tiada" /><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <div><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></div>}{mode === 'arrange' && <div><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></div>}{mode === 'spell' && <div><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></div>}{mode === 'answer' && <div><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></div>}<div className="actions"><button onClick={submitMendengar}>Semak Jawapan</button><button className="secondary" onClick={saveMendengar}>Simpan Skor Latihan</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section></main>;
 }
 
 const speakingPrompts = [
@@ -1165,10 +1387,10 @@ const speakingPrompts = [
     speechLang: 'ar-SA',
     title: 'Arabic Bertutur',
     prompts: {
-      intro: { label: 'Kenalkan diri', text: 'Ø¹Ø±Ù Ù†ÙØ³Ùƒ Ø¨Ø¬Ù…Ù„Ø© Ù‚ØµÙŠØ±Ø©.', keywords: ['Ø£Ù†Ø§', 'Ø§Ø³Ù…ÙŠ'] },
-      describe: { label: 'Ceritakan gambar atau arahan', text: 'ØµÙ Ø¨ÙŠØªØ§ Ø¬Ù…ÙŠÙ„Ø§ ÙÙŠÙ‡ Ø¨Ø§Ø¨ ÙˆÙ†Ø§ÙØ°Ø©.', keywords: ['Ø¨ÙŠØª', 'Ø¬Ù…ÙŠÙ„', 'Ø¨Ø§Ø¨'] },
-      answer: { label: 'Jawab soalan mudah', text: 'Ù…Ø§Ø°Ø§ ØªØ­Ø¨ØŸ', keywords: ['Ø£Ø­Ø¨', 'Ø§Ù†Ø§'] },
-      repeat: { label: 'Ulang ayat', text: 'Ø£Ù†Ø§ Ø£ØªØ¹Ù„Ù… Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©.', keywords: ['Ø£Ù†Ø§', 'Ø£ØªØ¹Ù„Ù…', 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'] }
+      intro: { label: 'Kenalkan diri', text: 'عرف نفسك بجملة قصيرة.', keywords: ['أنا', 'اسمي'] },
+      describe: { label: 'Ceritakan gambar atau arahan', text: 'صف بيتا جميلا فيه باب ونافذة.', keywords: ['بيت', 'جميل', 'باب'] },
+      answer: { label: 'Jawab soalan mudah', text: 'ماذا تحب؟', keywords: ['أحب', 'انا'] },
+      repeat: { label: 'Ulang ayat', text: 'أنا أتعلم اللغة العربية.', keywords: ['أنا', 'أتعلم', 'العربية'] }
     }
   }
 ];
@@ -1240,7 +1462,7 @@ function BertuturCoach({ onBack, onFinish }) {
     });
   }
 
-  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">ðŸ—£ï¸</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{prompt.text}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{result.score}%</h2><div className="recommend-meta"><span>{result.matched.length}/{prompt.keywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{prompt.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.missed.length > 0 && <p>Cuba masukkan: <b>{result.missed.join(', ')}</b></p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
+  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{prompt.text}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{result.score}%</h2><div className="recommend-meta"><span>{result.matched.length}/{prompt.keywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{prompt.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.missed.length > 0 && <p>Cuba masukkan: <b>{result.missed.join(', ')}</b></p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
 }
 
 const writingSets = [
@@ -1274,13 +1496,13 @@ const writingSets = [
     id: 'arab',
     language: 'Arabic',
     title: 'Arabic Menulis',
-    dictionary: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø£Ù…ÙŠ', 'Ø£Ø¨ÙŠ', 'Ø¨ÙŠØªÙŠ', 'Ø¬Ù…ÙŠÙ„', 'ÙÙŠ', 'Ø§Ù„Ø¨ÙŠØª', 'Ø£ØªØ¹Ù„Ù…', 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©', 'ÙƒØªØ§Ø¨', 'Ù‚Ù„Ù…', 'Ù…Ø¯Ø±Ø³Ø©'],
+    dictionary: ['أنا', 'أحب', 'أمي', 'أبي', 'بيتي', 'جميل', 'في', 'البيت', 'أتعلم', 'العربية', 'كتاب', 'قلم', 'مدرسة'],
     tasks: {
-      arrange: { label: 'Susun ayat', prompt: 'Ø±ØªØ¨ Ø§Ù„Ø¬Ù…Ù„Ø©.', words: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø£Ù…ÙŠ'], answer: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø£Ù…ÙŠ', keywords: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø£Ù…ÙŠ'] },
-      blank: { label: 'Isi tempat kosong', prompt: 'Ø£Ù†Ø§ ____ Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©.', answer: 'Ø£ØªØ¹Ù„Ù…', keywords: ['Ø£ØªØ¹Ù„Ù…'] },
-      short: { label: 'Jawapan pendek', prompt: 'Ù…Ø§Ø°Ø§ ØªØ­Ø¨ØŸ', keywords: ['Ø£Ø­Ø¨'] },
-      build: { label: 'Bina ayat', prompt: 'Ø§ÙƒØªØ¨ Ø¬Ù…Ù„Ø© ÙÙŠÙ‡Ø§: Ø¨ÙŠØªØŒ Ø¬Ù…ÙŠÙ„.', keywords: ['Ø¨ÙŠØª', 'Ø¬Ù…ÙŠÙ„'] },
-      paragraph: { label: 'Perenggan mudah', prompt: 'Ø§ÙƒØªØ¨ Ø¬Ù…Ù„ØªÙŠÙ† Ø¹Ù† Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.', keywords: ['Ù…Ø¯Ø±Ø³Ø©', 'ÙƒØªØ§Ø¨'] }
+      arrange: { label: 'Susun ayat', prompt: 'رتب الجملة.', words: ['أنا', 'أحب', 'أمي'], answer: 'أنا أحب أمي', keywords: ['أنا', 'أحب', 'أمي'] },
+      blank: { label: 'Isi tempat kosong', prompt: 'أنا ____ العربية.', answer: 'أتعلم', keywords: ['أتعلم'] },
+      short: { label: 'Jawapan pendek', prompt: 'ماذا تحب؟', keywords: ['أحب'] },
+      build: { label: 'Bina ayat', prompt: 'اكتب جملة فيها: بيت، جميل.', keywords: ['بيت', 'جميل'] },
+      paragraph: { label: 'Perenggan mudah', prompt: 'اكتب جملتين عن المدرسة.', keywords: ['مدرسة', 'كتاب'] }
     }
   }
 ];
@@ -1294,8 +1516,8 @@ function scoreMenulis(task, answer, dictionary = []) {
     return !dictionary.some(item => normalizeBacaanWord(item) === word.normalized);
   });
   const grammarPetunjuks = [];
-  if (answer.trim() && !/[.!ØŸ?]$/.test(answer.trim())) grammarPetunjuks.push('Tambah tanda noktah di hujung ayat.');
-  if (task.label === 'Perenggan mudah' && answer.split(/[.!ØŸ?]+/).filter(sentence => sentence.trim()).length < 2) grammarPetunjuks.push('Tulis sekurang-kurangnya dua ayat pendek.');
+  if (answer.trim() && !/[.!؟?]$/.test(answer.trim())) grammarPetunjuks.push('Tambah tanda noktah di hujung ayat.');
+  if (task.label === 'Perenggan mudah' && answer.split(/[.!؟?]+/).filter(sentence => sentence.trim()).length < 2) grammarPetunjuks.push('Tulis sekurang-kurangnya dua ayat pendek.');
   if (task.label !== 'Isi tempat kosong' && words.length < Math.max(2, task.keywords.length)) grammarPetunjuks.push('Panjangkan jawapan sedikit lagi.');
   const keywordScore = task.keywords.length ? Math.round((matched.length / task.keywords.length) * 60) : 0;
   const spellingScore = Math.max(0, 20 - spellingIssues.length * 5);
@@ -1349,7 +1571,7 @@ function MenulisCoach({ onBack, onFinish }) {
 
   const availableWords = (task.words || []).filter(word => !arranged.includes(word));
 
-  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>â† Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">âœï¸</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{task.prompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{result.score}%</h2><div className="recommend-meta"><span>{result.matched.length}/{task.keywords.length} kata kunci</span><span>{result.spellingIssues.length} isu ejaan</span><span>{result.grammarPetunjuks.length} petua tatabahasa</span></div><div className="word-check reading-word-check">{task.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.spellingIssues.length > 0 && <p>Semak ejaan: <b>{result.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{result.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{result.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{result.explanation}</p></div></section>}</main>;
+  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">✍️</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{task.prompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{result.score}%</h2><div className="recommend-meta"><span>{result.matched.length}/{task.keywords.length} kata kunci</span><span>{result.spellingIssues.length} isu ejaan</span><span>{result.grammarPetunjuks.length} petua tatabahasa</span></div><div className="word-check reading-word-check">{task.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.spellingIssues.length > 0 && <p>Semak ejaan: <b>{result.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{result.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{result.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{result.explanation}</p></div></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {

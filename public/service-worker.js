@@ -20,6 +20,9 @@ const APP_SHELL = [
   `${BASE}brand/brand/brand-tokens.css`,
   `${BASE}brand/brand/brand-colors.json`,
   `${BASE}brand/brand/manifest-snippet.json`,
+  `${BASE}brand/mascot/mascot-manifest.json`,
+  `${BASE}brand/mascot/janna/README.md`,
+  `${BASE}brand/mascot/jati/README.md`,
 ];
 
 self.addEventListener('install', event => {

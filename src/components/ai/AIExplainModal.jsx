@@ -1,7 +1,8 @@
 ﻿import React from 'react';
 import BrandLogo from '../BrandLogo';
+import MascotCard from '../MascotCard';
 
-export default function AIExplainModal({ open, data, question, onTutup, onTryAgain, onTeach }) {
+export default function AIExplainModal({ open, data, question, character = 'jati', onTutup, onTryAgain, onTeach }) {
   if (!open || !data) return null;
 
   return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
@@ -11,15 +12,16 @@ export default function AIExplainModal({ open, data, question, onTutup, onTryAga
           <BrandLogo iconOnly size="sm" />
           <div>
           <p className="eyebrow">Penerangan AI Luar Talian</p>
-          <h2>ðŸ¤– Terangkan</h2>
+          <h2>🤖 Terangkan</h2>
                   </div>
         </div>
-        <button className="ghost" onClick={onTutup}>âœ•</button>
+        <button className="ghost" onClick={onTutup}>✕</button>
       </div>
       <div className="explain-answer-box">
         <span>Jawapan betul</span>
         <b>{question?.answer || '-'}</b>
       </div>
+      <MascotCard character={character} mood="thinking" size="md" animation="gentle" message="Guru AI akan bantu kamu faham." />
       <div className="explain-section">
         <h3>Kenapa jawapan itu betul</h3>
         <p>{data.explanation}</p>
@@ -34,11 +36,12 @@ export default function AIExplainModal({ open, data, question, onTutup, onTryAga
       </div>
       <p className="explain-encouragement">{data.encouragement}</p>
       <div className="actions">
-        <button className="secondary" onClick={onTeach}>ðŸ“– Ajar Saya</button>
+        <button className="secondary" onClick={onTeach}>📖 Ajar Saya</button>
         <button onClick={onTryAgain}>Cuba Lagi</button>
         <button className="secondary" onClick={onTutup}>Tutup</button>
       </div>
     </section>
   </div>;
 }
+
 

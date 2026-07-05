@@ -10,9 +10,9 @@ const logoMap = {
 };
 
 const sizeMap = {
-  sm: 40,
+  sm: 48,
   md: 72,
-  lg: 120,
+  lg: 160,
   xl: 180,
 };
 
@@ -45,10 +45,12 @@ export default function BrandLogo({
       alt={alt}
       className={`brand-logo brand-logo-${resolvedVariant} ${className}`}
       style={{
-        width: resolvedVariant === "horizontal" ? resolvedSize * 2.8 : resolvedSize,
+        width: resolvedVariant === "icon" ? resolvedSize : "auto",
         maxWidth: "100%",
-        height: "auto",
+        height: resolvedSize,
+        maxHeight: resolvedSize,
         display: "block",
+        objectFit: "contain",
       }}
       loading="eager"
       decoding="async"

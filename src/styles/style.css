@@ -1941,6 +1941,38 @@ button:active {
   line-height: 1.35;
 }
 
+.qde-debug-panel {
+  margin-top: 14px;
+  border: 1px dashed rgba(8,122,59,.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fbfffc;
+  color: #1f3328;
+  font-size: 12px;
+}
+
+.qde-debug-panel summary {
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.qde-debug-panel dl {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 6px 10px;
+  margin: 10px 0 0;
+}
+
+.qde-debug-panel dt {
+  color: #506458;
+  font-weight: 900;
+}
+
+.qde-debug-panel dd {
+  margin: 0;
+  word-break: break-word;
+}
+
 @media(max-width:650px) {
   .ai-explain-overlay {
     padding: 10px;

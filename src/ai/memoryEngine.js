@@ -1,5 +1,7 @@
 import { buildMasteryMap, summarizeMastery } from './adaptive/masteryEngine';
 import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
+import { rememberQuestionHistory } from './diversity/sessionHistoryEngine';
+import { rememberQuestionIntelligenceHistory } from './question/questionEngine.js';
 
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
@@ -24,6 +26,16 @@ function emptyMemory() {
     listeningHistory: [],
     speakingHistory: [],
     writingHistory: [],
+    questionHistory: [],
+    qipHistory: {
+      questions: [],
+      stems: [],
+      topics: [],
+      templates: [],
+      contexts: [],
+      names: [],
+      objects: []
+    },
     curriculumCoverage: null,
     updatedAt: ''
   };
@@ -114,11 +126,23 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
     date: new Date().toISOString()
   };
 
+  const historyMemory = rememberQuestionIntelligenceHistory(
+    rememberQuestionHistory(next, session.questions || topic.questions || []),
+    session.questions || topic.questions || []
+  );
+
   saveAIMemory({
     ...next,
+    ...historyMemory,
     lastLesson: lesson,
     studyTime: Math.max(0, previous.studyTime || 0) + Math.max(0, studySeconds || 0)
   });
+}
+
+export function saveQuestionHistory(questions = []) {
+  const previous = loadAIMemory();
+  const rows = Array.isArray(questions) ? questions : [questions];
+  saveAIMemory(rememberQuestionIntelligenceHistory(rememberQuestionHistory(previous, rows), rows));
 }
 
 function refreshMemoryBase(profile, subjects, previous) {

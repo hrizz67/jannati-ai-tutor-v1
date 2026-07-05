@@ -16,6 +16,26 @@ async function loadSubjects() {
   return subjectsModule.loadAllSubjects();
 }
 
+async function loadDiversityTools() {
+  const qdePath = path.resolve('src/ai/diversity/questionDiversityEngine.js');
+  const detectorPath = path.resolve('src/ai/diversity/duplicateDetector.js');
+  const qipPath = path.resolve('src/ai/question/questionEngine.js');
+  const qipDuplicatePath = path.resolve('src/ai/question/duplicateEngine.js');
+  const qipDistractorPath = path.resolve('src/ai/question/distractorEngine.js');
+  const qipContextPath = path.resolve('src/ai/question/contextEngine.js');
+  const contextValidatorPath = path.resolve('src/ai/question/contextValidator.js');
+  const stemValidatorPath = path.resolve('src/ai/question/stemValidator.js');
+  const qde = await import(`${pathToFileURL(qdePath).href}?v=${Date.now()}`);
+  const detector = await import(`${pathToFileURL(detectorPath).href}?v=${Date.now()}`);
+  const qip = await import(`${pathToFileURL(qipPath).href}?v=${Date.now()}`);
+  const qipDuplicate = await import(`${pathToFileURL(qipDuplicatePath).href}?v=${Date.now()}`);
+  const qipDistractor = await import(`${pathToFileURL(qipDistractorPath).href}?v=${Date.now()}`);
+  const qipContext = await import(`${pathToFileURL(qipContextPath).href}?v=${Date.now()}`);
+  const contextValidator = await import(`${pathToFileURL(contextValidatorPath).href}?v=${Date.now()}`);
+  const stemValidator = await import(`${pathToFileURL(stemValidatorPath).href}?v=${Date.now()}`);
+  return { ...qde, ...detector, ...qip, ...qipDuplicate, ...qipDistractor, ...qipContext, ...contextValidator, ...stemValidator };
+}
+
 function normalizeText(value = '') {
   return String(value).trim().toLowerCase().replace(/\s+/g, ' ');
 }
@@ -26,6 +46,13 @@ function issue(severity, code, message, context = {}) {
 
 function getQuestionText(question = {}) {
   return question.q || question.question || question.stem || '';
+}
+
+function recordRepeat(map, key, context) {
+  if (!key) return null;
+  if (map.has(key)) return map.get(key);
+  map.set(key, context);
+  return null;
 }
 
 function hasAnswer(question = {}) {
@@ -47,16 +74,52 @@ function validateAnswerIndex(question = {}, options = []) {
 async function runQuestionValidation() {
   ensureReportDir();
   const subjects = await loadSubjects();
+  const diversityTools = await loadDiversityTools();
   const issues = [];
   const seenIds = new Map();
   const seenStems = new Map();
+  const seenTemplates = new Map();
+  const seenNumberPatterns = new Map();
+  const seenAnswerPatterns = new Map();
+  const seenContexts = new Map();
+  const seenDistractors = new Map();
+  const seenAnswerPositions = new Map();
   const difficultyCounts = {};
+  const diversityDiagnostics = {
+    repeatedTemplates: 0,
+    repeatedNumberPatterns: 0,
+    repeatedAnswerPatterns: 0,
+    repeatedContexts: 0,
+    repeatedDistractors: 0,
+    repeatedAnswerPositions: 0,
+    simulatedSessions: 0,
+    simulatedQuestions: 0,
+    failedSessions: 0,
+    averageDiversityScore: 0,
+    duplicatePercent: 0,
+    diagnosticRepeatPercent: 0,
+    averageSelectionTimeMs: 0,
+    stemDiversity: 0,
+    stemReuseRate: 0,
+    repeatedStems: 0,
+    contextDiversity: 0,
+    nameReuseRate: 0,
+    objectReuseRate: 0,
+    contextReuseRate: 0,
+    unsafeContextChanges: 0,
+    unusedStemVariationGroups: [],
+    brokenStemMappings: 0,
+    topicBalance: {},
+    difficultyBalance: {}
+  };
   let totalQuestions = 0;
+  const allQuestions = [];
 
   subjects.forEach(subject => {
     (subject.topics || []).forEach(topic => {
       (topic.questions || []).forEach((question, questionIndex) => {
         totalQuestions += 1;
+        allQuestions.push({ ...question, subjectId: subject.id, topicId: topic.id, topicTitle: topic.title });
         const context = {
           subjectId: subject.id,
           topicId: topic.id,
@@ -68,6 +131,12 @@ async function runQuestionValidation() {
         const stem = normalizeText(getQuestionText(question));
         const options = question.options || question.choices;
         const difficulty = question.difficulty || topic.difficulty;
+        const template = diversityTools.templateSignature(question);
+        const numberPattern = diversityTools.numberSignature(question);
+        const answerPattern = diversityTools.answerPattern(question);
+        const contextPattern = diversityTools.contextSignature(question);
+        const distractorPattern = diversityTools.distractorSignature(question);
+        const answerPositionPattern = diversityTools.answerPositionSignature(question);
 
         if (!question.id || !String(question.id).trim()) {
           issues.push(issue('error', 'EMPTY_ID', 'Question is missing an id.', context));
@@ -83,6 +152,25 @@ async function runQuestionValidation() {
           issues.push(issue('warning', 'DUPLICATE_STEM', 'Duplicate question stem found.', { ...context, duplicateOf: seenStems.get(stem) }));
         } else {
           seenStems.set(stem, idKey || `${subject.id}:${topic.id}:${questionIndex}`);
+        }
+
+        if (recordRepeat(seenTemplates, template, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedTemplates += 1;
+        }
+        if (recordRepeat(seenNumberPatterns, numberPattern, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedNumberPatterns += 1;
+        }
+        if (recordRepeat(seenAnswerPatterns, answerPattern, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedAnswerPatterns += 1;
+        }
+        if (recordRepeat(seenContexts, contextPattern, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedContexts += 1;
+        }
+        if (recordRepeat(seenDistractors, distractorPattern, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedDistractors += 1;
+        }
+        if (recordRepeat(seenAnswerPositions, answerPositionPattern, idKey || `${subject.id}:${topic.id}:${questionIndex}`)) {
+          diversityDiagnostics.repeatedAnswerPositions += 1;
         }
 
         if (Array.isArray(options) && (options.length === 0 || options.some(option => String(option).trim() === ''))) {
@@ -119,6 +207,125 @@ async function runQuestionValidation() {
     });
   });
 
+  const stemValidation = diversityTools.validateStemMappings(allQuestions);
+  diversityDiagnostics.unusedStemVariationGroups = stemValidation.unusedVariationGroups;
+  diversityDiagnostics.brokenStemMappings = stemValidation.issues.filter(item => item.severity === 'error').length;
+  stemValidation.issues
+    .filter(item => item.severity === 'error')
+    .forEach(item => issues.push(issue('error', item.code, 'Stem intelligence mapping is broken.', item)));
+
+  const sessionCount = 5000;
+  let diversityTotal = 0;
+  let stemDiversityTotal = 0;
+  let stemReuseTotal = 0;
+  let repeatedStemTotal = 0;
+  let contextDiversityTotal = 0;
+  let contextReuseTotal = 0;
+  let nameReuseTotal = 0;
+  let objectReuseTotal = 0;
+  let protectedDuplicateEvents = 0;
+  let diagnosticDuplicateEvents = 0;
+  let selectionTimeTotalMs = 0;
+  for (let sessionIndex = 0; sessionIndex < sessionCount; sessionIndex += 1) {
+    const subject = subjects[sessionIndex % subjects.length];
+    const topic = subject.topics[(sessionIndex * 7) % subject.topics.length];
+    const count = Math.min(20, topic.questions.length);
+    const startedAt = process.hrtime.bigint();
+    const result = diversityTools.buildQuestionSession({
+      subject,
+      topic,
+      questions: topic.questions,
+      count,
+      memory: {},
+      sessionSeed: 1000 + sessionIndex
+    });
+    const endedAt = process.hrtime.bigint();
+    selectionTimeTotalMs += Number(endedAt - startedAt) / 1000000;
+    const selected = result.questions || [];
+    diversityDiagnostics.simulatedSessions += 1;
+    diversityDiagnostics.simulatedQuestions += selected.length;
+    diversityTotal += result.analytics?.overallDiversity || result.score?.overallDiversity || 0;
+    stemDiversityTotal += result.analytics?.stemAnalytics?.averageStemDiversity || 0;
+    stemReuseTotal += result.analytics?.stemAnalytics?.stemReuseRate || 0;
+    repeatedStemTotal += result.analytics?.stemAnalytics?.repeatedStems || 0;
+    contextDiversityTotal += result.analytics?.contextAnalytics?.contextDiversity || 0;
+    contextReuseTotal += result.analytics?.contextAnalytics?.reuseRate || 0;
+    nameReuseTotal += result.analytics?.contextAnalytics?.nameDiversity !== undefined ? 100 - result.analytics.contextAnalytics.nameDiversity : 0;
+    objectReuseTotal += result.analytics?.contextAnalytics?.objectDiversity !== undefined ? 100 - result.analytics.contextAnalytics.objectDiversity : 0;
+    const contextIssues = diversityTools.validateContextMappings(selected);
+    diversityDiagnostics.unsafeContextChanges += contextIssues.filter(item => item.severity === 'error').length;
+    contextIssues
+      .filter(item => item.severity === 'error')
+      .forEach(item => issues.push(issue('error', item.code, 'Context intelligence produced an unsafe change.', item)));
+    Object.entries(result.balance?.topics || {}).forEach(([key, value]) => {
+      diversityDiagnostics.topicBalance[key] = (diversityDiagnostics.topicBalance[key] || 0) + value;
+    });
+    Object.entries(result.balance?.difficulties || {}).forEach(([key, value]) => {
+      diversityDiagnostics.difficultyBalance[key] = (diversityDiagnostics.difficultyBalance[key] || 0) + value;
+    });
+
+    const localSeen = {
+      ids: new Set(),
+      stems: new Set(),
+      templates: new Set(),
+      contexts: new Set(),
+      numbers: new Set(),
+      distractors: new Set(),
+      answerPositions: new Set()
+    };
+    const sessionFailures = [];
+    const sessionDiagnostics = [];
+    selected.forEach((question, index) => {
+      const signature = diversityTools.questionIntelligenceSignature(question);
+      [
+        ['id', signature.id, localSeen.ids],
+        ['stem', signature.stem, localSeen.stems],
+        ['template', signature.template, localSeen.templates],
+        ['context', signature.context && signature.context !== 'none' ? signature.context : '', localSeen.contexts],
+        ['numbers', signature.numbers, localSeen.numbers],
+        ['distractors', signature.distractors, localSeen.distractors],
+        ['answerPosition', signature.answerPosition, localSeen.answerPositions]
+      ].forEach(([kind, key, set]) => {
+        if (!key) return;
+        if (set.has(key)) {
+          const row = { kind, index, questionId: question.id || null };
+          if (['answerPosition', 'distractors', 'context'].includes(kind)) {
+            sessionDiagnostics.push(row);
+          } else {
+            sessionFailures.push(row);
+          }
+        }
+        set.add(key);
+      });
+    });
+    protectedDuplicateEvents += sessionFailures.length;
+    diagnosticDuplicateEvents += sessionDiagnostics.length;
+    diversityDiagnostics.repeatedContexts += sessionDiagnostics.filter(item => item.kind === 'context').length;
+    diversityDiagnostics.repeatedDistractors += sessionDiagnostics.filter(item => item.kind === 'distractors').length;
+    diversityDiagnostics.repeatedAnswerPositions += sessionDiagnostics.filter(item => item.kind === 'answerPosition').length;
+
+    if (sessionFailures.length) {
+      diversityDiagnostics.failedSessions += 1;
+      issues.push(issue('error', 'QIP_SESSION_DUPLICATE', 'Question Intelligence Platform generated repeated protected session signatures.', {
+        sessionIndex,
+        subjectId: subject.id,
+        topicId: topic.id,
+        failures: sessionFailures.slice(0, 8)
+      }));
+    }
+  }
+  diversityDiagnostics.averageDiversityScore = Math.round(diversityTotal / sessionCount);
+  diversityDiagnostics.stemDiversity = Math.round(stemDiversityTotal / sessionCount);
+  diversityDiagnostics.stemReuseRate = Number((stemReuseTotal / sessionCount).toFixed(2));
+  diversityDiagnostics.repeatedStems = repeatedStemTotal;
+  diversityDiagnostics.contextDiversity = Math.round(contextDiversityTotal / sessionCount);
+  diversityDiagnostics.contextReuseRate = Number((contextReuseTotal / sessionCount).toFixed(2));
+  diversityDiagnostics.nameReuseRate = Number((nameReuseTotal / sessionCount).toFixed(2));
+  diversityDiagnostics.objectReuseRate = Number((objectReuseTotal / sessionCount).toFixed(2));
+  diversityDiagnostics.duplicatePercent = Number(((protectedDuplicateEvents / Math.max(diversityDiagnostics.simulatedQuestions, 1)) * 100).toFixed(2));
+  diversityDiagnostics.diagnosticRepeatPercent = Number(((diagnosticDuplicateEvents / Math.max(diversityDiagnostics.simulatedQuestions, 1)) * 100).toFixed(2));
+  diversityDiagnostics.averageSelectionTimeMs = Number((selectionTimeTotalMs / sessionCount).toFixed(3));
+
   const errors = issues.filter(item => item.severity === 'error');
   const warnings = issues.filter(item => item.severity === 'warning');
   const infos = issues.filter(item => item.severity === 'info');
@@ -129,11 +336,13 @@ async function runQuestionValidation() {
     totals: {
       subjects: subjects.length,
       questions: totalQuestions,
+      diversitySessions: diversityDiagnostics.simulatedSessions,
       infos: infos.length,
       errors: errors.length,
       warnings: warnings.length
     },
     difficultyCounts,
+    diversityDiagnostics,
     issues
   };
 
