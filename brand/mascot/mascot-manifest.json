@@ -1,0 +1,21 @@
+﻿{
+  "version": "1.0.0",
+  "characters": {
+    "janna": {
+      "role": "Friendly learner companion",
+      "moods": ["happy", "thinking", "teaching", "celebrating", "encouraging"],
+      "placeholderPath": "/jannati-ai-tutor-v1/brand/mascot/janna/"
+    },
+    "jati": {
+      "role": "AI teacher companion",
+      "moods": ["happy", "thinking", "teaching", "celebrating", "encouraging"],
+      "placeholderPath": "/jannati-ai-tutor-v1/brand/mascot/jati/"
+    }
+  },
+  "defaultMessages": [
+    "Syabas! Teruskan usaha kamu.",
+    "Mari kita cuba sekali lagi.",
+    "Guru AI akan bantu kamu faham.",
+    "Hebat! Kamu semakin mahir."
+  ]
+}
