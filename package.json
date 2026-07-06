@@ -9,6 +9,7 @@
     "validate:curriculum": "node scripts/validate/curriculumValidator.js",
     "validate:metadata": "node scripts/validate/metadataValidator.js",
     "validate:storage": "node scripts/validate/storageValidator.js",
+    "audit:subjects": "node scripts/audit/subjectCoverage.js",
     "release": "node scripts/release/release.js",
     "preview": "vite preview",
     "predeploy": "npm run build",
