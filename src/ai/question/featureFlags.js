@@ -2,7 +2,7 @@ export const QUESTION_INTELLIGENCE = true;
 export const QUESTION_STEM_ENGINE = true;
 export const QUESTION_TEMPLATE_ENGINE = false;
 export const QUESTION_CONTEXT_ENGINE = true;
-export const QUESTION_NUMBER_ENGINE = false;
+export const QUESTION_NUMBER_ENGINE = true;
 export const QUESTION_DISTRACTOR_ENGINE = false;
 
 function readEnvFlag(name, fallback) {
