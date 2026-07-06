@@ -1,5 +1,6 @@
 import { createDuplicateState } from './duplicateDetector.js';
 import { applyContextIntelligenceToSession } from './contextEngine.js';
+import { applyNumberIntelligenceToSession } from './numberEngine.js';
 import { registerQuestionBank } from './questionRegistry.js';
 import { selectQuestions } from './questionSelector.js';
 import { applyStemIntelligenceToSession } from './stemEngine.js';
@@ -18,8 +19,11 @@ export function planQuestionSession(baseQuestions = [], options = {}) {
     duplicateState,
     count: options.count || candidates.length
   });
+  const numbered = options.featureFlags?.QUESTION_NUMBER_ENGINE === true
+    ? applyNumberIntelligenceToSession(selected.questions, options)
+    : selected.questions;
   return {
-    questions: selected.questions,
+    questions: numbered,
     rejected: selected.rejected,
     plan: {
       requested: options.count || registered.length,
@@ -27,6 +31,7 @@ export function planQuestionSession(baseQuestions = [], options = {}) {
       selected: selected.questions.length,
       stemEngine: options.featureFlags?.QUESTION_STEM_ENGINE !== false,
       contextEngine: options.featureFlags?.QUESTION_CONTEXT_ENGINE !== false,
+      numberEngine: options.featureFlags?.QUESTION_NUMBER_ENGINE === true,
       topicBalance: true,
       difficultyBalance: true
     }
