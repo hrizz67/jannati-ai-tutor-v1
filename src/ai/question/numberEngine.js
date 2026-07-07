@@ -39,6 +39,13 @@ function normalizeStemValue(value = '') {
   return String(value).trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+function isStructuredNumberTopic(question = {}) {
+  const topic = String(question.topicId || question.qip?.metadata?.topic || '').toLowerCase();
+  const text = `${question.q || question.question || ''} ${question.hint || ''} ${question.explanation || ''}`.toLowerCase();
+  if (topic.includes('nombor') || topic.includes('sequence') || topic.includes('pattern')) return true;
+  return /nombor selepas|nombor sebelum|nilai digit|paling kecil|paling besar|nilai tempat|ratus|puluh|sa\b/.test(text);
+}
+
 function computeExpectedAnswer(operation, values = []) {
   const [a, b] = values.map(Number);
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
@@ -47,6 +54,43 @@ function computeExpectedAnswer(operation, values = []) {
   if (operation === 'multiply') return a * b;
   if (operation === 'divide') return b !== 0 ? a / b : null;
   return null;
+}
+
+function getRepeatedAdditionPattern(text = '') {
+  return String(text || '').match(/(\d+(?:\s*\+\s*\d+){2,}\s*=\s*_{2,})/);
+}
+
+function renderRepeatedAdditionStem(text = '', values = []) {
+  const [term, repeatCount] = values.map(Number);
+  if (!Number.isInteger(term) || !Number.isInteger(repeatCount) || term < 0 || repeatCount < 1) return null;
+
+  const source = String(text || '');
+  const match = getRepeatedAdditionPattern(source);
+  if (!match) return null;
+
+  const renderedExpression = repeatCount === 1
+    ? `${term} x 1 = ________`
+    : `${Array.from({ length: repeatCount }, () => String(term)).join(' + ')} = ________`;
+  return source.replace(match[0], renderedExpression);
+}
+
+function renderQuestionText(text = '', operation, values = []) {
+  if (operation === 'multiply') {
+    const repeatedAdditionText = renderRepeatedAdditionStem(text, values);
+    if (repeatedAdditionText) return repeatedAdditionText;
+  }
+
+  return replaceFirstNumbers(text, values);
+}
+
+function buildExplanation(text = '', operation, values = [], answer = '') {
+  const [first, second] = values.map(Number);
+  if (operation === 'multiply' && second >= 2 && getRepeatedAdditionPattern(text)) {
+    return `${first} ditambah ${second} kali menjadi ${answer}.`;
+  }
+
+  const operator = operation === 'add' ? '+' : operation === 'subtract' ? '-' : operation === 'multiply' ? 'x' : '÷';
+  return `${first} ${operator} ${second} = ${answer}.`;
 }
 
 function remember(memory, operation, values, selectionIndex = 0) {
@@ -88,6 +132,8 @@ function canSafelyRotate(question = {}, operation, numbers = []) {
   if (!['add', 'subtract', 'multiply', 'divide'].includes(operation)) return false;
   if (numbers.length < 2) return false;
   if (!/^\d+$/.test(String(question.answer || ''))) return false;
+  const explicitProfile = question.numberProfile || question.profileId || question.profile || question.qip?.metadata?.numberProfile || question.qip?.metadata?.profileId;
+  if (!explicitProfile && isStructuredNumberTopic(question)) return false;
   return true;
 }
 
@@ -266,7 +312,7 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
 
     if (!candidate) continue;
 
-    const candidateText = replaceFirstNumbers(originalText, candidate.values);
+    const candidateText = renderQuestionText(originalText, operation, candidate.values);
     const candidateStem = normalizeStemValue(candidateText);
     if (candidateStem && protectedStems.has(candidateStem)) continue;
 
@@ -400,7 +446,7 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
   }
 
   const selectedNumbers = selected.values;
-  const nextText = replaceFirstNumbers(originalText, selectedNumbers);
+  const nextText = renderQuestionText(originalText, operation, selectedNumbers);
   const pair = pairSignature(selectedNumbers);
   const reuseCount = memory.reuseCounts.get(pair) || 0;
   const selectedPattern = patternGroup(operation, selectedNumbers);
@@ -433,7 +479,7 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
     q: nextText,
     answer: String(selected.answer),
     accepted: [String(selected.answer)],
-    explanation: `${selectedNumbers[0]} ${operation === 'add' ? '+' : operation === 'subtract' ? '-' : operation === 'multiply' ? 'x' : '÷'} ${selectedNumbers[1]} = ${selected.answer}.`,
+    explanation: buildExplanation(originalText, operation, selectedNumbers, selected.answer),
     qip: {
       ...(question.qip || {}),
       originalNumbers,

@@ -15,6 +15,13 @@ function hashText(text = '') {
   return [...String(text)].reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
 
+function isStructuredNumberTopic(question = {}) {
+  const topic = String(question.topicId || question.qde?.selectedTopicId || '').toLowerCase();
+  const text = `${question.q || ''} ${question.hint || ''} ${question.explanation || ''}`.toLowerCase();
+  if (topic.includes('nombor') || topic.includes('sequence') || topic.includes('pattern')) return true;
+  return /nombor selepas|nombor sebelum|nilai digit|paling kecil|paling besar|nilai tempat|ratus|puluh|sa\b/.test(text);
+}
+
 function choosePair(seed, usedNumberSequences = new Set(), config = {}) {
   const limits = { ...YEAR_2_DEFAULTS, ...config };
   for (let attempt = 0; attempt < 80; attempt += 1) {
@@ -35,13 +42,25 @@ function operationFor(question = {}, seed = 0) {
   if (/darab|multiply|kali/i.test(topicText)) return 'multiply';
   if (/[x×]/.test(text) || /darab|kali|setiap|kumpulan/i.test(text)) return 'multiply';
   if (/[÷]/.test(text) || /bahagi/i.test(text)) return 'divide';
-  if (/[−-]/.test(text) || /tolak|baki|beza/i.test(text)) return 'subtract';
   if (/[+]/.test(text) || /tambah|lagi|membeli/i.test(text)) return 'add';
+  if (/(^|\s)−(?=\s|\d)|\d\s*-(?=\s*\d)/.test(text) || /tolak|baki|beza/i.test(text)) return 'subtract';
   return seed % 2 === 0 ? 'unknown' : 'unknown';
 }
 
 function renderTemplate(template, values) {
   return template.replace(/\{A\}/g, values.A).replace(/\{B\}/g, values.B);
+}
+
+function buildExplanation(operation, numbers, expectedAnswer) {
+  const [a, b] = numbers;
+  if (!Number.isFinite(a) || !Number.isFinite(b) || expectedAnswer === null || expectedAnswer === undefined) {
+    return '';
+  }
+  if (operation === 'subtract') return `${a} - ${b} = ${expectedAnswer}.`;
+  if (operation === 'add') return `${a} + ${b} = ${expectedAnswer}.`;
+  if (operation === 'multiply') return `${a} x ${b} = ${expectedAnswer}.`;
+  if (operation === 'divide') return `${a} ÷ ${b} = ${expectedAnswer}.`;
+  return '';
 }
 
 function computeAnswer(operation, a, b) {
@@ -97,6 +116,7 @@ export function applyNumberVariation(question = {}, context = {}) {
   const sourceText = question.q || '';
   const existingNumbers = extractNumbers(sourceText);
   if (subjectId !== 'math' || existingNumbers.length < 2) return question;
+  if (isStructuredNumberTopic(question) && !question.numberProfile && !question.profileId && !question.profile) return question;
 
   const seed = hashText(`${question.id || sourceText}:${context.index || 0}:${context.sessionSeed || 0}`);
   const operation = operationFor(question, seed);
@@ -140,6 +160,7 @@ export function applyNumberVariation(question = {}, context = {}) {
     q: nextText,
     answer: String(expectedAnswer),
     accepted: [String(expectedAnswer)],
+    explanation: buildExplanation(operation, values, expectedAnswer) || question.explanation,
     qde: {
       ...(question.qde || {}),
       numberVariation: true,

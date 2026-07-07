@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-07-07T15:12:30.867Z",
+  "status": "pass",
+  "sessionsAttempted": 10000,
+  "sessionsCompleted": 10000,
+  "questionsEvaluated": 200000,
+  "statistics": {
+    "duplicateSessionRate": "0.0000%",
+    "duplicateStemRate": "0.000000%",
+    "duplicateNumberSignatureRate": "0.000000%",
+    "answerMismatchCount": 0,
+    "explanationMismatchCount": 0,
+    "averageDifficultyDistribution": {
+      "easy": "8.9456",
+      "medium": "8.2055",
+      "hard": "2.8489"
+    },
+    "difficultyDistribution": {
+      "easy": {
+        "count": 89456,
+        "percent": "44.73%"
+      },
+      "medium": {
+        "count": 82055,
+        "percent": "41.03%"
+      },
+      "hard": {
+        "count": 28489,
+        "percent": "14.24%"
+      }
+    },
+    "topicDistribution": {
+      "tambah": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "jisim_isi_padu": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "wang": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "tolak": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "bentuk": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "masa": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "darab": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "nombor": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "panjang": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "bahagi": {
+        "count": 20000,
+        "percent": "10.00%"
+      }
+    },
+    "learningObjectiveDistribution": {
+      "ADD_001:basic_addition": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "MEA_002:mass_and_volume": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "MON_001:money_operations": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "SUB_001:basic_subtraction": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "GEO_001:shapes_and_space": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "TIM_001:time_and_schedule": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "MUL_001:basic_multiplication": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "NUM_001:number_sense_under_1000": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "MEA_001:length_measurement": {
+        "count": 20000,
+        "percent": "10.00%"
+      },
+      "DIV_001:basic_division": {
+        "count": 20000,
+        "percent": "10.00%"
+      }
+    }
+  },
+  "failure": null
+}
