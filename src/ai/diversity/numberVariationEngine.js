@@ -30,7 +30,9 @@ function choosePair(seed, usedNumberSequences = new Set(), config = {}) {
 }
 
 function operationFor(question = {}, seed = 0) {
-  const text = question.q || '';
+  const text = `${question.q || ''} ${question.hint || ''} ${question.explanation || ''}`;
+  const topicText = `${question.topicId || ''} ${question.topicTitle || ''}`;
+  if (/darab|multiply|kali/i.test(topicText)) return 'multiply';
   if (/[x×]/.test(text) || /darab|kali|setiap|kumpulan/i.test(text)) return 'multiply';
   if (/[÷]/.test(text) || /bahagi/i.test(text)) return 'divide';
   if (/[−-]/.test(text) || /tolak|baki|beza/i.test(text)) return 'subtract';
@@ -40,6 +42,22 @@ function operationFor(question = {}, seed = 0) {
 
 function renderTemplate(template, values) {
   return template.replace(/\{A\}/g, values.A).replace(/\{B\}/g, values.B);
+}
+
+function computeAnswer(operation, a, b) {
+  if (operation === 'subtract') return a - b;
+  if (operation === 'add') return a + b;
+  if (operation === 'multiply') return a * b;
+  if (operation === 'divide') return b !== 0 ? a / b : null;
+  return null;
+}
+
+function computeRenderedIntegrity(text, operation) {
+  const numbers = extractNumbers(text).slice(0, 2);
+  if (numbers.length < 2) return { ok: false, numbers, expected: null };
+  const expected = computeAnswer(operation, numbers[0], numbers[1]);
+  if (expected === null) return { ok: false, numbers, expected: null };
+  return { ok: true, numbers, expected };
 }
 
 function operationPair(seed, operation, usedNumberSequences = new Set(), range = {}) {
@@ -83,48 +101,99 @@ export function applyNumberVariation(question = {}, context = {}) {
   const seed = hashText(`${question.id || sourceText}:${context.index || 0}:${context.sessionSeed || 0}`);
   const operation = operationFor(question, seed);
   if (!['add', 'subtract'].includes(operation)) return question;
-  const [a, b] = operationPair(seed, operation, context.usedNumberSequences, context.range);
-
-  const values = [a, b];
+  let values = null;
   let nextText = sourceText;
-  existingNumbers.slice(0, 2).forEach((number, numberIndex) => {
-    nextText = nextText.replace(String(number), String(values[numberIndex]));
-  });
+  let expectedAnswer = null;
 
-  const answer = operation === 'subtract' ? a - b : a + b;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const [a, b] = operationPair(seed + attempt * 101, operation, context.usedNumberSequences, context.range);
+    const candidateValues = [a, b];
+    let candidateText = sourceText;
+    existingNumbers.slice(0, 2).forEach((number, numberIndex) => {
+      candidateText = candidateText.replace(String(number), String(candidateValues[numberIndex]));
+    });
+
+    const integrity = computeRenderedIntegrity(candidateText, operation);
+    if (!integrity.ok) continue;
+
+    values = integrity.numbers;
+    nextText = candidateText;
+    expectedAnswer = integrity.expected;
+    break;
+  }
+
+  if (!values || expectedAnswer === null) {
+    return {
+      ...question,
+      qip: {
+        ...(question.qip || {}),
+        integrity: {
+          ok: false,
+          reason: 'Number variation integrity failed'
+        }
+      }
+    };
+  }
+
   return {
     ...question,
     q: nextText,
-    answer: String(answer),
-    accepted: [String(answer)],
+    answer: String(expectedAnswer),
+    accepted: [String(expectedAnswer)],
     qde: {
       ...(question.qde || {}),
       numberVariation: true,
       numbers: values,
       operation,
-      originalNumbers: existingNumbers
+      originalNumbers: existingNumbers,
+      integrity: {
+        ok: true,
+        expectedAnswer: expectedAnswer
+      }
     }
   };
 }
 
 export function buildVirtualQuestion(template, context = {}) {
   const seed = hashText(`${template.id}:${context.index || 0}:${context.sessionSeed || 0}`);
-  const [a, b] = operationPair(seed, template.operation, context.usedNumberSequences, template.range);
-  const answer = template.operation === 'subtract' ? a - b : a + b;
+  let text = '';
+  let values = null;
+  let expectedAnswer = null;
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const [a, b] = operationPair(seed + attempt * 131, template.operation, context.usedNumberSequences, template.range);
+    const candidateText = renderTemplate(template.template, { A: a, B: b });
+    const integrity = computeRenderedIntegrity(candidateText, template.operation);
+    if (!integrity.ok) continue;
+    text = candidateText;
+    values = integrity.numbers;
+    expectedAnswer = integrity.expected;
+    break;
+  }
+
+  if (!values || expectedAnswer === null) {
+    throw new Error(`Unable to build virtual question with valid integrity for template ${template.id}`);
+  }
+
+  const [a, b] = values;
   return {
     id: `${template.id}_${a}_${b}`,
-    q: renderTemplate(template.template, { A: a, B: b }),
-    answer: String(answer),
-    accepted: [String(answer)],
+    q: text,
+    answer: String(expectedAnswer),
+    accepted: [String(expectedAnswer)],
     hint: template.operation === 'subtract' ? 'Tolak nombor kedua daripada nombor pertama.' : 'Tambah kedua-dua nombor.',
-    explanation: template.operation === 'subtract' ? `${a} - ${b} = ${answer}` : `${a} + ${b} = ${answer}`,
+    explanation: template.operation === 'subtract' ? `${a} - ${b} = ${expectedAnswer}` : `${a} + ${b} = ${expectedAnswer}`,
     difficulty: template.difficulty || 'mudah',
     qde: {
       virtual: true,
       templateId: template.id,
       templateUsed: template.template,
       numbers: [a, b],
-      operation: template.operation
+      operation: template.operation,
+      integrity: {
+        ok: true,
+        expectedAnswer
+      }
     }
   };
 }

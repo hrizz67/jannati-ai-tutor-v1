@@ -73,8 +73,8 @@ export function detectOperation(question = {}) {
   const text = `${question.q || question.question || ''} ${question.hint || ''} ${question.explanation || ''}`.toLowerCase();
   if (/[×x]/.test(text) || /darab|kali|setiap|kumpulan/.test(text)) return 'multiply';
   if (/[÷]/.test(text) || /bahagi|kongsi sama/.test(text)) return 'divide';
-  if (/[−-]/.test(text) || /tolak|baki|beza|keluar|memberikan|beri/.test(text)) return 'subtract';
-  if (/[+]/.test(text) || /tambah|jumlah|lagi|membeli|memberi/.test(text)) return 'add';
+  if (/[−-]/.test(text) || /\btolak\b|\bbaki\b|\bbeza\b|\bkeluar\b|\bmemberikan kepada\b|\bberi kepada\b|\bdikurang\b/.test(text)) return 'subtract';
+  if (/[+]/.test(text) || /\btambah\b|\bjumlah\b|\blagi\b|\bmembeli\b|\bmenerima\b|\bdapat\b|\bmemberi\b|\bdiberi\b/.test(text)) return 'add';
   return 'unknown';
 }
 

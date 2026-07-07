@@ -39,6 +39,16 @@ function normalizeStemValue(value = '') {
   return String(value).trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+function computeExpectedAnswer(operation, values = []) {
+  const [a, b] = values.map(Number);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  if (operation === 'add') return a + b;
+  if (operation === 'subtract') return a - b;
+  if (operation === 'multiply') return a * b;
+  if (operation === 'divide') return b !== 0 ? a / b : null;
+  return null;
+}
+
 function remember(memory, operation, values, selectionIndex = 0) {
   const pair = pairSignature(values);
   const equation = equationSignature(operation, values);
@@ -194,7 +204,7 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
   const originalText = question.q || question.question || '';
   const originalNumbers = extractNumbers(originalText).map((item) => item.value);
   const requestedProfile = resolveProfile(question);
-  const operation = question.operation || detectOperation(question);
+  const operation = question.operation || question.qde?.operation || detectOperation(question);
   const profile = requestedProfile || detectNumberProfile(question);
 
   const requestedDifficulty = question.difficulty || question.qip?.metadata?.difficulty || question.qip?.difficulty;
@@ -299,18 +309,25 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
   const shouldExplore = (selectionIndex % 7 === 0) || validCandidates.every((item) => item.score <= 6);
 
   if (validCandidates.length > 0) {
-    const bestCandidate = validCandidates
+    const sortedCandidates = validCandidates
       .slice()
       .sort((left, right) => {
         const leftScore = shouldExplore ? left.explorationScore : left.score;
         const rightScore = shouldExplore ? right.explorationScore : right.score;
         return rightScore - leftScore || left.attempt - right.attempt;
-      })[0];
+      });
 
-    selected = bestCandidate.candidate;
-    selectedCandidateMetadata = bestCandidate.scoreMetadata;
-    selectionReason = bestCandidate.reasons.join(', ') || 'Highest-scoring valid candidate selected';
-    explorationUsed = shouldExplore;
+    for (const candidateRow of sortedCandidates) {
+      const expected = computeExpectedAnswer(operation, candidateRow.candidate.values || []);
+      if (expected === null || expected !== Number(candidateRow.candidate.answer)) {
+        continue;
+      }
+      selected = candidateRow.candidate;
+      selectedCandidateMetadata = candidateRow.scoreMetadata;
+      selectionReason = candidateRow.reasons.join(', ') || 'Highest-scoring valid candidate selected';
+      explorationUsed = shouldExplore;
+      break;
+    }
   }
 
   if (!selected) {
@@ -341,6 +358,26 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
         };
       }
     }
+  }
+
+  const selectedExpected = computeExpectedAnswer(operation, selected?.values || []);
+  if (selectedExpected === null || selectedExpected !== Number(selected?.answer)) {
+    return {
+      ...question,
+      qip: {
+        ...(question.qip || {}),
+        numberEngine: {
+          enabled: true,
+          originalNumbers,
+          selectedNumbers: originalNumbers,
+          patternGroup: 'legacy',
+          difficultyProfile: constraints.difficultyProfile,
+          selectionReason: 'Integrity mismatch detected; candidate rejected and legacy preserved',
+          reuseCount: 0,
+          numberDiversityScore: 100
+        }
+      }
+    };
   }
 
   if (!selected) {
