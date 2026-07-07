@@ -48,7 +48,16 @@ function expectedFromGroupedMultiplicationPattern(text = '') {
 
   const groupedPatterns = [
     /\bbaris\b.*\bsetiap\s+baris\b/,
+    /\bada\s+\d+\s+kumpulan\s+dan\s+setiap\s+kumpulan\s+ada\s+\d+\b/,
+    /\bada\s+\d+\s+kumpulan\s+dengan\s+\d+\b/,
+    /\bsatu\s+set\b.*\bmengandungi\b/,
+    /\bjika\s+ada\s+\d+\s+set\b/,
+    /\bset\s+mengandungi\b/,
+    /\bset\b.*\bsetiap\s+set\b/,
+    /\bberapa\s+jumlah\s+objek\b/,
     /\bkumpulan\b.*\bsetiap\s+kumpulan\b/,
+    /\bsetiap\s+kumpulan\s+ada\b/,
+    /\bjumlah\s+item\s+ialah\b/,
     /\bkotak\b.*\bsetiap\s+kotak\b/,
     /\bbungkus\b.*\bsetiap\s+bungkus\b/,
     /\brak\b.*\bsetiap\s+rak\b/,
@@ -60,6 +69,7 @@ function expectedFromGroupedMultiplicationPattern(text = '') {
   ];
 
   if (!groupedPatterns.some((pattern) => pattern.test(source))) return null;
+  if (/\bdikongsi\s+sama\s+rata\b|\bdibahagi\b|\bdiagihkan\b|\bsetiap\s+murid\s+mendapat\b/.test(source)) return null;
   return Number(numbers[0]) * Number(numbers[1]);
 }
 
@@ -72,6 +82,7 @@ function expectedFromEqualSharingPattern(text = '') {
     /\bdikongsi\s+sama\s+rata\s+kepada\b/,
     /\bdibahagi\s+sama\s+rata\s+kepada\b/,
     /\bdiagihkan\s+sama\s+rata\s+kepada\b/,
+    /\bke\s+dalam\s+\d+\s+\w+\s+sama\s+banyak\b/,
     /\bdibahagi\s+kepada\s+kumpulan\b/,
     /\bdibahagi\s+kepada\b.*\bkumpulan\b/
   ];
@@ -85,8 +96,9 @@ function expectedFromEqualSharingPattern(text = '') {
 
   const hasSharingPhrase = sharingPatterns.some((pattern) => pattern.test(source));
   const hasRecipientPhrase = recipientPatterns.some((pattern) => pattern.test(source));
+  const hasDivisionCue = /\bbahagi\b|\bdikongsi\b|\bkongsi\b|\bdiagihkan\b|\bdibahagi\b|\bsama\s+banyak\b|\bke\s+dalam\b/.test(source);
 
-  if (!hasSharingPhrase && !hasRecipientPhrase) return null;
+  if (!(hasSharingPhrase || (hasRecipientPhrase && hasDivisionCue))) return null;
   return Number(numbers[0]) / Number(numbers[1]);
 }
 

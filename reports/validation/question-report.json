@@ -1,24 +1,24 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-07-05T06:38:51.260Z",
+  "generatedAt": "2026-07-07T15:56:06.015Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
-    "questions": 4000,
+    "questions": 4300,
     "diversitySessions": 5000,
     "infos": 0,
     "errors": 0,
-    "warnings": 0
+    "warnings": 6
   },
   "difficultyCounts": {
-    "mudah": 1600,
-    "sederhana": 1600,
-    "sukar": 800
+    "mudah": 1714,
+    "sederhana": 1714,
+    "sukar": 872
   },
   "diversityDiagnostics": {
     "repeatedTemplates": 0,
     "repeatedNumberPatterns": 0,
-    "repeatedAnswerPatterns": 2482,
+    "repeatedAnswerPatterns": 2721,
     "repeatedContexts": 0,
     "repeatedDistractors": 0,
     "repeatedAnswerPositions": 0,
@@ -28,14 +28,14 @@
     "averageDiversityScore": 71,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 0,
-    "averageSelectionTimeMs": 21.745,
+    "averageSelectionTimeMs": 14.111,
     "stemDiversity": 100,
     "stemReuseRate": 0,
     "repeatedStems": 0,
     "contextDiversity": 77,
-    "nameReuseRate": 90.53,
-    "objectReuseRate": 14.15,
-    "contextReuseRate": 23.3,
+    "nameReuseRate": 91.08,
+    "objectReuseRate": 13.31,
+    "contextReuseRate": 22.88,
     "unsafeContextChanges": 0,
     "unusedStemVariationGroups": [
       "sentence_building",
@@ -85,10 +85,83 @@
       "kesihatan_mental_emosi": 2500
     },
     "difficultyBalance": {
-      "mudah": 43774,
-      "sukar": 24077,
-      "sederhana": 32149
+      "mudah": 43869,
+      "sukar": 24196,
+      "sederhana": 31935
     }
   },
-  "issues": []
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-097",
+        "questionIndex": 96,
+        "duplicateOf": "math:MATH-DARAB-010"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-100",
+        "questionIndex": 99,
+        "duplicateOf": "math:MATH-DARAB-009"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-102",
+        "questionIndex": 101,
+        "duplicateOf": "math:MATH-DARAB-052"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-105",
+        "questionIndex": 104,
+        "duplicateOf": "math:MATH-DARAB-006"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-115",
+        "questionIndex": 114,
+        "duplicateOf": "math:MATH-DARAB-001"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-122",
+        "questionIndex": 121,
+        "duplicateOf": "math:MATH-DARAB-054"
+      }
+    }
+  ]
 }

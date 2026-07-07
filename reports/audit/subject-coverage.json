@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T14:07:34.760Z",
+  "generatedAt": "2026-07-07T15:26:07.499Z",
   "subjects": [
     {
       "id": "bm",
@@ -87,10 +87,10 @@
     {
       "id": "math",
       "title": "Matematik Tahun 2",
-      "totalQuestions": 500,
-      "uniqueStems": 500,
-      "duplicateStemCount": 0,
-      "uniqueTemplates": 500,
+      "totalQuestions": 800,
+      "uniqueStems": 792,
+      "duplicateStemCount": 8,
+      "uniqueTemplates": 800,
       "templateReuseCount": 0,
       "topics": [
         {
@@ -103,29 +103,29 @@
         {
           "id": "tambah",
           "title": "Tambah",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
+          "totalQuestions": 126,
+          "uniqueStems": 126,
           "duplicateStemCount": 0
         },
         {
           "id": "tolak",
           "title": "Tolak",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
+          "totalQuestions": 126,
+          "uniqueStems": 126,
           "duplicateStemCount": 0
         },
         {
           "id": "darab",
           "title": "Darab",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
-          "duplicateStemCount": 0
+          "totalQuestions": 124,
+          "uniqueStems": 116,
+          "duplicateStemCount": 8
         },
         {
           "id": "bahagi",
           "title": "Bahagi",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
+          "totalQuestions": 124,
+          "uniqueStems": 124,
           "duplicateStemCount": 0
         },
         {
@@ -165,7 +165,28 @@
         }
       ],
       "topTemplateReuses": [],
-      "topDuplicateStems": []
+      "topDuplicateStems": [
+        {
+          "value": "4 4 4 ________",
+          "count": 4
+        },
+        {
+          "value": "9 9 9 ________",
+          "count": 3
+        },
+        {
+          "value": "10 x 3 ________",
+          "count": 2
+        },
+        {
+          "value": "2 x 3 ________",
+          "count": 2
+        },
+        {
+          "value": "5 x 8 ________",
+          "count": 2
+        }
+      ]
     },
     {
       "id": "english",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T15:12:30.867Z",
+  "generatedAt": "2026-07-07T16:46:03.256Z",
   "status": "pass",
   "sessionsAttempted": 10000,
   "sessionsCompleted": 10000,
@@ -11,22 +11,22 @@
     "answerMismatchCount": 0,
     "explanationMismatchCount": 0,
     "averageDifficultyDistribution": {
-      "easy": "8.9456",
-      "medium": "8.2055",
-      "hard": "2.8489"
+      "easy": "8.8356",
+      "medium": "8.1824",
+      "hard": "2.9820"
     },
     "difficultyDistribution": {
       "easy": {
-        "count": 89456,
-        "percent": "44.73%"
+        "count": 88356,
+        "percent": "44.18%"
       },
       "medium": {
-        "count": 82055,
-        "percent": "41.03%"
+        "count": 81824,
+        "percent": "40.91%"
       },
       "hard": {
-        "count": 28489,
-        "percent": "14.24%"
+        "count": 29820,
+        "percent": "14.91%"
       }
     },
     "topicDistribution": {

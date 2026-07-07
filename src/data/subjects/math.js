@@ -1948,6 +1948,538 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "523 + 17 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-089",
+          "q": "Di sekolah, ada 18 item berkaitan sekolah dan 6 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "18 + 6 = 24.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sekolah, ada 18 item berkaitan sekolah dan 6 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-090",
+          "q": "Aina mengumpul 25 bahan bertema wang. Kemudian dia menambah 11 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "25 + 11 = 36.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 25 bahan bertema wang. Kemudian dia menambah 11 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-091",
+          "q": "32 + 16 = ________.",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "32 + 16 = 48.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "32 + 16 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-092",
+          "q": "Semasa aktiviti buku, kumpulan pertama mendapat 39 markah dan kumpulan kedua mendapat 21 markah. Jumlah markah ialah ________.",
+          "answer": "60",
+          "accepted": [
+            "60"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "39 + 21 = 60.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, kumpulan pertama mendapat 39 markah dan kumpulan kedua mendapat 21 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-093",
+          "q": "Dalam topik alat tulis, cikgu menyediakan 46 kad dan menambah 26 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "72",
+          "accepted": [
+            "72"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "46 + 26 = 72.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik alat tulis, cikgu menyediakan 46 kad dan menambah 26 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-094",
+          "q": "Di rumah, ada 53 item berkaitan permainan dan 31 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "84",
+          "accepted": [
+            "84"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "53 + 31 = 84.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rumah, ada 53 item berkaitan permainan dan 31 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-095",
+          "q": "Aina mengumpul 60 bahan bertema masa. Kemudian dia menambah 36 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "96",
+          "accepted": [
+            "96"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "60 + 36 = 96.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 60 bahan bertema masa. Kemudian dia menambah 36 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-096",
+          "q": "67 + 41 = ________.",
+          "answer": "108",
+          "accepted": [
+            "108"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "67 + 41 = 108.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "67 + 41 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-097",
+          "q": "Semasa aktiviti haiwan, kumpulan pertama mendapat 74 markah dan kumpulan kedua mendapat 46 markah. Jumlah markah ialah ________.",
+          "answer": "120",
+          "accepted": [
+            "120"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "74 + 46 = 120.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, kumpulan pertama mendapat 74 markah dan kumpulan kedua mendapat 46 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-098",
+          "q": "Dalam topik makanan, cikgu menyediakan 81 kad dan menambah 51 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "132",
+          "accepted": [
+            "132"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "81 + 51 = 132.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik makanan, cikgu menyediakan 81 kad dan menambah 51 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-099",
+          "q": "Di sekolah, ada 88 item berkaitan sekolah dan 56 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "144",
+          "accepted": [
+            "144"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "88 + 56 = 144.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sekolah, ada 88 item berkaitan sekolah dan 56 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-100",
+          "q": "Aina mengumpul 95 bahan bertema wang. Kemudian dia menambah 61 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "156",
+          "accepted": [
+            "156"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "95 + 61 = 156.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 95 bahan bertema wang. Kemudian dia menambah 61 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-101",
+          "q": "102 + 66 = ________.",
+          "answer": "168",
+          "accepted": [
+            "168"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "102 + 66 = 168.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "102 + 66 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-102",
+          "q": "Semasa aktiviti buku, kumpulan pertama mendapat 109 markah dan kumpulan kedua mendapat 71 markah. Jumlah markah ialah ________.",
+          "answer": "180",
+          "accepted": [
+            "180"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "109 + 71 = 180.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, kumpulan pertama mendapat 109 markah dan kumpulan kedua mendapat 71 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-103",
+          "q": "Dalam topik alat tulis, cikgu menyediakan 116 kad dan menambah 76 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "192",
+          "accepted": [
+            "192"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "116 + 76 = 192.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik alat tulis, cikgu menyediakan 116 kad dan menambah 76 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-104",
+          "q": "Di rumah, ada 123 item berkaitan permainan dan 81 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "204",
+          "accepted": [
+            "204"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "123 + 81 = 204.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rumah, ada 123 item berkaitan permainan dan 81 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-105",
+          "q": "Aina mengumpul 130 bahan bertema masa. Kemudian dia menambah 86 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "216",
+          "accepted": [
+            "216"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "130 + 86 = 216.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 130 bahan bertema masa. Kemudian dia menambah 86 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-106",
+          "q": "137 + 91 = ________.",
+          "answer": "228",
+          "accepted": [
+            "228"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "137 + 91 = 228.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "137 + 91 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-107",
+          "q": "Semasa aktiviti haiwan, kumpulan pertama mendapat 144 markah dan kumpulan kedua mendapat 96 markah. Jumlah markah ialah ________.",
+          "answer": "240",
+          "accepted": [
+            "240"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "144 + 96 = 240.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, kumpulan pertama mendapat 144 markah dan kumpulan kedua mendapat 96 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-108",
+          "q": "Dalam topik makanan, cikgu menyediakan 151 kad dan menambah 101 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "252",
+          "accepted": [
+            "252"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "151 + 101 = 252.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik makanan, cikgu menyediakan 151 kad dan menambah 101 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-109",
+          "q": "Di sekolah, ada 158 item berkaitan sekolah dan 106 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "264",
+          "accepted": [
+            "264"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "158 + 106 = 264.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sekolah, ada 158 item berkaitan sekolah dan 106 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-110",
+          "q": "Aina mengumpul 165 bahan bertema wang. Kemudian dia menambah 111 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "276",
+          "accepted": [
+            "276"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "165 + 111 = 276.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 165 bahan bertema wang. Kemudian dia menambah 111 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-111",
+          "q": "172 + 116 = ________.",
+          "answer": "288",
+          "accepted": [
+            "288"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "172 + 116 = 288.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "172 + 116 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-112",
+          "q": "Semasa aktiviti buku, kumpulan pertama mendapat 179 markah dan kumpulan kedua mendapat 121 markah. Jumlah markah ialah ________.",
+          "answer": "300",
+          "accepted": [
+            "300"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "179 + 121 = 300.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, kumpulan pertama mendapat 179 markah dan kumpulan kedua mendapat 121 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-113",
+          "q": "Dalam topik alat tulis, cikgu menyediakan 186 kad dan menambah 126 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "312",
+          "accepted": [
+            "312"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "186 + 126 = 312.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik alat tulis, cikgu menyediakan 186 kad dan menambah 126 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-114",
+          "q": "Di rumah, ada 193 item berkaitan permainan dan 131 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "324",
+          "accepted": [
+            "324"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "193 + 131 = 324.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rumah, ada 193 item berkaitan permainan dan 131 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-115",
+          "q": "Aina mengumpul 200 bahan bertema masa. Kemudian dia menambah 136 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "336",
+          "accepted": [
+            "336"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "200 + 136 = 336.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 200 bahan bertema masa. Kemudian dia menambah 136 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-116",
+          "q": "207 + 141 = ________.",
+          "answer": "348",
+          "accepted": [
+            "348"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "207 + 141 = 348.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "207 + 141 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-117",
+          "q": "Semasa aktiviti haiwan, kumpulan pertama mendapat 214 markah dan kumpulan kedua mendapat 146 markah. Jumlah markah ialah ________.",
+          "answer": "360",
+          "accepted": [
+            "360"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "214 + 146 = 360.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, kumpulan pertama mendapat 214 markah dan kumpulan kedua mendapat 146 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-118",
+          "q": "Dalam topik makanan, cikgu menyediakan 221 kad dan menambah 151 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "372",
+          "accepted": [
+            "372"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "221 + 151 = 372.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik makanan, cikgu menyediakan 221 kad dan menambah 151 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-119",
+          "q": "Di sekolah, ada 228 item berkaitan sekolah dan 156 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "384",
+          "accepted": [
+            "384"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "228 + 156 = 384.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sekolah, ada 228 item berkaitan sekolah dan 156 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-120",
+          "q": "Aina mengumpul 235 bahan bertema wang. Kemudian dia menambah 161 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "396",
+          "accepted": [
+            "396"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "235 + 161 = 396.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 235 bahan bertema wang. Kemudian dia menambah 161 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-121",
+          "q": "242 + 166 = ________.",
+          "answer": "408",
+          "accepted": [
+            "408"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "242 + 166 = 408.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "242 + 166 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-122",
+          "q": "Semasa aktiviti buku, kumpulan pertama mendapat 249 markah dan kumpulan kedua mendapat 171 markah. Jumlah markah ialah ________.",
+          "answer": "420",
+          "accepted": [
+            "420"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "249 + 171 = 420.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, kumpulan pertama mendapat 249 markah dan kumpulan kedua mendapat 171 markah. Jumlah markah ialah ________."
+        },
+        {
+          "id": "MATH-TAMBAH-123",
+          "q": "Dalam topik alat tulis, cikgu menyediakan 256 kad dan menambah 176 kad lagi. Berapakah jumlah kad itu?",
+          "answer": "432",
+          "accepted": [
+            "432"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "256 + 176 = 432.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam topik alat tulis, cikgu menyediakan 256 kad dan menambah 176 kad lagi. Berapakah jumlah kad itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-124",
+          "q": "Di rumah, ada 263 item berkaitan permainan dan 181 lagi ditambah. Berapakah jumlah semuanya?",
+          "answer": "444",
+          "accepted": [
+            "444"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "263 + 181 = 444.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rumah, ada 263 item berkaitan permainan dan 181 lagi ditambah. Berapakah jumlah semuanya?"
+        },
+        {
+          "id": "MATH-TAMBAH-125",
+          "q": "Aina mengumpul 270 bahan bertema masa. Kemudian dia menambah 6 lagi. Berapakah jumlah bahan Aina?",
+          "answer": "276",
+          "accepted": [
+            "276"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "270 + 6 = 276.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aina mengumpul 270 bahan bertema masa. Kemudian dia menambah 6 lagi. Berapakah jumlah bahan Aina?"
+        },
+        {
+          "id": "MATH-TAMBAH-126",
+          "q": "277 + 11 = ________.",
+          "answer": "288",
+          "accepted": [
+            "288"
+          ],
+          "hint": "Tambah kedua-dua nombor untuk mendapatkan jumlah.",
+          "explanation": "277 + 11 = 288.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "277 + 11 = ________."
         }
       ]
     },
@@ -3187,6 +3719,538 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "490 - 28 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-089",
+          "q": "Dalam aktiviti sekolah, terdapat 40 item. Sebanyak 5 telah digunakan. Berapakah baki item?",
+          "answer": "35",
+          "accepted": [
+            "35"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "40 - 5 = 35.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti sekolah, terdapat 40 item. Sebanyak 5 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-090",
+          "q": "Faris mempunyai 49 koleksi bertema wang. Dia memberikan 9 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "40",
+          "accepted": [
+            "40"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "49 - 9 = 40.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 49 koleksi bertema wang. Dia memberikan 9 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-091",
+          "q": "58 - 13 = ________.",
+          "answer": "45",
+          "accepted": [
+            "45"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "58 - 13 = 45.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "58 - 13 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-092",
+          "q": "Di sudut buku, cikgu menyusun 67 bahan dan mengeluarkan 17 bahan. Tinggal berapa bahan?",
+          "answer": "50",
+          "accepted": [
+            "50"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "67 - 17 = 50.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut buku, cikgu menyusun 67 bahan dan mengeluarkan 17 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-093",
+          "q": "Semasa latihan alat tulis, pasukan mendapat 76 mata kemudian ditolak 21 mata. Skor akhir ialah ________.",
+          "answer": "55",
+          "accepted": [
+            "55"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "76 - 21 = 55.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan alat tulis, pasukan mendapat 76 mata kemudian ditolak 21 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-094",
+          "q": "Dalam aktiviti permainan, terdapat 85 item. Sebanyak 25 telah digunakan. Berapakah baki item?",
+          "answer": "60",
+          "accepted": [
+            "60"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "85 - 25 = 60.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti permainan, terdapat 85 item. Sebanyak 25 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-095",
+          "q": "Faris mempunyai 94 koleksi bertema masa. Dia memberikan 29 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "65",
+          "accepted": [
+            "65"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "94 - 29 = 65.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 94 koleksi bertema masa. Dia memberikan 29 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-096",
+          "q": "103 - 33 = ________.",
+          "answer": "70",
+          "accepted": [
+            "70"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "103 - 33 = 70.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "103 - 33 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-097",
+          "q": "Di sudut haiwan, cikgu menyusun 112 bahan dan mengeluarkan 37 bahan. Tinggal berapa bahan?",
+          "answer": "75",
+          "accepted": [
+            "75"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "112 - 37 = 75.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut haiwan, cikgu menyusun 112 bahan dan mengeluarkan 37 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-098",
+          "q": "Semasa latihan makanan, pasukan mendapat 121 mata kemudian ditolak 41 mata. Skor akhir ialah ________.",
+          "answer": "80",
+          "accepted": [
+            "80"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "121 - 41 = 80.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan makanan, pasukan mendapat 121 mata kemudian ditolak 41 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-099",
+          "q": "Dalam aktiviti sekolah, terdapat 130 item. Sebanyak 45 telah digunakan. Berapakah baki item?",
+          "answer": "85",
+          "accepted": [
+            "85"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "130 - 45 = 85.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti sekolah, terdapat 130 item. Sebanyak 45 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-100",
+          "q": "Faris mempunyai 139 koleksi bertema wang. Dia memberikan 49 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "90",
+          "accepted": [
+            "90"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "139 - 49 = 90.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 139 koleksi bertema wang. Dia memberikan 49 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-101",
+          "q": "148 - 53 = ________.",
+          "answer": "95",
+          "accepted": [
+            "95"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "148 - 53 = 95.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "148 - 53 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-102",
+          "q": "Di sudut buku, cikgu menyusun 157 bahan dan mengeluarkan 57 bahan. Tinggal berapa bahan?",
+          "answer": "100",
+          "accepted": [
+            "100"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "157 - 57 = 100.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut buku, cikgu menyusun 157 bahan dan mengeluarkan 57 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-103",
+          "q": "Semasa latihan alat tulis, pasukan mendapat 166 mata kemudian ditolak 61 mata. Skor akhir ialah ________.",
+          "answer": "105",
+          "accepted": [
+            "105"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "166 - 61 = 105.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan alat tulis, pasukan mendapat 166 mata kemudian ditolak 61 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-104",
+          "q": "Dalam aktiviti permainan, terdapat 175 item. Sebanyak 65 telah digunakan. Berapakah baki item?",
+          "answer": "110",
+          "accepted": [
+            "110"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "175 - 65 = 110.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti permainan, terdapat 175 item. Sebanyak 65 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-105",
+          "q": "Faris mempunyai 184 koleksi bertema masa. Dia memberikan 69 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "115",
+          "accepted": [
+            "115"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "184 - 69 = 115.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 184 koleksi bertema masa. Dia memberikan 69 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-106",
+          "q": "193 - 73 = ________.",
+          "answer": "120",
+          "accepted": [
+            "120"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "193 - 73 = 120.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "193 - 73 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-107",
+          "q": "Di sudut haiwan, cikgu menyusun 202 bahan dan mengeluarkan 77 bahan. Tinggal berapa bahan?",
+          "answer": "125",
+          "accepted": [
+            "125"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "202 - 77 = 125.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut haiwan, cikgu menyusun 202 bahan dan mengeluarkan 77 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-108",
+          "q": "Semasa latihan makanan, pasukan mendapat 211 mata kemudian ditolak 81 mata. Skor akhir ialah ________.",
+          "answer": "130",
+          "accepted": [
+            "130"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "211 - 81 = 130.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan makanan, pasukan mendapat 211 mata kemudian ditolak 81 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-109",
+          "q": "Dalam aktiviti sekolah, terdapat 220 item. Sebanyak 85 telah digunakan. Berapakah baki item?",
+          "answer": "135",
+          "accepted": [
+            "135"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "220 - 85 = 135.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti sekolah, terdapat 220 item. Sebanyak 85 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-110",
+          "q": "Faris mempunyai 229 koleksi bertema wang. Dia memberikan 89 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "140",
+          "accepted": [
+            "140"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "229 - 89 = 140.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 229 koleksi bertema wang. Dia memberikan 89 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-111",
+          "q": "238 - 93 = ________.",
+          "answer": "145",
+          "accepted": [
+            "145"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "238 - 93 = 145.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "238 - 93 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-112",
+          "q": "Di sudut buku, cikgu menyusun 247 bahan dan mengeluarkan 97 bahan. Tinggal berapa bahan?",
+          "answer": "150",
+          "accepted": [
+            "150"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "247 - 97 = 150.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut buku, cikgu menyusun 247 bahan dan mengeluarkan 97 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-113",
+          "q": "Semasa latihan alat tulis, pasukan mendapat 256 mata kemudian ditolak 101 mata. Skor akhir ialah ________.",
+          "answer": "155",
+          "accepted": [
+            "155"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "256 - 101 = 155.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan alat tulis, pasukan mendapat 256 mata kemudian ditolak 101 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-114",
+          "q": "Dalam aktiviti permainan, terdapat 265 item. Sebanyak 105 telah digunakan. Berapakah baki item?",
+          "answer": "160",
+          "accepted": [
+            "160"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "265 - 105 = 160.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti permainan, terdapat 265 item. Sebanyak 105 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-115",
+          "q": "Faris mempunyai 274 koleksi bertema masa. Dia memberikan 109 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "165",
+          "accepted": [
+            "165"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "274 - 109 = 165.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 274 koleksi bertema masa. Dia memberikan 109 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-116",
+          "q": "283 - 113 = ________.",
+          "answer": "170",
+          "accepted": [
+            "170"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "283 - 113 = 170.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "283 - 113 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-117",
+          "q": "Di sudut haiwan, cikgu menyusun 292 bahan dan mengeluarkan 117 bahan. Tinggal berapa bahan?",
+          "answer": "175",
+          "accepted": [
+            "175"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "292 - 117 = 175.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut haiwan, cikgu menyusun 292 bahan dan mengeluarkan 117 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-118",
+          "q": "Semasa latihan makanan, pasukan mendapat 301 mata kemudian ditolak 121 mata. Skor akhir ialah ________.",
+          "answer": "180",
+          "accepted": [
+            "180"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "301 - 121 = 180.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan makanan, pasukan mendapat 301 mata kemudian ditolak 121 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-119",
+          "q": "Dalam aktiviti sekolah, terdapat 310 item. Sebanyak 125 telah digunakan. Berapakah baki item?",
+          "answer": "185",
+          "accepted": [
+            "185"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "310 - 125 = 185.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti sekolah, terdapat 310 item. Sebanyak 125 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-120",
+          "q": "Faris mempunyai 319 koleksi bertema wang. Dia memberikan 129 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "190",
+          "accepted": [
+            "190"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "319 - 129 = 190.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 319 koleksi bertema wang. Dia memberikan 129 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-121",
+          "q": "328 - 133 = ________.",
+          "answer": "195",
+          "accepted": [
+            "195"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "328 - 133 = 195.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "328 - 133 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-122",
+          "q": "Di sudut buku, cikgu menyusun 337 bahan dan mengeluarkan 137 bahan. Tinggal berapa bahan?",
+          "answer": "200",
+          "accepted": [
+            "200"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "337 - 137 = 200.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut buku, cikgu menyusun 337 bahan dan mengeluarkan 137 bahan. Tinggal berapa bahan?"
+        },
+        {
+          "id": "MATH-TOLAK-123",
+          "q": "Semasa latihan alat tulis, pasukan mendapat 346 mata kemudian ditolak 141 mata. Skor akhir ialah ________.",
+          "answer": "205",
+          "accepted": [
+            "205"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "346 - 141 = 205.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa latihan alat tulis, pasukan mendapat 346 mata kemudian ditolak 141 mata. Skor akhir ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-124",
+          "q": "Dalam aktiviti permainan, terdapat 355 item. Sebanyak 145 telah digunakan. Berapakah baki item?",
+          "answer": "210",
+          "accepted": [
+            "210"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "355 - 145 = 210.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti permainan, terdapat 355 item. Sebanyak 145 telah digunakan. Berapakah baki item?"
+        },
+        {
+          "id": "MATH-TOLAK-125",
+          "q": "Faris mempunyai 364 koleksi bertema masa. Dia memberikan 149 kepada adiknya. Baki Faris ialah ________.",
+          "answer": "215",
+          "accepted": [
+            "215"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "364 - 149 = 215.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris mempunyai 364 koleksi bertema masa. Dia memberikan 149 kepada adiknya. Baki Faris ialah ________."
+        },
+        {
+          "id": "MATH-TOLAK-126",
+          "q": "373 - 153 = ________.",
+          "answer": "220",
+          "accepted": [
+            "220"
+          ],
+          "hint": "Cari baki dengan menolak nombor kedua daripada nombor pertama.",
+          "explanation": "373 - 153 = 220.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "373 - 153 = ________."
         }
       ]
     },
@@ -4412,6 +5476,524 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "Kira dengan teliti: 15 + 15 + 15 = ________."
+        },
+        {
+          "id": "MATH-DARAB-088",
+          "q": "Dalam tema sekolah, ada 2 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "2 x 2 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema sekolah, ada 2 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-089",
+          "q": "Satu set wang mengandungi 5 objek. Jika ada 3 set, berapakah jumlah objek?",
+          "answer": "15",
+          "accepted": [
+            "15"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "3 x 5 = 15.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set wang mengandungi 5 objek. Jika ada 3 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-090",
+          "q": "4 x 8 = ________.",
+          "answer": "32",
+          "accepted": [
+            "32"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "4 x 8 = 32.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x 8 = ________."
+        },
+        {
+          "id": "MATH-DARAB-091",
+          "q": "Semasa aktiviti buku, murid membuat 5 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "50",
+          "accepted": [
+            "50"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "5 x 10 = 50.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, murid membuat 5 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-092",
+          "q": "6 x 4 = ________.",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "6 x 4 = 24.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-093",
+          "q": "Dalam tema permainan, ada 7 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "answer": "49",
+          "accepted": [
+            "49"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "7 x 7 = 49.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema permainan, ada 7 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-094",
+          "q": "Satu set masa mengandungi 10 objek. Jika ada 8 set, berapakah jumlah objek?",
+          "answer": "80",
+          "accepted": [
+            "80"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "8 x 10 = 80.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set masa mengandungi 10 objek. Jika ada 8 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-095",
+          "q": "9 x 3 = ________.",
+          "answer": "27",
+          "accepted": [
+            "27"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "9 x 3 = 27.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 x 3 = ________."
+        },
+        {
+          "id": "MATH-DARAB-096",
+          "q": "Semasa aktiviti haiwan, murid membuat 10 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "60",
+          "accepted": [
+            "60"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "10 x 6 = 60.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, murid membuat 10 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-097",
+          "q": "2 x 9 = ________.",
+          "answer": "18",
+          "accepted": [
+            "18"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "2 x 9 = 18.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 9 = ________."
+        },
+        {
+          "id": "MATH-DARAB-098",
+          "q": "Dalam tema sekolah, ada 3 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "3 x 2 = 6.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema sekolah, ada 3 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-099",
+          "q": "Satu set wang mengandungi 5 objek. Jika ada 4 set, berapakah jumlah objek?",
+          "answer": "20",
+          "accepted": [
+            "20"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "4 x 5 = 20.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set wang mengandungi 5 objek. Jika ada 4 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-100",
+          "q": "5 x 8 = ________.",
+          "answer": "40",
+          "accepted": [
+            "40"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "5 x 8 = 40.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x 8 = ________."
+        },
+        {
+          "id": "MATH-DARAB-101",
+          "q": "Semasa aktiviti buku, murid membuat 6 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "60",
+          "accepted": [
+            "60"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "6 x 10 = 60.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, murid membuat 6 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-102",
+          "q": "7 x 4 = ________.",
+          "answer": "28",
+          "accepted": [
+            "28"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "7 x 4 = 28.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-103",
+          "q": "Dalam tema permainan, ada 8 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "answer": "56",
+          "accepted": [
+            "56"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "8 x 7 = 56.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema permainan, ada 8 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-104",
+          "q": "Satu set masa mengandungi 10 objek. Jika ada 9 set, berapakah jumlah objek?",
+          "answer": "90",
+          "accepted": [
+            "90"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "9 x 10 = 90.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set masa mengandungi 10 objek. Jika ada 9 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-105",
+          "q": "10 x 3 = ________.",
+          "answer": "30",
+          "accepted": [
+            "30"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "10 x 3 = 30.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "10 x 3 = ________."
+        },
+        {
+          "id": "MATH-DARAB-106",
+          "q": "Semasa aktiviti haiwan, murid membuat 2 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "2 x 6 = 12.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, murid membuat 2 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-107",
+          "q": "9 + 9 + 9 = ________.",
+          "answer": "27",
+          "accepted": [
+            "27"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "3 x 9 = 27.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 + 9 + 9 = ________."
+        },
+        {
+          "id": "MATH-DARAB-108",
+          "q": "Dalam tema sekolah, ada 4 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "4 x 2 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema sekolah, ada 4 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-109",
+          "q": "Satu set wang mengandungi 5 objek. Jika ada 5 set, berapakah jumlah objek?",
+          "answer": "25",
+          "accepted": [
+            "25"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "5 x 5 = 25.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set wang mengandungi 5 objek. Jika ada 5 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-110",
+          "q": "6 x 8 = ________.",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "6 x 8 = 48.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x 8 = ________."
+        },
+        {
+          "id": "MATH-DARAB-111",
+          "q": "Semasa aktiviti buku, murid membuat 7 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "70",
+          "accepted": [
+            "70"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "7 x 10 = 70.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, murid membuat 7 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-112",
+          "q": "8 x 4 = ________.",
+          "answer": "32",
+          "accepted": [
+            "32"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "8 x 4 = 32.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-113",
+          "q": "Dalam tema permainan, ada 9 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "answer": "63",
+          "accepted": [
+            "63"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "9 x 7 = 63.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema permainan, ada 9 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-114",
+          "q": "Satu set masa mengandungi 10 objek. Jika ada 10 set, berapakah jumlah objek?",
+          "answer": "100",
+          "accepted": [
+            "100"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "10 x 10 = 100.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set masa mengandungi 10 objek. Jika ada 10 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-115",
+          "q": "2 x 3 = ________.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "2 x 3 = 6.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 3 = ________."
+        },
+        {
+          "id": "MATH-DARAB-116",
+          "q": "Semasa aktiviti haiwan, murid membuat 3 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "18",
+          "accepted": [
+            "18"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "3 x 6 = 18.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti haiwan, murid membuat 3 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-117",
+          "q": "4 x 9 = ________.",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "4 x 9 = 36.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x 9 = ________."
+        },
+        {
+          "id": "MATH-DARAB-118",
+          "q": "Dalam tema sekolah, ada 5 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________.",
+          "answer": "10",
+          "accepted": [
+            "10"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "5 x 2 = 10.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema sekolah, ada 5 kumpulan dan setiap kumpulan ada 2 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-119",
+          "q": "Satu set wang mengandungi 5 objek. Jika ada 6 set, berapakah jumlah objek?",
+          "answer": "30",
+          "accepted": [
+            "30"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "6 x 5 = 30.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set wang mengandungi 5 objek. Jika ada 6 set, berapakah jumlah objek?"
+        },
+        {
+          "id": "MATH-DARAB-120",
+          "q": "7 x 8 = ________.",
+          "answer": "56",
+          "accepted": [
+            "56"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "7 x 8 = 56.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 x 8 = ________."
+        },
+        {
+          "id": "MATH-DARAB-121",
+          "q": "Semasa aktiviti buku, murid membuat 8 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "answer": "80",
+          "accepted": [
+            "80"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "8 x 10 = 80.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Semasa aktiviti buku, murid membuat 8 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-122",
+          "q": "9 x 4 = ________.",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "9 x 4 = 36.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-123",
+          "q": "Dalam tema permainan, ada 10 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "answer": "70",
+          "accepted": [
+            "70"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "10 x 7 = 70.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam tema permainan, ada 10 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-124",
+          "q": "Satu set masa mengandungi 10 objek. Jika ada 2 set, berapakah jumlah objek?",
+          "answer": "20",
+          "accepted": [
+            "20"
+          ],
+          "hint": "Gunakan darab sebagai tambah berulang untuk mendapatkan jumlah.",
+          "explanation": "2 x 10 = 20.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu set masa mengandungi 10 objek. Jika ada 2 set, berapakah jumlah objek?"
         }
       ]
     },
@@ -5637,6 +7219,524 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "9 x ________ = 108."
+        },
+        {
+          "id": "MATH-BAHAGI-088",
+          "q": "4 item bertema sekolah dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ item.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "4 bahagi 2 = 2.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 item bertema sekolah dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-089",
+          "q": "Dalam aktiviti wang, 12 objek dibahagi sama rata kepada 3 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "12 bahagi 3 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti wang, 12 objek dibahagi sama rata kepada 3 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-090",
+          "q": "24 ÷ 4 = ________.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "24 bahagi 4 = 6.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "24 ÷ 4 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-091",
+          "q": "Keluarga menyusun 40 bahan buku ke dalam 5 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "40 bahagi 5 = 8.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 40 bahan buku ke dalam 5 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-092",
+          "q": "12 gula-gula diagihkan sama rata kepada 6 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "12 bahagi 6 = 2.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "12 gula-gula diagihkan sama rata kepada 6 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-093",
+          "q": "28 item bertema permainan dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ item.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "28 bahagi 7 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "28 item bertema permainan dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-094",
+          "q": "Dalam aktiviti masa, 48 objek dibahagi sama rata kepada 8 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "48 bahagi 8 = 6.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti masa, 48 objek dibahagi sama rata kepada 8 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-095",
+          "q": "72 ÷ 9 = ________.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "72 bahagi 9 = 8.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "72 ÷ 9 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-096",
+          "q": "Keluarga menyusun 20 bahan haiwan ke dalam 10 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "20 bahagi 10 = 2.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 20 bahan haiwan ke dalam 10 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-097",
+          "q": "8 gula-gula diagihkan sama rata kepada 2 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "8 bahagi 2 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 gula-gula diagihkan sama rata kepada 2 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-098",
+          "q": "18 item bertema sekolah dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ item.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "18 bahagi 3 = 6.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "18 item bertema sekolah dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-099",
+          "q": "Dalam aktiviti wang, 32 objek dibahagi sama rata kepada 4 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "32 bahagi 4 = 8.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti wang, 32 objek dibahagi sama rata kepada 4 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-100",
+          "q": "10 ÷ 5 = ________.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "10 bahagi 5 = 2.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "10 ÷ 5 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-101",
+          "q": "Keluarga menyusun 24 bahan buku ke dalam 6 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "24 bahagi 6 = 4.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 24 bahan buku ke dalam 6 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-102",
+          "q": "42 gula-gula diagihkan sama rata kepada 7 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "42 bahagi 7 = 6.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "42 gula-gula diagihkan sama rata kepada 7 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-103",
+          "q": "64 item bertema permainan dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ item.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "64 bahagi 8 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "64 item bertema permainan dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-104",
+          "q": "Dalam aktiviti masa, 18 objek dibahagi sama rata kepada 9 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "18 bahagi 9 = 2.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti masa, 18 objek dibahagi sama rata kepada 9 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-105",
+          "q": "40 ÷ 10 = ________.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "40 bahagi 10 = 4.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "40 ÷ 10 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-106",
+          "q": "Keluarga menyusun 12 bahan haiwan ke dalam 2 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "12 bahagi 2 = 6.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 12 bahan haiwan ke dalam 2 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-107",
+          "q": "24 gula-gula diagihkan sama rata kepada 3 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "24 bahagi 3 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "24 gula-gula diagihkan sama rata kepada 3 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-108",
+          "q": "8 item bertema sekolah dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ item.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "8 bahagi 4 = 2.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 item bertema sekolah dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-109",
+          "q": "Dalam aktiviti wang, 20 objek dibahagi sama rata kepada 5 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "20 bahagi 5 = 4.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti wang, 20 objek dibahagi sama rata kepada 5 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-110",
+          "q": "36 ÷ 6 = ________.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "36 bahagi 6 = 6.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "36 ÷ 6 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-111",
+          "q": "Keluarga menyusun 56 bahan buku ke dalam 7 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "56 bahagi 7 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 56 bahan buku ke dalam 7 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-112",
+          "q": "16 gula-gula diagihkan sama rata kepada 8 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "16 bahagi 8 = 2.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "16 gula-gula diagihkan sama rata kepada 8 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-113",
+          "q": "36 item bertema permainan dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ item.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "36 bahagi 9 = 4.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "36 item bertema permainan dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-114",
+          "q": "Dalam aktiviti masa, 60 objek dibahagi sama rata kepada 10 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "60 bahagi 10 = 6.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti masa, 60 objek dibahagi sama rata kepada 10 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-115",
+          "q": "16 ÷ 2 = ________.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "16 bahagi 2 = 8.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "16 ÷ 2 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-116",
+          "q": "Keluarga menyusun 6 bahan haiwan ke dalam 3 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "6 bahagi 3 = 2.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 6 bahan haiwan ke dalam 3 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-117",
+          "q": "16 gula-gula diagihkan sama rata kepada 4 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "16 bahagi 4 = 4.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "16 gula-gula diagihkan sama rata kepada 4 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-118",
+          "q": "30 item bertema sekolah dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ item.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "30 bahagi 5 = 6.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "30 item bertema sekolah dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-119",
+          "q": "Dalam aktiviti wang, 48 objek dibahagi sama rata kepada 6 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "48 bahagi 6 = 8.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti wang, 48 objek dibahagi sama rata kepada 6 kumpulan. Setiap kumpulan mendapat ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-120",
+          "q": "14 ÷ 7 = ________.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "14 bahagi 7 = 2.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "14 ÷ 7 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-121",
+          "q": "Keluarga menyusun 32 bahan buku ke dalam 8 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "32 bahagi 8 = 4.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Keluarga menyusun 32 bahan buku ke dalam 8 bekas sama banyak. Setiap bekas ada ________ bahan."
+        },
+        {
+          "id": "MATH-BAHAGI-122",
+          "q": "54 gula-gula diagihkan sama rata kepada 9 orang. Setiap orang menerima ________ gula-gula.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "54 bahagi 9 = 6.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "54 gula-gula diagihkan sama rata kepada 9 orang. Setiap orang menerima ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-123",
+          "q": "80 item bertema permainan dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ item.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "80 bahagi 10 = 8.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "80 item bertema permainan dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ item."
+        },
+        {
+          "id": "MATH-BAHAGI-124",
+          "q": "Dalam aktiviti masa, 4 objek dibahagi sama rata kepada 2 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "answer": "2",
+          "accepted": [
+            "2"
+          ],
+          "hint": "Bahagi jumlah item dengan bilangan kumpulan untuk dapatkan setiap kumpulan.",
+          "explanation": "4 bahagi 2 = 2.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dalam aktiviti masa, 4 objek dibahagi sama rata kepada 2 kumpulan. Setiap kumpulan mendapat ________ objek."
         }
       ]
     },

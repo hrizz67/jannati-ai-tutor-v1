@@ -1,13 +1,13 @@
 # Subject Coverage Audit
 
-Generated: 2026-07-06T14:07:34.999Z
+Generated: 2026-07-07T15:26:07.701Z
 
 ## Summary
 
 | Subject | Questions | Unique Stems | Duplicate Stems | Unique Templates | Template Reuse |
 |---|---|---|---|---|---|
 | bm | 500 | 500 | 0 | 500 | 0 |
-| math | 500 | 500 | 0 | 500 | 0 |
+| math | 800 | 792 | 8 | 800 | 0 |
 | english | 500 | 500 | 0 | 500 | 0 |
 | sains | 500 | 500 | 0 | 500 | 0 |
 | arab | 500 | 500 | 0 | 500 | 0 |
@@ -40,10 +40,10 @@ Generated: 2026-07-06T14:07:34.999Z
 
 ## Matematik Tahun 2 (math)
 
-- Total questions: **500**
-- Unique normalized stems: **500**
-- Duplicate stems: **0**
-- Unique templates: **500**
+- Total questions: **800**
+- Unique normalized stems: **792**
+- Duplicate stems: **8**
+- Unique templates: **800**
 - Template reuse count: **0**
 
 ### Per-topic breakdown
@@ -51,15 +51,25 @@ Generated: 2026-07-06T14:07:34.999Z
 | Topic | Questions | Unique Stems | Duplicate Stems |
 |---|---|---|---|
 | nombor | 50 | 50 | 0 |
-| tambah | 50 | 50 | 0 |
-| tolak | 50 | 50 | 0 |
-| darab | 50 | 50 | 0 |
-| bahagi | 50 | 50 | 0 |
+| tambah | 126 | 126 | 0 |
+| tolak | 126 | 126 | 0 |
+| darab | 124 | 116 | 8 |
+| bahagi | 124 | 124 | 0 |
 | wang | 50 | 50 | 0 |
 | masa | 50 | 50 | 0 |
 | panjang | 50 | 50 | 0 |
 | jisim_isi_padu | 50 | 50 | 0 |
 | bentuk | 50 | 50 | 0 |
+
+### Top duplicate stems
+
+| Stem | Count |
+|---|---|
+| 4 4 4 ________ | 4 |
+| 9 9 9 ________ | 3 |
+| 10 x 3 ________ | 2 |
+| 2 x 3 ________ | 2 |
+| 5 x 8 ________ | 2 |
 
 ## English Year 2 (english)
 
