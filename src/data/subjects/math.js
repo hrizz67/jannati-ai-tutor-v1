@@ -1416,6 +1416,538 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "368 + 26 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-051",
+          "q": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Berapakah jumlah setem Nadia?",
+          "answer": "25",
+          "accepted": [
+            "25"
+          ],
+          "hint": "Tambah bilangan setem asal dengan setem yang diterima.",
+          "explanation": "18 + 7 = 25.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Berapakah jumlah setem Nadia?"
+        },
+        {
+          "id": "MATH-TAMBAH-052",
+          "q": "24 + 13 = ________.",
+          "answer": "37",
+          "accepted": [
+            "37"
+          ],
+          "hint": "Tambah nombor pertama dengan nombor kedua.",
+          "explanation": "24 + 13 = 37.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "24 + 13 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-053",
+          "q": "Di meja ada 32 buku rujukan dan 16 buku aktiviti. Berapakah jumlah buku di meja itu?",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Jumlah buku diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "32 + 16 = 48.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di meja ada 32 buku rujukan dan 16 buku aktiviti. Berapakah jumlah buku di meja itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-054",
+          "q": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Berapakah jumlah gundu Faris?",
+          "answer": "49",
+          "accepted": [
+            "49"
+          ],
+          "hint": "Tambah gundu yang ada dengan gundu yang diterima.",
+          "explanation": "41 + 8 = 49.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Berapakah jumlah gundu Faris?"
+        },
+        {
+          "id": "MATH-TAMBAH-055",
+          "q": "27 + 22 = ________.",
+          "answer": "49",
+          "accepted": [
+            "49"
+          ],
+          "hint": "Tambah nombor yang diberikan satu demi satu.",
+          "explanation": "27 + 22 = 49.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "27 + 22 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-056",
+          "q": "Di troli ada 35 botol air dan 14 kotak jus. Berapakah jumlah barang minuman di troli itu?",
+          "answer": "49",
+          "accepted": [
+            "49"
+          ],
+          "hint": "Campurkan kedua-dua bilangan barang minuman.",
+          "explanation": "35 + 14 = 49.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di troli ada 35 botol air dan 14 kotak jus. Berapakah jumlah barang minuman di troli itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-057",
+          "q": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Berapakah jumlah pelekat Lina?",
+          "answer": "59",
+          "accepted": [
+            "59"
+          ],
+          "hint": "Tambah pelekat sedia ada dengan pelekat tambahan.",
+          "explanation": "43 + 16 = 59.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Berapakah jumlah pelekat Lina?"
+        },
+        {
+          "id": "MATH-TAMBAH-058",
+          "q": "28 + 31 = ________.",
+          "answer": "59",
+          "accepted": [
+            "59"
+          ],
+          "hint": "Tambah nombor puluh dan sa dengan teliti.",
+          "explanation": "28 + 31 = 59.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "28 + 31 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-059",
+          "q": "Di rak pameran ada 46 buku sains dan 12 buku matematik. Berapakah jumlah buku pada rak pameran itu?",
+          "answer": "58",
+          "accepted": [
+            "58"
+          ],
+          "hint": "Jumlah buku diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "46 + 12 = 58.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di rak pameran ada 46 buku sains dan 12 buku matematik. Berapakah jumlah buku pada rak pameran itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-060",
+          "q": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Berapakah jumlah manik Qistina?",
+          "answer": "69",
+          "accepted": [
+            "69"
+          ],
+          "hint": "Tambah manik asal dengan manik yang diterima.",
+          "explanation": "54 + 15 = 69.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Berapakah jumlah manik Qistina?"
+        },
+        {
+          "id": "MATH-TAMBAH-061",
+          "q": "39 + 24 = ________.",
+          "answer": "63",
+          "accepted": [
+            "63"
+          ],
+          "hint": "Jumlah diperoleh dengan menambah kedua-dua nombor.",
+          "explanation": "39 + 24 = 63.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "39 + 24 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-062",
+          "q": "Di almari ada 58 fail biru dan 11 fail merah. Berapakah jumlah fail dalam almari itu?",
+          "answer": "69",
+          "accepted": [
+            "69"
+          ],
+          "hint": "Tambah bilangan fail biru dan fail merah.",
+          "explanation": "58 + 11 = 69.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di almari ada 58 fail biru dan 11 fail merah. Berapakah jumlah fail dalam almari itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-063",
+          "q": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Berapakah jumlah kad ucapan Haziq?",
+          "answer": "80",
+          "accepted": [
+            "80"
+          ],
+          "hint": "Tambah bilangan asal dengan bilangan tambahan.",
+          "explanation": "67 + 13 = 80.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Berapakah jumlah kad ucapan Haziq?"
+        },
+        {
+          "id": "MATH-TAMBAH-064",
+          "q": "44 + 26 = ________.",
+          "answer": "70",
+          "accepted": [
+            "70"
+          ],
+          "hint": "Tambah kedua-dua nombor dengan kemas.",
+          "explanation": "44 + 26 = 70.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "44 + 26 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-065",
+          "q": "Di stor ada 62 kotak pensel dan 17 kotak pemadam. Berapakah jumlah kotak alat tulis di stor itu?",
+          "answer": "79",
+          "accepted": [
+            "79"
+          ],
+          "hint": "Jumlah alat tulis diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "62 + 17 = 79.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di stor ada 62 kotak pensel dan 17 kotak pemadam. Berapakah jumlah kotak alat tulis di stor itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-066",
+          "q": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Berapakah jumlah syiling Umairah?",
+          "answer": "194",
+          "accepted": [
+            "194"
+          ],
+          "hint": "Tambah syiling asal dengan syiling tambahan.",
+          "explanation": "175 + 19 = 194.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Berapakah jumlah syiling Umairah?"
+        },
+        {
+          "id": "MATH-TAMBAH-067",
+          "q": "189 + 24 = ________.",
+          "answer": "213",
+          "accepted": [
+            "213"
+          ],
+          "hint": "Tambah nombor puluh dan nombor sa secara teratur.",
+          "explanation": "189 + 24 = 213.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "189 + 24 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-068",
+          "q": "Di perpustakaan mini ada 204 buku cerita dan 18 buku rujukan. Berapakah jumlah buku di perpustakaan mini itu?",
+          "answer": "222",
+          "accepted": [
+            "222"
+          ],
+          "hint": "Tambah kedua-dua bilangan buku.",
+          "explanation": "204 + 18 = 222.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di perpustakaan mini ada 204 buku cerita dan 18 buku rujukan. Berapakah jumlah buku di perpustakaan mini itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-069",
+          "q": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Berapakah jumlah reben Safiyyah?",
+          "answer": "243",
+          "accepted": [
+            "243"
+          ],
+          "hint": "Tambah bilangan reben yang ada dengan reben yang diberi.",
+          "explanation": "218 + 25 = 243.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Berapakah jumlah reben Safiyyah?"
+        },
+        {
+          "id": "MATH-TAMBAH-070",
+          "q": "227 + 16 = ________.",
+          "answer": "243",
+          "accepted": [
+            "243"
+          ],
+          "hint": "Cari hasil tambah dengan berhati-hati.",
+          "explanation": "227 + 16 = 243.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "227 + 16 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-071",
+          "q": "Di sudut bacaan ada 236 majalah dan 27 akhbar. Berapakah jumlah bahan bacaan di sudut itu?",
+          "answer": "263",
+          "accepted": [
+            "263"
+          ],
+          "hint": "Jumlah bahan bacaan diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "236 + 27 = 263.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di sudut bacaan ada 236 majalah dan 27 akhbar. Berapakah jumlah bahan bacaan di sudut itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-072",
+          "q": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Berapakah jumlah syiling Qalish?",
+          "answer": "267",
+          "accepted": [
+            "267"
+          ],
+          "hint": "Tambah bilangan syiling yang ada dengan syiling tambahan.",
+          "explanation": "249 + 18 = 267.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Berapakah jumlah syiling Qalish?"
+        },
+        {
+          "id": "MATH-TAMBAH-073",
+          "q": "258 + 29 = ________.",
+          "answer": "287",
+          "accepted": [
+            "287"
+          ],
+          "hint": "Tambah nombor hingga selesai.",
+          "explanation": "258 + 29 = 287.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "258 + 29 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-074",
+          "q": "Di galeri kelas ada 267 lukisan dan 14 kolaj. Berapakah jumlah hasil seni di galeri itu?",
+          "answer": "281",
+          "accepted": [
+            "281"
+          ],
+          "hint": "Jumlah hasil seni diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "267 + 14 = 281.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di galeri kelas ada 267 lukisan dan 14 kolaj. Berapakah jumlah hasil seni di galeri itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-075",
+          "q": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Berapakah jumlah manik Najla?",
+          "answer": "301",
+          "accepted": [
+            "301"
+          ],
+          "hint": "Tambah bilangan manik asal dengan manik tambahan.",
+          "explanation": "276 + 25 = 301.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Berapakah jumlah manik Najla?"
+        },
+        {
+          "id": "MATH-TAMBAH-076",
+          "q": "285 + 17 = ________.",
+          "answer": "302",
+          "accepted": [
+            "302"
+          ],
+          "hint": "Tambah kedua-dua nombor mengikut nilai tempat.",
+          "explanation": "285 + 17 = 302.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "285 + 17 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-077",
+          "q": "Di bilik muzik ada 294 alat perkusi dan 26 alat bertali. Berapakah jumlah alat muzik di bilik itu?",
+          "answer": "320",
+          "accepted": [
+            "320"
+          ],
+          "hint": "Tambah bilangan dua jenis alat muzik.",
+          "explanation": "294 + 26 = 320.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di bilik muzik ada 294 alat perkusi dan 26 alat bertali. Berapakah jumlah alat muzik di bilik itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-078",
+          "q": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Berapakah jumlah butang Aisyah?",
+          "answer": "327",
+          "accepted": [
+            "327"
+          ],
+          "hint": "Tambah butang asal dengan butang yang diterima.",
+          "explanation": "308 + 19 = 327.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Berapakah jumlah butang Aisyah?"
+        },
+        {
+          "id": "MATH-TAMBAH-079",
+          "q": "317 + 28 = ________.",
+          "answer": "345",
+          "accepted": [
+            "345"
+          ],
+          "hint": "Tambah nombor pertama dengan nombor kedua.",
+          "explanation": "317 + 28 = 345.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "317 + 28 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-080",
+          "q": "Di makmal komputer ada 326 tetikus dan 15 papan kekunci ganti. Berapakah jumlah peranti kecil di makmal itu?",
+          "answer": "341",
+          "accepted": [
+            "341"
+          ],
+          "hint": "Jumlah peranti kecil diperoleh dengan menambah kedua-dua bilangan.",
+          "explanation": "326 + 15 = 341.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di makmal komputer ada 326 tetikus dan 15 papan kekunci ganti. Berapakah jumlah peranti kecil di makmal itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-081",
+          "q": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Berapakah jumlah kad Aminah?",
+          "answer": "429",
+          "accepted": [
+            "429"
+          ],
+          "hint": "Tambah bilangan kad asal dengan kad tambahan.",
+          "explanation": "402 + 27 = 429.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Berapakah jumlah kad Aminah?"
+        },
+        {
+          "id": "MATH-TAMBAH-082",
+          "q": "418 + 36 = ________.",
+          "answer": "454",
+          "accepted": [
+            "454"
+          ],
+          "hint": "Tambah nombor ratus, puluh dan sa dengan cermat.",
+          "explanation": "418 + 36 = 454.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "418 + 36 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-083",
+          "q": "Di pusat sumber ada 435 buku cerita dan 24 kamus. Berapakah jumlah bahan bacaan di pusat sumber itu?",
+          "answer": "459",
+          "accepted": [
+            "459"
+          ],
+          "hint": "Tambah kedua-dua bilangan bahan bacaan.",
+          "explanation": "435 + 24 = 459.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di pusat sumber ada 435 buku cerita dan 24 kamus. Berapakah jumlah bahan bacaan di pusat sumber itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-084",
+          "q": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Berapakah jumlah syiling Harith?",
+          "answer": "470",
+          "accepted": [
+            "470"
+          ],
+          "hint": "Tambah bilangan syiling yang ada dengan syiling tambahan.",
+          "explanation": "452 + 18 = 470.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Berapakah jumlah syiling Harith?"
+        },
+        {
+          "id": "MATH-TAMBAH-085",
+          "q": "467 + 25 = ________.",
+          "answer": "492",
+          "accepted": [
+            "492"
+          ],
+          "hint": "Tambah nombor mengikut nilai tempat.",
+          "explanation": "467 + 25 = 492.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "467 + 25 = ________."
+        },
+        {
+          "id": "MATH-TAMBAH-086",
+          "q": "Di bilik seni ada 484 krayon dan 19 berus warna. Berapakah jumlah alat seni kecil di bilik itu?",
+          "answer": "503",
+          "accepted": [
+            "503"
+          ],
+          "hint": "Campurkan kedua-dua bilangan alat seni kecil.",
+          "explanation": "484 + 19 = 503.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Di bilik seni ada 484 krayon dan 19 berus warna. Berapakah jumlah alat seni kecil di bilik itu?"
+        },
+        {
+          "id": "MATH-TAMBAH-087",
+          "q": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Berapakah jumlah manik Balqis?",
+          "answer": "534",
+          "accepted": [
+            "534"
+          ],
+          "hint": "Tambah bilangan manik yang ada dengan manik tambahan.",
+          "explanation": "506 + 28 = 534.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Berapakah jumlah manik Balqis?"
+        },
+        {
+          "id": "MATH-TAMBAH-088",
+          "q": "523 + 17 = ________.",
+          "answer": "540",
+          "accepted": [
+            "540"
+          ],
+          "hint": "Tambah kedua-dua nombor hingga selesai.",
+          "explanation": "523 + 17 = 540.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "523 + 17 = ________."
         }
       ]
     },
@@ -2123,6 +2655,538 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "297 - 17 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-051",
+          "q": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Berapakah baki pelekat Nadia?",
+          "answer": "71",
+          "accepted": [
+            "71"
+          ],
+          "hint": "Baki diperoleh dengan menolak bilangan yang diberi.",
+          "explanation": "83 - 12 = 71.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Berapakah baki pelekat Nadia?"
+        },
+        {
+          "id": "MATH-TOLAK-052",
+          "q": "94 - 21 = ________.",
+          "answer": "73",
+          "accepted": [
+            "73"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama.",
+          "explanation": "94 - 21 = 73.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "94 - 21 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-053",
+          "q": "Ada 105 murid di kantin. 14 murid pulang ke kelas. Berapakah murid yang masih di kantin?",
+          "answer": "91",
+          "accepted": [
+            "91"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas murid berkurang.",
+          "explanation": "105 - 14 = 91.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 105 murid di kantin. 14 murid pulang ke kelas. Berapakah murid yang masih di kantin?"
+        },
+        {
+          "id": "MATH-TOLAK-054",
+          "q": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Berapakah baki syiling Hakim?",
+          "answer": "93",
+          "accepted": [
+            "93"
+          ],
+          "hint": "Baki syiling diperoleh dengan menolak jumlah yang diberi.",
+          "explanation": "116 - 23 = 93.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Berapakah baki syiling Hakim?"
+        },
+        {
+          "id": "MATH-TOLAK-055",
+          "q": "127 - 15 = ________.",
+          "answer": "112",
+          "accepted": [
+            "112"
+          ],
+          "hint": "Tolak nombor yang diberi dengan cermat.",
+          "explanation": "127 - 15 = 112.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "127 - 15 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-056",
+          "q": "Ada 138 murid di gelanggang. 24 murid masuk ke perpustakaan. Berapakah murid yang masih di gelanggang?",
+          "answer": "114",
+          "accepted": [
+            "114"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang bergerak keluar.",
+          "explanation": "138 - 24 = 114.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 138 murid di gelanggang. 24 murid masuk ke perpustakaan. Berapakah murid yang masih di gelanggang?"
+        },
+        {
+          "id": "MATH-TOLAK-057",
+          "q": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Berapakah baki manik Dhiya?",
+          "answer": "133",
+          "accepted": [
+            "133"
+          ],
+          "hint": "Baki manik diperoleh dengan menolak manik yang diberi.",
+          "explanation": "149 - 16 = 133.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Berapakah baki manik Dhiya?"
+        },
+        {
+          "id": "MATH-TOLAK-058",
+          "q": "160 - 25 = ________.",
+          "answer": "135",
+          "accepted": [
+            "135"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama.",
+          "explanation": "160 - 25 = 135.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "160 - 25 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-059",
+          "q": "Ada 171 murid di dewan bacaan. 18 murid bergerak ke makmal. Berapakah murid yang masih di dewan bacaan?",
+          "answer": "153",
+          "accepted": [
+            "153"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas beberapa murid berpindah.",
+          "explanation": "171 - 18 = 153.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 171 murid di dewan bacaan. 18 murid bergerak ke makmal. Berapakah murid yang masih di dewan bacaan?"
+        },
+        {
+          "id": "MATH-TOLAK-060",
+          "q": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Berapakah baki setem Mikael?",
+          "answer": "155",
+          "accepted": [
+            "155"
+          ],
+          "hint": "Tolak bilangan setem yang diberi daripada jumlah asal.",
+          "explanation": "182 - 27 = 155.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Berapakah baki setem Mikael?"
+        },
+        {
+          "id": "MATH-TOLAK-061",
+          "q": "193 - 19 = ________.",
+          "answer": "174",
+          "accepted": [
+            "174"
+          ],
+          "hint": "Tolak nombor kedua dengan tertib.",
+          "explanation": "193 - 19 = 174.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "193 - 19 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-062",
+          "q": "Ada 204 murid di padang. 28 murid masuk ke bilik darjah. Berapakah murid yang masih di padang?",
+          "answer": "176",
+          "accepted": [
+            "176"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas sebahagian murid beredar.",
+          "explanation": "204 - 28 = 176.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 204 murid di padang. 28 murid masuk ke bilik darjah. Berapakah murid yang masih di padang?"
+        },
+        {
+          "id": "MATH-TOLAK-063",
+          "q": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Berapakah baki kad Taufiq?",
+          "answer": "204",
+          "accepted": [
+            "204"
+          ],
+          "hint": "Tolak kad yang diberi daripada kad yang ada.",
+          "explanation": "215 - 11 = 204.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Berapakah baki kad Taufiq?"
+        },
+        {
+          "id": "MATH-TOLAK-064",
+          "q": "226 - 22 = ________.",
+          "answer": "204",
+          "accepted": [
+            "204"
+          ],
+          "hint": "Tolak bilangan yang diberi dengan betul.",
+          "explanation": "226 - 22 = 204.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "226 - 22 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-065",
+          "q": "Ada 237 murid di dewan serbaguna. 13 murid pergi berlatih koir. Berapakah murid yang masih di dewan serbaguna?",
+          "answer": "224",
+          "accepted": [
+            "224"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang keluar.",
+          "explanation": "237 - 13 = 224.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 237 murid di dewan serbaguna. 13 murid pergi berlatih koir. Berapakah murid yang masih di dewan serbaguna?"
+        },
+        {
+          "id": "MATH-TOLAK-066",
+          "q": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Berapakah baki butang Qaseh?",
+          "answer": "224",
+          "accepted": [
+            "224"
+          ],
+          "hint": "Baki diperoleh dengan menolak butang yang diberi.",
+          "explanation": "248 - 24 = 224.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Berapakah baki butang Qaseh?"
+        },
+        {
+          "id": "MATH-TOLAK-067",
+          "q": "259 - 35 = ________.",
+          "answer": "224",
+          "accepted": [
+            "224"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama.",
+          "explanation": "259 - 35 = 224.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "259 - 35 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-068",
+          "q": "Ada 270 murid di balai ilmu. 17 murid pulang ke rumah. Berapakah murid yang masih di balai ilmu?",
+          "answer": "253",
+          "accepted": [
+            "253"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang keluar.",
+          "explanation": "270 - 17 = 253.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 270 murid di balai ilmu. 17 murid pulang ke rumah. Berapakah murid yang masih di balai ilmu?"
+        },
+        {
+          "id": "MATH-TOLAK-069",
+          "q": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Berapakah baki penanda buku Hana?",
+          "answer": "255",
+          "accepted": [
+            "255"
+          ],
+          "hint": "Tolak jumlah yang diberi daripada jumlah asal.",
+          "explanation": "281 - 26 = 255.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Berapakah baki penanda buku Hana?"
+        },
+        {
+          "id": "MATH-TOLAK-070",
+          "q": "292 - 37 = ________.",
+          "answer": "255",
+          "accepted": [
+            "255"
+          ],
+          "hint": "Tolak nombor kedua dengan betul.",
+          "explanation": "292 - 37 = 255.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "292 - 37 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-071",
+          "q": "Ada 303 murid di gelanggang tertutup. 18 murid masuk ke kelas muzik. Berapakah murid yang masih di gelanggang tertutup?",
+          "answer": "285",
+          "accepted": [
+            "285"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang beredar.",
+          "explanation": "303 - 18 = 285.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 303 murid di gelanggang tertutup. 18 murid masuk ke kelas muzik. Berapakah murid yang masih di gelanggang tertutup?"
+        },
+        {
+          "id": "MATH-TOLAK-072",
+          "q": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Berapakah baki riben Alya?",
+          "answer": "285",
+          "accepted": [
+            "285"
+          ],
+          "hint": "Baki riben diperoleh dengan menolak riben yang diberi.",
+          "explanation": "314 - 29 = 285.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Berapakah baki riben Alya?"
+        },
+        {
+          "id": "MATH-TOLAK-073",
+          "q": "325 - 16 = ________.",
+          "answer": "309",
+          "accepted": [
+            "309"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama.",
+          "explanation": "325 - 16 = 309.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "325 - 16 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-074",
+          "q": "Ada 336 murid di astaka. 27 murid naik bas. Berapakah murid yang masih di astaka?",
+          "answer": "309",
+          "accepted": [
+            "309"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas menolak murid yang beredar.",
+          "explanation": "336 - 27 = 309.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 336 murid di astaka. 27 murid naik bas. Berapakah murid yang masih di astaka?"
+        },
+        {
+          "id": "MATH-TOLAK-075",
+          "q": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Berapakah baki syiling Izzah?",
+          "answer": "328",
+          "accepted": [
+            "328"
+          ],
+          "hint": "Tolak jumlah syiling yang diberi daripada syiling asal.",
+          "explanation": "347 - 19 = 328.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Berapakah baki syiling Izzah?"
+        },
+        {
+          "id": "MATH-TOLAK-076",
+          "q": "358 - 28 = ________.",
+          "answer": "330",
+          "accepted": [
+            "330"
+          ],
+          "hint": "Tolak nombor kedua dengan teratur.",
+          "explanation": "358 - 28 = 330.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "358 - 28 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-077",
+          "q": "Ada 369 murid di dataran. 15 murid pergi ke surau. Berapakah murid yang masih di dataran?",
+          "answer": "354",
+          "accepted": [
+            "354"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang pergi.",
+          "explanation": "369 - 15 = 354.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 369 murid di dataran. 15 murid pergi ke surau. Berapakah murid yang masih di dataran?"
+        },
+        {
+          "id": "MATH-TOLAK-078",
+          "q": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Berapakah baki klip kertas Husna?",
+          "answer": "354",
+          "accepted": [
+            "354"
+          ],
+          "hint": "Baki diperoleh dengan menolak bilangan yang diberi.",
+          "explanation": "380 - 26 = 354.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Berapakah baki klip kertas Husna?"
+        },
+        {
+          "id": "MATH-TOLAK-079",
+          "q": "391 - 17 = ________.",
+          "answer": "374",
+          "accepted": [
+            "374"
+          ],
+          "hint": "Tolak nombor kedua dengan tepat.",
+          "explanation": "391 - 17 = 374.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "391 - 17 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-080",
+          "q": "Ada 402 murid di dewan bacaan utama. 28 murid keluar untuk latihan. Berapakah murid yang masih di dewan bacaan utama?",
+          "answer": "374",
+          "accepted": [
+            "374"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas beberapa murid keluar.",
+          "explanation": "402 - 28 = 374.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 402 murid di dewan bacaan utama. 28 murid keluar untuk latihan. Berapakah murid yang masih di dewan bacaan utama?"
+        },
+        {
+          "id": "MATH-TOLAK-081",
+          "q": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Berapakah baki pelekat Imran?",
+          "answer": "384",
+          "accepted": [
+            "384"
+          ],
+          "hint": "Tolak pelekat yang diberi daripada jumlah asal.",
+          "explanation": "413 - 29 = 384.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Berapakah baki pelekat Imran?"
+        },
+        {
+          "id": "MATH-TOLAK-082",
+          "q": "424 - 38 = ________.",
+          "answer": "386",
+          "accepted": [
+            "386"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama dengan cermat.",
+          "explanation": "424 - 38 = 386.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "424 - 38 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-083",
+          "q": "Ada 435 murid di auditorium. 16 murid pergi ke bilik rehat. Berapakah murid yang masih di auditorium?",
+          "answer": "419",
+          "accepted": [
+            "419"
+          ],
+          "hint": "Bilangan yang tinggal diperoleh dengan menolak murid yang keluar.",
+          "explanation": "435 - 16 = 419.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 435 murid di auditorium. 16 murid pergi ke bilik rehat. Berapakah murid yang masih di auditorium?"
+        },
+        {
+          "id": "MATH-TOLAK-084",
+          "q": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Berapakah baki manik Nurin?",
+          "answer": "419",
+          "accepted": [
+            "419"
+          ],
+          "hint": "Baki diperoleh dengan menolak manik yang diberi.",
+          "explanation": "446 - 27 = 419.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Berapakah baki manik Nurin?"
+        },
+        {
+          "id": "MATH-TOLAK-085",
+          "q": "457 - 18 = ________.",
+          "answer": "439",
+          "accepted": [
+            "439"
+          ],
+          "hint": "Tolak nombor kedua dengan betul.",
+          "explanation": "457 - 18 = 439.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "457 - 18 = ________."
+        },
+        {
+          "id": "MATH-TOLAK-086",
+          "q": "Ada 468 murid di dewan utama. 29 murid ke bilik sains. Berapakah murid yang masih di dewan utama?",
+          "answer": "439",
+          "accepted": [
+            "439"
+          ],
+          "hint": "Cari bilangan yang tinggal selepas menolak murid yang beredar.",
+          "explanation": "468 - 29 = 439.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 468 murid di dewan utama. 29 murid ke bilik sains. Berapakah murid yang masih di dewan utama?"
+        },
+        {
+          "id": "MATH-TOLAK-087",
+          "q": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Berapakah baki kad Farisya?",
+          "answer": "442",
+          "accepted": [
+            "442"
+          ],
+          "hint": "Tolak kad yang diberi daripada kad yang ada.",
+          "explanation": "479 - 37 = 442.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Berapakah baki kad Farisya?"
+        },
+        {
+          "id": "MATH-TOLAK-088",
+          "q": "490 - 28 = ________.",
+          "answer": "462",
+          "accepted": [
+            "462"
+          ],
+          "hint": "Tolak nombor kedua daripada nombor pertama.",
+          "explanation": "490 - 28 = 462.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "490 - 28 = ________."
         }
       ]
     },
@@ -2830,6 +3894,524 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 9 kotak?"
+        },
+        {
+          "id": "MATH-DARAB-051",
+          "q": "6 x 3 = ________.",
+          "answer": "18",
+          "accepted": [
+            "18"
+          ],
+          "hint": "Darab ialah tambah berulang.",
+          "explanation": "6 x 3 = 18.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x 3 = ________."
+        },
+        {
+          "id": "MATH-DARAB-052",
+          "q": "7 x 4 = ________.",
+          "answer": "28",
+          "accepted": [
+            "28"
+          ],
+          "hint": "Darabkan nombor pertama dengan nombor kedua.",
+          "explanation": "7 x 4 = 28.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-053",
+          "q": "8 x 3 = ________.",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Darab ialah cara cepat untuk tambah berulang.",
+          "explanation": "8 x 3 = 24.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 x 3 = ________."
+        },
+        {
+          "id": "MATH-DARAB-054",
+          "q": "9 x 4 = ________.",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Kira hasil darab dengan teliti.",
+          "explanation": "9 x 4 = 36.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 x 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-055",
+          "q": "6 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
+          "explanation": "6 x 6 = 36.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-056",
+          "q": "7 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "35",
+          "accepted": [
+            "35"
+          ],
+          "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
+          "explanation": "7 x 5 = 35.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-057",
+          "q": "8 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "32",
+          "accepted": [
+            "32"
+          ],
+          "hint": "Kira jumlah semua objek menggunakan darab.",
+          "explanation": "8 x 4 = 32.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-058",
+          "q": "9 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "27",
+          "accepted": [
+            "27"
+          ],
+          "hint": "Darabkan kumpulan dengan objek setiap kumpulan.",
+          "explanation": "9 x 3 = 27.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-059",
+          "q": "4 + 4 + 4 + 4 + 4 = ________.",
+          "answer": "20",
+          "accepted": [
+            "20"
+          ],
+          "hint": "Tambah berulang boleh ditukar kepada darab.",
+          "explanation": "4 ditambah 5 kali menjadi 20.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 + 4 + 4 + 4 + 4 = ________."
+        },
+        {
+          "id": "MATH-DARAB-060",
+          "q": "5 + 5 + 5 + 5 + 5 = ________.",
+          "answer": "25",
+          "accepted": [
+            "25"
+          ],
+          "hint": "Tambah berulang menunjukkan operasi darab.",
+          "explanation": "5 ditambah 5 kali menjadi 25.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "5 + 5 + 5 + 5 + 5 = ________."
+        },
+        {
+          "id": "MATH-DARAB-061",
+          "q": "6 + 6 + 6 = ________.",
+          "answer": "18",
+          "accepted": [
+            "18"
+          ],
+          "hint": "Jumlah ini ialah hasil tambah berulang nombor yang sama.",
+          "explanation": "6 ditambah 3 kali menjadi 18.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 + 6 + 6 = ________."
+        },
+        {
+          "id": "MATH-DARAB-062",
+          "q": "7 + 7 + 7 = ________.",
+          "answer": "21",
+          "accepted": [
+            "21"
+          ],
+          "hint": "Tambah berulang boleh dikira satu demi satu.",
+          "explanation": "7 ditambah 3 kali menjadi 21.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 + 7 + 7 = ________."
+        },
+        {
+          "id": "MATH-DARAB-063",
+          "q": "Kira dengan teliti: 8 + 8 + 8 = ________.",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Tambah berulang perlu dikira dengan teliti.",
+          "explanation": "8 ditambah 3 kali menjadi 24.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 8 + 8 + 8 = ________."
+        },
+        {
+          "id": "MATH-DARAB-064",
+          "q": "Kira dengan teliti: 9 + 9 + 9 = ________.",
+          "answer": "27",
+          "accepted": [
+            "27"
+          ],
+          "hint": "Jumlah ini boleh diperoleh melalui tambah berulang.",
+          "explanation": "9 ditambah 3 kali menjadi 27.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 9 + 9 + 9 = ________."
+        },
+        {
+          "id": "MATH-DARAB-065",
+          "q": "Soalan ulang kaji Darab: 6 + 6 + 6 + 6 = ________.",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Tambah berulang boleh ditukar kepada darab.",
+          "explanation": "6 ditambah 4 kali menjadi 24.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Soalan ulang kaji Darab: 6 + 6 + 6 + 6 = ________."
+        },
+        {
+          "id": "MATH-DARAB-066",
+          "q": "Satu bekas ada 6 pen marker. Berapakah pen marker dalam 4 bekas?",
+          "answer": "24",
+          "accepted": [
+            "24"
+          ],
+          "hint": "Darabkan bilangan pen marker dalam satu bekas dengan bilangan bekas.",
+          "explanation": "6 x 4 = 24.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu bekas ada 6 pen marker. Berapakah pen marker dalam 4 bekas?"
+        },
+        {
+          "id": "MATH-DARAB-067",
+          "q": "Satu bekas ada 7 pemadam. Berapakah pemadam dalam 6 bekas?",
+          "answer": "42",
+          "accepted": [
+            "42"
+          ],
+          "hint": "Darabkan pemadam dalam satu bekas dengan jumlah bekas.",
+          "explanation": "7 x 6 = 42.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu bekas ada 7 pemadam. Berapakah pemadam dalam 6 bekas?"
+        },
+        {
+          "id": "MATH-DARAB-068",
+          "q": "Satu dulang ada 8 kek kecil. Berapakah kek kecil dalam 5 dulang?",
+          "answer": "40",
+          "accepted": [
+            "40"
+          ],
+          "hint": "Darabkan bilangan kek pada satu dulang dengan bilangan dulang.",
+          "explanation": "8 x 5 = 40.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu dulang ada 8 kek kecil. Berapakah kek kecil dalam 5 dulang?"
+        },
+        {
+          "id": "MATH-DARAB-069",
+          "q": "Satu rak ada 9 buku latihan. Berapakah buku latihan dalam 6 rak?",
+          "answer": "54",
+          "accepted": [
+            "54"
+          ],
+          "hint": "Darabkan bilangan buku pada satu rak dengan jumlah rak.",
+          "explanation": "9 x 6 = 54.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu rak ada 9 buku latihan. Berapakah buku latihan dalam 6 rak?"
+        },
+        {
+          "id": "MATH-DARAB-070",
+          "q": "Terdapat 7 baris kerusi dengan 4 kerusi setiap baris. Jumlah kerusi ialah ________.",
+          "answer": "28",
+          "accepted": [
+            "28"
+          ],
+          "hint": "Darabkan bilangan baris dengan kerusi setiap baris.",
+          "explanation": "7 x 4 = 28.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Terdapat 7 baris kerusi dengan 4 kerusi setiap baris. Jumlah kerusi ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-071",
+          "q": "Terdapat 8 baris pokok dengan 6 pokok setiap baris. Jumlah pokok ialah ________.",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Kira jumlah pokok dengan operasi darab.",
+          "explanation": "8 x 6 = 48.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Terdapat 8 baris pokok dengan 6 pokok setiap baris. Jumlah pokok ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-072",
+          "q": "Terdapat 9 baris botol dengan 5 botol setiap baris. Jumlah botol ialah ________.",
+          "answer": "45",
+          "accepted": [
+            "45"
+          ],
+          "hint": "Darabkan bilangan baris dengan botol pada setiap baris.",
+          "explanation": "9 x 5 = 45.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Terdapat 9 baris botol dengan 5 botol setiap baris. Jumlah botol ialah ________."
+        },
+        {
+          "id": "MATH-DARAB-073",
+          "q": "5 kumpulan dengan 7 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "35",
+          "accepted": [
+            "35"
+          ],
+          "hint": "Jumlah objek diperoleh dengan darab.",
+          "explanation": "5 x 7 = 35.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "5 kumpulan dengan 7 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-074",
+          "q": "4 kumpulan dengan 8 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "32",
+          "accepted": [
+            "32"
+          ],
+          "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
+          "explanation": "4 x 8 = 32.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 kumpulan dengan 8 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-075",
+          "q": "3 kumpulan dengan 9 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "27",
+          "accepted": [
+            "27"
+          ],
+          "hint": "Kira hasil darab untuk mencari jumlah objek.",
+          "explanation": "3 x 9 = 27.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "3 kumpulan dengan 9 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-076",
+          "q": "2 x 11 = ________.",
+          "answer": "22",
+          "accepted": [
+            "22"
+          ],
+          "hint": "Darabkan nombor pertama dengan nombor kedua.",
+          "explanation": "2 x 11 = 22.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "2 x 11 = ________."
+        },
+        {
+          "id": "MATH-DARAB-077",
+          "q": "3 x 12 = ________.",
+          "answer": "36",
+          "accepted": [
+            "36"
+          ],
+          "hint": "Darab menunjukkan jumlah beberapa kumpulan yang sama.",
+          "explanation": "3 x 12 = 36.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "3 x 12 = ________."
+        },
+        {
+          "id": "MATH-DARAB-078",
+          "q": "4 x 11 = ________.",
+          "answer": "44",
+          "accepted": [
+            "44"
+          ],
+          "hint": "Darabkan kedua-dua nombor.",
+          "explanation": "4 x 11 = 44.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "4 x 11 = ________."
+        },
+        {
+          "id": "MATH-DARAB-079",
+          "q": "5 x 11 = ________.",
+          "answer": "55",
+          "accepted": [
+            "55"
+          ],
+          "hint": "Kira hasil darab dengan tepat.",
+          "explanation": "5 x 11 = 55.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "5 x 11 = ________."
+        },
+        {
+          "id": "MATH-DARAB-080",
+          "q": "6 x 11 = ________.",
+          "answer": "66",
+          "accepted": [
+            "66"
+          ],
+          "hint": "Darabkan nombor untuk mendapatkan jumlah keseluruhan.",
+          "explanation": "6 x 11 = 66.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x 11 = ________."
+        },
+        {
+          "id": "MATH-DARAB-081",
+          "q": "Satu kotak ada 12 pensel. Berapakah pensel dalam 4 kotak?",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Darabkan bilangan pensel dalam satu kotak dengan jumlah kotak.",
+          "explanation": "12 x 4 = 48.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 12 pensel. Berapakah pensel dalam 4 kotak?"
+        },
+        {
+          "id": "MATH-DARAB-082",
+          "q": "Satu kotak ada 15 pensel. Berapakah pensel dalam 3 kotak?",
+          "answer": "45",
+          "accepted": [
+            "45"
+          ],
+          "hint": "Darabkan kandungan satu kotak dengan bilangan kotak.",
+          "explanation": "15 x 3 = 45.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 15 pensel. Berapakah pensel dalam 3 kotak?"
+        },
+        {
+          "id": "MATH-DARAB-083",
+          "q": "Satu kotak ada 14 pensel warna. Berapakah pensel warna dalam 5 kotak?",
+          "answer": "70",
+          "accepted": [
+            "70"
+          ],
+          "hint": "Darabkan bilangan pensel warna dalam satu kotak dengan jumlah kotak.",
+          "explanation": "14 x 5 = 70.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Satu kotak ada 14 pensel warna. Berapakah pensel warna dalam 5 kotak?"
+        },
+        {
+          "id": "MATH-DARAB-084",
+          "q": "12 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Jumlah objek diperoleh dengan operasi darab.",
+          "explanation": "12 x 4 = 48.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "12 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-085",
+          "q": "11 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek.",
+          "answer": "66",
+          "accepted": [
+            "66"
+          ],
+          "hint": "Darabkan bilangan kumpulan dengan objek setiap kumpulan.",
+          "explanation": "11 x 6 = 66.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "11 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek."
+        },
+        {
+          "id": "MATH-DARAB-086",
+          "q": "Kira dengan teliti: 12 + 12 + 12 + 12 = ________.",
+          "answer": "48",
+          "accepted": [
+            "48"
+          ],
+          "hint": "Tambah berulang boleh ditukar kepada darab.",
+          "explanation": "12 ditambah 4 kali menjadi 48.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 12 + 12 + 12 + 12 = ________."
+        },
+        {
+          "id": "MATH-DARAB-087",
+          "q": "Kira dengan teliti: 15 + 15 + 15 = ________.",
+          "answer": "45",
+          "accepted": [
+            "45"
+          ],
+          "hint": "Tambah berulang menunjukkan jumlah beberapa kumpulan yang sama.",
+          "explanation": "15 ditambah 3 kali menjadi 45.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Kira dengan teliti: 15 + 15 + 15 = ________."
         }
       ]
     },
@@ -3537,6 +5119,524 @@ export const mathSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "6 x ________ = 36."
+        },
+        {
+          "id": "MATH-BAHAGI-051",
+          "q": "42 bahagi 6 = ________.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Bahagikan nombor kepada kumpulan yang sama banyak.",
+          "explanation": "42 bahagi 6 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "42 bahagi 6 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-052",
+          "q": "49 bahagi 7 = ________.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Cari berapa banyak dalam setiap kumpulan.",
+          "explanation": "49 bahagi 7 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "49 bahagi 7 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-053",
+          "q": "54 bahagi 6 = ________.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Bahagikan nombor secara sama rata.",
+          "explanation": "54 bahagi 6 = 9.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "54 bahagi 6 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-054",
+          "q": "56 bahagi 7 = ________.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Gunakan hubungan darab dan bahagi.",
+          "explanation": "56 bahagi 7 = 8.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "56 bahagi 7 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-055",
+          "q": "63 bahagi 9 = ________.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Fikirkan sifir yang berkaitan.",
+          "explanation": "63 bahagi 9 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "63 bahagi 9 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-056",
+          "q": "72 bahagi 8 = ________.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Bahagi bermaksud mengagih sama rata.",
+          "explanation": "72 bahagi 8 = 9.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "72 bahagi 8 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-057",
+          "q": "81 bahagi 9 = ________.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Gunakan sifir 9 untuk membantu.",
+          "explanation": "81 bahagi 9 = 9.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "81 bahagi 9 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-058",
+          "q": "24 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Kongsi sama rata bermaksud bahagi.",
+          "explanation": "24 bahagi 6 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "24 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-059",
+          "q": "28 gula-gula dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagikan jumlah gula-gula dengan bilangan murid.",
+          "explanation": "28 bahagi 7 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "28 gula-gula dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-060",
+          "q": "42 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Kongsi gula-gula itu sama banyak.",
+          "explanation": "42 bahagi 6 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "42 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-061",
+          "q": "45 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "5",
+          "accepted": [
+            "5"
+          ],
+          "hint": "Bahagikan jumlah gula-gula dengan bilangan murid.",
+          "explanation": "45 bahagi 9 = 5.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "45 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-062",
+          "q": "56 gula-gula dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Cari bilangan gula-gula untuk seorang murid.",
+          "explanation": "56 bahagi 8 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "56 gula-gula dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-063",
+          "q": "63 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Kongsi sama rata bermaksud bahagi.",
+          "explanation": "63 bahagi 9 = 7.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "63 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula."
+        },
+        {
+          "id": "MATH-BAHAGI-064",
+          "q": "Ada 32 biji oren. Oren itu dimasukkan sama banyak ke dalam 8 bakul. Setiap bakul ada ________ biji oren.",
+          "answer": "4",
+          "accepted": [
+            "4"
+          ],
+          "hint": "Bahagikan jumlah oren dengan jumlah bakul.",
+          "explanation": "32 bahagi 8 = 4.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 32 biji oren. Oren itu dimasukkan sama banyak ke dalam 8 bakul. Setiap bakul ada ________ biji oren."
+        },
+        {
+          "id": "MATH-BAHAGI-065",
+          "q": "Ada 54 biji oren. Oren itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji oren.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Bahagikan jumlah oren dengan bilangan bakul.",
+          "explanation": "54 bahagi 6 = 9.",
+          "difficulty": "mudah",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 54 biji oren. Oren itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji oren."
+        },
+        {
+          "id": "MATH-BAHAGI-066",
+          "q": "Jika 42 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Cari bilangan objek bagi setiap kumpulan.",
+          "explanation": "42 bahagi 6 = 7.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 42 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-067",
+          "q": "Jika 49 objek dibahagi kepada kumpulan 7, setiap kumpulan ada ________ objek.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Bahagi jumlah objek dengan bilangan kumpulan.",
+          "explanation": "49 bahagi 7 = 7.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 49 objek dibahagi kepada kumpulan 7, setiap kumpulan ada ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-068",
+          "q": "Jika 64 objek dibahagi kepada kumpulan 8, setiap kumpulan ada ________ objek.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Gunakan fakta bahagi untuk mencari jawapan.",
+          "explanation": "64 bahagi 8 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 64 objek dibahagi kepada kumpulan 8, setiap kumpulan ada ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-069",
+          "q": "Jika 72 objek dibahagi kepada kumpulan 9, setiap kumpulan ada ________ objek.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagikan jumlah objek dengan bilangan kumpulan.",
+          "explanation": "72 bahagi 9 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Jika 72 objek dibahagi kepada kumpulan 9, setiap kumpulan ada ________ objek."
+        },
+        {
+          "id": "MATH-BAHAGI-070",
+          "q": "56 bahagi 8 = ________.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Gunakan sifir 8 untuk membantu.",
+          "explanation": "56 bahagi 8 = 7.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "56 bahagi 8 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-071",
+          "q": "63 bahagi 7 = ________.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Cari nombor yang didarab dengan 7 untuk mendapat 63.",
+          "explanation": "63 bahagi 7 = 9.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "63 bahagi 7 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-072",
+          "q": "90 bahagi 9 = ________.",
+          "answer": "10",
+          "accepted": [
+            "10"
+          ],
+          "hint": "Gunakan hubungan songsang antara darab dan bahagi.",
+          "explanation": "90 bahagi 9 = 10.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "90 bahagi 9 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-073",
+          "q": "Ada 48 roti. Roti itu diagihkan sama rata kepada 6 keluarga. Setiap keluarga menerima ________ roti.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Bahagikan jumlah roti dengan bilangan keluarga.",
+          "explanation": "48 bahagi 6 = 8.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 48 roti. Roti itu diagihkan sama rata kepada 6 keluarga. Setiap keluarga menerima ________ roti."
+        },
+        {
+          "id": "MATH-BAHAGI-074",
+          "q": "Ada 54 roti. Roti itu diagihkan sama rata kepada 9 keluarga. Setiap keluarga menerima ________ roti.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Gunakan bahagi untuk mengagihkan roti sama rata.",
+          "explanation": "54 bahagi 9 = 6.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 54 roti. Roti itu diagihkan sama rata kepada 9 keluarga. Setiap keluarga menerima ________ roti."
+        },
+        {
+          "id": "MATH-BAHAGI-075",
+          "q": "Ada 72 pensel. Pensel itu dibahagi sama rata kepada 8 murid. Setiap murid mendapat ________ pensel.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Bahagikan jumlah pensel dengan bilangan murid.",
+          "explanation": "72 bahagi 8 = 9.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 72 pensel. Pensel itu dibahagi sama rata kepada 8 murid. Setiap murid mendapat ________ pensel."
+        },
+        {
+          "id": "MATH-BAHAGI-076",
+          "q": "Ada 63 pensel warna. Pensel itu dibahagi sama rata kepada 7 murid. Setiap murid mendapat ________ pensel warna.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Bahagikan jumlah pensel warna dengan bilangan murid.",
+          "explanation": "63 bahagi 7 = 9.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 63 pensel warna. Pensel itu dibahagi sama rata kepada 7 murid. Setiap murid mendapat ________ pensel warna."
+        },
+        {
+          "id": "MATH-BAHAGI-077",
+          "q": "7 x ________ = 42.",
+          "answer": "6",
+          "accepted": [
+            "6"
+          ],
+          "hint": "Gunakan fakta darab songsang.",
+          "explanation": "7 x 6 = 42.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "7 x ________ = 42."
+        },
+        {
+          "id": "MATH-BAHAGI-078",
+          "q": "8 x ________ = 64.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Cari nombor yang melengkapkan ayat darab.",
+          "explanation": "8 x 8 = 64.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "8 x ________ = 64."
+        },
+        {
+          "id": "MATH-BAHAGI-079",
+          "q": "9 x ________ = 72.",
+          "answer": "8",
+          "accepted": [
+            "8"
+          ],
+          "hint": "Fikirkan sifir 9 yang sesuai.",
+          "explanation": "9 x 8 = 72.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 x ________ = 72."
+        },
+        {
+          "id": "MATH-BAHAGI-080",
+          "q": "6 x ________ = 54.",
+          "answer": "9",
+          "accepted": [
+            "9"
+          ],
+          "hint": "Gunakan hubungan darab songsang untuk melengkapkan tempat kosong.",
+          "explanation": "6 x 9 = 54.",
+          "difficulty": "sederhana",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "6 x ________ = 54."
+        },
+        {
+          "id": "MATH-BAHAGI-081",
+          "q": "84 bahagi 7 = ________.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Gunakan fakta darab songsang untuk mencari jawapan.",
+          "explanation": "84 bahagi 7 = 12.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "84 bahagi 7 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-082",
+          "q": "96 bahagi 8 = ________.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Bahagikan nombor besar ini kepada kumpulan sama banyak.",
+          "explanation": "96 bahagi 8 = 12.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "96 bahagi 8 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-083",
+          "q": "108 bahagi 9 = ________.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Gunakan sifir 9 untuk membantu.",
+          "explanation": "108 bahagi 9 = 12.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "108 bahagi 9 = ________."
+        },
+        {
+          "id": "MATH-BAHAGI-084",
+          "q": "Ada 84 biskut. Biskut itu dikongsi sama rata kepada 7 bekas. Setiap bekas ada ________ biskut.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Bahagikan jumlah biskut dengan jumlah bekas.",
+          "explanation": "84 bahagi 7 = 12.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 84 biskut. Biskut itu dikongsi sama rata kepada 7 bekas. Setiap bekas ada ________ biskut."
+        },
+        {
+          "id": "MATH-BAHAGI-085",
+          "q": "Ada 96 manik. Manik itu dikongsi sama rata kepada 8 bekas. Setiap bekas ada ________ manik.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Bahagikan jumlah manik dengan bilangan bekas.",
+          "explanation": "96 bahagi 8 = 12.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Ada 96 manik. Manik itu dikongsi sama rata kepada 8 bekas. Setiap bekas ada ________ manik."
+        },
+        {
+          "id": "MATH-BAHAGI-086",
+          "q": "12 x ________ = 84.",
+          "answer": "7",
+          "accepted": [
+            "7"
+          ],
+          "hint": "Gunakan fakta darab songsang untuk melengkapkan tempat kosong.",
+          "explanation": "12 x 7 = 84.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "12 x ________ = 84."
+        },
+        {
+          "id": "MATH-BAHAGI-087",
+          "q": "9 x ________ = 108.",
+          "answer": "12",
+          "accepted": [
+            "12"
+          ],
+          "hint": "Cari nombor yang melengkapkan ayat darab ini.",
+          "explanation": "9 x 12 = 108.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "9 x ________ = 108."
         }
       ]
     },
