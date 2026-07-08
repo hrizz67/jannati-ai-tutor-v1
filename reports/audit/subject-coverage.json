@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-07T15:26:07.499Z",
+  "generatedAt": "2026-07-08T15:17:22.049Z",
   "subjects": [
     {
       "id": "bm",
       "title": "Bahasa Melayu Tahun 2",
-      "totalQuestions": 500,
-      "uniqueStems": 500,
+      "totalQuestions": 800,
+      "uniqueStems": 800,
       "duplicateStemCount": 0,
-      "uniqueTemplates": 500,
+      "uniqueTemplates": 800,
       "templateReuseCount": 0,
       "topics": [
         {
@@ -62,8 +62,8 @@
         {
           "id": "penjodoh_bilangan",
           "title": "Penjodoh Bilangan",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
+          "totalQuestions": 90,
+          "uniqueStems": 90,
           "duplicateStemCount": 0
         },
         {
@@ -76,8 +76,43 @@
         {
           "id": "pemahaman_penulisan",
           "title": "Pemahaman dan Penulisan",
+          "totalQuestions": 110,
+          "uniqueStems": 110,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "tatabahasa",
+          "title": "Tatabahasa",
           "totalQuestions": 50,
           "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "imbuhan",
+          "title": "Imbuhan",
+          "totalQuestions": 40,
+          "uniqueStems": 40,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bina_ayat",
+          "title": "Bina Ayat",
+          "totalQuestions": 40,
+          "uniqueStems": 40,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "simpulan_bahasa",
+          "title": "Simpulan Bahasa",
+          "totalQuestions": 35,
+          "uniqueStems": 35,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "uasa_kbat",
+          "title": "UASA/KBAT",
+          "totalQuestions": 35,
+          "uniqueStems": 35,
           "duplicateStemCount": 0
         }
       ],
@@ -88,8 +123,8 @@
       "id": "math",
       "title": "Matematik Tahun 2",
       "totalQuestions": 800,
-      "uniqueStems": 792,
-      "duplicateStemCount": 8,
+      "uniqueStems": 794,
+      "duplicateStemCount": 6,
       "uniqueTemplates": 800,
       "templateReuseCount": 0,
       "topics": [
@@ -118,8 +153,8 @@
           "id": "darab",
           "title": "Darab",
           "totalQuestions": 124,
-          "uniqueStems": 116,
-          "duplicateStemCount": 8
+          "uniqueStems": 118,
+          "duplicateStemCount": 6
         },
         {
           "id": "bahagi",
@@ -167,14 +202,6 @@
       "topTemplateReuses": [],
       "topDuplicateStems": [
         {
-          "value": "4 4 4 ________",
-          "count": 4
-        },
-        {
-          "value": "9 9 9 ________",
-          "count": 3
-        },
-        {
           "value": "10 x 3 ________",
           "count": 2
         },
@@ -183,7 +210,19 @@
           "count": 2
         },
         {
+          "value": "2 x 9 ________",
+          "count": 2
+        },
+        {
           "value": "5 x 8 ________",
+          "count": 2
+        },
+        {
+          "value": "7 x 4 ________",
+          "count": 2
+        },
+        {
+          "value": "9 x 4 ________",
           "count": 2
         }
       ]

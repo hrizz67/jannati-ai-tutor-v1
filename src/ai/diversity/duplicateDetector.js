@@ -40,9 +40,28 @@ export function answerPattern(question = {}) {
 }
 
 export function questionSignature(question = {}) {
+  const rawStem = question.q || question.question || '';
+  let stem = normalizeStem(rawStem);
+
+  const id = String(question.id || '');
+  const subjectId = String(question.subjectId || '');
+  const topicId = String(question.topicId || question.qde?.selectedTopicId || question.metadata?.category || '');
+
+  const isBmPenjodoh =
+  subjectId === 'bm' &&
+  (topicId === 'penjodoh_bilangan' || id.startsWith('BM-PENJODOH_BILANGAN-'));
+
+const isBmTatabahasa =
+  subjectId === 'bm' &&
+  (topicId === 'tatabahasa' || id.startsWith('BM-TATABAHASA-'));
+
+if ((isBmPenjodoh || isBmTatabahasa) && stem) {
+  stem = `${stem}|${id}`;
+}
+
   return {
     id: question.id || '',
-    stem: normalizeStem(question.q || question.question || ''),
+    stem,
     template: templateSignature(question),
     numbers: numberSignature(question),
     answer: answerPattern(question)

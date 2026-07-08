@@ -1,13 +1,13 @@
 # Subject Coverage Audit
 
-Generated: 2026-07-07T15:26:07.701Z
+Generated: 2026-07-08T15:17:22.202Z
 
 ## Summary
 
 | Subject | Questions | Unique Stems | Duplicate Stems | Unique Templates | Template Reuse |
 |---|---|---|---|---|---|
-| bm | 500 | 500 | 0 | 500 | 0 |
-| math | 800 | 792 | 8 | 800 | 0 |
+| bm | 800 | 800 | 0 | 800 | 0 |
+| math | 800 | 794 | 6 | 800 | 0 |
 | english | 500 | 500 | 0 | 500 | 0 |
 | sains | 500 | 500 | 0 | 500 | 0 |
 | arab | 500 | 500 | 0 | 500 | 0 |
@@ -17,10 +17,10 @@ Generated: 2026-07-07T15:26:07.701Z
 
 ## Bahasa Melayu Tahun 2 (bm)
 
-- Total questions: **500**
-- Unique normalized stems: **500**
+- Total questions: **800**
+- Unique normalized stems: **800**
 - Duplicate stems: **0**
-- Unique templates: **500**
+- Unique templates: **800**
 - Template reuse count: **0**
 
 ### Per-topic breakdown
@@ -34,15 +34,20 @@ Generated: 2026-07-07T15:26:07.701Z
 | kata_adjektif | 50 | 50 | 0 |
 | kata_sendi | 50 | 50 | 0 |
 | kata_hubung | 50 | 50 | 0 |
-| penjodoh_bilangan | 50 | 50 | 0 |
+| penjodoh_bilangan | 90 | 90 | 0 |
 | ayat | 50 | 50 | 0 |
-| pemahaman_penulisan | 50 | 50 | 0 |
+| pemahaman_penulisan | 110 | 110 | 0 |
+| tatabahasa | 50 | 50 | 0 |
+| imbuhan | 40 | 40 | 0 |
+| bina_ayat | 40 | 40 | 0 |
+| simpulan_bahasa | 35 | 35 | 0 |
+| uasa_kbat | 35 | 35 | 0 |
 
 ## Matematik Tahun 2 (math)
 
 - Total questions: **800**
-- Unique normalized stems: **792**
-- Duplicate stems: **8**
+- Unique normalized stems: **794**
+- Duplicate stems: **6**
 - Unique templates: **800**
 - Template reuse count: **0**
 
@@ -53,7 +58,7 @@ Generated: 2026-07-07T15:26:07.701Z
 | nombor | 50 | 50 | 0 |
 | tambah | 126 | 126 | 0 |
 | tolak | 126 | 126 | 0 |
-| darab | 124 | 116 | 8 |
+| darab | 124 | 118 | 6 |
 | bahagi | 124 | 124 | 0 |
 | wang | 50 | 50 | 0 |
 | masa | 50 | 50 | 0 |
@@ -65,11 +70,12 @@ Generated: 2026-07-07T15:26:07.701Z
 
 | Stem | Count |
 |---|---|
-| 4 4 4 ________ | 4 |
-| 9 9 9 ________ | 3 |
 | 10 x 3 ________ | 2 |
 | 2 x 3 ________ | 2 |
+| 2 x 9 ________ | 2 |
 | 5 x 8 ________ | 2 |
+| 7 x 4 ________ | 2 |
+| 9 x 4 ________ | 2 |
 
 ## English Year 2 (english)
 
