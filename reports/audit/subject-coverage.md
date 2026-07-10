@@ -1,6 +1,6 @@
 # Subject Coverage Audit
 
-Generated: 2026-07-10T16:40:30.565Z
+Generated: 2026-07-10T16:51:11.306Z
 
 ## Summary
 
