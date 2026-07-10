@@ -10,11 +10,17 @@ import MascotCard from './components/MascotCard';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
+import { loadProfile as loadAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
+import { rankStrongTopics, rankWeakTopics, explainWeakness } from './ai/adaptive/weakTopicEngine';
+import { generateRecommendation } from './ai/adaptive/recommendationEngine';
 import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from './ai/adaptive/masteryEngine';
+import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/adaptive/adaptivePracticeEngine';
 import { buildLessonPlan } from './ai/adaptive/lessonPlanner';
 import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
+import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { teachAnswer } from './ai/teacherEngine';
 import { formatStudyTime, loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
+import { buildStudentIntelligence, getStudentLevel, loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { buildTeacherPortalSnapshot } from './curriculum/curriculumEngine';
 import { buildCurriculumCoverage } from './curriculum/coverageEngine';
@@ -187,6 +193,34 @@ function getSubjectAverage(profile, subject) {
   return Math.round(total / subject.topics.length);
 }
 
+function hasAdaptiveEvidence(profile = {}) {
+  if (!profile || typeof profile !== 'object') return false;
+  if ((profile.totalQuestions || 0) > 0) return true;
+  if ((profile.correctQuestions || 0) > 0) return true;
+  if ((profile.studyMinutes || 0) > 0) return true;
+  const topicGroups = Object.values(profile.topics || {});
+  return topicGroups.some(subjectTopics => Object.values(subjectTopics || {}).some(record => (record?.total || 0) > 0));
+}
+
+function getAdaptiveBestStreak(profile = {}) {
+  return Number(profile.bestStreak || profile.longestStreak || profile.maxStreak || profile.streak || 0);
+}
+
+function getAdaptiveSubjectSummary(profile = {}, subjectId) {
+  const subjectRecord = profile.subjects?.[subjectId] || {};
+  return {
+    accuracy: Number(subjectRecord.accuracy || 0),
+    correct: Number(subjectRecord.correct || 0),
+    total: Number(subjectRecord.total || 0)
+  };
+}
+
+function getAdaptiveMotivation(streak = 0) {
+  if (streak >= 7) return '🔥 Hebat!';
+  if (streak >= 3) return '🔥 Teruskan!';
+  return '🔥 Belajar lagi hari ini!';
+}
+
 function getRecommendedTopic(profile, subject) {
   return subject.topics.find((topic, index) => {
     const progress = profile.progress?.[progressKey(subject.id, topic.id)];
@@ -263,7 +297,7 @@ function printReport() {
 }
 
 export default function App() {
-  const [profile, setProfile] = useState(loadProfile);
+  const [profile, setProfile] = useState(() => loadStudentCore(loadProfile()));
   const [resume, setResume] = useState(loadResume);
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
@@ -290,14 +324,19 @@ export default function App() {
   const [teacherOpen, setTeacherOpen] = useState(false);
   const [teacherData, setTeacherData] = useState(null);
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
+  const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
+  const adaptiveSessionRef = useRef(null);
+  const questionStartedAtRef = useRef(Date.now());
+  const quizSubmitKeyRef = useRef('');
 
   useEffect(() => {
     try {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      saveStudentCore(profile, allSubjects, loadAIMemory());
     } catch {
       setRecoveryMessages(prev => [...prev, 'Perubahan profil tidak dapat disimpan kerana simpanan peranti tidak tersedia.']);
     }
-  }, [profile]);
+  }, [profile, allSubjects]);
 
   useEffect(() => {
     let alive = true;
@@ -317,6 +356,20 @@ export default function App() {
   const totalQuestions = useMemo(() => {
     return selectedSubject?.topics?.reduce((sum, topic) => sum + topic.questions.length, 0) || 0;
   }, [selectedSubject]);
+
+  const adaptivePracticePreview = useMemo(() => {
+    if (!allSubjects.length) return null;
+    const session = buildAdaptivePracticeSession(profile, allSubjects, {
+      questionCount: adaptivePracticeCount,
+      mode: 'balanced',
+      subjectId: selectedSubjectId,
+      seed: 'preview'
+    });
+    return {
+      session,
+      summary: getAdaptivePracticeSummary(session)
+    };
+  }, [profile, allSubjects, adaptivePracticeCount, selectedSubjectId]);
 
   async function startProfile(name, avatar) {
     setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
@@ -426,7 +479,9 @@ export default function App() {
       });
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
-    const startSession = options.session || { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug };
+    const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const startSession = { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
+    startSession.adaptiveSessionId = adaptiveSessionId;
 
     setActiveSubject(subject);
     setActiveTopic({ ...topic, questions, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
@@ -438,8 +493,22 @@ export default function App() {
     setTeacherOpen(false);
     setTeacherData(null);
     setQuizStartedAt(Date.now());
+    questionStartedAtRef.current = Date.now();
     setSession(startSession);
     setScreen('quiz');
+    adaptiveSessionRef.current = {
+      sessionId: adaptiveSessionId,
+      subjectId: subject.id,
+      topicId: topic.id,
+      startedAt: new Date().toISOString()
+    };
+    recordSessionStart(getAdaptiveProfile(), {
+      sessionId: adaptiveSessionId,
+      startedAt: adaptiveSessionRef.current.startedAt,
+      subjectId: subject.id,
+      topicId: topic.id,
+      questions: questions.map(item => item.id).filter(Boolean)
+    });
 
     const resumeData = {
       subjectId: subject.id,
@@ -488,6 +557,49 @@ export default function App() {
     const remainingSoalan = topic.questions.filter(question => question.id !== questionId);
     const questions = targetQuestion ? [targetQuestion, ...shuffleArray(remainingSoalan)] : shuffleArray(topic.questions);
     startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true });
+  }
+
+  async function startAdaptivePractice(questionCount = adaptivePracticeCount) {
+    if (!allSubjects.length) return;
+    const session = buildAdaptivePracticeSession(profile, allSubjects, {
+      questionCount,
+      mode: 'balanced',
+      subjectId: selectedSubjectId,
+      seed: Date.now()
+    });
+    if (!session.questions.length) return;
+
+    const practiceSubject = {
+      id: 'adaptive',
+      title: 'Latihan AI',
+      short: 'AI',
+      icon: '🧠',
+      topics: [
+        {
+          id: `adaptive_${session.sessionId}`,
+          title: 'Latihan AI',
+          note: session.metadata?.fallbackUsed ? 'Latihan permulaan seimbang' : 'Latihan adaptif berfokus',
+          questions: session.questions,
+          adaptivePractice: true,
+          adaptiveSessionId: session.sessionId,
+          adaptivePlan: session.plan,
+          adaptiveMetadata: session.metadata
+        }
+      ]
+    };
+    const practiceTopic = practiceSubject.topics[0];
+    startTopic(practiceTopic, practiceSubject, {
+      questions: session.questions,
+      preserveQuestions: true,
+      session: {
+        adaptivePractice: true,
+        adaptiveSessionId: session.sessionId,
+        adaptivePracticeMode: session.mode,
+        adaptivePracticeMetadata: session.metadata,
+        requestedQuestions: session.requestedQuestions,
+        estimatedMinutes: session.estimatedMinutes
+      }
+    });
   }
 
   function currentQuestion() {
@@ -540,6 +652,13 @@ export default function App() {
     let xp = 0;
     let coins = 0;
     const nextSession = { ...session, answers: [...(session.answers || [])] };
+    const answeredAt = new Date().toISOString();
+    const timeSpent = Math.max(1, Math.round((Date.now() - questionStartedAtRef.current) / 1000));
+    const attemptNumber = (nextSession.answers || []).filter(item => item.questionId === question.id).length + 1;
+    const sessionId = session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId;
+    const submitKey = [sessionId || 'session', question.id || 'question', attemptNumber].join('|');
+    if (quizSubmitKeyRef.current === submitKey) return;
+    quizSubmitKeyRef.current = submitKey;
 
     if (result.status === 'correct') {
       xp = 10; coins = 5; nextSession.correct += 1; beep('good');
@@ -554,6 +673,19 @@ export default function App() {
     nextSession.answers.push({ questionId: question.id, answer, status: result.status, correctAnswer: question.answer });
     nextSession.questions = [...(nextSession.questions || []), question];
     saveQuestionHistory(question);
+    const adaptiveSubjectId = question.subjectId || activeSubject?.id;
+    const adaptiveTopicId = question.topicId || activeTopic?.id;
+    recordQuestionResult(getAdaptiveProfile(), {
+      sessionId,
+      questionId: question.id,
+      subjectId: adaptiveSubjectId,
+      topicId: adaptiveTopicId,
+      attemptNumber,
+      correct: result.status === 'correct',
+      difficulty: question?.difficulty || question?.level || activeTopic?.difficulty || 'medium',
+      timeSpent,
+      answeredAt
+    });
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
@@ -578,6 +710,7 @@ export default function App() {
   }
 
   function tryAgainQuestion() {
+    questionStartedAtRef.current = Date.now();
     setAnswer('');
     setFeedback(null);
     setExplainOpen(false);
@@ -592,6 +725,7 @@ export default function App() {
       return;
     }
     const nextIndex = questionIndex + 1;
+    questionStartedAtRef.current = Date.now();
     setQuestionIndex(nextIndex);
     setAnswer('');
     setFeedback(null);
@@ -610,6 +744,17 @@ export default function App() {
     const today = todayKey();
     const key = progressKey(activeSubject.id, activeTopic.id);
     const studySeconds = Math.max(1, Math.round((Date.now() - quizStartedAt) / 1000));
+    recordSessionEnd(getAdaptiveProfile(), {
+      sessionId: session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId,
+      subjectId: activeSubject.id,
+      topicId: activeTopic.id,
+      questions: (session.answers || []).map(item => item.questionId).filter(Boolean),
+      correct: session.correct || 0,
+      wrong: session.wrong || 0,
+      durationSeconds: studySeconds,
+      endedAt: new Date().toISOString()
+    });
+    adaptiveSessionRef.current = null;
 
     setProfile(prev => {
       const badges = new Set(prev.badges || []);
@@ -735,8 +880,8 @@ export default function App() {
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ParentDashboard profile={profile} allSubjects={allSubjects} onBack={() => setScreen('dashboard')} /></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
-  return <BetaChrome recoveryMessages={recoveryMessages}><Dashboard profile={profile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} onSelectSubject={setSelectedSubjectId} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
-}
+    return <BetaChrome recoveryMessages={recoveryMessages}><Dashboard profile={profile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={setSelectedSubjectId} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+  }
 
 function BetaChrome({ children, recoveryMessages = [] }) {
   return <>
@@ -943,10 +1088,15 @@ function SettingsPanel({ onExportBetaReport, onReset }) {
   </section>;
 }
 
-function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selectedSubjectId, totalQuestions, resume, dailyChallenge, onSelectSubject, onStartTopic, onStartAdaptiveLesson, onStartBacaan, onStartMendengar, onStartBertutur, onStartMenulis, onOpenParent, onOpenUasa, onOpenAi, onReset, onExportBetaReport, onResume, onRestartResume, onCompleteDaily, onToggleFavourite }) {
+function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selectedSubjectId, totalQuestions, resume, dailyChallenge, adaptivePracticePreview, adaptivePracticeCount, onAdaptivePracticeCountChange, onSelectSubject, onStartTopic, onStartAdaptiveLesson, onStartAdaptivePractice, onStartBacaan, onStartMendengar, onStartBertutur, onStartMenulis, onOpenParent, onOpenUasa, onOpenAi, onReset, onExportBetaReport, onResume, onRestartResume, onCompleteDaily, onToggleFavourite }) {
   const topics = selectedSubject.topics;
-  const level = Math.floor((profile.xp || 0) / 100) + 1;
-  const levelProgress = (profile.xp || 0) % 100;
+  const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp]);
+  const adaptiveProfile = useMemo(() => loadAdaptiveStudentProfile(), [profile.xp, profile.streak, profile.totalQuestions, profile.correctQuestions, profile.studyMinutes, selectedSubjectId, allSubjects.length]);
+  const adaptiveSubjects = useMemo(() => allSubjects?.length ? allSubjects : [selectedSubject], [allSubjects, selectedSubject]);
+  const studentCore = useMemo(() => buildStudentIntelligence(profile, adaptiveSubjects, aiMemory), [profile, adaptiveSubjects, aiMemory]);
+  const levelInfo = getStudentLevel(profile.xp || 0);
+  const level = studentCore.level || levelInfo.level;
+  const levelProgress = studentCore.xpProgress ?? levelInfo.levelXp;
   const recommended = getRecommendedTopic(profile, selectedSubject);
   const today = todayKey();
   const dailyDone = profile.daily?.[today]?.completed;
@@ -954,8 +1104,6 @@ function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selecte
   const averageScore = getSubjectAverage(profile, selectedSubject);
   const aiRecommendation = profile.recommendations?.[selectedSubject.id] || buildRecommendation(profile, selectedSubject);
   const recommendedPracticeTopic = topics.find(topic => topic.id === aiRecommendation.recommendedTopicId) || recommended;
-  const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp]);
-  const adaptiveSubjects = useMemo(() => allSubjects?.length ? allSubjects : [selectedSubject], [allSubjects, selectedSubject]);
   const topicMastery = useMemo(() => ({
     ...(aiMemory.topicMastery || {}),
     ...buildMasteryMap(profile, adaptiveSubjects, aiMemory)
@@ -979,11 +1127,44 @@ function Dashboard({ profile, subjectList, allSubjects, selectedSubject, selecte
   const writingHistory = aiMemory.writingHistory || [];
   const writingPurata = writingHistory.length ? Math.round(writingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / writingHistory.length) : 0;
   const hasDashboardActivity = (profile.history || []).length > 0 || Object.keys(profile.progress || {}).length > 0 || readingHistory.length > 0 || listeningHistory.length > 0 || speakingHistory.length > 0 || writingHistory.length > 0;
+  const adaptiveHasEvidence = hasAdaptiveEvidence(adaptiveProfile);
+  const adaptiveWeakTopics = useMemo(() => rankWeakTopics(adaptiveProfile, { limit: 5 }), [adaptiveProfile]);
+  const adaptiveStrongTopics = useMemo(() => rankStrongTopics(adaptiveProfile, { limit: 5 }), [adaptiveProfile]);
+  const adaptiveRecommendation = useMemo(() => generateRecommendation(adaptiveProfile, { questionCount: adaptivePracticeCount, mode: 'daily' }), [adaptiveProfile, adaptivePracticeCount]);
+  const adaptiveSubjectRows = useMemo(() => {
+    return subjectList.map(subject => {
+      const summary = getAdaptiveSubjectSummary(adaptiveProfile, subject.id);
+      return {
+        ...subject,
+        ...summary
+      };
+    });
+  }, [adaptiveProfile, subjectList]);
+  const overallAccuracy = adaptiveProfile.totalQuestions ? Math.round((adaptiveProfile.correctQuestions / adaptiveProfile.totalQuestions) * 100) : 0;
+  const statsCards = [
+    { label: 'XP', value: adaptiveProfile.xp || 0 },
+    { label: 'Tahap', value: adaptiveProfile.level || 1 },
+    { label: 'Soalan', value: adaptiveProfile.totalQuestions || 0 },
+    { label: 'Ketepatan', value: `${overallAccuracy}%` },
+    { label: 'Masa Belajar', value: formatStudyTime(adaptiveProfile.studyMinutes || 0) },
+    { label: 'Streak', value: adaptiveProfile.streak || 0 }
+  ];
+  const streakBest = getAdaptiveBestStreak(adaptiveProfile);
+  const streakMessage = getAdaptiveMotivation(adaptiveProfile.streak || 0);
 
   return <main className="dashboard-shell"><aside className="sidebar"><div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div><button className="nav active">🏠 Papan Utama</button><button className="nav" onClick={onOpenAi}>🤖 Tutor AI</button><button className="nav" onClick={onOpenUasa}>🏆 UASA</button><button className="nav" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button><div className="sidebar-note"><b>⚡ Data Ringan</b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div></aside><section className="dashboard-main">    <DashboardHeader profile={profile} level={level} levelProgress={levelProgress} />    <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood="happy" size="md" animation="gentle" message={`Assalamualaikum, ${profile.name || 'Anak'}. Hari ini kita akan belajar ${welcomeTopic}. Jom mulakan!`} /><div className="avatar-large">{profile.avatar || '\u{1F466}'}</div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name || 'Anak'}</h1><p>Hari ini kita akan belajar <b>{welcomeTopic}</b>. Jom mulakan!</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
+    <section className="card adaptive-overview-card"><p className="eyebrow">Ringkasan Murid</p><h2>Ringkasan Murid</h2>{adaptiveHasEvidence ? <><div className="mastery-summary-grid"><div><b>{adaptiveProfile.name || profile.name || 'Anak'}</b><span>Nama Murid</span></div><div><b>{adaptiveProfile.level || 1}</b><span>Tahap Semasa</span></div><div><b>{adaptiveProfile.xp || 0}</b><span>XP Semasa</span></div><div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div></div><div className="progress-wrap"><div className="progress" style={{ width: `${Math.min(100, overallAccuracy)}%` }} /></div><div className="mastery-summary-grid"><div><b>{adaptiveProfile.totalQuestions || 0}</b><span>Soalan</span></div><div><b>{adaptiveProfile.correctQuestions || 0}</b><span>Betul</span></div><div><b>{overallAccuracy}%</b><span>Ketepatan</span></div><div><b>{formatStudyTime(adaptiveProfile.studyMinutes || 0)}</b><span>Masa Belajar</span></div></div></> : <EmptyState title="Belum ada rekod pembelajaran." message="Mulakan dengan Latihan AI untuk membina profil adaptif." actionLabel="Mula Latihan AI" onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
+    <section className="card"><p className="eyebrow">Prestasi Subjek</p><h2>Prestasi Subjek</h2><div className="subject-report-grid">{adaptiveSubjectRows.map(subject => <div className="report-box" key={subject.id}><h3>{subject.icon} {subject.title}</h3><b>{subject.accuracy}%</b><div className="mini-progress"><div style={{ width: `${subject.accuracy}%` }} /></div><span>{subject.total} soalan dicuba</span></div>)}</div></section>
+    <section className="card"><p className="eyebrow">Kad Ringkas</p><h2>Kad Statistik</h2><div className="mastery-summary-grid">{statsCards.map(item => <div key={item.label}><b>{item.value}</b><span>{item.label}</span></div>)}</div></section>
+    <section className="card"><p className="eyebrow">Topik Perlu Diperbaiki</p><h2>Topik Perlu Diperbaiki</h2>{adaptiveWeakTopics.length ? <div className="timeline">{adaptiveWeakTopics.slice(0, 5).map(topic => { const explanation = explainWeakness(topic); return <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}><span>{topic.subjectId}</span><b>{topic.topicId}</b><em>{topic.status} • Penguasaan {topic.mastery}% • Keyakinan Data {topic.confidence}%</em><p>{explanation.message}</p></div>; })}</div> : <EmptyState title="Belum cukup data." message="Mula beberapa latihan untuk melihat topik yang perlu diperbaiki." />}</section>
+    <section className="card"><p className="eyebrow">Topik Dikuasai</p><h2>Topik Dikuasai</h2>{adaptiveStrongTopics.length ? <div className="timeline">{adaptiveStrongTopics.slice(0, 5).map(topic => <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}><span>{topic.subjectId}</span><b>{topic.topicId}</b><em>Penguasaan {topic.mastery}% • Keyakinan Data {topic.confidence}%</em></div>)}</div> : <EmptyState title="Belum cukup data." message="Topik dikuasai akan muncul selepas beberapa sesi." />}</section>
+    <section className="card adaptive-recommendation-card"><p className="eyebrow">Cadangan Hari Ini</p><h2>Cadangan Hari Ini</h2><p>{adaptiveRecommendation.summary.recommendedFocus[0] ? `Fokus utama: ${adaptiveRecommendation.summary.recommendedFocus[0].subjectId} • ${adaptiveRecommendation.summary.recommendedFocus[0].topicId}` : 'Fokus utama belum tersedia.'}</p><div className="mastery-summary-grid"><div><b>{adaptiveRecommendation.plan.totalQuestions}</b><span>Soalan</span></div><div><b>{adaptiveRecommendation.plan.estimatedMinutes}</b><span>Masa</span></div><div><b>{adaptiveRecommendation.summary.weakTopics}</b><span>Topik Perlu Diperbaiki</span></div><div><b>{adaptiveRecommendation.summary.strongTopics}</b><span>Topik Dikuasai</span></div></div><button type="button" className="full" onClick={() => onStartAdaptivePractice(adaptivePracticeCount)}>Mula Latihan AI</button></section>
+    <section className="card"><p className="eyebrow">Streak Pembelajaran</p><h2>Streak Pembelajaran</h2><div className="mastery-summary-grid"><div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div><div><b>{streakBest}</b><span>Streak Terbaik</span></div><div><b>{adaptiveProfile.lastStudyDate || '-'}</b><span>Tarikh Belajar Terakhir</span></div><div><b>{streakMessage}</b><span>Motivasi</span></div></div></section>
     <section className="stats"><Stat label="XP" value={profile.xp || 0} icon="⭐" /><Stat label="Level" value={level} icon="🏆" /><Stat label="Syiling" value={profile.coins || 0} icon="💰" /><Stat label="Streak" value={profile.streak || 0} icon="🔥" /></section>
+    <section className="card student-core-card"><p className="eyebrow">Student Intelligence Core</p><h2>Ringkasan Profil Murid</h2><div className="mastery-summary-grid"><div><b>{studentCore.completedTopics}</b><span>Topik Dikuasai</span></div><div><b>{studentCore.attemptedTopics}</b><span>Topik Dicuba</span></div><div><b>{studentCore.activity.totalSessions}</b><span>Sesi Tersimpan</span></div><div><b>{studentCore.streakStatus}</b><span>Status Streak</span></div></div><p className="memory-last">XP ke tahap seterusnya: {studentCore.xpToNextLevel} • {studentCore.subjectCount} subjek dikesan • {studentCore.topicCompletionRate}% liputan topik</p></section>
     {!hasDashboardActivity && <section className="card"><EmptyState title="Belum ada aktiviti pembelajaran" message="Mulakan satu latihan ringkas untuk membina rekod kemajuan, sejarah dan laporan ibu bapa." actionLabel="Mula Latihan Cadangan" onAction={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} /></section>}
-    <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>▶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>🤖 Tanya Tutor AI</button><button className="secondary" onClick={onOpenUasa}>🏆 Simulator UASA</button><button className="secondary" onClick={onStartBacaan}>🎤 Bacaan</button><button className="secondary" onClick={onStartMendengar}>🎧 Mendengar</button><button className="secondary" onClick={onStartBertutur}>🗣️ Bertutur</button><button className="secondary" onClick={onStartMenulis}>✍️ Menulis</button><button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button></section>
+    <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>▶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>🤖 Tutor AI</button><button className="secondary" onClick={onOpenUasa}>🏆 Simulator UASA</button><button className="secondary" onClick={onStartBacaan}>🎤 Bacaan</button><button className="secondary" onClick={onStartMendengar}>🎧 Mendengar</button><button className="secondary" onClick={onStartBertutur}>🗣️ Bertutur</button><button className="secondary" onClick={onStartMenulis}>✍️ Menulis</button><button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button></section>
+    <section className="card adaptive-practice-card"><p className="eyebrow">Latihan AI</p><h2>Latihan AI</h2><p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p><div className="mastery-summary-grid"><div><b>{adaptivePracticePreview?.summary?.totalQuestions || adaptivePracticeCount}</b><span>Soalan</span></div><div><b>{adaptivePracticePreview?.summary?.estimatedMinutes || 0}</b><span>Masa</span></div><div><b>{adaptivePracticePreview?.summary?.focusTopics?.length || 0}</b><span>Topik Fokus</span></div><div><b>{adaptivePracticePreview?.summary?.metadata?.fallbackUsed ? 'Ya' : 'Tidak'}</b><span>Fallback</span></div></div><div className="actions"><button type="button" className={adaptivePracticeCount === 10 ? '' : 'secondary'} onClick={() => onAdaptivePracticeCountChange(10)}>10 Soalan</button><button type="button" className={adaptivePracticeCount === 20 ? '' : 'secondary'} onClick={() => onAdaptivePracticeCountChange(20)}>20 Soalan</button><button type="button" className="full" onClick={() => onStartAdaptivePractice(adaptivePracticeCount)} disabled={!adaptivePracticePreview?.session?.questions?.length}>Mula Latihan AI</button></div><div className="recommend-meta">{(adaptivePracticePreview?.summary?.focusTopics || []).slice(0, 3).map(topic => <span key={`${topic.subjectId}-${topic.topicId}`}>{topic.subjectId} • {topic.topicId}</span>)}</div></section>
     {resume && <section className="card resume-card"><p className="eyebrow">Sambung Automatik</p><h2>▶ Sambung Latihan</h2><p>Subjek: <b>{resume.subjectId}</b><br/>Soalan: <b>{resume.questionIndex + 1}</b></p><div className="actions"><button onClick={onResume}>▶ Sambung</button><button className="secondary" onClick={onRestartResume}>🔄 Mula Semula</button></div></section>}
     <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><div className="mastery-summary-grid"><div><b>{masterySummary.masteryScore}%</b><span>Skor Penguasaan</span></div><div><b>{masterySummary.dikuasai}</b><span>Dikuasai</span></div><div><b>{masterySummary.learning}</b><span>Sedang Belajar</span></div><div><b>{masterySummary.needsPractice}</b><span>Perlu Latihan</span></div></div></section>
     <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + UASA</h2><div className="mastery-summary-grid"><div><b>{curriculumCoverage.summary.coveragePercent}%</b><span>SK/SP Diliputi</span></div><div><b>{curriculumCoverage.summary.masteryPercent}%</b><span>Penguasaan SK/SP</span></div><div><b>{curriculumCoverage.summary.missing}</b><span>SK/SP Belum Cukup</span></div><div><b>{curriculumCoverage.summary.estimatedMinutes}</b><span>Anggaran Minit</span></div></div>{missingSkSpRecommendation && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</section>
@@ -1035,12 +1216,55 @@ function UasaSimulator({ subject, onBack, onSave }) {
   const [answers, setAnswers] = useState([]);
   const [finished, setFinished] = useState(false);
   const [saved, setSaved] = useState(false);
+  const sessionIdRef = useRef(`uasa_${subject.id}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`);
+  const startedAtRef = useRef(Date.now());
+  const questionStartedAtRef = useRef(Date.now());
+  const endedRef = useRef(false);
+  const submitKeyRef = useRef('');
   const question = questions[index];
+  useEffect(() => {
+    recordSessionStart(getAdaptiveProfile(), {
+      sessionId: sessionIdRef.current,
+      subjectId: subject.id,
+      topicId: 'uasa',
+      questions: questions.map(item => item.id).filter(Boolean),
+      startedAt: new Date().toISOString()
+    });
+    return () => {
+      if (endedRef.current) return;
+      recordSessionEnd(getAdaptiveProfile(), {
+        sessionId: sessionIdRef.current,
+        subjectId: subject.id,
+        topicId: 'uasa',
+        durationSeconds: Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)),
+        endedAt: new Date().toISOString()
+      });
+      endedRef.current = true;
+    };
+  }, [questions, subject.id]);
   function submitAnswer() {
     if (!question) return;
     const result = smartCheck(answer, question);
+    const answeredAt = new Date().toISOString();
+    const timeSpent = Math.max(1, Math.round((Date.now() - questionStartedAtRef.current) / 1000));
+    const attemptNumber = (answers.filter(item => item.questionId === question.id).length || 0) + 1;
+    const submitKey = [sessionIdRef.current, question.id || 'question', attemptNumber].join('|');
+    if (submitKeyRef.current === submitKey) return;
+    submitKeyRef.current = submitKey;
     const next = [...answers, { questionId: question.id, topicId: question.topicId, topic: question.topicTitle, answer, correctAnswer: question.answer, status: result.status }];
+    recordQuestionResult(getAdaptiveProfile(), {
+      sessionId: sessionIdRef.current,
+      questionId: question.id,
+      subjectId: question.subjectId || subject.id,
+      topicId: question.topicId || 'uasa',
+      attemptNumber,
+      correct: result.status === 'correct',
+      difficulty: question.difficulty || question.level || 'medium',
+      timeSpent,
+      answeredAt
+    });
     setAnswers(next); setAnswer('');
+    questionStartedAtRef.current = Date.now();
     if (index + 1 >= questions.length) setFinished(true); else setIndex(index + 1);
   }
   const correctCount = answers.filter(a => a.status === 'correct').length;
@@ -1049,11 +1273,21 @@ function UasaSimulator({ subject, onBack, onSave }) {
   const grade = getGrade(score);
   function saveResult() {
     if (saved) return;
+    if (!endedRef.current) {
+      recordSessionEnd(getAdaptiveProfile(), {
+        sessionId: sessionIdRef.current,
+        subjectId: subject.id,
+        topicId: 'uasa',
+        durationSeconds: Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)),
+        endedAt: new Date().toISOString()
+      });
+      endedRef.current = true;
+    }
     onSave({ date: todayKey(), subjectId: subject.id, subjectShort: subject.short, subjectTitle: subject.title, score, grade, total: questions.length, correct: correctCount, weakTopics: [] });
     setSaved(true);
   }
   if (finished) return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>Papan Utama</button><span className="pill">UASA {subject.short}</span></div><section className="card reward-card"><MascotCard character={getPersonalityForSubject(subject)} mood="celebrating" size="lg" animation="bounce" message={`Syabas! Kamu berjaya menjawab ${correctCount} daripada ${questions.length} soalan.`} /><div className="big">UASA</div><h1>Keputusan UASA</h1><div className="result-score"><b>{score}%</b><span>Gred {grade} - {getStars(score)}</span></div><div className="actions"><button disabled={saved} onClick={saveResult}>{saved ? 'Disimpan' : 'Simpan Keputusan'}</button><button className="secondary" onClick={onBack}>Kembali</button></div></section></main>;
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span></div><section className="card"><h1 className="question">{question.q}</h1><input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitAnswer()} placeholder="Tulis jawapan" autoFocus /><div className="actions"><button className="secondary" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>🔊 Baca Soalan</button><button onClick={submitAnswer}>Jawab</button></div></section></main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>← Papan Utama</button><span className="pill">UASA {subject.short} {index + 1}/{questions.length}</span></div><section className="card"><h1 className="question">{question.q}</h1><input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); submitAnswer(); } }} placeholder="Tulis jawapan" autoFocus /><div className="actions"><button className="secondary" type="button" onClick={() => speakText(question.q.replaceAll('________', ' kosong '))}>🔊 Baca Soalan</button><button type="button" onClick={submitAnswer}>Jawab</button></div></section></main>;
 }
 
 function summarizeHistory(history = [], days = 7) {
@@ -1124,7 +1358,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, o
         ? 'Fikir perlahan-lahan. Kamu boleh cuba.'
         : 'Tak mengapa. Mari kita cuba sekali lagi.';
   const feedbackTitle = feedback?.status === 'correct' ? 'Syabas!' : feedback?.status === 'almost' ? 'Hampir betul' : feedback?.status === 'hint' ? 'Petunjuk lembut' : 'Tak mengapa.';
-  return <main className="app"><div className="topbar"><button className="ghost" onClick={onBack}>Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') feedback ? onNextQuestion() : onCheckAnswer(); }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" onClick={onSpeak}>Baca Soalan</button><button className="secondary" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Developer Debug</summary><dl><dt>Selected Question</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Selection Reason</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>History Result</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Duplicate Result</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Diversity Score</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Original Stem</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Selected Stem</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Variation Group</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Stem Reason</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Stem Reuse</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Original Context</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Selected Context</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Context Group</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Context Reason</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Context Reuse</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Context Diversity</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Template</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Difficulty</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" onClick={onExplain}>Terangkan</button><button className="secondary" onClick={onTryAgain}>Cuba Lagi</button><button onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" type="button" onClick={onSpeak}>Baca Soalan</button><button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Developer Debug</summary><dl><dt>Selected Question</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Selection Reason</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>History Result</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Duplicate Result</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Diversity Score</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Original Stem</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Selected Stem</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Variation Group</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Stem Reason</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Stem Reuse</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Original Context</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Selected Context</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Context Group</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Context Reason</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Context Reuse</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Context Diversity</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Template</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Difficulty</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ profile, session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {

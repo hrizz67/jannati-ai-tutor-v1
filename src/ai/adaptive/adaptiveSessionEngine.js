@@ -1,0 +1,350 @@
+import { loadProfile, saveProfile } from './storageEngine.js';
+import { addXP, calculateXP } from './xpEngine.js';
+import { calculateLevel } from './levelEngine.js';
+import { updateStreak } from './streakEngine.js';
+import { recordAnswer } from './masteryEngine.js';
+
+const MAX_SESSION_HISTORY = 20;
+const MAX_QUESTION_LOG = 200;
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value || {}));
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function localDayKey(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const offsetMinutes = -date.getTimezoneOffset();
+  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
+  return local.toISOString().slice(0, 10);
+}
+
+function createSessionId() {
+  return `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function ensureArrays(profile) {
+  if (!Array.isArray(profile.sessionHistory)) profile.sessionHistory = [];
+  if (!Array.isArray(profile.questionLog)) profile.questionLog = [];
+  if (!Array.isArray(profile.learningHistory)) profile.learningHistory = [];
+  return profile;
+}
+
+function ensureSessionState(profile) {
+  ensureArrays(profile);
+  if (!profile.currentSession || typeof profile.currentSession !== 'object') {
+    profile.currentSession = null;
+  }
+  return profile;
+}
+
+function normalizeSessionInfo(sessionInfo = {}) {
+  const startedAt = sessionInfo.startedAt || nowIso();
+  const sessionId = sessionInfo.sessionId || createSessionId();
+  return {
+    sessionId,
+    startedAt,
+    endedAt: sessionInfo.endedAt || null,
+    subjectId: sessionInfo.subjectId || null,
+    topicId: sessionInfo.topicId || null,
+    questions: Array.isArray(sessionInfo.questions) ? [...sessionInfo.questions] : [],
+    correct: Number.isFinite(sessionInfo.correct) ? sessionInfo.correct : 0,
+    wrong: Number.isFinite(sessionInfo.wrong) ? sessionInfo.wrong : 0,
+    durationSeconds: Number.isFinite(sessionInfo.durationSeconds) ? sessionInfo.durationSeconds : 0
+  };
+}
+
+function getQuestionKey({ sessionId, questionId, attemptNumber }) {
+  return `${sessionId || 'no-session'}::${questionId || 'no-question'}::${attemptNumber || 1}`;
+}
+
+function getNextAttemptNumber(profile, sessionId, questionId) {
+  const prefix = `${sessionId || 'no-session'}::${questionId || 'no-question'}::`;
+  return (profile.questionLog || []).filter(item => typeof item.key === 'string' && item.key.startsWith(prefix)).length + 1;
+}
+
+function hasRecordedQuestion(profile, sessionId, questionId, attemptNumber) {
+  const key = getQuestionKey({ sessionId, questionId, attemptNumber });
+  return (profile.questionLog || []).some(item => item.key === key);
+}
+
+function pushQuestionLog(profile, entry) {
+  profile.questionLog = [entry, ...(profile.questionLog || [])].slice(0, MAX_QUESTION_LOG);
+  return profile;
+}
+
+function pushSessionHistory(profile, session) {
+  profile.sessionHistory = [session, ...(profile.sessionHistory || [])].slice(0, MAX_SESSION_HISTORY);
+  return profile;
+}
+
+function applyLifetimeTotals(profile, { correct, timeSpent, correctAnswer }) {
+  profile.totalQuestions = Number.isFinite(profile.totalQuestions) ? profile.totalQuestions + 1 : 1;
+  if (correct) profile.correctQuestions = Number.isFinite(profile.correctQuestions) ? profile.correctQuestions + 1 : 1;
+  else profile.correctQuestions = Number.isFinite(profile.correctQuestions) ? profile.correctQuestions : 0;
+  const studyMinutes = Number.isFinite(profile.studyMinutes) ? profile.studyMinutes : 0;
+  const addedMinutes = Number.isFinite(timeSpent) && timeSpent > 0 ? timeSpent / 60 : 0;
+  profile.studyMinutes = Math.max(0, Math.round((studyMinutes + addedMinutes) * 10) / 10);
+  profile.lastStudyDate = localDayKey();
+  profile.lastAnsweredAt = nowIso();
+  return profile;
+}
+
+function applySubjectTotals(profile, subjectId, correct) {
+  if (!subjectId) return profile;
+  if (!profile.subjects || typeof profile.subjects !== 'object') profile.subjects = {};
+  const topicRecords = Object.values(profile.topics?.[subjectId] || {});
+  const total = topicRecords.reduce((sum, record) => sum + (Number(record?.total) || 0), 0);
+  const correctTotal = topicRecords.reduce((sum, record) => sum + (Number(record?.correct) || 0), 0);
+  const existingSubject = profile.subjects[subjectId] && typeof profile.subjects[subjectId] === 'object'
+    ? profile.subjects[subjectId]
+    : {};
+  profile.subjects[subjectId] = {
+    ...existingSubject,
+    accuracy: total ? Math.round((correctTotal / total) * 100) : 0,
+    correct: correctTotal,
+    total
+  };
+  return profile;
+}
+
+function updateCurrentSession(profile, result, sessionId) {
+  ensureSessionState(profile);
+  const current = profile.currentSession;
+  if (!current || current.sessionId !== sessionId) {
+    return profile;
+  }
+
+  const questions = Array.isArray(current.questions) ? current.questions : [];
+  current.questions = questions.includes(result.questionId) ? questions : [...questions, result.questionId];
+  current.correct = (current.correct || 0) + (result.correct ? 1 : 0);
+  current.wrong = (current.wrong || 0) + (result.correct ? 0 : 1);
+  current.subjectId = current.subjectId || result.subjectId || null;
+  current.topicId = current.topicId || result.topicId || null;
+  current.updatedAt = nowIso();
+  current.lastQuestionId = result.questionId || null;
+  return profile;
+}
+
+function finalizeSession(profile, sessionInfo = {}) {
+  ensureSessionState(profile);
+  const current = profile.currentSession;
+  const candidate = current && (!sessionInfo.sessionId || current.sessionId === sessionInfo.sessionId)
+    ? current
+    : null;
+  const endedAt = sessionInfo.endedAt || nowIso();
+  const startedAt = candidate?.startedAt || sessionInfo.startedAt || endedAt;
+  const durationSeconds = sessionInfo.durationSeconds || candidate?.durationSeconds || Math.max(0, Math.round((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 1000));
+  const endedSession = {
+    sessionId: candidate?.sessionId || sessionInfo.sessionId || createSessionId(),
+    startedAt,
+    endedAt,
+    subjectId: candidate?.subjectId || sessionInfo.subjectId || null,
+    topicId: candidate?.topicId || sessionInfo.topicId || null,
+    questions: Array.isArray(candidate?.questions) ? [...candidate.questions] : Array.isArray(sessionInfo.questions) ? [...sessionInfo.questions] : [],
+    correct: Number.isFinite(sessionInfo.correct) ? sessionInfo.correct : candidate?.correct || 0,
+    wrong: Number.isFinite(sessionInfo.wrong) ? sessionInfo.wrong : candidate?.wrong || 0,
+    durationSeconds
+  };
+
+  profile.sessionHistory = [endedSession, ...(profile.sessionHistory || [])].slice(0, MAX_SESSION_HISTORY);
+  if (current && candidate && current.sessionId === candidate.sessionId) {
+    profile.currentSession = null;
+  }
+  return profile;
+}
+
+/**
+ * Returns the adaptive profile from storage.
+ */
+export function getAdaptiveProfile() {
+  return loadProfile();
+}
+
+/**
+ * Saves the adaptive profile safely.
+ */
+export function saveAdaptiveProfile(profile) {
+  return saveProfile(profile);
+}
+
+/**
+ * Records the start of a learning session.
+ */
+export function recordSessionStart(profile, sessionInfo = {}) {
+  const nextProfile = ensureSessionState(clone(profile));
+  const session = normalizeSessionInfo(sessionInfo);
+  const current = nextProfile.currentSession;
+
+  if (current && current.sessionId && current.sessionId !== session.sessionId) {
+    finalizeSession(nextProfile, {
+      sessionId: current.sessionId,
+      subjectId: current.subjectId,
+      topicId: current.topicId,
+      durationSeconds: current.durationSeconds || 0,
+      endedAt: nowIso()
+    });
+  }
+
+  const existing = nextProfile.currentSession && nextProfile.currentSession.sessionId === session.sessionId
+    ? nextProfile.currentSession
+    : null;
+
+  nextProfile.currentSession = {
+    ...(existing || {}),
+    ...session,
+    startedAt: existing?.startedAt || session.startedAt,
+    createdAt: existing?.createdAt || nowIso(),
+    updatedAt: nowIso()
+  };
+
+  return saveAdaptiveProfile(nextProfile);
+}
+
+/**
+ * Records one answered question into the adaptive profile.
+ */
+export function recordQuestionResult(profile, result = {}) {
+  const nextProfile = ensureSessionState(clone(profile));
+  const {
+    questionId,
+    subjectId,
+    topicId,
+    correct,
+    difficulty = 'medium',
+    timeSpent = 0,
+    answeredAt = nowIso(),
+    sessionId
+  } = result || {};
+
+  if (!questionId || !subjectId || !topicId) {
+    if (typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production') {
+      console.debug?.('[adaptiveSessionEngine] Skipped adaptive record because questionId, subjectId or topicId was missing.');
+    }
+    return {
+      profile: saveAdaptiveProfile(nextProfile),
+      summary: {
+        skipped: true,
+        xpEarned: 0,
+        levelBefore: calculateLevel(nextProfile.xp || 0),
+        levelAfter: calculateLevel(nextProfile.xp || 0),
+        levelUp: false,
+        streak: nextProfile.streak || 0,
+        topicMastery: 0,
+        topicConfidence: 0
+      }
+    };
+  }
+
+  const activeSessionId = sessionId || nextProfile.currentSession?.sessionId || createSessionId();
+  const attemptNumber = Number.isFinite(result.attemptNumber) && result.attemptNumber > 0
+    ? Math.floor(result.attemptNumber)
+    : getNextAttemptNumber(nextProfile, activeSessionId, questionId);
+  if (hasRecordedQuestion(nextProfile, activeSessionId, questionId, attemptNumber)) {
+    return {
+      profile: saveAdaptiveProfile(nextProfile),
+      summary: {
+        skipped: true,
+        duplicate: true,
+        xpEarned: 0,
+        levelBefore: calculateLevel(nextProfile.xp || 0),
+        levelAfter: calculateLevel(nextProfile.xp || 0),
+        levelUp: false,
+        streak: nextProfile.streak || 0,
+        topicMastery: nextProfile.topics?.[subjectId]?.[topicId]?.mastery || 0,
+        topicConfidence: nextProfile.topics?.[subjectId]?.[topicId]?.confidence || 0
+      }
+    };
+  }
+
+  const levelBefore = calculateLevel(nextProfile.xp || 0);
+  const safeCorrect = Boolean(correct);
+  const xpEarned = calculateXP(safeCorrect ? 1 : 0, difficulty);
+
+  recordAnswer(nextProfile, {
+    subjectId,
+    topicId,
+    correct: safeCorrect,
+    difficulty,
+    timeSpent
+  });
+
+  const afterXPProfile = addXP(nextProfile, xpEarned);
+  Object.assign(nextProfile, afterXPProfile);
+
+  const beforeStreak = nextProfile.streak || 0;
+  const streakProfile = updateStreak(nextProfile);
+  Object.assign(nextProfile, streakProfile);
+
+  nextProfile.level = calculateLevel(nextProfile.xp || 0);
+  nextProfile.lastAnsweredAt = answeredAt || nowIso();
+
+  applyLifetimeTotals(nextProfile, { correct: safeCorrect, timeSpent });
+  applySubjectTotals(nextProfile, subjectId, safeCorrect);
+
+  nextProfile.learningHistory = [
+    {
+      questionId,
+      subjectId,
+      topicId,
+      attemptNumber,
+      correct: safeCorrect,
+      difficulty,
+      xpEarned,
+      timeSpent: Number.isFinite(timeSpent) ? timeSpent : 0,
+      answeredAt: nextProfile.lastAnsweredAt,
+      sessionId: activeSessionId
+    },
+    ...(nextProfile.learningHistory || [])
+  ].slice(0, 100);
+
+  pushQuestionLog(nextProfile, {
+    key: getQuestionKey({ sessionId: activeSessionId, questionId, attemptNumber }),
+    sessionId: activeSessionId,
+    questionId,
+    attemptNumber,
+    subjectId,
+    topicId,
+    answeredAt: nextProfile.lastAnsweredAt
+  });
+
+  updateCurrentSession(nextProfile, { questionId, subjectId, topicId, correct: safeCorrect }, activeSessionId);
+
+  const topicMastery = nextProfile.topics?.[subjectId]?.[topicId] || {};
+  nextProfile.correctQuestions = Number.isFinite(nextProfile.correctQuestions) ? nextProfile.correctQuestions : 0;
+  nextProfile.totalQuestions = Number.isFinite(nextProfile.totalQuestions) ? nextProfile.totalQuestions : 0;
+  const savedProfile = saveAdaptiveProfile(nextProfile);
+  return {
+    profile: savedProfile,
+    summary: {
+      xpEarned,
+      levelBefore,
+      levelAfter: savedProfile.level || calculateLevel(savedProfile.xp || 0),
+      levelUp: (savedProfile.level || 0) > levelBefore,
+      streak: savedProfile.streak || 0,
+      streakChanged: (savedProfile.streak || 0) !== beforeStreak,
+      topicMastery: topicMastery.mastery || 0,
+      topicConfidence: topicMastery.confidence || 0
+    }
+  };
+}
+
+/**
+ * Records the end of a learning session.
+ */
+export function recordSessionEnd(profile, sessionInfo = {}) {
+  const nextProfile = ensureSessionState(clone(profile));
+  finalizeSession(nextProfile, sessionInfo);
+  return saveAdaptiveProfile(nextProfile);
+}
+
+export default {
+  getAdaptiveProfile,
+  recordQuestionResult,
+  recordSessionEnd,
+  recordSessionStart,
+  saveAdaptiveProfile
+};
