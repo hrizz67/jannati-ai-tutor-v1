@@ -1,6 +1,6 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-07-08T15:15:24.522Z",
+  "generatedAt": "2026-07-10T01:45:30.826Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
@@ -18,8 +18,8 @@
   "diversityDiagnostics": {
     "repeatedTemplates": 0,
     "repeatedNumberPatterns": 0,
-    "repeatedAnswerPatterns": 2987,
-    "repeatedContexts": 161,
+    "repeatedAnswerPatterns": 2977,
+    "repeatedContexts": 127,
     "repeatedDistractors": 0,
     "repeatedAnswerPositions": 0,
     "simulatedSessions": 5000,
@@ -27,19 +27,18 @@
     "failedSessions": 0,
     "averageDiversityScore": 71,
     "duplicatePercent": 0,
-    "diagnosticRepeatPercent": 0.16,
-    "averageSelectionTimeMs": 14.143,
+    "diagnosticRepeatPercent": 0.13,
+    "averageSelectionTimeMs": 13.484,
     "stemDiversity": 100,
-    "stemReuseRate": 0.16,
-    "repeatedStems": 161,
-    "contextDiversity": 77,
-    "nameReuseRate": 90.74,
-    "objectReuseRate": 15.79,
-    "contextReuseRate": 22.75,
+    "stemReuseRate": 0.13,
+    "repeatedStems": 127,
+    "contextDiversity": 79,
+    "nameReuseRate": 88.02,
+    "objectReuseRate": 16.23,
+    "contextReuseRate": 21.27,
     "unsafeContextChanges": 0,
     "unusedStemVariationGroups": [
-      "sentence_building",
-      "science_function"
+      "sentence_building"
     ],
     "brokenStemMappings": 0,
     "topicBalance": {
@@ -95,9 +94,9 @@
       "kata_adjektif": 820
     },
     "difficultyBalance": {
-      "mudah": 43381,
-      "sukar": 24564,
-      "sederhana": 32055
+      "mudah": 43340,
+      "sederhana": 32136,
+      "sukar": 24524
     }
   },
   "issues": [

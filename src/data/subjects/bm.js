@@ -12,7 +12,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_NAMA_AM-001",
-          "q": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu.",
+          "q": "Baca ayat berikut: Siti membaca buku di ruang tamu. Apakah kata nama am bagi benda dalam ayat itu?",
           "answer": "buku",
           "accepted": [
             "buku"
@@ -22,11 +22,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Siti membaca buku di ruang tamu."
+          "question": "Baca ayat berikut: Siti membaca buku di ruang tamu. Apakah kata nama am bagi benda dalam ayat itu?"
         },
         {
           "id": "BM-KATA_NAMA_AM-002",
-          "q": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar.",
+          "q": "Ayah membeli ikan di pasar. Pilih kata nama am yang menunjukkan haiwan atau makanan.",
           "answer": "ikan",
           "accepted": [
             "ikan"
@@ -36,11 +36,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Ayah membeli ikan di pasar."
+          "question": "Ayah membeli ikan di pasar. Pilih kata nama am yang menunjukkan haiwan atau makanan."
         },
         {
           "id": "BM-KATA_NAMA_AM-003",
-          "q": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin.",
+          "q": "Di sekolah, murid beratur di kantin. Nyatakan kata nama am bagi tempat dalam ayat ini.",
           "answer": "kantin",
           "accepted": [
             "kantin"
@@ -50,11 +50,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Murid beratur di kantin."
+          "question": "Di sekolah, murid beratur di kantin. Nyatakan kata nama am bagi tempat dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-004",
-          "q": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih.",
+          "q": "Guru menulis di papan putih. Perkataan manakah ialah kata nama am bagi orang?",
           "answer": "guru",
           "accepted": [
             "guru"
@@ -64,11 +64,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Guru menulis di papan putih."
+          "question": "Guru menulis di papan putih. Perkataan manakah ialah kata nama am bagi orang?"
         },
         {
           "id": "BM-KATA_NAMA_AM-005",
-          "q": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja.",
+          "q": "Baca situasi ini: Seekor kucing tidur di bawah meja. Apakah kata nama am bagi haiwan?",
           "answer": "kucing",
           "accepted": [
             "kucing"
@@ -78,11 +78,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Kucing itu tidur di bawah meja."
+          "question": "Baca situasi ini: Seekor kucing tidur di bawah meja. Apakah kata nama am bagi haiwan?"
         },
         {
           "id": "BM-KATA_NAMA_AM-006",
-          "q": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak.",
+          "q": "Adik menyimpan kasut di rak selepas pulang dari sekolah. Cari kata nama am bagi benda yang dipakai.",
           "answer": "kasut",
           "accepted": [
             "kasut"
@@ -92,11 +92,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Adik menyimpan kasut di rak."
+          "question": "Adik menyimpan kasut di rak selepas pulang dari sekolah. Cari kata nama am bagi benda yang dipakai."
         },
         {
           "id": "BM-KATA_NAMA_AM-007",
-          "q": "Apakah kata nama am dalam ayat ini? Kami bermain di taman.",
+          "q": "Kami bermain bola di taman pada waktu petang. Apakah kata nama am bagi tempat?",
           "answer": "taman",
           "accepted": [
             "taman"
@@ -106,11 +106,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Kami bermain di taman."
+          "question": "Kami bermain bola di taman pada waktu petang. Apakah kata nama am bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_AM-008",
-          "q": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu.",
+          "q": "Di klinik, doktor memeriksa pesakit itu. Tentukan kata nama am bagi pekerjaan.",
           "answer": "doktor",
           "accepted": [
             "doktor"
@@ -120,11 +120,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Doktor memeriksa pesakit itu."
+          "question": "Di klinik, doktor memeriksa pesakit itu. Tentukan kata nama am bagi pekerjaan."
         },
         {
           "id": "BM-KATA_NAMA_AM-009",
-          "q": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan.",
+          "q": "Burung hinggap di dahan pokok. Pilih kata nama am bagi haiwan dalam ayat tersebut.",
           "answer": "burung",
           "accepted": [
             "burung"
@@ -134,11 +134,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Burung hinggap di dahan."
+          "question": "Burung hinggap di dahan pokok. Pilih kata nama am bagi haiwan dalam ayat tersebut."
         },
         {
           "id": "BM-KATA_NAMA_AM-010",
-          "q": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai.",
+          "q": "Emak menyapu lantai supaya rumah bersih. Apakah kata nama am bagi bahagian rumah?",
           "answer": "lantai",
           "accepted": [
             "lantai"
@@ -148,11 +148,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama am dalam ayat ini? Emak menyapu lantai."
+          "question": "Emak menyapu lantai supaya rumah bersih. Apakah kata nama am bagi bahagian rumah?"
         },
         {
           "id": "BM-KATA_NAMA_AM-011",
-          "q": "Dalam ayat \"Siti membaca buku di ruang tamu.\", apakah kata nama am?",
+          "q": "Di perpustakaan sekolah, Hana meminjam buku cerita. Nyatakan kata nama am bagi benda dalam ayat ini.",
           "answer": "buku",
           "accepted": [
             "buku"
@@ -162,11 +162,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Siti membaca buku di ruang tamu.\", apakah kata nama am?"
+          "question": "Di perpustakaan sekolah, Hana meminjam buku cerita. Nyatakan kata nama am bagi benda dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-012",
-          "q": "Dalam ayat \"Ayah membeli ikan di pasar.\", apakah kata nama am?",
+          "q": "Di pasar pagi, ayah memilih ikan yang segar. Cari kata nama am bagi haiwan atau makanan.",
           "answer": "ikan",
           "accepted": [
             "ikan"
@@ -176,11 +176,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Ayah membeli ikan di pasar.\", apakah kata nama am?"
+          "question": "Di pasar pagi, ayah memilih ikan yang segar. Cari kata nama am bagi haiwan atau makanan."
         },
         {
           "id": "BM-KATA_NAMA_AM-013",
-          "q": "Dalam ayat \"Murid beratur di kantin.\", apakah kata nama am?",
+          "q": "Semasa waktu rehat, murid beratur di kantin untuk membeli makanan. Apakah kata nama am bagi tempat?",
           "answer": "kantin",
           "accepted": [
             "kantin"
@@ -190,11 +190,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Murid beratur di kantin.\", apakah kata nama am?"
+          "question": "Semasa waktu rehat, murid beratur di kantin untuk membeli makanan. Apakah kata nama am bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_AM-014",
-          "q": "Dalam ayat \"Guru menulis di papan putih.\", apakah kata nama am?",
+          "q": "Guru menerangkan pelajaran di hadapan kelas. Pilih kata nama am bagi orang dalam ayat ini.",
           "answer": "guru",
           "accepted": [
             "guru"
@@ -204,11 +204,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Guru menulis di papan putih.\", apakah kata nama am?"
+          "question": "Guru menerangkan pelajaran di hadapan kelas. Pilih kata nama am bagi orang dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-015",
-          "q": "Dalam ayat \"Kucing itu tidur di bawah meja.\", apakah kata nama am?",
+          "q": "Di halaman rumah, seekor kucing mengejar bola kecil. Apakah kata nama am bagi haiwan?",
           "answer": "kucing",
           "accepted": [
             "kucing"
@@ -218,11 +218,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kucing itu tidur di bawah meja.\", apakah kata nama am?"
+          "question": "i halaman rumah, seekor kucing mengejar bola kecil. Apakah kata nama am bagi haiwan?"
         },
         {
           "id": "BM-KATA_NAMA_AM-016",
-          "q": "Dalam ayat \"Adik menyimpan kasut di rak.\", apakah kata nama am?",
+          "q": "Sebelum masuk ke rumah, adik menyusun kasut di tepi pintu. Nyatakan kata nama am bagi benda yang dipakai.",
           "answer": "kasut",
           "accepted": [
             "kasut"
@@ -232,11 +232,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Adik menyimpan kasut di rak.\", apakah kata nama am?"
+          "question": "Sebelum masuk ke rumah, adik menyusun kasut di tepi pintu. Nyatakan kata nama am bagi benda yang dipakai."
         },
         {
           "id": "BM-KATA_NAMA_AM-017",
-          "q": "Dalam ayat \"Kami bermain di taman.\", apakah kata nama am?",
+          "q": "Pada waktu petang, kanak-kanak bermain di taman permainan. Cari kata nama am bagi tempat.",
           "answer": "taman",
           "accepted": [
             "taman"
@@ -246,11 +246,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kami bermain di taman.\", apakah kata nama am?"
+          "question": "Pada waktu petang, kanak-kanak bermain di taman permainan. Cari kata nama am bagi tempat."
         },
         {
           "id": "BM-KATA_NAMA_AM-018",
-          "q": "Dalam ayat \"Doktor memeriksa pesakit itu.\", apakah kata nama am?",
+          "q": "Di klinik desa, doktor memeriksa suhu badan pesakit. Pilih kata nama am bagi pekerjaan.",
           "answer": "doktor",
           "accepted": [
             "doktor"
@@ -260,11 +260,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Doktor memeriksa pesakit itu.\", apakah kata nama am?"
+          "question": "Di klinik desa, doktor memeriksa suhu badan pesakit. Pilih kata nama am bagi pekerjaan."
         },
         {
           "id": "BM-KATA_NAMA_AM-019",
-          "q": "Dalam ayat \"Burung hinggap di dahan.\", apakah kata nama am?",
+          "q": "Di atas pokok mangga, burung berkicau dengan kuat. Apakah kata nama am bagi haiwan?",
           "answer": "burung",
           "accepted": [
             "burung"
@@ -274,11 +274,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Burung hinggap di dahan.\", apakah kata nama am?"
+          "question": "Di atas pokok mangga, burung berkicau dengan kuat. Apakah kata nama am bagi haiwan?"
         },
         {
           "id": "BM-KATA_NAMA_AM-020",
-          "q": "Dalam ayat \"Emak menyapu lantai.\", apakah kata nama am?",
+          "q": "Selepas makan, emak mengelap lantai dapur. Nyatakan kata nama am bagi bahagian rumah.",
           "answer": "lantai",
           "accepted": [
             "lantai"
@@ -288,193 +288,193 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Emak menyapu lantai.\", apakah kata nama am?"
+          "question": "Selepas makan, emak mengelap lantai dapur. Nyatakan kata nama am bagi bahagian rumah."
         },
         {
           "id": "BM-KATA_NAMA_AM-021",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Siti membaca buku di ruang tamu.",
-          "answer": "buku",
+          "q": "Semasa lawatan ke zoo, Amir melihat seekor gajah yang besar. Nyatakan kata nama am bagi haiwan dalam ayat ini.",
+          "answer": "gajah",
           "accepted": [
-            "buku"
+            "gajah"
           ],
-          "hint": "Cari nama benda dalam ayat.",
-          "explanation": "buku ialah kata nama am bagi benda.",
+          "hint": "Cari nama haiwan dalam ayat.",
+          "explanation": "gajah ialah kata nama am bagi haiwan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Siti membaca buku di ruang tamu."
+          "question": "Semasa lawatan ke zoo, Amir melihat seekor gajah yang besar. Nyatakan kata nama am bagi haiwan dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-022",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Ayah membeli ikan di pasar.",
-          "answer": "ikan",
+          "q": "Kakak membeli sebiji tembikai di pasar raya. Pilih kata nama am bagi buah dalam ayat ini.",
+          "answer": "tembikai",
           "accepted": [
-            "ikan"
+            "tembikai"
           ],
-          "hint": "Cari nama haiwan atau makanan dalam ayat.",
-          "explanation": "ikan ialah kata nama am bagi haiwan.",
+          "hint": "Cari nama buah dalam ayat.",
+          "explanation": "tembikai ialah kata nama am bagi buah.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Ayah membeli ikan di pasar."
+          "question": "Kakak membeli sebiji tembikai di pasar raya. Pilih kata nama am bagi buah dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-023",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Murid beratur di kantin.",
-          "answer": "kantin",
+          "q": "Murid membaca buku cerita di perpustakaan sekolah. Cari kata nama am bagi tempat.",
+          "answer": "perpustakaan",
           "accepted": [
-            "kantin"
+            "perpustakaan"
           ],
           "hint": "Cari nama tempat dalam ayat.",
-          "explanation": "kantin ialah kata nama am bagi tempat.",
+          "explanation": "perpustakaan ialah kata nama am bagi tempat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Murid beratur di kantin."
+          "question": "Murid membaca buku cerita di perpustakaan sekolah. Cari kata nama am bagi tempat."
         },
         {
           "id": "BM-KATA_NAMA_AM-024",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Guru menulis di papan putih.",
-          "answer": "guru",
+          "q": "Seorang bomba membantu memadamkan kebakaran. Nyatakan kata nama am bagi pekerjaan.",
+          "answer": "bomba",
           "accepted": [
-            "guru"
+            "bomba"
           ],
           "hint": "Cari nama orang dalam ayat.",
-          "explanation": "guru ialah kata nama am bagi orang.",
+          "explanation": "bomba ialah kata nama am bagi orang.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Guru menulis di papan putih."
+          "question": "Seorang bomba membantu memadamkan kebakaran. Nyatakan kata nama am bagi pekerjaan."
         },
         {
           "id": "BM-KATA_NAMA_AM-025",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Kucing itu tidur di bawah meja.",
-          "answer": "kucing",
+          "q": "Arnab putih sedang makan lobak di dalam sangkar. Pilih kata nama am bagi haiwan.",
+          "answer": "arnab",
           "accepted": [
-            "kucing"
+            "arnab"
           ],
           "hint": "Cari nama haiwan dalam ayat.",
-          "explanation": "kucing ialah kata nama am bagi haiwan.",
+          "explanation": "arnab ialah kata nama am bagi haiwan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Kucing itu tidur di bawah meja."
+          "question": "Arnab putih sedang makan lobak di dalam sangkar. Pilih kata nama am bagi haiwan."
         },
         {
           "id": "BM-KATA_NAMA_AM-026",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Adik menyimpan kasut di rak.",
-          "answer": "kasut",
+          "q": "Adik memakai topi sebelum keluar bermain. Cari kata nama am bagi benda yang dipakai.",
+          "answer": "topi",
           "accepted": [
-            "kasut"
+            "topi"
           ],
           "hint": "Cari nama benda yang dipakai.",
-          "explanation": "kasut ialah kata nama am bagi benda.",
+          "explanation": "topi ialah kata nama am bagi benda.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Adik menyimpan kasut di rak."
+          "question": "Adik memakai topi sebelum keluar bermain. Cari kata nama am bagi benda yang dipakai."
         },
         {
           "id": "BM-KATA_NAMA_AM-027",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Kami bermain di taman.",
-          "answer": "taman",
+          "q": "Keluarga Farah berkelah di tepi pantai pada hujung minggu. Nyatakan kata nama am bagi tempat.",
+          "answer": "pantai",
           "accepted": [
-            "taman"
+            "pantai"
           ],
           "hint": "Cari nama tempat dalam ayat.",
-          "explanation": "taman ialah kata nama am bagi tempat.",
+          "explanation": "pantai ialah kata nama am bagi tempat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Kami bermain di taman."
+          "question": "Keluarga Farah berkelah di tepi pantai pada hujung minggu. Nyatakan kata nama am bagi tempat."
         },
         {
           "id": "BM-KATA_NAMA_AM-028",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Doktor memeriksa pesakit itu.",
-          "answer": "doktor",
+          "q": "Jururawat memberikan ubat kepada pesakit di klinik. Pilih kata nama am bagi pekerjaan.",
+          "answer": "jururawat",
           "accepted": [
-            "doktor"
+            "jururawat"
           ],
           "hint": "Cari nama pekerjaan orang.",
-          "explanation": "doktor ialah kata nama am bagi orang.",
+          "explanation": "jururawat ialah kata nama am bagi orang.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Doktor memeriksa pesakit itu."
+          "question": "Jururawat memberikan ubat kepada pesakit di klinik. Pilih kata nama am bagi pekerjaan."
         },
         {
           "id": "BM-KATA_NAMA_AM-029",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Burung hinggap di dahan.",
-          "answer": "burung",
+          "q": "Seekor rama-rama hinggap pada bunga yang cantik. Cari kata nama am bagi haiwan.",
+          "answer": "rama-rama",
           "accepted": [
-            "burung"
+            "rama-rama"
           ],
           "hint": "Cari nama haiwan dalam ayat.",
-          "explanation": "burung ialah kata nama am bagi haiwan.",
+          "explanation": "rama-rama ialah kata nama am bagi haiwan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Burung hinggap di dahan."
+          "question": "Seekor rama-rama hinggap pada bunga yang cantik. Cari kata nama am bagi haiwan."
         },
         {
           "id": "BM-KATA_NAMA_AM-030",
-          "q": "Pilih kata nama am yang terdapat dalam ayat: Emak menyapu lantai.",
-          "answer": "lantai",
+          "q": "Ayah membersihkan tingkap rumah pada waktu pagi. Nyatakan kata nama am bagi bahagian rumah.",
+          "answer": "tingkap",
           "accepted": [
-            "lantai"
+            "tingkap"
           ],
           "hint": "Cari nama benda atau bahagian rumah.",
-          "explanation": "lantai ialah kata nama am bagi benda.",
+          "explanation": "tingkap ialah kata nama am bagi benda.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama am yang terdapat dalam ayat: Emak menyapu lantai."
+          "question": "Ayah membersihkan tingkap rumah pada waktu pagi. Nyatakan kata nama am bagi bahagian rumah."
         },
         {
           "id": "BM-KATA_NAMA_AM-031",
-          "q": "Baca ayat ini: Siti membaca buku di ruang tamu. Apakah kata nama am?",
-          "answer": "buku",
+          "q": "Dialog: Amir: \"Mari kita bermain di padang.\" Badrul: \"Baik!\" Apakah kata nama am bagi tempat dalam dialog ini?",
+          "answer": "padang",
           "accepted": [
-            "buku"
+            "padang"
           ],
-          "hint": "Cari nama benda dalam ayat.",
-          "explanation": "buku ialah kata nama am bagi benda.",
+          "hint": "Cari nama tempat dalam dialog.",
+          "explanation": "padang ialah kata nama am bagi tempat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Siti membaca buku di ruang tamu. Apakah kata nama am?"
+          "question": "Dialog: Amir: \"Mari kita bermain di padang.\" Badrul: \"Baik!\" Apakah kata nama am bagi tempat dalam dialog ini?"
         },
         {
           "id": "BM-KATA_NAMA_AM-032",
-          "q": "Baca ayat ini: Ayah membeli ikan di pasar. Apakah kata nama am?",
-          "answer": "ikan",
+          "q": "Dialog: Ibu: \"Tolong simpan sayur di dalam peti sejuk.\" Apakah kata nama am bagi makanan dalam dialog ini?",
+          "answer": "sayur",
           "accepted": [
-            "ikan"
+            "sayur"
           ],
-          "hint": "Cari nama haiwan atau makanan dalam ayat.",
-          "explanation": "ikan ialah kata nama am bagi haiwan.",
+          "hint": "Cari nama makanan dalam dialog.",
+          "explanation": "sayur ialah kata nama am bagi makanan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Ayah membeli ikan di pasar. Apakah kata nama am?"
+          "question": "Dialog: Ibu: \"Tolong simpan sayur di dalam peti sejuk.\" Apakah kata nama am bagi makanan dalam dialog ini?"
         },
         {
           "id": "BM-KATA_NAMA_AM-033",
-          "q": "Baca ayat ini: Murid beratur di kantin. Apakah kata nama am?",
-          "answer": "kantin",
+          "q": "Petikan: Pada waktu pagi, murid berkumpul di dewan sekolah untuk perhimpunan. Nyatakan kata nama am bagi tempat dalam petikan ini.",
+          "answer": "dewan",
           "accepted": [
-            "kantin"
+            "dewan"
           ],
-          "hint": "Cari nama tempat dalam ayat.",
-          "explanation": "kantin ialah kata nama am bagi tempat.",
+          "hint": "Cari nama tempat dalam petikan.",
+          "explanation": "dewan ialah kata nama am bagi tempat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Murid beratur di kantin. Apakah kata nama am?"
+          "question": "Petikan: Pada waktu pagi, murid berkumpul di dewan sekolah untuk perhimpunan. Nyatakan kata nama am bagi tempat dalam petikan ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-034",
-          "q": "Baca ayat ini: Guru menulis di papan putih. Apakah kata nama am?",
+          "q": "Petikan: Seorang guru mengajar Matematik di dalam kelas. Cari kata nama am bagi pekerjaan dalam petikan ini.",
           "answer": "guru",
           "accepted": [
             "guru"
@@ -484,53 +484,54 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Guru menulis di papan putih. Apakah kata nama am?"
+          "question": "Petikan: Seorang guru mengajar Matematik di dalam kelas. Cari kata nama am bagi pekerjaan dalam petikan ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-035",
-          "q": "Baca ayat ini: Kucing itu tidur di bawah meja. Apakah kata nama am?",
-          "answer": "kucing",
+          "q": "Cerita ringkas: Seekor arnab berlari ke arah kebun untuk mencari makanan. Apakah kata nama am bagi haiwan dalam cerita ini?",
+          "answer": "arnab",
           "accepted": [
-            "kucing"
+            "arnab"
           ],
-          "hint": "Cari nama haiwan dalam ayat.",
-          "explanation": "kucing ialah kata nama am bagi haiwan.",
+          "hint": "Cari nama haiwan dalam cerita.",
+          "explanation": "arnab ialah kata nama am bagi haiwan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kucing itu tidur di bawah meja. Apakah kata nama am?"
+          "question": "Cerita ringkas: Seekor arnab berlari ke arah kebun untuk mencari makanan. Apakah kata nama am bagi haiwan dalam cerita ini?"
         },
         {
           "id": "BM-KATA_NAMA_AM-036",
-          "q": "Baca ayat ini: Adik menyimpan kasut di rak. Apakah kata nama am?",
-          "answer": "kasut",
+          "q": "Situasi: Kakak memakai baju baharu semasa sambutan Hari Raya. Nyatakan kata nama am bagi pakaian dalam situasi ini.",
+          "answer": "baju",
           "accepted": [
-            "kasut"
+            "baju"
           ],
           "hint": "Cari nama benda yang dipakai.",
-          "explanation": "kasut ialah kata nama am bagi benda.",
+          "explanation": "baju ialah kata nama am bagi benda.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Adik menyimpan kasut di rak. Apakah kata nama am?"
+          "question": "Situasi: Kakak memakai baju baharu semasa sambutan Hari Raya. Nyatakan kata nama am bagi pakaian dalam situasi ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-037",
-          "q": "Baca ayat ini: Kami bermain di taman. Apakah kata nama am?",
+          "q": "Situasi: Keluarga Amin berehat di bawah pokok ketika berkelah di taman rekreasi. Cari kata nama am bagi tempat dalam situasi ini.",
           "answer": "taman",
           "accepted": [
             "taman"
           ],
-          "hint": "Cari nama tempat dalam ayat.",
+          "hint": "Cari nama tempat dalam situasi.",
+
           "explanation": "taman ialah kata nama am bagi tempat.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kami bermain di taman. Apakah kata nama am?"
+          "question": "Situasi: Keluarga Amin berehat di bawah pokok ketika berkelah di taman rekreasi. Nyatakan kata nama am bagi tempat dalam situasi ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-038",
-          "q": "Baca ayat ini: Doktor memeriksa pesakit itu. Apakah kata nama am?",
+          "q": "Situasi: Doktor dan jururawat membantu pesakit di hospital. Pilih kata nama am bagi salah satu pekerjaan.",
           "answer": "doktor",
           "accepted": [
             "doktor"
@@ -540,11 +541,12 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Doktor memeriksa pesakit itu. Apakah kata nama am?"
+          "question": "Situasi: Doktor dan jururawat membantu pesakit di hospital. Nyatakan kata nama am bagi salah satu pekerjaan."
+
         },
         {
           "id": "BM-KATA_NAMA_AM-039",
-          "q": "Baca ayat ini: Burung hinggap di dahan. Apakah kata nama am?",
+          "q": "Cerita: Burung membina sarang di atas pokok yang tinggi. Apakah kata nama am bagi haiwan dalam cerita ini?",
           "answer": "burung",
           "accepted": [
             "burung"
@@ -554,53 +556,53 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Burung hinggap di dahan. Apakah kata nama am?"
+          "question": "Cerita: Burung membina sarang di atas pokok yang tinggi. Nyatakan kata nama am bagi haiwan dalam cerita ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-040",
-          "q": "Baca ayat ini: Emak menyapu lantai. Apakah kata nama am?",
-          "answer": "lantai",
+          "q": "Situasi: Ayah membasuh kereta di halaman rumah pada waktu petang. Nyatakan kata nama am bagi kenderaan dalam situasi ini.",
+          "answer": "kereta",
           "accepted": [
-            "lantai"
+            "kereta"
           ],
-          "hint": "Cari nama benda atau bahagian rumah.",
-          "explanation": "lantai ialah kata nama am bagi benda.",
+          "hint": "Cari nama kenderaan dalam ayat.",
+          "explanation": "kereta ialah kata nama am bagi kenderaan.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Emak menyapu lantai. Apakah kata nama am?"
+          "question": "Situasi: Ayah membasuh kereta di halaman rumah pada waktu petang. Nyatakan kata nama am bagi kenderaan dalam situasi ini."
         },
         {
           "id": "BM-KATA_NAMA_AM-041",
-          "q": "Soalan ulang kaji Kata Nama Am: Siti membaca buku di ruang tamu. Jawapan bagi kata nama am ialah ________.",
-          "answer": "buku",
+          "q": "Petikan UASA: Aina menyusun buku, pensel dan beg di atas meja. Apakah kata nama am bagi benda yang digunakan untuk menulis?",
+          "answer": "pensel",
           "accepted": [
-            "buku"
+            "pensel"
           ],
           "hint": "Cari nama benda dalam ayat.",
-          "explanation": "buku ialah kata nama am bagi benda.",
+          "explanation": "pensel ialah kata nama am bagi benda.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Siti membaca buku di ruang tamu. Jawapan bagi kata nama am ialah ________."
+          "question": "Petikan UASA: Aina menyusun buku, pensel dan beg di atas meja. Apakah kata nama am bagi benda yang digunakan untuk menulis?"
         },
         {
           "id": "BM-KATA_NAMA_AM-042",
-          "q": "Soalan ulang kaji Kata Nama Am: Ayah membeli ikan di pasar. Jawapan bagi kata nama am ialah ________.",
-          "answer": "ikan",
+          "q": "Di pasar raya, ibu membeli sayur, ikan dan roti. Nyatakan kata nama am bagi makanan yang dibuat daripada tepung.",
+          "answer": "roti",
           "accepted": [
-            "ikan"
+            "roti"
           ],
           "hint": "Cari nama haiwan atau makanan dalam ayat.",
-          "explanation": "ikan ialah kata nama am bagi haiwan.",
+          "explanation": "roti ialah kata nama am bagi makanan.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Ayah membeli ikan di pasar. Jawapan bagi kata nama am ialah ________."
+          "question": "Di pasar raya, ibu membeli sayur, ikan dan roti. Nyatakan kata nama am bagi makanan yang dibuat daripada tepung."
         },
         {
           "id": "BM-KATA_NAMA_AM-043",
-          "q": "Soalan ulang kaji Kata Nama Am: Murid beratur di kantin. Jawapan bagi kata nama am ialah ________.",
+          "q": "KBAT: Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?",
           "answer": "kantin",
           "accepted": [
             "kantin"
@@ -610,11 +612,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Murid beratur di kantin. Jawapan bagi kata nama am ialah ________."
+          "question": "KBAT: Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_AM-044",
-          "q": "Soalan ulang kaji Kata Nama Am: Guru menulis di papan putih. Jawapan bagi kata nama am ialah ________.",
+          "q": "Seorang guru sedang mengajar murid di dalam kelas. Nyatakan kata nama am bagi pekerjaan.",
           "answer": "guru",
           "accepted": [
             "guru"
@@ -624,53 +626,53 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Guru menulis di papan putih. Jawapan bagi kata nama am ialah ________."
+          "question": "Seorang guru sedang mengajar murid di dalam kelas. Nyatakan kata nama am bagi pekerjaan."
         },
         {
           "id": "BM-KATA_NAMA_AM-045",
-          "q": "Soalan ulang kaji Kata Nama Am: Kucing itu tidur di bawah meja. Jawapan bagi kata nama am ialah ________.",
-          "answer": "kucing",
+          "q": "Di zoo, adik melihat harimau, gajah dan arnab. Apakah kata nama am bagi haiwan yang paling besar dalam ayat ini?",
+          "answer": "gajah",
           "accepted": [
-            "kucing"
+            "gajah"
           ],
           "hint": "Cari nama haiwan dalam ayat.",
-          "explanation": "kucing ialah kata nama am bagi haiwan.",
+          "explanation": "gajah ialah kata nama am bagi haiwan.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Kucing itu tidur di bawah meja. Jawapan bagi kata nama am ialah ________."
+          "question": "Di zoo, adik melihat harimau, gajah dan arnab. Apakah kata nama am bagi haiwan yang paling besar dalam ayat ini?"
         },
         {
           "id": "BM-KATA_NAMA_AM-046",
-          "q": "Soalan ulang kaji Kata Nama Am: Adik menyimpan kasut di rak. Jawapan bagi kata nama am ialah ________.",
-          "answer": "kasut",
+          "q": "Semasa Hari Raya, kakak memakai baju kurung baharu. Nyatakan kata nama am bagi pakaian.",
+          "answer": "baju kurung",
           "accepted": [
-            "kasut"
+            "baju kurung"
           ],
           "hint": "Cari nama benda yang dipakai.",
-          "explanation": "kasut ialah kata nama am bagi benda.",
+          "explanation": "baju kurung ialah kata nama am bagi pakaian.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Adik menyimpan kasut di rak. Jawapan bagi kata nama am ialah ________."
+          "question": "Semasa Hari Raya, kakak memakai baju kurung baharu. Nyatakan kata nama am bagi pakaian."
         },
         {
           "id": "BM-KATA_NAMA_AM-047",
-          "q": "Soalan ulang kaji Kata Nama Am: Kami bermain di taman. Jawapan bagi kata nama am ialah ________.",
-          "answer": "taman",
+          "q": "Keluarga Amir berkelah di tepi sungai pada hujung minggu. Apakah kata nama am bagi tempat semula jadi?",
+          "answer": "sungai",
           "accepted": [
-            "taman"
+            "sungai"
           ],
           "hint": "Cari nama tempat dalam ayat.",
-          "explanation": "taman ialah kata nama am bagi tempat.",
+          "explanation": "sungai ialah kata nama am bagi tempat.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Kami bermain di taman. Jawapan bagi kata nama am ialah ________."
+          "question": "Keluarga Amir berkelah di tepi sungai pada hujung minggu. Apakah kata nama am bagi tempat semula jadi?"
         },
         {
           "id": "BM-KATA_NAMA_AM-048",
-          "q": "Soalan ulang kaji Kata Nama Am: Doktor memeriksa pesakit itu. Jawapan bagi kata nama am ialah ________.",
+          "q": "Di hospital, jururawat membantu doktor merawat pesakit. Nyatakan kata nama am bagi pekerjaan yang memberi rawatan kepada pesakit.",
           "answer": "doktor",
           "accepted": [
             "doktor"
@@ -680,35 +682,35 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Doktor memeriksa pesakit itu. Jawapan bagi kata nama am ialah ________."
+          "question": "Di hospital, jururawat membantu doktor merawat pesakit. Nyatakan kata nama am bagi pekerjaan yang memberi rawatan kepada pesakit."
         },
         {
           "id": "BM-KATA_NAMA_AM-049",
-          "q": "Soalan ulang kaji Kata Nama Am: Burung hinggap di dahan. Jawapan bagi kata nama am ialah ________.",
-          "answer": "burung",
+          "q": "Cerita pendek: Rama-rama terbang di taman bunga pada waktu pagi. Apakah kata nama am bagi haiwan kecil dalam ayat ini?",
+          "answer": "rama-rama",
           "accepted": [
-            "burung"
+            "rama-rama"
           ],
           "hint": "Cari nama haiwan dalam ayat.",
-          "explanation": "burung ialah kata nama am bagi haiwan.",
+          "explanation": "rama-rama ialah kata nama am bagi haiwan.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Burung hinggap di dahan. Jawapan bagi kata nama am ialah ________."
+          "question": "Cerita pendek: Rama-rama terbang di taman bunga pada waktu pagi. Apakah kata nama am bagi haiwan kecil dalam ayat ini?"
         },
         {
           "id": "BM-KATA_NAMA_AM-050",
-          "q": "Soalan ulang kaji Kata Nama Am: Emak menyapu lantai. Jawapan bagi kata nama am ialah ________.",
-          "answer": "lantai",
+          "q": "Ayah memandu kereta ke pejabat pada waktu pagi. Nyatakan kata nama am bagi kenderaan.",
+          "answer": "kereta",
           "accepted": [
-            "lantai"
+            "kereta"
           ],
-          "hint": "Cari nama benda atau bahagian rumah.",
-          "explanation": "lantai ialah kata nama am bagi benda.",
+          "hint": "Cari nama kenderaan dalam ayat.",
+          "explanation": "kereta ialah kata nama am bagi kenderaan.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Am: Emak menyapu lantai. Jawapan bagi kata nama am ialah ________."
+          "question": "Ayah memandu kereta ke pejabat pada waktu pagi. Nyatakan kata nama am bagi kenderaan."
         }
       ]
     },
@@ -719,7 +721,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_NAMA_KHAS-001",
-          "q": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita.",
+          "q": "Di dalam kelas, Aina membaca buku cerita bersama rakannya. Nyatakan kata nama khas bagi nama murid dalam ayat ini.",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -729,11 +731,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Aina membaca buku cerita."
+          "question": "Di dalam kelas, Aina membaca buku cerita bersama rakannya. Nyatakan kata nama khas bagi nama murid dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-002",
-          "q": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Guru memperkenalkan Cikgu Hana kepada murid-murid Tahun 2. Apakah kata nama khas bagi nama guru?",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -743,11 +745,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Cikgu Hana mengajar Bahasa Melayu."
+          "question": "Guru memperkenalkan Cikgu Hana kepada murid-murid Tahun 2. Apakah kata nama khas bagi nama guru?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-003",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara.",
+          "q": "Semasa cuti sekolah, kami melawat Zoo Negara untuk melihat pelbagai haiwan. Nyatakan kata nama khas bagi tempat tersebut.",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -757,11 +759,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Kami melawat Zoo Negara."
+          "question": "Semasa cuti sekolah, kami melawat Zoo Negara untuk melihat pelbagai haiwan. Nyatakan kata nama khas bagi tempat tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-004",
-          "q": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur.",
+          "q": "Ayah menghadiri mesyuarat di Kuala Lumpur pada minggu lalu. Apakah kata nama khas bagi bandar dalam ayat ini?",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -771,11 +773,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Ayah bekerja di Kuala Lumpur."
+          "question": "Ayah menghadiri mesyuarat di Kuala Lumpur pada minggu lalu. Apakah kata nama khas bagi bandar dalam ayat ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-005",
-          "q": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady.",
+          "q": "Sara minum susu jenama Dutch Lady setiap pagi sebelum ke sekolah. Nyatakan kata nama khas bagi jenama tersebut.",
           "answer": "Dutch Lady",
           "accepted": [
             "Dutch Lady"
@@ -785,11 +787,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Sara minum susu Dutch Lady."
+          "question": "Sara minum susu jenama Dutch Lady setiap pagi sebelum ke sekolah. Nyatakan kata nama khas bagi jenama tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-006",
-          "q": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Irfan belajar di Sekolah Kebangsaan Jaya sejak Tahun 1. Apakah kata nama khas bagi nama sekolah?",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
             "Sekolah Kebangsaan Jaya"
@@ -799,11 +801,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Irfan pergi ke Sekolah Kebangsaan Jaya."
+          "question": "Irfan belajar di Sekolah Kebangsaan Jaya sejak Tahun 1. Apakah kata nama khas bagi nama sekolah?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-007",
-          "q": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih.",
+          "q": "Puan Salmah menjual kuih di gerai pada setiap pagi. Nyatakan kata nama khas bagi nama orang.",
           "answer": "Salmah",
           "accepted": [
             "Salmah"
@@ -813,11 +815,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Puan Salmah menjual kuih."
+          "question": "Puan Salmah menjual kuih di gerai pada setiap pagi. Nyatakan kata nama khas bagi nama orang."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-008",
-          "q": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin.",
+          "q": "Adik menonton rancangan Upin Ipin bersama keluarga pada waktu malam. Apakah kata nama khas bagi tajuk rancangan itu?",
           "answer": "Upin Ipin",
           "accepted": [
             "Upin Ipin"
@@ -827,11 +829,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Adik menonton Upin Ipin."
+          "question": "Adik menonton rancangan Upin Ipin bersama keluarga pada waktu malam. Apakah kata nama khas bagi tajuk rancangan itu?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-009",
-          "q": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi.",
+          "q": "Keluarga kami bercuti di Pulau Langkawi semasa cuti sekolah. Nyatakan kata nama khas bagi tempat percutian tersebut.",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -841,11 +843,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Kami bercuti di Pulau Langkawi."
+          "question": "Keluarga kami bercuti di Pulau Langkawi semasa cuti sekolah. Nyatakan kata nama khas bagi tempat percutian tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-010",
-          "q": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta.",
+          "q": "Encik Rahman memandu kereta ke pejabat setiap pagi. Apakah kata nama khas bagi nama orang dalam ayat ini?",
           "answer": "Rahman",
           "accepted": [
             "Rahman"
@@ -855,11 +857,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata nama khas dalam ayat ini? Encik Rahman memandu kereta."
+          "question": "Encik Rahman memandu kereta ke pejabat setiap pagi. Apakah kata nama khas bagi nama orang dalam ayat ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-011",
-          "q": "Dalam ayat \"Aina membaca buku cerita.\", apakah kata nama khas?",
+          "q": "Dialog: Aina berkata, \"Saya suka membaca buku cerita di perpustakaan.\" Apakah kata nama khas bagi nama orang dalam dialog ini?",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -869,11 +871,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Aina membaca buku cerita.\", apakah kata nama khas?"
+          "question": "Dialog: Aina berkata, \"Saya suka membaca buku cerita di perpustakaan.\" Apakah kata nama khas bagi nama orang dalam dialog ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-012",
-          "q": "Dalam ayat \"Cikgu Hana mengajar Bahasa Melayu.\", apakah kata nama khas?",
+          "q": "Dialog: Murid-murid menyapa Cikgu Hana sebelum kelas Bahasa Melayu bermula. Nyatakan kata nama khas bagi nama guru.",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -883,11 +885,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Cikgu Hana mengajar Bahasa Melayu.\", apakah kata nama khas?"
+          "question": "Dialog: Murid-murid menyapa Cikgu Hana sebelum kelas Bahasa Melayu bermula. Nyatakan kata nama khas bagi nama guru."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-013",
-          "q": "Dalam ayat \"Kami melawat Zoo Negara.\", apakah kata nama khas?",
+          "q": "Petikan: Pada hari Sabtu, keluarga Danial pergi ke Zoo Negara. Apakah kata nama khas bagi tempat dalam petikan ini?",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -897,11 +899,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kami melawat Zoo Negara.\", apakah kata nama khas?"
+          "question": "Petikan: Pada hari Sabtu, keluarga Danial pergi ke Zoo Negara. Apakah kata nama khas bagi tempat dalam petikan ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-014",
-          "q": "Dalam ayat \"Ayah bekerja di Kuala Lumpur.\", apakah kata nama khas?",
+          "q": "Petikan: Ayah menaiki bas ekspres ke Kuala Lumpur untuk bekerja. Nyatakan kata nama khas bagi bandar.",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -911,11 +913,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Ayah bekerja di Kuala Lumpur.\", apakah kata nama khas?"
+          "question": "Petikan: Ayah menaiki bas ekspres ke Kuala Lumpur untuk bekerja. Nyatakan kata nama khas bagi bandar."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-015",
-          "q": "Dalam ayat \"Sara minum susu Dutch Lady.\", apakah kata nama khas?",
+          "q": "Situasi: Sara membeli susu Dutch Lady di pasar raya bersama ibunya. Apakah kata nama khas bagi jenama susu?",
           "answer": "Dutch Lady",
           "accepted": [
             "Dutch Lady"
@@ -925,11 +927,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Sara minum susu Dutch Lady.\", apakah kata nama khas?"
+          "question": "Situasi: Sara membeli susu Dutch Lady di pasar raya bersama ibunya. Apakah kata nama khas bagi jenama susu?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-016",
-          "q": "Dalam ayat \"Irfan pergi ke Sekolah Kebangsaan Jaya.\", apakah kata nama khas?",
+          "q": "Petikan: Irfan memakai lencana Sekolah Kebangsaan Jaya pada baju sekolahnya. Nyatakan kata nama khas bagi sekolah.",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
             "Sekolah Kebangsaan Jaya"
@@ -939,11 +941,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Irfan pergi ke Sekolah Kebangsaan Jaya.\", apakah kata nama khas?"
+          "question": "Petikan: Irfan memakai lencana Sekolah Kebangsaan Jaya pada baju sekolahnya. Nyatakan kata nama khas bagi sekolah."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-017",
-          "q": "Dalam ayat \"Puan Salmah menjual kuih.\", apakah kata nama khas?",
+          "q": "Dialog: \"Puan Salmah membuat kuih yang sedap,\" kata ibu. Apakah kata nama khas bagi nama orang dalam dialog ini?",
           "answer": "Salmah",
           "accepted": [
             "Salmah"
@@ -953,11 +955,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Puan Salmah menjual kuih.\", apakah kata nama khas?"
+          "question": "Dialog: \"Puan Salmah membuat kuih yang sedap,\" kata ibu. Apakah kata nama khas bagi nama orang dalam dialog ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-018",
-          "q": "Dalam ayat \"Adik menonton Upin Ipin.\", apakah kata nama khas?",
+          "q": "Situasi: Adik menonton Upin Ipin selepas menyiapkan kerja sekolah. Nyatakan kata nama khas bagi tajuk rancangan.",
           "answer": "Upin Ipin",
           "accepted": [
             "Upin Ipin"
@@ -967,11 +969,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Adik menonton Upin Ipin.\", apakah kata nama khas?"
+          "question": "Situasi: Adik menonton Upin Ipin selepas menyiapkan kerja sekolah. Nyatakan kata nama khas bagi tajuk rancangan."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-019",
-          "q": "Dalam ayat \"Kami bercuti di Pulau Langkawi.\", apakah kata nama khas?",
+          "q": "Petikan: Rombongan sekolah bercuti ke Pulau Langkawi semasa cuti akhir tahun. Apakah kata nama khas bagi tempat percutian?",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -981,11 +983,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kami bercuti di Pulau Langkawi.\", apakah kata nama khas?"
+          "question": "Petikan: Rombongan sekolah bercuti ke Pulau Langkawi semasa cuti akhir tahun. Apakah kata nama khas bagi tempat percutian?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-020",
-          "q": "Dalam ayat \"Encik Rahman memandu kereta.\", apakah kata nama khas?",
+          "q": "Dialog: Encik Rahman berkata, \"Saya akan menghantar surat itu esok.\" Nyatakan kata nama khas bagi nama orang.",
           "answer": "Rahman",
           "accepted": [
             "Rahman"
@@ -995,11 +997,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Encik Rahman memandu kereta.\", apakah kata nama khas?"
+          "question": "Dialog: Encik Rahman berkata, \"Saya akan menghantar surat itu esok.\" Nyatakan kata nama khas bagi nama orang."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-021",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Aina membaca buku cerita.",
+          "q": "Semasa Hari Anugerah, Aina menerima hadiah daripada guru besar. Nyatakan kata nama khas bagi nama murid dalam ayat ini.",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -1009,11 +1011,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Aina membaca buku cerita."
+          "question": "Semasa Hari Anugerah, Aina menerima hadiah daripada guru besar. Nyatakan kata nama khas bagi nama murid dalam ayat ini."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-022",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Cikgu Hana mengajar Bahasa Melayu.",
+          "q": "Cikgu Hana membawa murid melawat perpustakaan sekolah pada waktu pagi. Apakah kata nama khas bagi nama guru?",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -1023,11 +1025,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Cikgu Hana mengajar Bahasa Melayu."
+          "question": "Cikgu Hana membawa murid melawat perpustakaan sekolah pada waktu pagi. Apakah kata nama khas bagi nama guru?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-023",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Kami melawat Zoo Negara.",
+          "q": "Keluarga Amir meluangkan masa di Zoo Negara pada hujung minggu. Nyatakan kata nama khas bagi tempat tersebut.",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -1037,11 +1039,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Kami melawat Zoo Negara."
+          "question": "Keluarga Amir meluangkan masa di Zoo Negara pada hujung minggu. Nyatakan kata nama khas bagi tempat tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-024",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Ayah bekerja di Kuala Lumpur.",
+          "q": "Ayah menghadiri kursus di Kuala Lumpur selama tiga hari. Apakah kata nama khas bagi bandar?",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -1051,11 +1053,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Ayah bekerja di Kuala Lumpur."
+          "question": "Ayah menghadiri kursus di Kuala Lumpur selama tiga hari. Apakah kata nama khas bagi bandar?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-025",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Sara minum susu Dutch Lady.",
+          "q": "Sara menyediakan susu Dutch Lady untuk adiknya sebelum ke sekolah. Nyatakan kata nama khas bagi jenama susu.",
           "answer": "Dutch Lady",
           "accepted": [
             "Dutch Lady"
@@ -1065,11 +1067,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Sara minum susu Dutch Lady."
+          "question": "Sara menyediakan susu Dutch Lady untuk adiknya sebelum ke sekolah. Nyatakan kata nama khas bagi jenama susu."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-026",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Irfan pergi ke Sekolah Kebangsaan Jaya.",
+          "q": "Irfan menyertai pertandingan bercerita mewakili Sekolah Kebangsaan Jaya. Apakah kata nama khas bagi nama sekolah?",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
             "Sekolah Kebangsaan Jaya"
@@ -1079,11 +1081,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Irfan pergi ke Sekolah Kebangsaan Jaya."
+          "question": "Irfan menyertai pertandingan bercerita mewakili Sekolah Kebangsaan Jaya. Apakah kata nama khas bagi nama sekolah?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-027",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Puan Salmah menjual kuih.",
+          "q": "Puan Salmah menghadiahkan buku cerita kepada murid yang rajin membaca. Nyatakan kata nama khas bagi nama orang.",
           "answer": "Salmah",
           "accepted": [
             "Salmah"
@@ -1093,11 +1095,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Puan Salmah menjual kuih."
+          "question": "Puan Salmah menghadiahkan buku cerita kepada murid yang rajin membaca. Nyatakan kata nama khas bagi nama orang."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-028",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Adik menonton Upin Ipin.",
+          "q": "Pada malam minggu, adik menonton Upin Ipin bersama seluruh keluarga. Apakah kata nama khas bagi tajuk rancangan?",
           "answer": "Upin Ipin",
           "accepted": [
             "Upin Ipin"
@@ -1107,11 +1109,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Adik menonton Upin Ipin."
+          "question": "Pada malam minggu, adik menonton Upin Ipin bersama seluruh keluarga. Apakah kata nama khas bagi tajuk rancangan?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-029",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Kami bercuti di Pulau Langkawi.",
+          "q": "Sekolah kami mengadakan lawatan sambil belajar ke Pulau Langkawi. Nyatakan kata nama khas bagi tempat tersebut.",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -1121,11 +1123,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Kami bercuti di Pulau Langkawi."
+          "question": "Sekolah kami mengadakan lawatan sambil belajar ke Pulau Langkawi. Nyatakan kata nama khas bagi tempat tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-030",
-          "q": "Pilih kata nama khas yang terdapat dalam ayat: Encik Rahman memandu kereta.",
+          "q": "Encik Rahman menghadiri mesyuarat ibu bapa dan guru di sekolah anaknya. Apakah kata nama khas bagi nama orang?",
           "answer": "Rahman",
           "accepted": [
             "Rahman"
@@ -1135,11 +1137,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata nama khas yang terdapat dalam ayat: Encik Rahman memandu kereta."
+          "question": "Encik Rahman menghadiri mesyuarat ibu bapa dan guru di sekolah anaknya. Apakah kata nama khas bagi nama orang?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-031",
-          "q": "Baca ayat ini: Aina membaca buku cerita. Apakah kata nama khas?",
+          "q": "Dialog: Aina: \"Mari kita baca buku cerita bersama di perpustakaan.\" Siapakah kata nama khas dalam dialog ini?",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -1149,11 +1151,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Aina membaca buku cerita. Apakah kata nama khas?"
+          "question": "Dialog: Aina: \"Mari kita baca buku cerita bersama di perpustakaan.\" Siapakah kata nama khas dalam dialog ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-032",
-          "q": "Baca ayat ini: Cikgu Hana mengajar Bahasa Melayu. Apakah kata nama khas?",
+          "q": "Situasi: Cikgu Hana memberikan hadiah kepada murid yang mendapat keputusan cemerlang. Nyatakan kata nama khas bagi nama guru.",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -1163,11 +1165,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Cikgu Hana mengajar Bahasa Melayu. Apakah kata nama khas?"
+          "question": "Situasi: Cikgu Hana memberikan hadiah kepada murid yang mendapat keputusan cemerlang. Nyatakan kata nama khas bagi nama guru."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-033",
-          "q": "Baca ayat ini: Kami melawat Zoo Negara. Apakah kata nama khas?",
+          "q": "Petikan: Pada hujung minggu, keluarga kami melawat Zoo Negara untuk melihat pelbagai haiwan. Apakah kata nama khas bagi tempat tersebut?",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -1177,11 +1179,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kami melawat Zoo Negara. Apakah kata nama khas?"
+          "question": "Petikan: Pada hujung minggu, keluarga kami melawat Zoo Negara untuk melihat pelbagai haiwan. Apakah kata nama khas bagi tempat tersebut?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-034",
-          "q": "Baca ayat ini: Ayah bekerja di Kuala Lumpur. Apakah kata nama khas?",
+          "q": "KBAT: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -1191,11 +1193,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Ayah bekerja di Kuala Lumpur. Apakah kata nama khas?"
+          "question": "KBAT: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-035",
-          "q": "Baca ayat ini: Sara minum susu Dutch Lady. Apakah kata nama khas?",
+          "q": "Situasi: Sara memilih susu Dutch Lady kerana rasanya yang sedap. Nyatakan kata nama khas bagi jenama tersebut.",
           "answer": "Dutch Lady",
           "accepted": [
             "Dutch Lady"
@@ -1205,11 +1207,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Sara minum susu Dutch Lady. Apakah kata nama khas?"
+          "question": "Situasi: Sara memilih susu Dutch Lady kerana rasanya yang sedap. Nyatakan kata nama khas bagi jenama tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-036",
-          "q": "Baca ayat ini: Irfan pergi ke Sekolah Kebangsaan Jaya. Apakah kata nama khas?",
+          "q": "Petikan: Irfan mewakili Sekolah Kebangsaan Jaya dalam pertandingan bercerita. Apakah kata nama khas bagi nama sekolah?",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
             "Sekolah Kebangsaan Jaya"
@@ -1219,11 +1221,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Irfan pergi ke Sekolah Kebangsaan Jaya. Apakah kata nama khas?"
+          "question": "Petikan: Irfan mewakili Sekolah Kebangsaan Jaya dalam pertandingan bercerita. Apakah kata nama khas bagi nama sekolah?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-037",
-          "q": "Baca ayat ini: Puan Salmah menjual kuih. Apakah kata nama khas?",
+          "q": "Dialog: \"Puan Salmah akan menghadiahkan buku kepada pemenang,\" kata guru. Nyatakan kata nama khas bagi nama orang.",
           "answer": "Salmah",
           "accepted": [
             "Salmah"
@@ -1233,11 +1235,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Puan Salmah menjual kuih. Apakah kata nama khas?"
+          "question": "Dialog: \"Puan Salmah akan menghadiahkan buku kepada pemenang,\" kata guru. Nyatakan kata nama khas bagi nama orang."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-038",
-          "q": "Baca ayat ini: Adik menonton Upin Ipin. Apakah kata nama khas?",
+          "q": "Situasi: Selepas menyiapkan kerja sekolah, adik menonton Upin Ipin bersama abang. Apakah kata nama khas bagi tajuk rancangan?",
           "answer": "Upin Ipin",
           "accepted": [
             "Upin Ipin"
@@ -1247,11 +1249,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Adik menonton Upin Ipin. Apakah kata nama khas?"
+          "question": "Situasi: Selepas menyiapkan kerja sekolah, adik menonton Upin Ipin bersama abang. Apakah kata nama khas bagi tajuk rancangan?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-039",
-          "q": "Baca ayat ini: Kami bercuti di Pulau Langkawi. Apakah kata nama khas?",
+          "q": "Petikan: Murid Tahun 2 mengikuti lawatan sambil belajar ke Pulau Langkawi. Nyatakan kata nama khas bagi tempat tersebut.",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -1261,11 +1263,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kami bercuti di Pulau Langkawi. Apakah kata nama khas?"
+          "question": "Petikan: Murid Tahun 2 mengikuti lawatan sambil belajar ke Pulau Langkawi. Nyatakan kata nama khas bagi tempat tersebut."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-040",
-          "q": "Baca ayat ini: Encik Rahman memandu kereta. Apakah kata nama khas?",
+          "q": "Situasi: Encik Rahman menyampaikan hadiah kepada murid yang menang pertandingan. Apakah kata nama khas bagi nama orang?",
           "answer": "Rahman",
           "accepted": [
             "Rahman"
@@ -1275,11 +1277,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Encik Rahman memandu kereta. Apakah kata nama khas?"
+          "question": "Situasi: Encik Rahman menyampaikan hadiah kepada murid yang menang pertandingan. Apakah kata nama khas bagi nama orang?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-041",
-          "q": "Soalan ulang kaji Kata Nama Khas: Aina membaca buku cerita. Jawapan bagi kata nama khas ialah ________.",
+          "q": "UASA: Aina menyertai pertandingan bercerita di sekolah. Siapakah kata nama khas dalam ayat ini?",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -1289,11 +1291,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Aina membaca buku cerita. Jawapan bagi kata nama khas ialah ________."
+          "question": "UASA: Aina menyertai pertandingan bercerita di sekolah. Siapakah kata nama khas dalam ayat ini?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-042",
-          "q": "Soalan ulang kaji Kata Nama Khas: Cikgu Hana mengajar Bahasa Melayu. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Isi tempat kosong: ________ mengajar Bahasa Melayu kepada murid Tahun 2. (Nama guru)",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -1303,11 +1305,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Cikgu Hana mengajar Bahasa Melayu. Jawapan bagi kata nama khas ialah ________."
+          "question": "Isi tempat kosong: ________ mengajar Bahasa Melayu kepada murid Tahun 2. (Nama guru)"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-043",
-          "q": "Soalan ulang kaji Kata Nama Khas: Kami melawat Zoo Negara. Jawapan bagi kata nama khas ialah ________.",
+          "q": "KBAT: Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -1317,11 +1319,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Kami melawat Zoo Negara. Jawapan bagi kata nama khas ialah ________."
+          "question": "KBAT: Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-044",
-          "q": "Soalan ulang kaji Kata Nama Khas: Ayah bekerja di Kuala Lumpur. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Petikan: Ayah bekerja di Kuala Lumpur sejak lima tahun yang lalu. Nyatakan kata nama khas bagi tempat.",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -1331,11 +1333,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Ayah bekerja di Kuala Lumpur. Jawapan bagi kata nama khas ialah ________."
+          "question": "Petikan: Ayah bekerja di Kuala Lumpur sejak lima tahun yang lalu. Nyatakan kata nama khas bagi tempat."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-045",
-          "q": "Soalan ulang kaji Kata Nama Khas: Sara minum susu Dutch Lady. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Situasi: Sara memilih susu Dutch Lady kerana disyorkan oleh ibunya. Apakah kata nama khas bagi jenama tersebut?",
           "answer": "Dutch Lady",
           "accepted": [
             "Dutch Lady"
@@ -1345,11 +1347,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Sara minum susu Dutch Lady. Jawapan bagi kata nama khas ialah ________."
+          "question": "Situasi: Sara memilih susu Dutch Lady kerana disyorkan oleh ibunya. Apakah kata nama khas bagi jenama tersebut?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-046",
-          "q": "Soalan ulang kaji Kata Nama Khas: Irfan pergi ke Sekolah Kebangsaan Jaya. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Dialog: \"Saya belajar di Sekolah Kebangsaan Jaya,\" kata Irfan. Nyatakan kata nama khas bagi sekolah.",
           "answer": "Sekolah Kebangsaan Jaya",
           "accepted": [
             "Sekolah Kebangsaan Jaya"
@@ -1359,11 +1361,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Irfan pergi ke Sekolah Kebangsaan Jaya. Jawapan bagi kata nama khas ialah ________."
+          "question": "Dialog: \"Saya belajar di Sekolah Kebangsaan Jaya,\" kata Irfan. Nyatakan kata nama khas bagi sekolah."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-047",
-          "q": "Soalan ulang kaji Kata Nama Khas: Puan Salmah menjual kuih. Jawapan bagi kata nama khas ialah ________.",
+          "q": "UASA: Puan Salmah menerima anugerah guru cemerlang pada tahun ini. Siapakah kata nama khas dalam ayat tersebut?",
           "answer": "Salmah",
           "accepted": [
             "Salmah"
@@ -1373,11 +1375,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Puan Salmah menjual kuih. Jawapan bagi kata nama khas ialah ________."
+          "question": "UASA: Puan Salmah menerima anugerah guru cemerlang pada tahun ini. Siapakah kata nama khas dalam ayat tersebut?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-048",
-          "q": "Soalan ulang kaji Kata Nama Khas: Adik menonton Upin Ipin. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Petikan: Selepas menyiapkan kerja sekolah, adik menonton Upin Ipin bersama keluarganya. Nyatakan kata nama khas bagi tajuk rancangan.",
           "answer": "Upin Ipin",
           "accepted": [
             "Upin Ipin"
@@ -1387,11 +1389,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Adik menonton Upin Ipin. Jawapan bagi kata nama khas ialah ________."
+          "question": "Petikan: Selepas menyiapkan kerja sekolah, adik menonton Upin Ipin bersama keluarganya. Nyatakan kata nama khas bagi tajuk rancangan."
         },
         {
           "id": "BM-KATA_NAMA_KHAS-049",
-          "q": "Soalan ulang kaji Kata Nama Khas: Kami bercuti di Pulau Langkawi. Jawapan bagi kata nama khas ialah ________.",
+          "q": "KBAT: Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -1401,11 +1403,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Kami bercuti di Pulau Langkawi. Jawapan bagi kata nama khas ialah ________."
+          "question": "KBAT: Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-050",
-          "q": "Soalan ulang kaji Kata Nama Khas: Encik Rahman memandu kereta. Jawapan bagi kata nama khas ialah ________.",
+          "q": "Situasi: Encik Rahman menyampaikan hadiah kepada pemenang pertandingan pidato. Nyatakan kata nama khas bagi nama orang.",
           "answer": "Rahman",
           "accepted": [
             "Rahman"
@@ -1415,7 +1417,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Nama Khas: Encik Rahman memandu kereta. Jawapan bagi kata nama khas ialah ________."
+          "question": "Situasi: Encik Rahman menyampaikan hadiah kepada pemenang pertandingan pidato. Nyatakan kata nama khas bagi nama orang."
         }
       ]
     },
@@ -1426,7 +1428,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_GANTI_NAMA-001",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)",
+          "q": "Semasa sesi perkenalan di sekolah, ________ memperkenalkan diri kepada semua rakan baharu.",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1436,11 +1438,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri)"
+          "question": "Semasa sesi perkenalan di sekolah, ________ memperkenalkan diri kepada semua rakan baharu."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-002",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah.",
+          "q": "Aina demam sejak semalam. ________ tidak hadir ke sekolah hari ini.",
           "answer": "Dia",
           "accepted": [
             "Dia"
@@ -1450,11 +1452,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah."
+          "question": "Aina demam sejak semalam. ________ tidak hadir ke sekolah hari ini."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-003",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang.",
+          "q": "Amir dan Badrul menyertai pertandingan bola sepak. ________ berlatih setiap petang.",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
@@ -1464,11 +1466,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang."
+          "question": "Amir dan Badrul menyertai pertandingan bola sepak. ________ berlatih setiap petang."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-004",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)",
+          "q": "Selepas tamat kelas, ________ pergi ke perpustakaan untuk menyiapkan tugasan.",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1478,11 +1480,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan)"
+          "question": "Selepas tamat kelas, ________ pergi ke perpustakaan untuk menyiapkan tugasan."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-005",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita.",
+          "q": "______ perlu menjaga kebersihan kelas supaya suasana belajar lebih selesa.",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1492,11 +1494,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita."
+          "question": "________ perlu menjaga kebersihan kelas supaya suasana belajar lebih selesa."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-006",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid.",
+          "q": "Guru Besar sedang berucap di dewan. ________ mengucapkan tahniah kepada semua murid.",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -1506,11 +1508,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid."
+          "question": "Guru Besar sedang berucap di dewan. ________ mengucapkan tahniah kepada semua murid."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-007",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________.",
+          "q": "Buku cerita itu milik Sara. Buku itu kepunyaan ________.",
           "answer": "dia",
           "accepted": [
             "dia"
@@ -1520,11 +1522,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________."
+          "question": "Buku cerita itu milik Sara. Buku itu kepunyaan ________."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-008",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)",
+          "q": "Sebelum masuk ke makmal komputer, ________ mesti beratur dengan tertib.",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1534,11 +1536,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu)"
+          "question": "Sebelum masuk ke makmal komputer, ________ mesti beratur dengan tertib."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-009",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang.",
+          "q": "Abang membantu ayah mencuci kereta. ________ sangat rajin.",
           "answer": "Dia",
           "accepted": [
             "Dia"
@@ -1548,11 +1550,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang."
+          "question": "Abang membantu ayah mencuci kereta. ________ sangat rajin."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-010",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)",
+          "q": "Untuk projek Sains minggu ini, ________ akan menghasilkan model sistem suria.",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1562,11 +1564,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan)"
+          "question": "Untuk projek Sains minggu ini, ________ akan menyiapkan kerja kumpulan ini."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-011",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 2)",
+          "q": "Dialog: \"________ akan mewakili kelas dalam pertandingan bercerita,\" kata Aiman. (merujuk kepada diri sendiri)",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1576,53 +1578,53 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 2)"
+          "question": "Dialog: \"________ akan mewakili kelas dalam pertandingan bercerita,\" kata Aiman. (merujuk kepada diri sendiri)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-012",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 2)",
+          "q": "Petikan: Sofea tidak hadir ke sekolah kerana demam. ________ sedang berehat di rumah.",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
-          "explanation": "Dia menggantikan nama Aina.",
+          "explanation": "Dia menggantikan nama Sofea.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 2)"
+          "question": "Petikan: Sofea tidak hadir ke sekolah kerana demam. ________ sedang berehat di rumah."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-013",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 2)",
+          "q": "Situasi: Amir, Hakim dan Danish membersihkan kelas bersama-sama. ________ bekerjasama dengan baik.",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
-          "explanation": "Mereka digunakan untuk Amir dan Badrul.",
+          "explanation": "Mereka digunakan untuk Amir, Hakim dan Danish.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 2)"
+          "question": "Situasi: Amir, Hakim dan Danish membersihkan kelas bersama-sama. ________ bekerjasama dengan baik."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-014",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 2)",
+          "q": "KBAT: Selepas tamat latihan sukan, ________ terus pulang ke rumah. (saya dan rakan-rakan, tidak termasuk guru)",
           "answer": "Kami",
           "accepted": [
             "Kami"
           ],
           "hint": "Gunakan kata ganti nama untuk kumpulan yang tidak termasuk pendengar.",
-          "explanation": "Kami merujuk kepada saya dan kawan saya.",
+          "explanation": "Kami merujuk kepada saya dan rakan-rakan, tidak termasuk guru.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 2)"
+          "question": "KBAT: Selepas tamat latihan sukan, ________ terus pulang ke rumah. (saya dan rakan-rakan, tidak termasuk guru)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-015",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 2)",
+          "q": "Guru berkata, \"________ hendaklah menjaga kebersihan tandas sekolah.\" (termasuk guru dan murid)",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1632,11 +1634,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 2)"
+          "question": "Guru berkata, \"________ hendaklah menjaga kebersihan tandas sekolah.\" (termasuk guru dan murid)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-016",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 2)",
+          "q": "Petikan: Guru Besar menyampaikan ucapan semasa perhimpunan. ________ mengingatkan murid supaya rajin belajar.",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -1646,25 +1648,25 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 2)"
+          "question": "Petikan: Guru Besar menyampaikan ucapan semasa perhimpunan. ________ mengingatkan murid supaya rajin belajar."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-017",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 2)",
+          "q": "Situasi: Basikal itu milik Farah. Basikal itu kepunyaan ________.",
           "answer": "dia",
           "accepted": [
             "dia"
           ],
-          "hint": "Gantikan nama Sara dengan kata ganti nama.",
-          "explanation": "dia menggantikan nama Sara.",
+          "hint": "Gantikan nama Farah dengan kata ganti nama.",
+          "explanation": "dia menggantikan nama Farah.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 2)"
+          "question": "Situasi: Basikal itu milik Farah. Basikal itu kepunyaan ________."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-018",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 2)",
+          "q": "Dialog: \"________ mesti memakai tali pinggang keledar semasa menaiki bas sekolah,\" kata cikgu kepada murid.",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1674,11 +1676,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 2)"
+          "question": "Dialog: \"________ mesti memakai tali pinggang keledar semasa menaiki bas sekolah,\" kata cikgu kepada murid."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-019",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 2)",
+          "q": "Petikan: Abang membantu ayah membasuh kereta. ________ melakukannya dengan bersungguh-sungguh.",
           "answer": "Dia",
           "accepted": [
             "Dia"
@@ -1688,11 +1690,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 2)"
+          "question": "Petikan: Abang membantu ayah membasuh kereta. ________ melakukannya dengan bersungguh-sungguh."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-020",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 2)",
+          "q": "Situasi: Untuk projek Matematik minggu ini, ________ akan menyiapkan model bersama-sama. (saya dan ahli kumpulan)",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1702,11 +1704,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 2)"
+          "question": "Situasi: Untuk projek Matematik minggu ini, ________ akan menyiapkan model bersama-sama. (saya dan ahli kumpulan)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-021",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 3)",
+          "q": "Dialog: \"________ akan memulangkan buku cerita ini selepas waktu rehat,\" kata Mei Ling kepada pustakawan.",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1716,39 +1718,39 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 3)"
+          "question": "Dialog: \"________ akan memulangkan buku cerita ini selepas waktu rehat,\" kata Mei Ling kepada pustakawan."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-022",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 3)",
+          "q": "Petikan: Nurul ternampak wang syiling di kantin. ________ menyerahkannya kepada guru bertugas.",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
-          "explanation": "Dia menggantikan nama Aina.",
+          "explanation": "Dia menggantikan nama Nurul.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 3)"
+          "question": "Petikan: Nurul ternampak wang syiling di kantin. ________ menyerahkannya kepada guru bertugas."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-023",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 3)",
+          "q": "Semasa latihan rumah sukan, Kumar dan Hakim membawa kon ke padang. ________ menyusunnya di garisan permulaan.",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
-          "explanation": "Mereka digunakan untuk Amir dan Badrul.",
+          "explanation": "Mereka digunakan untuk Kumar dan Hakim.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 3)"
+          "question": "Semasa latihan rumah sukan, Kumar dan Hakim membawa kon ke padang. ________ menyusunnya di garisan permulaan."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-024",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 3)",
+          "q": "\"Aiman, tunggu di sini. ________ mahu mengambil dulang makanan dahulu,\" ujar Raju bagi pihak dirinya dan Faris.",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1758,11 +1760,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 3)"
+          "question": "\"Aiman, tunggu di sini. ________ mahu mengambil dulang makanan dahulu,\" ujar Raju bagi pihak dirinya dan Faris."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-025",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 3)",
+          "q": "Tong kitar semula di kelas sudah penuh. Apakah kata ganti nama paling sesuai dalam cadangan ketua kelas ini? \"________ patut mengasingkan sampah sebelum membuangnya.\"",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1772,11 +1774,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 3)"
+          "question": "Tong kitar semula di kelas sudah penuh. Apakah kata ganti nama paling sesuai dalam cadangan ketua kelas ini? \"________ patut mengasingkan sampah sebelum membuangnya.\""
         },
         {
           "id": "BM-KATA_GANTI_NAMA-026",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 3)",
+          "q": "Pilih kata ganti nama yang betul. Puan Salmah ialah Guru Besar SK Seri Murni. ________ menyampaikan hadiah kepada pemenang pertandingan bercerita.",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -1786,25 +1788,25 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 3)"
+          "question": "Pilih kata ganti nama yang betul. Puan Salmah ialah Guru Besar SK Seri Murni. ________ menyampaikan hadiah kepada pemenang pertandingan bercerita."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-027",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 3)",
+          "q": "Situasi: Izzah tertinggal bekas penselnya di makmal komputer. Bekas pensel berwarna ungu itu kepunyaan ________.",
           "answer": "dia",
           "accepted": [
             "dia"
           ],
           "hint": "Gantikan nama Sara dengan kata ganti nama.",
-          "explanation": "dia menggantikan nama Sara.",
+          "explanation": "dia menggantikan nama Izzah.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 3)"
+          "question": "Situasi: Izzah tertinggal bekas penselnya di makmal komputer. Bekas pensel berwarna ungu itu kepunyaan ________."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-028",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 3)",
+          "q": "Cikgu Azlan berkata kepada murid-muridnya, \"Sebelum melintas di hadapan sekolah, ________ mesti melihat ke kanan dan ke kiri.\"",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1814,25 +1816,25 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 3)"
+          "question": "Cikgu Azlan berkata kepada murid-muridnya, \"Sebelum melintas di hadapan sekolah, ________ mesti melihat ke kanan dan ke kiri.\""
         },
         {
           "id": "BM-KATA_GANTI_NAMA-029",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 3)",
+          "q": "Petikan: Danish mendengar loceng kecemasan berbunyi ketika berada di bilik muzik. ________ berjalan pantas menuju ke tempat berkumpul.",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
-          "hint": "Gantikan abang dengan kata ganti nama.",
-          "explanation": "Dia menggantikan abang dalam ayat kedua.",
+          "hint": "Gantikan Danish dengan kata ganti nama.",
+          "explanation": "Dia menggantikan Danish dalam ayat kedua.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 3)"
+          "question": "Petikan: Danish mendengar loceng kecemasan berbunyi ketika berada di bilik muzik. ________ berjalan pantas menuju ke tempat berkumpul."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-030",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 3)",
+          "q": "Kumpulan Siti perlu memastikan model rumah kukuh sebelum dipamerkan. Siti memberitahu cikgu, \"________ akan menguji model ini sekali lagi.\"",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1842,11 +1844,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 3)"
+          "question": "Kumpulan Siti perlu memastikan model rumah kukuh sebelum dipamerkan. Siti memberitahu cikgu, \"________ akan menguji model ini sekali lagi.\""
         },
         {
           "id": "BM-KATA_GANTI_NAMA-031",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 4)",
+          "q": "Dialog di perpustakaan: \"Cikgu, ________ mahu meminjam buku cerita tentang haiwan,\" kata Hana sambil tersenyum. (Latihan 4)",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1856,39 +1858,39 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 4)"
+          "question": "Dialog di perpustakaan: \"Cikgu, ________ mahu meminjam buku cerita tentang haiwan,\" kata Hana sambil tersenyum. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-032",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 4)",
+          "q": "Pada petang itu, Farah demam dan tidak datang ke sekolah. ________ berehat di rumah bersama ibu. (Latihan 4)",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
-          "explanation": "Dia menggantikan nama Aina.",
+          "explanation": "Dia menggantikan nama Farah.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 4)"
+          "question": "Pada petang itu, Farah demam dan tidak datang ke sekolah. ________ berehat di rumah bersama ibu. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-033",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 4)",
+          "q": "Di padang sekolah, Kamil dan Nabil sedang menendang bola. ________ bermain dengan gembira selepas waktu rehat. (Latihan 4)",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
-          "explanation": "Mereka digunakan untuk Amir dan Badrul.",
+          "explanation": "Mereka digunakan untuk Kamil dan Nabil.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 4)"
+          "question": "Di padang sekolah, Kamil dan Nabil sedang menendang bola. ________ bermain dengan gembira selepas waktu rehat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-034",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 4)",
+          "q": "Semasa mesyuarat kelab, Ravi berkata kepada Suresh, \"________ akan menyusun majalah di sudut bacaan.\" (saya dan rakan) (Latihan 4)",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1898,11 +1900,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 4)"
+          "question": "Semasa mesyuarat kelab, Ravi berkata kepada Suresh, \"________ akan menyusun majalah di sudut bacaan.\" (saya dan rakan) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-035",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 4)",
+          "q": "Cikgu Aina mengingatkan murid-murid kelas 2 Cerdas, \"________ mesti menyimpan buku di dalam laci dengan kemas.\" (Latihan 4)",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1912,11 +1914,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 4)"
+          "question": "Cikgu Aina mengingatkan murid-murid kelas 2 Cerdas, \"________ mesti menyimpan buku di dalam laci dengan kemas.\" (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-036",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 4)",
+          "q": "Dalam perhimpunan sekolah, pengetua menyampaikan pesanan yang baik. ________ menasihati murid supaya menepati masa. (Latihan 4)",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -1926,25 +1928,25 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 4)"
+          "question": "Dalam perhimpunan sekolah, pengetua menyampaikan pesanan yang baik. ________ menasihati murid supaya menepati masa. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-037",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 4)",
+          "q": "Semasa di kantin, Ain melihat kotak pensel merah itu. Kotak pensel itu kepunyaan ________. (Latihan 4)",
           "answer": "dia",
           "accepted": [
             "dia"
           ],
-          "hint": "Gantikan nama Sara dengan kata ganti nama.",
-          "explanation": "dia menggantikan nama Sara.",
+          "hint": "Gantikan nama Ain dengan kata ganti nama.",
+          "explanation": "dia menggantikan nama Ain.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 4)"
+          "question": "Semasa di kantin, Ain melihat kotak pensel merah itu. Kotak pensel itu kepunyaan ________. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-038",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 4)",
+          "q": "Semasa latihan kebakaran, guru berkata, \"________ perlu bergerak ke padang dengan tenang.\" (semua murid termasuk kamu) (Latihan 4)",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1954,25 +1956,25 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 4)"
+          "question": "Semasa latihan kebakaran, guru berkata, \"________ perlu bergerak ke padang dengan tenang.\" (semua murid termasuk kamu) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-039",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 4)",
+          "q": "Ibu memanggil Kakak Liyana dari dapur. ________ segera membantu mengangkat pinggan ke meja. (Latihan 4)",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
-          "hint": "Gantikan abang dengan kata ganti nama.",
-          "explanation": "Dia menggantikan abang dalam ayat kedua.",
+          "hint": "Gantikan Kakak Liyana dengan kata ganti nama.",
+          "explanation": "Dia menggantikan nama Kakak Liyana dalam ayat kedua.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 4)"
+          "question": "Ibu memanggil Kakak Liyana dari dapur. ________ segera membantu mengangkat pinggan ke meja. (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-040",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 4)",
+          "q": "Untuk projek sains, Aiman memberitahu ahli kumpulannya, \"________ akan menyiapkan model rumah ini sebelum Jumaat.\" (saya dan ahli kumpulan) (Latihan 4)",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1982,11 +1984,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 4)"
+          "question": "Untuk projek sains, Aiman memberitahu ahli kumpulannya, \"________ akan menyiapkan model rumah ini sebelum Jumaat.\" (saya dan ahli kumpulan) (Latihan 4)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-041",
-          "q": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 5)",
+          "q": "Di sudut bacaan, Mira berkata kepada rakan sebangkunya, \"________ suka membaca buku cerita bergambar.\" (diri sendiri) (Latihan 5)",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1996,39 +1998,39 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ suka membaca buku cerita. (diri sendiri) (Latihan 5)"
+          "question": "Di sudut bacaan, Mira berkata kepada rakan sebangkunya, \"________ suka membaca buku cerita bergambar.\" (diri sendiri) (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-042",
-          "q": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 5)",
+          "q": "Petang semalam, Alia tidak hadir ke kelas kerana demam. ________ berehat di rumah bersama ayah. (Latihan 5)",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
           "hint": "Gunakan kata ganti nama untuk seorang yang disebut tadi.",
-          "explanation": "Dia menggantikan nama Aina.",
+          "explanation": "Dia menggantikan nama Alia.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina sakit. ________ berehat di rumah. (Latihan 5)"
+          "question": "Petang semalam, Alia tidak hadir ke kelas kerana demam. ________ berehat di rumah bersama ayah. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-043",
-          "q": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 5)",
+          "q": "Selepas loceng rehat berbunyi, Haris dan Danial berlari ke padang sekolah. ________ bermain bola dengan gembira. (Latihan 5)",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
           ],
           "hint": "Gunakan kata ganti nama untuk lebih daripada seorang.",
-          "explanation": "Mereka digunakan untuk Amir dan Badrul.",
+          "explanation": "Mereka digunakan untuk Haris dan Danial.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir dan Badrul bermain bola. ________ bermain di padang. (Latihan 5)"
+          "question": "Selepas loceng rehat berbunyi, Haris dan Danial berlari ke padang sekolah. ________ bermain bola dengan gembira. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-044",
-          "q": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 5)",
+          "q": "Semasa mesyuarat kelab membaca, Nabil berkata kepada Syafiq, \"________ mahu menghias sudut buku di kelas.\" (saya dan kawan) (Latihan 5)",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -2038,11 +2040,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ hendak pergi ke perpustakaan bersama-sama. (saya dan kawan) (Latihan 5)"
+          "question": "Semasa mesyuarat kelab membaca, Nabil berkata kepada Syafiq, \"________ mahu menghias sudut buku di kelas.\" (saya dan kawan) (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-045",
-          "q": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 5)",
+          "q": "Dalam perhimpunan kelas, cikgu berkata, \"________ mesti menyapu lantai sebelum pulang.\" (Latihan 5)",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -2052,11 +2054,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ mestilah menjaga kebersihan kelas kita. (Latihan 5)"
+          "question": "Dalam perhimpunan kelas, cikgu berkata, \"________ mesti menyapu lantai sebelum pulang.\" (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-046",
-          "q": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 5)",
+          "q": "Ketika perhimpunan pagi, Guru Besar menyampaikan pesanan yang baik. ________ menasihati murid supaya menghormati guru. (Latihan 5)",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -2066,25 +2068,25 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Cikgu sedang bercakap. ________ memberi nasihat kepada murid. (Latihan 5)"
+          "question": "Ketika perhimpunan pagi, Guru Besar menyampaikan pesanan yang baik. ________ menasihati murid supaya menghormati guru. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-047",
-          "q": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 5)",
+          "q": "Di meja kantin, Shima terlihat bekas pensel berwarna biru. Bekas pensel itu kepunyaan ________. (Latihan 5)",
           "answer": "dia",
           "accepted": [
             "dia"
           ],
-          "hint": "Gantikan nama Sara dengan kata ganti nama.",
-          "explanation": "dia menggantikan nama Sara.",
+          "hint": "Gantikan nama Shima dengan kata ganti nama.",
+          "explanation": "dia menggantikan nama Shima.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu milik Sara. Buku itu kepunyaan ________. (Latihan 5)"
+          "question": "Di meja kantin, Shima terlihat bekas pensel berwarna biru. Bekas pensel itu kepunyaan ________. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-048",
-          "q": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 5)",
+          "q": "Sebelum masuk ke bilik sains, guru meminta murid-murid, \"________ perlu berbaris dengan kemas.\" (semua murid termasuk kamu) (Latihan 5)",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -2094,25 +2096,25 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ perlu beratur sebelum masuk ke kelas. (semua murid termasuk kamu) (Latihan 5)"
+          "question": "Sebelum masuk ke bilik sains, guru meminta murid-murid, \"________ perlu berbaris dengan kemas.\" (semua murid termasuk kamu) (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-049",
-          "q": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 5)",
+          "q": "Di rumah, ibu memanggil kakak dari ruang tamu. ________ segera membantu menyiapkan meja makan. (Latihan 5)",
           "answer": "Dia",
           "accepted": [
             "Dia"
           ],
-          "hint": "Gantikan abang dengan kata ganti nama.",
-          "explanation": "Dia menggantikan abang dalam ayat kedua.",
+          "hint": "Gantikan kakak dengan kata ganti nama.",
+          "explanation": "Dia menggantikan kakak dalam ayat kedua.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memanggil abang. ________ segera datang. (Latihan 5)"
+          "question": "Di rumah, ibu memanggil kakak dari ruang tamu. ________ segera membantu menyiapkan meja makan. (Latihan 5)"
         },
         {
           "id": "BM-KATA_GANTI_NAMA-050",
-          "q": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 5)",
+          "q": "Untuk projek sains mudah, Faris memberitahu ahli kumpulannya, \"________ akan menyiapkan model rumah kadbod ini.\" (saya dan ahli kumpulan) (Latihan 5)",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -2122,7 +2124,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. ________ akan menyiapkan kerja kumpulan ini. (saya dan ahli kumpulan) (Latihan 5)"
+          "question": "Untuk projek sains mudah, Faris memberitahu ahli kumpulannya, \"________ akan menyiapkan model rumah kadbod ini.\" (saya dan ahli kumpulan) (Latihan 5)"
         }
       ]
     },
@@ -2133,7 +2135,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_KERJA-001",
-          "q": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak.",
+          "q": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Apakah kata kerja dalam ayat ini?",
           "answer": "menyanyi",
           "accepted": [
             "menyanyi"
@@ -2143,11 +2145,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Adik menyanyi lagu kanak-kanak."
+          "question": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-002",
-          "q": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam.",
+          "q": "Pada waktu makan tengah hari, ibu memasak lauk di dapur. Apakah kata kerja dalam ayat ini?",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -2157,11 +2159,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Ibu memasak sup ayam."
+          "question": "Pada waktu makan tengah hari, ibu memasak lauk di dapur. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-003",
-          "q": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas.",
+          "q": "Selepas rehat, murid membaca buku cerita di sudut bacaan. Apakah kata kerja dalam ayat ini?",
           "answer": "membaca",
           "accepted": [
             "membaca"
@@ -2171,11 +2173,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Murid membaca buku di kelas."
+          "question": "Selepas rehat, murid membaca buku cerita di sudut bacaan. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-004",
-          "q": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta.",
+          "q": "Pada hari Sabtu, ayah mencuci kereta di halaman rumah. Apakah kata kerja dalam ayat ini?",
           "answer": "mencuci",
           "accepted": [
             "mencuci"
@@ -2185,11 +2187,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Ayah mencuci kereta."
+          "question": "Pada hari Sabtu, ayah mencuci kereta di halaman rumah. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-005",
-          "q": "Apakah kata kerja dalam ayat ini? Kakak menulis surat.",
+          "q": "Di meja belajar, kakak menulis kad ucapan untuk guru. Apakah kata kerja dalam ayat ini?",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -2199,11 +2201,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Kakak menulis surat."
+          "question": "Di meja belajar, kakak menulis kad ucapan untuk guru. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-006",
-          "q": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa.",
+          "q": "Di ruang tamu, kucing itu tidur di atas sofa yang lembut. Apakah kata kerja dalam ayat ini?",
           "answer": "tidur",
           "accepted": [
             "tidur"
@@ -2213,11 +2215,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Kucing itu tidur di sofa."
+          "question": "Di ruang tamu, kucing itu tidur di atas sofa yang lembut. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-007",
-          "q": "Apakah kata kerja dalam ayat ini? Abang menendang bola.",
+          "q": "Di padang sekolah, abang menendang bola ke arah gawang. Apakah kata kerja dalam ayat ini?",
           "answer": "menendang",
           "accepted": [
             "menendang"
@@ -2227,11 +2229,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Abang menendang bola."
+          "question": "Di padang sekolah, abang menendang bola ke arah gawang. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-008",
-          "q": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga.",
+          "q": "Pada petang yang cerah, nenek menyiram bunga di laman. Apakah kata kerja dalam ayat ini?",
           "answer": "menyiram",
           "accepted": [
             "menyiram"
@@ -2241,11 +2243,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Nenek menyiram bunga."
+          "question": "Pada petang yang cerah, nenek menyiram bunga di laman. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-009",
-          "q": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah.",
+          "q": "Di taman permainan, Danish melukis gambar rumah pada buku sketsa. Apakah kata kerja dalam ayat ini?",
           "answer": "melukis",
           "accepted": [
             "melukis"
@@ -2255,11 +2257,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Danish melukis gambar rumah."
+          "question": "Di taman permainan, Danish melukis gambar rumah pada buku sketsa. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-010",
-          "q": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur.",
+          "q": "Sebelum tidur, Farah mengemas bilik tidurnya dengan kemas. Apakah kata kerja dalam ayat ini?",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -2269,11 +2271,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata kerja dalam ayat ini? Farah mengemas bilik tidur."
+          "question": "Sebelum tidur, Farah mengemas bilik tidurnya dengan kemas. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-011",
-          "q": "Dalam ayat \"Adik menyanyi lagu kanak-kanak.\", apakah kata kerja?",
+          "q": "Dalam situasi di rumah, adik menyanyi lagu kanak-kanak. Apakah kata kerja dalam ayat ini?",
           "answer": "menyanyi",
           "accepted": [
             "menyanyi"
@@ -2283,11 +2285,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Adik menyanyi lagu kanak-kanak.\", apakah kata kerja?"
+          "question": "Dalam situasi di rumah, adik menyanyi lagu kanak-kanak. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-012",
-          "q": "Dalam ayat \"Ibu memasak sup ayam.\", apakah kata kerja?",
+          "q": "Ketika di dapur, ibu memasak sup ayam untuk makan malam. Apakah kata kerja dalam ayat ini?",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -2297,11 +2299,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Ibu memasak sup ayam.\", apakah kata kerja?"
+          "question": "Ketika di dapur, ibu memasak sup ayam untuk makan malam. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-013",
-          "q": "Dalam ayat \"Murid membaca buku di kelas.\", apakah kata kerja?",
+          "q": "Semasa waktu rehat, murid membaca buku di kelas. Apakah kata kerja dalam ayat ini?",
           "answer": "membaca",
           "accepted": [
             "membaca"
@@ -2311,11 +2313,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Murid membaca buku di kelas.\", apakah kata kerja?"
+          "question": "Semasa waktu rehat, murid membaca buku di kelas. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-014",
-          "q": "Dalam ayat \"Ayah mencuci kereta.\", apakah kata kerja?",
+          "q": "Pada pagi Ahad, ayah mencuci kereta di halaman rumah. Apakah kata kerja dalam ayat ini?",
           "answer": "mencuci",
           "accepted": [
             "mencuci"
@@ -2325,11 +2327,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Ayah mencuci kereta.\", apakah kata kerja?"
+          "question": "Pada pagi Ahad, ayah mencuci kereta di halaman rumah. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-015",
-          "q": "Dalam ayat \"Kakak menulis surat.\", apakah kata kerja?",
+          "q": "Di bilik belajar, kakak menulis surat kepada sepupunya. Apakah kata kerja dalam ayat ini?",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -2339,11 +2341,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kakak menulis surat.\", apakah kata kerja?"
+          "question": "Di bilik belajar, kakak menulis surat kepada sepupunya. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-016",
-          "q": "Dalam ayat \"Kucing itu tidur di sofa.\", apakah kata kerja?",
+          "q": "Petang itu, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?",
           "answer": "tidur",
           "accepted": [
             "tidur"
@@ -2353,11 +2355,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Kucing itu tidur di sofa.\", apakah kata kerja?"
+          "question": "Petang itu, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-017",
-          "q": "Dalam ayat \"Abang menendang bola.\", apakah kata kerja?",
+          "q": "Di padang permainan, abang menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?",
           "answer": "menendang",
           "accepted": [
             "menendang"
@@ -2367,11 +2369,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Abang menendang bola.\", apakah kata kerja?"
+          "question": "Di padang permainan, abang menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-018",
-          "q": "Dalam ayat \"Nenek menyiram bunga.\", apakah kata kerja?",
+          "q": "Pada waktu pagi, nenek menyiram bunga di halaman rumah. Apakah kata kerja dalam ayat ini?",
           "answer": "menyiram",
           "accepted": [
             "menyiram"
@@ -2381,11 +2383,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Nenek menyiram bunga.\", apakah kata kerja?"
+          "question": "Pada waktu pagi, nenek menyiram bunga di halaman rumah. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-019",
-          "q": "Dalam ayat \"Danish melukis gambar rumah.\", apakah kata kerja?",
+          "q": "Di kelas seni, Danish melukis gambar rumah dengan pensel warna. Apakah kata kerja dalam ayat ini?",
           "answer": "melukis",
           "accepted": [
             "melukis"
@@ -2395,11 +2397,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Danish melukis gambar rumah.\", apakah kata kerja?"
+          "question": "Di kelas seni, Danish melukis gambar rumah dengan pensel warna. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-020",
-          "q": "Dalam ayat \"Farah mengemas bilik tidur.\", apakah kata kerja?",
+          "q": "Sebelum keluar bermain, Farah mengemas bilik tidur dahulu. Apakah kata kerja dalam ayat ini?",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -2409,11 +2411,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Farah mengemas bilik tidur.\", apakah kata kerja?"
+          "question": "Sebelum keluar bermain, Farah mengemas bilik tidur dahulu. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-021",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Adik menyanyi lagu kanak-kanak.",
+          "q": "Dialog di rumah: \"Adik menyanyi lagu kanak-kanak dan ibu tersenyum,\" kata kakak. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "menyanyi",
           "accepted": [
             "menyanyi"
@@ -2423,11 +2425,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Adik menyanyi lagu kanak-kanak."
+          "question": "Dialog di rumah: \"Adik menyanyi lagu kanak-kanak dan ibu tersenyum,\" kata kakak. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-022",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Ibu memasak sup ayam.",
+          "q": "Dialog di dapur: \"Ibu memasak sup ayam untuk kami,\" kata Farhan. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -2437,11 +2439,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Ibu memasak sup ayam."
+          "question": "Dialog di dapur: \"Ibu memasak sup ayam untuk kami,\" kata Farhan. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-023",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Murid membaca buku di kelas.",
+          "q": "Dialog di kelas: \"Murid membaca buku di sudut bacaan,\" kata cikgu. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "membaca",
           "accepted": [
             "membaca"
@@ -2451,11 +2453,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Murid membaca buku di kelas."
+          "question": "Dialog di kelas: \"Murid membaca buku di sudut bacaan,\" kata cikgu. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-024",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Ayah mencuci kereta.",
+          "q": "Dialog keluarga: \"Ayah mencuci kereta selepas sarapan,\" kata Amin. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "mencuci",
           "accepted": [
             "mencuci"
@@ -2465,11 +2467,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Ayah mencuci kereta."
+          "question": "Dialog keluarga: \"Ayah mencuci kereta selepas sarapan,\" kata Amin. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-025",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Kakak menulis surat.",
+          "q": "Dialog di rumah: \"Kakak menulis surat untuk nenek,\" kata Mia. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -2479,11 +2481,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Kakak menulis surat."
+          "question": "Dialog di rumah: \"Kakak menulis surat untuk nenek,\" kata Mia. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-026",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Kucing itu tidur di sofa.",
+          "q": "Dialog petang: \"Kucing itu tidur di sofa sambil berehat,\" kata adik. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "tidur",
           "accepted": [
             "tidur"
@@ -2493,11 +2495,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Kucing itu tidur di sofa."
+          "question": "Dialog petang: \"Kucing itu tidur di sofa sambil berehat,\" kata adik. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-027",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Abang menendang bola.",
+          "q": "Dialog di padang: \"Abang menendang bola ke arah penjaga gol,\" kata Haziq. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "menendang",
           "accepted": [
             "menendang"
@@ -2507,11 +2509,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Abang menendang bola."
+          "question": "Dialog di padang: \"Abang menendang bola ke arah penjaga gol,\" kata Haziq. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-028",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Nenek menyiram bunga.",
+          "q": "Dialog di halaman: \"Nenek menyiram bunga pada waktu pagi,\" kata Sara. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "menyiram",
           "accepted": [
             "menyiram"
@@ -2521,11 +2523,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Nenek menyiram bunga."
+          "question": "Dialog di halaman: \"Nenek menyiram bunga pada waktu pagi,\" kata Sara. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-029",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Danish melukis gambar rumah.",
+          "q": "Dialog di kelas seni: \"Danish melukis gambar rumah yang cantik,\" kata guru. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "melukis",
           "accepted": [
             "melukis"
@@ -2535,11 +2537,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Danish melukis gambar rumah."
+          "question": "Dialog di kelas seni: \"Danish melukis gambar rumah yang cantik,\" kata guru. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-030",
-          "q": "Pilih kata kerja yang terdapat dalam ayat: Farah mengemas bilik tidur.",
+          "q": "Dialog di rumah: \"Farah mengemas bilik tidur sebelum bermain,\" kata ibu. Pilih kata kerja yang terdapat dalam ayat ini.",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -2549,11 +2551,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata kerja yang terdapat dalam ayat: Farah mengemas bilik tidur."
+          "question": "Dialog di rumah: \"Farah mengemas bilik tidur sebelum bermain,\" kata ibu. Pilih kata kerja yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-031",
-          "q": "Baca ayat ini: Adik menyanyi lagu kanak-kanak. Apakah kata kerja?",
+          "q": "Petikan ringkas: Adik menyanyi lagu kanak-kanak di ruang tamu. Apakah kata kerja?",
           "answer": "menyanyi",
           "accepted": [
             "menyanyi"
@@ -2563,11 +2565,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Adik menyanyi lagu kanak-kanak. Apakah kata kerja?"
+          "question": "Petikan ringkas: Adik menyanyi lagu kanak-kanak di ruang tamu. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-032",
-          "q": "Baca ayat ini: Ibu memasak sup ayam. Apakah kata kerja?",
+          "q": "Petikan ringkas: Ibu memasak sup ayam untuk makan malam. Apakah kata kerja?",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -2577,11 +2579,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Ibu memasak sup ayam. Apakah kata kerja?"
+          "question": "Petikan ringkas: Ibu memasak sup ayam untuk makan malam. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-033",
-          "q": "Baca ayat ini: Murid membaca buku di kelas. Apakah kata kerja?",
+          "q": "Petikan ringkas: Murid membaca buku di kelas selepas rehat. Apakah kata kerja?",
           "answer": "membaca",
           "accepted": [
             "membaca"
@@ -2591,11 +2593,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Murid membaca buku di kelas. Apakah kata kerja?"
+          "question": "Petikan ringkas: Murid membaca buku di kelas selepas rehat. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-034",
-          "q": "Baca ayat ini: Ayah mencuci kereta. Apakah kata kerja?",
+          "q": "Petikan ringkas: Ayah mencuci kereta di halaman rumah pada pagi Ahad. Apakah kata kerja?",
           "answer": "mencuci",
           "accepted": [
             "mencuci"
@@ -2605,11 +2607,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Ayah mencuci kereta. Apakah kata kerja?"
+          "question": "Petikan ringkas: Ayah mencuci kereta di halaman rumah pada pagi Ahad. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-035",
-          "q": "Baca ayat ini: Kakak menulis surat. Apakah kata kerja?",
+          "q": "Petikan ringkas: Kakak menulis surat kepada nenek di bilik belajar. Apakah kata kerja?",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -2619,11 +2621,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kakak menulis surat. Apakah kata kerja?"
+          "question": "Petikan ringkas: Kakak menulis surat kepada nenek di bilik belajar. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-036",
-          "q": "Baca ayat ini: Kucing itu tidur di sofa. Apakah kata kerja?",
+          "q": "Petikan ringkas: Kucing itu tidur di sofa sambil berehat. Apakah kata kerja?",
           "answer": "tidur",
           "accepted": [
             "tidur"
@@ -2633,11 +2635,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Kucing itu tidur di sofa. Apakah kata kerja?"
+          "question": "Petikan ringkas: Kucing itu tidur di sofa sambil berehat. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-037",
-          "q": "Baca ayat ini: Abang menendang bola. Apakah kata kerja?",
+          "q": "Petikan ringkas: Abang menendang bola di padang permainan. Apakah kata kerja?",
           "answer": "menendang",
           "accepted": [
             "menendang"
@@ -2647,11 +2649,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Abang menendang bola. Apakah kata kerja?"
+          "question": "Petikan ringkas: Abang menendang bola di padang permainan. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-038",
-          "q": "Baca ayat ini: Nenek menyiram bunga. Apakah kata kerja?",
+          "q": "Petikan ringkas: Nenek menyiram bunga di halaman rumah. Apakah kata kerja?",
           "answer": "menyiram",
           "accepted": [
             "menyiram"
@@ -2661,11 +2663,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Nenek menyiram bunga. Apakah kata kerja?"
+          "question": "Petikan ringkas: Nenek menyiram bunga di halaman rumah. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-039",
-          "q": "Baca ayat ini: Danish melukis gambar rumah. Apakah kata kerja?",
+          "q": "Petikan ringkas: Danish melukis gambar rumah dengan pensel warna. Apakah kata kerja?",
           "answer": "melukis",
           "accepted": [
             "melukis"
@@ -2675,11 +2677,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Danish melukis gambar rumah. Apakah kata kerja?"
+          "question": "Petikan ringkas: Danish melukis gambar rumah dengan pensel warna. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-040",
-          "q": "Baca ayat ini: Farah mengemas bilik tidur. Apakah kata kerja?",
+          "q": "Petikan ringkas: Farah mengemas bilik tidur sebelum keluar bermain. Apakah kata kerja?",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -2689,11 +2691,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Farah mengemas bilik tidur. Apakah kata kerja?"
+          "question": "Petikan ringkas: Farah mengemas bilik tidur sebelum keluar bermain. Apakah kata kerja?"
         },
         {
           "id": "BM-KATA_KERJA-041",
-          "q": "Soalan ulang kaji Kata Kerja: Adik menyanyi lagu kanak-kanak. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Ketika hari hujan, adik duduk di rumah dan menyanyi lagu kegemaran. Apakah kata kerja dalam ayat ini?",
           "answer": "menyanyi",
           "accepted": [
             "menyanyi"
@@ -2703,11 +2705,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Adik menyanyi lagu kanak-kanak. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Ketika hari hujan, adik duduk di rumah dan menyanyi lagu kegemaran. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-042",
-          "q": "Soalan ulang kaji Kata Kerja: Ibu memasak sup ayam. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Untuk makan malam, ibu memasak sup ayam dan ayah mengemas meja. Apakah kata kerja dalam ayat ini?",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -2717,11 +2719,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Ibu memasak sup ayam. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Untuk makan malam, ibu memasak sup ayam dan ayah mengemas meja. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-043",
-          "q": "Soalan ulang kaji Kata Kerja: Murid membaca buku di kelas. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Murid ingin menjadi rajin, lalu membaca buku di kelas selepas rehat. Apakah kata kerja dalam ayat ini?",
           "answer": "membaca",
           "accepted": [
             "membaca"
@@ -2731,11 +2733,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Murid membaca buku di kelas. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Murid ingin menjadi rajin, lalu membaca buku di kelas selepas rehat. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-044",
-          "q": "Soalan ulang kaji Kata Kerja: Ayah mencuci kereta. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Pada hujung minggu, ayah mencuci kereta supaya bersih. Apakah kata kerja dalam ayat ini?",
           "answer": "mencuci",
           "accepted": [
             "mencuci"
@@ -2745,11 +2747,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Ayah mencuci kereta. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Pada hujung minggu, ayah mencuci kereta supaya bersih. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-045",
-          "q": "Soalan ulang kaji Kata Kerja: Kakak menulis surat. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Kakak mahu mengucapkan terima kasih kepada nenek, lalu menulis surat dengan kemas. Apakah kata kerja dalam ayat ini?",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -2759,11 +2761,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Kakak menulis surat. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Kakak mahu mengucapkan terima kasih kepada nenek, lalu menulis surat dengan kemas. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-046",
-          "q": "Soalan ulang kaji Kata Kerja: Kucing itu tidur di sofa. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Selepas bermain, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?",
           "answer": "tidur",
           "accepted": [
             "tidur"
@@ -2773,11 +2775,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Kucing itu tidur di sofa. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Selepas bermain, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-047",
-          "q": "Soalan ulang kaji Kata Kerja: Abang menendang bola. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Abang mahu menjaringkan gol, lalu menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?",
           "answer": "menendang",
           "accepted": [
             "menendang"
@@ -2787,11 +2789,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Abang menendang bola. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Abang mahu menjaringkan gol, lalu menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-048",
-          "q": "Soalan ulang kaji Kata Kerja: Nenek menyiram bunga. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Walaupun cuaca panas, nenek menyiram bunga supaya segar. Apakah kata kerja dalam ayat ini?",
           "answer": "menyiram",
           "accepted": [
             "menyiram"
@@ -2801,11 +2803,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Nenek menyiram bunga. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Walaupun cuaca panas, nenek menyiram bunga supaya segar. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-049",
-          "q": "Soalan ulang kaji Kata Kerja: Danish melukis gambar rumah. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Dalam kelas seni, Danish melukis gambar rumah untuk pameran. Apakah kata kerja dalam ayat ini?",
           "answer": "melukis",
           "accepted": [
             "melukis"
@@ -2815,11 +2817,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Danish melukis gambar rumah. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Dalam kelas seni, Danish melukis gambar rumah untuk pameran. Apakah kata kerja dalam ayat ini?"
         },
         {
           "id": "BM-KATA_KERJA-050",
-          "q": "Soalan ulang kaji Kata Kerja: Farah mengemas bilik tidur. Jawapan bagi kata kerja ialah ________.",
+          "q": "KBAT: Sebelum tidur, Farah mengemas bilik tidur agar selesa. Apakah kata kerja dalam ayat ini?",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -2829,7 +2831,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Kerja: Farah mengemas bilik tidur. Jawapan bagi kata kerja ialah ________."
+          "question": "KBAT: Sebelum tidur, Farah mengemas bilik tidur agar selesa. Apakah kata kerja dalam ayat ini?"
         }
       ]
     },
@@ -2840,7 +2842,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_ADJEKTIF-001",
-          "q": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah.",
+          "q": "Di rumah, baju adik yang dijemur itu berwarna merah. Apakah kata adjektif dalam ayat ini?",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -2850,11 +2852,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Baju adik berwarna merah."
+          "question": "Di rumah, baju adik yang dijemur itu berwarna merah. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-002",
-          "q": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat.",
+          "q": "Di sekolah, beg abang terasa berat kerana penuh dengan buku. Apakah kata adjektif dalam ayat ini?",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -2864,11 +2866,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Beg sekolah itu berat."
+          "question": "Di sekolah, beg abang terasa berat kerana penuh dengan buku. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-003",
-          "q": "Apakah kata adjektif dalam ayat ini? Air teh itu panas.",
+          "q": "Di kantin, air teh yang baru dibeli itu masih panas. Apakah kata adjektif dalam ayat ini?",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -2878,11 +2880,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Air teh itu panas."
+          "question": "Di kantin, air teh yang baru dibeli itu masih panas. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-004",
-          "q": "Apakah kata adjektif dalam ayat ini? Rumah itu besar.",
+          "q": "Rumah baharu Pak Ali sangat besar dan luas. Apakah kata adjektif dalam ayat ini?",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -2892,11 +2894,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Rumah itu besar."
+          "question": "Rumah baharu Pak Ali sangat besar dan luas. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-005",
-          "q": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis.",
+          "q": "Di rumah, ibu memberi adik potongan mangga yang manis. Apakah kata adjektif dalam ayat ini?",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -2906,11 +2908,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Rasa mangga itu manis."
+          "question": "Di rumah, ibu memberi adik potongan mangga yang manis. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-006",
-          "q": "Apakah kata adjektif dalam ayat ini? Lantai itu licin.",
+          "q": "Selepas hujan, lantai di bilik air menjadi licin. Apakah kata adjektif dalam ayat ini?",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -2920,11 +2922,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Lantai itu licin."
+          "question": "Selepas hujan, lantai di bilik air menjadi licin. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-007",
-          "q": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu.",
+          "q": "Di majlis sekolah, suara penyanyi cilik itu sangat merdu. Apakah kata adjektif dalam ayat ini?",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -2934,11 +2936,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Suara penyanyi itu merdu."
+          "question": "Di majlis sekolah, suara penyanyi cilik itu sangat merdu. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-008",
-          "q": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat.",
+          "q": "Rumah Aina dekat dengan sekolahnya. Apakah kata adjektif dalam ayat ini?",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -2948,11 +2950,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Jalan ke sekolah itu dekat."
+          "question": "Rumah Aina dekat dengan sekolahnya. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-009",
-          "q": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira.",
+          "q": "Adik berasa gembira apabila mendapat hadiah buku cerita. Apakah kata adjektif dalam ayat ini?",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -2962,11 +2964,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Adik berasa gembira."
+          "question": "Adik berasa gembira apabila mendapat hadiah buku cerita. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-010",
-          "q": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam.",
+          "q": "Di dapur, pisau itu tajam supaya mudah memotong buah. Apakah kata adjektif dalam ayat ini?",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -2976,11 +2978,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata adjektif dalam ayat ini? Pisau itu tajam."
+          "question": "Di dapur, pisau itu tajam supaya mudah memotong buah. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-011",
-          "q": "Dalam ayat \"Baju adik berwarna merah.\", apakah kata adjektif?",
+          "q": "Dialog di rumah: \"Baju adik berwarna merah,\" kata ibu. Apakah kata adjektif dalam ayat ini?",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -2990,11 +2992,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Baju adik berwarna merah.\", apakah kata adjektif?"
+          "question": "Dialog di rumah: \"Baju adik berwarna merah,\" kata ibu. Apakah kata adjektif dalam ayat ini?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-012",
-          "q": "Dalam ayat \"Beg sekolah itu berat.\", apakah kata adjektif?",
+          "q": "Dialog di sekolah: \"Beg sekolah itu berat,\" kata Dani sambil mengangkatnya. Apakah kata adjektif?",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -3004,11 +3006,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Beg sekolah itu berat.\", apakah kata adjektif?"
+          "question": "Dialog di sekolah: \"Beg sekolah itu berat,\" kata Dani sambil mengangkatnya. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-013",
-          "q": "Dalam ayat \"Air teh itu panas.\", apakah kata adjektif?",
+          "q": "Dialog di kantin: \"Air teh itu panas,\" kata kakak kepada adik. Apakah kata adjektif?",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -3018,11 +3020,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Air teh itu panas.\", apakah kata adjektif?"
+          "question": "Dialog di kantin: \"Air teh itu panas,\" kata kakak kepada adik. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-014",
-          "q": "Dalam ayat \"Rumah itu besar.\", apakah kata adjektif?",
+          "q": "Dialog jiran: \"Rumah itu besar dan cantik,\" kata Amin kepada rakannya. Apakah kata adjektif?",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -3032,11 +3034,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Rumah itu besar.\", apakah kata adjektif?"
+          "question": "Dialog jiran: \"Rumah itu besar dan cantik,\" kata Amin kepada rakannya. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-015",
-          "q": "Dalam ayat \"Rasa mangga itu manis.\", apakah kata adjektif?",
+          "q": "Dialog di rumah: \"Rasa mangga itu manis,\" kata ibu sambil menghidang buah. Apakah kata adjektif?",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -3046,11 +3048,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Rasa mangga itu manis.\", apakah kata adjektif?"
+          "question": "Dialog di rumah: \"Rasa mangga itu manis,\" kata ibu sambil menghidang buah. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-016",
-          "q": "Dalam ayat \"Lantai itu licin.\", apakah kata adjektif?",
+          "q": "Dialog di bilik air: \"Lantai itu licin,\" kata kakak kepada adik. Apakah kata adjektif?",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -3060,11 +3062,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Lantai itu licin.\", apakah kata adjektif?"
+          "question": "Dialog di bilik air: \"Lantai itu licin,\" kata kakak kepada adik. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-017",
-          "q": "Dalam ayat \"Suara penyanyi itu merdu.\", apakah kata adjektif?",
+          "q": "Dialog di sekolah: \"Suara penyanyi itu merdu,\" kata cikgu semasa latihan koir. Apakah kata adjektif?",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -3074,11 +3076,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Suara penyanyi itu merdu.\", apakah kata adjektif?"
+          "question": "Dialog di sekolah: \"Suara penyanyi itu merdu,\" kata cikgu semasa latihan koir. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-018",
-          "q": "Dalam ayat \"Jalan ke sekolah itu dekat.\", apakah kata adjektif?",
+          "q": "Dialog pagi: \"Jalan ke sekolah itu dekat,\" kata ibu sambil menyiapkan bekal. Apakah kata adjektif?",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -3088,11 +3090,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Jalan ke sekolah itu dekat.\", apakah kata adjektif?"
+          "question": "Dialog pagi: \"Jalan ke sekolah itu dekat,\" kata ibu sambil menyiapkan bekal. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-019",
-          "q": "Dalam ayat \"Adik berasa gembira.\", apakah kata adjektif?",
+          "q": "Dialog petang: \"Adik berasa gembira kerana berjaya membaca dengan lancar,\" kata guru. Apakah kata adjektif?",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -3102,11 +3104,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Adik berasa gembira.\", apakah kata adjektif?"
+          "question": "Dialog petang: \"Adik berasa gembira kerana berjaya membaca dengan lancar,\" kata guru. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-020",
-          "q": "Dalam ayat \"Pisau itu tajam.\", apakah kata adjektif?",
+          "q": "Dialog di dapur: \"Pisau itu tajam,\" pesan ibu supaya berhati-hati. Apakah kata adjektif?",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -3116,11 +3118,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Pisau itu tajam.\", apakah kata adjektif?"
+          "question": "Dialog di dapur: \"Pisau itu tajam,\" pesan ibu supaya berhati-hati. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-021",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Baju adik berwarna merah.",
+          "q": "Petikan pendek: Baju adik yang baharu berwarna merah. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -3130,11 +3132,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Baju adik berwarna merah."
+          "question": "Petikan pendek: Baju adik yang baharu berwarna merah. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-022",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Beg sekolah itu berat.",
+          "q": "Petikan pendek: Selepas pulang dari sekolah, beg sekolah itu berat. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -3144,11 +3146,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Beg sekolah itu berat."
+          "question": "Petikan pendek: Selepas pulang dari sekolah, beg sekolah itu berat. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-023",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Air teh itu panas.",
+          "q": "Petikan pendek: Di kantin, air teh itu panas dan berwap. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -3158,11 +3160,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Air teh itu panas."
+          "question": "Petikan pendek: Di kantin, air teh itu panas dan berwap. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-024",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Rumah itu besar.",
+          "q": "Petikan pendek: Rumah di hujung jalan itu besar dan luas. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -3172,11 +3174,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Rumah itu besar."
+          "question": "Petikan pendek: Rumah di hujung jalan itu besar dan luas. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-025",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Rasa mangga itu manis.",
+          "q": "Petikan pendek: Mangga yang dibawa ibu sangat manis. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -3186,11 +3188,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Rasa mangga itu manis."
+          "question": "Petikan pendek: Mangga yang dibawa ibu sangat manis. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-026",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Lantai itu licin.",
+          "q": "Petikan pendek: Selepas dibersihkan, lantai itu licin. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -3200,11 +3202,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Lantai itu licin."
+          "question": "Petikan pendek: Selepas dibersihkan, lantai itu licin. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-027",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Suara penyanyi itu merdu.",
+          "q": "Petikan pendek: Suara penyanyi itu merdu semasa persembahan. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -3214,11 +3216,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Suara penyanyi itu merdu."
+          "question": "Petikan pendek: Suara penyanyi itu merdu semasa persembahan. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-028",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Jalan ke sekolah itu dekat.",
+          "q": "Petikan pendek: Jalan ke sekolah itu dekat dari rumah Aina. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -3228,11 +3230,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Jalan ke sekolah itu dekat."
+          "question": "Petikan pendek: Jalan ke sekolah itu dekat dari rumah Aina. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-029",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Adik berasa gembira.",
+          "q": "Petikan pendek: Adik berasa gembira kerana menerima hadiah. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -3242,11 +3244,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Adik berasa gembira."
+          "question": "Petikan pendek: Adik berasa gembira kerana menerima hadiah. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-030",
-          "q": "Pilih kata adjektif yang terdapat dalam ayat: Pisau itu tajam.",
+          "q": "Petikan pendek: Pisau itu tajam kerana selalu diasah. Pilih kata adjektif yang terdapat dalam ayat ini.",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -3256,11 +3258,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata adjektif yang terdapat dalam ayat: Pisau itu tajam."
+          "question": "Petikan pendek: Pisau itu tajam kerana selalu diasah. Pilih kata adjektif yang terdapat dalam ayat ini."
         },
         {
           "id": "BM-KATA_ADJEKTIF-031",
-          "q": "Baca ayat ini: Baju adik berwarna merah. Apakah kata adjektif?",
+          "q": "KBAT: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -3270,11 +3272,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Baju adik berwarna merah. Apakah kata adjektif?"
+          "question": "KBAT: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-032",
-          "q": "Baca ayat ini: Beg sekolah itu berat. Apakah kata adjektif?",
+          "q": "KBAT: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -3284,11 +3286,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Beg sekolah itu berat. Apakah kata adjektif?"
+          "question": "KBAT: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-033",
-          "q": "Baca ayat ini: Air teh itu panas. Apakah kata adjektif?",
+          "q": "KBAT: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -3298,11 +3300,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Air teh itu panas. Apakah kata adjektif?"
+          "question": "KBAT: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-034",
-          "q": "Baca ayat ini: Rumah itu besar. Apakah kata adjektif?",
+          "q": "KBAT: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -3312,11 +3314,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Rumah itu besar. Apakah kata adjektif?"
+          "question": "KBAT: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-035",
-          "q": "Baca ayat ini: Rasa mangga itu manis. Apakah kata adjektif?",
+          "q": "KBAT: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -3326,11 +3328,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Rasa mangga itu manis. Apakah kata adjektif?"
+          "question": "KBAT: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-036",
-          "q": "Baca ayat ini: Lantai itu licin. Apakah kata adjektif?",
+          "q": "KBAT: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -3340,11 +3342,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Lantai itu licin. Apakah kata adjektif?"
+          "question": "KBAT: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-037",
-          "q": "Baca ayat ini: Suara penyanyi itu merdu. Apakah kata adjektif?",
+          "q": "KBAT: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -3354,11 +3356,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Suara penyanyi itu merdu. Apakah kata adjektif?"
+          "question": "KBAT: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-038",
-          "q": "Baca ayat ini: Jalan ke sekolah itu dekat. Apakah kata adjektif?",
+          "q": "KBAT: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -3368,11 +3370,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Jalan ke sekolah itu dekat. Apakah kata adjektif?"
+          "question": "KBAT: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-039",
-          "q": "Baca ayat ini: Adik berasa gembira. Apakah kata adjektif?",
+          "q": "KBAT: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -3382,11 +3384,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Adik berasa gembira. Apakah kata adjektif?"
+          "question": "KBAT: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-040",
-          "q": "Baca ayat ini: Pisau itu tajam. Apakah kata adjektif?",
+          "q": "KBAT: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -3396,11 +3398,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Pisau itu tajam. Apakah kata adjektif?"
+          "question": "KBAT: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-041",
-          "q": "Soalan ulang kaji Kata Adjektif: Baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Dalam gambar, baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________.",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -3410,11 +3412,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Dalam gambar, baju adik berwarna merah. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-042",
-          "q": "Soalan ulang kaji Kata Adjektif: Beg sekolah itu berat. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Beg sekolah di tangan Aina itu berat. Jawapan bagi kata adjektif ialah ________.",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -3424,11 +3426,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Beg sekolah itu berat. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Beg sekolah di tangan Aina itu berat. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-043",
-          "q": "Soalan ulang kaji Kata Adjektif: Air teh itu panas. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Air teh yang baru dibeli itu panas. Jawapan bagi kata adjektif ialah ________.",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -3438,11 +3440,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Air teh itu panas. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Air teh yang baru dibeli itu panas. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-044",
-          "q": "Soalan ulang kaji Kata Adjektif: Rumah itu besar. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Rumah kampung itu besar dan luas. Jawapan bagi kata adjektif ialah ________.",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -3452,11 +3454,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Rumah itu besar. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Rumah kampung itu besar dan luas. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-045",
-          "q": "Soalan ulang kaji Kata Adjektif: Rasa mangga itu manis. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Rasa mangga yang masak itu manis. Jawapan bagi kata adjektif ialah ________.",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -3466,11 +3468,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Rasa mangga itu manis. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Rasa mangga yang masak itu manis. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-046",
-          "q": "Soalan ulang kaji Kata Adjektif: Lantai itu licin. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Lantai di bilik air itu licin selepas dibersihkan. Jawapan bagi kata adjektif ialah ________.",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -3480,11 +3482,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Lantai itu licin. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Lantai di bilik air itu licin selepas dibersihkan. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-047",
-          "q": "Soalan ulang kaji Kata Adjektif: Suara penyanyi itu merdu. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Suara penyanyi cilik itu merdu semasa persembahan. Jawapan bagi kata adjektif ialah ________.",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -3494,11 +3496,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Suara penyanyi itu merdu. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Suara penyanyi cilik itu merdu semasa persembahan. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-048",
-          "q": "Soalan ulang kaji Kata Adjektif: Jalan ke sekolah itu dekat. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Jalan ke sekolah dari rumah Aina dekat. Jawapan bagi kata adjektif ialah ________.",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -3508,11 +3510,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Jalan ke sekolah itu dekat. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Jalan ke sekolah dari rumah Aina dekat. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-049",
-          "q": "Soalan ulang kaji Kata Adjektif: Adik berasa gembira. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Adik berasa gembira kerana dapat hadiah buku. Jawapan bagi kata adjektif ialah ________.",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -3522,11 +3524,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Adik berasa gembira. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Adik berasa gembira kerana dapat hadiah buku. Jawapan bagi kata adjektif ialah ________."
         },
         {
           "id": "BM-KATA_ADJEKTIF-050",
-          "q": "Soalan ulang kaji Kata Adjektif: Pisau itu tajam. Jawapan bagi kata adjektif ialah ________.",
+          "q": "UASA: Pisau dapur itu tajam untuk memotong buah. Jawapan bagi kata adjektif ialah ________.",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -3536,7 +3538,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Kata Adjektif: Pisau itu tajam. Jawapan bagi kata adjektif ialah ________."
+          "question": "UASA: Pisau dapur itu tajam untuk memotong buah. Jawapan bagi kata adjektif ialah ________."
         }
       ]
     },
@@ -3547,7 +3549,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_SENDI-001",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja.",
+          "q": "Di bilik belajar, buku itu terletak ________ atas meja.",
           "answer": "di",
           "accepted": [
             "di"
@@ -3557,11 +3559,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja."
+          "question": "Di bilik belajar, buku itu terletak ________ atas meja."
         },
         {
           "id": "BM-KATA_SENDI-002",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat.",
+          "q": "Di sekolah, kami pergi ________ perpustakaan selepas rehat.",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3571,11 +3573,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat."
+          "question": "Di sekolah, kami pergi ________ perpustakaan selepas rehat."
         },
         {
           "id": "BM-KATA_SENDI-003",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam.",
+          "q": "Pada petang itu, ayah pulang ________ pejabat dengan menaiki kereta.",
           "answer": "dari",
           "accepted": [
             "dari"
@@ -3585,11 +3587,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam."
+          "question": "Pada petang itu, ayah pulang ________ pejabat dengan menaiki kereta."
         },
         {
           "id": "BM-KATA_SENDI-004",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu.",
+          "q": "Sempena Hari Ibu, hadiah kecil itu diberikan ________ ibu.",
           "answer": "kepada",
           "accepted": [
             "kepada"
@@ -3599,11 +3601,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu."
+          "question": "Sempena Hari Ibu, hadiah kecil itu diberikan ________ ibu."
         },
         {
           "id": "BM-KATA_SENDI-005",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain.",
+          "q": "Di sudut kraf, beg ini dibuat ________ kain terpakai.",
           "answer": "daripada",
           "accepted": [
             "daripada"
@@ -3613,11 +3615,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain."
+          "question": "Di sudut kraf, beg ini dibuat ________ kain terpakai."
         },
         {
           "id": "BM-KATA_SENDI-006",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi.",
+          "q": "Di dewan sekolah, latihan bermula ________ pukul lapan pagi.",
           "answer": "pada",
           "accepted": [
             "pada"
@@ -3627,11 +3629,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi."
+          "question": "Di dewan sekolah, latihan bermula ________ pukul lapan pagi."
         },
         {
           "id": "BM-KATA_SENDI-007",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel.",
+          "q": "Di kelas, Sara menulis ________ pensel warna biru.",
           "answer": "dengan",
           "accepted": [
             "dengan"
@@ -3641,11 +3643,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara menulis ________ pensel."
+          "question": "Di kelas, Sara menulis ________ pensel warna biru."
         },
         {
           "id": "BM-KATA_SENDI-008",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya.",
+          "q": "Ibu membeli kuih ini ________ adik saya.",
           "answer": "untuk",
           "accepted": [
             "untuk"
@@ -3655,11 +3657,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kuih ini ________ adik saya."
+          "question": "Ibu membeli kuih ini ________ adik saya."
         },
         {
           "id": "BM-KATA_SENDI-009",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang.",
+          "q": "Semasa bermain di taman, bola itu jatuh ________ longkang.",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3669,11 +3671,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang."
+          "question": "Semasa bermain di taman, bola itu jatuh ________ longkang."
         },
         {
           "id": "BM-KATA_SENDI-010",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah.",
+          "q": "Pada waktu rehat, mereka bermain ________ padang sekolah.",
           "answer": "di",
           "accepted": [
             "di"
@@ -3683,11 +3685,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah."
+          "question": "Pada waktu rehat, mereka bermain ________ padang sekolah."
         },
         {
           "id": "BM-KATA_SENDI-011",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 2)",
+          "q": "Dialog di rumah: \"Buku itu terletak ________ atas meja,\" kata kakak. (Latihan 2)",
           "answer": "di",
           "accepted": [
             "di"
@@ -3697,11 +3699,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 2)"
+          "question": "Dialog di rumah: \"Buku itu terletak ________ atas meja,\" kata kakak. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-012",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 2)",
+          "q": "Dialog di sekolah: \"Kami pergi ________ perpustakaan selepas rehat,\" kata guru. (Latihan 2)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3711,11 +3713,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 2)"
+          "question": "Dialog di sekolah: \"Kami pergi ________ perpustakaan selepas rehat,\" kata guru. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-013",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 2)",
+          "q": "Dialog petang: \"Ayah pulang ________ pejabat pada pukul enam,\" kata Kak Wani. (Latihan 2)",
           "answer": "dari",
           "accepted": [
             "dari"
@@ -3725,11 +3727,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 2)"
+          "question": "Dialog petang: \"Ayah pulang ________ pejabat pada pukul enam,\" kata Kak Wani. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-014",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 2)",
+          "q": "Dialog Hari Ibu: \"Hadiah itu diberikan ________ ibu,\" kata Ali. (Latihan 2)",
           "answer": "kepada",
           "accepted": [
             "kepada"
@@ -3739,11 +3741,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 2)"
+          "question": "Dialog Hari Ibu: \"Hadiah itu diberikan ________ ibu,\" kata Ali. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-015",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 2)",
+          "q": "Dialog kraf: \"Beg ini dibuat ________ kain terpakai,\" kata cikgu. (Latihan 2)",
           "answer": "daripada",
           "accepted": [
             "daripada"
@@ -3753,11 +3755,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 2)"
+          "question": "Dialog kraf: \"Beg ini dibuat ________ kain terpakai,\" kata cikgu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-016",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 2)",
+          "q": "Dialog pagi: \"Latihan bermula ________ pukul lapan pagi,\" kata pengawas. (Latihan 2)",
           "answer": "pada",
           "accepted": [
             "pada"
@@ -3767,11 +3769,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 2)"
+          "question": "Dialog pagi: \"Latihan bermula ________ pukul lapan pagi,\" kata pengawas. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-017",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 2)",
+          "q": "Dialog di kelas: \"Sara menulis ________ pensel,\" kata rakan sebelahnya. (Latihan 2)",
           "answer": "dengan",
           "accepted": [
             "dengan"
@@ -3781,11 +3783,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 2)"
+          "question": "Dialog di kelas: \"Sara menulis ________ pensel,\" kata rakan sebelahnya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-018",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 2)",
+          "q": "Dialog di dapur: \"Kuih ini ________ adik saya,\" kata ibu. (Latihan 2)",
           "answer": "untuk",
           "accepted": [
             "untuk"
@@ -3795,11 +3797,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 2)"
+          "question": "Dialog di dapur: \"Kuih ini ________ adik saya,\" kata ibu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-019",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 2)",
+          "q": "Dialog di padang: \"Bola itu jatuh ________ longkang,\" kata Amir. (Latihan 2)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3809,11 +3811,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 2)"
+          "question": "Dialog di padang: \"Bola itu jatuh ________ longkang,\" kata Amir. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-020",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 2)",
+          "q": "Dialog waktu rehat: \"Mereka bermain ________ padang sekolah,\" kata cikgu. (Latihan 2)",
           "answer": "di",
           "accepted": [
             "di"
@@ -3823,11 +3825,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 2)"
+          "question": "Dialog waktu rehat: \"Mereka bermain ________ padang sekolah,\" kata cikgu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_SENDI-021",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 3)",
+          "q": "Petikan pendek: Buku itu terletak ________ atas meja di bilik darjah. (Latihan 3)",
           "answer": "di",
           "accepted": [
             "di"
@@ -3837,11 +3839,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 3)"
+          "question": "Petikan pendek: Buku itu terletak ________ atas meja di bilik darjah. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-022",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 3)",
+          "q": "Petikan pendek: Selepas rehat, kami pergi ________ perpustakaan untuk membaca. (Latihan 3)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3851,11 +3853,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 3)"
+          "question": "Petikan pendek: Selepas rehat, kami pergi ________ perpustakaan untuk membaca. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-023",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 3)",
+          "q": "Petikan pendek: Ayah pulang ________ pejabat sebelum maghrib. (Latihan 3)",
           "answer": "dari",
           "accepted": [
             "dari"
@@ -3865,11 +3867,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 3)"
+          "question": "Petikan pendek: Ayah pulang ________ pejabat sebelum maghrib. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-024",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 3)",
+          "q": "Petikan pendek: Hadiah kecil itu diberikan ________ ibu pada Hari Guru. (Latihan 3)",
           "answer": "kepada",
           "accepted": [
             "kepada"
@@ -3879,11 +3881,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 3)"
+          "question": "Petikan pendek: Hadiah kecil itu diberikan ________ ibu pada Hari Guru. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-025",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 3)",
+          "q": "Petikan pendek: Beg mesra alam ini dibuat ________ kain terpakai. (Latihan 3)",
           "answer": "daripada",
           "accepted": [
             "daripada"
@@ -3893,11 +3895,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 3)"
+          "question": "Petikan pendek: Beg mesra alam ini dibuat ________ kain terpakai. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-026",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 3)",
+          "q": "Petikan pendek: Latihan pancaragam bermula ________ pukul lapan pagi. (Latihan 3)",
           "answer": "pada",
           "accepted": [
             "pada"
@@ -3907,11 +3909,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 3)"
+          "question": "Petikan pendek: Latihan pancaragam bermula ________ pukul lapan pagi. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-027",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 3)",
+          "q": "Petikan pendek: Sara menulis nota ________ pensel warna. (Latihan 3)",
           "answer": "dengan",
           "accepted": [
             "dengan"
@@ -3921,11 +3923,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 3)"
+          "question": "Petikan pendek: Sara menulis nota ________ pensel warna. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-028",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 3)",
+          "q": "Petikan pendek: Kuih ini ________ adik saya yang sakit. (Latihan 3)",
           "answer": "untuk",
           "accepted": [
             "untuk"
@@ -3935,11 +3937,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 3)"
+          "question": "Petikan pendek: Kuih ini ________ adik saya yang sakit. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-029",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 3)",
+          "q": "Petikan pendek: Bola itu jatuh ________ longkang semasa bermain. (Latihan 3)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3949,11 +3951,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 3)"
+          "question": "Petikan pendek: Bola itu jatuh ________ longkang semasa bermain. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-030",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 3)",
+          "q": "Petikan pendek: Mereka bermain ________ padang sekolah pada waktu petang. (Latihan 3)",
           "answer": "di",
           "accepted": [
             "di"
@@ -3963,11 +3965,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 3)"
+          "question": "Petikan pendek: Mereka bermain ________ padang sekolah pada waktu petang. (Latihan 3)"
         },
         {
           "id": "BM-KATA_SENDI-031",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 4)",
+          "q": "KBAT: Jika buku itu perlu dicari, buku itu terletak ________ atas meja di ruang tamu. (Latihan 4)",
           "answer": "di",
           "accepted": [
             "di"
@@ -3977,11 +3979,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 4)"
+          "question": "KBAT: Jika buku itu perlu dicari, buku itu terletak ________ atas meja di ruang tamu. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-032",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 4)",
+          "q": "KBAT: Untuk menyiapkan kerja sekolah, kami pergi ________ perpustakaan selepas rehat. (Latihan 4)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -3991,11 +3993,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 4)"
+          "question": "KBAT: Untuk menyiapkan kerja sekolah, kami pergi ________ perpustakaan selepas rehat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-033",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 4)",
+          "q": "KBAT: Ayah pulang ________ pejabat selepas mesyuarat tamat. (Latihan 4)",
           "answer": "dari",
           "accepted": [
             "dari"
@@ -4005,11 +4007,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 4)"
+          "question": "KBAT: Ayah pulang ________ pejabat selepas mesyuarat tamat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-034",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 4)",
+          "q": "KBAT: Hadiah yang dibuat sendiri itu diberikan ________ ibu pada hari lahirnya. (Latihan 4)",
           "answer": "kepada",
           "accepted": [
             "kepada"
@@ -4019,11 +4021,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 4)"
+          "question": "KBAT: Hadiah yang dibuat sendiri itu diberikan ________ ibu pada hari lahirnya. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-035",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 4)",
+          "q": "KBAT: Dalam projek kraf, beg ini dibuat ________ kain terpakai. (Latihan 4)",
           "answer": "daripada",
           "accepted": [
             "daripada"
@@ -4033,11 +4035,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 4)"
+          "question": "KBAT: Dalam projek kraf, beg ini dibuat ________ kain terpakai. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-036",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 4)",
+          "q": "KBAT: Pada hari sukan, latihan bermula ________ pukul lapan pagi. (Latihan 4)",
           "answer": "pada",
           "accepted": [
             "pada"
@@ -4047,11 +4049,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 4)"
+          "question": "KBAT: Pada hari sukan, latihan bermula ________ pukul lapan pagi. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-037",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 4)",
+          "q": "KBAT: Sara menulis surat ________ pensel di meja belajar. (Latihan 4)",
           "answer": "dengan",
           "accepted": [
             "dengan"
@@ -4061,11 +4063,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 4)"
+          "question": "KBAT: Sara menulis surat ________ pensel di meja belajar. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-038",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 4)",
+          "q": "KBAT: Kuih yang dibeli di pasar itu ________ adik saya yang kecil. (Latihan 4)",
           "answer": "untuk",
           "accepted": [
             "untuk"
@@ -4075,11 +4077,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 4)"
+          "question": "KBAT: Kuih yang dibeli di pasar itu ________ adik saya yang kecil. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-039",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 4)",
+          "q": "KBAT: Semasa bermain bola, bola itu jatuh ________ longkang berhampiran taman. (Latihan 4)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -4089,11 +4091,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 4)"
+          "question": "KBAT: Semasa bermain bola, bola itu jatuh ________ longkang berhampiran taman. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-040",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 4)",
+          "q": "KBAT: Murid-murid bermain ________ padang sekolah semasa hari sukan. (Latihan 4)",
           "answer": "di",
           "accepted": [
             "di"
@@ -4103,11 +4105,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 4)"
+          "question": "KBAT: Murid-murid bermain ________ padang sekolah semasa hari sukan. (Latihan 4)"
         },
         {
           "id": "BM-KATA_SENDI-041",
-          "q": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 5)",
+          "q": "UASA: Dalam gambar bilik darjah, buku itu terletak ________ atas meja.",
           "answer": "di",
           "accepted": [
             "di"
@@ -4117,11 +4119,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Buku itu terletak ________ atas meja. (Latihan 5)"
+          "question": "UASA: Dalam gambar bilik darjah, buku itu terletak ________ atas meja."
         },
         {
           "id": "BM-KATA_SENDI-042",
-          "q": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 5)",
+          "q": "UASA: Dalam gambar sekolah, kami pergi ________ perpustakaan selepas rehat.",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -4131,11 +4133,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kami pergi ________ perpustakaan selepas rehat. (Latihan 5)"
+          "question": "UASA: Dalam gambar sekolah, kami pergi ________ perpustakaan selepas rehat."
         },
         {
           "id": "BM-KATA_SENDI-043",
-          "q": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 5)",
+          "q": "UASA: Ayah pulang ________ pejabat selepas waktu kerja.",
           "answer": "dari",
           "accepted": [
             "dari"
@@ -4145,11 +4147,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ayah pulang ________ pejabat pada pukul enam. (Latihan 5)"
+          "question": "UASA: Ayah pulang ________ pejabat selepas waktu kerja."
         },
         {
           "id": "BM-KATA_SENDI-044",
-          "q": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 5)",
+          "q": "UASA: Hadiah kecil itu diberikan ________ ibu semasa makan malam.",
           "answer": "kepada",
           "accepted": [
             "kepada"
@@ -4159,11 +4161,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hadiah itu diberikan ________ ibu. (Latihan 5)"
+          "question": "UASA: Hadiah kecil itu diberikan ________ ibu semasa makan malam."
         },
         {
           "id": "BM-KATA_SENDI-045",
-          "q": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 5)",
+          "q": "UASA: Beg sekolah ini dibuat ________ kain terpakai.",
           "answer": "daripada",
           "accepted": [
             "daripada"
@@ -4173,11 +4175,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Beg ini dibuat ________ kain. (Latihan 5)"
+          "question": "UASA: Beg sekolah ini dibuat ________ kain terpakai."
         },
         {
           "id": "BM-KATA_SENDI-046",
-          "q": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 5)",
+          "q": "UASA: Latihan perbarisan bermula ________ pukul lapan pagi.",
           "answer": "pada",
           "accepted": [
             "pada"
@@ -4187,11 +4189,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Latihan bermula ________ pukul lapan pagi. (Latihan 5)"
+          "question": "UASA: Latihan perbarisan bermula ________ pukul lapan pagi."
         },
         {
           "id": "BM-KATA_SENDI-047",
-          "q": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 5)",
+          "q": "UASA: Sara menulis nama di buku latihan ________ pensel.",
           "answer": "dengan",
           "accepted": [
             "dengan"
@@ -4201,11 +4203,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara menulis ________ pensel. (Latihan 5)"
+          "question": "UASA: Sara menulis nama di buku latihan ________ pensel."
         },
         {
           "id": "BM-KATA_SENDI-048",
-          "q": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 5)",
+          "q": "UASA: Kuih itu ________ adik saya yang demam.",
           "answer": "untuk",
           "accepted": [
             "untuk"
@@ -4215,11 +4217,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kuih ini ________ adik saya. (Latihan 5)"
+          "question": "UASA: Kuih itu ________ adik saya yang demam."
         },
         {
           "id": "BM-KATA_SENDI-049",
-          "q": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 5)",
+          "q": "UASA: Bola yang ditendang itu jatuh ________ longkang di tepi padang.",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -4229,11 +4231,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Bola itu jatuh ________ longkang. (Latihan 5)"
+          "question": "UASA: Bola yang ditendang itu jatuh ________ longkang di tepi padang."
         },
         {
           "id": "BM-KATA_SENDI-050",
-          "q": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 5)",
+          "q": "UASA: Mereka bermain ________ padang sekolah ketika hari sukan.",
           "answer": "di",
           "accepted": [
             "di"
@@ -4243,7 +4245,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Mereka bermain ________ padang sekolah. (Latihan 5)"
+          "question": "UASA: Mereka bermain ________ padang sekolah ketika hari sukan."
         }
       ]
     },
@@ -4254,7 +4256,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-KATA_HUBUNG-001",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis.",
+          "q": "Di rumah, Aina membaca buku ________ adik melukis di atas meja.",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4264,11 +4266,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis."
+          "question": "Di rumah, Aina membaca buku ________ adik melukis di atas meja."
         },
         {
           "id": "BM-KATA_HUBUNG-002",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun.",
+          "q": "Di padang sekolah, Amir mahu bermain bola ________ hujan turun.",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4278,11 +4280,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun."
+          "question": "Di padang sekolah, Amir mahu bermain bola ________ hujan turun."
         },
         {
           "id": "BM-KATA_HUBUNG-003",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan.",
+          "q": "Semasa berjalan ke kelas, Sara membawa payung ________ hari hujan.",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4292,11 +4294,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan."
+          "question": "Semasa berjalan ke kelas, Sara membawa payung ________ hari hujan."
         },
         {
           "id": "BM-KATA_HUBUNG-004",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu?",
+          "q": "Di kantin, kamu hendak minum air ________ susu?",
           "answer": "atau",
           "accepted": [
             "atau"
@@ -4306,11 +4308,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu?"
+          "question": "Di kantin, kamu hendak minum air ________ susu?"
         },
         {
           "id": "BM-KATA_HUBUNG-005",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan.",
+          "q": "Di dapur, ibu memasak ________ menyanyi perlahan-lahan.",
           "answer": "sambil",
           "accepted": [
             "sambil"
@@ -4320,11 +4322,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan."
+          "question": "Di dapur, ibu memasak ________ menyanyi perlahan-lahan."
         },
         {
           "id": "BM-KATA_HUBUNG-006",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas.",
+          "q": "Di sekolah, loceng berbunyi ________ murid masuk ke kelas.",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4334,11 +4336,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas."
+          "question": "Di sekolah, loceng berbunyi ________ murid masuk ke kelas."
         },
         {
           "id": "BM-KATA_HUBUNG-007",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan.",
+          "q": "Setiap petang, Danish rajin belajar ________ selalu membuat latihan.",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4348,11 +4350,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan."
+          "question": "Setiap petang, Danish rajin belajar ________ selalu membuat latihan."
         },
         {
           "id": "BM-KATA_HUBUNG-008",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal.",
+          "q": "Di pasar raya, baju itu cantik ________ harganya mahal.",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4362,11 +4364,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal."
+          "question": "Di pasar raya, baju itu cantik ________ harganya mahal."
         },
         {
           "id": "BM-KATA_HUBUNG-009",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam.",
+          "q": "Farah tidak hadir ke sekolah ________ dia demam.",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4376,11 +4378,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam."
+          "question": "Farah tidak hadir ke sekolah ________ dia demam."
         },
         {
           "id": "BM-KATA_HUBUNG-010",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku.",
+          "q": "Di kelas, Hakim membuka beg ________ mengeluarkan buku latihan.",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4390,11 +4392,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku."
+          "question": "Di kelas, Hakim membuka beg ________ mengeluarkan buku latihan."
         },
         {
           "id": "BM-KATA_HUBUNG-011",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 2)",
+          "q": "Dialog di rumah: \"Aina membaca buku ________ adik melukis,\" kata ibu. (Latihan 2)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4404,11 +4406,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 2)"
+          "question": "Dialog di rumah: \"Aina membaca buku ________ adik melukis,\" kata ibu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-012",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 2)",
+          "q": "Dialog di padang: \"Amir mahu bermain bola ________ hujan turun,\" kata rakannya. (Latihan 2)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4418,11 +4420,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 2)"
+          "question": "Dialog di padang: \"Amir mahu bermain bola ________ hujan turun,\" kata rakannya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-013",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 2)",
+          "q": "Dialog pagi: \"Sara membawa payung ________ hari hujan,\" kata kakaknya. (Latihan 2)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4432,11 +4434,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 2)"
+          "question": "Dialog pagi: \"Sara membawa payung ________ hari hujan,\" kata kakaknya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-014",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 2)",
+          "q": "Dialog di kantin: \"Kamu hendak minum air ________ susu?\" tanya pengawas. (Latihan 2)",
           "answer": "atau",
           "accepted": [
             "atau"
@@ -4446,11 +4448,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 2)"
+          "question": "Dialog di kantin: \"Kamu hendak minum air ________ susu?\" tanya pengawas. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-015",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 2)",
+          "q": "Dialog di dapur: \"Ibu memasak ________ menyanyi perlahan-lahan,\" kata adik. (Latihan 2)",
           "answer": "sambil",
           "accepted": [
             "sambil"
@@ -4460,11 +4462,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 2)"
+          "question": "Dialog di dapur: \"Ibu memasak ________ menyanyi perlahan-lahan,\" kata adik. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-016",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 2)",
+          "q": "Dialog di sekolah: \"Loceng berbunyi ________ murid masuk ke kelas,\" kata guru. (Latihan 2)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4474,11 +4476,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 2)"
+          "question": "Dialog di sekolah: \"Loceng berbunyi ________ murid masuk ke kelas,\" kata guru. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-017",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 2)",
+          "q": "Dialog waktu petang: \"Danish rajin belajar ________ selalu membuat latihan,\" kata ibunya. (Latihan 2)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4488,11 +4490,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 2)"
+          "question": "Dialog waktu petang: \"Danish rajin belajar ________ selalu membuat latihan,\" kata ibunya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-018",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 2)",
+          "q": "Dialog di pasar raya: \"Baju itu cantik ________ harganya mahal,\" kata kakak. (Latihan 2)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4502,11 +4504,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 2)"
+          "question": "Dialog di pasar raya: \"Baju itu cantik ________ harganya mahal,\" kata kakak. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-019",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 2)",
+          "q": "Dialog di klinik: \"Farah tidak hadir ________ dia demam,\" kata ibunya. (Latihan 2)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4516,11 +4518,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 2)"
+          "question": "Dialog di klinik: \"Farah tidak hadir ________ dia demam,\" kata ibunya. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-020",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 2)",
+          "q": "Dialog di kelas: \"Hakim membuka beg ________ mengeluarkan buku,\" kata cikgu. (Latihan 2)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4530,11 +4532,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 2)"
+          "question": "Dialog di kelas: \"Hakim membuka beg ________ mengeluarkan buku,\" kata cikgu. (Latihan 2)"
         },
         {
           "id": "BM-KATA_HUBUNG-021",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 3)",
+          "q": "Petikan pendek: Aina membaca buku ________ adik melukis di ruang tamu. (Latihan 3)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4544,11 +4546,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 3)"
+          "question": "Petikan pendek: Aina membaca buku ________ adik melukis di ruang tamu. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-022",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 3)",
+          "q": "Petikan pendek: Amir mahu bermain bola ________ hujan turun dengan lebat. (Latihan 3)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4558,11 +4560,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 3)"
+          "question": "Petikan pendek: Amir mahu bermain bola ________ hujan turun dengan lebat. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-023",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 3)",
+          "q": "Petikan pendek: Sara membawa payung ________ hari hujan pada pagi itu. (Latihan 3)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4572,11 +4574,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 3)"
+          "question": "Petikan pendek: Sara membawa payung ________ hari hujan pada pagi itu. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-024",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 3)",
+          "q": "Petikan pendek: Di kantin sekolah, kamu hendak minum air ________ susu. (Latihan 3)",
           "answer": "atau",
           "accepted": [
             "atau"
@@ -4586,11 +4588,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 3)"
+          "question": "Petikan pendek: Di kantin sekolah, kamu hendak minum air ________ susu. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-025",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 3)",
+          "q": "Petikan pendek: Ibu memasak ________ menyanyi perlahan-lahan di dapur. (Latihan 3)",
           "answer": "sambil",
           "accepted": [
             "sambil"
@@ -4600,11 +4602,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 3)"
+          "question": "Petikan pendek: Ibu memasak ________ menyanyi perlahan-lahan di dapur. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-026",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 3)",
+          "q": "Petikan pendek: Loceng berbunyi ________ murid masuk ke kelas dengan tertib. (Latihan 3)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4614,11 +4616,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 3)"
+          "question": "Petikan pendek: Loceng berbunyi ________ murid masuk ke kelas dengan tertib. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-027",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 3)",
+          "q": "Petikan pendek: Danish rajin belajar ________ selalu membuat latihan di rumah. (Latihan 3)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4628,11 +4630,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 3)"
+          "question": "Petikan pendek: Danish rajin belajar ________ selalu membuat latihan di rumah. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-028",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 3)",
+          "q": "Petikan pendek: Baju itu cantik ________ harganya mahal di pasar raya. (Latihan 3)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4642,11 +4644,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 3)"
+          "question": "Petikan pendek: Baju itu cantik ________ harganya mahal di pasar raya. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-029",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 3)",
+          "q": "Petikan pendek: Farah tidak hadir ________ dia demam sejak malam tadi. (Latihan 3)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4656,11 +4658,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 3)"
+          "question": "Petikan pendek: Farah tidak hadir ________ dia demam sejak malam tadi. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-030",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 3)",
+          "q": "Petikan pendek: Hakim membuka beg ________ mengeluarkan buku latihan. (Latihan 3)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4670,11 +4672,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 3)"
+          "question": "Petikan pendek: Hakim membuka beg ________ mengeluarkan buku latihan. (Latihan 3)"
         },
         {
           "id": "BM-KATA_HUBUNG-031",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 4)",
+          "q": "KBAT: Di rumah, Aina membaca buku ________ adik melukis supaya tidak bising. (Latihan 4)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4684,11 +4686,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 4)"
+          "question": "KBAT: Di rumah, Aina membaca buku ________ adik melukis supaya tidak bising. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-032",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 4)",
+          "q": "KBAT: Amir mahu bermain bola ________ hujan turun, jadi dia menunggu di pondok. (Latihan 4)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4698,11 +4700,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 4)"
+          "question": "KBAT: Amir mahu bermain bola ________ hujan turun, jadi dia menunggu di pondok. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-033",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 4)",
+          "q": "KBAT: Sara membawa payung ________ hari hujan supaya tidak basah. (Latihan 4)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4712,11 +4714,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 4)"
+          "question": "KBAT: Sara membawa payung ________ hari hujan supaya tidak basah. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-034",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 4)",
+          "q": "KBAT: Di kantin, kamu hendak minum air ________ susu selepas bermain. (Latihan 4)",
           "answer": "atau",
           "accepted": [
             "atau"
@@ -4726,11 +4728,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 4)"
+          "question": "KBAT: Di kantin, kamu hendak minum air ________ susu selepas bermain. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-035",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 4)",
+          "q": "KBAT: Ibu memasak ________ menyanyi perlahan-lahan supaya suasana ceria. (Latihan 4)",
           "answer": "sambil",
           "accepted": [
             "sambil"
@@ -4740,11 +4742,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 4)"
+          "question": "KBAT: Ibu memasak ________ menyanyi perlahan-lahan supaya suasana ceria. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-036",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 4)",
+          "q": "KBAT: Loceng berbunyi ________ murid masuk ke kelas dengan teratur. (Latihan 4)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4754,11 +4756,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 4)"
+          "question": "KBAT: Loceng berbunyi ________ murid masuk ke kelas dengan teratur. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-037",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 4)",
+          "q": "KBAT: Danish rajin belajar ________ selalu membuat latihan supaya cemerlang. (Latihan 4)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4768,11 +4770,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 4)"
+          "question": "KBAT: Danish rajin belajar ________ selalu membuat latihan supaya cemerlang. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-038",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 4)",
+          "q": "KBAT: Baju itu cantik ________ harganya mahal, jadi ibu menangguhkannya. (Latihan 4)",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4782,11 +4784,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 4)"
+          "question": "KBAT: Baju itu cantik ________ harganya mahal, jadi ibu menangguhkannya. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-039",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 4)",
+          "q": "KBAT: Farah tidak hadir ________ dia demam dan perlu berehat. (Latihan 4)",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4796,11 +4798,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 4)"
+          "question": "KBAT: Farah tidak hadir ________ dia demam dan perlu berehat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-040",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 4)",
+          "q": "KBAT: Hakim membuka beg ________ mengeluarkan buku latihan dengan cepat. (Latihan 4)",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4810,11 +4812,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 4)"
+          "question": "KBAT: Hakim membuka beg ________ mengeluarkan buku latihan dengan cepat. (Latihan 4)"
         },
         {
           "id": "BM-KATA_HUBUNG-041",
-          "q": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 5)",
+          "q": "UASA: Di rumah, Aina membaca buku ________ adik melukis di meja belajar.",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4824,11 +4826,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Aina membaca buku ________ adik melukis. (Latihan 5)"
+          "question": "UASA: Di rumah, Aina membaca buku ________ adik melukis di meja belajar."
         },
         {
           "id": "BM-KATA_HUBUNG-042",
-          "q": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 5)",
+          "q": "UASA: Amir mahu bermain bola ________ hujan turun di padang.",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4838,11 +4840,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Amir mahu bermain bola ________ hujan turun. (Latihan 5)"
+          "question": "UASA: Amir mahu bermain bola ________ hujan turun di padang."
         },
         {
           "id": "BM-KATA_HUBUNG-043",
-          "q": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 5)",
+          "q": "UASA: Sara membawa payung ________ hari hujan semasa berjalan ke sekolah.",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4852,11 +4854,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Sara membawa payung ________ hari hujan. (Latihan 5)"
+          "question": "UASA: Sara membawa payung ________ hari hujan semasa berjalan ke sekolah."
         },
         {
           "id": "BM-KATA_HUBUNG-044",
-          "q": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 5)",
+          "q": "UASA: Kamu hendak minum air ________ susu di kantin sekolah?",
           "answer": "atau",
           "accepted": [
             "atau"
@@ -4866,11 +4868,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Kamu hendak minum air ________ susu? (Latihan 5)"
+          "question": "UASA: Kamu hendak minum air ________ susu di kantin sekolah?"
         },
         {
           "id": "BM-KATA_HUBUNG-045",
-          "q": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 5)",
+          "q": "UASA: Ibu memasak ________ menyanyi perlahan-lahan di dapur.",
           "answer": "sambil",
           "accepted": [
             "sambil"
@@ -4880,11 +4882,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Ibu memasak ________ menyanyi perlahan-lahan. (Latihan 5)"
+          "question": "UASA: Ibu memasak ________ menyanyi perlahan-lahan di dapur."
         },
         {
           "id": "BM-KATA_HUBUNG-046",
-          "q": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 5)",
+          "q": "UASA: Loceng berbunyi ________ murid masuk ke kelas dengan tertib.",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4894,11 +4896,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Loceng berbunyi ________ murid masuk ke kelas. (Latihan 5)"
+          "question": "UASA: Loceng berbunyi ________ murid masuk ke kelas dengan tertib."
         },
         {
           "id": "BM-KATA_HUBUNG-047",
-          "q": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 5)",
+          "q": "UASA: Danish rajin belajar ________ selalu membuat latihan di rumah.",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -4908,11 +4910,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Danish rajin belajar ________ selalu membuat latihan. (Latihan 5)"
+          "question": "UASA: Danish rajin belajar ________ selalu membuat latihan di rumah."
         },
         {
           "id": "BM-KATA_HUBUNG-048",
-          "q": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 5)",
+          "q": "UASA: Baju itu cantik ________ harganya mahal di pasar raya.",
           "answer": "tetapi",
           "accepted": [
             "tetapi"
@@ -4922,11 +4924,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Baju itu cantik ________ harganya mahal. (Latihan 5)"
+          "question": "UASA: Baju itu cantik ________ harganya mahal di pasar raya."
         },
         {
           "id": "BM-KATA_HUBUNG-049",
-          "q": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 5)",
+          "q": "UASA: Farah tidak hadir ________ dia demam dan pergi ke klinik.",
           "answer": "kerana",
           "accepted": [
             "kerana"
@@ -4936,11 +4938,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Farah tidak hadir ________ dia demam. (Latihan 5)"
+          "question": "UASA: Farah tidak hadir ________ dia demam dan pergi ke klinik."
         },
         {
           "id": "BM-KATA_HUBUNG-050",
-          "q": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 5)",
+          "q": "UASA: Hakim membuka beg ________ mengeluarkan buku latihan selepas duduk.",
           "answer": "lalu",
           "accepted": [
             "lalu"
@@ -4950,7 +4952,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat. Hakim membuka beg ________ mengeluarkan buku. (Latihan 5)"
+          "question": "UASA: Hakim membuka beg ________ mengeluarkan buku latihan selepas duduk."
         }
       ]
     },
@@ -4961,7 +4963,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-PENJODOH_BILANGAN-001",
-          "q": "Lengkapkan frasa. se________ pensel",
+          "q": "Di meja belajar, Amir meletakkan se________ pensel warna.",
           "answer": "batang",
           "accepted": [
             "batang"
@@ -4971,11 +4973,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pensel"
+          "question": "Di meja belajar, Amir meletakkan se________ pensel warna."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-002",
-          "q": "Lengkapkan frasa. se________ rumah",
+          "q": "Keluarga itu membeli se________ rumah baharu di taman perumahan.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -4985,11 +4987,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ rumah"
+          "question": "Keluarga itu membeli se________ rumah baharu di taman perumahan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-003",
-          "q": "Lengkapkan frasa. se________ kucing",
+          "q": "Di halaman rumah, ada se________ kucing yang tidur di bawah pokok.",
           "answer": "ekor",
           "accepted": [
             "ekor"
@@ -4999,11 +5001,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ kucing"
+          "question": "Di halaman rumah, ada se________ kucing yang tidur di bawah pokok."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-004",
-          "q": "Lengkapkan frasa. se________ baju",
+          "q": "Ibu menggantung se________ baju sekolah di ampaian.",
           "answer": "helai",
           "accepted": [
             "helai"
@@ -5013,11 +5015,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ baju"
+          "question": "Ibu menggantung se________ baju sekolah di ampaian."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-005",
-          "q": "Lengkapkan frasa. se________ buku",
+          "q": "Di perpustakaan, saya meminjam se________ buku cerita.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5027,11 +5029,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ buku"
+          "question": "Di perpustakaan, saya meminjam se________ buku cerita."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-006",
-          "q": "Lengkapkan frasa. se________ pisang",
+          "q": "Penjual di pasar menawarkan se________ pisang kepada pelanggan.",
           "answer": "sikat",
           "accepted": [
             "sikat"
@@ -5041,11 +5043,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pisang"
+          "question": "Penjual di pasar menawarkan se________ pisang kepada pelanggan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-007",
-          "q": "Lengkapkan frasa. se________ bunga",
+          "q": "Nenek memetik se________ bunga mawar di taman.",
           "answer": "kuntum",
           "accepted": [
             "kuntum"
@@ -5055,11 +5057,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ bunga"
+          "question": "Nenek memetik se________ bunga mawar di taman."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-008",
-          "q": "Lengkapkan frasa. se________ surat",
+          "q": "Ayah menerima se________ surat daripada pejabat pos.",
           "answer": "pucuk",
           "accepted": [
             "pucuk"
@@ -5069,11 +5071,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ surat"
+          "question": "Ayah menerima se________ surat daripada pejabat pos."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-009",
-          "q": "Lengkapkan frasa. se________ roti",
+          "q": "Di kantin sekolah, Aina membeli se________ roti untuk sarapan.",
           "answer": "keping",
           "accepted": [
             "keping"
@@ -5083,11 +5085,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ roti"
+          "question": "Di kantin sekolah, Aina membeli se________ roti untuk sarapan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-010",
-          "q": "Lengkapkan frasa. se________ payung",
+          "q": "Semasa hujan, ibu membawa se________ payung berwarna biru.",
           "answer": "kaki",
           "accepted": [
             "kaki"
@@ -5097,11 +5099,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ payung"
+          "question": "Semasa hujan, ibu membawa se________ payung berwarna biru."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-011",
-          "q": "Lengkapkan frasa. se________ pensel (Latihan 2)",
+          "q": "Lengkapkan frasa di dalam bilik darjah: se________ pensel.",
           "answer": "batang",
           "accepted": [
             "batang"
@@ -5111,11 +5113,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pensel (Latihan 2)"
+          "question": "Lengkapkan frasa di dalam bilik darjah: se________ pensel."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-012",
-          "q": "Lengkapkan frasa. se________ rumah (Latihan 2)",
+          "q": "Kamu nampak se________ rumah kayu di hujung kampung.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5125,11 +5127,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ rumah (Latihan 2)"
+          "question": "Kamu nampak se________ rumah kayu di hujung kampung."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-013",
-          "q": "Lengkapkan frasa. se________ kucing (Latihan 2)",
+          "q": "Ada se________ kucing hitam di atas tembok.",
           "answer": "ekor",
           "accepted": [
             "ekor"
@@ -5139,11 +5141,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ kucing (Latihan 2)"
+          "question": "Ada se________ kucing hitam di atas tembok."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-014",
-          "q": "Lengkapkan frasa. se________ baju (Latihan 2)",
+          "q": "Kakak membeli se________ baju baharu di pasar raya.",
           "answer": "helai",
           "accepted": [
             "helai"
@@ -5153,11 +5155,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ baju (Latihan 2)"
+          "question": "Kakak membeli se________ baju baharu di pasar raya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-015",
-          "q": "Lengkapkan frasa. se________ buku (Latihan 2)",
+          "q": "Di meja guru, terdapat se________ buku latihan murid.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5167,11 +5169,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ buku (Latihan 2)"
+          "question": "Di meja guru, terdapat se________ buku latihan murid."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-016",
-          "q": "Lengkapkan frasa. se________ pisang (Latihan 2)",
+          "q": "Bapa membeli se________ pisang untuk keluarga di pasar malam.",
           "answer": "sikat",
           "accepted": [
             "sikat"
@@ -5181,11 +5183,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pisang (Latihan 2)"
+          "question": "Bapa membeli se________ pisang untuk keluarga di pasar malam."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-017",
-          "q": "Lengkapkan frasa. se________ bunga (Latihan 2)",
+          "q": "Di taman sekolah, ada se________ bunga yang harum.",
           "answer": "kuntum",
           "accepted": [
             "kuntum"
@@ -5195,11 +5197,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ bunga (Latihan 2)"
+          "question": "Di taman sekolah, ada se________ bunga yang harum."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-018",
-          "q": "Lengkapkan frasa. se________ surat (Latihan 2)",
+          "q": "Ibu menulis se________ surat kepada nenek.",
           "answer": "pucuk",
           "accepted": [
             "pucuk"
@@ -5209,11 +5211,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ surat (Latihan 2)"
+          "question": "Ibu menulis se________ surat kepada nenek."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-019",
-          "q": "Lengkapkan frasa. se________ roti (Latihan 2)",
+          "q": "Adik makan se________ roti sebelum ke sekolah.",
           "answer": "keping",
           "accepted": [
             "keping"
@@ -5223,11 +5225,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ roti (Latihan 2)"
+          "question": "Adik makan se________ roti sebelum ke sekolah."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-020",
-          "q": "Lengkapkan frasa. se________ payung (Latihan 2)",
+          "q": "Ayah menyimpan se________ payung di dalam kereta.",
           "answer": "kaki",
           "accepted": [
             "kaki"
@@ -5237,11 +5239,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ payung (Latihan 2)"
+          "question": "Ayah menyimpan se________ payung di dalam kereta."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-021",
-          "q": "Lengkapkan frasa. se________ pensel (Latihan 3)",
+          "q": "Semasa ujian, murid itu menggunakan se________ pensel yang tajam.",
           "answer": "batang",
           "accepted": [
             "batang"
@@ -5251,11 +5253,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pensel (Latihan 3)"
+          "question": "Semasa ujian, murid itu menggunakan se________ pensel yang tajam."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-022",
-          "q": "Lengkapkan frasa. se________ rumah (Latihan 3)",
+          "q": "Di kawasan baharu itu, ayah membina se________ rumah kecil.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5265,11 +5267,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ rumah (Latihan 3)"
+          "question": "Di kawasan baharu itu, ayah membina se________ rumah kecil."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-023",
-          "q": "Lengkapkan frasa. se________ kucing (Latihan 3)",
+          "q": "Pada waktu petang, se________ kucing berlari di bawah bangku.",
           "answer": "ekor",
           "accepted": [
             "ekor"
@@ -5279,11 +5281,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ kucing (Latihan 3)"
+          "question": "Pada waktu petang, se________ kucing berlari di bawah bangku."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-024",
-          "q": "Lengkapkan frasa. se________ baju (Latihan 3)",
+          "q": "Kakak menjemur se________ baju sekolah selepas dibasuh.",
           "answer": "helai",
           "accepted": [
             "helai"
@@ -5293,11 +5295,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ baju (Latihan 3)"
+          "question": "Kakak menjemur se________ baju sekolah selepas dibasuh."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-025",
-          "q": "Lengkapkan frasa. se________ buku (Latihan 3)",
+          "q": "Budak itu membaca se________ buku cerita di perpustakaan.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5307,11 +5309,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ buku (Latihan 3)"
+          "question": "Budak itu membaca se________ buku cerita di perpustakaan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-026",
-          "q": "Lengkapkan frasa. se________ pisang (Latihan 3)",
+          "q": "Peniaga itu menggantung se________ pisang di gerai.",
           "answer": "sikat",
           "accepted": [
             "sikat"
@@ -5321,11 +5323,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pisang (Latihan 3)"
+          "question": "Peniaga itu menggantung se________ pisang di gerai."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-027",
-          "q": "Lengkapkan frasa. se________ bunga (Latihan 3)",
+          "q": "Ibu membeli se________ bunga untuk meja makan.",
           "answer": "kuntum",
           "accepted": [
             "kuntum"
@@ -5335,11 +5337,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ bunga (Latihan 3)"
+          "question": "Ibu membeli se________ bunga untuk meja makan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-028",
-          "q": "Lengkapkan frasa. se________ surat (Latihan 3)",
+          "q": "Ayah menyerahkan se________ surat kepada posmen.",
           "answer": "pucuk",
           "accepted": [
             "pucuk"
@@ -5349,11 +5351,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ surat (Latihan 3)"
+          "question": "Ayah menyerahkan se________ surat kepada posmen."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-029",
-          "q": "Lengkapkan frasa. se________ roti (Latihan 3)",
+          "q": "Di meja makan, ada se________ roti yang dipotong dua.",
           "answer": "keping",
           "accepted": [
             "keping"
@@ -5363,11 +5365,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ roti (Latihan 3)"
+          "question": "Di meja makan, ada se________ roti yang dipotong dua."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-030",
-          "q": "Lengkapkan frasa. se________ payung (Latihan 3)",
+          "q": "Ketika cuaca mendung, kami membawa se________ payung ke taman.",
           "answer": "kaki",
           "accepted": [
             "kaki"
@@ -5377,11 +5379,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ payung (Latihan 3)"
+          "question": "Ketika cuaca mendung, kami membawa se________ payung ke taman."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-031",
-          "q": "Lengkapkan frasa. se________ pensel (Latihan 4)",
+          "q": "KBAT: Untuk menyiapkan kerja seni, gunakan se________ pensel berwarna.",
           "answer": "batang",
           "accepted": [
             "batang"
@@ -5391,11 +5393,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pensel (Latihan 4)"
+          "question": "KBAT: Untuk menyiapkan kerja seni, gunakan se________ pensel berwarna."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-032",
-          "q": "Lengkapkan frasa. se________ rumah (Latihan 4)",
+          "q": "KBAT: Keluarga itu sedang mencari se________ rumah yang dekat dengan sekolah.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5405,11 +5407,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ rumah (Latihan 4)"
+          "question": "KBAT: Keluarga itu sedang mencari se________ rumah yang dekat dengan sekolah."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-033",
-          "q": "Lengkapkan frasa. se________ kucing (Latihan 4)",
+          "q": "KBAT: Jika kamu nampak se________ kucing kelaparan, berilah makanan.",
           "answer": "ekor",
           "accepted": [
             "ekor"
@@ -5419,11 +5421,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ kucing (Latihan 4)"
+          "question": "KBAT: Jika kamu nampak se________ kucing kelaparan, berilah makanan."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-034",
-          "q": "Lengkapkan frasa. se________ baju (Latihan 4)",
+          "q": "KBAT: Ibu memilih se________ baju untuk dipakai ke majlis.",
           "answer": "helai",
           "accepted": [
             "helai"
@@ -5433,11 +5435,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ baju (Latihan 4)"
+          "question": "KBAT: Ibu memilih se________ baju untuk dipakai ke majlis."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-035",
-          "q": "Lengkapkan frasa. se________ buku (Latihan 4)",
+          "q": "KBAT: Murid itu meminjam se________ buku supaya dapat membaca di rumah.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5447,11 +5449,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ buku (Latihan 4)"
+          "question": "KBAT: Murid itu meminjam se________ buku supaya dapat membaca di rumah."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-036",
-          "q": "Lengkapkan frasa. se________ pisang (Latihan 4)",
+          "q": "KBAT: Penjual pasar malam menyusun se________ pisang di atas meja.",
           "answer": "sikat",
           "accepted": [
             "sikat"
@@ -5461,11 +5463,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pisang (Latihan 4)"
+          "question": "KBAT: Penjual pasar malam menyusun se________ pisang di atas meja."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-037",
-          "q": "Lengkapkan frasa. se________ bunga (Latihan 4)",
+          "q": "KBAT: Untuk mencantikkan kelas, guru meletak se________ bunga di tingkap.",
           "answer": "kuntum",
           "accepted": [
             "kuntum"
@@ -5475,11 +5477,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ bunga (Latihan 4)"
+          "question": "KBAT: Untuk mencantikkan kelas, guru meletak se________ bunga di tingkap."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-038",
-          "q": "Lengkapkan frasa. se________ surat (Latihan 4)",
+          "q": "KBAT: Posmen itu membawa se________ surat ke rumah kami.",
           "answer": "pucuk",
           "accepted": [
             "pucuk"
@@ -5489,11 +5491,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ surat (Latihan 4)"
+          "question": "KBAT: Posmen itu membawa se________ surat ke rumah kami."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-039",
-          "q": "Lengkapkan frasa. se________ roti (Latihan 4)",
+          "q": "KBAT: Adik menghabiskan se________ roti selepas bermain.",
           "answer": "keping",
           "accepted": [
             "keping"
@@ -5503,11 +5505,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ roti (Latihan 4)"
+          "question": "KBAT: Adik menghabiskan se________ roti selepas bermain."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-040",
-          "q": "Lengkapkan frasa. se________ payung (Latihan 4)",
+          "q": "KBAT: Ibu menyuruh saya membawa se________ payung kerana cuaca gelap.",
           "answer": "kaki",
           "accepted": [
             "kaki"
@@ -5517,11 +5519,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ payung (Latihan 4)"
+          "question": "KBAT: Ibu menyuruh saya membawa se________ payung kerana cuaca gelap."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-041",
-          "q": "Lengkapkan frasa. se________ pensel (Latihan 5)",
+          "q": "UASA: Dalam gambar, murid itu memegang se________ pensel.",
           "answer": "batang",
           "accepted": [
             "batang"
@@ -5531,11 +5533,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pensel (Latihan 5)"
+          "question": "UASA: Dalam gambar, murid itu memegang se________ pensel."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-042",
-          "q": "Lengkapkan frasa. se________ rumah (Latihan 5)",
+          "q": "UASA: Di kampung itu ada se________ rumah kayu.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5545,11 +5547,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ rumah (Latihan 5)"
+          "question": "UASA: Di kampung itu ada se________ rumah kayu."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-043",
-          "q": "Lengkapkan frasa. se________ kucing (Latihan 5)",
+          "q": "UASA: Dalam petikan, se________ kucing sedang tidur di sofa.",
           "answer": "ekor",
           "accepted": [
             "ekor"
@@ -5559,11 +5561,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ kucing (Latihan 5)"
+          "question": "UASA: Dalam petikan, se________ kucing sedang tidur di sofa."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-044",
-          "q": "Lengkapkan frasa. se________ baju (Latihan 5)",
+          "q": "UASA: Ibu menyidai se________ baju di ampaian.",
           "answer": "helai",
           "accepted": [
             "helai"
@@ -5573,11 +5575,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ baju (Latihan 5)"
+          "question": "UASA: Ibu menyidai se________ baju di ampaian."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-045",
-          "q": "Lengkapkan frasa. se________ buku (Latihan 5)",
+          "q": "UASA: Rak itu mempunyai se________ buku cerita.",
           "answer": "buah",
           "accepted": [
             "buah"
@@ -5587,11 +5589,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ buku (Latihan 5)"
+          "question": "UASA: Rak itu mempunyai se________ buku cerita."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-046",
-          "q": "Lengkapkan frasa. se________ pisang (Latihan 5)",
+          "q": "UASA: Peniaga itu menjual se________ pisang goreng.",
           "answer": "sikat",
           "accepted": [
             "sikat"
@@ -5601,11 +5603,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ pisang (Latihan 5)"
+          "question": "UASA: Peniaga itu menjual se________ pisang goreng."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-047",
-          "q": "Lengkapkan frasa. se________ bunga (Latihan 5)",
+          "q": "UASA: Dalam taman, ada se________ bunga yang mekar.",
           "answer": "kuntum",
           "accepted": [
             "kuntum"
@@ -5615,11 +5617,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ bunga (Latihan 5)"
+          "question": "UASA: Dalam taman, ada se________ bunga yang mekar."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-048",
-          "q": "Lengkapkan frasa. se________ surat (Latihan 5)",
+          "q": "UASA: Ayah menerima se________ surat rasmi.",
           "answer": "pucuk",
           "accepted": [
             "pucuk"
@@ -5629,11 +5631,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ surat (Latihan 5)"
+          "question": "UASA: Ayah menerima se________ surat rasmi."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-049",
-          "q": "Lengkapkan frasa. se________ roti (Latihan 5)",
+          "q": "UASA: Sarapan pagi itu ada se________ roti bakar.",
           "answer": "keping",
           "accepted": [
             "keping"
@@ -5643,11 +5645,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ roti (Latihan 5)"
+          "question": "UASA: Sarapan pagi itu ada se________ roti bakar."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-050",
-          "q": "Lengkapkan frasa. se________ payung (Latihan 5)",
+          "q": "UASA: Apabila hujan, kami membawa se________ payung bersama-sama.",
           "answer": "kaki",
           "accepted": [
             "kaki"
@@ -5657,7 +5659,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa. se________ payung (Latihan 5)"
+          "question": "UASA: Apabila hujan, kami membawa se________ payung bersama-sama."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-051",
@@ -7135,7 +7137,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-PEMAHAMAN_PENULISAN-001",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
+          "q": "Di halaman rumah, Aina sedang menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7145,11 +7147,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?"
+          "question": "Di halaman rumah, Aina sedang menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-002",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?",
+          "q": "Setelah pulang dari sekolah, Danish membeli roti di kedai runcit. Di manakah Danish membeli roti?",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7159,11 +7161,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti?"
+          "question": "Setelah pulang dari sekolah, Danish membeli roti di kedai runcit. Di manakah Danish membeli roti?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-003",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
+          "q": "Di dapur rumah, ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7173,11 +7175,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?"
+          "question": "Di dapur rumah, ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-004",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?",
+          "q": "Pada pagi itu, Hakim memakai baju hujan kerana langit gelap dan hujan turun. Mengapakah Hakim memakai baju hujan?",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7187,11 +7189,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan?"
+          "question": "Pada pagi itu, Hakim memakai baju hujan kerana langit gelap dan hujan turun. Mengapakah Hakim memakai baju hujan?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-005",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?",
+          "q": "Semasa waktu rehat, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara?",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7201,11 +7203,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara?"
+          "question": "Semasa waktu rehat, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-006",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?",
+          "q": "Setiap hari Jumaat, murid-murid membersihkan kelas sebelum pulang. Bilakah murid-murid membersihkan kelas?",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7215,11 +7217,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas?"
+          "question": "Setiap hari Jumaat, murid-murid membersihkan kelas sebelum pulang. Bilakah murid-murid membersihkan kelas?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-007",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?",
+          "q": "Di belakang rumah, ayah menanam pokok cili dalam pasu besar. Apakah yang ditanam oleh ayah?",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7229,11 +7231,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah?"
+          "question": "Di belakang rumah, ayah menanam pokok cili dalam pasu besar. Apakah yang ditanam oleh ayah?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-008",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?",
+          "q": "Di kelas seni, Farah berkongsi pensel warna dengan Mira. Dengan siapakah Farah berkongsi pensel?",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7243,11 +7245,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel?"
+          "question": "Di kelas seni, Farah berkongsi pensel warna dengan Mira. Dengan siapakah Farah berkongsi pensel?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-009",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?",
+          "q": "Di ruang tamu, kucing putih itu tidur di bawah kerusi yang kecil. Di manakah kucing itu tidur?",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7257,11 +7259,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur?"
+          "question": "Di ruang tamu, kucing putih itu tidur di bawah kerusi yang kecil. Di manakah kucing itu tidur?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-010",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?",
+          "q": "Sebelum bermain bola, Iman menyiapkan kerja sekolah dengan cepat. Apakah yang disiapkan oleh Iman?",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7271,11 +7273,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman?"
+          "question": "Sebelum bermain bola, Iman menyiapkan kerja sekolah dengan cepat. Apakah yang disiapkan oleh Iman?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-011",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)",
+          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7285,11 +7287,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)"
+          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-012",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 2)",
+          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7299,11 +7301,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 2)"
+          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-013",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 2)",
+          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7313,11 +7315,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 2)"
+          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-014",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)",
+          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 2)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7327,11 +7329,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)"
+          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-015",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 2)",
+          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7341,11 +7343,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 2)"
+          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-016",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 2)",
+          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7355,11 +7357,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 2)"
+          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-017",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 2)",
+          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7369,11 +7371,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 2)"
+          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-018",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 2)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7383,11 +7385,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 2)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-019",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 2)",
+          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 2)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7397,11 +7399,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 2)"
+          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-020",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 2)",
+          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 2)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7411,11 +7413,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 2)"
+          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-021",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
+          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7425,11 +7427,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
+          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-022",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 3)",
+          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7439,11 +7441,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 3)"
+          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-023",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 3)",
+          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7453,11 +7455,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 3)"
+          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-024",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
+          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7467,11 +7469,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
+          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-025",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 3)",
+          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7481,11 +7483,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 3)"
+          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-026",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
+          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7495,11 +7497,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
+          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-027",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 3)",
+          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7509,11 +7511,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 3)"
+          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-028",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 3)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7523,11 +7525,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 3)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-029",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 3)",
+          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 3)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7537,11 +7539,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 3)"
+          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-030",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 3)",
+          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 3)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7551,11 +7553,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 3)"
+          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-031",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)",
+          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7565,11 +7567,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)"
+          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-032",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 4)",
+          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7579,11 +7581,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 4)"
+          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-033",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 4)",
+          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7593,11 +7595,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 4)"
+          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-034",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)",
+          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 4)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7607,11 +7609,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)"
+          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-035",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 4)",
+          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 4)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7621,11 +7623,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 4)"
+          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-036",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 4)",
+          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7635,11 +7637,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 4)"
+          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-037",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 4)",
+          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7649,11 +7651,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 4)"
+          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-038",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 4)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7663,11 +7665,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 4)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-039",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 4)",
+          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 4)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7677,11 +7679,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 4)"
+          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-040",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 4)",
+          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 4)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7691,11 +7693,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 4)"
+          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-041",
-          "q": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)",
+          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7705,11 +7707,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)"
+          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-042",
-          "q": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 5)",
+          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7719,11 +7721,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Danish membeli roti di kedai. Di manakah Danish membeli roti? (Latihan 5)"
+          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-043",
-          "q": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 5)",
+          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 5)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7733,11 +7735,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ibu memasak nasi goreng untuk keluarga. Apakah yang dimasak oleh ibu? (Latihan 5)"
+          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-044",
-          "q": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)",
+          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 5)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7747,11 +7749,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Hakim memakai baju hujan kerana hari hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)"
+          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-045",
-          "q": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 5)",
+          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 5)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7761,11 +7763,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Sara membaca buku cerita di perpustakaan. Apakah yang dibaca oleh Sara? (Latihan 5)"
+          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-046",
-          "q": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 5)",
+          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 5)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7775,11 +7777,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Murid-murid membersihkan kelas pada hari Jumaat. Bilakah murid-murid membersihkan kelas? (Latihan 5)"
+          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-047",
-          "q": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 5)",
+          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7789,11 +7791,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Ayah menanam pokok cili di belakang rumah. Apakah yang ditanam oleh ayah? (Latihan 5)"
+          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-048",
-          "q": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 5)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 5)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7803,11 +7805,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Farah berkongsi pensel dengan Mira. Dengan siapakah Farah berkongsi pensel? (Latihan 5)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-049",
-          "q": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 5)",
+          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 5)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7817,11 +7819,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Kucing putih itu tidur di bawah kerusi. Di manakah kucing itu tidur? (Latihan 5)"
+          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-050",
-          "q": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 5)",
+          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 5)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7831,11 +7833,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Iman menyiapkan kerja sekolah sebelum bermain. Apakah yang disiapkan oleh Iman? (Latihan 5)"
+          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-051",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 1)",
+          "q": "Pada hari Isnin, Aina membaca buku cerita di kantin sekolah sebelum loceng berbunyi. Apakah aktiviti Aina? (Set Pemahaman 1)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -7850,11 +7852,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 1)"
+          "question": "Pada hari Isnin, Aina membaca buku cerita di kantin sekolah sebelum loceng berbunyi. Apakah aktiviti Aina? (Set Pemahaman 1)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-052",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 2)",
+          "q": "Pada hari Selasa, Hakim membawa bekal ke sekolah sebelum bermain di padang. Apakah aktiviti Hakim? (Set Pemahaman 2)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -7869,11 +7871,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 2)"
+          "question": "Pada hari Selasa, Hakim membawa bekal ke sekolah sebelum bermain di padang. Apakah aktiviti Hakim? (Set Pemahaman 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-053",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 3)",
+          "q": "Pada hari Rabu, Faris membaca buku cerita di bilik sains selepas rehat. Apakah aktiviti Faris? (Set Pemahaman 3)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -7888,11 +7890,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 3)"
+          "question": "Pada hari Rabu, Faris membaca buku cerita di bilik sains selepas rehat. Apakah aktiviti Faris? (Set Pemahaman 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-054",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 4)",
+          "q": "Pada hari Khamis, Liyana membawa bekal ke sekolah sebelum pergi ke pasar tani bersama ibu. Apakah aktiviti Liyana? (Set Pemahaman 4)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -7907,11 +7909,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 4)"
+          "question": "Pada hari Khamis, Liyana membawa bekal ke sekolah sebelum pergi ke pasar tani bersama ibu. Apakah aktiviti Liyana? (Set Pemahaman 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-055",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 5)",
+          "q": "Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah semasa menunggu giliran. Apakah aktiviti Iman? (Set Pemahaman 5)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -7926,7 +7928,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 5)"
+          "question": "Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah semasa menunggu giliran. Apakah aktiviti Iman? (Set Pemahaman 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-056",
@@ -8982,7 +8984,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-TATABAHASA-001",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 1)",
+          "q": "Di rumah, baju seragam adik ________ kemas. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 1)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -8997,11 +8999,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 1)"
+          "question": "Di rumah, baju seragam adik ________ kemas. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 1)"
         },
         {
           "id": "BM-TATABAHASA-002",
-          "q": "Isi tempat kosong dengan kata yang betul: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 2)",
+          "q": "Di kelas, Aiman membawa pensel ___ pemadam ke meja. Pilihan: dan/atau/tetapi. (Set Tatabahasa 2)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9016,11 +9018,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 2)"
+          "question": "Di kelas, Aiman membawa pensel ___ pemadam ke meja. Pilihan: dan/atau/tetapi. (Set Tatabahasa 2)"
         },
         {
           "id": "BM-TATABAHASA-003",
-          "q": "Isi tempat kosong dengan kata yang betul: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 3)",
+          "q": "Selepas rehat, mereka pergi ___ perpustakaan sekolah. Pilihan: di/ke/dari. (Set Tatabahasa 3)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9035,11 +9037,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 3)"
+          "question": "Selepas rehat, mereka pergi ___ perpustakaan sekolah. Pilihan: di/ke/dari. (Set Tatabahasa 3)"
         },
         {
           "id": "BM-TATABAHASA-004",
-          "q": "Pilih kata tunjuk yang paling tepat untuk ayat ini: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 4)",
+          "q": "Di padang, bola merah di hujung sana ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 4)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9054,11 +9056,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata tunjuk yang paling tepat untuk ayat ini: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 4)"
+          "question": "Di padang, bola merah di hujung sana ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 4)"
         },
         {
           "id": "BM-TATABAHASA-005",
-          "q": "Pilih kata yang menunjukkan perbuatan sudah berlaku dalam ayat ini: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 5)",
+          "q": "Di rumah, kami ___ menyiapkan latihan Matematik sebelum bermain. Pilihan: belum/sudah/akan. (Set Tatabahasa 5)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9073,11 +9075,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata yang menunjukkan perbuatan sudah berlaku dalam ayat ini: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 5)"
+          "question": "Di rumah, kami ___ menyiapkan latihan Matematik sebelum bermain. Pilihan: belum/sudah/akan. (Set Tatabahasa 5)"
         },
         {
           "id": "BM-TATABAHASA-006",
-          "q": "Isi tempat kosong dengan kata yang betul: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 6)",
+          "q": "Di pasar raya, kasut baharu itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 6)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9092,11 +9094,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 6)"
+          "question": "Di pasar raya, kasut baharu itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 6)"
         },
         {
           "id": "BM-TATABAHASA-007",
-          "q": "Tentukan kata hubung yang paling tepat dalam ayat ini: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 7)",
+          "q": "Di bilik darjah, Aiman membawa pensel ___ pemadam dalam begnya. Pilihan: dan/atau/tetapi. (Set Tatabahasa 7)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9111,11 +9113,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata hubung yang paling tepat dalam ayat ini: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 7)"
+          "question": "Di bilik darjah, Aiman membawa pensel ___ pemadam dalam begnya. Pilihan: dan/atau/tetapi. (Set Tatabahasa 7)"
         },
         {
           "id": "BM-TATABAHASA-008",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 8)",
+          "q": "Pada waktu petang, mereka pergi ___ perpustakaan untuk membaca buku. Pilihan: di/ke/dari. (Set Tatabahasa 8)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9130,11 +9132,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 8)"
+          "question": "Pada waktu petang, mereka pergi ___ perpustakaan untuk membaca buku. Pilihan: di/ke/dari. (Set Tatabahasa 8)"
         },
         {
           "id": "BM-TATABAHASA-009",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 9)",
+          "q": "Di tepi padang, bola merah di sebelah kanan ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 9)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9149,11 +9151,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 9)"
+          "question": "Di tepi padang, bola merah di sebelah kanan ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 9)"
         },
         {
           "id": "BM-TATABAHASA-010",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 10)",
+          "q": "Di rumah, kami ___ menyiapkan latihan dan boleh berehat. Pilihan: belum/sudah/akan. (Set Tatabahasa 10)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9168,11 +9170,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 10)"
+          "question": "Di rumah, kami ___ menyiapkan latihan dan boleh berehat. Pilihan: belum/sudah/akan. (Set Tatabahasa 10)"
         },
         {
           "id": "BM-TATABAHASA-011",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 11)",
+          "q": "Di klinik, luka pada tangan adik ________ kecil. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 11)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9187,11 +9189,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 11)"
+          "question": "Di klinik, luka pada tangan adik ________ kecil. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 11)"
         },
         {
           "id": "BM-TATABAHASA-012",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 12)",
+          "q": "Dialog di sekolah: \"Aiman membawa pensel ___ pemadam,\" kata cikgu. Pilihan: dan/atau/tetapi. (Set Tatabahasa 12)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9206,11 +9208,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 12)"
+          "question": "Dialog di sekolah: \"Aiman membawa pensel ___ pemadam,\" kata cikgu. Pilihan: dan/atau/tetapi. (Set Tatabahasa 12)"
         },
         {
           "id": "BM-TATABAHASA-013",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 13)",
+          "q": "Dialog di rumah: \"Mereka pergi ___ perpustakaan selepas makan tengah hari,\" kata ibu. Pilihan: di/ke/dari. (Set Tatabahasa 13)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9225,11 +9227,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 13)"
+          "question": "Dialog di rumah: \"Mereka pergi ___ perpustakaan selepas makan tengah hari,\" kata ibu. Pilihan: di/ke/dari. (Set Tatabahasa 13)"
         },
         {
           "id": "BM-TATABAHASA-014",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 14)",
+          "q": "Dialog di padang: \"Bola merah di bangku sana ___ milik Amir,\" kata Nabil. Pilihan: itu/ini/tersebut. (Set Tatabahasa 14)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9244,11 +9246,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 14)"
+          "question": "Dialog di padang: \"Bola merah di bangku sana ___ milik Amir,\" kata Nabil. Pilihan: itu/ini/tersebut. (Set Tatabahasa 14)"
         },
         {
           "id": "BM-TATABAHASA-015",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 15)",
+          "q": "Dialog di rumah: \"Kami ___ menyiapkan latihan Bahasa Melayu,\" kata Kak Long. Pilihan: belum/sudah/akan. (Set Tatabahasa 15)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9263,11 +9265,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 15)"
+          "question": "Dialog di rumah: \"Kami ___ menyiapkan latihan Bahasa Melayu,\" kata Kak Long. Pilihan: belum/sudah/akan. (Set Tatabahasa 15)"
         },
         {
           "id": "BM-TATABAHASA-016",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 16)",
+          "q": "Dialog di pasar: \"Sayur ini ________ segar,\" kata penjual. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 16)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9282,11 +9284,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 16)"
+          "question": "Dialog di pasar: \"Sayur ini ________ segar,\" kata penjual. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 16)"
         },
         {
           "id": "BM-TATABAHASA-017",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 17)",
+          "q": "Dialog di kelas seni: \"Aiman membawa pensel ___ pemadam untuk melukis,\" kata guru. Pilihan: dan/atau/tetapi. (Set Tatabahasa 17)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9301,11 +9303,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 17)"
+          "question": "Dialog di kelas seni: \"Aiman membawa pensel ___ pemadam untuk melukis,\" kata guru. Pilihan: dan/atau/tetapi. (Set Tatabahasa 17)"
         },
         {
           "id": "BM-TATABAHASA-018",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 18)",
+          "q": "Dialog di sekolah: \"Mereka pergi ___ perpustakaan selepas kelas,\" kata pengawas. Pilihan: di/ke/dari. (Set Tatabahasa 18)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9320,11 +9322,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 18)"
+          "question": "Dialog di sekolah: \"Mereka pergi ___ perpustakaan selepas kelas,\" kata pengawas. Pilihan: di/ke/dari. (Set Tatabahasa 18)"
         },
         {
           "id": "BM-TATABAHASA-019",
-          "q": "Isi tempat kosong dengan kata yang betul: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 19)",
+          "q": "Dialog di taman: \"Bola merah yang jauh di sana ___ milik Amir,\" kata Siti. Pilihan: itu/ini/tersebut. (Set Tatabahasa 19)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9339,11 +9341,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 19)"
+          "question": "Dialog di taman: \"Bola merah yang jauh di sana ___ milik Amir,\" kata Siti. Pilihan: itu/ini/tersebut. (Set Tatabahasa 19)"
         },
         {
           "id": "BM-TATABAHASA-020",
-          "q": "Isi tempat kosong dengan kata yang betul: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 20)",
+          "q": "Dialog di rumah: \"Kami ___ menyiapkan latihan dan boleh keluar bermain,\" kata adik. Pilihan: belum/sudah/akan. (Set Tatabahasa 20)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9358,11 +9360,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 20)"
+          "question": "Dialog di rumah: \"Kami ___ menyiapkan latihan dan boleh keluar bermain,\" kata adik. Pilihan: belum/sudah/akan. (Set Tatabahasa 20)"
         },
         {
           "id": "BM-TATABAHASA-021",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 21)",
+          "q": "Petikan pendek: Baju seragam murid itu ________ kemas semasa perhimpunan. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 21)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9377,11 +9379,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 21)"
+          "question": "Petikan pendek: Baju seragam murid itu ________ kemas semasa perhimpunan. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 21)"
         },
         {
           "id": "BM-TATABAHASA-022",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 22)",
+          "q": "Petikan pendek: Aiman membawa pensel ___ pemadam ke kelas seni. Pilihan: dan/atau/tetapi. (Set Tatabahasa 22)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9396,11 +9398,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 22)"
+          "question": "Petikan pendek: Aiman membawa pensel ___ pemadam ke kelas seni. Pilihan: dan/atau/tetapi. (Set Tatabahasa 22)"
         },
         {
           "id": "BM-TATABAHASA-023",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 23)",
+          "q": "Petikan pendek: Murid itu berjalan ___ perpustakaan selepas rehat. Pilihan: di/ke/dari. (Set Tatabahasa 23)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9415,11 +9417,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 23)"
+          "question": "Petikan pendek: Murid itu berjalan ___ perpustakaan selepas rehat. Pilihan: di/ke/dari. (Set Tatabahasa 23)"
         },
         {
           "id": "BM-TATABAHASA-024",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 24)",
+          "q": "Petikan pendek: Bola merah di sudut padang ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 24)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9434,11 +9436,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 24)"
+          "question": "Petikan pendek: Bola merah di sudut padang ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 24)"
         },
         {
           "id": "BM-TATABAHASA-025",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 25)",
+          "q": "Petikan pendek: Kami ___ menyiapkan latihan sebelum guru masuk. Pilihan: belum/sudah/akan. (Set Tatabahasa 25)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9453,11 +9455,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 25)"
+          "question": "Petikan pendek: Kami ___ menyiapkan latihan sebelum guru masuk. Pilihan: belum/sudah/akan. (Set Tatabahasa 25)"
         },
         {
           "id": "BM-TATABAHASA-026",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 26)",
+          "q": "Petikan pendek: Baju itu ________ cantik apabila dipakai ke majlis. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 26)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9472,11 +9474,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 26)"
+          "question": "Petikan pendek: Baju itu ________ cantik apabila dipakai ke majlis. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 26)"
         },
         {
           "id": "BM-TATABAHASA-027",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 27)",
+          "q": "Petikan pendek: Aiman membawa pensel ___ pemadam untuk latihan menulis. Pilihan: dan/atau/tetapi. (Set Tatabahasa 27)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9491,11 +9493,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 27)"
+          "question": "Petikan pendek: Aiman membawa pensel ___ pemadam untuk latihan menulis. Pilihan: dan/atau/tetapi. (Set Tatabahasa 27)"
         },
         {
           "id": "BM-TATABAHASA-028",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 28)",
+          "q": "Petikan pendek: Mereka pergi ___ perpustakaan untuk mencari buku cerita. Pilihan: di/ke/dari. (Set Tatabahasa 28)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9510,11 +9512,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 28)"
+          "question": "Petikan pendek: Mereka pergi ___ perpustakaan untuk mencari buku cerita. Pilihan: di/ke/dari. (Set Tatabahasa 28)"
         },
         {
           "id": "BM-TATABAHASA-029",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 29)",
+          "q": "Petikan pendek: Bola merah yang berada di situ ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 29)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9529,11 +9531,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 29)"
+          "question": "Petikan pendek: Bola merah yang berada di situ ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 29)"
         },
         {
           "id": "BM-TATABAHASA-030",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 30)",
+          "q": "Petikan pendek: Kami ___ menyiapkan latihan dan boleh ke kantin. Pilihan: belum/sudah/akan. (Set Tatabahasa 30)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9548,11 +9550,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 30)"
+          "question": "Petikan pendek: Kami ___ menyiapkan latihan dan boleh ke kantin. Pilihan: belum/sudah/akan. (Set Tatabahasa 30)"
         },
         {
           "id": "BM-TATABAHASA-031",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 31)",
+          "q": "KBAT: Jika kamu memuji pakaian rakan, kamu boleh kata baju itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 31)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9567,11 +9569,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 31)"
+          "question": "KBAT: Jika kamu memuji pakaian rakan, kamu boleh kata baju itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 31)"
         },
         {
           "id": "BM-TATABAHASA-032",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 32)",
+          "q": "KBAT: Untuk melukis, Aiman membawa pensel ___ pemadam ke sekolah. Pilihan: dan/atau/tetapi. (Set Tatabahasa 32)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9586,11 +9588,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 32)"
+          "question": "KBAT: Untuk melukis, Aiman membawa pensel ___ pemadam ke sekolah. Pilihan: dan/atau/tetapi. (Set Tatabahasa 32)"
         },
         {
           "id": "BM-TATABAHASA-033",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 33)",
+          "q": "KBAT: Murid itu berlari ___ perpustakaan apabila loceng berbunyi. Pilihan: di/ke/dari. (Set Tatabahasa 33)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9605,11 +9607,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 33)"
+          "question": "KBAT: Murid itu berlari ___ perpustakaan apabila loceng berbunyi. Pilihan: di/ke/dari. (Set Tatabahasa 33)"
         },
         {
           "id": "BM-TATABAHASA-034",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 34)",
+          "q": "KBAT: Bola merah yang jauh di hujung padang ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 34)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9624,11 +9626,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 34)"
+          "question": "KBAT: Bola merah yang jauh di hujung padang ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 34)"
         },
         {
           "id": "BM-TATABAHASA-035",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 35)",
+          "q": "KBAT: Setelah semua kerja siap, kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 35)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9643,11 +9645,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 35)"
+          "question": "KBAT: Setelah semua kerja siap, kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 35)"
         },
         {
           "id": "BM-TATABAHASA-036",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 36)",
+          "q": "KBAT: Baju yang dipakai ke hari sukan itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 36)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9662,11 +9664,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 36)"
+          "question": "KBAT: Baju yang dipakai ke hari sukan itu ________ cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 36)"
         },
         {
           "id": "BM-TATABAHASA-037",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 37)",
+          "q": "KBAT: Dalam beg sekolah, Aiman membawa pensel ___ pemadam supaya senang belajar. Pilihan: dan/atau/tetapi. (Set Tatabahasa 37)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9681,11 +9683,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 37)"
+          "question": "KBAT: Dalam beg sekolah, Aiman membawa pensel ___ pemadam supaya senang belajar. Pilihan: dan/atau/tetapi. (Set Tatabahasa 37)"
         },
         {
           "id": "BM-TATABAHASA-038",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 38)",
+          "q": "KBAT: Selepas makan, mereka pergi ___ perpustakaan untuk membaca. Pilihan: di/ke/dari. (Set Tatabahasa 38)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9700,11 +9702,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 38)"
+          "question": "KBAT: Selepas makan, mereka pergi ___ perpustakaan untuk membaca. Pilihan: di/ke/dari. (Set Tatabahasa 38)"
         },
         {
           "id": "BM-TATABAHASA-039",
-          "q": "Isi tempat kosong dengan kata yang betul: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 39)",
+          "q": "KBAT: Di taman permainan, bola merah di sebelah bangku ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 39)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9719,11 +9721,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong dengan kata yang betul: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 39)"
+          "question": "KBAT: Di taman permainan, bola merah di sebelah bangku ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 39)"
         },
         {
           "id": "BM-TATABAHASA-040",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 40)",
+          "q": "KBAT: Jika latihan siap, kami ___ menyiapkan latihan dan boleh pulang. Pilihan: belum/sudah/akan. (Set Tatabahasa 40)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9738,11 +9740,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 40)"
+          "question": "KBAT: Jika latihan siap, kami ___ menyiapkan latihan dan boleh pulang. Pilihan: belum/sudah/akan. (Set Tatabahasa 40)"
         },
         {
           "id": "BM-TATABAHASA-041",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 41)",
+          "q": "UASA: Baju sekolah murid itu ________ cantik dalam gambar. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 41)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9757,11 +9759,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 41)"
+          "question": "UASA: Baju sekolah murid itu ________ cantik dalam gambar. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 41)"
         },
         {
           "id": "BM-TATABAHASA-042",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 42)",
+          "q": "UASA: Aiman membawa pensel ___ pemadam ke kelas. Pilihan: dan/atau/tetapi. (Set Tatabahasa 42)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9776,11 +9778,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 42)"
+          "question": "UASA: Aiman membawa pensel ___ pemadam ke kelas. Pilihan: dan/atau/tetapi. (Set Tatabahasa 42)"
         },
         {
           "id": "BM-TATABAHASA-043",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 43)",
+          "q": "UASA: Mereka pergi ___ perpustakaan selepas rehat. Pilihan: di/ke/dari. (Set Tatabahasa 43)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9795,11 +9797,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 43)"
+          "question": "UASA: Mereka pergi ___ perpustakaan selepas rehat. Pilihan: di/ke/dari. (Set Tatabahasa 43)"
         },
         {
           "id": "BM-TATABAHASA-044",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 44)",
+          "q": "UASA: Bola merah di atas bangku ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 44)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9814,11 +9816,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 44)"
+          "question": "UASA: Bola merah di atas bangku ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 44)"
         },
         {
           "id": "BM-TATABAHASA-045",
-          "q": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 45)",
+          "q": "UASA: Kami ___ menyiapkan latihan sebelum bermain di padang. Pilihan: belum/sudah/akan. (Set Tatabahasa 45)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9833,11 +9835,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan jawapan yang tepat berdasarkan ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 45)"
+          "question": "UASA: Kami ___ menyiapkan latihan sebelum bermain di padang. Pilihan: belum/sudah/akan. (Set Tatabahasa 45)"
         },
         {
           "id": "BM-TATABAHASA-046",
-          "q": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 46)",
+          "q": "UASA: Baju itu ________ cantik sehingga cikgu memujinya. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 46)",
           "answer": "sangat",
           "accepted": [
             "sangat"
@@ -9852,11 +9854,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih jawapan yang paling tepat berdasarkan ayat berikut: Baju Farah cantik. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 46)"
+          "question": "UASA: Baju itu ________ cantik sehingga cikgu memujinya. Pilihan: sangat/sungguh/amat. (Set Tatabahasa 46)"
         },
         {
           "id": "BM-TATABAHASA-047",
-          "q": "Pilih perkataan yang betul berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 47)",
+          "q": "UASA: Aiman membawa pensel ___ pemadam untuk latihan menulis. Pilihan: dan/atau/tetapi. (Set Tatabahasa 47)",
           "answer": "dan",
           "accepted": [
             "dan"
@@ -9871,11 +9873,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang betul berdasarkan ayat berikut: Aiman membawa pensel ___ pemadam. Pilihan: dan/atau/tetapi. (Set Tatabahasa 47)"
+          "question": "UASA: Aiman membawa pensel ___ pemadam untuk latihan menulis. Pilihan: dan/atau/tetapi. (Set Tatabahasa 47)"
         },
         {
           "id": "BM-TATABAHASA-048",
-          "q": "Lengkapkan ayat berikut berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 48)",
+          "q": "UASA: Mereka pergi ___ perpustakaan untuk mencari buku. Pilihan: di/ke/dari. (Set Tatabahasa 48)",
           "answer": "ke",
           "accepted": [
             "ke"
@@ -9890,11 +9892,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat berikut berdasarkan ayat berikut: Mereka pergi ___ perpustakaan. Pilihan: di/ke/dari. (Set Tatabahasa 48)"
+          "question": "UASA: Mereka pergi ___ perpustakaan untuk mencari buku. Pilihan: di/ke/dari. (Set Tatabahasa 48)"
         },
         {
           "id": "BM-TATABAHASA-049",
-          "q": "Tentukan kata yang sesuai berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 49)",
+          "q": "UASA: Bola merah yang kelihatan di sana ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 49)",
           "answer": "itu",
           "accepted": [
             "itu"
@@ -9909,11 +9911,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan kata yang sesuai berdasarkan ayat berikut: Bola merah ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 49)"
+          "question": "UASA: Bola merah yang kelihatan di sana ___ milik Amir. Pilihan: itu/ini/tersebut. (Set Tatabahasa 49)"
         },
         {
           "id": "BM-TATABAHASA-050",
-          "q": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 50)",
+          "q": "UASA: Kami ___ menyiapkan latihan dan kini sedang berehat. Pilihan: belum/sudah/akan. (Set Tatabahasa 50)",
           "answer": "sudah",
           "accepted": [
             "sudah"
@@ -9928,7 +9930,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih perkataan yang sesuai dalam ayat berdasarkan ayat berikut: Kami ___ menyiapkan latihan. Pilihan: belum/sudah/akan. (Set Tatabahasa 50)"
+          "question": "UASA: Kami ___ menyiapkan latihan dan kini sedang berehat. Pilihan: belum/sudah/akan. (Set Tatabahasa 50)"
         }
       ]
     },
@@ -9939,7 +9941,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-IMBUHAN-001",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 1)",
+          "q": "Di dapur rumah, ibu sedang ___ nasi untuk makan malam. Kata dasar: masak. (Set Imbuhan 1)",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -9954,11 +9956,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 1)"
+          "question": "Di dapur rumah, ibu sedang ___ nasi untuk makan malam. Kata dasar: masak. (Set Imbuhan 1)"
         },
         {
           "id": "BM-IMBUHAN-002",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 2)",
+          "q": "Di halaman rumah, ayah ___ basikal baharu adik yang rosak. Kata dasar: baik. (Set Imbuhan 2)",
           "answer": "membaiki",
           "accepted": [
             "membaiki"
@@ -9973,11 +9975,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 2)"
+          "question": "Di halaman rumah, ayah ___ basikal baharu adik yang rosak. Kata dasar: baik. (Set Imbuhan 2)"
         },
         {
           "id": "BM-IMBUHAN-003",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 3)",
+          "q": "Sebelum tidur, kakak sedang ___ bilik tidurnya supaya lebih selesa. Kata dasar: kemas. (Set Imbuhan 3)",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -9992,11 +9994,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 3)"
+          "question": "Sebelum tidur, kakak sedang ___ bilik tidurnya supaya lebih selesa. Kata dasar: kemas. (Set Imbuhan 3)"
         },
         {
           "id": "BM-IMBUHAN-004",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 4)",
+          "q": "Di kelas, murid itu ___ surat kepada guru untuk latihan bahasa. Kata dasar: tulis. (Set Imbuhan 4)",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -10011,11 +10013,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 4)"
+          "question": "Di kelas, murid itu ___ surat kepada guru untuk latihan bahasa. Kata dasar: tulis. (Set Imbuhan 4)"
         },
         {
           "id": "BM-IMBUHAN-005",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 5)",
+          "q": "Selepas bermain bola di padang, abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 5)",
           "answer": "menyimpan",
           "accepted": [
             "menyimpan"
@@ -10030,11 +10032,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 5)"
+          "question": "Selepas bermain bola di padang, abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 5)"
         },
         {
           "id": "BM-IMBUHAN-006",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 6)",
+          "q": "Di taman sekolah, pekerja sedang ___ pokok bunga baharu. Kata dasar: tanam. (Set Imbuhan 6)",
           "answer": "menanam",
           "accepted": [
             "menanam"
@@ -10049,11 +10051,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 6)"
+          "question": "Di taman sekolah, pekerja sedang ___ pokok bunga baharu. Kata dasar: tanam. (Set Imbuhan 6)"
         },
         {
           "id": "BM-IMBUHAN-007",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 7)",
+          "q": "Sebelum pulang, Aina ___ buku latihan ke dalam beg sekolah. Kata dasar: masuk. (Set Imbuhan 7)",
           "answer": "memasukkan",
           "accepted": [
             "memasukkan"
@@ -10068,11 +10070,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 7)"
+          "question": "Sebelum pulang, Aina ___ buku latihan ke dalam beg sekolah. Kata dasar: masuk. (Set Imbuhan 7)"
         },
         {
           "id": "BM-IMBUHAN-008",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 8)",
+          "q": "Sebelum pulang dari sekolah, kami ___ kelas dengan kemas. Kata dasar: bersih. (Set Imbuhan 8)",
           "answer": "membersihkan",
           "accepted": [
             "membersihkan"
@@ -10087,11 +10089,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 8)"
+          "question": "Sebelum pulang dari sekolah, kami ___ kelas dengan kemas. Kata dasar: bersih. (Set Imbuhan 8)"
         },
         {
           "id": "BM-IMBUHAN-009",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 9)",
+          "q": "Di rumah, ibu sedang ___ nasi dan lauk untuk kami. Kata dasar: masak. (Set Imbuhan 9)",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -10106,11 +10108,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 9)"
+          "question": "Di rumah, ibu sedang ___ nasi dan lauk untuk kami. Kata dasar: masak. (Set Imbuhan 9)"
         },
         {
           "id": "BM-IMBUHAN-010",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 10)",
+          "q": "Di garaj rumah, ayah ___ basikal baharu adik sebelum petang. Kata dasar: baik. (Set Imbuhan 10)",
           "answer": "membaiki",
           "accepted": [
             "membaiki"
@@ -10125,11 +10127,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 10)"
+          "question": "Di garaj rumah, ayah ___ basikal baharu adik sebelum petang. Kata dasar: baik. (Set Imbuhan 10)"
         },
         {
           "id": "BM-IMBUHAN-011",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 11)",
+          "q": "Dialog di rumah: \"Kakak sedang ___ bilik tidur,\" kata ibu sambil tersenyum. Kata dasar: kemas. (Set Imbuhan 11)",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -10144,11 +10146,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 11)"
+          "question": "Dialog di rumah: \"Kakak sedang ___ bilik tidur,\" kata ibu sambil tersenyum. Kata dasar: kemas. (Set Imbuhan 11)"
         },
         {
           "id": "BM-IMBUHAN-012",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 12)",
+          "q": "Dialog di kelas: \"Murid itu ___ surat kepada guru,\" kata cikgu semasa latihan menulis. Kata dasar: tulis. (Set Imbuhan 12)",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -10163,11 +10165,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 12)"
+          "question": "Dialog di kelas: \"Murid itu ___ surat kepada guru,\" kata cikgu semasa latihan menulis. Kata dasar: tulis. (Set Imbuhan 12)"
         },
         {
           "id": "BM-IMBUHAN-013",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 13)",
+          "q": "Dialog di padang: \"Abang ___ bola ke dalam stor selepas bermain,\" kata Farid. Kata dasar: simpan. (Set Imbuhan 13)",
           "answer": "menyimpan",
           "accepted": [
             "menyimpan"
@@ -10182,11 +10184,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 13)"
+          "question": "Dialog di padang: \"Abang ___ bola ke dalam stor selepas bermain,\" kata Farid. Kata dasar: simpan. (Set Imbuhan 13)"
         },
         {
           "id": "BM-IMBUHAN-014",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 14)",
+          "q": "Dialog di taman: \"Pekerja sedang ___ pokok bunga di situ,\" kata murid itu. Kata dasar: tanam. (Set Imbuhan 14)",
           "answer": "menanam",
           "accepted": [
             "menanam"
@@ -10201,11 +10203,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 14)"
+          "question": "Dialog di taman: \"Pekerja sedang ___ pokok bunga di situ,\" kata murid itu. Kata dasar: tanam. (Set Imbuhan 14)"
         },
         {
           "id": "BM-IMBUHAN-015",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 15)",
+          "q": "Dialog di sekolah: \"Aina ___ buku latihan ke dalam beg,\" kata rakannya. Kata dasar: masuk. (Set Imbuhan 15)",
           "answer": "memasukkan",
           "accepted": [
             "memasukkan"
@@ -10220,11 +10222,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 15)"
+          "question": "Dialog di sekolah: \"Aina ___ buku latihan ke dalam beg,\" kata rakannya. Kata dasar: masuk. (Set Imbuhan 15)"
         },
         {
           "id": "BM-IMBUHAN-016",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 16)",
+          "q": "Dialog sebelum pulang: \"Kami ___ kelas dahulu,\" kata ketua kelas. Kata dasar: bersih. (Set Imbuhan 16)",
           "answer": "membersihkan",
           "accepted": [
             "membersihkan"
@@ -10239,11 +10241,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 16)"
+          "question": "Dialog sebelum pulang: \"Kami ___ kelas dahulu,\" kata ketua kelas. Kata dasar: bersih. (Set Imbuhan 16)"
         },
         {
           "id": "BM-IMBUHAN-017",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 17)",
+          "q": "Dialog di dapur: \"Ibu sedang ___ nasi untuk makan tengah hari,\" kata adik. Kata dasar: masak. (Set Imbuhan 17)",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -10258,11 +10260,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 17)"
+          "question": "Dialog di dapur: \"Ibu sedang ___ nasi untuk makan tengah hari,\" kata adik. Kata dasar: masak. (Set Imbuhan 17)"
         },
         {
           "id": "BM-IMBUHAN-018",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 18)",
+          "q": "Dialog di rumah: \"Ayah ___ basikal baharu adik yang rosak,\" kata kakak. Kata dasar: baik. (Set Imbuhan 18)",
           "answer": "membaiki",
           "accepted": [
             "membaiki"
@@ -10277,11 +10279,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 18)"
+          "question": "Dialog di rumah: \"Ayah ___ basikal baharu adik yang rosak,\" kata kakak. Kata dasar: baik. (Set Imbuhan 18)"
         },
         {
           "id": "BM-IMBUHAN-019",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 19)",
+          "q": "Dialog di bilik: \"Kakak sedang ___ bilik tidur supaya cepat siap,\" kata ibu. Kata dasar: kemas. (Set Imbuhan 19)",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -10296,11 +10298,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 19)"
+          "question": "Dialog di bilik: \"Kakak sedang ___ bilik tidur supaya cepat siap,\" kata ibu. Kata dasar: kemas. (Set Imbuhan 19)"
         },
         {
           "id": "BM-IMBUHAN-020",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 20)",
+          "q": "Dialog di kelas: \"Murid itu ___ surat kepada guru untuk latihan,\" kata guru. Kata dasar: tulis. (Set Imbuhan 20)",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -10315,11 +10317,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 20)"
+          "question": "Dialog di kelas: \"Murid itu ___ surat kepada guru untuk latihan,\" kata guru. Kata dasar: tulis. (Set Imbuhan 20)"
         },
         {
           "id": "BM-IMBUHAN-021",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 21)",
+          "q": "Petikan pendek: Selepas bermain di padang, abang ___ bola ke dalam stor sekolah. Kata dasar: simpan. (Set Imbuhan 21)",
           "answer": "menyimpan",
           "accepted": [
             "menyimpan"
@@ -10334,11 +10336,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 21)"
+          "question": "Petikan pendek: Selepas bermain di padang, abang ___ bola ke dalam stor sekolah. Kata dasar: simpan. (Set Imbuhan 21)"
         },
         {
           "id": "BM-IMBUHAN-022",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 22)",
+          "q": "Petikan pendek: Pekerja sedang ___ pokok di taman sekolah pada pagi itu. Kata dasar: tanam. (Set Imbuhan 22)",
           "answer": "menanam",
           "accepted": [
             "menanam"
@@ -10353,11 +10355,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 22)"
+          "question": "Petikan pendek: Pekerja sedang ___ pokok di taman sekolah pada pagi itu. Kata dasar: tanam. (Set Imbuhan 22)"
         },
         {
           "id": "BM-IMBUHAN-023",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 23)",
+          "q": "Petikan pendek: Aina ___ buku latihan ke dalam beg sebelum pulang. Kata dasar: masuk. (Set Imbuhan 23)",
           "answer": "memasukkan",
           "accepted": [
             "memasukkan"
@@ -10372,11 +10374,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 23)"
+          "question": "Petikan pendek: Aina ___ buku latihan ke dalam beg sebelum pulang. Kata dasar: masuk. (Set Imbuhan 23)"
         },
         {
           "id": "BM-IMBUHAN-024",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 24)",
+          "q": "Petikan pendek: Sebelum pulang, kami ___ kelas bersama-sama. Kata dasar: bersih. (Set Imbuhan 24)",
           "answer": "membersihkan",
           "accepted": [
             "membersihkan"
@@ -10391,11 +10393,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 24)"
+          "question": "Petikan pendek: Sebelum pulang, kami ___ kelas bersama-sama. Kata dasar: bersih. (Set Imbuhan 24)"
         },
         {
           "id": "BM-IMBUHAN-025",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 25)",
+          "q": "Petikan pendek: Ibu sedang ___ nasi di dapur untuk keluarga. Kata dasar: masak. (Set Imbuhan 25)",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -10410,11 +10412,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 25)"
+          "question": "Petikan pendek: Ibu sedang ___ nasi di dapur untuk keluarga. Kata dasar: masak. (Set Imbuhan 25)"
         },
         {
           "id": "BM-IMBUHAN-026",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 26)",
+          "q": "Petikan pendek: Ayah ___ basikal baharu adik di halaman rumah. Kata dasar: baik. (Set Imbuhan 26)",
           "answer": "membaiki",
           "accepted": [
             "membaiki"
@@ -10429,11 +10431,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 26)"
+          "question": "Petikan pendek: Ayah ___ basikal baharu adik di halaman rumah. Kata dasar: baik. (Set Imbuhan 26)"
         },
         {
           "id": "BM-IMBUHAN-027",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 27)",
+          "q": "Petikan pendek: Kakak sedang ___ bilik tidur supaya nampak cantik. Kata dasar: kemas. (Set Imbuhan 27)",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -10448,11 +10450,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 27)"
+          "question": "Petikan pendek: Kakak sedang ___ bilik tidur supaya nampak cantik. Kata dasar: kemas. (Set Imbuhan 27)"
         },
         {
           "id": "BM-IMBUHAN-028",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 28)",
+          "q": "Petikan pendek: Murid itu ___ surat kepada guru selepas kelas tamat. Kata dasar: tulis. (Set Imbuhan 28)",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -10467,11 +10469,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 28)"
+          "question": "Petikan pendek: Murid itu ___ surat kepada guru selepas kelas tamat. Kata dasar: tulis. (Set Imbuhan 28)"
         },
         {
           "id": "BM-IMBUHAN-029",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 29)",
+          "q": "Petikan pendek: Abang ___ bola ke dalam stor sebelum hujan turun. Kata dasar: simpan. (Set Imbuhan 29)",
           "answer": "menyimpan",
           "accepted": [
             "menyimpan"
@@ -10486,11 +10488,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 29)"
+          "question": "Petikan pendek: Abang ___ bola ke dalam stor sebelum hujan turun. Kata dasar: simpan. (Set Imbuhan 29)"
         },
         {
           "id": "BM-IMBUHAN-030",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 30)",
+          "q": "Petikan pendek: Pekerja sedang ___ pokok di taman sekolah yang baharu. Kata dasar: tanam. (Set Imbuhan 30)",
           "answer": "menanam",
           "accepted": [
             "menanam"
@@ -10505,11 +10507,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 30)"
+          "question": "Petikan pendek: Pekerja sedang ___ pokok di taman sekolah yang baharu. Kata dasar: tanam. (Set Imbuhan 30)"
         },
         {
           "id": "BM-IMBUHAN-031",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 31)",
+          "q": "KBAT: Untuk bersiap ke sekolah, Aina ___ buku latihan ke dalam beg. Kata dasar: masuk. (Set Imbuhan 31)",
           "answer": "memasukkan",
           "accepted": [
             "memasukkan"
@@ -10524,11 +10526,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 31)"
+          "question": "KBAT: Untuk bersiap ke sekolah, Aina ___ buku latihan ke dalam beg. Kata dasar: masuk. (Set Imbuhan 31)"
         },
         {
           "id": "BM-IMBUHAN-032",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 32)",
+          "q": "KBAT: Sebelum keluar, kami ___ kelas supaya bersih. Kata dasar: bersih. (Set Imbuhan 32)",
           "answer": "membersihkan",
           "accepted": [
             "membersihkan"
@@ -10543,11 +10545,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 32)"
+          "question": "KBAT: Sebelum keluar, kami ___ kelas supaya bersih. Kata dasar: bersih. (Set Imbuhan 32)"
         },
         {
           "id": "BM-IMBUHAN-033",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 33)",
+          "q": "KBAT: Ibu sedang ___ nasi sementara menunggu ayah pulang. Kata dasar: masak. (Set Imbuhan 33)",
           "answer": "memasak",
           "accepted": [
             "memasak"
@@ -10562,11 +10564,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ibu sedang ___ nasi di dapur. Kata dasar: masak. (Set Imbuhan 33)"
+          "question": "KBAT: Ibu sedang ___ nasi sementara menunggu ayah pulang. Kata dasar: masak. (Set Imbuhan 33)"
         },
         {
           "id": "BM-IMBUHAN-034",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 34)",
+          "q": "KBAT: Jika basikal adik rosak, ayah akan ___ basikal itu di garaj. Kata dasar: baik. (Set Imbuhan 34)",
           "answer": "membaiki",
           "accepted": [
             "membaiki"
@@ -10581,11 +10583,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Ayah ___ basikal baharu adik. Kata dasar: baik. (Set Imbuhan 34)"
+          "question": "KBAT: Jika basikal adik rosak, ayah akan ___ basikal itu di garaj. Kata dasar: baik. (Set Imbuhan 34)"
         },
         {
           "id": "BM-IMBUHAN-035",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 35)",
+          "q": "KBAT: Kakak sedang ___ bilik tidur agar lebih selesa untuk belajar. Kata dasar: kemas. (Set Imbuhan 35)",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
@@ -10600,11 +10602,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kakak sedang ___ bilik tidur. Kata dasar: kemas. (Set Imbuhan 35)"
+          "question": "KBAT: Kakak sedang ___ bilik tidur agar lebih selesa untuk belajar. Kata dasar: kemas. (Set Imbuhan 35)"
         },
         {
           "id": "BM-IMBUHAN-036",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 36)",
+          "q": "KBAT: Murid itu ___ surat kepada guru supaya tugasnya siap. Kata dasar: tulis. (Set Imbuhan 36)",
           "answer": "menulis",
           "accepted": [
             "menulis"
@@ -10619,11 +10621,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Murid itu ___ surat kepada guru. Kata dasar: tulis. (Set Imbuhan 36)"
+          "question": "KBAT: Murid itu ___ surat kepada guru supaya tugasnya siap. Kata dasar: tulis. (Set Imbuhan 36)"
         },
         {
           "id": "BM-IMBUHAN-037",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 37)",
+          "q": "KBAT: Selepas bermain, abang ___ bola ke dalam stor supaya tidak hilang. Kata dasar: simpan. (Set Imbuhan 37)",
           "answer": "menyimpan",
           "accepted": [
             "menyimpan"
@@ -10638,11 +10640,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Abang ___ bola ke dalam stor. Kata dasar: simpan. (Set Imbuhan 37)"
+          "question": "KBAT: Selepas bermain, abang ___ bola ke dalam stor supaya tidak hilang. Kata dasar: simpan. (Set Imbuhan 37)"
         },
         {
           "id": "BM-IMBUHAN-038",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 38)",
+          "q": "KBAT: Pekerja sedang ___ pokok di taman sekolah untuk mencantikkan kawasan. Kata dasar: tanam. (Set Imbuhan 38)",
           "answer": "menanam",
           "accepted": [
             "menanam"
@@ -10657,11 +10659,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Pekerja sedang ___ pokok di taman. Kata dasar: tanam. (Set Imbuhan 38)"
+          "question": "KBAT: Pekerja sedang ___ pokok di taman sekolah untuk mencantikkan kawasan. Kata dasar: tanam. (Set Imbuhan 38)"
         },
         {
           "id": "BM-IMBUHAN-039",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 39)",
+          "q": "KBAT: Aina ___ buku ke dalam beg sebelum loceng berbunyi. Kata dasar: masuk. (Set Imbuhan 39)",
           "answer": "memasukkan",
           "accepted": [
             "memasukkan"
@@ -10676,11 +10678,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Aina ___ buku ke dalam beg. Kata dasar: masuk. (Set Imbuhan 39)"
+          "question": "KBAT: Aina ___ buku ke dalam beg sebelum loceng berbunyi. Kata dasar: masuk. (Set Imbuhan 39)"
         },
         {
           "id": "BM-IMBUHAN-040",
-          "q": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 40)",
+          "q": "KBAT: Kami ___ kelas sebelum pulang supaya guru gembira. Kata dasar: bersih. (Set Imbuhan 40)",
           "answer": "membersihkan",
           "accepted": [
             "membersihkan"
@@ -10695,7 +10697,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat dengan kata berimbuhan yang betul: Kami ___ kelas sebelum pulang. Kata dasar: bersih. (Set Imbuhan 40)"
+          "question": "KBAT: Kami ___ kelas sebelum pulang supaya guru gembira. Kata dasar: bersih. (Set Imbuhan 40)"
         }
       ]
     },
@@ -10706,7 +10708,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-BINA_AYAT-001",
-          "q": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 1)",
+          "q": "Tuliskan satu ayat lengkap dengan menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 1)",
           "answer": "Ali sangat rajin mengulang kaji setiap petang.",
           "accepted": [
             "Ali sangat rajin mengulang kaji setiap petang."
@@ -10721,11 +10723,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 1)"
+          "question": "Tuliskan satu ayat lengkap dengan menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 1)"
         },
         {
           "id": "BM-BINA_AYAT-002",
-          "q": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 2)",
+          "q": "Berdasarkan perkataan \"perpustakaan\" dan nama \"Mira\", bina satu ayat yang betul. (Set Bina Ayat 2)",
           "answer": "Mira pergi ke perpustakaan selepas waktu sekolah.",
           "accepted": [
             "Mira pergi ke perpustakaan selepas waktu sekolah."
@@ -10740,11 +10742,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 2)"
+          "question": "Berdasarkan perkataan \"perpustakaan\" dan nama \"Mira\", bina satu ayat yang betul. (Set Bina Ayat 2)"
         },
         {
           "id": "BM-BINA_AYAT-003",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 3)",
+          "q": "Dengan kata \"menyapu\" dan nama \"ibu\", tulis satu ayat yang lengkap. (Set Bina Ayat 3)",
           "answer": "ibu membantu ibu menyapu lantai ruang tamu.",
           "accepted": [
             "ibu membantu ibu menyapu lantai ruang tamu."
@@ -10759,11 +10761,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 3)"
+          "question": "Dengan kata \"menyapu\" dan nama \"ibu\", tulis satu ayat yang lengkap. (Set Bina Ayat 3)"
         },
         {
           "id": "BM-BINA_AYAT-004",
-          "q": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 4)",
+          "q": "Gunakan kata \"beratur\" dan nama \"murid\" untuk membina ayat lengkap. (Set Bina Ayat 4)",
           "answer": "murid beratur dengan tertib di kantin sekolah.",
           "accepted": [
             "murid beratur dengan tertib di kantin sekolah."
@@ -10778,11 +10780,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 4)"
+          "question": "Gunakan kata \"beratur\" dan nama \"murid\" untuk membina ayat lengkap. (Set Bina Ayat 4)"
         },
         {
           "id": "BM-BINA_AYAT-005",
-          "q": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 5)",
+          "q": "Susun satu ayat yang menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 5)",
           "answer": "kakak membawa payung ketika hari hujan.",
           "accepted": [
             "kakak membawa payung ketika hari hujan."
@@ -10797,11 +10799,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 5)"
+          "question": "Susun satu ayat yang menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 5)"
         },
         {
           "id": "BM-BINA_AYAT-006",
-          "q": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 6)",
+          "q": "Bina ayat lengkap dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 6)",
           "answer": "datuk berkebun bersama datuk pada hujung minggu.",
           "accepted": [
             "datuk berkebun bersama datuk pada hujung minggu."
@@ -10816,11 +10818,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 6)"
+          "question": "Bina ayat lengkap dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 6)"
         },
         {
           "id": "BM-BINA_AYAT-007",
-          "q": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 7)",
+          "q": "Tulis ayat lengkap dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 7)",
           "answer": "adik bersarapan sebelum ke sekolah.",
           "accepted": [
             "adik bersarapan sebelum ke sekolah."
@@ -10835,11 +10837,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 7)"
+          "question": "Tulis ayat lengkap dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 7)"
         },
         {
           "id": "BM-BINA_AYAT-008",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 8)",
+          "q": "Dengan kata \"menabung\" dan nama \"Farid\", bina satu ayat lengkap. (Set Bina Ayat 8)",
           "answer": "Farid menabung wang saku di dalam tabung.",
           "accepted": [
             "Farid menabung wang saku di dalam tabung."
@@ -10854,11 +10856,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 8)"
+          "question": "Dengan kata \"menabung\" dan nama \"Farid\", bina satu ayat lengkap. (Set Bina Ayat 8)"
         },
         {
           "id": "BM-BINA_AYAT-009",
-          "q": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 9)",
+          "q": "Tuliskan ayat yang sesuai menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 9)",
           "answer": "Ali sangat rajin mengulang kaji setiap petang.",
           "accepted": [
             "Ali sangat rajin mengulang kaji setiap petang."
@@ -10873,11 +10875,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 9)"
+          "question": "Tuliskan ayat yang sesuai menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 9)"
         },
         {
           "id": "BM-BINA_AYAT-010",
-          "q": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 10)",
+          "q": "Bina ayat yang lengkap dengan perkataan \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 10)",
           "answer": "Mira pergi ke perpustakaan selepas waktu sekolah.",
           "accepted": [
             "Mira pergi ke perpustakaan selepas waktu sekolah."
@@ -10892,11 +10894,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 10)"
+          "question": "Bina ayat yang lengkap dengan perkataan \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 10)"
         },
         {
           "id": "BM-BINA_AYAT-011",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 11)",
+          "q": "Gunakan kata \"menyapu\" dan nama \"ibu\" untuk membina ayat. (Set Bina Ayat 11)",
           "answer": "ibu membantu ibu menyapu lantai ruang tamu.",
           "accepted": [
             "ibu membantu ibu menyapu lantai ruang tamu."
@@ -10911,11 +10913,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 11)"
+          "question": "Gunakan kata \"menyapu\" dan nama \"ibu\" untuk membina ayat. (Set Bina Ayat 11)"
         },
         {
           "id": "BM-BINA_AYAT-012",
-          "q": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 12)",
+          "q": "Tulis satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 12)",
           "answer": "murid beratur dengan tertib di kantin sekolah.",
           "accepted": [
             "murid beratur dengan tertib di kantin sekolah."
@@ -10930,11 +10932,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 12)"
+          "question": "Tulis satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 12)"
         },
         {
           "id": "BM-BINA_AYAT-013",
-          "q": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 13)",
+          "q": "Dengan kata \"hujan\" dan nama \"kakak\", bina satu ayat yang betul. (Set Bina Ayat 13)",
           "answer": "kakak membawa payung ketika hari hujan.",
           "accepted": [
             "kakak membawa payung ketika hari hujan."
@@ -10949,11 +10951,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 13)"
+          "question": "Dengan kata \"hujan\" dan nama \"kakak\", bina satu ayat yang betul. (Set Bina Ayat 13)"
         },
         {
           "id": "BM-BINA_AYAT-014",
-          "q": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 14)",
+          "q": "Lengkapkan dengan satu ayat menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 14)",
           "answer": "datuk berkebun bersama datuk pada hujung minggu.",
           "accepted": [
             "datuk berkebun bersama datuk pada hujung minggu."
@@ -10968,11 +10970,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 14)"
+          "question": "Lengkapkan dengan satu ayat menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 14)"
         },
         {
           "id": "BM-BINA_AYAT-015",
-          "q": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 15)",
+          "q": "Bina satu ayat yang lengkap dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 15)",
           "answer": "adik bersarapan sebelum ke sekolah.",
           "accepted": [
             "adik bersarapan sebelum ke sekolah."
@@ -10987,11 +10989,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 15)"
+          "question": "Bina satu ayat yang lengkap dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 15)"
         },
         {
           "id": "BM-BINA_AYAT-016",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 16)",
+          "q": "Susun ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 16)",
           "answer": "Farid menabung wang saku di dalam tabung.",
           "accepted": [
             "Farid menabung wang saku di dalam tabung."
@@ -11006,11 +11008,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 16)"
+          "question": "Susun ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 16)"
         },
         {
           "id": "BM-BINA_AYAT-017",
-          "q": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 17)",
+          "q": "Tulis ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 17)",
           "answer": "Ali sangat rajin mengulang kaji setiap petang.",
           "accepted": [
             "Ali sangat rajin mengulang kaji setiap petang."
@@ -11025,11 +11027,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 17)"
+          "question": "Tulis ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 17)"
         },
         {
           "id": "BM-BINA_AYAT-018",
-          "q": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 18)",
+          "q": "Berdasarkan kata \"perpustakaan\" dan nama \"Mira\", bina ayat lengkap. (Set Bina Ayat 18)",
           "answer": "Mira pergi ke perpustakaan selepas waktu sekolah.",
           "accepted": [
             "Mira pergi ke perpustakaan selepas waktu sekolah."
@@ -11044,11 +11046,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 18)"
+          "question": "Berdasarkan kata \"perpustakaan\" dan nama \"Mira\", bina ayat lengkap. (Set Bina Ayat 18)"
         },
         {
           "id": "BM-BINA_AYAT-019",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 19)",
+          "q": "Gunakan kata \"menyapu\" dan nama \"ibu\" untuk bina ayat lengkap. (Set Bina Ayat 19)",
           "answer": "ibu membantu ibu menyapu lantai ruang tamu.",
           "accepted": [
             "ibu membantu ibu menyapu lantai ruang tamu."
@@ -11063,11 +11065,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 19)"
+          "question": "Gunakan kata \"menyapu\" dan nama \"ibu\" untuk bina ayat lengkap. (Set Bina Ayat 19)"
         },
         {
           "id": "BM-BINA_AYAT-020",
-          "q": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 20)",
+          "q": "Bina ayat yang lengkap dengan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 20)",
           "answer": "murid beratur dengan tertib di kantin sekolah.",
           "accepted": [
             "murid beratur dengan tertib di kantin sekolah."
@@ -11082,11 +11084,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 20)"
+          "question": "Bina ayat yang lengkap dengan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 20)"
         },
         {
           "id": "BM-BINA_AYAT-021",
-          "q": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 21)",
+          "q": "Tulis ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 21)",
           "answer": "kakak membawa payung ketika hari hujan.",
           "accepted": [
             "kakak membawa payung ketika hari hujan."
@@ -11101,11 +11103,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 21)"
+          "question": "Tulis ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 21)"
         },
         {
           "id": "BM-BINA_AYAT-022",
-          "q": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 22)",
+          "q": "Dengan kata \"berkebun\" dan nama \"datuk\", bina satu ayat. (Set Bina Ayat 22)",
           "answer": "datuk berkebun bersama datuk pada hujung minggu.",
           "accepted": [
             "datuk berkebun bersama datuk pada hujung minggu."
@@ -11120,11 +11122,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 22)"
+          "question": "Dengan kata \"berkebun\" dan nama \"datuk\", bina satu ayat. (Set Bina Ayat 22)"
         },
         {
           "id": "BM-BINA_AYAT-023",
-          "q": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 23)",
+          "q": "Bina ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 23)",
           "answer": "adik bersarapan sebelum ke sekolah.",
           "accepted": [
             "adik bersarapan sebelum ke sekolah."
@@ -11139,11 +11141,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 23)"
+          "question": "Bina ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 23)"
         },
         {
           "id": "BM-BINA_AYAT-024",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 24)",
+          "q": "Lengkapkan ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 24)",
           "answer": "Farid menabung wang saku di dalam tabung.",
           "accepted": [
             "Farid menabung wang saku di dalam tabung."
@@ -11158,11 +11160,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 24)"
+          "question": "Lengkapkan ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 24)"
         },
         {
           "id": "BM-BINA_AYAT-025",
-          "q": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 25)",
+          "q": "Tuliskan satu ayat yang lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 25)",
           "answer": "Ali sangat rajin mengulang kaji setiap petang.",
           "accepted": [
             "Ali sangat rajin mengulang kaji setiap petang."
@@ -11177,11 +11179,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 25)"
+          "question": "Tuliskan satu ayat yang lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 25)"
         },
         {
           "id": "BM-BINA_AYAT-026",
-          "q": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 26)",
+          "q": "Bina ayat yang sesuai dengan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 26)",
           "answer": "Mira pergi ke perpustakaan selepas waktu sekolah.",
           "accepted": [
             "Mira pergi ke perpustakaan selepas waktu sekolah."
@@ -11196,11 +11198,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 26)"
+          "question": "Bina ayat yang sesuai dengan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 26)"
         },
         {
           "id": "BM-BINA_AYAT-027",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 27)",
+          "q": "Susun satu ayat menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 27)",
           "answer": "ibu membantu ibu menyapu lantai ruang tamu.",
           "accepted": [
             "ibu membantu ibu menyapu lantai ruang tamu."
@@ -11215,11 +11217,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 27)"
+          "question": "Susun satu ayat menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 27)"
         },
         {
           "id": "BM-BINA_AYAT-028",
-          "q": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 28)",
+          "q": "Gunakan kata \"beratur\" dan nama \"murid\" untuk menulis ayat lengkap. (Set Bina Ayat 28)",
           "answer": "murid beratur dengan tertib di kantin sekolah.",
           "accepted": [
             "murid beratur dengan tertib di kantin sekolah."
@@ -11234,11 +11236,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 28)"
+          "question": "Gunakan kata \"beratur\" dan nama \"murid\" untuk menulis ayat lengkap. (Set Bina Ayat 28)"
         },
         {
           "id": "BM-BINA_AYAT-029",
-          "q": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 29)",
+          "q": "Bina ayat lengkap yang menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 29)",
           "answer": "kakak membawa payung ketika hari hujan.",
           "accepted": [
             "kakak membawa payung ketika hari hujan."
@@ -11253,11 +11255,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 29)"
+          "question": "Bina ayat lengkap yang menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 29)"
         },
         {
           "id": "BM-BINA_AYAT-030",
-          "q": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 30)",
+          "q": "Tuliskan ayat lengkap dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 30)",
           "answer": "datuk berkebun bersama datuk pada hujung minggu.",
           "accepted": [
             "datuk berkebun bersama datuk pada hujung minggu."
@@ -11272,11 +11274,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 30)"
+          "question": "Tuliskan ayat lengkap dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 30)"
         },
         {
           "id": "BM-BINA_AYAT-031",
-          "q": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 31)",
+          "q": "KBAT: Setelah bangun awal, adik perlu menggunakan kata \"sarapan\" dan nama \"adik\" untuk bina ayat. (Set Bina Ayat 31)",
           "answer": "adik bersarapan sebelum ke sekolah.",
           "accepted": [
             "adik bersarapan sebelum ke sekolah."
@@ -11291,11 +11293,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 31)"
+          "question": "KBAT: Setelah bangun awal, adik perlu menggunakan kata \"sarapan\" dan nama \"adik\" untuk bina ayat. (Set Bina Ayat 31)"
         },
         {
           "id": "BM-BINA_AYAT-032",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 32)",
+          "q": "KBAT: Untuk berjimat, bina ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 32)",
           "answer": "Farid menabung wang saku di dalam tabung.",
           "accepted": [
             "Farid menabung wang saku di dalam tabung."
@@ -11310,11 +11312,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 32)"
+          "question": "KBAT: Untuk berjimat, bina ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 32)"
         },
         {
           "id": "BM-BINA_AYAT-033",
-          "q": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 33)",
+          "q": "KBAT: Ali ingin mendapat markah baik, jadi bina ayat dengan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 33)",
           "answer": "Ali sangat rajin mengulang kaji setiap petang.",
           "accepted": [
             "Ali sangat rajin mengulang kaji setiap petang."
@@ -11329,11 +11331,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 33)"
+          "question": "KBAT: Ali ingin mendapat markah baik, jadi bina ayat dengan kata \"rajin\" dan nama \"Ali\". (Set Bina Ayat 33)"
         },
         {
           "id": "BM-BINA_AYAT-034",
-          "q": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 34)",
+          "q": "KBAT: Mira suka membaca, jadi bina ayat dengan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 34)",
           "answer": "Mira pergi ke perpustakaan selepas waktu sekolah.",
           "accepted": [
             "Mira pergi ke perpustakaan selepas waktu sekolah."
@@ -11348,11 +11350,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 34)"
+          "question": "KBAT: Mira suka membaca, jadi bina ayat dengan kata \"perpustakaan\" dan nama \"Mira\". (Set Bina Ayat 34)"
         },
         {
           "id": "BM-BINA_AYAT-035",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 35)",
+          "q": "KBAT: Untuk menolong ibu, bina ayat menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 35)",
           "answer": "ibu membantu ibu menyapu lantai ruang tamu.",
           "accepted": [
             "ibu membantu ibu menyapu lantai ruang tamu."
@@ -11367,11 +11369,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 35)"
+          "question": "KBAT: Untuk menolong ibu, bina ayat menggunakan kata \"menyapu\" dan nama \"ibu\". (Set Bina Ayat 35)"
         },
         {
           "id": "BM-BINA_AYAT-036",
-          "q": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 36)",
+          "q": "KBAT: Di kantin, murid perlu berdisiplin. Bina ayat dengan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 36)",
           "answer": "murid beratur dengan tertib di kantin sekolah.",
           "accepted": [
             "murid beratur dengan tertib di kantin sekolah."
@@ -11386,11 +11388,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 36)"
+          "question": "KBAT: Di kantin, murid perlu berdisiplin. Bina ayat dengan kata \"beratur\" dan nama \"murid\". (Set Bina Ayat 36)"
         },
         {
           "id": "BM-BINA_AYAT-037",
-          "q": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 37)",
+          "q": "KBAT: Cuaca mendung, jadi bina ayat dengan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 37)",
           "answer": "kakak membawa payung ketika hari hujan.",
           "accepted": [
             "kakak membawa payung ketika hari hujan."
@@ -11405,11 +11407,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 37)"
+          "question": "KBAT: Cuaca mendung, jadi bina ayat dengan kata \"hujan\" dan nama \"kakak\". (Set Bina Ayat 37)"
         },
         {
           "id": "BM-BINA_AYAT-038",
-          "q": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 38)",
+          "q": "KBAT: Datuk rajin menjaga pokok. Bina ayat dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 38)",
           "answer": "datuk berkebun bersama datuk pada hujung minggu.",
           "accepted": [
             "datuk berkebun bersama datuk pada hujung minggu."
@@ -11424,11 +11426,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 38)"
+          "question": "KBAT: Datuk rajin menjaga pokok. Bina ayat dengan kata \"berkebun\" dan nama \"datuk\". (Set Bina Ayat 38)"
         },
         {
           "id": "BM-BINA_AYAT-039",
-          "q": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 39)",
+          "q": "KBAT: Sebelum ke sekolah, adik perlu bersarapan. Bina ayat dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 39)",
           "answer": "adik bersarapan sebelum ke sekolah.",
           "accepted": [
             "adik bersarapan sebelum ke sekolah."
@@ -11443,11 +11445,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 39)"
+          "question": "KBAT: Sebelum ke sekolah, adik perlu bersarapan. Bina ayat dengan kata \"sarapan\" dan nama \"adik\". (Set Bina Ayat 39)"
         },
         {
           "id": "BM-BINA_AYAT-040",
-          "q": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 40)",
+          "q": "KBAT: Farid mahu membeli basikal, jadi bina ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 40)",
           "answer": "Farid menabung wang saku di dalam tabung.",
           "accepted": [
             "Farid menabung wang saku di dalam tabung."
@@ -11462,7 +11464,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bina satu ayat lengkap menggunakan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 40)"
+          "question": "KBAT: Farid mahu membeli basikal, jadi bina ayat dengan kata \"menabung\" dan nama \"Farid\". (Set Bina Ayat 40)"
         }
       ]
     },
@@ -11473,7 +11475,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-SIMPULAN_BAHASA-001",
-          "q": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 1)",
+          "q": "Di rumah, Nora selalu membantu ibu menyapu dan mengemas meja. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 1)",
           "answer": "rajin membantu",
           "accepted": [
             "rajin membantu"
@@ -11488,11 +11490,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 1)"
+          "question": "Di rumah, Nora selalu membantu ibu menyapu dan mengemas meja. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 1)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-002",
-          "q": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 2)",
+          "q": "Pada waktu rehat, Jamil keluar ke halaman sekolah tanpa memakai kasut. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 2)",
           "answer": "berjalan tanpa kasut",
           "accepted": [
             "berjalan tanpa kasut"
@@ -11507,11 +11509,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 2)"
+          "question": "Pada waktu rehat, Jamil keluar ke halaman sekolah tanpa memakai kasut. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 2)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-003",
-          "q": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 3)",
+          "q": "Guru memuji Aina kerana dia bercakap dengan sopan dan lembut kepada rakan-rakan. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 3)",
           "answer": "bercakap dengan lemah lembut",
           "accepted": [
             "bercakap dengan lemah lembut"
@@ -11526,11 +11528,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 3)"
+          "question": "Guru memuji Aina kerana dia bercakap dengan sopan dan lembut kepada rakan-rakan. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 3)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-004",
-          "q": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 4)",
+          "q": "Ketika melawat nenek di kampung, Faris membawa kuih sebagai hadiah kecil. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 4)",
           "answer": "hadiah yang dibawa ketika melawat",
           "accepted": [
             "hadiah yang dibawa ketika melawat"
@@ -11545,11 +11547,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 4)"
+          "question": "Ketika melawat nenek di kampung, Faris membawa kuih sebagai hadiah kecil. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 4)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-005",
-          "q": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 5)",
+          "q": "Semasa permainan teka-teki di kelas, Daniel bijak mencari cara untuk menang. Apakah maksud simpulan bahasa \"panjang akal\"? (Set Simpulan 5)",
           "answer": "bijak mencari jalan penyelesaian",
           "accepted": [
             "bijak mencari jalan penyelesaian"
@@ -11564,11 +11566,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 5)"
+          "question": "Semasa permainan teka-teki di kelas, Daniel bijak mencari cara untuk menang. Apakah maksud simpulan bahasa \"panjang akal\"? (Set Simpulan 5)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-006",
-          "q": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 6)",
+          "q": "Murid itu cepat faham apabila cikgu menerangkan latihan matematik. Apakah maksud simpulan bahasa \"otak cair\"? (Set Simpulan 6)",
           "answer": "cepat memahami pelajaran",
           "accepted": [
             "cepat memahami pelajaran"
@@ -11583,11 +11585,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 6)"
+          "question": "Murid itu cepat faham apabila cikgu menerangkan latihan matematik. Apakah maksud simpulan bahasa \"otak cair\"? (Set Simpulan 6)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-007",
-          "q": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 7)",
+          "q": "Ayah sentiasa bertanya tentang kesihatan adik setiap hari. Apakah maksud simpulan bahasa \"ambil berat\"? (Set Simpulan 7)",
           "answer": "memberi perhatian",
           "accepted": [
             "memberi perhatian"
@@ -11602,11 +11604,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 7)"
+          "question": "Ayah sentiasa bertanya tentang kesihatan adik setiap hari. Apakah maksud simpulan bahasa \"ambil berat\"? (Set Simpulan 7)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-008",
-          "q": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 8)",
+          "q": "Siti berasa gembira dan bangga apabila mendapat hadiah buku. Apakah maksud simpulan bahasa \"besar hati\"? (Set Simpulan 8)",
           "answer": "gembira atau bangga",
           "accepted": [
             "gembira atau bangga"
@@ -11621,11 +11623,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 8)"
+          "question": "Siti berasa gembira dan bangga apabila mendapat hadiah buku. Apakah maksud simpulan bahasa \"besar hati\"? (Set Simpulan 8)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-009",
-          "q": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 9)",
+          "q": "Di dapur, abang membantu ibu membawa pinggan dan mengelap meja. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 9)",
           "answer": "rajin membantu",
           "accepted": [
             "rajin membantu"
@@ -11640,11 +11642,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 9)"
+          "question": "Di dapur, abang membantu ibu membawa pinggan dan mengelap meja. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 9)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-010",
-          "q": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 10)",
+          "q": "Ketika bermain di laman, adik keluar tanpa memakai selipar. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 10)",
           "answer": "berjalan tanpa kasut",
           "accepted": [
             "berjalan tanpa kasut"
@@ -11659,11 +11661,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 10)"
+          "question": "Ketika bermain di laman, adik keluar tanpa memakai selipar. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 10)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-011",
-          "q": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 11)",
+          "q": "Dialog di kantin: \"Kakak itu sangat sopan apabila bercakap,\" kata Mira. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 11)",
           "answer": "bercakap dengan lemah lembut",
           "accepted": [
             "bercakap dengan lemah lembut"
@@ -11678,11 +11680,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 11)"
+          "question": "Dialog di kantin: \"Kakak itu sangat sopan apabila bercakap,\" kata Mira. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 11)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-012",
-          "q": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 12)",
+          "q": "Cerita pendek: Hana pergi melawat jiran yang sakit sambil membawa biskut. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 12)",
           "answer": "hadiah yang dibawa ketika melawat",
           "accepted": [
             "hadiah yang dibawa ketika melawat"
@@ -11697,11 +11699,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 12)"
+          "question": "Cerita pendek: Hana pergi melawat jiran yang sakit sambil membawa biskut. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 12)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-013",
-          "q": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 13)",
+          "q": "Dialog di kelas: \"Nabil pandai mencari cara untuk menyusun buku dengan cepat,\" kata cikgu. Apakah maksud simpulan bahasa \"panjang akal\"? (Set Simpulan 13)",
           "answer": "bijak mencari jalan penyelesaian",
           "accepted": [
             "bijak mencari jalan penyelesaian"
@@ -11716,11 +11718,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 13)"
+          "question": "Dialog di kelas: \"Nabil pandai mencari cara untuk menyusun buku dengan cepat,\" kata cikgu. Apakah maksud simpulan bahasa \"panjang akal\"? (Set Simpulan 13)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-014",
-          "q": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 14)",
+          "q": "Cerita pendek: Murid itu terus faham semasa cikgu mengajar membaca. Apakah maksud simpulan bahasa \"otak cair\"? (Set Simpulan 14)",
           "answer": "cepat memahami pelajaran",
           "accepted": [
             "cepat memahami pelajaran"
@@ -11735,11 +11737,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 14)"
+          "question": "Cerita pendek: Murid itu terus faham semasa cikgu mengajar membaca. Apakah maksud simpulan bahasa \"otak cair\"? (Set Simpulan 14)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-015",
-          "q": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 15)",
+          "q": "Dialog di rumah: \"Ibu selalu bertanya jika saya demam,\" kata Syafiq. Apakah maksud simpulan bahasa \"ambil berat\"? (Set Simpulan 15)",
           "answer": "memberi perhatian",
           "accepted": [
             "memberi perhatian"
@@ -11754,11 +11756,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 15)"
+          "question": "Dialog di rumah: \"Ibu selalu bertanya jika saya demam,\" kata Syafiq. Apakah maksud simpulan bahasa \"ambil berat\"? (Set Simpulan 15)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-016",
-          "q": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 16)",
+          "q": "Cerita pendek: Aina tersenyum lebar apabila namanya diumumkan sebagai pemenang. Apakah maksud simpulan bahasa \"besar hati\"? (Set Simpulan 16)",
           "answer": "gembira atau bangga",
           "accepted": [
             "gembira atau bangga"
@@ -11773,11 +11775,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 16)"
+          "question": "Cerita pendek: Aina tersenyum lebar apabila namanya diumumkan sebagai pemenang. Apakah maksud simpulan bahasa \"besar hati\"? (Set Simpulan 16)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-017",
-          "q": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 17)",
+          "q": "Dialog di taman: \"Dia sentiasa membantu ayah menyiram pokok,\" kata abang. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 17)",
           "answer": "rajin membantu",
           "accepted": [
             "rajin membantu"
@@ -11792,11 +11794,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 17)"
+          "question": "Dialog di taman: \"Dia sentiasa membantu ayah menyiram pokok,\" kata abang. Apakah maksud simpulan bahasa \"ringan tulang\"? (Set Simpulan 17)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-018",
-          "q": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 18)",
+          "q": "Di halaman rumah, budak itu berlari tanpa kasut selepas hujan reda. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 18)",
           "answer": "berjalan tanpa kasut",
           "accepted": [
             "berjalan tanpa kasut"
@@ -11811,11 +11813,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 18)"
+          "question": "Di halaman rumah, budak itu berlari tanpa kasut selepas hujan reda. Apakah maksud simpulan bahasa \"kaki ayam\"? (Set Simpulan 18)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-019",
-          "q": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 19)",
+          "q": "Dialog di sekolah: \"Dia bercakap dengan lembut kepada cikgu,\" kata rakan sekelas. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 19)",
           "answer": "bercakap dengan lemah lembut",
           "accepted": [
             "bercakap dengan lemah lembut"
@@ -11830,11 +11832,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 19)"
+          "question": "Dialog di sekolah: \"Dia bercakap dengan lembut kepada cikgu,\" kata rakan sekelas. Apakah maksud simpulan bahasa \"mulut manis\"? (Set Simpulan 19)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-020",
-          "q": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 20)",
+          "q": "Cerita pendek: Semasa pulang dari kampung, nenek membawa dodol untuk cucu-cucunya. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 20)",
           "answer": "hadiah yang dibawa ketika melawat",
           "accepted": [
             "hadiah yang dibawa ketika melawat"
@@ -11849,11 +11851,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 20)"
+          "question": "Cerita pendek: Semasa pulang dari kampung, nenek membawa dodol untuk cucu-cucunya. Apakah maksud simpulan bahasa \"buah tangan\"? (Set Simpulan 20)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-021",
-          "q": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 21)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Seorang murid menggunakan akal untuk mencari cara menyelesaikan masalah. Apakah simpulan bahasa yang sesuai? (Set Simpulan 21)",
           "answer": "bijak mencari jalan penyelesaian",
           "accepted": [
             "bijak mencari jalan penyelesaian"
@@ -11868,11 +11870,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 21)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Seorang murid menggunakan akal untuk mencari cara menyelesaikan masalah. Apakah simpulan bahasa yang sesuai? (Set Simpulan 21)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-022",
-          "q": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 22)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Murid itu cepat faham pelajaran baharu. Apakah simpulan bahasa yang sesuai? (Set Simpulan 22)",
           "answer": "cepat memahami pelajaran",
           "accepted": [
             "cepat memahami pelajaran"
@@ -11887,11 +11889,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 22)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Murid itu cepat faham pelajaran baharu. Apakah simpulan bahasa yang sesuai? (Set Simpulan 22)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-023",
-          "q": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 23)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Ayah selalu bertanya tentang pelajaran dan kesihatan anak. Apakah simpulan bahasa yang sesuai? (Set Simpulan 23)",
           "answer": "memberi perhatian",
           "accepted": [
             "memberi perhatian"
@@ -11906,11 +11908,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 23)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Ayah selalu bertanya tentang pelajaran dan kesihatan anak. Apakah simpulan bahasa yang sesuai? (Set Simpulan 23)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-024",
-          "q": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 24)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Adik berasa bangga selepas menang pertandingan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 24)",
           "answer": "gembira atau bangga",
           "accepted": [
             "gembira atau bangga"
@@ -11925,11 +11927,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 24)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Adik berasa bangga selepas menang pertandingan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 24)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-025",
-          "q": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 25)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Kakak rajin membantu ibu di dapur tanpa disuruh. Apakah simpulan bahasa yang sesuai? (Set Simpulan 25)",
           "answer": "rajin membantu",
           "accepted": [
             "rajin membantu"
@@ -11944,11 +11946,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 25)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Kakak rajin membantu ibu di dapur tanpa disuruh. Apakah simpulan bahasa yang sesuai? (Set Simpulan 25)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-026",
-          "q": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 26)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Budak itu berjalan keluar rumah tanpa kasut. Apakah simpulan bahasa yang sesuai? (Set Simpulan 26)",
           "answer": "berjalan tanpa kasut",
           "accepted": [
             "berjalan tanpa kasut"
@@ -11963,11 +11965,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 26)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Budak itu berjalan keluar rumah tanpa kasut. Apakah simpulan bahasa yang sesuai? (Set Simpulan 26)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-027",
-          "q": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 27)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Rakan itu bercakap dengan lembut dan sopan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 27)",
           "answer": "bercakap dengan lemah lembut",
           "accepted": [
             "bercakap dengan lemah lembut"
@@ -11982,11 +11984,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 27)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Rakan itu bercakap dengan lembut dan sopan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 27)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-028",
-          "q": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 28)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Anak itu membawa sesuatu semasa melawat datuknya. Apakah simpulan bahasa yang sesuai? (Set Simpulan 28)",
           "answer": "hadiah yang dibawa ketika melawat",
           "accepted": [
             "hadiah yang dibawa ketika melawat"
@@ -12001,11 +12003,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"buah tangan\" dalam ayat Tahun 2? (Set Simpulan 28)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Anak itu membawa sesuatu semasa melawat datuknya. Apakah simpulan bahasa yang sesuai? (Set Simpulan 28)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-029",
-          "q": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 29)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Murid itu bijak mencari jalan keluar semasa permainan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 29)",
           "answer": "bijak mencari jalan penyelesaian",
           "accepted": [
             "bijak mencari jalan penyelesaian"
@@ -12020,11 +12022,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"panjang akal\" dalam ayat Tahun 2? (Set Simpulan 29)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Murid itu bijak mencari jalan keluar semasa permainan. Apakah simpulan bahasa yang sesuai? (Set Simpulan 29)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-030",
-          "q": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 30)",
+          "q": "Padankan simpulan bahasa dengan maksudnya: Kakak cepat memahami semua arahan guru. Apakah simpulan bahasa yang sesuai? (Set Simpulan 30)",
           "answer": "cepat memahami pelajaran",
           "accepted": [
             "cepat memahami pelajaran"
@@ -12039,11 +12041,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"otak cair\" dalam ayat Tahun 2? (Set Simpulan 30)"
+          "question": "Padankan simpulan bahasa dengan maksudnya: Kakak cepat memahami semua arahan guru. Apakah simpulan bahasa yang sesuai? (Set Simpulan 30)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-031",
-          "q": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 31)",
+          "q": "KBAT: Jika kamu melihat rakan sakit dan bertanya khabar, simpulan bahasa manakah yang sesuai? (Set Simpulan 31)",
           "answer": "memberi perhatian",
           "accepted": [
             "memberi perhatian"
@@ -12058,11 +12060,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ambil berat\" dalam ayat Tahun 2? (Set Simpulan 31)"
+          "question": "KBAT: Jika kamu melihat rakan sakit dan bertanya khabar, simpulan bahasa manakah yang sesuai? (Set Simpulan 31)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-032",
-          "q": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 32)",
+          "q": "KBAT: Selepas memenangi pertandingan sajak, Rani berasa bangga. Apakah simpulan bahasa yang sesuai? (Set Simpulan 32)",
           "answer": "gembira atau bangga",
           "accepted": [
             "gembira atau bangga"
@@ -12077,11 +12079,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"besar hati\" dalam ayat Tahun 2? (Set Simpulan 32)"
+          "question": "KBAT: Selepas memenangi pertandingan sajak, Rani berasa bangga. Apakah simpulan bahasa yang sesuai? (Set Simpulan 32)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-033",
-          "q": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 33)",
+          "q": "KBAT: Di rumah, kakak membantu ibu mengangkat pinggan setiap hari. Apakah simpulan bahasa yang sesuai? (Set Simpulan 33)",
           "answer": "rajin membantu",
           "accepted": [
             "rajin membantu"
@@ -12096,11 +12098,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"ringan tulang\" dalam ayat Tahun 2? (Set Simpulan 33)"
+          "question": "KBAT: Di rumah, kakak membantu ibu mengangkat pinggan setiap hari. Apakah simpulan bahasa yang sesuai? (Set Simpulan 33)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-034",
-          "q": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 34)",
+          "q": "KBAT: Seorang budak keluar bermain di halaman tanpa memakai selipar. Apakah simpulan bahasa yang sesuai? (Set Simpulan 34)",
           "answer": "berjalan tanpa kasut",
           "accepted": [
             "berjalan tanpa kasut"
@@ -12115,11 +12117,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"kaki ayam\" dalam ayat Tahun 2? (Set Simpulan 34)"
+          "question": "KBAT: Seorang budak keluar bermain di halaman tanpa memakai selipar. Apakah simpulan bahasa yang sesuai? (Set Simpulan 34)"
         },
         {
           "id": "BM-SIMPULAN_BAHASA-035",
-          "q": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 35)",
+          "q": "KBAT: Rakannya bercakap dengan sopan dan lembut semasa meminta tolong. Apakah simpulan bahasa yang sesuai? (Set Simpulan 35)",
           "answer": "bercakap dengan lemah lembut",
           "accepted": [
             "bercakap dengan lemah lembut"
@@ -12134,7 +12136,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah maksud simpulan bahasa \"mulut manis\" dalam ayat Tahun 2? (Set Simpulan 35)"
+          "question": "KBAT: Rakannya bercakap dengan sopan dan lembut semasa meminta tolong. Apakah simpulan bahasa yang sesuai? (Set Simpulan 35)"
         }
       ]
     },
@@ -12145,7 +12147,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-UASA_KBAT-001",
-          "q": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 1)",
+          "q": "Selepas rehat, Amir nampak kertas pembalut makanan bertaburan di lantai kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 1)",
           "answer": "mengutip sampah dan membuangnya ke dalam tong",
           "accepted": [
             "mengutip sampah dan membuangnya ke dalam tong"
@@ -12160,11 +12162,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 1)"
+          "question": "Selepas rehat, Amir nampak kertas pembalut makanan bertaburan di lantai kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 1)"
         },
         {
           "id": "BM-UASA_KBAT-002",
-          "q": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 2)",
+          "q": "Di dalam kelas, Siti nampak rakan sebangkunya terlupa membawa pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 2)",
           "answer": "meminjamkan pensel dengan sopan",
           "accepted": [
             "meminjamkan pensel dengan sopan"
@@ -12179,11 +12181,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 2)"
+          "question": "Di dalam kelas, Siti nampak rakan sebangkunya terlupa membawa pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 2)"
         },
         {
           "id": "BM-UASA_KBAT-003",
-          "q": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 3)",
+          "q": "Ketika berada di perpustakaan sekolah, Daniel nampak semua murid sedang membaca dengan tenang. Apakah tindakan paling sesuai? (Set UASA KBAT 3)",
           "answer": "bercakap perlahan untuk menjaga suasana",
           "accepted": [
             "bercakap perlahan untuk menjaga suasana"
@@ -12198,11 +12200,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 3)"
+          "question": "Ketika berada di perpustakaan sekolah, Daniel nampak semua murid sedang membaca dengan tenang. Apakah tindakan paling sesuai? (Set UASA KBAT 3)"
         },
         {
           "id": "BM-UASA_KBAT-004",
-          "q": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 4)",
+          "q": "Waktu pulang sekolah, hujan turun dengan lebat. Aina masih menunggu ayahnya di luar pagar. Apakah tindakan paling sesuai? (Set UASA KBAT 4)",
           "answer": "menunggu ibu bapa di tempat berbumbung",
           "accepted": [
             "menunggu ibu bapa di tempat berbumbung"
@@ -12217,11 +12219,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 4)"
+          "question": "Waktu pulang sekolah, hujan turun dengan lebat. Aina masih menunggu ayahnya di luar pagar. Apakah tindakan paling sesuai? (Set UASA KBAT 4)"
         },
         {
           "id": "BM-UASA_KBAT-005",
-          "q": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 5)",
+          "q": "Di rumah, adik menangis kerana keretanya patah. Apakah tindakan paling sesuai? (Set UASA KBAT 5)",
           "answer": "menenangkan adik dan meminta bantuan orang dewasa",
           "accepted": [
             "menenangkan adik dan meminta bantuan orang dewasa"
@@ -12236,11 +12238,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 5)"
+          "question": "Di rumah, adik menangis kerana keretanya patah. Apakah tindakan paling sesuai? (Set UASA KBAT 5)"
         },
         {
           "id": "BM-UASA_KBAT-006",
-          "q": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 6)",
+          "q": "Pada waktu malam, Kamal nampak lampu bilik bacaan masih menyala walaupun tiada sesiapa di dalamnya. Apakah tindakan paling sesuai? (Set UASA KBAT 6)",
           "answer": "menutup suis untuk berjimat elektrik",
           "accepted": [
             "menutup suis untuk berjimat elektrik"
@@ -12255,11 +12257,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 6)"
+          "question": "Pada waktu malam, Kamal nampak lampu bilik bacaan masih menyala walaupun tiada sesiapa di dalamnya. Apakah tindakan paling sesuai? (Set UASA KBAT 6)"
         },
         {
           "id": "BM-UASA_KBAT-007",
-          "q": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 7)",
+          "q": "Di kantin sekolah, barisan murid sangat panjang kerana waktu rehat baru bermula. Apakah tindakan paling sesuai? (Set UASA KBAT 7)",
           "answer": "beratur dengan sabar tanpa memotong barisan",
           "accepted": [
             "beratur dengan sabar tanpa memotong barisan"
@@ -12274,11 +12276,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 7)"
+          "question": "Di kantin sekolah, barisan murid sangat panjang kerana waktu rehat baru bermula. Apakah tindakan paling sesuai? (Set UASA KBAT 7)"
         },
         {
           "id": "BM-UASA_KBAT-008",
-          "q": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 8)",
+          "q": "Selepas aktiviti melukis, Farid nampak beberapa batang pensel warna jatuh di atas lantai kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 8)",
           "answer": "mengutip sampah dan membuangnya ke dalam tong",
           "accepted": [
             "mengutip sampah dan membuangnya ke dalam tong"
@@ -12293,11 +12295,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 8)"
+          "question": "Selepas aktiviti melukis, Farid nampak beberapa batang pensel warna jatuh di atas lantai kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 8)"
         },
         {
           "id": "BM-UASA_KBAT-009",
-          "q": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 9)",
+          "q": "Di padang sekolah, kawan kamu terlupa membawa pensel untuk menulis skor permainan. Apakah tindakan paling sesuai? (Set UASA KBAT 9)",
           "answer": "meminjamkan pensel dengan sopan",
           "accepted": [
             "meminjamkan pensel dengan sopan"
@@ -12312,11 +12314,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 9)"
+          "question": "Di padang sekolah, kawan kamu terlupa membawa pensel untuk menulis skor permainan. Apakah tindakan paling sesuai? (Set UASA KBAT 9)"
         },
         {
           "id": "BM-UASA_KBAT-010",
-          "q": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 10)",
+          "q": "Semasa membaca di perpustakaan, Haziq mendengar rakannya bercakap agak kuat. Apakah tindakan paling sesuai? (Set UASA KBAT 10)",
           "answer": "bercakap perlahan untuk menjaga suasana",
           "accepted": [
             "bercakap perlahan untuk menjaga suasana"
@@ -12331,11 +12333,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 10)"
+          "question": "Semasa membaca di perpustakaan, Haziq mendengar rakannya bercakap agak kuat. Apakah tindakan paling sesuai? (Set UASA KBAT 10)"
         },
         {
           "id": "BM-UASA_KBAT-011",
-          "q": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 11)",
+          "q": "Waktu pulang sekolah, langit gelap dan hujan mula turun. Kakak sedang menunggu di pondok jaga. Apakah tindakan paling sesuai? (Set UASA KBAT 11)",
           "answer": "menunggu ibu bapa di tempat berbumbung",
           "accepted": [
             "menunggu ibu bapa di tempat berbumbung"
@@ -12350,11 +12352,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 11)"
+          "question": "Waktu pulang sekolah, langit gelap dan hujan mula turun. Kakak sedang menunggu di pondok jaga. Apakah tindakan paling sesuai? (Set UASA KBAT 11)"
         },
         {
           "id": "BM-UASA_KBAT-012",
-          "q": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 12)",
+          "q": "Adik kecil kamu menangis kerana patung kegemarannya terjatuh dan rosak sedikit. Apakah tindakan paling sesuai? (Set UASA KBAT 12)",
           "answer": "menenangkan adik dan meminta bantuan orang dewasa",
           "accepted": [
             "menenangkan adik dan meminta bantuan orang dewasa"
@@ -12369,11 +12371,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 12)"
+          "question": "Adik kecil kamu menangis kerana patung kegemarannya terjatuh dan rosak sedikit. Apakah tindakan paling sesuai? (Set UASA KBAT 12)"
         },
         {
           "id": "BM-UASA_KBAT-013",
-          "q": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 13)",
+          "q": "Selepas semua ahli keluarga keluar dari bilik tidur, lampu masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 13)",
           "answer": "menutup suis untuk berjimat elektrik",
           "accepted": [
             "menutup suis untuk berjimat elektrik"
@@ -12388,11 +12390,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 13)"
+          "question": "Selepas semua ahli keluarga keluar dari bilik tidur, lampu masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 13)"
         },
         {
           "id": "BM-UASA_KBAT-014",
-          "q": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 14)",
+          "q": "Di kantin, Amir melihat ramai murid sedang beratur untuk membeli makanan. Apakah tindakan paling sesuai? (Set UASA KBAT 14)",
           "answer": "beratur dengan sabar tanpa memotong barisan",
           "accepted": [
             "beratur dengan sabar tanpa memotong barisan"
@@ -12407,11 +12409,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 14)"
+          "question": "Di kantin, Amir melihat ramai murid sedang beratur untuk membeli makanan. Apakah tindakan paling sesuai? (Set UASA KBAT 14)"
         },
         {
           "id": "BM-UASA_KBAT-015",
-          "q": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 15)",
+          "q": "Selepas majlis kelas, kamu melihat meja guru bersepah dengan kertas kecil. Apakah tindakan paling sesuai? (Set UASA KBAT 15)",
           "answer": "mengutip sampah dan membuangnya ke dalam tong",
           "accepted": [
             "mengutip sampah dan membuangnya ke dalam tong"
@@ -12426,11 +12428,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 15)"
+          "question": "Selepas majlis kelas, kamu melihat meja guru bersepah dengan kertas kecil. Apakah tindakan paling sesuai? (Set UASA KBAT 15)"
         },
         {
           "id": "BM-UASA_KBAT-016",
-          "q": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 16)",
+          "q": "Di dalam kelas seni, rakan kamu terlupa membawa pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 16)",
           "answer": "meminjamkan pensel dengan sopan",
           "accepted": [
             "meminjamkan pensel dengan sopan"
@@ -12445,11 +12447,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 16)"
+          "question": "Di dalam kelas seni, rakan kamu terlupa membawa pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 16)"
         },
         {
           "id": "BM-UASA_KBAT-017",
-          "q": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 17)",
+          "q": "Semasa waktu rehat, beberapa murid sedang membaca buku cerita di perpustakaan. Apakah tindakan paling sesuai? (Set UASA KBAT 17)",
           "answer": "bercakap perlahan untuk menjaga suasana",
           "accepted": [
             "bercakap perlahan untuk menjaga suasana"
@@ -12464,11 +12466,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 17)"
+          "question": "Semasa waktu rehat, beberapa murid sedang membaca buku cerita di perpustakaan. Apakah tindakan paling sesuai? (Set UASA KBAT 17)"
         },
         {
           "id": "BM-UASA_KBAT-018",
-          "q": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 18)",
+          "q": "Waktu pulang, hujan turun dan jalan di luar sekolah basah. Apakah tindakan paling sesuai? (Set UASA KBAT 18)",
           "answer": "menunggu ibu bapa di tempat berbumbung",
           "accepted": [
             "menunggu ibu bapa di tempat berbumbung"
@@ -12483,11 +12485,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 18)"
+          "question": "Waktu pulang, hujan turun dan jalan di luar sekolah basah. Apakah tindakan paling sesuai? (Set UASA KBAT 18)"
         },
         {
           "id": "BM-UASA_KBAT-019",
-          "q": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 19)",
+          "q": "Di rumah, adik menangis kerana basikal mainannya rosak ketika bermain di laman. Apakah tindakan paling sesuai? (Set UASA KBAT 19)",
           "answer": "menenangkan adik dan meminta bantuan orang dewasa",
           "accepted": [
             "menenangkan adik dan meminta bantuan orang dewasa"
@@ -12502,11 +12504,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 19)"
+          "question": "Di rumah, adik menangis kerana basikal mainannya rosak ketika bermain di laman. Apakah tindakan paling sesuai? (Set UASA KBAT 19)"
         },
         {
           "id": "BM-UASA_KBAT-020",
-          "q": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 20)",
+          "q": "Pada malam hari, kamu nampak lampu bilik belajar masih menyala sedangkan ayah sudah tidur. Apakah tindakan paling sesuai? (Set UASA KBAT 20)",
           "answer": "menutup suis untuk berjimat elektrik",
           "accepted": [
             "menutup suis untuk berjimat elektrik"
@@ -12521,11 +12523,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 20)"
+          "question": "Pada malam hari, kamu nampak lampu bilik belajar masih menyala sedangkan ayah sudah tidur. Apakah tindakan paling sesuai? (Set UASA KBAT 20)"
         },
         {
           "id": "BM-UASA_KBAT-021",
-          "q": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 21)",
+          "q": "Di kantin sekolah, barisan untuk membeli makanan sangat panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 21)",
           "answer": "beratur dengan sabar tanpa memotong barisan",
           "accepted": [
             "beratur dengan sabar tanpa memotong barisan"
@@ -12540,11 +12542,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 21)"
+          "question": "Di kantin sekolah, barisan untuk membeli makanan sangat panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 21)"
         },
         {
           "id": "BM-UASA_KBAT-022",
-          "q": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 22)",
+          "q": "Selepas guru keluar, kamu melihat serpihan kertas di bawah meja murid. Apakah tindakan paling sesuai? (Set UASA KBAT 22)",
           "answer": "mengutip sampah dan membuangnya ke dalam tong",
           "accepted": [
             "mengutip sampah dan membuangnya ke dalam tong"
@@ -12559,11 +12561,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 22)"
+          "question": "Selepas guru keluar, kamu melihat serpihan kertas di bawah meja murid. Apakah tindakan paling sesuai? (Set UASA KBAT 22)"
         },
         {
           "id": "BM-UASA_KBAT-023",
-          "q": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 23)",
+          "q": "Semasa latihan menulis, kawan kamu terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 23)",
           "answer": "meminjamkan pensel dengan sopan",
           "accepted": [
             "meminjamkan pensel dengan sopan"
@@ -12578,11 +12580,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 23)"
+          "question": "Semasa latihan menulis, kawan kamu terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 23)"
         },
         {
           "id": "BM-UASA_KBAT-024",
-          "q": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 24)",
+          "q": "Ketika berada di perpustakaan, Aida melihat beberapa murid sedang membaca buku. Apakah tindakan paling sesuai? (Set UASA KBAT 24)",
           "answer": "bercakap perlahan untuk menjaga suasana",
           "accepted": [
             "bercakap perlahan untuk menjaga suasana"
@@ -12597,11 +12599,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 24)"
+          "question": "Ketika berada di perpustakaan, Aida melihat beberapa murid sedang membaca buku. Apakah tindakan paling sesuai? (Set UASA KBAT 24)"
         },
         {
           "id": "BM-UASA_KBAT-025",
-          "q": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 25)",
+          "q": "Waktu pulang sekolah, hujan turun dengan renyai. Kamu masih menunggu di hadapan pejabat sekolah. Apakah tindakan paling sesuai? (Set UASA KBAT 25)",
           "answer": "menunggu ibu bapa di tempat berbumbung",
           "accepted": [
             "menunggu ibu bapa di tempat berbumbung"
@@ -12616,11 +12618,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 25)"
+          "question": "Waktu pulang sekolah, hujan turun dengan renyai. Kamu masih menunggu di hadapan pejabat sekolah. Apakah tindakan paling sesuai? (Set UASA KBAT 25)"
         },
         {
           "id": "BM-UASA_KBAT-026",
-          "q": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 26)",
+          "q": "Di rumah, adik menangis kerana mainannya rosak selepas jatuh dari sofa. Apakah tindakan paling sesuai? (Set UASA KBAT 26)",
           "answer": "menenangkan adik dan meminta bantuan orang dewasa",
           "accepted": [
             "menenangkan adik dan meminta bantuan orang dewasa"
@@ -12635,11 +12637,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 26)"
+          "question": "Di rumah, adik menangis kerana mainannya rosak selepas jatuh dari sofa. Apakah tindakan paling sesuai? (Set UASA KBAT 26)"
         },
         {
           "id": "BM-UASA_KBAT-027",
-          "q": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 27)",
+          "q": "Selepas membaca buku, kamu nampak lampu bilik belajar masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 27)",
           "answer": "menutup suis untuk berjimat elektrik",
           "accepted": [
             "menutup suis untuk berjimat elektrik"
@@ -12654,11 +12656,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 27)"
+          "question": "Selepas membaca buku, kamu nampak lampu bilik belajar masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 27)"
         },
         {
           "id": "BM-UASA_KBAT-028",
-          "q": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 28)",
+          "q": "Di kantin, barisan murid bergerak perlahan kerana ramai yang membeli makanan. Apakah tindakan paling sesuai? (Set UASA KBAT 28)",
           "answer": "beratur dengan sabar tanpa memotong barisan",
           "accepted": [
             "beratur dengan sabar tanpa memotong barisan"
@@ -12673,11 +12675,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 28)"
+          "question": "Di kantin, barisan murid bergerak perlahan kerana ramai yang membeli makanan. Apakah tindakan paling sesuai? (Set UASA KBAT 28)"
         },
         {
           "id": "BM-UASA_KBAT-029",
-          "q": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 29)",
+          "q": "Sebelum pulang, kamu nampak meja kumpulan kamu ada cebisan kertas dan pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 29)",
           "answer": "mengutip sampah dan membuangnya ke dalam tong",
           "accepted": [
             "mengutip sampah dan membuangnya ke dalam tong"
@@ -12692,11 +12694,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak sampah bertaburan di kelas. Apakah tindakan paling sesuai? (Set UASA KBAT 29)"
+          "question": "Sebelum pulang, kamu nampak meja kumpulan kamu ada cebisan kertas dan pensel warna. Apakah tindakan paling sesuai? (Set UASA KBAT 29)"
         },
         {
           "id": "BM-UASA_KBAT-030",
-          "q": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 30)",
+          "q": "Semasa pertandingan menulis di kelas, seorang kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 30)",
           "answer": "meminjamkan pensel dengan sopan",
           "accepted": [
             "meminjamkan pensel dengan sopan"
@@ -12711,11 +12713,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 30)"
+          "question": "Semasa pertandingan menulis di kelas, seorang kawan terlupa membawa pensel. Apakah tindakan paling sesuai? (Set UASA KBAT 30)"
         },
         {
           "id": "BM-UASA_KBAT-031",
-          "q": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 31)",
+          "q": "Ketika guru membaca cerita di perpustakaan, semua murid duduk dengan senyap. Apakah tindakan paling sesuai? (Set UASA KBAT 31)",
           "answer": "bercakap perlahan untuk menjaga suasana",
           "accepted": [
             "bercakap perlahan untuk menjaga suasana"
@@ -12730,11 +12732,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak perpustakaan sedang sunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 31)"
+          "question": "Ketika guru membaca cerita di perpustakaan, semua murid duduk dengan senyap. Apakah tindakan paling sesuai? (Set UASA KBAT 31)"
         },
         {
           "id": "BM-UASA_KBAT-032",
-          "q": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 32)",
+          "q": "Waktu pulang sekolah, hujan mula turun dan jalan menjadi licin. Apakah tindakan paling sesuai? (Set UASA KBAT 32)",
           "answer": "menunggu ibu bapa di tempat berbumbung",
           "accepted": [
             "menunggu ibu bapa di tempat berbumbung"
@@ -12749,11 +12751,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak hujan turun ketika waktu pulang. Apakah tindakan paling sesuai? (Set UASA KBAT 32)"
+          "question": "Waktu pulang sekolah, hujan mula turun dan jalan menjadi licin. Apakah tindakan paling sesuai? (Set UASA KBAT 32)"
         },
         {
           "id": "BM-UASA_KBAT-033",
-          "q": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 33)",
+          "q": "Adik menangis kerana susunannya mainan kegemarannya terjatuh dan pecah sedikit. Apakah tindakan paling sesuai? (Set UASA KBAT 33)",
           "answer": "menenangkan adik dan meminta bantuan orang dewasa",
           "accepted": [
             "menenangkan adik dan meminta bantuan orang dewasa"
@@ -12768,11 +12770,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak adik menangis kerana mainan rosak. Apakah tindakan paling sesuai? (Set UASA KBAT 33)"
+          "question": "Adik menangis kerana susunannya mainan kegemarannya terjatuh dan pecah sedikit. Apakah tindakan paling sesuai? (Set UASA KBAT 33)"
         },
         {
           "id": "BM-UASA_KBAT-034",
-          "q": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 34)",
+          "q": "Pada waktu malam, kamu melihat lampu bilik belajar masih menyala walaupun tiada sesiapa di dalamnya. Apakah tindakan paling sesuai? (Set UASA KBAT 34)",
           "answer": "menutup suis untuk berjimat elektrik",
           "accepted": [
             "menutup suis untuk berjimat elektrik"
@@ -12787,11 +12789,11 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak lampu bilik masih menyala. Apakah tindakan paling sesuai? (Set UASA KBAT 34)"
+          "question": "Pada waktu malam, kamu melihat lampu bilik belajar masih menyala walaupun tiada sesiapa di dalamnya. Apakah tindakan paling sesuai? (Set UASA KBAT 34)"
         },
         {
           "id": "BM-UASA_KBAT-035",
-          "q": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 35)",
+          "q": "Di kantin sekolah, barisan untuk membeli kuih sangat panjang selepas loceng rehat berbunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 35)",
           "answer": "beratur dengan sabar tanpa memotong barisan",
           "accepted": [
             "beratur dengan sabar tanpa memotong barisan"
@@ -12806,7 +12808,7 @@ export const bmSubject = {
           },
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Kamu nampak barisan kantin panjang. Apakah tindakan paling sesuai? (Set UASA KBAT 35)"
+          "question": "Di kantin sekolah, barisan untuk membeli kuih sangat panjang selepas loceng rehat berbunyi. Apakah tindakan paling sesuai? (Set UASA KBAT 35)"
         }
       ]
     }
