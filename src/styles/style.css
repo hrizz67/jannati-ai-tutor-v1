@@ -1806,11 +1806,29 @@ button:active {
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .parent-print-report,
+  .parent-print-report * {
+    visibility: visible !important;
+  }
+
   .sidebar,
   .topbar,
   .quick-actions,
   .ai-chat-overlay,
-  .ai-explain-overlay {
+  .ai-explain-overlay,
+  .print-hide,
+  button,
+  nav,
+  footer {
     display: none !important;
   }
 
@@ -1822,12 +1840,40 @@ button:active {
   .parent-page {
     max-width: none !important;
     padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
   }
 
   .card,
   .parent-metric {
     box-shadow: none !important;
     break-inside: avoid;
+  }
+
+  .parent-print-report {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .parent-print-report .card {
+    margin: 0 0 10mm 0 !important;
+  }
+
+  .parent-report-footer {
+    display: block !important;
+    margin-top: 10mm;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .parent-print-empty {
+    display: block;
+    padding: 12px 14px;
+    border: 1px dashed #cfd8d3;
+    border-radius: 14px;
+    color: #355;
+    background: #f8fbf8;
   }
 }
 
