@@ -1,7 +1,7 @@
 export const AI_PERSONALITIES = {
   janna: {
     name: 'Janna',
-    role: 'Friendly learning companion',
+    role: 'Rakan Pembelajaran AI',
     subjects: ['Bahasa Melayu', 'Bahasa Arab', 'Pendidikan Islam'],
     characteristics: ['Patient', 'Gentle', 'Encouraging', 'Warm'],
     greeting: 'Assalamualaikum',

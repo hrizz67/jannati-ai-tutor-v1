@@ -66,24 +66,24 @@ export function buildLessonPlan({ subjects = [], topicMastery = {} } = {}) {
     todayCandidate?.subject,
     todayCandidate?.topic,
     todayCandidate?.mastery,
-    'Selected because prerequisites are unlocked and mastery needs the most attention.'
+    'Topik ini dipilih kerana syarat terdahulu telah lengkap dan ia masih memerlukan perhatian.'
   );
   const nextLesson = toLesson(
     nextCandidate?.subject,
     nextCandidate?.topic,
     nextCandidate?.mastery,
-    'Next best unlocked topic after today lesson.'
+    'Topik seterusnya yang terbuka selepas pelajaran hari ini.'
   );
   const recommendedReview = toLesson(
     reviewCandidate?.subject,
     reviewCandidate?.topic,
     reviewCandidate?.mastery,
-    'Recommended review from mastery status and review timing.'
+    'Cadangan ulang kaji berdasarkan tahap penguasaan dan masa ulang kaji.'
   );
 
   const reason = todayLesson
-    ? `${todayLesson.title} was chosen because its prerequisites are complete and its mastery status is ${todayLesson.masteryStatus}.`
-    : 'No available lesson was found because all visible topics are blocked or unavailable.';
+    ? `Latihan ini dipilih berdasarkan tahap penguasaan, sejarah pembelajaran dan keseimbangan topik.`
+    : 'Tiada pelajaran tersedia kerana semua topik yang kelihatan masih dikunci atau tidak tersedia.';
 
   return {
     todayLesson,

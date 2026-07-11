@@ -67,7 +67,7 @@ function describeReason(candidate, memory = {}) {
     return `Streak sedang baik, jadi kekalkan momentum dengan cabaran ${candidate.topic.title}.`;
   }
 
-  return `Latihan ${candidate.topic.title} dipilih berdasarkan mastery, sejarah belajar dan keseimbangan topik.`;
+  return `Latihan ${candidate.topic.title} dipilih berdasarkan penguasaan, sejarah belajar dan keseimbangan topik.`;
 }
 
 function priorityLabel(score) {
@@ -145,7 +145,7 @@ export function buildAdaptiveRecommendation({ profile = {}, memory = {}, subject
     nextSubject: selected.subject.id,
     nextTopic: selected.topic.id,
     nextQuestionId: selected.question.id,
-    reason: selected.skspGap ? `Focus ${selected.topic.title} because ${selected.skspGap.SK} / ${selected.skspGap.SP} is not mastered yet.` : describeReason(selected, memory),
+    reason: selected.skspGap ? `Fokus pada ${selected.topic.title} kerana ${selected.skspGap.SK} / ${selected.skspGap.SP} belum dikuasai.` : describeReason(selected, memory),
     priority: priorityLabel(selected.score)
   };
 }

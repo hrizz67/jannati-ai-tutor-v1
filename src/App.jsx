@@ -10,7 +10,7 @@ import MascotCard from './components/MascotCard';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
-import { loadProfile as loadAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
+import { loadProfile as loadAdaptiveStudentProfile, resetProfile as resetAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
 import { rankStrongTopics, rankWeakTopics, explainWeakness } from './ai/adaptive/weakTopicEngine';
 import { generateRecommendation } from './ai/adaptive/recommendationEngine';
 import { getWeeklySummary } from './ai/adaptive/weeklyAnalyticsEngine';
@@ -46,7 +46,7 @@ const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
-const BETA_STATUS = 'Persediaan Beta Tertutup';
+const BETA_STATUS = 'Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
 const storageRecoveryEvents = [];
@@ -112,14 +112,20 @@ function loadProfile() {
 function loadResume() {
   try {
     const saved = localStorage.getItem(RESUME_KEY);
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = normalizeResumeData(JSON.parse(saved));
+      if (parsed) return parsed;
+      clearResume();
+    }
 
     for (const key of LEGACY_RESUME_KEYS) {
       const legacy = localStorage.getItem(key);
       if (legacy) {
-        const parsed = JSON.parse(legacy);
-        localStorage.setItem(RESUME_KEY, JSON.stringify(parsed));
-        return parsed;
+        const parsed = normalizeResumeData(JSON.parse(legacy));
+        if (parsed) {
+          localStorage.setItem(RESUME_KEY, JSON.stringify(parsed));
+          return parsed;
+        }
       }
     }
   } catch {
@@ -132,7 +138,9 @@ function loadResume() {
 
 function saveResume(data) {
   try {
-    localStorage.setItem(RESUME_KEY, JSON.stringify(data));
+    const normalized = normalizeResumeData(data);
+    if (!normalized) return;
+    localStorage.setItem(RESUME_KEY, JSON.stringify(normalized));
   } catch {
     storageRecoveryEvents.push('Simpanan automatik latihan tidak dapat dibuat kerana simpanan peranti tidak tersedia.');
   }
@@ -141,6 +149,106 @@ function saveResume(data) {
 function clearResume() {
   localStorage.removeItem(RESUME_KEY);
   LEGACY_RESUME_KEYS.forEach(key => localStorage.removeItem(key));
+}
+
+function normalizeResumeData(value) {
+  if (!value || typeof value !== 'object') return null;
+  const state = value.state && typeof value.state === 'object' ? value.state : {};
+  const session = value.session && typeof value.session === 'object'
+    ? value.session
+    : state.session && typeof state.session === 'object'
+      ? state.session
+      : null;
+  const questions = Array.isArray(value.questions)
+    ? [...value.questions]
+    : Array.isArray(value.questionIds)
+      ? [...value.questionIds]
+      : Array.isArray(state.questions)
+        ? [...state.questions]
+        : Array.isArray(state.questionIds)
+          ? [...state.questionIds]
+          : null;
+  const subjectId = value.subjectId || value.subject || state.subjectId || state.subject || null;
+  const topicId = value.topicId || value.topic || state.topicId || state.topic || null;
+  const mode = value.mode || value.screen || state.mode || state.screen || 'quiz';
+  const questionIndexValue = Number.isInteger(value.currentIndex)
+    ? value.currentIndex
+    : Number.isInteger(value.questionIndex)
+      ? value.questionIndex
+      : Number.isInteger(state.currentIndex)
+        ? state.currentIndex
+        : Number.isInteger(state.questionIndex)
+          ? state.questionIndex
+          : 0;
+  const answers = Array.isArray(value.answers)
+    ? [...value.answers]
+    : Array.isArray(state.answers)
+      ? [...state.answers]
+      : Array.isArray(session?.answers)
+        ? [...session.answers]
+        : [];
+  const metadata = {
+    ...(state.metadata || {}),
+    ...(value.metadata || {})
+  };
+  const normalized = {
+    version: Number(value.version || state.version || 1),
+    mode,
+    screen: value.screen || state.screen || mode,
+    sessionId: value.sessionId || session?.adaptiveSessionId || state.sessionId || state.adaptiveSessionId || null,
+    subjectId,
+    topicId,
+    questions,
+    questionIds: Array.isArray(value.questionIds)
+      ? [...value.questionIds]
+      : Array.isArray(state.questionIds)
+        ? [...state.questionIds]
+        : questions?.map(item => item?.id).filter(Boolean) || [],
+    currentIndex: questionIndexValue,
+    questionIndex: questionIndexValue,
+    answers,
+    score: Number(value.score ?? state.score ?? session?.percent ?? 0),
+    correct: Number(value.correct ?? state.correct ?? session?.correct ?? 0),
+    wrong: Number(value.wrong ?? state.wrong ?? session?.wrong ?? 0),
+    xp: Number(value.xp ?? state.xp ?? session?.xp ?? 0),
+    coins: Number(value.coins ?? state.coins ?? session?.coins ?? 0),
+    attemptNumber: Number(value.attemptNumber ?? state.attemptNumber ?? session?.attemptNumber ?? 0),
+    metadata,
+    startedAt: value.startedAt || state.startedAt || session?.startedAt || new Date().toISOString(),
+    updatedAt: value.updatedAt || state.updatedAt || new Date().toISOString(),
+    completed: Boolean(value.completed ?? state.completed ?? false),
+    session,
+    state: {
+      ...state,
+      ...value.state,
+      session,
+      metadata
+    }
+  };
+  if (!mode) return null;
+  const questionModes = new Set(['quiz', 'adaptive-practice', 'adaptive-lesson']);
+  if (questionModes.has(mode)) {
+    if (!subjectId || !topicId || !normalized.questions?.length) return null;
+  } else if (mode === 'uasa') {
+    if (!subjectId || !normalized.questions?.length) return null;
+  } else if (['reading', 'listening', 'speaking', 'writing'].includes(mode)) {
+    const hasState = Boolean(normalized.state?.passageId || normalized.state?.setId || normalized.state?.task || normalized.state?.prompt || normalized.state?.title);
+    if (!hasState) return null;
+  }
+  return normalized;
+}
+
+function persistResumeData(data, setResume) {
+  const normalized = normalizeResumeData(data);
+  if (!normalized) return null;
+  saveResume(normalized);
+  setResume(normalized);
+  return normalized;
+}
+
+function clearResumeData(setResume) {
+  clearResume();
+  setResume(null);
 }
 
 function loadFeedbackItems() {
@@ -306,6 +414,7 @@ function aiReply(message, profile, selectedSubject) {
 
 export default function App() {
   const [profile, setProfile] = useState(() => loadStudentCore(loadProfile()));
+  const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile());
   const [resume, setResume] = useState(loadResume);
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
@@ -346,6 +455,10 @@ export default function App() {
     }
   }, [profile, allSubjects]);
 
+  function refreshAdaptiveProfile() {
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+  }
+
   useEffect(() => {
     let alive = true;
     setLoadingSubject(true);
@@ -381,6 +494,7 @@ export default function App() {
 
   async function startProfile(name, avatar) {
     setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
+    refreshAdaptiveProfile();
     setScreen('dashboard');
   }
 
@@ -416,6 +530,8 @@ export default function App() {
         setRecoveryMessages(prev => [...prev, 'Profil demo beta tidak dapat disimpan selepas reset.']);
       }
       setProfile(demoProfile);
+      resetAdaptiveStudentProfile();
+      refreshAdaptiveProfile();
       setResume(null);
       setShowOnboarding(true);
       setScreen('dashboard');
@@ -471,7 +587,21 @@ export default function App() {
     URL.revokeObjectURL(url);
   }
 
+  function isQuestionResumeMode(mode) {
+    return ['quiz', 'adaptive-practice', 'adaptive-lesson'].includes(mode);
+  }
+
   function startTopic(topic, subject = selectedSubject, options = {}) {
+    const resumeMode = options.mode || 'quiz';
+    if (!options.restoreFromResume && resume && !resume.completed && resume.mode === resumeMode && isQuestionResumeMode(resumeMode)) {
+      const sameSubject = resume.subjectId === subject.id;
+      const sameTopic = resume.topicId === topic.id;
+      const hasResumeQuestions = Array.isArray(resume.questions) && resume.questions.length > 0;
+      if (sameSubject && sameTopic && hasResumeQuestions) {
+        startResume();
+        return;
+      }
+    }
     const sourceQuestions = options.questions || topic.questions;
     const diversity = options.preserveQuestions
       ? { questions: sourceQuestions, score: null, debug: [], duplicateIssues: [] }
@@ -488,11 +618,11 @@ export default function App() {
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
     const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const startSession = { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
+    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
     startSession.adaptiveSessionId = adaptiveSessionId;
 
     setActiveSubject(subject);
-    setActiveTopic({ ...topic, questions, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
+    setActiveTopic({ ...topic, questions, resumeMode, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
     setQuestionIndex(startIndex);
     setAnswer('');
     setFeedback(null);
@@ -502,6 +632,7 @@ export default function App() {
     setTeacherData(null);
     setQuizStartedAt(Date.now());
     questionStartedAtRef.current = Date.now();
+    quizSubmitKeyRef.current = '';
     setSession(startSession);
     setScreen('quiz');
     adaptiveSessionRef.current = {
@@ -519,37 +650,110 @@ export default function App() {
     });
 
     const resumeData = {
+      version: 1,
+      mode: resumeMode,
+      screen: resumeMode,
+      sessionId: adaptiveSessionId,
       subjectId: subject.id,
       topicId: topic.id,
+      currentIndex: startIndex,
       questionIndex: startIndex,
       questions,
       session: startSession,
+      answers: startSession.answers,
+      score: startSession.percent,
+      correct: startSession.correct,
+      wrong: startSession.wrong,
+      xp: startSession.xp,
+      coins: startSession.coins,
+      attemptNumber: startSession.answers.length || 0,
+      metadata: {
+        displayTitle: options.displayTitle || topic.title || subject.title || 'Latihan',
+        displayNote: options.displayNote || topic.note || subject.short || '',
+        subjectTitle: subject.title,
+        topicTitle: topic.title,
+        mode: resumeMode,
+        diversityScore: diversity.score,
+        diversityDebug: diversity.debug,
+        preserveQuestions: Boolean(options.preserveQuestions),
+        allowReinforcement: Boolean(options.allowReinforcement),
+        allowAdaptiveOverride: Boolean(options.allowAdaptiveOverride)
+      },
+      startedAt: startSession.startedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    saveResume(resumeData);
-    setResume(resumeData);
+    persistResumeData(resumeData, setResume);
   }
 
   async function startResume() {
     if (!resume) return;
-    const subject = await loadSubjectData(resume.subjectId);
-    const topic = subject?.topics.find(t => t.id === resume.topicId);
-    if (!subject || !topic) return;
-    startTopic(topic, subject, {
-      questions: resume.questions,
-      questionIndex: resume.questionIndex,
-      session: resume.session,
-      preserveQuestions: true
-    });
+    if (resume.completed) return;
+    if (isQuestionResumeMode(resume.mode || 'quiz')) {
+      if ((resume.mode || 'quiz') === 'adaptive-practice') {
+        const practiceSubject = {
+          id: resume.subjectId || 'adaptive',
+          title: resume.metadata?.displayTitle || 'Latihan AI',
+          short: 'AI',
+          icon: '??',
+          topics: [
+            {
+              id: resume.topicId || `adaptive_${resume.sessionId || resume.session?.adaptiveSessionId || 'resume'}`,
+              title: resume.metadata?.displayTitle || 'Latihan AI',
+              note: resume.metadata?.displayNote || 'Latihan adaptif berfokus',
+              questions: resume.questions || [],
+              adaptivePractice: true,
+              adaptiveSessionId: resume.sessionId || resume.session?.adaptiveSessionId || null,
+              adaptivePlan: resume.metadata?.adaptivePlan || null,
+              adaptiveMetadata: resume.metadata?.adaptiveMetadata || resume.metadata || null
+            }
+          ]
+        };
+        const practiceTopic = practiceSubject.topics[0];
+        startTopic(practiceTopic, practiceSubject, {
+          questions: resume.questions,
+          questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
+          session: resume.session,
+          preserveQuestions: true,
+          mode: 'adaptive-practice',
+          restoreFromResume: true
+        });
+        return;
+      }
+      const subject = await loadSubjectData(resume.subjectId);
+      const topic = subject?.topics.find(t => t.id === resume.topicId);
+      if (!subject || !topic) return;
+      startTopic(topic, subject, {
+        questions: resume.questions,
+        questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
+        session: resume.session,
+        preserveQuestions: true,
+        mode: resume.mode || 'quiz',
+        restoreFromResume: true
+      });
+      return;
+    }
+    if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(resume.mode)) {
+      setScreen(resume.mode);
+    }
   }
 
   async function restartResume() {
     if (!resume) return;
-    const subject = await loadSubjectData(resume.subjectId);
-    const topic = subject?.topics.find(t => t.id === resume.topicId);
-    clearResume();
-    setResume(null);
-    if (subject && topic) startTopic(topic, subject);
+    const mode = resume.mode || 'quiz';
+    clearResumeData(setResume);
+    if (mode === 'adaptive-practice') {
+      await startAdaptivePractice(resume.session?.requestedQuestions || resume.metadata?.requestedQuestions || adaptivePracticeCount, { forceFresh: true });
+      return;
+    }
+    if (isQuestionResumeMode(mode)) {
+      const subject = await loadSubjectData(resume.subjectId);
+      const topic = subject?.topics.find(t => t.id === resume.topicId);
+      if (subject && topic) startTopic(topic, subject, { mode, restoreFromResume: true });
+      return;
+    }
+    if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(mode)) {
+      setScreen(mode);
+    }
   }
 
   async function startAdaptiveLesson(recommendation) {
@@ -564,10 +768,14 @@ export default function App() {
     const targetQuestion = topic.questions.find(question => question.id === questionId);
     const remainingSoalan = topic.questions.filter(question => question.id !== questionId);
     const questions = targetQuestion ? [targetQuestion, ...shuffleArray(remainingSoalan)] : shuffleArray(topic.questions);
-    startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true });
+    startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true, mode: 'adaptive-lesson' });
   }
 
-  async function startAdaptivePractice(questionCount = adaptivePracticeCount) {
+  async function startAdaptivePractice(questionCount = adaptivePracticeCount, options = {}) {
+    if (!options.forceFresh && resume && !resume.completed && resume.mode === 'adaptive-practice' && Array.isArray(resume.questions) && resume.questions.length) {
+      await startResume();
+      return;
+    }
     if (!allSubjects.length) return;
     const session = buildAdaptivePracticeSession(profile, allSubjects, {
       questionCount,
@@ -599,6 +807,9 @@ export default function App() {
     startTopic(practiceTopic, practiceSubject, {
       questions: session.questions,
       preserveQuestions: true,
+      mode: 'adaptive-practice',
+      displayTitle: 'Latihan AI',
+      displayNote: session.metadata?.fallbackUsed ? 'Latihan permulaan seimbang' : 'Latihan adaptif berfokus',
       session: {
         adaptivePractice: true,
         adaptiveSessionId: session.sessionId,
@@ -616,16 +827,43 @@ export default function App() {
 
   function autoSave(nextIndex = questionIndex, nextSession = session) {
     if (!activeSubject || !activeTopic) return;
+    const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
     const resumeData = {
+      version: 1,
+      mode,
+      screen: mode,
+      sessionId: nextSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || null,
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
+      currentIndex: nextIndex,
       questionIndex: nextIndex,
       questions: activeTopic.questions,
-      session: nextSession,
+      answers: nextSession.answers || [],
+      score: nextSession.percent || 0,
+      correct: nextSession.correct || 0,
+      wrong: nextSession.wrong || 0,
+      xp: nextSession.xp || 0,
+      coins: nextSession.coins || 0,
+      attemptNumber: (nextSession.answers || []).length || 0,
+      metadata: {
+        diversityScore: activeTopic.qdeScore || activeTopic.qipScore || null,
+        diversityDebug: activeTopic.qdeDebug || activeTopic.qipDebug || [],
+        preserveQuestions: true
+      },
+      session: {
+        ...nextSession,
+        mode,
+        adaptiveSessionId: nextSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || null
+      },
+      startedAt: session.startedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    saveResume(resumeData);
-    setResume(resumeData);
+    persistResumeData(resumeData, setResume);
+  }
+
+  function handleQuizBack() {
+    autoSave(questionIndex, session);
+    setScreen('dashboard');
   }
 
   function toggleBookmark() {
@@ -652,6 +890,12 @@ export default function App() {
         : [{ id: favId, subjectId, topicId, title, date: todayKey() }, ...existing];
       return { ...prev, favourites: nextFavourites.slice(0, 50) };
     });
+  }
+
+  function handleSelectSubject(subjectId) {
+    if (!subjectId) return;
+    setSelectedSubjectId(subjectId);
+    setScreen('dashboard');
   }
 
   function checkAnswer() {
@@ -694,6 +938,7 @@ export default function App() {
       timeSpent,
       answeredAt
     });
+    refreshAdaptiveProfile();
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
@@ -787,6 +1032,7 @@ export default function App() {
     clearResume();
     setResume(null);
     setScreen('finish');
+    refreshAdaptiveProfile();
   }
 
   function completeDailyChallenge() {
@@ -812,6 +1058,7 @@ export default function App() {
       };
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
+    clearResumeData(setResume);
   }
 
   function finishBacaan(result) {
@@ -823,6 +1070,7 @@ export default function App() {
       saveReadingMemory(memoryResult, updatedProfile, allSubjects);
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
+    clearResumeData(setResume);
     setScreen('dashboard');
   }
 
@@ -835,6 +1083,7 @@ export default function App() {
       saveListeningMemory(memoryResult, updatedProfile, allSubjects);
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
+    clearResumeData(setResume);
     setScreen('dashboard');
   }
 
@@ -847,6 +1096,7 @@ export default function App() {
       saveSpeakingMemory(memoryResult, updatedProfile, allSubjects);
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
+    clearResumeData(setResume);
     setScreen('dashboard');
   }
 
@@ -859,6 +1109,7 @@ export default function App() {
       saveWritingMemory(memoryResult, updatedProfile, allSubjects);
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
+    clearResumeData(setResume);
     setScreen('dashboard');
   }
 
@@ -868,27 +1119,32 @@ export default function App() {
 
   if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages}><Login onStart={startProfile} /></BetaChrome>;
 
-  if (loadingSubject || !selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages}><LoadingSkeleton /></BetaChrome>;
+  if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages}><LoadingSkeleton /></BetaChrome>;
+  if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
 
   if (screen === 'quiz') {
     const question = currentQuestion();
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={() => setScreen('dashboard')} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: currentQuestion().hint })} onSpeak={() => speakText(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} />{chatWidget}</BetaChrome>;
   }
 
   if (screen === 'finish') {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
     return <BetaChrome recoveryMessages={recoveryMessages}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
-  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
-  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages}><BertuturCoach onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><MenulisCoach onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></BetaChrome>;
-  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ParentDashboardPage profile={profile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></BetaChrome>;
-  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
+  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
+  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></BetaChrome>;
+  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></BetaChrome>;
+  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
-    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={setSelectedSubjectId} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+  if (screen === 'dashboard') {
+    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} resume={resume} dailyChallenge={buildDailyChallenge()} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+  }
+
+  return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
   }
 
 function BetaChrome({ children, recoveryMessages = [] }) {
@@ -899,6 +1155,15 @@ function BetaChrome({ children, recoveryMessages = [] }) {
     <BetaFeedbackButton />
     <AppVersiFooter />
   </>;
+}
+
+function BrandSplash() {
+  return <div className="brand-splash" aria-label="Jannati AI Tutor sedang dimuat">
+    <BrandLogo horizontal size="lg" className="brand-logo-full" />
+    <h1>Jannati AI Tutor</h1>
+    <p>AI Tutor Rasmi</p>
+    <div className="brand-loading-dot" aria-hidden="true" />
+  </div>;
 }
 
 function AppVersiFooter() {
@@ -1032,6 +1297,14 @@ function BetaFeedbackButton() {
   </>;
 }
 
+function Login({ onStart }) {
+  const [name, setName] = useState('');
+  const [avatar, setAvatar] = useState('👦');
+  const avatars = ['👦', '👧', '🧒', '🙂'];
+
+  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item} type="button" className={item === avatar ? '' : 'secondary'} onClick={() => setAvatar(item)}>{item}</button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar</button></section></main>;
+}
+
 function LoadingSkeleton() {
   return <main className="dashboard-shell skeleton-shell">
     <aside className="sidebar"><BrandLogo horizontal size="sm" /><div className="jannati-skeleton skeleton-card" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /><div className="jannati-skeleton skeleton-line" /></aside>
@@ -1055,13 +1328,135 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, o
         ? 'Fikir perlahan-lahan. Kamu boleh cuba.'
         : 'Tak mengapa. Mari kita cuba sekali lagi.';
   const feedbackTitle = feedback?.status === 'correct' ? 'Syabas!' : feedback?.status === 'almost' ? 'Hampir betul' : feedback?.status === 'hint' ? 'Petunjuk lembut' : 'Tak mengapa.';
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" type="button" onClick={onSpeak}>Baca Soalan</button><button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Developer Debug</summary><dl><dt>Selected Question</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Selection Reason</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>History Result</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Duplicate Result</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Diversity Score</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Original Stem</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Selected Stem</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Variation Group</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Stem Reason</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Stem Reuse</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Original Context</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Selected Context</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Context Group</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Context Reason</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Context Reuse</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Context Diversity</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Template</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Difficulty</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">{subject.icon} {questionIndex + 1}/{topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progress}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><button className="secondary" type="button" onClick={onSpeak}>Baca Soalan</button><button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Nyahpepijat</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.explanation && <div className="explain-box"><b>Jannati AI Tutor</b><p>{feedback.explanation}</p></div>}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ profile, session, topic, nextTopic, onDashboard, onRetry, onNextTopic, onOpenAi }) {
   const passed = (session.percent || 0) >= 80;
   const finishMessage = passed ? PERSONALITY_MESSAGES.completed : PERSONALITY_MESSAGES.retry;
   return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={passed ? 'celebrating' : 'encouraging'} size="lg" animation="bounce" message={finishMessage} /><div className="big bounce">{passed ? '\u{1F389}' : '\u{1F4AA}'}</div><p className="eyebrow">{topic?.title || 'Topik Selesai'}</p><h1>{passed ? 'Hebat!' : 'Tak mengapa.'}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : 'Mari kita cuba sekali lagi dengan tenang.'}</p><div className="result-score"><b>{session.percent || 0}%</b><span>{session.stars || '\u2606\u2606\u2606'}</span></div><div className="finish-rewards"><div><b>{session.stars || '\u2606\u2606\u2606'}</b><span>Bintang</span></div><div><b>{session.xp || 0}</b><span>XP diterima</span></div><div><b>{profile?.streak || 0}</b><span>Streak</span></div></div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+}
+
+function AiTutorChat({ profile, selectedSubject, onTutup }) {
+  const [messages, setMessages] = useState(() => {
+    const greeting = aiReply('halo', profile, selectedSubject);
+    return [{ role: 'ai', text: greeting }];
+  });
+  const [input, setInput] = useState('');
+
+  const quickPrompts = ['Apa topik lemah saya?', 'Apa cadangan ulang kaji?', 'Bagaimana UASA saya?'];
+
+  function submitMessage(text = input) {
+    const value = text.trim();
+    if (!value) return;
+    const reply = aiReply(value, profile, selectedSubject);
+    setMessages(prev => [...prev, { role: 'user', text: value }, { role: 'ai', text: reply }]);
+    setInput('');
+  }
+
+  return <div className="ai-chat-overlay" role="dialog" aria-modal="true" aria-label="Tutor AI"><section className="ai-chat"><header className="ai-chat-head"><div className="ai-chat-brand"><MascotCard character={getPersonalityForSubject(selectedSubject)} mood="thinking" size="sm" animation="gentle" /><div><strong>Tutor AI</strong><span>{selectedSubject?.title || 'Subjek dipilih'}</span></div></div><button type="button" className="secondary" onClick={onTutup}>Tutup</button></header><div className="ai-chat-body">{messages.map((message, index) => <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>{message.text}</div>)}</div><div className="quick-prompts">{quickPrompts.map(prompt => <button key={prompt} type="button" onClick={() => submitMessage(prompt)}>{prompt}</button>)}</div><div className="ai-chat-input"><input value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); submitMessage(); } }} placeholder="Tanya Guru AI..." autoFocus /><button type="button" onClick={() => submitMessage()}>Hantar</button></div></section></div>;
+}
+
+function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
+  const questionsRef = useRef(Array.isArray(resume?.questions) && resume.questions.length ? resume.questions : null);
+  const questions = useMemo(() => questionsRef.current || buildUasaSet(subject, 20), [subject]);
+  const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(resume?.currentIndex) ? resume.currentIndex : Number.isInteger(resume?.questionIndex) ? resume.questionIndex : 0);
+  const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
+  const [result, setResult] = useState(() => resume?.state?.result || null);
+  const [score, setScore] = useState(() => resume?.state?.score || { correct: Number(resume?.correct || 0), wrong: Number(resume?.wrong || 0) });
+  const completedRef = useRef(Boolean(resume?.completed));
+
+  const question = questions[questionIndex];
+
+  useEffect(() => {
+    if (completedRef.current) return;
+    if (!onResumeChange || !subject) return;
+    onResumeChange({
+      version: 1,
+      mode: 'uasa',
+      screen: 'uasa',
+      sessionId: resume?.sessionId || resume?.session?.sessionId || `uasa_${subject.id}_${questions.length}`,
+      subjectId: subject.id,
+      topicId: resume?.topicId || `uasa_${subject.id}`,
+      questions,
+      currentIndex: questionIndex,
+      questionIndex,
+      answers: resume?.answers || [],
+      score: Math.round((score.correct / Math.max(1, questions.length)) * 100),
+      correct: score.correct,
+      wrong: score.wrong,
+      metadata: {
+        displayTitle: 'Simulator UASA',
+        subjectTitle: subject.title
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: Boolean(result && questionIndex + 1 >= questions.length),
+      session: {
+        ...(resume?.session || {}),
+        mode: 'uasa',
+        subjectId: subject.id
+      },
+      state: {
+        questionIndex,
+        answer,
+        result,
+        score
+      }
+    });
+  }, [answer, questionIndex, questions, result, score, subject, onResumeChange]);
+
+  if (!subject) {
+    return <main className="app"><EmptyState title="Subjek tidak dijumpai." message="Kembali ke Papan Utama untuk memilih subjek." actionLabel="Papan Utama" onAction={onBack} /></main>;
+  }
+
+  function submitAnswer() {
+    if (!question) return;
+    const normalized = (answer || '').trim().toLowerCase();
+    const accepted = [question.answer, ...(question.accepted || [])].map(item => String(item).trim().toLowerCase());
+    const correct = accepted.includes(normalized);
+    const nextScore = {
+      correct: score.correct + (correct ? 1 : 0),
+      wrong: score.wrong + (correct ? 0 : 1)
+    };
+    setScore(nextScore);
+    setResult({
+      correct,
+      expected: question.answer,
+      explanation: question.explanation || question.hint || ''
+    });
+    if (questionIndex + 1 >= questions.length) {
+      const total = questions.length;
+      const percent = Math.round((nextScore.correct / Math.max(1, total)) * 100);
+      completedRef.current = true;
+      onSave({
+        date: todayKey(),
+        subjectId: subject.id,
+        subjectShort: subject.short,
+        grade: getGrade(percent),
+        score: percent,
+        total,
+        correct: nextScore.correct,
+        wrong: nextScore.wrong
+      });
+      onClearResume?.();
+      return;
+    }
+  }
+
+  function nextQuestion() {
+    if (questionIndex + 1 >= questions.length) {
+      completedRef.current = true;
+      onClearResume?.();
+      onBack();
+      return;
+    }
+    setQuestionIndex(index => index + 1);
+    setAnswer('');
+    setResult(null);
+  }
+
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>🏆 Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>{questionIndex + 1}/{questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = [
@@ -1148,12 +1543,13 @@ function compareBacaan(targetText = '', transcript = '') {
   };
 }
 
-function BacaanCoach({ profile, onBack, onFinish }) {
-  const [passageId, setPassageId] = useState(readingPassages[0].id);
-  const [transcript, setTranscript] = useState('');
+function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && resume?.state?.passageId) || readingPassages[0].id);
+  const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(() => resume?.state?.result || null);
+  const passageChangeRef = useRef(passageId);
   const passage = readingPassages.find(item => item.id === passageId) || readingPassages[0];
 
   useEffect(() => {
@@ -1161,9 +1557,35 @@ function BacaanCoach({ profile, onBack, onFinish }) {
   }, []);
 
   useEffect(() => {
+    if (passageChangeRef.current === passageId) return;
+    passageChangeRef.current = passageId;
     setTranscript('');
     setResult(null);
   }, [passageId]);
+
+  useEffect(() => {
+    if (!onResumeChange) return;
+    onResumeChange({
+      version: 1,
+      mode: 'reading',
+      screen: 'reading',
+      sessionId: resume?.sessionId || `reading_${passage.id}`,
+      subjectId: resume?.subjectId || 'reading',
+      topicId: resume?.topicId || passage.id,
+      metadata: {
+        displayTitle: 'Bacaan',
+        subjectTitle: passage.title
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      state: {
+        passageId,
+        transcript,
+        result
+      }
+    });
+  }, [passageId, transcript, result, passage.id, passage.title, onResumeChange]);
 
   function startMendengar() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1199,6 +1621,7 @@ function BacaanCoach({ profile, onBack, onFinish }) {
       tertinggal: nextResult.missed,
       incorrect: nextResult.incorrect
     });
+    onClearResume?.();
   }
 
   return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>? Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">??</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{passage.text}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{result.score}%</h2><div className="word-check reading-word-check">{result.words.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{result.incorrectWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{result.incorrectWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{result.correct} betul</span><span>{result.missed} tertinggal</span><span>{result.incorrect} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
@@ -1214,14 +1637,15 @@ function normalizeMendengar(text = '') {
   return normalizeBacaanWord(text).replace(/\s+/g, '');
 }
 
-function MendengarLab({ onBack, onFinish }) {
-  const [setId, setSetId] = useState('bm');
-  const [mode, setMode] = useState('choose');
-  const [choice, setChoice] = useState('');
-  const [arranged, setSusund] = useState([]);
-  const [typed, setTyped] = useState('');
-  const [feedback, setFeedback] = useState(null);
-  const [answers, setAnswers] = useState([]);
+function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const [setId, setSetId] = useState(() => (resume?.mode === 'listening' && resume?.state?.setId) || 'bm');
+  const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
+  const [choice, setChoice] = useState(() => resume?.state?.choice || '');
+  const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
+  const [typed, setTyped] = useState(() => resume?.state?.typed || '');
+  const [feedback, setFeedback] = useState(() => resume?.state?.feedback || null);
+  const [answers, setAnswers] = useState(() => Array.isArray(resume?.state?.answers) ? resume.state.answers : []);
+  const modeResetRef = useRef({ setId, mode });
   const audioRef = useRef(null);
   const item = listeningSets.find(set => set.id === setId) || listeningSets[0];
   const modes = [
@@ -1232,11 +1656,44 @@ function MendengarLab({ onBack, onFinish }) {
   ];
 
   useEffect(() => {
+    if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
+    modeResetRef.current = { setId, mode };
     setChoice('');
     setSusund([]);
     setTyped('');
     setFeedback(null);
+    setAnswers([]);
   }, [setId, mode]);
+
+  useEffect(() => {
+    if (!onResumeChange) return;
+    onResumeChange({
+      version: 1,
+      mode: 'listening',
+      screen: 'listening',
+      sessionId: resume?.sessionId || `listening_${setId}_${mode}`,
+      subjectId: resume?.subjectId || 'listening',
+      topicId: resume?.topicId || `${setId}_${mode}`,
+      metadata: {
+        displayTitle: 'Mendengar',
+        subjectTitle: item.title,
+        setId,
+        questionMode: mode
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      state: {
+        setId,
+        mode,
+        choice,
+        arranged,
+        typed,
+        feedback,
+        answers
+      }
+    });
+  }, [setId, mode, choice, arranged, typed, feedback, answers, item.id, item.title, onResumeChange]);
 
   function playAudio() {
     if (audioRef.current?.src) {
@@ -1280,6 +1737,7 @@ function MendengarLab({ onBack, onFinish }) {
     const correct = answers.filter(answer => answer.correct).length + (feedback?.correct && !answers.some(answer => answer.mode === feedback.mode) ? 1 : 0);
     const score = Math.round((correct / total) * 100);
     onFinish({ language: item.language, title: item.title, mode: 'mixed', score, correct, total });
+    onClearResume?.();
   }
 
   const availableWords = item.arrange.filter(word => !arranged.includes(word));
@@ -1338,13 +1796,14 @@ function scoreBertutur(prompt, transcript) {
   };
 }
 
-function BertuturCoach({ onBack, onFinish }) {
-  const [setId, setSetId] = useState('bm');
-  const [mode, setMode] = useState('intro');
-  const [transcript, setTranscript] = useState('');
+function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const [setId, setSetId] = useState(() => (resume?.mode === 'speaking' && resume?.state?.setId) || 'bm');
+  const [mode, setMode] = useState(() => resume?.state?.mode || 'intro');
+  const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(() => resume?.state?.result || null);
+  const modeResetRef = useRef({ setId, mode });
   const set = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
   const prompt = set.prompts[mode];
   const modes = Object.entries(set.prompts).map(([id, value]) => ({ id, label: value.label }));
@@ -1354,9 +1813,38 @@ function BertuturCoach({ onBack, onFinish }) {
   }, []);
 
   useEffect(() => {
+    if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
+    modeResetRef.current = { setId, mode };
     setTranscript('');
     setResult(null);
   }, [setId, mode]);
+
+  useEffect(() => {
+    if (!onResumeChange) return;
+    onResumeChange({
+      version: 1,
+      mode: 'speaking',
+      screen: 'speaking',
+      sessionId: resume?.sessionId || `speaking_${setId}_${mode}`,
+      subjectId: resume?.subjectId || 'speaking',
+      topicId: resume?.topicId || `${setId}_${mode}`,
+      metadata: {
+        displayTitle: 'Bertutur',
+        subjectTitle: set.title,
+        setId,
+        questionMode: mode
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      state: {
+        setId,
+        mode,
+        transcript,
+        result
+      }
+    });
+  }, [setId, mode, transcript, result, set.title, onResumeChange]);
 
   function startBertutur() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1391,6 +1879,7 @@ function BertuturCoach({ onBack, onFinish }) {
       matchedKeywords: nextResult.matched.length,
       totalKeywords: prompt.keywords.length
     });
+    onClearResume?.();
   }
 
   return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>? Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">???</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{prompt.text}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{result.score}%</h2><div className="recommend-meta"><span>{result.matched.length}/{prompt.keywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{prompt.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.missed.length > 0 && <p>Cuba masukkan: <b>{result.missed.join(', ')}</b></p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
@@ -1461,21 +1950,52 @@ function scoreMenulis(task, answer, dictionary = []) {
   return { score, matched, spellingIssues, grammarPetunjuks, explanation };
 }
 
-function MenulisCoach({ onBack, onFinish }) {
-  const [setId, setSetId] = useState('bm');
-  const [mode, setMode] = useState('arrange');
-  const [answer, setAnswer] = useState('');
-  const [arranged, setSusund] = useState([]);
-  const [result, setResult] = useState(null);
+function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const [setId, setSetId] = useState(() => (resume?.mode === 'writing' && resume?.state?.setId) || 'bm');
+  const [mode, setMode] = useState(() => resume?.state?.mode || 'arrange');
+  const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
+  const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
+  const [result, setResult] = useState(() => resume?.state?.result || null);
+  const modeResetRef = useRef({ setId, mode });
   const set = writingSets.find(item => item.id === setId) || writingSets[0];
   const task = set.tasks[mode];
   const modes = Object.entries(set.tasks).map(([id, value]) => ({ id, label: value.label }));
 
   useEffect(() => {
+    if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
+    modeResetRef.current = { setId, mode };
     setAnswer('');
     setSusund([]);
     setResult(null);
   }, [setId, mode]);
+
+  useEffect(() => {
+    if (!onResumeChange) return;
+    onResumeChange({
+      version: 1,
+      mode: 'writing',
+      screen: 'writing',
+      sessionId: resume?.sessionId || `writing_${setId}_${mode}`,
+      subjectId: resume?.subjectId || 'writing',
+      topicId: resume?.topicId || `${setId}_${mode}`,
+      metadata: {
+        displayTitle: 'Menulis',
+        subjectTitle: set.title,
+        setId,
+        questionMode: mode
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      state: {
+        setId,
+        mode,
+        answer,
+        arranged,
+        result
+      }
+    });
+  }, [setId, mode, answer, arranged, result, set.title, onResumeChange]);
 
   function currentAnswer() {
     return mode === 'arrange' ? arranged.join(' ') : answer;
@@ -1498,6 +2018,7 @@ function MenulisCoach({ onBack, onFinish }) {
       spellingIssues: nextResult.spellingIssues.length,
       grammarPetunjuks: nextResult.grammarPetunjuks
     });
+    onClearResume?.();
   }
 
   const availableWords = (task.words || []).filter(word => !arranged.includes(word));
