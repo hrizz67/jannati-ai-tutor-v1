@@ -160,6 +160,15 @@ export function formatDataConfidence(value) {
   return toTitleCase(key || value);
 }
 
+export function formatActivityStatus(percent) {
+  const value = Number(percent);
+  if (!Number.isFinite(value)) return 'Aktif';
+  if (value >= 100) return 'Selesai';
+  if (value >= 70) return 'Betul';
+  if (value >= 50) return 'Cuba Lagi';
+  return 'Perlu Latihan';
+}
+
 export function formatStudyMinutes(value) {
   const minutes = Number(value);
   if (!Number.isFinite(minutes) || minutes <= 0) return '0s';

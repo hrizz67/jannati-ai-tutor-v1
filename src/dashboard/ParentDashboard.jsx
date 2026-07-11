@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { EmptyState } from './dashboardHelpers.jsx';
 import { loadAIMemory } from '../ai/memoryEngine';
 import { getWeeklySummary } from '../ai/adaptive/weeklyAnalyticsEngine';
@@ -86,7 +86,7 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
                   <h3>{formatSubjectName(subject.subjectId)}</h3>
                   <b>{subject.accuracy}%</b>
                   <div className="mini-progress"><div style={{ width: `${subject.accuracy}%` }} /></div>
-                  <span>{subject.totalQuestions} soalan • {formatAttentionLevel(subject.attentionLevel)}</span>
+                  <span>{subject.totalQuestions} soalan â€¢ {formatAttentionLevel(subject.attentionLevel)}</span>
                 </button>
               ))}
             </div>
@@ -95,8 +95,8 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
                 <div className="timeline-item">
                   <span>{formatSubjectName(selectedSubjectAnalytics.subjectId)}</span>
                   <b>{formatStatus(selectedSubjectAnalytics.status)}</b>
-                  <em>Penguasaan {selectedSubjectAnalytics.mastery}% • Keyakinan Data {selectedSubjectAnalytics.confidence}%</em>
-                  <p>{formatTrend(selectedSubjectAnalytics.trend.direction)} • {selectedSubjectAnalytics.trend.message}</p>
+                  <em>Penguasaan {selectedSubjectAnalytics.mastery}% â€¢ Keyakinan Data {selectedSubjectAnalytics.confidence}%</em>
+                  <p>{formatTrend(selectedSubjectAnalytics.trend.direction)} â€¢ {selectedSubjectAnalytics.trend.message}</p>
                 </div>
                 <div className="timeline-item">
                   <span>Topik Lemah</span>
@@ -149,65 +149,69 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
       </section>
 
       <section className="card">
-        <h2>🎤 Sejarah Bacaan</h2>
+        <h2>ðŸŽ¤ Sejarah Bacaan</h2>
         <div className="timeline">
-          {readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct} betul • {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}
+          {readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct} betul â€¢ {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>🎧 Sejarah Mendengar</h2>
+        <h2>ðŸŽ§ Sejarah Mendengar</h2>
         <div className="timeline">
-          {listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct}/{item.total} betul • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}
+          {listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct}/{item.total} betul â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>🗣️ Sejarah Bertutur</h2>
+        <h2>ðŸ—£ï¸ Sejarah Bertutur</h2>
         <div className="timeline">
-          {speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}
+          {speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>✍️ Sejarah Menulis</h2>
+        <h2>âœï¸ Sejarah Menulis</h2>
         <div className="timeline">
-          {writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}
+          {writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}
         </div>
       </section>
 
       <section className="parent-two-col">
         <section className="card">
-          <h2>⚠️ Topik Lemah</h2>
+          <h2>âš ï¸ Topik Lemah</h2>
           <div className="parent-topic-list">
-            {weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}
+            {weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}
           </div>
         </section>
         <section className="card">
-          <h2>🌟 Topik Kuat</h2>
+          <h2>ðŸŒŸ Topik Kuat</h2>
           <div className="parent-topic-list">
-            {strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}
+            {strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}
           </div>
         </section>
       </section>
 
       <section className="card">
-        <h2>🏆 Sejarah UASA</h2>
+        <h2>ðŸ† Sejarah UASA</h2>
         <div className="timeline">
-          {(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {item.grade}</b><em>{item.score}% • {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}
+          {(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {item.grade}</b><em>{item.score}% â€¢ {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>📅 Aktiviti Terkini</h2>
+        <h2>ðŸ“… Aktiviti Terkini</h2>
         <div className="timeline">
-          {(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subject)} - {item.topic}</b><em>{item.percent}% {item.stars}</em></div>)}
+          {(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subject)} - {item.topic}</b><em>{item.percent}% {item.percent >= 100 ? 'Selesai' : 'Betul'}</em></div>)}
         </div>
       </section>
 
       <section className="card">
-        <button type="button" className="full" onClick={() => printParentReport()}>🖨️ Cetak Laporan</button>
+        <button type="button" className="full" onClick={() => printParentReport()}>ðŸ–¨ï¸ Cetak Laporan</button>
       </section>
     </main>
   );
 }
+
+
+
+

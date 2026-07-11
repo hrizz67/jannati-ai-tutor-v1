@@ -8,7 +8,7 @@ export const AI_PERSONALITIES = {
   },
   jati: {
     name: 'Jati',
-    role: 'Problem solving coach',
+    role: 'Jurulatih Penyelesaian Masalah',
     subjects: ['Mathematics', 'Science', 'English'],
     characteristics: ['Energetic', 'Confident', 'Motivating', 'Positive'],
     greeting: 'Jom fikir bersama',

@@ -22,11 +22,11 @@ textarea {
 
 .app-version-footer {
   max-width: 1180px;
-  margin: 4px auto 76px;
+  margin: 4px auto calc(76px + env(safe-area-inset-bottom, 0px));
   padding: 12px 16px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px 18px;
   color: #4b5c52;
   font-size: 13px;
@@ -41,8 +41,8 @@ textarea {
 
 .beta-feedback-fab {
   position: fixed;
-  right: 16px;
-  bottom: 18px;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   z-index: 45;
   box-shadow: 0 14px 28px rgba(8,122,59,.22);
 }
@@ -174,16 +174,17 @@ textarea {
   }
 
   .beta-feedback-fab {
-    right: 10px;
-    bottom: 10px;
-    padding: 12px 14px;
-    font-size: 14px;
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 12px;
+    font-size: 13px;
+    max-width: calc(100vw - 20px);
   }
 
   .storage-recovery {
     left: 10px;
     right: 10px;
-    bottom: 70px;
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   }
 }
 
