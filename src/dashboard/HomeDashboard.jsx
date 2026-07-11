@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
+import JannaAvatar from '../components/JannaAvatar';
 import DashboardLayout from './DashboardLayout.jsx';
 import StudentDashboard from './StudentDashboard.jsx';
 import RevisionDashboard from './RevisionDashboard.jsx';
@@ -188,9 +189,9 @@ export default function HomeDashboard(props) {
       <section className="dashboard-main">
         <header className="brand-app-header">
           <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">Tahun 2</p><h1>Jannati AI Tutor</h1></div></div>
-          <div className="brand-student-strip"><span className="student-avatar">{profile.avatar || '👦'}</span><div><b>{profile.name || 'Anak'}</b><small>Tahun 2</small></div><span className="achievement-chip">Tahap {level}</span><span className="achievement-chip">Bintang {levelProgress}</span><span className="achievement-chip">Streak {adaptiveStore.streak || 0}</span><button type="button" className="icon-button" aria-label="Notifikasi">!</button></div>
+          <div className="brand-student-strip"><JannaAvatar size={48} className="student-avatar" /><div><b>{profile.name || 'Anak'}</b><small>Tahun 2</small></div><span className="achievement-chip">Tahap {level}</span><span className="achievement-chip">Bintang {levelProgress}</span><span className="achievement-chip">Streak {adaptiveStore.streak || 0}</span><button type="button" className="icon-button" aria-label="Notifikasi">!</button></div>
         </header>
-        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood="happy" size="md" animation="gentle" message={`Assalamualaikum, ${profile.name || 'Anak'}. Hari ini kita akan belajar ${welcomeTopic}. Jom mulakan!`} /><div className="avatar-large">{profile.avatar || '👦'}</div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name || 'Anak'}</h1><p>Hari ini kita akan belajar <b>{welcomeTopic}</b>. Jom mulakan!</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
+        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood="happy" size="md" animation="gentle" message={`Assalamualaikum, ${profile.name || 'Anak'}. Hari ini kita akan belajar ${welcomeTopic}. Jom mulakan!`} /><div className="avatar-large"><JannaAvatar size={84} /></div><div><p className="eyebrow">Edisi Data Ringan</p><h1>Assalamualaikum, {profile.name || 'Anak'}</h1><p>Hari ini kita akan belajar <b>{welcomeTopic}</b>. Jom mulakan!</p><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
         <StudentDashboard {...studentData} />
         <RevisionDashboard {...revisionData} />
         <AnalyticsDashboard {...analyticsData} />

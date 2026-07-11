@@ -1,10 +1,11 @@
 import React from 'react';
+import JannaAvatar from './JannaAvatar';
 
 const CHARACTER_META = {
   janna: {
-    name: 'Janna',
+    name: 'JANNA',
     initials: 'Jn',
-    role: 'Rakan belajar',
+    role: 'Rakan Pembelajaran AI',
     defaultMessage: 'Syabas! Teruskan usaha kamu.',
   },
   jati: {
@@ -37,6 +38,7 @@ export default function Mascot({
   const normalizedCharacter = character === 'jati' ? 'jati' : 'janna';
   const normalizedMood = VALID_MOODS.has(mood) ? mood : 'happy';
   const normalizedSize = VALID_SIZES.has(size) ? size : 'md';
+  const avatarSize = normalizedSize === 'sm' ? 42 : normalizedSize === 'lg' ? 86 : 58;
   const meta = CHARACTER_META[normalizedCharacter];
   const bubbleMessage = message || MOOD_MESSAGES[normalizedMood] || meta.defaultMessage;
 
@@ -46,7 +48,7 @@ export default function Mascot({
       aria-label={`${meta.name}, ${meta.role}, ${normalizedMood}`}
     >
       <div className="mascot-avatar" aria-hidden="true">
-        <span>{meta.initials}</span>
+        <JannaAvatar size={avatarSize} className="mascot-avatar-image" />
       </div>
       <div className="mascot-caption">
         <b>{meta.name}</b>

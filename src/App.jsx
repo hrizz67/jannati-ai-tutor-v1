@@ -7,6 +7,7 @@ import AITeacherModal from './components/ai/AITeacherModal';
 import BrandLogo from './components/BrandLogo';
 import Mascot from './components/Mascot';
 import MascotCard from './components/MascotCard';
+import JannaAvatar from './components/JannaAvatar';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -1354,7 +1355,7 @@ function AiTutorChat({ profile, selectedSubject, onTutup }) {
     setInput('');
   }
 
-  return <div className="ai-chat-overlay" role="dialog" aria-modal="true" aria-label="Tutor AI"><section className="ai-chat"><header className="ai-chat-head"><div className="ai-chat-brand"><MascotCard character={getPersonalityForSubject(selectedSubject)} mood="thinking" size="sm" animation="gentle" /><div><strong>Tutor AI</strong><span>{selectedSubject?.title || 'Subjek dipilih'}</span></div></div><button type="button" className="secondary" onClick={onTutup}>Tutup</button></header><div className="ai-chat-body">{messages.map((message, index) => <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>{message.text}</div>)}</div><div className="quick-prompts">{quickPrompts.map(prompt => <button key={prompt} type="button" onClick={() => submitMessage(prompt)}>{prompt}</button>)}</div><div className="ai-chat-input"><input value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); submitMessage(); } }} placeholder="Tanya Guru AI..." autoFocus /><button type="button" onClick={() => submitMessage()}>Hantar</button></div></section></div>;
+  return <div className="ai-chat-overlay" role="dialog" aria-modal="true" aria-label="Tutor AI"><section className="ai-chat"><header className="ai-chat-head"><div className="ai-chat-brand"><JannaAvatar size={72} className="ai-chat-avatar" /><div className="ai-chat-brand-copy"><small className="eyebrow">JANNA</small><strong>Rakan Pembelajaran AI</strong><span>Syabas! Teruskan usaha kamu.</span></div></div><strong className="ai-chat-title">Tutor AI</strong><button type="button" className="secondary" onClick={onTutup}>Tutup</button></header><div className="ai-chat-body">{messages.map((message, index) => <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>{message.text}</div>)}</div><div className="quick-prompts">{quickPrompts.map(prompt => <button key={prompt} type="button" onClick={() => submitMessage(prompt)}>{prompt}</button>)}</div><div className="ai-chat-input"><input value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); submitMessage(); } }} placeholder="Tanya Guru AI..." autoFocus /><button type="button" onClick={() => submitMessage()}>Hantar</button></div></section></div>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {

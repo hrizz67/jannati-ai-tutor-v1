@@ -996,6 +996,48 @@ button:active {
 
 .ai-chat-head {
   background: linear-gradient(135deg, var(--jannati-soft), #fff8d8) !important;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ai-chat-brand {
+  gap: 18px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ai-chat-avatar {
+  flex: 0 0 auto;
+}
+
+.ai-chat-brand-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-chat-brand-copy .eyebrow {
+  margin: 0;
+}
+
+.ai-chat-brand-copy strong {
+  color: var(--jannati-primary);
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.ai-chat-brand-copy span {
+  color: var(--jannati-muted);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.ai-chat-title {
+  margin-left: auto;
+  color: var(--jannati-primary);
+  font-size: 18px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .chat-bubble.ai {

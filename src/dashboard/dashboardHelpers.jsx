@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
+import JannaAvatar from '../components/JannaAvatar';
 import { formatStudyTime, loadAIMemory } from '../ai/memoryEngine';
 import { buildRecommendation, isWeakTopic } from '../ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from '../ai/adaptiveEngine';
@@ -134,7 +135,7 @@ export function DashboardHeader({ profile, level, levelProgress }) {
   return <header className="brand-app-header">
     <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">{studentYear}</p><h1>Jannati AI Tutor</h1></div></div>
     <div className="brand-student-strip">
-      <span className="student-avatar">{profile.avatar || '👦'}</span>
+      <JannaAvatar size={48} className="student-avatar" />
       <div><b>{profile.name || 'Anak'}</b><small>{studentYear}</small></div>
       <span className="achievement-chip">Tahap {level}</span>
       <span className="achievement-chip">Bintang {getStars(levelProgress)}</span>
