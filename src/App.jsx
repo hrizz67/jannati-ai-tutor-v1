@@ -8,6 +8,7 @@ import BrandLogo from './components/BrandLogo';
 import MascotCard from './components/MascotCard';
 import JannaAvatar from './components/JannaAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
+import GamificationSummary from './components/GamificationSummary.jsx';
 import { explainAnswer } from './ai/explainEngine';
 import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -35,6 +36,7 @@ import { buildRevisionCalendar } from './ai/revision/revisionCalendarEngine';
 import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from './ai/adaptive/masteryEngine';
 import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/adaptive/adaptivePracticeEngine';
 import { buildLessonPlan } from './ai/adaptive/lessonPlanner';
+import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
 import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { teachAnswer } from './ai/teacherEngine';
@@ -465,6 +467,7 @@ function buildPredictionGreeting(profile, predictionProfile, readiness, studyPla
 export default function App() {
   const [profile, setProfile] = useState(() => loadStudentCore(loadProfile()));
   const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile());
+  const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState());
   const [resume, setResume] = useState(loadResume);
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
@@ -605,6 +608,21 @@ export default function App() {
     setAdaptiveProfile(loadAdaptiveStudentProfile());
   }
 
+  function recordGamification(event = {}, sourceProfile = adaptiveProfile, context = {}) {
+    const updated = recordGamificationEvent(gamificationProfile, aiMemory, {
+      profile: sourceProfile || adaptiveProfile,
+      adaptiveProfile,
+      learningObservation,
+      predictionProfile,
+      readiness,
+      studyPlan,
+      narrativeBundle,
+      today: new Date(),
+      ...context
+    }, event);
+    setGamificationProfile(updated);
+  }
+
   useEffect(() => {
     let alive = true;
     setLoadingSubject(true);
@@ -640,6 +658,7 @@ export default function App() {
 
   async function startProfile(name, avatar) {
     setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
+    setGamificationProfile(resetGamificationProfile());
     refreshAdaptiveProfile();
     setScreen('dashboard');
   }
@@ -677,6 +696,7 @@ export default function App() {
       }
       setProfile(demoProfile);
       resetAdaptiveStudentProfile();
+      setGamificationProfile(resetGamificationProfile());
       refreshAdaptiveProfile();
       setResume(null);
       setShowOnboarding(true);
@@ -1073,7 +1093,7 @@ export default function App() {
     saveQuestionHistory(question);
     const adaptiveSubjectId = question.subjectId || activeSubject?.id;
     const adaptiveTopicId = question.topicId || activeTopic?.id;
-    recordQuestionResult(getAdaptiveProfile(), {
+    const adaptiveResult = recordQuestionResult(getAdaptiveProfile(), {
       sessionId,
       questionId: question.id,
       subjectId: adaptiveSubjectId,
@@ -1083,6 +1103,19 @@ export default function App() {
       difficulty: question?.difficulty || question?.level || activeTopic?.difficulty || 'medium',
       timeSpent,
       answeredAt
+    });
+    recordGamification({
+      type: 'quiz-answer',
+      sessionId,
+      questionId: question.id,
+      attemptNumber,
+      date: answeredAt,
+      answeredAt
+    }, adaptiveResult?.profile || getAdaptiveProfile(), {
+      questionId: question.id,
+      sessionId,
+      attemptNumber,
+      eventType: 'quiz-answer'
     });
     refreshAdaptiveProfile();
 
@@ -1143,8 +1176,9 @@ export default function App() {
     const today = todayKey();
     const key = progressKey(activeSubject.id, activeTopic.id);
     const studySeconds = Math.max(1, Math.round((Date.now() - quizStartedAt) / 1000));
-    recordSessionEnd(getAdaptiveProfile(), {
-      sessionId: session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId,
+    const finishedSessionId = session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || '';
+    const adaptiveSessionResult = recordSessionEnd(getAdaptiveProfile(), {
+      sessionId: finishedSessionId,
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
       questions: (session.answers || []).map(item => item.questionId).filter(Boolean),
@@ -1154,6 +1188,16 @@ export default function App() {
       endedAt: new Date().toISOString()
     });
     adaptiveSessionRef.current = null;
+    recordGamification({
+      type: 'session-complete',
+      sessionId: finishedSessionId,
+      date: new Date().toISOString(),
+      completedAt: new Date().toISOString()
+    }, adaptiveSessionResult, {
+      sessionId: finishedSessionId,
+      eventType: 'session-complete',
+      sessionCompleted: true
+    });
 
     setProfile(prev => {
       const badges = new Set(prev.badges || []);
@@ -1183,26 +1227,43 @@ export default function App() {
 
   function completeDailyChallenge() {
     const today = todayKey();
-    setProfile(prev => {
-      if (prev.daily?.[today]?.completed) return prev;
-      const updatedProfile = { ...prev, xp: (prev.xp || 0) + 50, coins: (prev.coins || 0) + 20, daily: { ...(prev.daily || {}), [today]: { completed: true, xp: 50, coins: 20 } } };
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    if (profile.daily?.[today]?.completed) return;
+    const updatedProfile = { ...profile, xp: (profile.xp || 0) + 50, coins: (profile.coins || 0) + 20, daily: { ...(profile.daily || {}), [today]: { completed: true, xp: 50, coins: 20 } } };
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'daily-mission',
+      date: today,
+      completedAt: new Date().toISOString(),
+      key: `daily-mission::${today}`
+    }, adaptiveProfile, {
+      dailyMissionCompleted: true,
+      eventType: 'daily-mission',
+      today: new Date(today)
     });
   }
 
   function saveUasaResult(result) {
-    setProfile(prev => {
-      const badges = new Set(prev.badges || []);
-      if (result.score >= 80) badges.add('UASA A');
-      const updatedProfile = {
-        ...prev,
-        xp: (prev.xp || 0) + Math.round(result.score / 2),
-        coins: (prev.coins || 0) + Math.round(result.score / 10),
-        badges: [...badges],
-        uasaHistory: [result, ...(prev.uasaHistory || [])].slice(0, 20),
-        history: [{ date: result.date, subject: result.subjectShort, topic: 'Simulator UASA', percent: result.score, stars: getStars(result.score) }, ...(prev.history || [])].slice(0, 50)
-      };
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    const badges = new Set(profile.badges || []);
+    if (result.score >= 80) badges.add('UASA A');
+    const updatedProfile = {
+      ...profile,
+      xp: (profile.xp || 0) + Math.round(result.score / 2),
+      coins: (profile.coins || 0) + Math.round(result.score / 10),
+      badges: [...badges],
+      uasaHistory: [result, ...(profile.uasaHistory || [])].slice(0, 20),
+      history: [{ date: result.date, subject: result.subjectShort, topic: 'Simulator UASA', percent: result.score, stars: getStars(result.score) }, ...(profile.history || [])].slice(0, 50)
+    };
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'uasa-result',
+      sessionId: `uasa::${result?.date || todayKey()}`,
+      questionId: `uasa::${result?.subjectShort || 'subjek'}`,
+      date: result?.date || todayKey(),
+      key: `uasa-result::${result?.date || todayKey()}::${result?.subjectShort || 'subjek'}`
+    }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: adaptiveProfile.studyMinutes || 0 }, {
+      eventType: 'uasa-result',
+      sessionCompleted: true,
+      today: new Date(result?.date || todayKey())
     });
     clearResumeData(setResume);
   }
@@ -1211,10 +1272,18 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    setProfile(prev => {
-      const updatedProfile = { ...prev, xp: (prev.xp || 0) + Math.round(score / 2), coins: (prev.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bacaan', topic: result?.title || 'Jurulatih Bacaan', percent: score, stars: getStars(score) }, ...(prev.history || [])].slice(0, 50) };
-      saveReadingMemory(memoryResult, updatedProfile, allSubjects);
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bacaan', topic: result?.title || 'Jurulatih Bacaan', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    saveReadingMemory(memoryResult, updatedProfile, allSubjects);
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'reading-session',
+      sessionId: `reading::${today}::${result?.title || 'Jurulatih Bacaan'}`,
+      date: memoryResult.date,
+      key: `reading-session::${today}::${result?.title || 'Jurulatih Bacaan'}`
+    }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
+      eventType: 'reading-session',
+      sessionCompleted: true,
+      today: new Date()
     });
     clearResumeData(setResume);
     setScreen('dashboard');
@@ -1224,10 +1293,18 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    setProfile(prev => {
-      const updatedProfile = { ...prev, xp: (prev.xp || 0) + Math.round(score / 2), coins: (prev.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Mendengar', topic: result?.title || 'Makmal Mendengar', percent: score, stars: getStars(score) }, ...(prev.history || [])].slice(0, 50) };
-      saveListeningMemory(memoryResult, updatedProfile, allSubjects);
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Mendengar', topic: result?.title || 'Makmal Mendengar', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    saveListeningMemory(memoryResult, updatedProfile, allSubjects);
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'listening-session',
+      sessionId: `listening::${today}::${result?.title || 'Makmal Mendengar'}`,
+      date: memoryResult.date,
+      key: `listening-session::${today}::${result?.title || 'Makmal Mendengar'}`
+    }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
+      eventType: 'listening-session',
+      sessionCompleted: true,
+      today: new Date()
     });
     clearResumeData(setResume);
     setScreen('dashboard');
@@ -1237,10 +1314,18 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    setProfile(prev => {
-      const updatedProfile = { ...prev, xp: (prev.xp || 0) + Math.round(score / 2), coins: (prev.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bertutur', topic: result?.title || 'Jurulatih Bertutur', percent: score, stars: getStars(score) }, ...(prev.history || [])].slice(0, 50) };
-      saveSpeakingMemory(memoryResult, updatedProfile, allSubjects);
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bertutur', topic: result?.title || 'Jurulatih Bertutur', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    saveSpeakingMemory(memoryResult, updatedProfile, allSubjects);
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'speaking-session',
+      sessionId: `speaking::${today}::${result?.title || 'Jurulatih Bertutur'}`,
+      date: memoryResult.date,
+      key: `speaking-session::${today}::${result?.title || 'Jurulatih Bertutur'}`
+    }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
+      eventType: 'speaking-session',
+      sessionCompleted: true,
+      today: new Date()
     });
     clearResumeData(setResume);
     setScreen('dashboard');
@@ -1250,10 +1335,18 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    setProfile(prev => {
-      const updatedProfile = { ...prev, xp: (prev.xp || 0) + Math.round(score / 2), coins: (prev.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Menulis', topic: result?.title || 'Jurulatih Menulis', percent: score, stars: getStars(score) }, ...(prev.history || [])].slice(0, 50) };
-      saveWritingMemory(memoryResult, updatedProfile, allSubjects);
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
+    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Menulis', topic: result?.title || 'Jurulatih Menulis', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    saveWritingMemory(memoryResult, updatedProfile, allSubjects);
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    recordGamification({
+      type: 'writing-session',
+      sessionId: `writing::${today}::${result?.title || 'Jurulatih Menulis'}`,
+      date: memoryResult.date,
+      key: `writing-session::${today}::${result?.title || 'Jurulatih Menulis'}`
+    }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
+      eventType: 'writing-session',
+      sessionCompleted: true,
+      today: new Date()
     });
     clearResumeData(setResume);
     setScreen('dashboard');
@@ -1291,7 +1384,7 @@ export default function App() {
 
   if (screen === 'finish') {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
-    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
   if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
@@ -1301,7 +1394,7 @@ export default function App() {
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -1519,7 +1612,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} label="Baca Soalan" title="Baca soalan" className="secondary" /><button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div><div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{(feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>Janna</b><p>{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
-function Finish({ profile, session, topic, nextTopic, aiSummary, personality, voiceSummaryText, onDashboard, onRetry, onNextTopic, onOpenAi }) {
+function Finish({ profile, session, topic, nextTopic, aiSummary, personality, voiceSummaryText, gamificationProfile, onDashboard, onRetry, onNextTopic, onOpenAi }) {
   const scorePercent = clampPercent(session.percent);
   const passed = scorePercent >= 80;
   const finishMessage = passed ? PERSONALITY_MESSAGES.completed : PERSONALITY_MESSAGES.retry;
@@ -1551,7 +1644,7 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
     }
   ];
 
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa 😊')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div><div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa 😊')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
   }
 
 function AiTutorChat({ profile, selectedSubject, onTutup }) {

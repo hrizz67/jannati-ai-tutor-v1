@@ -2,6 +2,7 @@ import React, { Suspense, useMemo } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
 import JannaAvatar from '../components/JannaAvatar';
+import GamificationSummary from '../components/GamificationSummary.jsx';
 import VoiceButton from '../components/VoiceButton.jsx';
 import DashboardLayout from './DashboardLayout.jsx';
 const StudentDashboard = React.lazy(() => import('./StudentDashboard.jsx'));
@@ -29,6 +30,7 @@ export default function HomeDashboard(props) {
     selectedSubjectId,
     totalQuestions,
     personality,
+    gamificationProfile,
     resume,
     dailyChallenge,
     voiceGreetingText,
@@ -103,6 +105,7 @@ export default function HomeDashboard(props) {
   const studentData = {
     profile,
     adaptiveProfile: adaptiveStore,
+    gamificationProfile,
     adaptiveHasEvidence: (adaptiveStore.totalQuestions || 0) > 0 || (adaptiveStore.correctQuestions || 0) > 0 || (adaptiveStore.studyMinutes || 0) > 0,
     overallAccuracy: adaptiveStore.totalQuestions ? Math.round((adaptiveStore.correctQuestions / adaptiveStore.totalQuestions) * 100) : 0,
     adaptivePracticeCount,
@@ -201,7 +204,7 @@ export default function HomeDashboard(props) {
           <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">Tahun 2</p><h1>Jannati AI Tutor</h1></div></div>
           <div className="brand-student-strip"><JannaAvatar size={48} className="student-avatar" /><div><b>{profile.name || 'Anak'}</b><small>Tahun 2</small></div><span className="achievement-chip">Tahap {level}</span><span className="achievement-chip">Bintang {levelProgress}</span><span className="achievement-chip">Streak {adaptiveStore.streak || 0}</span><button type="button" className="icon-button" aria-label="Notifikasi">!</button></div>
         </header>
-        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div className="avatar-large"><JannaAvatar size={84} /></div><div><p className="eyebrow">Edisi Data Ringan</p><h1>{personalityGreeting || `Assalamualaikum, ${profile.name || 'Anak'}`}</h1><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
+        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div className="avatar-large"><JannaAvatar size={84} /></div><div><p className="eyebrow">Edisi Data Ringan</p><h1>{personalityGreeting || `Assalamualaikum, ${profile.name || 'Anak'}`}</h1><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" />{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="home-gamification-summary" />}<div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
         <Suspense fallback={<section className="card"><p className="eyebrow">Memuat</p><h2>Dashboard sedang dimuat</h2><p>Sebentar ya, kandungan sedang disiapkan.</p></section>}>
           <StudentDashboard {...studentData} />
           <RevisionDashboard {...revisionData} />

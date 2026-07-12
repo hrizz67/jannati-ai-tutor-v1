@@ -2,6 +2,7 @@ import React from 'react';
 import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dashboardHelpers.jsx';
 import { explainWeakness } from '../ai/adaptive/weakTopicEngine';
 import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import GamificationSummary from '../components/GamificationSummary.jsx';
 
 export default function StudentDashboard({
   profile = {},
@@ -17,6 +18,7 @@ export default function StudentDashboard({
   adaptiveRecommendationFocus = null,
   streakBest,
   streakMessage,
+  gamificationProfile = null,
   onStartAdaptivePractice
 }) {
   const name = adaptiveProfile?.name || profile.name || 'Anak';
@@ -30,13 +32,14 @@ export default function StudentDashboard({
         <h2>Ringkasan Murid</h2>
         {adaptiveHasEvidence ? (
           <>
-            <div className="mastery-summary-grid">
-              <div><b>{name}</b><span>Nama Murid</span></div>
-              <div><b>{adaptiveProfile.level || 1}</b><span>Tahap Semasa</span></div>
-              <div><b>{adaptiveProfile.xp || 0}</b><span>XP Semasa</span></div>
-              <div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div>
-            </div>
-            <div className="progress-wrap"><div className="progress" style={{ width: `${clampPercent(overallAccuracy)}%` }} /></div>
+          <div className="mastery-summary-grid">
+            <div><b>{name}</b><span>Nama Murid</span></div>
+            <div><b>{adaptiveProfile.level || 1}</b><span>Tahap Semasa</span></div>
+            <div><b>{adaptiveProfile.xp || 0}</b><span>XP Semasa</span></div>
+            <div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div>
+          </div>
+          {gamificationProfile && <GamificationSummary profile={gamificationProfile} className="student-gamification-summary" />}
+          <div className="progress-wrap"><div className="progress" style={{ width: `${clampPercent(overallAccuracy)}%` }} /></div>
             <div className="mastery-summary-grid">
               <div><b>{adaptiveProfile.totalQuestions || 0}</b><span>Soalan</span></div>
               <div><b>{adaptiveProfile.correctQuestions || 0}</b><span>Betul</span></div>
