@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
 import JannaAvatar from '../components/JannaAvatar';
 import VoiceButton from '../components/VoiceButton.jsx';
 import DashboardLayout from './DashboardLayout.jsx';
-import StudentDashboard from './StudentDashboard.jsx';
-import RevisionDashboard from './RevisionDashboard.jsx';
-import AnalyticsDashboard from './AnalyticsDashboard.jsx';
+const StudentDashboard = React.lazy(() => import('./StudentDashboard.jsx'));
+const RevisionDashboard = React.lazy(() => import('./RevisionDashboard.jsx'));
+const AnalyticsDashboard = React.lazy(() => import('./AnalyticsDashboard.jsx'));
 import { buildRecommendation } from '../ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from '../ai/adaptiveEngine';
 import { loadAIMemory, formatStudyTime } from '../ai/memoryEngine';
@@ -202,9 +202,11 @@ export default function HomeDashboard(props) {
           <div className="brand-student-strip"><JannaAvatar size={48} className="student-avatar" /><div><b>{profile.name || 'Anak'}</b><small>Tahun 2</small></div><span className="achievement-chip">Tahap {level}</span><span className="achievement-chip">Bintang {levelProgress}</span><span className="achievement-chip">Streak {adaptiveStore.streak || 0}</span><button type="button" className="icon-button" aria-label="Notifikasi">!</button></div>
         </header>
         <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div className="avatar-large"><JannaAvatar size={84} /></div><div><p className="eyebrow">Edisi Data Ringan</p><h1>{personalityGreeting || `Assalamualaikum, ${profile.name || 'Anak'}`}</h1><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /><div className="level-line"><span>Tahap {level}</span><div className="progress-wrap"><div className="progress" style={{ width: `${levelProgress}%` }} /></div><span>{levelProgress}/100 XP</span></div></div></section>
-        <StudentDashboard {...studentData} />
-        <RevisionDashboard {...revisionData} />
-        <AnalyticsDashboard {...analyticsData} />
+        <Suspense fallback={<section className="card"><p className="eyebrow">Memuat</p><h2>Dashboard sedang dimuat</h2><p>Sebentar ya, kandungan sedang disiapkan.</p></section>}>
+          <StudentDashboard {...studentData} />
+          <RevisionDashboard {...revisionData} />
+          <AnalyticsDashboard {...analyticsData} />
+        </Suspense>
         <section className="card"><button type="button" className="full" onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>▶ Sambung Belajar</button></section>
         <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}>▶ Sambung Belajar</button><button className="secondary" onClick={onOpenAi}>🤖 Tutor AI</button><button className="secondary" onClick={onOpenUasa}>🏆 Simulator UASA</button><button className="secondary" onClick={onStartBacaan}>🎤 Bacaan</button><button className="secondary" onClick={onStartMendengar}>🎧 Mendengar</button><button className="secondary" onClick={onStartBertutur}>🗣️ Bertutur</button><button className="secondary" onClick={onStartMenulis}>✍️ Menulis</button><button className="secondary" onClick={onOpenParent}>👨‍👩‍👧 Ibu Bapa</button></section>
         <section className="card adaptive-practice-card"><p className="eyebrow">Latihan AI</p><h2>Latihan AI</h2><p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p><div className="mastery-summary-grid"><div><b>{adaptivePracticePreview?.summary?.totalQuestions || adaptivePracticeCount}</b><span>Soalan</span></div><div><b>{adaptivePracticePreview?.summary?.estimatedMinutes || 0}</b><span>Masa</span></div><div><b>{adaptivePracticePreview?.summary?.focusTopics?.length || 0}</b><span>Topik Fokus</span></div><div><b>{adaptivePracticePreview?.summary?.metadata?.fallbackUsed ? 'Ya' : 'Tidak'}</b><span>Pengganti</span></div></div><div className="actions"><button type="button" className={adaptivePracticeCount === 10 ? '' : 'secondary'} onClick={() => onAdaptivePracticeCountChange(10)}>10 Soalan</button><button type="button" className={adaptivePracticeCount === 20 ? '' : 'secondary'} onClick={() => onAdaptivePracticeCountChange(20)}>20 Soalan</button><button type="button" className="full" onClick={() => onStartAdaptivePractice(adaptivePracticeCount)} disabled={!adaptivePracticePreview?.session?.questions?.length}>Mula Latihan AI</button></div><VoiceButton text={voiceMissionText || adaptivePracticePreview?.summary?.focusTopics?.slice(0, 3).map(topic => `${formatSubjectName(topic.subjectId)} ${formatTopicName(topic.topicId)}`).join('. ') || ''} label="Dengar Misi" title="Dengar misi hari ini" /><div className="recommend-meta">{(adaptivePracticePreview?.summary?.focusTopics || []).slice(0, 3).map(topic => <span key={`${topic.subjectId}-${topic.topicId}`}>{formatSubjectName(topic.subjectId)} • {formatTopicName(topic.topicId)}</span>)}</div></section>

@@ -1,4 +1,4 @@
-import jatiAvatar from '../assets/mascot/jati.png';
+import jatiAvatar from '../assets/mascot/jati-optimized.png';
 
 export const AI_PERSONALITIES = {
   janna: {

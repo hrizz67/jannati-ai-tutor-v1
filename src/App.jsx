@@ -2,8 +2,8 @@
 import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
-import AIExplainModal from './components/ai/AIExplainModal';
-import AITeacherModal from './components/ai/AITeacherModal';
+const AIExplainModal = React.lazy(() => import('./components/ai/AIExplainModal'));
+const AITeacherModal = React.lazy(() => import('./components/ai/AITeacherModal'));
 import BrandLogo from './components/BrandLogo';
 import MascotCard from './components/MascotCard';
 import JannaAvatar from './components/JannaAvatar';
@@ -49,8 +49,9 @@ import { recommendMissingSkSp, summarizeUasaCoverage } from './curriculum/uasaEn
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatStatus, formatTopicName } from './utils/displayFormatter';
 import HomeDashboard from './dashboard/HomeDashboard';
-import ParentDashboardPage from './dashboard/ParentDashboard';
+const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
+import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const RESUME_KEY = 'jannati_v151_resume';
@@ -1285,18 +1286,18 @@ export default function App() {
     const safeHint = sanitizeAiText(coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
-    return <BetaChrome recoveryMessages={recoveryMessages}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
   if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
   if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
   if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></BetaChrome>;
-  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} predictionProfile={predictionProfile} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></BetaChrome>;
+  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} predictionProfile={predictionProfile} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
@@ -1918,7 +1919,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
       audioRef.current.play();
       return;
     }
-    speakText(item.prompt, item.speechLang);
+    speak(item.prompt, { lang: item.speechLang });
   }
 
   function submitMendengar() {

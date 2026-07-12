@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import jatiAvatar from '../assets/mascot/jati.png';
+import jatiAvatar from '../assets/mascot/jati-optimized.png';
 
 export default function JatiAvatar({ size = 64, className = '' }) {
   const resolvedSize = typeof size === 'number' ? size : 64;
