@@ -1,12 +1,20 @@
 import React from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
+import VoiceButton from '../VoiceButton.jsx';
 
 export default function AITeacherModal({ open, data, character = 'jati', onTutup, onLatih }) {
   if (!open || !data) return null;
 
   const examples = Array.isArray(data.examples) ? data.examples : [];
   const commonMistakes = Array.isArray(data.commonMistakes) ? data.commonMistakes : [];
+  const voiceText = [
+    data.explanation,
+    ...examples,
+    ...commonMistakes,
+    data.memoryTip,
+    data.practicePrompt
+  ].filter(Boolean).join('. ');
 
   return (
     <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Guru AI">
@@ -23,6 +31,7 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
         </div>
 
         <div className="ai-explain-body">
+          <VoiceButton text={voiceText} label="Baca Ajaran" title="Baca penerangan Ajar Saya" className="voice-inline" />
           <div className="explain-section">
             <h3>Penerangan mudah</h3>
             <p>{data.explanation || 'Jawapan ini sesuai dengan soalan.'}</p>

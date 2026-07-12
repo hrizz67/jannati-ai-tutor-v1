@@ -1,12 +1,23 @@
 import React from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
+import VoiceButton from '../VoiceButton.jsx';
 
 export default function AIExplainModal({ open, data, question, character = 'jati', onTutup, onTryAgain, onTeach }) {
   if (!open || !data) return null;
 
   const examples = Array.isArray(data.examples) ? data.examples : [];
   const commonMistakes = Array.isArray(data.commonMistakes) ? data.commonMistakes : [];
+  const voiceText = [
+    data.explanation,
+    data.simpleExplanation,
+    data.hint,
+    ...examples,
+    ...commonMistakes,
+    data.memoryTip,
+    data.encouragement,
+    question?.answer ? `Jawapan betul ${question.answer}` : ''
+  ].filter(Boolean).join('. ');
 
   return (
     <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
@@ -23,6 +34,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
         </div>
 
         <div className="ai-explain-body">
+          <VoiceButton text={voiceText} label="Baca Penerangan" title="Baca penerangan AI" className="voice-inline" />
           <div className="explain-section">
             <h3>Kenapa jawapan itu betul</h3>
             <p>{data.explanation || 'Jawapan ini sesuai dengan soalan.'}</p>
