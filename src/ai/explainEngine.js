@@ -1,78 +1,93 @@
-const CATEGORY_RULES = [
-  {
-    keywords: ['kata nama', 'noun', 'nouns'],
-    explanation: 'Soalan ini meminta murid mengenal pasti nama orang, haiwan, tempat atau benda.',
-    hint: 'Cari perkataan yang menamakan sesuatu.',
-    examples: ['guru', 'kucing', 'sekolah', 'buku']
+import { detectLearningCategory, getLearningExamples, sanitizeAiText } from './learningCopy.js';
+
+const CATEGORY_RULES = {
+  person: {
+    explanation: 'Jawapan ini betul kerana ia ialah nama orang yang sesuai dengan soalan.',
+    hint: 'Cari nama orang yang sepadan dengan ayat.',
+    commonMistakes: ['Memilih nama tempat.', 'Memilih perkataan yang bukan nama orang.']
   },
-  {
-    keywords: ['kata kerja', 'verb', 'verbs'],
-    explanation: 'Soalan ini berkaitan perbuatan atau aksi dalam ayat.',
-    hint: 'Cari perkataan yang menunjukkan apa yang dibuat.',
-    examples: ['makan', 'lari', 'read', 'write']
+  place: {
+    explanation: 'Jawapan ini betul kerana ia ialah nama tempat yang sesuai.',
+    hint: 'Cari kata yang menamakan tempat.',
+    commonMistakes: ['Memilih nama orang.', 'Memilih kata kerja atau sifat.']
   },
-  {
-    keywords: ['kata adjektif', 'adjective', 'adjectives'],
-    explanation: 'Soalan ini meminta murid mengenal pasti sifat atau keadaan sesuatu.',
-    hint: 'Cari perkataan yang menerangkan rupa, warna, saiz atau perasaan.',
-    examples: ['besar', 'cantik', 'happy', 'small']
+  animal: {
+    explanation: 'Jawapan ini betul kerana ia menamakan haiwan yang tepat.',
+    hint: 'Cari nama haiwan yang sesuai dengan ayat.',
+    commonMistakes: ['Memilih benda atau tempat.', 'Memilih perkataan yang bukan haiwan.']
   },
-  {
-    keywords: ['tambah', 'addition', 'plus'],
-    explanation: 'Soalan ini menggunakan operasi tambah untuk menggabungkan nilai.',
-    hint: 'Kumpulkan nombor dan kira jumlah semuanya.',
-    examples: ['2 + 3 = 5', '10 + 4 = 14']
+  object: {
+    explanation: 'Jawapan ini betul kerana ia ialah nama benda.',
+    hint: 'Cari nama benda yang sepadan dengan ayat.',
+    commonMistakes: ['Memilih nama orang.', 'Memilih kata kerja.']
   },
-  {
-    keywords: ['tolak', 'subtraction', 'minus'],
-    explanation: 'Soalan ini menggunakan operasi tolak untuk mencari baki atau beza.',
-    hint: 'Mulakan dengan nombor besar, kemudian buang nilai yang diminta.',
-    examples: ['8 - 3 = 5', '12 - 2 = 10']
+  verb: {
+    explanation: 'Jawapan ini betul kerana ia menunjukkan perbuatan.',
+    hint: 'Cari perkataan yang menunjukkan aksi.',
+    commonMistakes: ['Memilih kata nama.', 'Memilih kata adjektif.']
+  },
+  adjective: {
+    explanation: 'Jawapan ini betul kerana ia menerangkan sifat atau keadaan.',
+    hint: 'Cari perkataan yang menerangkan rupa, saiz atau perasaan.',
+    commonMistakes: ['Memilih nama benda.', 'Memilih perbuatan.']
+  },
+  penjodoh: {
+    explanation: 'Jawapan ini betul kerana ia ialah penjodoh bilangan yang sesuai.',
+    hint: 'Cari pasangan bilangan yang tepat untuk benda itu.',
+    commonMistakes: ['Memilih kata nama biasa.', 'Menggunakan penjodoh yang tidak sesuai.']
+  },
+  simpulan: {
+    explanation: 'Jawapan ini betul kerana ia ialah simpulan bahasa yang membawa maksud khas.',
+    hint: 'Cari maksud yang paling sesuai dengan situasi ayat.',
+    commonMistakes: ['Membaca setiap perkataan secara literal.', 'Memilih frasa yang tiada maksud khas.']
+  },
+  conjunction: {
+    explanation: 'Jawapan ini betul kerana ia menghubungkan dua bahagian ayat dengan tepat.',
+    hint: 'Cari kata hubung yang sesuai dengan maksud ayat.',
+    commonMistakes: ['Memilih kata sendi nama.', 'Memilih kata nama.']
+  },
+  sendi: {
+    explanation: 'Jawapan ini betul kerana ia ialah kata sendi nama yang sesuai.',
+    hint: 'Cari kata sendi nama yang menunjukkan tempat atau arah.',
+    commonMistakes: ['Memilih kata kerja.', 'Memilih kata hubung.']
+  },
+  generic: {
+    explanation: 'Jawapan ini betul kerana ia melengkapkan maksud soalan dengan tepat.',
+    hint: 'Baca soalan sekali lagi dan cari kata kunci penting.',
+    commonMistakes: ['Menjawab terlalu cepat.', 'Tidak semak ayat penuh.']
   }
-];
+};
 
-function normalize(value = '') {
-  return String(value).toLowerCase();
-}
-
-function findRule(question = {}, topic = {}) {
-  const text = normalize(`${topic.title || ''} ${topic.note || ''} ${question.topic || ''} ${question.uasa || ''} ${question.dskp || ''} ${question.q || ''} ${question.hint || ''}`);
-  return CATEGORY_RULES.find(rule => rule.keywords.some(keyword => text.includes(keyword)));
-}
-
-function buildContext(question = {}, topic = {}) {
-  const context = [
-    question.topic || topic.title,
-    question.uasa,
-    question.dskp
-  ].filter(Boolean);
-  return context.length ? ` Konteks: ${context.join(' • ')}.` : '';
-}
-
-function fallbackExamples(question = {}) {
-  const answer = question.answer ? String(question.answer) : 'jawapan tepat';
-  return [
-    `Jawapan contoh: ${answer}`,
-    'Baca ayat sekali lagi dan cari petunjuk sebelum ruang kosong.',
-    'Bandingkan jawapan dengan maksud ayat.'
-  ];
+function buildBaseExamples(question, topic) {
+  const examples = getLearningExamples(question, topic);
+  return examples.length ? examples : ['Baca ayat sekali lagi.', 'Cari kata kunci penting.', 'Bandingkan dengan jawapan.'];
 }
 
 export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '' } = {}) {
-  const rule = findRule(question, topic);
-  const correctAnswer = question.answer || 'jawapan yang betul';
-  const context = buildContext(question, topic);
+  const category = detectLearningCategory(question, topic);
+  const rule = CATEGORY_RULES[category] || CATEGORY_RULES.generic;
+  const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');
+  const explanation = sanitizeAiText(question.explanation || rule.explanation);
+  const hint = sanitizeAiText(question.hint || rule.hint);
+  const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
+  const commonMistakes = (rule.commonMistakes || []).map(item => sanitizeAiText(item));
   const wasCorrect = result.status === 'correct';
   const wasAlmost = result.status === 'almost';
 
   return {
-    explanation: `${question.explanation || rule?.explanation || `Jawapan yang sesuai ialah "${correctAnswer}" kerana ia melengkapkan maksud soalan.`}${context}`,
-    hint: question.hint || rule?.hint || `Fokus pada kata kunci soalan dan bandingkan dengan jawapan "${correctAnswer}".`,
-    examples: rule?.examples || fallbackExamples(question),
+    category,
+    explanation,
+    simpleExplanation: explanation,
+    hint,
+    examples,
+    commonMistakes,
+    memoryTip: sanitizeAiText(question.memoryTip || ''),
     encouragement: wasCorrect
-      ? 'Hebat. Teruskan momentum ini.'
+      ? 'Hebat! Teruskan usaha kamu.'
       : wasAlmost
-        ? `Hampir tepat. Jawapan kamu "${userAnswer || '-'}" sudah dekat, cuba kemaskan lagi.`
-        : 'Tidak mengapa. Cuba sekali lagi dengan melihat petunjuk dan contoh.'
+        ? 'Sedikit lagi. Kamu hampir berjaya.'
+        : 'Tak mengapa. Kita cuba sekali lagi.',
+    answerLine: `Jawapan: ${correctAnswer}`,
+    correctAnswer
   };
 }

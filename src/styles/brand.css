@@ -409,11 +409,15 @@ button:disabled {
 
 .subject-card strong {
   justify-self: start;
-  padding: 7px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: var(--brand-primary-green);
   color: var(--brand-white);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
 }
 
 .subject-complete strong {
@@ -899,6 +903,88 @@ button:disabled {
   min-height: 188px !important;
   padding: var(--brand-space-md) !important;
   align-content: start;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--brand-space-md);
+}
+
+.metric-card {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  min-height: 112px;
+  padding: 18px 16px;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-white);
+  border: 1px solid rgba(15, 138, 67, .12);
+  box-shadow: var(--brand-shadow-sm);
+  text-align: center;
+}
+
+.metric-card-value {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--brand-primary-green);
+}
+
+.metric-card-label {
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--brand-ink);
+}
+
+.metric-card-subtitle {
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--brand-muted-gray);
+}
+
+.report-box {
+  min-height: 148px !important;
+  align-content: center;
+  justify-items: start;
+}
+
+.report-box h3 {
+  font-size: 18px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.subject-status-empty {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brand-muted-gray);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.report-box b {
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.report-box span {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+@media (max-width: 1024px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .path-card-head,

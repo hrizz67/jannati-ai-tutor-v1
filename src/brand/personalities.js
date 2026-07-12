@@ -1,26 +1,29 @@
+import jatiAvatar from '../assets/mascot/jati.png';
+
 export const AI_PERSONALITIES = {
   janna: {
     name: 'Janna',
     role: 'Rakan Pembelajaran AI',
     subjects: ['Bahasa Melayu', 'Bahasa Arab', 'Pendidikan Islam'],
-    characteristics: ['Patient', 'Gentle', 'Encouraging', 'Warm'],
+    characteristics: ['Sabar', 'Lembut', 'Menggalakkan', 'Mesra'],
     greeting: 'Assalamualaikum',
   },
   jati: {
     name: 'Jati',
     role: 'Jurulatih Penyelesaian Masalah',
-    subjects: ['Mathematics', 'Science', 'English'],
-    characteristics: ['Energetic', 'Confident', 'Motivating', 'Positive'],
+    avatar: jatiAvatar,
+    subjects: ['Matematik', 'Sains', 'Bahasa Inggeris'],
+    characteristics: ['Bertenaga', 'Yakin', 'Memberi Semangat', 'Positif'],
     greeting: 'Jom fikir bersama',
   },
 };
 
 export const PERSONALITY_MESSAGES = {
   success: 'Syabas! Kamu berjaya menjawab soalan ini.',
-  retry: 'Tak mengapa. Mari kita cuba sekali lagi.',
+  retry: 'Tak mengapa 😊 Mari kita cuba sekali lagi.',
   completed: 'Hebat! Kamu telah menamatkan latihan ini.',
   loading: 'Sedang menyediakan pembelajaran terbaik untuk kamu...',
-  aiTeacher: 'Guru AI akan bantu kamu faham.',
+  aiTeacher: 'Mari kita belajar bersama.',
 };
 
 export function getPersonalityForSubject(subject = {}) {

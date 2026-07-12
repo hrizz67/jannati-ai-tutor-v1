@@ -6,9 +6,10 @@ import { getAllSubjectAnalytics, getBestSubject, getWeakestSubject, getSubjectAt
 import { generateParentReport } from '../ai/adaptive/parentReportEngine';
 import { explainWeakness, rankStrongTopics, rankWeakTopics } from '../ai/adaptive/weakTopicEngine';
 import { printParentReport } from '../utils/printReport';
-import { formatAttentionLevel, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, formatTrend } from '../utils/displayFormatter';
+import { clampPercent, formatActivityStatus, formatAttentionLevel, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, formatTrend } from '../utils/displayFormatter';
+import MetricCard from '../components/MetricCard.jsx';
 
-export default function ParentDashboard({ profile, adaptiveProfile, allSubjects, adaptivePracticeCount, onStartAdaptivePractice, onBack }) {
+export default function ParentDashboard({ profile, adaptiveProfile, allSubjects, adaptivePracticeCount, readiness, onStartAdaptivePractice, onBack }) {
   const [selectedSubjectId, setSelectedSubjectId] = useState(allSubjects[0]?.id || 'bm');
   const memory = loadAIMemory();
   const activeAdaptiveProfile = useMemo(() => adaptiveProfile || profile.adaptiveProfile || profile, [adaptiveProfile, profile]);
@@ -41,19 +42,19 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
         <h2>Trend Mingguan</h2>
         {weeklyAnalytics.totals.questions > 0 ? (
           <>
-            <div className="mastery-summary-grid">
-              <div><b>{weeklyAnalytics.totals.questions}</b><span>Soalan 7 hari</span></div>
-              <div><b>{weeklyAnalytics.totals.accuracy}%</b><span>Ketepatan 7 hari</span></div>
-              <div><b>{formatStudyMinutes(weeklyAnalytics.totals.studyMinutes)}</b><span>Masa belajar</span></div>
-              <div><b>{weeklyAnalytics.totals.activeDays}</b><span>Hari aktif</span></div>
-              <div><b>{formatTrend(weeklyAnalytics.trend.direction)}</b><span>Arah trend</span></div>
+            <div className="metric-grid">
+              <MetricCard value={weeklyAnalytics.totals.questions} label="Soalan Minggu Ini" />
+              <MetricCard value={`${clampPercent(weeklyAnalytics.totals.accuracy)}%`} label="Ketepatan" />
+              <MetricCard value={formatTrend(weeklyAnalytics.trend.direction)} label="Trend" subtitle={weeklyAnalytics.trend.message} />
+              <MetricCard value={weeklyAnalytics.totals.activeDays} label="Hari Aktif" />
+              <MetricCard value={formatStudyMinutes(weeklyAnalytics.totals.studyMinutes)} label="Masa Belajar" />
             </div>
             <div className="timeline" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '0.5rem' }}>
               {weeklyAnalytics.daily.map(day => (
                 <div className="report-box" key={day.date} style={{ padding: '0.75rem' }}>
                   <h3 style={{ marginBottom: '0.25rem' }}>{day.date.slice(5)}</h3>
                   <b>{day.questions}</b>
-                  <span>{day.active ? `${day.accuracy}%` : 'Aktif'}</span>
+                  <span>{day.active ? `${clampPercent(day.accuracy)}%` : 'Aktif'}</span>
                 </div>
               ))}
             </div>
@@ -65,15 +66,26 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
       </section>
 
       <section className="card">
+        <p className="eyebrow">Kesediaan UASA</p>
+        <h2>Kesediaan UASA</h2>
+        <div className="metric-grid">
+          <MetricCard value={`${clampPercent(readiness?.score)}%`} label="Skor Kesediaan" />
+          <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" />
+          <MetricCard value={formatTrend(clampPercent(readiness?.score) >= 80 ? 'improving' : clampPercent(readiness?.score) >= 55 ? 'stable' : 'declining')} label="Trend" subtitle={readiness?.message || 'Perlu lebih latihan sebelum ke tahap seterusnya.'} />
+          <MetricCard value={formatAttentionLevel(readiness?.attentionLevel || 'medium')} label="Keperluan Sokongan" />
+        </div>
+      </section>
+
+      <section className="card">
         <p className="eyebrow">Analisis Subjek</p>
         <h2>Analisis Subjek</h2>
         {subjectAnalytics.length ? (
           <>
-            <div className="mastery-summary-grid">
-              <div><b>{formatSubjectName(bestSubject?.subjectId)}</b><span>Subjek Terbaik</span></div>
-              <div><b>{formatSubjectName(weakestSubject?.subjectId)}</b><span>Perlu Diberi Perhatian</span></div>
-              <div><b>{subjectAnalytics.length}</b><span>Subjek Dinilai</span></div>
-              <div><b>{formatAttentionLevel(selectedAttention?.attentionLevel)}</b><span>Keutamaan</span></div>
+            <div className="metric-grid">
+              <MetricCard value={formatSubjectName(bestSubject?.subjectId)} label="Subjek Terbaik" />
+              <MetricCard value={formatSubjectName(weakestSubject?.subjectId)} label="Perlu Diberi Perhatian" />
+              <MetricCard value={subjectAnalytics.length} label="Subjek Dinilai" />
+              <MetricCard value={formatAttentionLevel(selectedAttention?.attentionLevel)} label="Keutamaan" />
             </div>
             <div className="subject-report-grid">
               {subjectAnalytics.map(subject => (
@@ -84,9 +96,13 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
                   onClick={() => setSelectedSubjectId(subject.subjectId)}
                 >
                   <h3>{formatSubjectName(subject.subjectId)}</h3>
-                  <b>{subject.accuracy}%</b>
-                  <div className="mini-progress"><div style={{ width: `${subject.accuracy}%` }} /></div>
-                  <span>{subject.totalQuestions} soalan â€¢ {formatAttentionLevel(subject.attentionLevel)}</span>
+                  {subject.totalQuestions > 0 ? (
+                    <b>{clampPercent(subject.accuracy)}%</b>
+                  ) : (
+                    <span className="subject-status-empty">Belum Dimulakan</span>
+                  )}
+                  <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
+                  <span>{subject.totalQuestions > 0 ? `${subject.totalQuestions} soalan` : '0 soalan'} • {formatAttentionLevel(subject.attentionLevel)}</span>
                 </button>
               ))}
             </div>
@@ -95,8 +111,8 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
                 <div className="timeline-item">
                   <span>{formatSubjectName(selectedSubjectAnalytics.subjectId)}</span>
                   <b>{formatStatus(selectedSubjectAnalytics.status)}</b>
-                  <em>Penguasaan {selectedSubjectAnalytics.mastery}% â€¢ Keyakinan Data {selectedSubjectAnalytics.confidence}%</em>
-                  <p>{formatTrend(selectedSubjectAnalytics.trend.direction)} â€¢ {selectedSubjectAnalytics.trend.message}</p>
+                  <em>Penguasaan {clampPercent(selectedSubjectAnalytics.mastery)}% • Keyakinan Data {clampPercent(selectedSubjectAnalytics.confidence)}%</em>
+                  <p>{formatTrend(selectedSubjectAnalytics.trend.direction)} • {selectedSubjectAnalytics.trend.message}</p>
                 </div>
                 <div className="timeline-item">
                   <span>Topik Lemah</span>
@@ -129,11 +145,11 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
         <h2>Laporan AI</h2>
         {reportHasData ? (
           <>
-            <div className="parent-summary-grid">
-              <div className="parent-metric"><span>Ringkasan Mingguan</span><b>{parentReport.summary}</b><small>{parentReport.generatedAt.slice(0, 10)}</small></div>
-              <div className="parent-metric"><span>Pencapaian</span><b>{parentReport.achievements.length}</b><small>{parentReport.achievements[0] || 'Belum cukup data.'}</small></div>
-              <div className="parent-metric"><span>Perlu Diperbaiki</span><b>{parentReport.improvements.length}</b><small>{reportWeakTopic}</small></div>
-              <div className="parent-metric"><span>Cadangan AI</span><b>{parentReport.estimatedStudyTime} min</b><small>{reportAdvice[0] || 'Cadangan akan muncul apabila data mencukupi.'}</small></div>
+            <div className="metric-grid">
+              <MetricCard value={weeklyAnalytics.totals.questions} label="Soalan Minggu Ini" subtitle={parentReport.generatedAt.slice(0, 10)} />
+              <MetricCard value={`${clampPercent(weeklyAnalytics.totals.accuracy)}%`} label="Ketepatan" subtitle={weeklyAnalytics.trend.message} />
+              <MetricCard value={parentReport.achievements.length} label="Pencapaian" subtitle={parentReport.achievements[0] || 'Belum cukup data.'} />
+              <MetricCard value={`${parentReport.estimatedStudyTime} min`} label="Cadangan AI" subtitle={reportAdvice[0] || 'Cadangan akan muncul apabila data mencukupi.'} />
             </div>
             <div className="timeline">{parentReport.achievements.slice(0, 3).map((item, index) => <div className="timeline-item" key={`achievement-${index}`}><span>Pencapaian</span><b>{item}</b><em>{parentReport.encouragement}</em></div>)}</div>
             <div className="timeline">{parentReport.improvements.slice(0, 3).map((item, index) => <div className="timeline-item" key={`improvement-${index}`}><span>Perlu Diperbaiki</span><b>{item}</b><em>{parentReport.nextGoal}</em></div>)}</div>
@@ -149,64 +165,64 @@ export default function ParentDashboard({ profile, adaptiveProfile, allSubjects,
       </section>
 
       <section className="card">
-        <h2>ðŸŽ¤ Sejarah Bacaan</h2>
+        <h2>🎤 Sejarah Bacaan</h2>
         <div className="timeline">
-          {readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct} betul â€¢ {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}
+          {readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct} betul • {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>ðŸŽ§ Sejarah Mendengar</h2>
+        <h2>🎧 Sejarah Mendengar</h2>
         <div className="timeline">
-          {listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.correct}/{item.total} betul â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}
+          {listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct}/{item.total} betul • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>ðŸ—£ï¸ Sejarah Bertutur</h2>
+        <h2>🗣️ Sejarah Bertutur</h2>
         <div className="timeline">
-          {speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}
+          {speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>âœï¸ Sejarah Menulis</h2>
+        <h2>✍️ Sejarah Menulis</h2>
         <div className="timeline">
-          {writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% â€¢ {item.matchedKeywords}/{item.totalKeywords} kata kunci â€¢ {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}
+          {writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}
         </div>
       </section>
 
       <section className="parent-two-col">
         <section className="card">
-          <h2>âš ï¸ Topik Lemah</h2>
+          <h2>⚠️ Topik Lemah</h2>
           <div className="parent-topic-list">
-            {weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}
+            {weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}
           </div>
         </section>
         <section className="card">
-          <h2>ðŸŒŸ Topik Kuat</h2>
+          <h2>🌟 Topik Kuat</h2>
           <div className="parent-topic-list">
-            {strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} â€¢ {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}
+            {strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}
           </div>
         </section>
       </section>
 
       <section className="card">
-        <h2>ðŸ† Sejarah UASA</h2>
+        <h2>🏆 Sejarah UASA</h2>
         <div className="timeline">
-          {(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {item.grade}</b><em>{item.score}% â€¢ {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}
+          {(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {item.grade}</b><em>{clampPercent(item.score)}% • {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}
         </div>
       </section>
 
       <section className="card">
-        <h2>ðŸ“… Aktiviti Terkini</h2>
+        <h2>📅 Aktiviti Terkini</h2>
         <div className="timeline">
-          {(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subject)} - {item.topic}</b><em>{item.percent}% {item.percent >= 100 ? 'Selesai' : 'Betul'}</em></div>)}
+          {(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subject)} - {item.topic}</b><em>{Number.isFinite(Number(item.percent)) ? `${clampPercent(item.percent)}% ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em></div>)}
         </div>
       </section>
 
       <section className="card">
-        <button type="button" className="full" onClick={() => printParentReport()}>ðŸ–¨ï¸ Cetak Laporan</button>
+        <button type="button" className="full" onClick={() => printParentReport()}>🖨️ Cetak Laporan</button>
       </section>
     </main>
   );

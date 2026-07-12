@@ -1,2 +1,23 @@
-export function smartCheck(userAnswer, question){const user=n(userAnswer), ans=n(question.answer), acc=(question.accepted||[]).map(n); if(!user)return{status:'wrong',title:'Belum jawab',message:'Tulis jawapan dahulu ya.'}; if(user===ans||acc.includes(user)||user.includes(ans)||ans.includes(user))return{status:'correct',title:'Betul!',message:'Jawapan kamu diterima.'}; if(Math.abs(user.length-ans.length)<=2&&user.length>3){let m=0; for(let i=0;i<Math.max(user.length,ans.length);i++) if(user[i]!==ans[i]) m++; if(m<=2)return{status:'almost',title:'Hampir betul',message:'Ejaan kamu hampir sama.'};} return{status:'wrong',title:'Belum tepat',message:'Cuba semak semula jawapan kamu.'};}
-function n(t){return (t||'').toString().toLowerCase().trim().replace(/[.,!?]/g,'').replace(/\s+/g,' ')}
+export function normalizeAnswer(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[.,!?;:]+$/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+export function smartCheck(userAnswer, question) {
+  const user = normalizeAnswer(userAnswer);
+  const correct = normalizeAnswer(question?.answer);
+  const accepted = Array.isArray(question?.accepted) ? question.accepted.map(normalizeAnswer) : [];
+
+  if (!user) {
+    return { status: 'wrong', title: 'Belum jawab', message: 'Tulis jawapan dahulu ya.' };
+  }
+
+  if (user === correct || accepted.some(answer => answer === user)) {
+    return { status: 'correct', title: 'Betul!', message: 'Jawapan kamu diterima.' };
+  }
+
+  return { status: 'wrong', title: 'Belum tepat', message: 'Cuba semak semula jawapan kamu.' };
+}

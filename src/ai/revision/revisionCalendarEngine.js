@@ -116,15 +116,15 @@ function buildWeeklyGoals(profile = {}) {
 
 function getMilestoneDefinitions() {
   return [
-    { id: 'questions-100', label: '100 Questions', type: 'questions', target: 100 },
-    { id: 'questions-500', label: '500 Questions', type: 'questions', target: 500 },
-    { id: 'questions-1000', label: '1000 Questions', type: 'questions', target: 1000 },
+    { id: 'questions-100', label: '100 Soalan', type: 'questions', target: 100 },
+    { id: 'questions-500', label: '500 Soalan', type: 'questions', target: 500 },
+    { id: 'questions-1000', label: '1000 Soalan', type: 'questions', target: 1000 },
     { id: 'xp-500', label: '500 XP', type: 'xp', target: 500 },
     { id: 'xp-1000', label: '1000 XP', type: 'xp', target: 1000 },
-    { id: 'streak-7', label: '7-day streak', type: 'streak', target: 7 },
-    { id: 'streak-30', label: '30-day streak', type: 'streak', target: 30 },
-    { id: 'bm-mastered', label: 'All BM topics mastered', type: 'subjectMastery', subjectId: 'bm', target: 80 },
-    { id: 'math-mastered', label: 'All Math topics mastered', type: 'subjectMastery', subjectId: 'math', target: 80 }
+    { id: 'streak-7', label: 'Streak 7 Hari', type: 'streak', target: 7 },
+    { id: 'streak-30', label: 'Streak 30 Hari', type: 'streak', target: 30 },
+    { id: 'bm-mastered', label: 'Semua topik BM dikuasai', type: 'subjectMastery', subjectId: 'bm', target: 80 },
+    { id: 'math-mastered', label: 'Semua topik Matematik dikuasai', type: 'subjectMastery', subjectId: 'math', target: 80 }
   ];
 }
 

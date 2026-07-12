@@ -2,6 +2,7 @@ import { buildMasteryMap, summarizeMastery } from './adaptive/masteryEngine';
 import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
 import { rememberQuestionHistory } from './diversity/sessionHistoryEngine';
 import { rememberQuestionIntelligenceHistory } from './question/questionEngine.js';
+import { loadMemory as loadStudentMemory } from './memory/memoryStorage.js';
 
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
@@ -37,28 +38,72 @@ function emptyMemory() {
       objects: []
     },
     curriculumCoverage: null,
+    topicHistory: {},
+    mistakeHistory: {},
+    dailySnapshots: [],
+    recommendationScores: {},
+    learningHistory: [],
+    memoryUpdatedAt: '',
     updatedAt: ''
   };
 }
 
 export function loadAIMemory() {
   try {
+    const studentMemory = loadStudentMemory();
     const saved = localStorage.getItem(MEMORY_KEY);
-    if (saved) return { ...emptyMemory(), ...JSON.parse(saved) };
+    if (saved) {
+      return {
+        ...emptyMemory(),
+        ...JSON.parse(saved),
+        topicHistory: studentMemory.topics || {},
+        mistakeHistory: studentMemory.mistakes || {},
+        dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+        recommendationScores: studentMemory.recommendationScores || {},
+        learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+        memoryUpdatedAt: studentMemory.updatedAt || ''
+      };
+    }
 
     for (const key of LEGACY_MEMORY_KEYS) {
       const legacy = localStorage.getItem(key);
       if (legacy) {
         localStorage.setItem(MEMORY_KEY, legacy);
-        return { ...emptyMemory(), ...JSON.parse(legacy) };
+        return {
+          ...emptyMemory(),
+          ...JSON.parse(legacy),
+          topicHistory: studentMemory.topics || {},
+          mistakeHistory: studentMemory.mistakes || {},
+          dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+          recommendationScores: studentMemory.recommendationScores || {},
+          learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+          memoryUpdatedAt: studentMemory.updatedAt || ''
+        };
       }
     }
 
-    return emptyMemory();
+    return {
+      ...emptyMemory(),
+      topicHistory: studentMemory.topics || {},
+      mistakeHistory: studentMemory.mistakes || {},
+      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+      recommendationScores: studentMemory.recommendationScores || {},
+      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+      memoryUpdatedAt: studentMemory.updatedAt || ''
+    };
   } catch {
     localStorage.removeItem(MEMORY_KEY);
     LEGACY_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
-    return emptyMemory();
+    const studentMemory = loadStudentMemory();
+    return {
+      ...emptyMemory(),
+      topicHistory: studentMemory.topics || {},
+      mistakeHistory: studentMemory.mistakes || {},
+      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+      recommendationScores: studentMemory.recommendationScores || {},
+      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+      memoryUpdatedAt: studentMemory.updatedAt || ''
+    };
   }
 }
 
@@ -97,6 +142,7 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
   const masterySummary = summarizeMastery(topicMastery);
   const mastery = masterySummary.total ? masterySummary.masteryScore : previousMemory.mastery || 0;
   const curriculumCoverage = buildCurriculumCoverage(profile, subjects);
+  const studentMemory = loadStudentMemory();
 
   return {
     ...previousMemory,
@@ -108,7 +154,13 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
     mastery,
     topicMastery,
     masterySummary,
-    curriculumCoverage
+    curriculumCoverage,
+    topicHistory: studentMemory.topics || previousMemory.topicHistory || {},
+    mistakeHistory: studentMemory.mistakes || previousMemory.mistakeHistory || {},
+    dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : previousMemory.dailySnapshots || [],
+    recommendationScores: studentMemory.recommendationScores || previousMemory.recommendationScores || {},
+    learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : previousMemory.learningHistory || [],
+    memoryUpdatedAt: studentMemory.updatedAt || previousMemory.memoryUpdatedAt || ''
   };
 }
 

@@ -343,20 +343,20 @@ export function explainWeakness(topicResult) {
   );
 
   const messages = {
-    low_evidence: 'There is not enough attempt data yet to make a strong ranking.',
-    low_mastery: 'Mastery is still below the desired level for this topic.',
-    low_accuracy: 'Accuracy remains below the target level.',
-    low_confidence: 'Confidence is still low because the attempts are not yet stable.',
-    high_wrong_count: 'Wrong answers appear frequently and need targeted review.',
-    slow_response_time: 'Response time suggests the topic needs more practice and fluency.',
-    recent_activity: 'Recent attempts still show learning gaps that need attention.',
-    high_priority_signal: 'Several performance signals indicate this topic needs immediate focus.'
+    low_evidence: 'Belum cukup data percubaan untuk membuat penarafan yang kuat.',
+    low_mastery: 'Penguasaan masih belum mencapai tahap yang disasarkan bagi topik ini.',
+    low_accuracy: 'Ketepatan masih di bawah tahap sasaran.',
+    low_confidence: 'Keyakinan masih rendah kerana percubaan belum stabil.',
+    high_wrong_count: 'Jawapan salah kerap berlaku dan perlu diberi perhatian.',
+    slow_response_time: 'Masa menjawab menunjukkan topik ini memerlukan lebih latihan.',
+    recent_activity: 'Percubaan terkini masih menunjukkan jurang pembelajaran yang perlu diberi perhatian.',
+    high_priority_signal: 'Beberapa isyarat prestasi menunjukkan topik ini perlu diberi fokus segera.'
   };
 
   return {
     primaryReason,
     reasonCodes,
-    message: messages[primaryReason] || 'This topic still needs additional practice and review.'
+    message: messages[primaryReason] || 'Topik ini masih memerlukan latihan dan ulang kaji tambahan.'
   };
 }
 

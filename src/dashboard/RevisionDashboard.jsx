@@ -3,12 +3,12 @@ import { EmptyState } from './dashboardHelpers.jsx';
 import { formatDifficulty, formatPriority, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 
 export default function RevisionDashboard({
-  todayRevision,
-  revisionDifficulty,
-  reviewQueue,
-  mixedRevisionSession,
-  difficultyPlan,
-  adaptivePracticeCount,
+  todayRevision = { totalQuestions: 0, summary: 'Tiada data', estimatedMinutes: 0, subjects: [], priorityTopics: [] },
+  revisionDifficulty = { recommendedDifficulty: 'mudah', reason: '-', score: 0, distribution: { mudah: 0, sederhana: 0, sukar: 0 } },
+  reviewQueue = { dueTopics: [], upcomingTopics: [], overdueTopics: [], today: null },
+  mixedRevisionSession = { totalQuestions: 0, subjects: [], estimatedMinutes: 0 },
+  difficultyPlan = { distribution: { mudah: 0, sederhana: 0, sukar: 0 } },
+  adaptivePracticeCount = 10,
   onStartAdaptivePractice
 }) {
   return (
@@ -31,11 +31,11 @@ export default function RevisionDashboard({
               <div className="timeline-item">
                 <span>Sebab Cadangan</span>
                 <b>{revisionDifficulty.reason}</b>
-                <em>Skor {revisionDifficulty.score}%</em>
+                <em>Skor {Math.max(0, Math.min(100, Math.round(revisionDifficulty.score || 0)))}%</em>
                 <p>
-                  {formatDifficulty('mudah')} {revisionDifficulty.distribution.mudah}% •{' '}
-                  {formatDifficulty('sederhana')} {revisionDifficulty.distribution.sederhana}% •{' '}
-                  {formatDifficulty('sukar')} {revisionDifficulty.distribution.sukar}%
+                  {formatDifficulty('mudah')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.mudah || 0)))}% •{' '}
+                  {formatDifficulty('sederhana')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.sederhana || 0)))}% •{' '}
+                  {formatDifficulty('sukar')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.sukar || 0)))}%
                 </p>
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function RevisionDashboard({
                   <h3>{formatSubjectName(subject.subjectId)}</h3>
                   <b>{subject.questions}</b>
                   <div className="mini-progress">
-                    <div style={{ width: `${Math.min(100, Math.round((subject.questions / Math.max(1, todayRevision.totalQuestions)) * 100))}%` }} />
+                    <div style={{ width: `${Math.max(0, Math.min(100, Math.round((subject.questions / Math.max(1, todayRevision.totalQuestions)) * 100)))}%` }} />
                   </div>
                   <span>{subject.topics.length} topik • {subject.estimatedMinutes} min</span>
                 </div>
@@ -78,7 +78,7 @@ export default function RevisionDashboard({
                       <span>{formatSubjectName(topic.subjectId)}</span>
                       <b>{formatTopicName(topic.topicId)}</b>
                       <em>Keutamaan {formatPriority(topic.priority)} • {topic.nextReview}</em>
-                      <p>Penguasaan {topic.mastery}% • Keyakinan Data {topic.confidence}%</p>
+                      <p>Penguasaan {Math.max(0, Math.min(100, Math.round(topic.mastery || 0)))}% • Keyakinan Data {Math.max(0, Math.min(100, Math.round(topic.confidence || 0)))}%</p>
                     </div>
                   )) : <EmptyState title="Tiada ulang kaji diperlukan hari ini." message="Semua topik telah dijadualkan dengan baik." />}
                 </div>
@@ -129,7 +129,7 @@ export default function RevisionDashboard({
             <div className="report-box" key={`mixed-${subject.subjectId}`}>
               <h3>{formatSubjectName(subject.subjectId)}</h3>
               <b>{subject.questions}</b>
-              <div className="mini-progress"><div style={{ width: `${Math.min(100, Math.round((subject.questions / Math.max(1, mixedRevisionSession.totalQuestions)) * 100))}%` }} /></div>
+              <div className="mini-progress"><div style={{ width: `${Math.max(0, Math.min(100, Math.round((subject.questions / Math.max(1, mixedRevisionSession.totalQuestions)) * 100)))}%` }} /></div>
               <span>{subject.topics.length} topik</span>
             </div>
           ))}

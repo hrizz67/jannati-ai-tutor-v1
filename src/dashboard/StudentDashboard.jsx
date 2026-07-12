@@ -1,19 +1,20 @@
 import React from 'react';
 import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dashboardHelpers.jsx';
 import { explainWeakness } from '../ai/adaptive/weakTopicEngine';
-import { formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 
 export default function StudentDashboard({
-  profile,
-  adaptiveProfile,
-  adaptiveHasEvidence,
-  overallAccuracy,
-  adaptivePracticeCount,
-  adaptivePracticePreview,
+  profile = {},
+  adaptiveProfile = {},
+  adaptiveHasEvidence = false,
+  overallAccuracy = 0,
+  adaptivePracticeCount = 10,
+  adaptivePracticePreview = null,
+  studyPlan = null,
   adaptiveWeakTopics = [],
   adaptiveStrongTopics = [],
-  adaptiveRecommendation,
-  adaptiveRecommendationFocus,
+  adaptiveRecommendation = { subjectRows: [], summary: { weakTopics: 0, strongTopics: 0 }, plan: { totalQuestions: 0, estimatedMinutes: 0 } },
+  adaptiveRecommendationFocus = null,
   streakBest,
   streakMessage,
   onStartAdaptivePractice
@@ -35,11 +36,11 @@ export default function StudentDashboard({
               <div><b>{adaptiveProfile.xp || 0}</b><span>XP Semasa</span></div>
               <div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div>
             </div>
-            <div className="progress-wrap"><div className="progress" style={{ width: `${Math.min(100, overallAccuracy)}%` }} /></div>
+            <div className="progress-wrap"><div className="progress" style={{ width: `${clampPercent(overallAccuracy)}%` }} /></div>
             <div className="mastery-summary-grid">
               <div><b>{adaptiveProfile.totalQuestions || 0}</b><span>Soalan</span></div>
               <div><b>{adaptiveProfile.correctQuestions || 0}</b><span>Betul</span></div>
-              <div><b>{overallAccuracy}%</b><span>Ketepatan</span></div>
+              <div><b>{clampPercent(overallAccuracy)}%</b><span>Ketepatan</span></div>
               <div><b>{formatStudyMinutes(adaptiveProfile.studyMinutes || 0)}</b><span>Masa Belajar</span></div>
             </div>
           </>
@@ -60,8 +61,8 @@ export default function StudentDashboard({
           {(adaptiveRecommendation?.subjectRows || []).map(subject => (
             <div className="report-box" key={`student-${subject.id}`}>
               <h3>{subject.icon} {subject.title || formatSubjectName(subject.id)}</h3>
-              <b>{subject.accuracy}%</b>
-              <div className="mini-progress"><div style={{ width: `${subject.accuracy}%` }} /></div>
+              <b>{clampPercent(subject.accuracy)}%</b>
+              <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
               <span>{subject.total} soalan dicuba</span>
             </div>
           ))}
@@ -79,7 +80,7 @@ export default function StudentDashboard({
                 <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}>
                   <span>{formatSubjectName(topic.subjectId)}</span>
                   <b>{formatTopicName(topic.topicId)}</b>
-                  <em>{formatStatus(topic.status)} • Penguasaan {topic.mastery}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
+                  <em>{formatStatus(topic.status)} • Penguasaan {clampPercent(topic.mastery)}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
                   <p>{explanation.message}</p>
                 </div>
               );
@@ -99,7 +100,7 @@ export default function StudentDashboard({
               <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}>
                 <span>{formatSubjectName(topic.subjectId)}</span>
                 <b>{formatTopicName(topic.topicId)}</b>
-                <em>Penguasaan {topic.mastery}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
+                <em>Penguasaan {clampPercent(topic.mastery)}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
               </div>
             ))}
           </div>
@@ -112,13 +113,15 @@ export default function StudentDashboard({
         <p className="eyebrow">Cadangan Hari Ini</p>
         <h2>Cadangan Hari Ini</h2>
         <p>
-          {adaptiveRecommendationFocus
-            ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} • ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
-            : 'Fokus utama belum tersedia.'}
+          {studyPlan
+            ? `${studyPlan.notes || 'Ikuti cadangan latihan yang seimbang.'} ${adaptiveRecommendationFocus ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} • ${formatTopicName(adaptiveRecommendationFocus.topicId)}` : ''}`
+            : adaptiveRecommendationFocus
+              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} • ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+              : 'Fokus utama belum tersedia.'}
         </p>
         <div className="mastery-summary-grid">
-          <div><b>{adaptiveRecommendation?.plan?.totalQuestions || adaptivePracticePreview?.summary?.totalQuestions || adaptivePracticeCount}</b><span>Soalan</span></div>
-          <div><b>{adaptiveRecommendation?.plan?.estimatedMinutes || adaptivePracticePreview?.summary?.estimatedMinutes || 0}</b><span>Masa</span></div>
+          <div><b>{studyPlan?.focusCount || adaptiveRecommendation?.plan?.totalQuestions || adaptivePracticePreview?.summary?.totalQuestions || adaptivePracticeCount}</b><span>Soalan</span></div>
+          <div><b>{studyPlan?.estimatedMinutes || adaptiveRecommendation?.plan?.estimatedMinutes || adaptivePracticePreview?.summary?.estimatedMinutes || 0}</b><span>Masa</span></div>
           <div><b>{adaptiveRecommendation?.summary?.weakTopics || 0}</b><span>Topik Perlu Diperbaiki</span></div>
           <div><b>{adaptiveRecommendation?.summary?.strongTopics || 0}</b><span>Topik Dikuasai</span></div>
         </div>

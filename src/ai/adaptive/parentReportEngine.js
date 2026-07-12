@@ -103,9 +103,9 @@ function buildStudyAdvice(profile = {}) {
   const focus = recommendation?.summary?.recommendedFocus?.[0];
 
   if (minutes > 0) {
-    advice.push(`Disarankan ${minutes} minit latihan setiap hari.`);
+    advice.push(`Latihan ${minutes} minit sehari.`);
   } else {
-    advice.push('Disarankan 15 minit latihan setiap hari.');
+    advice.push('Latihan 15 minit sehari.');
   }
   if (focus?.topicId) {
     advice.push(`Fokus kepada 2 topik lemah dahulu, termasuk ${focus.topicId}.`);

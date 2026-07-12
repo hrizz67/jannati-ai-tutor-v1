@@ -273,7 +273,7 @@ export function calculateTopicMastery({
   const status = resolveStatus({ attempts, accuracy, masteryScore });
 
   return {
-    masteryLevel: status === MASTERY_STATUS.MASTERED ? 'Advanced' : status === MASTERY_STATUS.NOT_STARTED ? 'Starter' : 'Developing',
+    masteryLevel: status === MASTERY_STATUS.MASTERED ? 'Lanjutan' : status === MASTERY_STATUS.NOT_STARTED ? 'Permulaan' : 'Berkembang',
     masteryScore,
     status,
     nextReviewDate: addDays(new Date(), reviewDays(status, confidence)),

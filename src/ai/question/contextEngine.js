@@ -45,11 +45,11 @@ export function applyContextIntelligence(question = {}, session = {}, options = 
   const original = question.q || question.question || '';
   const blocked = answerTerms(question);
   const protectedReason = isProtectedArabicContext(question)
-    ? 'Arabic text protected'
+    ? 'Teks Arab dilindungi'
     : isProtectedIslamContext(question)
-      ? 'Religious fact protected'
+      ? 'Fakta agama dilindungi'
       : isProtectedScienceContext(question)
-        ? 'Science fact protected'
+        ? 'Fakta sains dilindungi'
         : '';
   let next = original;
   const changes = [];
@@ -67,8 +67,8 @@ export function applyContextIntelligence(question = {}, session = {}, options = 
     }
   }
 
-  const selectedContext = changes.map(change => `${change.from}->${change.to}`).join(', ') || 'legacy';
-  const reuseCount = selectedContext === 'legacy' ? 0 : (session.reuseCounts?.get(changes[0]?.to.toLowerCase()) || 1) - 1;
+  const selectedContext = changes.map(change => `${change.from}->${change.to}`).join(', ') || 'lama';
+  const reuseCount = selectedContext === 'lama' ? 0 : (session.reuseCounts?.get(changes[0]?.to.toLowerCase()) || 1) - 1;
   return {
     ...question,
     q: next,
@@ -78,7 +78,7 @@ export function applyContextIntelligence(question = {}, session = {}, options = 
       selectedContext: next,
       contextVariant: selectedContext,
       contextGroup: changes[0]?.group || getContextGroupsForQuestion(question)[0] || 'none',
-      contextSelectionReason: changes.length ? 'Unused context alternative selected' : protectedReason || 'No safe context token found',
+      contextSelectionReason: changes.length ? 'Alternatif konteks yang belum digunakan dipilih' : protectedReason || 'Tiada token konteks yang selamat ditemui',
       contextReuseCount: reuseCount,
       metadata: {
         ...(question.qip?.metadata || {}),

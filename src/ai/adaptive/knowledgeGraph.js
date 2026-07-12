@@ -1,5 +1,6 @@
 import { MASTERY_STATUS } from './masteryEngine';
 import { getSubjectPrerequisites } from './curriculumGraph';
+import { formatTopicName } from '../../utils/displayFormatter';
 
 function topicKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
@@ -68,5 +69,5 @@ export function listBlockedTopics(subjects = [], topicMastery = {}) {
 export function getDependencyArrow(subject = {}, topicId) {
   const prerequisites = getPrerequisites(subject, topicId);
   if (!prerequisites.length) return '';
-  return `${prerequisites.join(' + ')} -> ${topicId}`;
+  return `${prerequisites.map(formatTopicName).join(' + ')} → ${formatTopicName(topicId)}`;
 }

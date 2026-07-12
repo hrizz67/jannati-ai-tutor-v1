@@ -8,15 +8,30 @@ const SUBJECT_LABELS = {
   pj: 'Pendidikan Jasmani dan Kesihatan'
 };
 
+const TOPIC_LABELS = {
+  kata_nama_am: 'Kata Nama Am',
+  kata_nama_khas: 'Kata Nama Khas',
+  kata_ganti_nama: 'Kata Ganti Nama',
+  kata_kerja: 'Kata Kerja',
+  kata_adjektif: 'Kata Adjektif',
+  kata_sendi: 'Kata Sendi Nama',
+  kata_hubung: 'Kata Hubung',
+  penjodoh_bilangan: 'Penjodoh Bilangan',
+  simpulan_bahasa: 'Simpulan Bahasa',
+  ayat: 'Ayat'
+};
+
 const STATUS_LABELS = {
   NOT_STARTED: 'Belum Dimulakan',
   IN_PROGRESS: 'Sedang Dipelajari',
-  MASTERED: 'Telah Dikuasai',
+  MASTERED: 'Dikuasai',
   LEARNING: 'Sedang Dipelajari',
   NEEDS_PRACTICE: 'Perlu Latihan',
   insufficient_data: 'Belum Cukup Data',
   no_data: 'Belum Cukup Data',
   developing: 'Sedang Berkembang',
+  advanced: 'Lanjutan',
+  starter: 'Permulaan',
   needs_attention: 'Perlu Diberi Perhatian',
   excellent: 'Cemerlang',
   good: 'Baik',
@@ -27,6 +42,8 @@ const STATUS_LABELS = {
   improving: 'Semakin Baik',
   declining: 'Menurun',
   ready: 'Sedia',
+  needs_support: 'Perlu Sokongan',
+  need_support: 'Perlu Sokongan',
   locked: 'Dikunci',
   clear: 'Bersih',
   active: 'Aktif',
@@ -37,7 +54,7 @@ const STATUS_LABELS = {
   not_started: 'Belum Dimulakan',
   in_progress: 'Sedang Dipelajari',
   learning: 'Sedang Dipelajari',
-  mastered: 'Telah Dikuasai',
+  mastered: 'Dikuasai',
   practice: 'Perlu Latihan',
   revision: 'Ulang Kaji',
   review: 'Ulang Kaji',
@@ -106,6 +123,7 @@ export function formatSubjectName(subjectId) {
 
 export function formatTopicName(topicId) {
   const key = normalizeKey(topicId);
+  if (TOPIC_LABELS[key]) return TOPIC_LABELS[key];
   return toTitleCase(key || topicId);
 }
 
@@ -185,4 +203,10 @@ export function formatStudyMinutes(value) {
 
 export function formatDisplayLabel(value) {
   return toTitleCase(value);
+}
+
+export function clampPercent(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
 }

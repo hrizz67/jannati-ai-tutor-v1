@@ -3,9 +3,16 @@ import { addXP, calculateXP } from './xpEngine.js';
 import { calculateLevel } from './levelEngine.js';
 import { updateStreak } from './streakEngine.js';
 import { recordAnswer } from './masteryEngine.js';
+import { saveMemory, hasProcessedAnswer, markProcessedAnswer } from '../memory/memoryStorage.js';
+import { getStudentMemory } from '../memory/studentMemory.js';
+import { updateTopicMemory } from '../memory/topicMemory.js';
+import { recordMistake } from '../memory/mistakeMemory.js';
+import { createDailySnapshot } from '../memory/dailySnapshot.js';
+import { getRecommendationScores } from '../memory/recommendationEngine.js';
 
 const MAX_SESSION_HISTORY = 20;
 const MAX_QUESTION_LOG = 200;
+const isDev = typeof import.meta !== 'undefined' ? Boolean(import.meta.env?.DEV) : false;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
@@ -109,6 +116,52 @@ function applySubjectTotals(profile, subjectId, correct) {
     total
   };
   return profile;
+}
+
+function syncMemoryAfterAnswer(profile, result, summary = {}) {
+  try {
+    const answerKey = `${result.sessionId || profile.currentSession?.sessionId || 'no-session'}::${result.questionId || 'no-question'}::${Number.isFinite(result.attemptNumber) ? Math.floor(result.attemptNumber) : 1}`;
+    if (hasProcessedAnswer(undefined, answerKey)) {
+      if (isDev) {
+        console.warn?.('[adaptiveSessionEngine] Skipped memory sync for duplicate answer identity.', { answerKey });
+      }
+      return;
+    }
+
+    let memory = getStudentMemory(profile);
+    memory = updateTopicMemory(memory, profile, result);
+    memory = recordMistake(memory, profile, result);
+    memory = createDailySnapshot(profile, memory, result?.answeredAt ? new Date(result.answeredAt) : new Date());
+    memory.recommendationScores = getRecommendationScores(memory, profile);
+    memory.updatedAt = profile.lastAnsweredAt || memory.updatedAt || new Date().toISOString();
+    memory.lastResult = {
+      questionId: result.questionId || null,
+      subjectId: result.subjectId || null,
+      topicId: result.topicId || null,
+      correct: Boolean(result.correct),
+      difficulty: result.difficulty || null,
+      xpEarned: summary.xpEarned || 0,
+      answeredAt: profile.lastAnsweredAt || null
+    };
+    memory.learningHistory = [
+      {
+        answerKey,
+        sessionId: result.sessionId || profile.currentSession?.sessionId || null,
+        questionId: result.questionId || null,
+        subjectId: result.subjectId || null,
+        topicId: result.topicId || null,
+        correct: Boolean(result.correct),
+        difficulty: result.difficulty || null,
+        timeSpent: Number.isFinite(result.timeSpent) ? result.timeSpent : 0,
+        answeredAt: profile.lastAnsweredAt || null
+      },
+      ...(Array.isArray(memory.learningHistory) ? memory.learningHistory : [])
+    ].slice(0, 300);
+    memory = markProcessedAnswer(memory, answerKey);
+    saveMemory(memory);
+  } catch {
+    // Memory updates must never block adaptive learning.
+  }
 }
 
 function updateCurrentSession(profile, result, sessionId) {
@@ -221,7 +274,7 @@ export function recordQuestionResult(profile, result = {}) {
   } = result || {};
 
   if (!questionId || !subjectId || !topicId) {
-    if (typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production') {
+    if (isDev) {
       console.debug?.('[adaptiveSessionEngine] Skipped adaptive record because questionId, subjectId or topicId was missing.');
     }
     return {
@@ -317,6 +370,17 @@ export function recordQuestionResult(profile, result = {}) {
   nextProfile.correctQuestions = Number.isFinite(nextProfile.correctQuestions) ? nextProfile.correctQuestions : 0;
   nextProfile.totalQuestions = Number.isFinite(nextProfile.totalQuestions) ? nextProfile.totalQuestions : 0;
   const savedProfile = saveAdaptiveProfile(nextProfile);
+  syncMemoryAfterAnswer(savedProfile, {
+    questionId,
+    subjectId,
+    topicId,
+    correct: safeCorrect,
+    difficulty,
+    timeSpent,
+    answeredAt
+  }, {
+    xpEarned
+  });
   return {
     profile: savedProfile,
     summary: {

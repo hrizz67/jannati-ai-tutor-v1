@@ -1,70 +1,84 @@
-const TEACHING_RULES = [
-  {
-    keywords: ['kata nama', 'noun'],
-    explanation: 'Kata nama ialah perkataan yang menamakan orang, haiwan, tempat atau benda.',
-    examples: ['Ali ialah nama orang.', 'Kucing ialah nama haiwan.', 'Sekolah ialah nama tempat.'],
-    commonMistakes: ['Memilih kata kerja sebagai jawapan.', 'Tidak membaca keseluruhan ayat sebelum menjawab.'],
-    memoryTip: 'Ingat formula NAMA: nama orang, haiwan, tempat atau benda.'
+import { detectLearningCategory, getLearningExamples, getLearningMemoryTip, sanitizeAiText } from './learningCopy.js';
+
+const TEACHING_RULES = {
+  person: {
+    explanation: 'Ini ialah nama orang yang sesuai dengan soalan.',
+    commonMistakes: ['Memilih nama tempat.', 'Memilih perkataan yang bukan nama orang.'],
+    practicePrompt: 'Cuba cari satu lagi nama orang yang sesuai.'
   },
-  {
-    keywords: ['kata kerja', 'verb'],
-    explanation: 'Kata kerja menunjukkan perbuatan atau aksi dalam ayat.',
-    examples: ['Aina makan nasi.', 'Murid membaca buku.', 'They play football.'],
-    commonMistakes: ['Keliru antara benda dan perbuatan.', 'Memilih perkataan yang menerangkan sifat.'],
-    memoryTip: 'Jika boleh dibuat dengan badan atau fikiran, biasanya itu kata kerja.'
+  place: {
+    explanation: 'Ini ialah nama tempat yang tepat.',
+    commonMistakes: ['Memilih nama orang.', 'Memilih kata kerja.'],
+    practicePrompt: 'Cuba cari satu lagi nama tempat yang sesuai.'
   },
-  {
-    keywords: ['kata adjektif', 'adjective'],
-    explanation: 'Kata adjektif menerangkan sifat, warna, rasa, bentuk, saiz atau keadaan.',
-    examples: ['Baju itu merah.', 'Beg itu berat.', 'The cat is small.'],
-    commonMistakes: ['Memilih nama benda, bukan sifat benda.', 'Tidak semak perkataan yang menerangkan keadaan.'],
-    memoryTip: 'Tanya “macam mana?” Jika jawapannya sifat, itu kata adjektif.'
+  animal: {
+    explanation: 'Ini ialah nama haiwan yang betul.',
+    commonMistakes: ['Memilih benda atau tempat.', 'Memilih perkataan yang bukan haiwan.'],
+    practicePrompt: 'Cuba cari satu lagi nama haiwan yang sesuai.'
   },
-  {
-    keywords: ['tambah', 'addition', 'plus'],
-    explanation: 'Tambah bermaksud menggabungkan dua atau lebih nilai untuk mencari jumlah.',
-    examples: ['3 + 2 = 5', '7 + 4 = 11', '10 + 5 = 15'],
-    commonMistakes: ['Tertinggal satu nombor.', 'Tersilap kira apabila mengumpul semula.'],
-    memoryTip: 'Tambah bergerak ke kanan pada garis nombor.'
+  object: {
+    explanation: 'Ini ialah nama benda yang sesuai.',
+    commonMistakes: ['Memilih nama orang.', 'Memilih kata kerja.'],
+    practicePrompt: 'Cuba cari satu lagi nama benda yang sesuai.'
   },
-  {
-    keywords: ['tolak', 'subtraction', 'minus'],
-    explanation: 'Tolak bermaksud mencari baki atau beza selepas sebahagian nilai dikeluarkan.',
-    examples: ['8 - 3 = 5', '12 - 4 = 8', '20 - 5 = 15'],
-    commonMistakes: ['Menukar susunan nombor.', 'Menambah apabila soalan meminta baki.'],
-    memoryTip: 'Tolak bergerak ke kiri pada garis nombor.'
+  verb: {
+    explanation: 'Ini ialah kata kerja kerana ia menunjukkan perbuatan.',
+    commonMistakes: ['Memilih kata nama.', 'Memilih kata adjektif.'],
+    practicePrompt: 'Cuba cari satu lagi kata kerja yang sesuai.'
+  },
+  adjective: {
+    explanation: 'Ini ialah kata adjektif kerana ia menerangkan sifat atau keadaan.',
+    commonMistakes: ['Memilih nama benda.', 'Memilih perbuatan.'],
+    practicePrompt: 'Cuba cari satu lagi kata adjektif yang sesuai.'
+  },
+  penjodoh: {
+    explanation: 'Ini ialah penjodoh bilangan yang sesuai dengan benda itu.',
+    commonMistakes: ['Memilih kata nama biasa.', 'Menggunakan penjodoh yang tidak sesuai.'],
+    practicePrompt: 'Cuba cari satu lagi penjodoh bilangan yang sesuai.'
+  },
+  simpulan: {
+    explanation: 'Ini ialah simpulan bahasa yang membawa maksud khas.',
+    commonMistakes: ['Membaca setiap perkataan secara literal.', 'Memilih frasa yang tiada maksud khas.'],
+    practicePrompt: 'Cuba cari maksud khas yang sama dengan ayat.'
+  },
+  conjunction: {
+    explanation: 'Ini ialah kata hubung yang menghubungkan dua bahagian ayat.',
+    commonMistakes: ['Memilih kata sendi nama.', 'Memilih kata nama.'],
+    practicePrompt: 'Cuba cari kata hubung yang sesuai dengan ayat.'
+  },
+  sendi: {
+    explanation: 'Ini ialah kata sendi nama yang menunjukkan tempat atau arah.',
+    commonMistakes: ['Memilih kata kerja.', 'Memilih kata hubung.'],
+    practicePrompt: 'Cuba cari kata sendi nama yang sesuai.'
+  },
+  generic: {
+    explanation: 'Jawapan ini sesuai dengan maksud soalan.',
+    commonMistakes: ['Menjawab terlalu cepat.', 'Tidak semak ayat penuh.'],
+    practicePrompt: 'Baca semula soalan dan cuba sekali lagi.'
   }
-];
+};
 
-function normalize(value = '') {
-  return String(value).toLowerCase();
-}
-
-function findTeachingRule(question = {}, topic = {}) {
-  const text = normalize(`${topic.title || ''} ${topic.note || ''} ${question.topic || ''} ${question.uasa || ''} ${question.dskp || ''} ${question.q || ''} ${question.hint || ''}`);
-  return TEACHING_RULES.find(rule => rule.keywords.some(keyword => text.includes(keyword)));
-}
-
-function fallbackLesson(question = {}, topic = {}) {
-  const answer = question.answer || 'jawapan betul';
-  const topicTitle = question.topic || topic.title || 'topik ini';
-  return {
-    explanation: `Untuk ${topicTitle}, fokus pada maksud soalan dan cari jawapan yang paling melengkapkan ayat. Dalam soalan ini, jawapan yang sesuai ialah "${answer}".`,
-    examples: [`Contoh jawapan: ${answer}`, 'Baca ayat penuh sebelum memilih jawapan.', 'Semak petunjuk dalam soalan.'],
-    commonMistakes: ['Menjawab terlalu cepat.', 'Tidak semak semula ruang kosong atau kata kunci.'],
-    memoryTip: 'Baca, cari kata kunci, jawab, kemudian semak semula.'
-  };
+function getRule(question, topic) {
+  const category = detectLearningCategory(question, topic);
+  return { category, ...(TEACHING_RULES[category] || TEACHING_RULES.generic) };
 }
 
 export function teachAnswer({ question = {}, topic = {}, explanationData = {} } = {}) {
-  const rule = findTeachingRule(question, topic);
-  const lesson = rule || fallbackLesson(question, topic);
+  const rule = getRule(question, topic);
+  const explanation = sanitizeAiText(explanationData.explanation || question.explanation || rule.explanation);
+  const examples = (Array.isArray(explanationData.examples) && explanationData.examples.length ? explanationData.examples : getLearningExamples(question, topic))
+    .map(item => sanitizeAiText(item));
+  const memoryTip = sanitizeAiText(explanationData.memoryTip || question.memoryTip || getLearningMemoryTip(question, topic));
+  const commonMistakes = (Array.isArray(explanationData.commonMistakes) && explanationData.commonMistakes.length ? explanationData.commonMistakes : rule.commonMistakes)
+    .map(item => sanitizeAiText(item));
+  const practicePrompt = sanitizeAiText(explanationData.practicePrompt || rule.practicePrompt);
 
   return {
-    explanation: explanationData.explanation || question.explanation || lesson.explanation,
-    examples: explanationData.examples?.length ? explanationData.examples : lesson.examples,
-    commonMistakes: lesson.commonMistakes,
-    memoryTip: lesson.memoryTip,
-    practicePrompt: `Cuba jawab semula soalan ini dan sasarkan jawapan: ${question.answer || 'jawapan betul'}.`
+    category: rule.category,
+    explanation,
+    examples,
+    commonMistakes,
+    memoryTip,
+    practicePrompt
   };
 }

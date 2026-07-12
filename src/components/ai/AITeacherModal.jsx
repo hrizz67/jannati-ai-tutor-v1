@@ -1,46 +1,58 @@
-﻿import React from 'react';
+import React from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
 
 export default function AITeacherModal({ open, data, character = 'jati', onTutup, onLatih }) {
   if (!open || !data) return null;
 
-  return <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Guru AI">
-    <section className="ai-explain-modal ai-teacher-modal">
-      <div className="ai-explain-head">
-        <div className="modal-brand-title">
-          <BrandLogo iconOnly size="sm" />
-          <div>
-          <p className="eyebrow">Guru AI Luar Talian</p>
-          <h2>📖 Ajar Saya</h2>
-                  </div>
+  const examples = Array.isArray(data.examples) ? data.examples : [];
+  const commonMistakes = Array.isArray(data.commonMistakes) ? data.commonMistakes : [];
+
+  return (
+    <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Guru AI">
+      <section className="ai-explain-modal ai-teacher-modal">
+        <div className="ai-explain-head">
+          <div className="modal-brand-title">
+            <BrandLogo iconOnly size="sm" />
+            <div>
+              <p className="eyebrow">Janna AI Luar Talian</p>
+              <h2>Ajar Saya</h2>
+            </div>
+          </div>
+          <button className="ghost" type="button" onClick={onTutup}>✕</button>
         </div>
-        <button className="ghost" onClick={onTutup}>✕</button>
-      </div>
-      <div className="explain-section">
-        <h3>Penerangan</h3>
-        <p>{data.explanation}</p>
-      </div>
-      <MascotCard character={character} mood="teaching" size="md" animation="gentle" message="Guru AI akan bantu kamu faham." />
-      <div className="explain-section">
-        <h3>Contoh</h3>
-        <ul>{(data.examples || []).map((example, index) => <li key={index}>{example}</li>)}</ul>
-      </div>
-      <div className="explain-section">
-        <h3>Kesilapan biasa</h3>
-        <ul>{(data.commonMistakes || []).map((mistake, index) => <li key={index}>{mistake}</li>)}</ul>
-      </div>
-      <div className="explain-answer-box">
-        <span>Tip ingatan</span>
-        <b>{data.memoryTip}</b>
-      </div>
-      <p className="explain-encouragement">{data.practicePrompt}</p>
-      <div className="actions">
-        <button onClick={onLatih}>Latih</button>
-        <button className="secondary" onClick={onTutup}>Tutup</button>
-      </div>
-    </section>
-  </div>;
+
+        <div className="ai-explain-body">
+          <div className="explain-section">
+            <h3>Penerangan mudah</h3>
+            <p>{data.explanation || 'Jawapan ini sesuai dengan soalan.'}</p>
+          </div>
+
+          <MascotCard character={character} mood="teaching" size="md" animation="gentle" message="Jom belajar langkah demi langkah." />
+
+          <div className="explain-section">
+            <h3>Contoh</h3>
+            <ul>{examples.map((example, index) => <li key={index}>{example}</li>)}</ul>
+          </div>
+
+          <div className="explain-section">
+            <h3>Kesilapan biasa</h3>
+            <ul>{commonMistakes.map((mistake, index) => <li key={index}>{mistake}</li>)}</ul>
+          </div>
+
+          <div className="explain-answer-box">
+            <span>Tip ingatan</span>
+            <b style={{ whiteSpace: 'pre-line' }}>{data.memoryTip || 'Ulang baca soalan dengan teliti.'}</b>
+          </div>
+
+          <p className="explain-encouragement">{data.practicePrompt || 'Cuba sekali lagi selepas membaca penerangan ini.'}</p>
+        </div>
+
+        <div className="ai-explain-footer actions">
+          <button type="button" onClick={onLatih}>Latih</button>
+          <button className="secondary" type="button" onClick={onTutup}>Tutup</button>
+        </div>
+      </section>
+    </div>
+  );
 }
-
-

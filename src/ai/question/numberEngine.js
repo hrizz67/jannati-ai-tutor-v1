@@ -10,7 +10,7 @@ function legacy(question = {}) {
       ...(question.qip || {}),
       numberEngine: {
         enabled: false,
-        selectionReason: 'QUESTION_NUMBER_ENGINE disabled; legacy numbers returned'
+        selectionReason: 'Enjin nombor soalan dilumpuhkan; nombor lama dikekalkan'
       }
     }
   };
@@ -279,9 +279,9 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
           enabled: true,
           originalNumbers,
           selectedNumbers: originalNumbers,
-          patternGroup: 'legacy',
+          patternGroup: 'lama',
           difficultyProfile: constraints.difficultyProfile,
-          selectionReason: 'No safe binary Year 2 number pattern found',
+          selectionReason: 'Tiada corak nombor Tahap 2 yang selamat ditemui',
           reuseCount: 0,
           numberDiversityScore: 100
         }
@@ -416,9 +416,9 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
           enabled: true,
           originalNumbers,
           selectedNumbers: originalNumbers,
-          patternGroup: 'legacy',
+          patternGroup: 'lama',
           difficultyProfile: constraints.difficultyProfile,
-          selectionReason: 'Integrity mismatch detected; candidate rejected and legacy preserved',
+          selectionReason: 'Tidak sepadan dengan integriti; calon ditolak dan nombor lama dikekalkan',
           reuseCount: 0,
           numberDiversityScore: 100
         }
@@ -435,9 +435,9 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
           enabled: true,
           originalNumbers,
           selectedNumbers: originalNumbers,
-          patternGroup: 'legacy',
+          patternGroup: 'lama',
           difficultyProfile: constraints.difficultyProfile,
-          selectionReason: `Legacy preserved: ${selectionReason}`,
+          selectionReason: `Nombor lama dikekalkan: ${selectionReason}`,
           reuseCount: 0,
           numberDiversityScore: 100
         }
