@@ -26,6 +26,8 @@ import { forecastMastery } from './ai/prediction/masteryForecastEngine';
 import { buildCoachingDecision } from './ai/coach/coachingEngine';
 import { buildTeachingStrategy } from './ai/coach/adaptiveTeachingEngine';
 import { buildPersonalityResponse } from './ai/personality/personalityEngine.js';
+import { buildLearningObservation } from './ai/observation/learningObservationEngine.js';
+import { buildNarrativeBundle } from './ai/narrative/narrativeEngine.js';
 import { buildMixedRevisionSession } from './ai/revision/mixedRevisionEngine';
 import { buildRevisionCalendar } from './ai/revision/revisionCalendarEngine';
 import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from './ai/adaptive/masteryEngine';
@@ -381,7 +383,11 @@ function autoBadges(profile) {
   return [...badges];
 }
 
-function buildDailyChallenge() {
+function buildDailyChallenge(observation = null) {
+  const mission = observation?.dailyMission?.items || [];
+  if (mission.length) {
+    return mission.map((label, index) => ({ subjectId: `mission-${index}`, count: 0, label }));
+  }
   return [
     { subjectId: 'bm', count: 5, label: '5 soalan BM' },
     { subjectId: 'math', count: 5, label: '5 soalan Matematik' },
@@ -487,10 +493,20 @@ export default function App() {
   const questionStartedAtRef = useRef(Date.now());
   const quizSubmitKeyRef = useRef('');
   const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp, adaptiveProfile.updatedAt, adaptiveProfile.totalQuestions, adaptiveProfile.studyMinutes]);
+  const learningObservation = useMemo(() => buildLearningObservation(adaptiveProfile, aiMemory, { subjects: allSubjects, profile }), [adaptiveProfile, aiMemory, allSubjects, profile]);
   const predictionProfile = useMemo(() => getPredictionProfile(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
   const readiness = useMemo(() => getReadiness(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
   const studyPlan = useMemo(() => buildStudyPlan(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
   const masteryForecast = useMemo(() => forecastMastery(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
+  const narrativeBundle = useMemo(() => buildNarrativeBundle(adaptiveProfile, aiMemory, learningObservation, {
+    timeOfDay: new Date(),
+    streak: adaptiveProfile.streak || 0,
+    mastery: predictionProfile?.evidence?.mastery || adaptiveProfile.mastery || 0,
+    readiness,
+    session,
+    subjectId: activeSubject?.id,
+    topicId: activeTopic?.id
+  }), [adaptiveProfile, aiMemory, learningObservation, predictionProfile, readiness, session, activeSubject?.id, activeTopic?.id]);
   const coachingDecision = useMemo(() => {
     if (!activeSubject || !activeTopic) return null;
     return buildCoachingDecision(adaptiveProfile, aiMemory, {
@@ -522,7 +538,8 @@ export default function App() {
     if (!topicId) return smartLesson?.todayLesson || smartLesson?.nextLesson || null;
     return smartSubject?.topics?.find(topic => topic?.id === topicId) || smartLesson?.todayLesson || smartLesson?.nextLesson || null;
   }, [smartLesson, smartSubject]);
-  const homePersonality = useMemo(() => buildPersonalityResponse(adaptiveProfile, aiMemory, {
+  const homePersonality = useMemo(() => {
+    const base = buildPersonalityResponse(adaptiveProfile, aiMemory, {
     timeOfDay: new Date(),
     streak: adaptiveProfile.streak || 0,
     mastery: predictionProfile?.evidence?.mastery || adaptiveProfile.mastery || 0,
@@ -530,7 +547,16 @@ export default function App() {
     predictionProfile,
     coachDecision: predictionProfile?.coachingDecision || coachingDecision,
     topicStrength: smartLesson?.mastery || smartTopic?.mastery || smartTopic?.masteryScore || predictionProfile?.evidence?.mastery || 0
-  }), [adaptiveProfile, aiMemory, predictionProfile, readiness, coachingDecision, smartLesson, smartTopic]);
+    });
+    return {
+      ...base,
+      greeting: narrativeBundle.greeting || base.greeting,
+      motivation: narrativeBundle.progress || base.motivation,
+      achievementMessage: narrativeBundle.achievement || base.achievementMessage,
+      farewell: narrativeBundle.encouragement || base.farewell,
+      journeySummary: narrativeBundle.journeySummary || null
+    };
+  }, [adaptiveProfile, aiMemory, predictionProfile, readiness, coachingDecision, smartLesson, smartTopic, narrativeBundle]);
   const quizPersonality = useMemo(() => buildPersonalityResponse(adaptiveProfile, aiMemory, {
     timeOfDay: new Date(),
     subjectId: activeSubject?.id,
@@ -542,7 +568,8 @@ export default function App() {
     coachDecision: coachingDecision,
     topicStrength: activeTopic?.mastery || activeTopic?.masteryScore || 0
   }), [adaptiveProfile, aiMemory, activeSubject?.id, activeTopic?.id, activeTopic?.mastery, activeTopic?.masteryScore, predictionProfile, readiness, coachingDecision]);
-  const finishPersonality = useMemo(() => buildPersonalityResponse(adaptiveProfile, aiMemory, {
+  const finishPersonality = useMemo(() => {
+    const base = buildPersonalityResponse(adaptiveProfile, aiMemory, {
     timeOfDay: new Date(),
     subjectId: activeSubject?.id,
     topicId: activeTopic?.id,
@@ -552,7 +579,15 @@ export default function App() {
     predictionProfile,
     coachDecision: coachingDecision,
     topicStrength: masteryForecast?.projected || smartLesson?.mastery || activeTopic?.mastery || activeTopic?.masteryScore || 0
-  }), [adaptiveProfile, aiMemory, activeSubject?.id, activeTopic?.id, profile.streak, adaptiveProfile.streak, masteryForecast, predictionProfile, readiness, coachingDecision, smartLesson, activeTopic?.mastery, activeTopic?.masteryScore]);
+    });
+    return {
+      ...base,
+      greeting: narrativeBundle.greeting || base.greeting,
+      achievementMessage: narrativeBundle.achievement || base.achievementMessage,
+      farewell: narrativeBundle.encouragement || base.farewell,
+      journeySummary: narrativeBundle.journeySummary || null
+    };
+  }, [adaptiveProfile, aiMemory, activeSubject?.id, activeTopic?.id, profile.streak, adaptiveProfile.streak, masteryForecast, predictionProfile, readiness, coachingDecision, smartLesson, activeTopic?.mastery, activeTopic?.masteryScore, narrativeBundle]);
 
   useEffect(() => {
     try {
@@ -1224,11 +1259,15 @@ export default function App() {
   const chatWidget = chatOpen && selectedSubject ? <AiTutorChat profile={profile} selectedSubject={selectedSubject} onTutup={() => setChatOpen(false)} /> : null;
   const predictionGreeting = buildPredictionGreeting(profile, predictionProfile, readiness, studyPlan);
   const aiSummary = {
-    strongestTopic: rankStrongTopics(adaptiveProfile, { limit: 1 })[0] || null,
-    weakestTopic: rankWeakTopics(adaptiveProfile, { limit: 1, includeLowConfidence: true })[0] || null,
-    studyRecommendation: studyPlan?.notes || readiness?.message || 'Teruskan usaha kamu hari ini.',
+    strongestTopic: learningObservation?.strongestTopic || rankStrongTopics(adaptiveProfile, { limit: 1 })[0] || null,
+    weakestTopic: learningObservation?.weakestTopic || rankWeakTopics(adaptiveProfile, { limit: 1, includeLowConfidence: true })[0] || null,
+    studyRecommendation: learningObservation?.recommendation || studyPlan?.notes || readiness?.message || 'Teruskan usaha kamu hari ini.',
     readinessLevel: readiness?.level || 'needs_support',
     readinessMessage: readiness?.message || 'Teruskan usaha kamu hari ini.',
+    learningTrend: learningObservation?.learningTrend || null,
+    riskLevel: learningObservation?.riskLevel || null,
+    memorySpeech: learningObservation?.memorySpeech || null,
+    dailyMission: learningObservation?.dailyMission || null,
     forecast: masteryForecast
   };
 
@@ -1259,7 +1298,7 @@ export default function App() {
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge()} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -1485,6 +1524,7 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, on
   const strongestTopic = aiSummary?.strongestTopic || null;
   const weakestTopic = aiSummary?.weakestTopic || null;
   const projectedMastery = Number.isFinite(Number(aiSummary?.forecast?.projected)) ? `${clampPercent(aiSummary.forecast.projected)}%` : '-';
+  const journeySummary = personality?.journeySummary || aiSummary?.journeySummary || '';
   const summaryCards = [
     {
       label: 'Topik Terkuat',
@@ -1508,8 +1548,8 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, on
     }
   ];
 
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa 😊')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi dengan tenang.')}</p><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div><div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
-}
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa 😊')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div><div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+  }
 
 function AiTutorChat({ profile, selectedSubject, onTutup }) {
   const safeSubject = selectedSubject || { short: 'Subjek ini', title: 'Subjek ini', topics: [] };

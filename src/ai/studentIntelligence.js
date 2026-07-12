@@ -2,6 +2,8 @@ const STUDENT_CORE_KEY = 'jannati_v152_student_core';
 const LEGACY_STUDENT_CORE_KEYS = ['jannati_v151_student_core', 'jannati_v150_student_core'];
 const STUDENT_CORE_VERSION = 1;
 
+import { buildLearningObservation } from './observation/learningObservationEngine.js';
+
 function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
 }
@@ -168,6 +170,7 @@ export function saveStudentCore(profile = {}, subjects = [], memory = {}) {
   const activity = summarizeActivity(normalizedProfile);
   const weakTopics = Array.isArray(memory.weakTopics) ? memory.weakTopics : [];
   const strongTopics = Array.isArray(memory.strongTopics) ? memory.strongTopics : [];
+  const learningObservation = buildLearningObservation(normalizedProfile, memory, { subjects });
 
   const payload = {
     version: STUDENT_CORE_VERSION,
@@ -190,6 +193,7 @@ export function saveStudentCore(profile = {}, subjects = [], memory = {}) {
       topicStats,
       weakTopics,
       strongTopics,
+      learningObservation,
       activity
     }
   };
@@ -216,6 +220,7 @@ export function buildStudentIntelligence(profile = {}, subjects = [], memory = {
   const activity = summarizeActivity(normalizedProfile);
   const memoryWeakTopics = Array.isArray(memory.weakTopics) ? memory.weakTopics : [];
   const memoryStrongTopics = Array.isArray(memory.strongTopics) ? memory.strongTopics : [];
+  const learningObservation = buildLearningObservation(normalizedProfile, memory, { subjects });
 
   return {
     version: STUDENT_CORE_VERSION,
@@ -234,6 +239,7 @@ export function buildStudentIntelligence(profile = {}, subjects = [], memory = {
     topicStats,
     weakTopics: memoryWeakTopics,
     strongTopics: memoryStrongTopics,
+    learningObservation,
     activity,
     topicCompletionRate: topicStats.length ? Math.round((completedTopics / topicStats.length) * 100) : 0,
     subjectCompletionRate: totalTopicSlots ? Math.round((completedTopics / totalTopicSlots) * 100) : 0
@@ -250,4 +256,3 @@ export function getStudentLevel(xp = 0) {
     xpToNextLevel: level * 100 - safeXp
   };
 }
-
