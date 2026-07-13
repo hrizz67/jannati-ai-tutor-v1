@@ -39,6 +39,7 @@ import { buildLessonPlan } from './ai/adaptive/lessonPlanner';
 import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
 import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
+import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
 import { formatStudyTime, loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
@@ -402,12 +403,46 @@ function buildDailyChallenge(observation = null) {
 }
 
 function buildUasaSet(subject, count = 20) {
+  const profile = loadAdaptiveStudentProfile();
+  const memory = loadAIMemory();
+  const gamificationProfile = loadGamificationState();
+  const subjectQuestions = (subject?.topics || []).flatMap(topic => (topic?.questions || []).map(question => ({
+    ...question,
+    subjectId: subject.id,
+    subjectTitle: subject.title,
+    topicId: topic.id,
+    topicTitle: topic.title
+  })));
+  const learningObservation = buildLearningObservation(profile, memory, { subjects: [subject], profile });
+  const predictionProfile = getPredictionProfile(profile, memory, { subjectId: subject?.id });
+  const readiness = getReadiness(profile, memory, { subjectId: subject?.id });
+  const smartSet = buildSmartQuestionSession(subjectQuestions, {
+    mode: 'uasa',
+    subject,
+    profile,
+    memory,
+    learningObservation,
+    predictionProfile,
+    readiness,
+    gamificationProfile,
+    count,
+    smartState: loadSmartQuestionState()
+  });
+  const orderedQuestions = smartSet.questions.length ? smartSet.questions : subjectQuestions;
+  const sessionSeed = smartSet.variationSeed || createSmartQuestionSeed([
+    subject?.id || '',
+    subject?.title || '',
+    count,
+    profile.totalQuestions || 0,
+    profile.streak || 0,
+    memory?.history?.length || 0
+  ]);
   return buildQuestionSession({
     subject,
-    topics: subject.topics,
+    questions: orderedQuestions,
     count,
-    memory: loadAIMemory(),
-    sessionSeed: Date.now()
+    memory,
+    sessionSeed
   }).questions;
 }
 
@@ -659,6 +694,7 @@ export default function App() {
   async function startProfile(name, avatar) {
     setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
     setGamificationProfile(resetGamificationProfile());
+    resetSmartQuestionState();
     refreshAdaptiveProfile();
     setScreen('dashboard');
   }
@@ -697,6 +733,7 @@ export default function App() {
       setProfile(demoProfile);
       resetAdaptiveStudentProfile();
       setGamificationProfile(resetGamificationProfile());
+      resetSmartQuestionState();
       refreshAdaptiveProfile();
       setResume(null);
       setShowOnboarding(true);
@@ -769,17 +806,41 @@ export default function App() {
       }
     }
     const sourceQuestions = options.questions || topic.questions;
+    const smartSession = buildSmartQuestionSession(sourceQuestions, {
+      mode: resumeMode,
+      subject,
+      topic,
+      profile: adaptiveProfile,
+      memory: aiMemory,
+      learningObservation,
+      predictionProfile,
+      readiness,
+      studyPlan,
+      masteryForecast,
+      narrativeBundle,
+      gamificationProfile,
+      count: sourceQuestions.length,
+      smartState: loadSmartQuestionState()
+    });
+    const orderedQuestions = smartSession.questions.length ? smartSession.questions : sourceQuestions;
     const diversity = options.preserveQuestions
-      ? { questions: sourceQuestions, score: null, debug: [], duplicateIssues: [] }
+      ? { questions: orderedQuestions, score: null, debug: [], duplicateIssues: [] }
       : buildQuestionSession({
         subject,
         topic,
-        questions: sourceQuestions,
-        count: sourceQuestions.length,
+        questions: orderedQuestions,
+        count: orderedQuestions.length,
         memory: loadAIMemory(),
         allowReinforcement: Boolean(options.allowReinforcement),
         allowAdaptiveOverride: Boolean(options.allowAdaptiveOverride),
-        sessionSeed: Date.now()
+        sessionSeed: smartSession.variationSeed || createSmartQuestionSeed([
+          subject?.id || '',
+          topic?.id || '',
+          orderedQuestions.map(item => item.id || item.questionId || item.q || item.question || '').join('|'),
+          adaptiveProfile.totalQuestions || 0,
+          adaptiveProfile.correctQuestions || 0,
+          adaptiveProfile.streak || 0
+        ])
       });
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
@@ -807,6 +868,15 @@ export default function App() {
       topicId: topic.id,
       startedAt: new Date().toISOString()
     };
+    if (!options.restoreFromResume && smartSession?.question) {
+      recordSmartQuestionState(loadSmartQuestionState(), smartSession, {
+        mode: resumeMode,
+        subjectId: subject.id,
+        topicId: topic.id,
+        revisionQueue: smartSession.revisionQueue,
+        timestamp: new Date().toISOString()
+      });
+    }
     recordSessionStart(getAdaptiveProfile(), {
       sessionId: adaptiveSessionId,
       startedAt: adaptiveSessionRef.current.startedAt,
@@ -933,7 +1003,25 @@ export default function App() {
 
     const targetQuestion = topic.questions.find(question => question.id === questionId);
     const remainingSoalan = topic.questions.filter(question => question.id !== questionId);
-    const questions = targetQuestion ? [targetQuestion, ...shuffleArray(remainingSoalan)] : shuffleArray(topic.questions);
+    const smartLessonQuestions = targetQuestion ? [targetQuestion, ...remainingSoalan] : [...topic.questions];
+    const smartSession = buildSmartQuestionSession(smartLessonQuestions, {
+      mode: 'adaptive-lesson',
+      preferredQuestionId: questionId,
+      profile: adaptiveProfile,
+      memory: aiMemory,
+      learningObservation,
+      predictionProfile,
+      readiness,
+      studyPlan,
+      masteryForecast,
+      narrativeBundle,
+      gamificationProfile,
+      subject,
+      topic,
+      count: smartLessonQuestions.length,
+      smartState: loadSmartQuestionState()
+    });
+    const questions = smartSession.questions.length ? smartSession.questions : smartLessonQuestions;
     startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true, mode: 'adaptive-lesson' });
   }
 
@@ -947,9 +1035,35 @@ export default function App() {
       questionCount,
       mode: 'balanced',
       subjectId: selectedSubjectId,
-      seed: Date.now()
+      seed: createSmartQuestionSeed([
+        profile.totalQuestions || 0,
+        profile.correctQuestions || 0,
+        profile.streak || 0,
+        adaptiveProfile.totalQuestions || 0,
+        adaptiveProfile.correctQuestions || 0,
+        adaptiveProfile.streak || 0,
+        selectedSubjectId || '',
+        questionCount,
+        allSubjects.length,
+        aiMemory?.history?.length || 0
+      ])
     });
     if (!session.questions.length) return;
+    const smartSession = buildSmartQuestionSession(session.questions, {
+      mode: 'adaptive-practice',
+      profile: adaptiveProfile,
+      memory: aiMemory,
+      learningObservation,
+      predictionProfile,
+      readiness,
+      studyPlan,
+      masteryForecast,
+      narrativeBundle,
+      gamificationProfile,
+      count: session.questions.length,
+      smartState: loadSmartQuestionState()
+    });
+    const orderedQuestions = smartSession.questions.length ? smartSession.questions : session.questions;
 
     const practiceSubject = {
       id: 'adaptive',
@@ -961,7 +1075,7 @@ export default function App() {
           id: `adaptive_${session.sessionId}`,
           title: 'Latihan AI',
           note: session.metadata?.fallbackUsed ? 'Latihan permulaan seimbang' : 'Latihan adaptif berfokus',
-          questions: session.questions,
+          questions: orderedQuestions,
           adaptivePractice: true,
           adaptiveSessionId: session.sessionId,
           adaptivePlan: session.plan,
@@ -971,7 +1085,7 @@ export default function App() {
     };
     const practiceTopic = practiceSubject.topics[0];
     startTopic(practiceTopic, practiceSubject, {
-      questions: session.questions,
+      questions: orderedQuestions,
       preserveQuestions: true,
       mode: 'adaptive-practice',
       displayTitle: 'Latihan AI',
