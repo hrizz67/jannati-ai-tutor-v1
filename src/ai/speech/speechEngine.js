@@ -32,11 +32,10 @@ function createEmptySpeechResult(errorCode = 'no-result', message = 'Suara belum
 }
 
 export function extractSpeechTranscript(event) {
-  const results = Array.from(event?.results || []);
-  const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
+  const results = event?.results ? Array.from(event.results) : [];
   return results
-    .slice(startIndex)
-    .map(result => String(result?.[0]?.transcript || '').trim())
+    .flatMap(result => (result ? Array.from(result) : []))
+    .map(alternative => typeof alternative?.transcript === 'string' ? alternative.transcript.trim() : '')
     .filter(Boolean)
     .join(' ')
     .trim();
@@ -78,6 +77,7 @@ export function createSpeechSession({
   let recognition = null;
   let state = createState();
   let receivedResult = false;
+  let transcriptBuffer = '';
   let finalized = false;
   let emptyResultEmitted = false;
   let timeoutId = null;
@@ -103,6 +103,7 @@ export function createSpeechSession({
       transcript: result.transcript,
       confidence: result.confidence,
       correct: result.correct,
+      error: '',
       result
     };
     emit(nextState);
@@ -160,6 +161,7 @@ export function createSpeechSession({
     } catch {
       // Ignore abort errors.
     }
+    transcriptBuffer = '';
     disposeRecognitionInstance(recognition);
     cleanup();
     emit({ status: 'idle' });
@@ -182,9 +184,14 @@ export function createSpeechSession({
       return unsupported;
     }
 
-    cancel();
+    try {
+      activeSpeechRecognitionCancel?.();
+    } catch {
+      // Ignore global cancellation errors.
+    }
     activeSpeechRecognitionCancel = cancel;
     receivedResult = false;
+    transcriptBuffer = '';
     finalized = false;
     emptyResultEmitted = false;
     const nextRecognition = new Recognition();
@@ -197,9 +204,14 @@ export function createSpeechSession({
     nextRecognition.onstart = () => emit({ status: 'listening', error: '' });
     nextRecognition.onresult = event => {
       const transcript = extractSpeechTranscript(event);
-      if (transcript) receivedResult = true;
-      emit({ status: 'processing', transcript });
-      finalize(transcript, 'completed');
+      if (transcript) {
+        receivedResult = true;
+        transcriptBuffer = [transcriptBuffer, transcript].filter(Boolean).join(' ').trim();
+        emit({ status: 'processing', transcript: transcriptBuffer });
+        finalize(transcriptBuffer, 'completed');
+        return;
+      }
+      emit({ status: 'processing', transcript: transcriptBuffer });
     };
     nextRecognition.onerror = event => {
       const error = event?.error || 'unknown_error';
@@ -232,18 +244,26 @@ export function createSpeechSession({
         cleanup();
         return;
       }
-      if (state.status === 'listening') {
-        if (!receivedResult) {
-          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
-        } else {
-          emit({ status: 'idle' });
-        }
+      const bufferedTranscript = typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
+      if (bufferedTranscript) {
+        finalize(bufferedTranscript, 'completed');
+      } else if (!receivedResult || state.status === 'listening' || state.status === 'processing') {
+        emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
+      } else {
+        emit({ status: 'idle' });
       }
       cleanup();
     };
 
     try {
       timeoutId = setTimeout(() => {
+        if (!finalized && state.status === 'listening') {
+          const bufferedTranscript = typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
+          if (bufferedTranscript) {
+            finalize(bufferedTranscript, 'completed');
+            return;
+          }
+        }
         if (!finalized && state.status === 'listening' && !receivedResult) {
           try {
             recognition?.stop?.();
