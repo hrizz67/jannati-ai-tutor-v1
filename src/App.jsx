@@ -2450,9 +2450,11 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
   const [result, setResult] = useState(() => resume?.state?.result || null);
   const modeResetRef = useRef({ setId, mode });
-  const set = writingSets.find(item => item.id === setId) || writingSets[0];
-  const task = set.tasks[mode];
-  const modes = Object.entries(set.tasks).map(([id, value]) => ({ id, label: value.label }));
+  const set = writingSets.find(item => item.id === setId) || writingSets[0] || null;
+  const safeTasks = set?.tasks && typeof set.tasks === 'object' ? set.tasks : {};
+  const safeModes = Object.entries(safeTasks).map(([id, value]) => ({ id, label: value?.label || id }));
+  const safeTask = safeTasks[mode] || safeTasks.arrange || Object.values(safeTasks).find(Boolean) || null;
+  const safeMode = safeTasks[mode] ? mode : (safeTasks.arrange ? 'arrange' : Object.keys(safeTasks)[0] || '');
 
   useEffect(() => {
     if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
@@ -2461,6 +2463,11 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
     setSusund([]);
     setResult(null);
   }, [setId, mode]);
+
+  useEffect(() => {
+    if (!safeMode || safeMode === mode) return;
+    setMode(safeMode);
+  }, [safeMode, mode]);
 
   useEffect(() => {
     if (!onResumeChange) return;
@@ -2495,11 +2502,13 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   function checkMenulis() {
-    setResult(scoreMenulis(task, currentAnswer(), set.dictionary));
+    if (!safeTask) return;
+    setResult(scoreMenulis(safeTask, currentAnswer(), set?.dictionary || []));
   }
 
   function saveMenulis() {
-    const nextResult = result || scoreMenulis(task, currentAnswer(), set.dictionary);
+    if (!safeTask || !set) return;
+    const nextResult = result || scoreMenulis(safeTask, currentAnswer(), set.dictionary || []);
     onFinish({
       language: set.language,
       title: set.title,
@@ -2507,16 +2516,20 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
       answer: currentAnswer(),
       score: nextResult.score,
       matchedKeywords: nextResult.matched.length,
-      totalKeywords: task.keywords.length,
+      totalKeywords: safeTask?.keywords?.length || 0,
       spellingIssues: nextResult.spellingIssues.length,
       grammarPetunjuks: nextResult.grammarPetunjuks
     });
     onClearResume?.();
   }
 
-  const availableWords = (task.words || []).filter(word => !arranged.includes(word));
+  if (!set || !safeTask) {
+    return <main className="app"><EmptyState title="Tugas menulis tidak dijumpai." message="Kembali ke Papan Utama dan pilih semula latihan menulis." actionLabel="Papan Utama" onAction={onBack} /></main>;
+  }
 
-  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{task.prompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(result.score)}%</h2><div className="recommend-meta"><span>{result.matched.length}/{task.keywords.length} kata kunci</span><span>{result.spellingIssues.length} isu ejaan</span><span>{result.grammarPetunjuks.length} petua tatabahasa</span></div><div className="word-check reading-word-check">{task.keywords.map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.spellingIssues.length > 0 && <p>Semak ejaan: <b>{result.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{result.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{result.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{result.explanation}</p></div></section>}</main>;
+  const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
+
+  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safeTask?.prompt || 'Tiada tugas menulis tersedia buat masa ini.'}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(result.score)}%</h2><div className="recommend-meta"><span>{result.matched.length}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{result.spellingIssues.length} isu ejaan</span><span>{result.grammarPetunjuks.length} petua tatabahasa</span></div><div className="word-check reading-word-check">{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.spellingIssues.length > 0 && <p>Semak ejaan: <b>{result.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{result.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{result.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{result.explanation}</p></div></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {
