@@ -1504,7 +1504,7 @@ export default function App() {
   if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
   if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
@@ -2352,6 +2352,17 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     score: 0
   });
 
+  const extractSpeechTranscript = (event) => {
+    const results = Array.from(event?.results || []);
+    const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
+    return results
+      .slice(startIndex)
+      .map(item => String(item?.[0]?.transcript || '').trim())
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+  };
+
   const clearSpeechTimeout = () => {
     if (speechTimeoutRef.current) {
       clearTimeout(speechTimeoutRef.current);
@@ -2532,12 +2543,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       if (finalizedRef.current || abortedRef.current) {
         return;
       }
-      const results = Array.isArray(event?.results) ? event.results : [];
-      const text = results
-        .map(item => item?.[0]?.transcript || '')
-        .filter(Boolean)
-        .join(' ');
-      const nextTranscript = typeof text === 'string' ? text.trim() : '';
+      const nextTranscript = extractSpeechTranscript(event);
       if (!nextTranscript) {
         return;
       }
@@ -2680,6 +2686,26 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const safeModes = Object.entries(safeTasks).map(([id, value]) => ({ id, label: value?.label || id }));
   const safeTask = safeTasks[mode] || safeTasks.arrange || Object.values(safeTasks).find(Boolean) || null;
   const safeMode = safeTasks[mode] ? mode : (safeTasks.arrange ? 'arrange' : Object.keys(safeTasks)[0] || '');
+  const safeResult = result && typeof result === 'object' ? {
+    score: Number(result.score) || 0,
+    matched: Array.isArray(result.matched) ? result.matched : [],
+    spellingIssues: Array.isArray(result.spellingIssues) ? result.spellingIssues : [],
+    grammarPetunjuks: Array.isArray(result.grammarPetunjuks) ? result.grammarPetunjuks : [],
+    explanation: typeof result.explanation === 'string' ? result.explanation : '',
+    ...result
+  } : null;
+
+  useEffect(() => {
+    if (import.meta?.env?.DEV) {
+      console.debug('[MenulisCoach]', {
+        language: set?.language || 'bm',
+        mode,
+        task: safeTask?.label || '',
+        resume: Boolean(resume),
+        resumeState: resume?.state || null
+      });
+    }
+  }, [mode, resume, safeTask?.label, set?.language]);
 
   useEffect(() => {
     if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
@@ -2751,17 +2777,17 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 
   function saveMenulis() {
     if (!safeTask || !set) return;
-    const nextResult = result || scoreMenulis(safeTask, currentAnswer(), set.dictionary || []);
+    const nextResult = safeResult || scoreMenulis(safeTask, currentAnswer(), set.dictionary || []);
     onFinish({
       language: set.language,
       title: set.title,
       mode,
       answer: currentAnswer(),
       score: nextResult.score,
-      matchedKeywords: nextResult.matched.length,
+      matchedKeywords: Array.isArray(nextResult.matched) ? nextResult.matched.length : 0,
       totalKeywords: safeTask?.keywords?.length || 0,
-      spellingIssues: nextResult.spellingIssues.length,
-      grammarPetunjuks: nextResult.grammarPetunjuks
+      spellingIssues: Array.isArray(nextResult.spellingIssues) ? nextResult.spellingIssues.length : 0,
+      grammarPetunjuks: Array.isArray(nextResult.grammarPetunjuks) ? nextResult.grammarPetunjuks : []
     });
     onClearResume?.();
   }
@@ -2772,7 +2798,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
 
-  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safeTask?.prompt || 'Tiada tugas menulis tersedia buat masa ini.'}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(result.score)}%</h2><div className="recommend-meta"><span>{result.matched.length}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{result.spellingIssues.length} isu ejaan</span><span>{result.grammarPetunjuks.length} petua tatabahasa</span></div><div className="word-check reading-word-check">{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={result.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{result.spellingIssues.length > 0 && <p>Semak ejaan: <b>{result.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{result.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{result.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{result.explanation}</p></div></section>}</main>;
+  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safeTask?.prompt || 'Tiada tugas menulis tersedia buat masa ini.'}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{safeResult ? <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span><span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span></div><div className="word-check reading-word-check">{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{safeResult.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{safeResult.explanation}</p></div></section> : <section className="card"><p className="eyebrow">Keputusan Menulis</p><h2>Belum ada keputusan.</h2><p>Semak tulisan untuk melihat analisis.</p></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {
