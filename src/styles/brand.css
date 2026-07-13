@@ -965,6 +965,40 @@ button:disabled {
   line-height: 1.15;
 }
 
+.speech-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  margin: 0.6rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(47, 133, 90, 0.08);
+  color: var(--brand-text, #123123);
+}
+
+.speech-status b {
+  font-size: 0.92rem;
+}
+
+.speech-status span {
+  font-size: 0.92rem;
+}
+
+.speech-result {
+  margin: 0.45rem 0 0;
+  font-size: 0.95rem;
+  color: var(--brand-text, #123123);
+}
+
+.speech-result.correct {
+  color: #1f7a44;
+}
+
+.speech-result.wrong {
+  color: #b45309;
+}
+
 .report-box {
   min-height: 148px !important;
   align-content: center;
