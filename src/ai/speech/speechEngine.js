@@ -31,6 +31,17 @@ function createEmptySpeechResult(errorCode = 'no-result', message = 'Suara belum
   };
 }
 
+export function extractSpeechTranscript(event) {
+  const results = Array.from(event?.results || []);
+  const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
+  return results
+    .slice(startIndex)
+    .map(result => String(result?.[0]?.transcript || '').trim())
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+}
+
 function disposeRecognitionInstance(instance) {
   if (!instance) return;
   try {
@@ -185,14 +196,7 @@ export function createSpeechSession({
 
     nextRecognition.onstart = () => emit({ status: 'listening', error: '' });
     nextRecognition.onresult = event => {
-      const results = Array.isArray(event?.results) ? event.results : [];
-      const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
-      const transcript = results
-        .slice(startIndex)
-        .map(result => String(result?.[0]?.transcript || '').trim())
-        .filter(Boolean)
-        .join(' ')
-        .trim();
+      const transcript = extractSpeechTranscript(event);
       if (transcript) receivedResult = true;
       emit({ status: 'processing', transcript });
       finalize(transcript, 'completed');
@@ -303,6 +307,7 @@ export function speakAnswerPrompt() {
 export default {
   createSpeechSession,
   cancelActiveSpeechRecognition,
+  extractSpeechTranscript,
   isSpeechAvailable,
   supportsSpeechRecognition,
   speakAnswerPrompt

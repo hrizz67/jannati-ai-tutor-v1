@@ -40,7 +40,7 @@ import { loadGamificationProfile as loadGamificationState, recordGamificationEve
 import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
-import { createSpeechSession, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
+import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
 import { formatStudyTime, loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
@@ -2244,14 +2244,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     };
     recognition.onresult = event => {
       if (sessionFinalizedRef.current) return;
-      const results = Array.from(event?.results || []);
-      const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
-      const text = results
-        .slice(startIndex)
-        .map(item => String(item?.[0]?.transcript || '').trim())
-        .filter(Boolean)
-        .join(' ')
-        .trim();
+      const text = extractSpeechTranscriptShared(event);
       if (!text) return;
       transcriptBufferRef.current = [transcriptBufferRef.current, text].filter(Boolean).join(' ').trim();
       setTranscript(transcriptBufferRef.current);
@@ -2588,16 +2581,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     score: 0
   });
 
-  const extractSpeechTranscript = (event) => {
-    const results = Array.from(event?.results || []);
-    const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
-    return results
-      .slice(startIndex)
-      .map(item => String(item?.[0]?.transcript || '').trim())
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-  };
+  const extractSpeechTranscript = extractSpeechTranscriptShared;
 
   const clearSpeechTimeout = () => {
     if (speechTimeoutRef.current) {
