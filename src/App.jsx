@@ -2313,7 +2313,16 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const receivedResultRef = useRef(false);
   const finalizedRef = useRef(false);
   const abortedRef = useRef(false);
+  const safariEmptyFailureRef = useRef(0);
+  const [safariMicDisabled, setSafariMicDisabled] = useState(false);
   const set = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
+  const isIOSSafari = useMemo(() => {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    return /iP(hone|ad|od)/i.test(ua)
+      && /Safari/i.test(ua)
+      && !/(CriOS|FxiOS|EdgiOS|OPiOS|Android)/i.test(ua);
+  }, []);
   const promptBank = useMemo(() => (set?.prompts && typeof set.prompts === 'object' ? set.prompts : {}), [set?.id]);
   const safeModeKeys = useMemo(() => Object.keys(promptBank).filter(key => promptBank?.[key]), [promptBank]);
   const safeModeKey = safeModeKeys.join('|');
@@ -2350,6 +2359,32 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     }
   };
 
+  const disposeRecognition = () => {
+    const recognition = recognitionRef.current;
+    clearSpeechTimeout();
+    if (!recognition) return;
+    try {
+      recognition.onstart = null;
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null;
+      recognition.onnomatch = null;
+    } catch {
+      // Ignore handler cleanup errors.
+    }
+    try {
+      recognition.stop?.();
+    } catch {
+      // Ignore stop errors.
+    }
+    try {
+      recognition.abort?.();
+    } catch {
+      // Ignore abort errors.
+    }
+    recognitionRef.current = null;
+  };
+
   const resetSpeechSession = () => {
     clearSpeechTimeout();
     receivedResultRef.current = false;
@@ -2358,21 +2393,33 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   };
 
   const stopRecognitionSilently = () => {
-    clearSpeechTimeout();
     abortedRef.current = true;
     finalizedRef.current = true;
-    try {
-      recognitionRef.current?.abort?.();
-    } catch {
-      // Ignore silent stop errors.
-    }
-    recognitionRef.current = null;
+    setMendengar(false);
+    disposeRecognition();
   };
 
   const finishSpeechSession = nextResult => {
     finalizedRef.current = true;
     clearSpeechTimeout();
     return nextResult;
+  };
+
+  const finalizeBertuturSession = (nextResult, nextTranscript = '', shouldCountFailure = false) => {
+    finalizedRef.current = true;
+    clearSpeechTimeout();
+    if (shouldCountFailure && isIOSSafari) {
+      safariEmptyFailureRef.current += 1;
+      if (safariEmptyFailureRef.current >= 2) {
+        setSafariMicDisabled(true);
+      }
+    } else if (isIOSSafari && (typeof nextResult?.transcript === 'string' ? nextResult.transcript.trim() : Boolean(nextResult?.correct))) {
+      safariEmptyFailureRef.current = 0;
+    }
+    setTranscript(nextTranscript);
+    setMendengar(false);
+    setResult(nextResult);
+    disposeRecognition();
   };
 
   useEffect(() => {
@@ -2431,7 +2478,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
 
   function startBertutur() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition || (isIOSSafari && safariMicDisabled)) return;
+    stopRecognitionSilently();
     resetSpeechSession();
     setTranscript('');
     setResult(null);
@@ -2447,28 +2495,24 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       if (finalizedRef.current || abortedRef.current) {
         return;
       }
-      setMendengar(false);
       const error = event?.error || 'unknown_error';
       if (error === 'aborted') {
         abortedRef.current = true;
         return;
       }
       if (error === 'no-speech' && !receivedResultRef.current) {
-        setTranscript('');
-        setResult(finishSpeechSession(createEmptySpeechResult('no-speech', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.')));
+        finalizeBertuturSession(createEmptySpeechResult('no-speech', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '', true);
         return;
       }
       if (error === 'audio-capture') {
-        setTranscript('');
-        setResult(finishSpeechSession(createEmptySpeechResult('audio-capture', 'Mikrofon tidak dapat digunakan.')));
+        finalizeBertuturSession(createEmptySpeechResult('audio-capture', 'Mikrofon tidak dapat digunakan.'));
         return;
       }
       if (error === 'not-allowed' || error === 'service-not-allowed') {
-        setTranscript('');
-        setResult(finishSpeechSession(createEmptySpeechResult(error, 'Kebenaran mikrofon diperlukan untuk latihan ini.')));
+        finalizeBertuturSession(createEmptySpeechResult(error, 'Kebenaran mikrofon diperlukan untuk latihan ini.'));
         return;
       }
-      setResult(finishSpeechSession({
+      finalizeBertuturSession({
         status: 'error',
         score: 0,
         matched: [],
@@ -2482,7 +2526,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         correct: false,
         errorCode: error,
         message: 'Cuba sekali lagi.'
-      }));
+      });
     };
     recognition.onresult = event => {
       if (finalizedRef.current || abortedRef.current) {
@@ -2495,15 +2539,12 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         .join(' ');
       const nextTranscript = typeof text === 'string' ? text.trim() : '';
       if (!nextTranscript) {
-        setTranscript('');
         return;
       }
       receivedResultRef.current = true;
-      setTranscript(nextTranscript);
-      setResult(finishSpeechSession(scoreBertutur(safePrompt, nextTranscript)));
+      finalizeBertuturSession(finishSpeechSession(scoreBertutur(safePrompt, nextTranscript)), nextTranscript);
     };
     recognition.onend = () => {
-      setMendengar(false);
       clearSpeechTimeout();
       if (finalizedRef.current) {
         recognitionRef.current = null;
@@ -2514,8 +2555,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         return;
       }
       if (!receivedResultRef.current) {
-        setTranscript('');
-        setResult(finishSpeechSession(createEmptySpeechResult('no-result', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.')));
+        finalizeBertuturSession(createEmptySpeechResult('no-result', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '', true);
       }
       recognitionRef.current = null;
     };
@@ -2527,9 +2567,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
           } catch {
             // Ignore timeout stop errors.
           }
-          setTranscript('');
-          setResult(finishSpeechSession(createEmptySpeechResult('no-result', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.')));
-          setMendengar(false);
+          finalizeBertuturSession(createEmptySpeechResult('no-result', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '', true);
           recognitionRef.current = null;
         }
       }, 9000);
@@ -2542,6 +2580,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }
 
   function checkBertutur() {
+    stopRecognitionSilently();
     setResult(scoreBertutur(safePrompt, safeTranscript));
   }
 
@@ -2559,7 +2598,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     onClearResume?.();
   }
 
-  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safePrompt?.text || ''}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{safeResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
+  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safePrompt?.text || ''}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Pengecaman suara automatik tidak stabil pada Safari. Gunakan transkrip manual.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{safeResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
 }
 
 const writingSets = [

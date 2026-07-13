@@ -31,6 +31,29 @@ function createEmptySpeechResult(errorCode = 'no-result', message = 'Suara belum
   };
 }
 
+function disposeRecognitionInstance(instance) {
+  if (!instance) return;
+  try {
+    instance.onstart = null;
+    instance.onresult = null;
+    instance.onerror = null;
+    instance.onend = null;
+    instance.onnomatch = null;
+  } catch {
+    // Ignore handler cleanup errors.
+  }
+  try {
+    instance.stop?.();
+  } catch {
+    // Ignore stop errors.
+  }
+  try {
+    instance.abort?.();
+  } catch {
+    // Ignore abort errors.
+  }
+}
+
 export function createSpeechSession({
   expectedAnswer = '',
   acceptedAnswers = [],
@@ -73,6 +96,8 @@ export function createSpeechSession({
     };
     emit(nextState);
     onResult?.(result);
+    disposeRecognitionInstance(recognition);
+    recognition = null;
     return result;
   }
 
@@ -94,6 +119,8 @@ export function createSpeechSession({
       result
     });
     onResult?.(result);
+    disposeRecognitionInstance(recognition);
+    recognition = null;
     return result;
   }
 
@@ -101,12 +128,8 @@ export function createSpeechSession({
     if (activeSpeechRecognitionCancel === cancel) {
       activeSpeechRecognitionCancel = null;
     }
-    if (recognition) {
-      recognition.onresult = null;
-      recognition.onerror = null;
-      recognition.onend = null;
-      recognition = null;
-    }
+    disposeRecognitionInstance(recognition);
+    recognition = null;
   }
 
   function stop() {
@@ -123,10 +146,10 @@ export function createSpeechSession({
         clearTimeout(timeoutId);
         timeoutId = null;
       }
-      recognition?.abort?.();
     } catch {
       // Ignore abort errors.
     }
+    disposeRecognitionInstance(recognition);
     cleanup();
     emit({ status: 'idle' });
   }

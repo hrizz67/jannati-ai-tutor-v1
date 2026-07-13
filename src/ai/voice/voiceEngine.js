@@ -9,6 +9,7 @@ export function speak(text, options = {}) {
 }
 
 export function stop() {
+  cancelActiveSpeechRecognition();
   clearVoiceQueue();
 }
 
@@ -25,6 +26,7 @@ export function isSpeaking() {
 }
 
 export function cancel() {
+  cancelActiveSpeechRecognition();
   clearVoiceQueue();
 }
 
