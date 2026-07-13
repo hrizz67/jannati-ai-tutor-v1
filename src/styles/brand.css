@@ -944,6 +944,27 @@ button:disabled {
   color: var(--brand-muted-gray);
 }
 
+.metric-card.study-habit-card {
+  min-height: 108px;
+}
+
+.metric-card.study-habit-card .metric-card-value {
+  font-size: 32px;
+}
+
+.metric-card.study-habit-card .metric-card-label {
+  font-size: 15px;
+}
+
+.metric-card.study-habit-card .metric-card-subtitle {
+  font-size: 12px;
+}
+
+.metric-card.study-habit-card-status .metric-card-value {
+  font-size: 24px;
+  line-height: 1.15;
+}
+
 .report-box {
   min-height: 148px !important;
   align-content: center;
