@@ -107,8 +107,12 @@ export function createSpeechSession({
 
     nextRecognition.onstart = () => emit({ status: 'listening', error: '' });
     nextRecognition.onresult = event => {
-      const transcript = Array.from(event.results || [])
-        .map(result => result[0]?.transcript || '')
+      const results = Array.isArray(event?.results) ? event.results : [];
+      const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
+      const transcript = results
+        .slice(startIndex)
+        .map(result => String(result?.[0]?.transcript || '').trim())
+        .filter(Boolean)
         .join(' ')
         .trim();
       emit({ status: 'processing', transcript });
