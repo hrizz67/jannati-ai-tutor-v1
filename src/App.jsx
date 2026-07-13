@@ -1501,7 +1501,7 @@ export default function App() {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
     return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
   if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
   if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
@@ -2037,13 +2037,100 @@ function compareBacaan(targetText = '', transcript = '') {
 }
 
 function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
-  const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && resume?.state?.passageId) || readingPassages[0].id);
+  const initialPassageId = readingPassages.find(item => item.id === resume?.state?.passageId)?.id || readingPassages[0]?.id || 'bm';
+  const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && initialPassageId) || initialPassageId);
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
-  const [result, setResult] = useState(() => resume?.state?.result || null);
+  const [result, setResult] = useState(() => {
+    if (resume?.state?.result && typeof resume.state.result === 'object') {
+      return normalizeBacaanResult(resume.state.result);
+    }
+    return null;
+  });
   const passageChangeRef = useRef(passageId);
-  const passage = readingPassages.find(item => item.id === passageId) || readingPassages[0];
+  const sessionFinalizedRef = useRef(false);
+  const [sessionEmptyFailures, setSessionEmptyFailures] = useState(0);
+  const recognitionRef = useRef(null);
+  const cleanupTimerRef = useRef(null);
+  const transcriptBufferRef = useRef('');
+  const finalResultRef = useRef(null);
+  const resumeChangeRef = useRef(onResumeChange);
+  const resumeSignatureRef = useRef('');
+  const passage = readingPassages.find(item => item.id === passageId) || readingPassages[0] || {
+    id: 'bm',
+    language: 'BM',
+    speechLang: 'ms-MY',
+    title: 'Bacaan',
+    text: '',
+    questions: []
+  };
+  const safeResult = normalizeBacaanResult(result);
+  const hasResult = Boolean(result);
+  const safePassageText = typeof passage?.text === 'string' ? passage.text : '';
+  const safeTranscript = typeof transcript === 'string' ? transcript : '';
+  const safeWords = Array.isArray(safeResult.words) ? safeResult.words : [];
+  const safeMatched = Array.isArray(safeResult.matched) ? safeResult.matched : [];
+  const safeMissed = Array.isArray(safeResult.missed) ? safeResult.missed : [];
+  const safeMissingWords = Array.isArray(safeResult.missingWords) ? safeResult.missingWords : safeMissed;
+  const safeExtraWords = Array.isArray(safeResult.extraWords) ? safeResult.extraWords : [];
+  const safeNormalizedResume = normalizeBacaanResult(resume?.state?.result);
+  const isSupportedSpeech = Boolean(recognitionSupported);
+  const createEmptyResult = (message = 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.') => createEmptyBacaanResult(message);
+
+  const clearBacaanTimer = () => {
+    if (cleanupTimerRef.current) {
+      clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
+    }
+  };
+
+  const disposeRecognition = () => {
+    const recognition = recognitionRef.current;
+    clearBacaanTimer();
+    if (!recognition) return;
+    try {
+      recognition.onstart = null;
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null;
+      recognition.onnomatch = null;
+    } catch {
+      // Ignore cleanup errors.
+    }
+    try {
+      recognition.stop?.();
+    } catch {
+      // Ignore stop errors.
+    }
+    try {
+      recognition.abort?.();
+    } catch {
+      // Ignore abort errors.
+    }
+    recognitionRef.current = null;
+    setMendengar(false);
+    if (import.meta?.env?.DEV) {
+      console.debug('[BacaanCoach] disposed recognition');
+    }
+  };
+
+  const finalizeBacaanSession = (nextResult, nextTranscript = '') => {
+    if (sessionFinalizedRef.current) return;
+    sessionFinalizedRef.current = true;
+    clearBacaanTimer();
+    finalResultRef.current = nextResult;
+    setTranscript(nextTranscript);
+    setResult(nextResult);
+    setMendengar(false);
+    disposeRecognition();
+    if (import.meta?.env?.DEV) {
+      console.debug('[BacaanCoach] finalized', {
+        reason: nextResult?.errorCode || nextResult?.status || 'completed',
+        transcript: nextTranscript
+      });
+    }
+  };
 
   useEffect(() => {
     setRecognitionSupported(Boolean(window.SpeechRecognition || window.webkitSpeechRecognition));
@@ -2054,11 +2141,35 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     passageChangeRef.current = passageId;
     setTranscript('');
     setResult(null);
+    sessionFinalizedRef.current = false;
+    setSessionEmptyFailures(0);
+    finalResultRef.current = null;
+    transcriptBufferRef.current = '';
   }, [passageId]);
 
   useEffect(() => {
-    if (!onResumeChange) return;
-    onResumeChange({
+    resumeChangeRef.current = onResumeChange;
+  }, [onResumeChange]);
+
+  useEffect(() => {
+    if (!resumeChangeRef.current) return;
+    const nextSignature = [
+      'reading',
+      passageId,
+      safeTranscript,
+      safeResult.status,
+      safeResult.score,
+      safeResult.correct ? '1' : '0',
+      safeResult.message,
+      safeResult.errorCode,
+      safeResult.words.length,
+      safeResult.matched.length,
+      safeResult.missingWords.length,
+      safeResult.extraWords.length
+    ].join('|');
+    if (resumeSignatureRef.current === nextSignature) return;
+    resumeSignatureRef.current = nextSignature;
+    resumeChangeRef.current({
       version: 1,
       mode: 'reading',
       screen: 'reading',
@@ -2074,36 +2185,118 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       completed: false,
       state: {
         passageId,
-        transcript,
-        result
+        transcript: safeTranscript,
+        result: safeResult
       }
     });
-  }, [passageId, transcript, result, passage.id, passage.title, onResumeChange]);
+  }, [passageId, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, passage.id, passage.title]);
+
+  useEffect(() => () => {
+    disposeRecognition();
+  }, []);
+
+  useEffect(() => {
+    if (import.meta?.env?.DEV) {
+      console.debug('[BacaanCoach]', {
+        passageId,
+        language: passage?.language || 'unknown',
+        passageTitle: passage?.title || 'unknown',
+        normalizedResume: safeNormalizedResume
+      });
+    }
+  }, [passageId, passage?.language, passage?.title, safeNormalizedResume]);
 
   function startMendengar() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
+    stopVoice();
+    disposeRecognition();
+    sessionFinalizedRef.current = false;
+    transcriptBufferRef.current = '';
+    finalResultRef.current = null;
+    setResult(null);
+    setTranscript('');
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     recognition.lang = passage.speechLang;
     recognition.interimResults = false;
     recognition.continuous = false;
+    recognition.maxAlternatives = 1;
     recognition.onstart = () => setMendengar(true);
-    recognition.onend = () => setMendengar(false);
-    recognition.onerror = () => setMendengar(false);
-    recognition.onresult = event => {
-      const text = Array.from(event.results).map(item => item[0]?.transcript || '').join(' ');
-      setTranscript(text);
-      setResult(compareBacaan(passage.text, text));
+    recognition.onerror = event => {
+      if (sessionFinalizedRef.current) return;
+      const error = event?.error || 'unknown_error';
+      if (error === 'aborted') return;
+      if (error === 'no-speech') {
+        finalizeBacaanSession(createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '');
+        setSessionEmptyFailures(prev => prev + 1);
+        return;
+      }
+      if (error === 'audio-capture') {
+        finalizeBacaanSession(createEmptyResult('Mikrofon tidak dapat digunakan.'), '');
+        return;
+      }
+      if (error === 'not-allowed' || error === 'service-not-allowed') {
+        finalizeBacaanSession(createEmptyResult('Kebenaran mikrofon diperlukan untuk latihan ini.'), '');
+        return;
+      }
+      finalizeBacaanSession(createEmptyResult('Cuba sekali lagi.'), '');
     };
-    recognition.start();
+    recognition.onresult = event => {
+      if (sessionFinalizedRef.current) return;
+      const results = Array.from(event?.results || []);
+      const startIndex = Number.isInteger(event?.resultIndex) ? Math.max(0, event.resultIndex) : 0;
+      const text = results
+        .slice(startIndex)
+        .map(item => String(item?.[0]?.transcript || '').trim())
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      if (!text) return;
+      transcriptBufferRef.current = [transcriptBufferRef.current, text].filter(Boolean).join(' ').trim();
+      setTranscript(transcriptBufferRef.current);
+      const nextResult = compareBacaan(passage.text, transcriptBufferRef.current);
+      finalResultRef.current = nextResult;
+      setResult(nextResult);
+    };
+    recognition.onend = () => {
+      if (sessionFinalizedRef.current) {
+        disposeRecognition();
+        return;
+      }
+      const bufferedTranscript = typeof transcriptBufferRef.current === 'string' ? transcriptBufferRef.current.trim() : '';
+      const nextResult = finalResultRef.current && typeof finalResultRef.current === 'object'
+        ? normalizeBacaanResult(finalResultRef.current)
+        : (bufferedTranscript ? compareBacaan(passage.text, bufferedTranscript) : createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'));
+      finalizeBacaanSession(nextResult, bufferedTranscript);
+    };
+    try {
+      cleanupTimerRef.current = window.setTimeout(() => {
+        if (!sessionFinalizedRef.current) {
+          finalizeBacaanSession(
+            transcriptBufferRef.current ? compareBacaan(passage.text, transcriptBufferRef.current) : createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'),
+            transcriptBufferRef.current
+          );
+        }
+      }, 9000);
+      recognition.start();
+    } catch {
+      disposeRecognition();
+      setMendengar(false);
+    }
   }
 
   function checkManual() {
-    setResult(compareBacaan(passage.text, transcript));
+    stopVoice();
+    disposeRecognition();
+    const nextResult = compareBacaan(passage.text, transcript);
+    finalizeBacaanSession(nextResult, transcript);
   }
 
   function saveResult() {
-    const nextResult = result || compareBacaan(passage.text, transcript);
+    const nextResult = result && typeof result === 'object'
+      ? normalizeBacaanResult(result)
+      : compareBacaan(passage.text, transcript);
     onFinish({
       language: passage.language,
       title: passage.title,
@@ -2111,13 +2304,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       transcript,
       score: nextResult.score,
       correct: nextResult.correct,
-      tertinggal: nextResult.missed,
-      incorrect: nextResult.incorrect
+      tertinggal: Array.isArray(nextResult.missed) ? nextResult.missed : [],
+      incorrect: Number(nextResult.incorrect) || 0
     });
     onClearResume?.();
   }
 
-  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{passage.text}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(result.score)}%</h2><div className="word-check reading-word-check">{result.words.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{result.incorrectWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{result.incorrectWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{result.correct} betul</span><span>{result.missed} tertinggal</span><span>{result.incorrect} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
+  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check">{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
 }
 
 const listeningSets = [
@@ -2297,6 +2490,49 @@ function scoreBertutur(prompt, transcript) {
     words: safeKeywords.map(keyword => ({ text: keyword, status: matched.includes(keyword) ? 'correct' : 'missed' })),
     transcript: safeTranscript
   };
+}
+
+function normalizeBacaanResult(value) {
+  const safeValue = value && typeof value === 'object' ? value : {};
+  const words = Array.isArray(safeValue.words) ? safeValue.words : [];
+  const matched = Array.isArray(safeValue.matched) ? safeValue.matched : [];
+  const matchedWords = Array.isArray(safeValue.matchedWords) ? safeValue.matchedWords : matched;
+  const missed = Array.isArray(safeValue.missed) ? safeValue.missed : [];
+  const missingWords = Array.isArray(safeValue.missingWords) ? safeValue.missingWords : missed;
+  const extraWords = Array.isArray(safeValue.extraWords) ? safeValue.extraWords : [];
+  return {
+    status: typeof safeValue.status === 'string' ? safeValue.status : 'idle',
+    transcript: typeof safeValue.transcript === 'string' ? safeValue.transcript : '',
+    score: Number.isFinite(Number(safeValue.score)) ? Number(safeValue.score) : 0,
+    correct: Boolean(safeValue.correct),
+    confidence: Number.isFinite(Number(safeValue.confidence)) ? Number(safeValue.confidence) : 0,
+    words,
+    matched,
+    matchedWords,
+    missed,
+    missingWords,
+    extraWords,
+    message: typeof safeValue.message === 'string' ? safeValue.message : '',
+    errorCode: typeof safeValue.errorCode === 'string' ? safeValue.errorCode : ''
+  };
+}
+
+function createEmptyBacaanResult(message = '') {
+  return normalizeBacaanResult({
+    status: 'empty',
+    transcript: '',
+    score: 0,
+    correct: false,
+    confidence: 0,
+    words: [],
+    matched: [],
+    matchedWords: [],
+    missed: [],
+    missingWords: [],
+    extraWords: [],
+    message,
+    errorCode: 'no-result'
+  });
 }
 
 function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
