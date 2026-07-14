@@ -6380,8 +6380,8 @@ export const sainsSubject = {
           "accepted": [
             "melihat"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Mata digunakan untuk memerhati warna, bentuk dan saiz.",
+          "hint": "Lihat dengan mata untuk perhatikan warna dan bentuk.",
+          "explanation": "Mata digunakan untuk melihat warna dan bentuk.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6394,8 +6394,8 @@ export const sainsSubject = {
           "accepted": [
             "menghidu"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Hidung digunakan untuk memerhati bau.",
+          "hint": "Gunakan hidung untuk menghidu bau.",
+          "explanation": "Hidung digunakan untuk menghidu bau.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6408,8 +6408,8 @@ export const sainsSubject = {
           "accepted": [
             "mendengar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Telinga digunakan untuk memerhati bunyi.",
+          "hint": "Gunakan telinga untuk mendengar bunyi.",
+          "explanation": "Telinga digunakan untuk mendengar bunyi.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6422,8 +6422,8 @@ export const sainsSubject = {
           "accepted": [
             "merasa"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Lidah digunakan untuk memerhati rasa.",
+          "hint": "Gunakan lidah untuk merasa rasa.",
+          "explanation": "Lidah digunakan untuk merasa rasa.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6436,8 +6436,8 @@ export const sainsSubject = {
           "accepted": [
             "menyentuh"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Kulit digunakan untuk memerhati kasar, licin, panas atau sejuk.",
+          "hint": "Gunakan kulit untuk sentuh dan rasa permukaan.",
+          "explanation": "Kulit digunakan untuk menyentuh dan merasai kasar, licin, panas atau sejuk.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6450,8 +6450,8 @@ export const sainsSubject = {
           "accepted": [
             "hijau"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Daun boleh diperhatikan melalui warna.",
+          "hint": "Perhatikan warna daun.",
+          "explanation": "Daun biasanya berwarna hijau.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6464,8 +6464,8 @@ export const sainsSubject = {
           "accepted": [
             "kuat"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Kekuatan bunyi boleh diperhatikan dengan telinga.",
+          "hint": "Dengar kuat atau perlahan bunyi loceng.",
+          "explanation": "Loceng yang nyaring menghasilkan bunyi kuat.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6478,8 +6478,8 @@ export const sainsSubject = {
           "accepted": [
             "harum"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Bau boleh diperhatikan dengan hidung.",
+          "hint": "Hidu bau bunga.",
+          "explanation": "Bunga yang harum berbau menyenangkan.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6492,8 +6492,8 @@ export const sainsSubject = {
           "accepted": [
             "kasar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Permukaan boleh diperhatikan dengan sentuhan.",
+          "hint": "Sentuh permukaan batu.",
+          "explanation": "Batu biasanya terasa kasar.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6506,8 +6506,8 @@ export const sainsSubject = {
           "accepted": [
             "besar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Saiz ialah ciri yang boleh diperhatikan.",
+          "hint": "Perhatikan saiz objek.",
+          "explanation": "Objek yang tidak kecil boleh disebut besar.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6520,8 +6520,8 @@ export const sainsSubject = {
           "accepted": [
             "kucing"
           ],
-          "hint": "Fikirkan ciri yang sama.",
-          "explanation": "Kucing mempunyai empat kaki.",
+          "hint": "Pilih haiwan berkaki empat.",
+          "explanation": "Kucing ialah haiwan berkaki empat.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6534,7 +6534,7 @@ export const sainsSubject = {
           "accepted": [
             "ikan"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih haiwan yang hidup di air.",
           "explanation": "Ikan hidup di dalam air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6548,7 +6548,7 @@ export const sainsSubject = {
           "accepted": [
             "bola merah"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek berwarna merah.",
           "explanation": "Bola merah dikelaskan mengikut warna.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6562,7 +6562,7 @@ export const sainsSubject = {
           "accepted": [
             "kaca"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih bahan lutsinar.",
           "explanation": "Kaca jernih membenarkan cahaya menembusi.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6576,7 +6576,7 @@ export const sainsSubject = {
           "accepted": [
             "kain"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih bahan yang lembut.",
           "explanation": "Kain terasa lembut.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6590,7 +6590,7 @@ export const sainsSubject = {
           "accepted": [
             "gabus"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek yang terapung.",
           "explanation": "Gabus boleh terapung di atas air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6604,7 +6604,7 @@ export const sainsSubject = {
           "accepted": [
             "batu"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek yang tenggelam.",
           "explanation": "Batu biasanya tenggelam di dalam air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6618,7 +6618,7 @@ export const sainsSubject = {
           "accepted": [
             "bunga raya"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih tumbuhan berbunga.",
           "explanation": "Bunga raya mempunyai bunga.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6632,7 +6632,7 @@ export const sainsSubject = {
           "accepted": [
             "pensel"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih alat menulis.",
           "explanation": "Pensel digunakan untuk menulis.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6646,7 +6646,7 @@ export const sainsSubject = {
           "accepted": [
             "lampu"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih sumber cahaya.",
           "explanation": "Lampu menghasilkan cahaya.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6660,7 +6660,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk panjang.",
           "explanation": "Pembaris digunakan untuk mengukur panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6674,7 +6674,7 @@ export const sainsSubject = {
           "accepted": [
             "jisim"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan penimbang untuk jisim.",
           "explanation": "Penimbang digunakan untuk mengukur jisim.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6688,7 +6688,7 @@ export const sainsSubject = {
           "accepted": [
             "masa"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk masa.",
           "explanation": "Jam digunakan untuk mengukur masa.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6702,7 +6702,7 @@ export const sainsSubject = {
           "accepted": [
             "suhu"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk suhu.",
           "explanation": "Termometer digunakan untuk mengukur suhu.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6716,7 +6716,7 @@ export const sainsSubject = {
           "accepted": [
             "isipadu air"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk isipadu air.",
           "explanation": "Silinder penyukat boleh mengukur isipadu cecair.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6730,7 +6730,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan pita ukur untuk panjang.",
           "explanation": "Pita ukur digunakan untuk mengukur panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6744,7 +6744,7 @@ export const sainsSubject = {
           "accepted": [
             "isipadu"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk isipadu.",
           "explanation": "Cawan penyukat membantu menyukat cecair.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6758,7 +6758,7 @@ export const sainsSubject = {
           "accepted": [
             "masa"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk masa aktiviti.",
           "explanation": "Jam randik digunakan untuk mengukur masa aktiviti.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6772,7 +6772,7 @@ export const sainsSubject = {
           "accepted": [
             "jisim"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Bandingkan jisim dengan neraca.",
           "explanation": "Neraca digunakan untuk membandingkan jisim.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6786,7 +6786,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan sentimeter untuk panjang.",
           "explanation": "Sentimeter ialah unit untuk panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6800,7 +6800,7 @@ export const sainsSubject = {
           "accepted": [
             "mencatat data"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat data dalam jadual.",
           "explanation": "Jadual membantu menyusun data.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6814,7 +6814,7 @@ export const sainsSubject = {
           "accepted": [
             "pemerhatian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan gambar sebagai rekod.",
           "explanation": "Gambar boleh merekod pemerhatian.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6828,7 +6828,7 @@ export const sainsSubject = {
           "accepted": [
             "bilangan"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan tanda palang untuk kira.",
           "explanation": "Tanda palang boleh digunakan untuk mengira bilangan.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6842,7 +6842,7 @@ export const sainsSubject = {
           "accepted": [
             "membandingkan"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Bandingkan data dengan graf gambar.",
           "explanation": "Graf gambar memudahkan perbandingan.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6856,7 +6856,7 @@ export const sainsSubject = {
           "accepted": [
             "maklumat"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat maklumat penting.",
           "explanation": "Nota ringkas mencatat maklumat penting.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6870,7 +6870,7 @@ export const sainsSubject = {
           "accepted": [
             "pemerhatian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Tulis tarikh pemerhatian.",
           "explanation": "Tarikh menunjukkan bila pemerhatian dibuat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6884,7 +6884,7 @@ export const sainsSubject = {
           "accepted": [
             "bahagian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan label pada bahagian.",
           "explanation": "Label membantu mengenal bahagian objek.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6898,7 +6898,7 @@ export const sainsSubject = {
           "accepted": [
             "bentuk"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Lukis bentuk objek dengan jelas.",
           "explanation": "Lukisan boleh menunjukkan bentuk objek.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6912,7 +6912,7 @@ export const sainsSubject = {
           "accepted": [
             "dicatat"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat keputusan ujian.",
           "explanation": "Keputusan penyiasatan perlu dicatat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6926,7 +6926,7 @@ export const sainsSubject = {
           "accepted": [
             "dibaca"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Susun data supaya mudah dibaca.",
           "explanation": "Data yang teratur mudah dibaca.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6940,7 +6940,7 @@ export const sainsSubject = {
           "accepted": [
             "penyiasatan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Fikirkan soalan dalam penyiasatan.",
           "explanation": "Penyiasatan bermula dengan soalan yang jelas.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6954,7 +6954,7 @@ export const sainsSubject = {
           "accepted": [
             "sebelum ujian"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Buat ramalan sebelum ujian.",
           "explanation": "Ramalan dibuat sebelum menjalankan ujian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6968,7 +6968,7 @@ export const sainsSubject = {
           "accepted": [
             "selepas ujian"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Perhatikan hasil ujian.",
           "explanation": "Pemerhatian dibuat semasa atau selepas ujian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6982,7 +6982,7 @@ export const sainsSubject = {
           "accepted": [
             "satu perkara diubah"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Uji satu perkara pada satu masa.",
           "explanation": "Ujian lebih adil apabila satu perkara diubah pada satu masa.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6996,7 +6996,7 @@ export const sainsSubject = {
           "accepted": [
             "ikut arahan guru"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Ikut arahan guru.",
           "explanation": "Arahan guru membantu aktiviti dijalankan dengan selamat.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7010,7 +7010,7 @@ export const sainsSubject = {
           "accepted": [
             "persamaan dan perbezaan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Cari persamaan dan perbezaan.",
           "explanation": "Membandingkan mencari persamaan dan perbezaan.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7024,7 +7024,7 @@ export const sainsSubject = {
           "accepted": [
             "ciri yang sama"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Cari ciri yang sama.",
           "explanation": "Mengelas ialah mengumpulkan objek mengikut ciri.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7038,7 +7038,7 @@ export const sainsSubject = {
           "accepted": [
             "jangkaan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Buat jangkaan awal.",
           "explanation": "Meramal ialah membuat jangkaan berdasarkan pemerhatian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7052,7 +7052,7 @@ export const sainsSubject = {
           "accepted": [
             "keputusan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Nyatakan keputusan penyiasatan.",
           "explanation": "Kesimpulan dibuat berdasarkan keputusan.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7066,7 +7066,7 @@ export const sainsSubject = {
           "accepted": [
             "menyampaikan maklumat"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Sampaikan maklumat dengan jelas.",
           "explanation": "Berkomunikasi ialah menyampaikan maklumat dengan jelas.",
           "difficulty": "sukar",
           "uasa": "Sains",

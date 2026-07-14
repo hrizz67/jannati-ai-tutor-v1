@@ -1,6 +1,6 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-07-10T17:07:38.730Z",
+  "generatedAt": "2026-07-14T16:34:10.880Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
@@ -8,7 +8,7 @@
     "diversitySessions": 5000,
     "infos": 0,
     "errors": 0,
-    "warnings": 6
+    "warnings": 12
   },
   "difficultyCounts": {
     "mudah": 1802,
@@ -28,14 +28,14 @@
     "averageDiversityScore": 71,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 0.13,
-    "averageSelectionTimeMs": 14.237,
+    "averageSelectionTimeMs": 10.728,
     "stemDiversity": 100,
     "stemReuseRate": 0.13,
     "repeatedStems": 127,
-    "contextDiversity": 79,
-    "nameReuseRate": 88.02,
-    "objectReuseRate": 16.23,
-    "contextReuseRate": 21.27,
+    "contextDiversity": 15,
+    "nameReuseRate": 87.93,
+    "objectReuseRate": 16.37,
+    "contextReuseRate": 84.93,
     "unsafeContextChanges": 0,
     "unusedStemVariationGroups": [
       "sentence_building"
@@ -105,11 +105,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-097",
-        "questionIndex": 96,
-        "duplicateOf": "math:MATH-DARAB-010"
+        "subjectId": "bm",
+        "topicId": "pemahaman_penulisan",
+        "questionId": "BM-PEMAHAMAN_PENULISAN-022",
+        "questionIndex": 21,
+        "duplicateOf": "bm:BM-AYAT-022"
       }
     },
     {
@@ -117,11 +117,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-100",
-        "questionIndex": 99,
-        "duplicateOf": "math:MATH-DARAB-009"
+        "subjectId": "bm",
+        "topicId": "pemahaman_penulisan",
+        "questionId": "BM-PEMAHAMAN_PENULISAN-045",
+        "questionIndex": 44,
+        "duplicateOf": "bm:BM-AYAT-045"
       }
     },
     {
@@ -129,11 +129,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-102",
-        "questionIndex": 101,
-        "duplicateOf": "math:MATH-DARAB-052"
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-018",
+        "questionIndex": 17,
+        "duplicateOf": "english:ENG-SENTENCES-008"
       }
     },
     {
@@ -141,11 +141,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-105",
-        "questionIndex": 104,
-        "duplicateOf": "math:MATH-DARAB-006"
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-019",
+        "questionIndex": 18,
+        "duplicateOf": "english:ENG-SENTENCES-009"
       }
     },
     {
@@ -153,11 +153,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-115",
-        "questionIndex": 114,
-        "duplicateOf": "math:MATH-DARAB-001"
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-023",
+        "questionIndex": 22,
+        "duplicateOf": "english:ENG-SENTENCES-003"
       }
     },
     {
@@ -165,11 +165,83 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "math",
-        "topicId": "darab",
-        "questionId": "MATH-DARAB-122",
-        "questionIndex": 121,
-        "duplicateOf": "math:MATH-DARAB-054"
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-024",
+        "questionIndex": 23,
+        "duplicateOf": "english:ENG-SENTENCES-004"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-025",
+        "questionIndex": 24,
+        "duplicateOf": "english:ENG-SENTENCES-005"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-026",
+        "questionIndex": 25,
+        "duplicateOf": "english:ENG-SENTENCES-006"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-027",
+        "questionIndex": 26,
+        "duplicateOf": "english:ENG-SENTENCES-007"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-028",
+        "questionIndex": 27,
+        "duplicateOf": "english:ENG-SENTENCES-008"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-029",
+        "questionIndex": 28,
+        "duplicateOf": "english:ENG-SENTENCES-009"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "english",
+        "topicId": "sentences",
+        "questionId": "ENG-SENTENCES-030",
+        "questionIndex": 29,
+        "duplicateOf": "english:ENG-SENTENCES-010"
       }
     }
   ]

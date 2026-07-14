@@ -43,7 +43,7 @@ const aqidahItems = [
   ["Allah Maha Mendengar bermaksud Allah mendengar setiap ________.", "suara", "Fikirkan maksud Allah Maha Mendengar.", "Allah mendengar setiap doa dan suara hamba-Nya."],
   ["Kita bersyukur kerana semua nikmat datang daripada ________.", "Allah", "Fikirkan pemberi nikmat.", "Semua nikmat datang daripada Allah."],
   ["Orang Islam percaya hanya Allah yang layak ________.", "disembah", "Fikirkan maksud tauhid.", "Tauhid mengajar kita bahawa hanya Allah yang layak disembah."],
-  ["Kalima syahadah bermula dengan lafaz ________.", "Asyhadu", "Ingat permulaan syahadah.", "Syahadah bermula dengan lafaz Asyhadu."],
+  ["Kalimah syahadah bermula dengan lafaz ________.", "Asyhadu", "Ingat permulaan syahadah.", "Syahadah bermula dengan lafaz Asyhadu."],
   ["Kita yakin Allah sentiasa ________ kita.", "menjaga", "Fikirkan kasih sayang Allah kepada hamba-Nya.", "Allah sentiasa menjaga dan memelihara hamba-Nya."],
   ["Beriman kepada rasul termasuk dalam Rukun ________.", "Iman", "Fikirkan enam perkara Rukun Iman.", "Beriman kepada rasul ialah salah satu Rukun Iman."],
   ["Beriman kepada kitab bermaksud percaya kepada kitab yang diturunkan oleh ________.", "Allah", "Fikirkan asal kitab suci.", "Kitab-kitab suci diturunkan oleh Allah."],

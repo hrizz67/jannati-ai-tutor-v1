@@ -1,13 +1,13 @@
 # Jannati AI Tutor V2.0 Curriculum Coverage Audit
 
-Generated: 2026-07-02T16:04:24.735Z
+Generated: 2026-07-14T16:34:17.559Z
 
 ## Coverage Summary
 
 - Metadata Coverage: 100%
 - Learning Outcome Coverage: 100%
-- DSKP SK Coverage: 50% mapped (0% verified)
-- DSKP SP Coverage: 50% mapped (0% verified)
+- DSKP SK Coverage: 100% mapped (57% verified)
+- DSKP SP Coverage: 100% mapped (57% verified)
 - UASA Readiness: 100%
 - Reading Coverage: 38% subject coverage
 - Listening Coverage: 38% subject coverage
@@ -20,14 +20,14 @@ Important: inferred SK/SP metadata is not counted as mapped or verified DSKP com
 
 | Subject | Questions | Metadata | Outcomes | SK Mapped | SP Mapped | Inferred SK/SP | Verified | UASA |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Bahasa Melayu Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
-| Matematik Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
-| English Year 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
-| Sains Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
-| Bahasa Arab Tahun 2 | 500 | 100% | 100% | 0% | 0% | 100%/100% | 0% | 100% |
-| Pendidikan Islam Tahun 2 | 500 | 100% | 100% | 0% | 0% | 100%/100% | 0% | 100% |
-| Pendidikan Jasmani Tahun 2 | 500 | 100% | 100% | 0% | 0% | 100%/100% | 0% | 100% |
-| Pendidikan Kesihatan Tahun 2 | 500 | 100% | 100% | 0% | 0% | 100%/100% | 0% | 100% |
+| Bahasa Melayu Tahun 2 | 800 | 100% | 100% | 100% | 100% | 0%/0% | 100% | 100% |
+| Matematik Tahun 2 | 800 | 100% | 100% | 100% | 100% | 0%/0% | 100% | 100% |
+| English Year 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 100% | 100% |
+| Sains Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 100% | 100% |
+| Bahasa Arab Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
+| Pendidikan Islam Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
+| Pendidikan Jasmani Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
+| Pendidikan Kesihatan Tahun 2 | 500 | 100% | 100% | 100% | 100% | 0%/0% | 0% | 100% |
 
 ## Coverage by Module
 
@@ -35,8 +35,8 @@ Important: inferred SK/SP metadata is not counted as mapped or verified DSKP com
 | --- | ---: | --- | --- | ---: |
 | reading | 3 | bm, english, arab | math, sains, islam, pj, pk | 38% |
 | listening | 3 | bm, english, arab | math, sains, islam, pj, pk | 38% |
-| speaking | 3 | bm, english, arab | math, sains, islam, pj, pk | 38% |
-| writing | 3 | bm, english, arab | math, sains, islam, pj, pk | 38% |
+| speaking | 0 | bm, english, arab | math, sains, islam, pj, pk | 38% |
+| writing | 0 | bm, english, arab | math, sains, islam, pj, pk | 38% |
 
 ## Coverage by Skill
 
@@ -46,11 +46,11 @@ Important: inferred SK/SP metadata is not counted as mapped or verified DSKP com
 | learningOutcomes | 100% |
 | dskpSK | 0% |
 | dskpSP | 0% |
-| mappedSK | 50% |
-| mappedSP | 50% |
-| inferredSK | 50% |
-| inferredSP | 50% |
-| verifiedSKSP | 0% |
+| mappedSK | 100% |
+| mappedSP | 100% |
+| inferredSK | 0% |
+| inferredSP | 0% |
+| verifiedSKSP | 57% |
 | uasa | 100% |
 | readingSubjectCoverage | 38% |
 | listeningSubjectCoverage | 38% |
@@ -59,13 +59,13 @@ Important: inferred SK/SP metadata is not counted as mapped or verified DSKP com
 
 ## SK/SP Mapping Status
 
-- Mapped SK: 2000
-- Mapped SP: 2000
-- Inferred SK: 2000
-- Inferred SP: 2000
-- Missing SK: 2000
-- Missing SP: 2000
-- Verified mapped rows: 0
+- Mapped SK: 4600
+- Mapped SP: 4600
+- Inferred SK: 0
+- Inferred SP: 0
+- Missing SK: 0
+- Missing SP: 0
+- Verified mapped rows: 2600
 
 ## Missing Outcomes
 
@@ -84,7 +84,6 @@ Important: inferred SK/SP metadata is not counted as mapped or verified DSKP com
 
 Status: ALPHA_READY_WITH_CURRICULUM_GAPS
 
-- mapped SK/SP not yet verified against official DSKP
 - language coach subject coverage below 50%
 
 Sprint 11 recommendation: Prioritize explicit SK/SP mapping and broaden coach module subject coverage.

@@ -78,11 +78,11 @@ export function buildLessonPlan({ subjects = [], topicMastery = {} } = {}) {
     reviewCandidate?.subject,
     reviewCandidate?.topic,
     reviewCandidate?.mastery,
-    'Cadangan ulang kaji berdasarkan tahap penguasaan dan masa ulang kaji.'
+    'Ulang kaji topik ini supaya kamu lebih yakin.'
   );
 
   const reason = todayLesson
-    ? `Latihan ini dipilih berdasarkan tahap penguasaan, sejarah pembelajaran dan keseimbangan topik.`
+    ? `Latihan ini dipilih kerana sesuai dengan kemajuan semasa kamu.`
     : 'Tiada pelajaran tersedia kerana semua topik yang kelihatan masih dikunci atau tidak tersedia.';
 
   return {

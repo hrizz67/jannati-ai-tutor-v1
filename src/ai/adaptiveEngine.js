@@ -52,7 +52,7 @@ function describeReason(candidate, memory = {}) {
   if (!candidate) return 'Mulakan satu sesi pendek untuk membina rekod pembelajaran.';
 
   if (candidate.recentMistake) {
-    return `Ulang ${candidate.topic.title} kerana kesilapan terkini menunjukkan topik ini perlu dikuatkan.`;
+    return `Ulang ${candidate.topic.title} supaya kamu lebih yakin pada topik ini.`;
   }
 
   if (candidate.isWeak) {
@@ -67,7 +67,7 @@ function describeReason(candidate, memory = {}) {
     return `Streak sedang baik, jadi kekalkan momentum dengan cabaran ${candidate.topic.title}.`;
   }
 
-  return `Latihan ${candidate.topic.title} dipilih berdasarkan penguasaan, sejarah belajar dan keseimbangan topik.`;
+  return `Latihan ${candidate.topic.title} dipilih kerana sesuai dengan kemajuan semasa kamu.`;
 }
 
 function priorityLabel(score) {

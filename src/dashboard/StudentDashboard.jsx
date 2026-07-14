@@ -24,6 +24,10 @@ export default function StudentDashboard({
   const name = adaptiveProfile?.name || profile.name || 'Anak';
   const topWeak = adaptiveWeakTopics.slice(0, 5);
   const topStrong = adaptiveStrongTopics.slice(0, 5);
+  const recommendationLead = studyPlan?.notes || 'Ikuti latihan yang seimbang hari ini.';
+  const recommendationFocusText = adaptiveRecommendationFocus
+    ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} ? ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+    : '';
 
   return (
     <>
@@ -117,9 +121,9 @@ export default function StudentDashboard({
         <h2>Cadangan Hari Ini</h2>
         <p>
           {studyPlan
-            ? `${studyPlan.notes || 'Ikuti cadangan latihan yang seimbang.'} ${adaptiveRecommendationFocus ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} • ${formatTopicName(adaptiveRecommendationFocus.topicId)}` : ''}`
+            ? `${recommendationLead}${recommendationFocusText ? ` ${recommendationFocusText}` : ''}`
             : adaptiveRecommendationFocus
-              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} • ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} ? ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
               : 'Fokus utama belum tersedia.'}
         </p>
         <div className="mastery-summary-grid">

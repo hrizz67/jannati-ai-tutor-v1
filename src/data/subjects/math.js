@@ -4387,7 +4387,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-010",
-          "q": "2 x 9 = ________.",
+          "q": "Hitung 2 x 9 dan isi jawapan.",
           "answer": "18",
           "accepted": [
             "18"
@@ -4397,7 +4397,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 9 = ________."
+          "question": "Hitung 2 x 9 dan isi jawapan."
         },
         {
           "id": "MATH-DARAB-011",
@@ -5647,7 +5647,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-100",
-          "q": "5 x 8 = ________.",
+          "q": "Cari hasil bagi 5 x 8.",
           "answer": "40",
           "accepted": [
             "40"
@@ -5657,7 +5657,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 x 8 = ________."
+          "question": "Cari hasil bagi 5 x 8."
         },
         {
           "id": "MATH-DARAB-101",
@@ -5675,7 +5675,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-102",
-          "q": "7 x 4 = ________.",
+          "q": "Tentukan hasil 7 x 4.",
           "answer": "28",
           "accepted": [
             "28"
@@ -5685,7 +5685,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "7 x 4 = ________."
+          "question": "Tentukan hasil 7 x 4."
         },
         {
           "id": "MATH-DARAB-103",
@@ -5717,7 +5717,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-105",
-          "q": "10 x 3 = ________.",
+          "q": "Berapakah 10 x 3?",
           "answer": "30",
           "accepted": [
             "30"
@@ -5727,7 +5727,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "10 x 3 = ________."
+          "question": "Berapakah 10 x 3?"
         },
         {
           "id": "MATH-DARAB-106",
@@ -5857,7 +5857,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-115",
-          "q": "2 x 3 = ________.",
+          "q": "Hitung 2 x 3 dengan cepat.",
           "answer": "6",
           "accepted": [
             "6"
@@ -5867,7 +5867,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 3 = ________."
+          "question": "Hitung 2 x 3 dengan cepat."
         },
         {
           "id": "MATH-DARAB-116",
@@ -5955,7 +5955,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-122",
-          "q": "9 x 4 = ________.",
+          "q": "Cari jawapan bagi 9 x 4.",
           "answer": "36",
           "accepted": [
             "36"
@@ -5965,7 +5965,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "9 x 4 = ________."
+          "question": "Cari jawapan bagi 9 x 4."
         },
         {
           "id": "MATH-DARAB-123",

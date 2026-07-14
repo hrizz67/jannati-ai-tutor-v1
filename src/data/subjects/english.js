@@ -5668,6 +5668,286 @@ export const englishSubject = {
       "questions": [
         {
           "id": "ENG-SENTENCES-001",
+          "q": "Fill in the blank. I ________ a pupil.",
+          "answer": "am",
+          "accepted": [
+            "am"
+          ],
+          "hint": "Use am with I.",
+          "explanation": "I am a pupil.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Fill in the blank. I ________ a pupil."
+        },
+        {
+          "id": "ENG-SENTENCES-002",
+          "q": "Write the missing word. She ________ my friend.",
+          "answer": "is",
+          "accepted": [
+            "is"
+          ],
+          "hint": "Use is with she.",
+          "explanation": "She is my friend.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write the missing word. She ________ my friend."
+        },
+        {
+          "id": "ENG-SENTENCES-003",
+          "q": "Read the sentence. They ________ happy.",
+          "answer": "are",
+          "accepted": [
+            "are"
+          ],
+          "hint": "Use are with they.",
+          "explanation": "They are happy.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read the sentence. They ________ happy."
+        },
+        {
+          "id": "ENG-SENTENCES-004",
+          "q": "Look at the sentence. This is ________ apple.",
+          "answer": "an",
+          "accepted": [
+            "an"
+          ],
+          "hint": "Use an before a vowel sound.",
+          "explanation": "an apple is correct.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Look at the sentence. This is ________ apple."
+        },
+        {
+          "id": "ENG-SENTENCES-005",
+          "q": "Choose the correct answer. This is ________ book.",
+          "answer": "a",
+          "accepted": [
+            "a"
+          ],
+          "hint": "Use a before a consonant sound.",
+          "explanation": "a book is correct.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct answer. This is ________ book."
+        },
+        {
+          "id": "ENG-SENTENCES-006",
+          "q": "Pick the best answer. I ________ to school every day.",
+          "answer": "go",
+          "accepted": [
+            "go"
+          ],
+          "hint": "Choose the action word.",
+          "explanation": "I go to school every day.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Pick the best answer. I ________ to school every day."
+        },
+        {
+          "id": "ENG-SENTENCES-007",
+          "q": "Choose the correct word. He ________ a red cap.",
+          "answer": "has",
+          "accepted": [
+            "has"
+          ],
+          "hint": "Use has for he.",
+          "explanation": "He has a red cap.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word. He ________ a red cap."
+        },
+        {
+          "id": "ENG-SENTENCES-008",
+          "q": "Read and complete. We ________ English.",
+          "answer": "like",
+          "accepted": [
+            "like"
+          ],
+          "hint": "Choose the simple verb.",
+          "explanation": "We like English.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and complete. We ________ English."
+        },
+        {
+          "id": "ENG-SENTENCES-009",
+          "q": "Find the correct word. The cats ________ small.",
+          "answer": "are",
+          "accepted": [
+            "are"
+          ],
+          "hint": "Use are for more than one cat.",
+          "explanation": "The cats are small.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Find the correct word. The cats ________ small."
+        },
+        {
+          "id": "ENG-SENTENCES-010",
+          "q": "Write the missing word. My mother ________ cooking.",
+          "answer": "is",
+          "accepted": [
+            "is"
+          ],
+          "hint": "Use is before an -ing action.",
+          "explanation": "My mother is cooking.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write the missing word. My mother ________ cooking."
+        },
+        {
+          "id": "ENG-SENTENCES-011",
+          "q": "Choose the correct answer. I ________ a pupil.",
+          "answer": "am",
+          "accepted": [
+            "am"
+          ],
+          "hint": "Use am with I.",
+          "explanation": "I am a pupil.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct answer. I ________ a pupil."
+        },
+        {
+          "id": "ENG-SENTENCES-012",
+          "q": "Choose the correct word. She ________ my friend.",
+          "answer": "is",
+          "accepted": [
+            "is"
+          ],
+          "hint": "Use is with she.",
+          "explanation": "She is my friend.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the correct word. She ________ my friend."
+        },
+        {
+          "id": "ENG-SENTENCES-013",
+          "q": "Fill in the blank. They ________ happy.",
+          "answer": "are",
+          "accepted": [
+            "are"
+          ],
+          "hint": "Use are with they.",
+          "explanation": "They are happy.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Fill in the blank. They ________ happy."
+        },
+        {
+          "id": "ENG-SENTENCES-014",
+          "q": "Read the sentence. This is ________ apple.",
+          "answer": "an",
+          "accepted": [
+            "an"
+          ],
+          "hint": "Use an before a vowel sound.",
+          "explanation": "an apple is correct.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read the sentence. This is ________ apple."
+        },
+        {
+          "id": "ENG-SENTENCES-015",
+          "q": "Look at the sentence. This is ________ book.",
+          "answer": "a",
+          "accepted": [
+            "a"
+          ],
+          "hint": "Use a before a consonant sound.",
+          "explanation": "a book is correct.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Look at the sentence. This is ________ book."
+        },
+        {
+          "id": "ENG-SENTENCES-016",
+          "q": "Write the missing word. I ________ to school every day.",
+          "answer": "go",
+          "accepted": [
+            "go"
+          ],
+          "hint": "Choose the action word.",
+          "explanation": "I go to school every day.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Write the missing word. I ________ to school every day."
+        },
+        {
+          "id": "ENG-SENTENCES-017",
+          "q": "Pick the best answer. He ________ a red cap.",
+          "answer": "has",
+          "accepted": [
+            "has"
+          ],
+          "hint": "Use has for he.",
+          "explanation": "He has a red cap.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Pick the best answer. He ________ a red cap."
+        },
+        {
+          "id": "ENG-SENTENCES-018",
+          "q": "Read and complete. We ________ English.",
+          "answer": "like",
+          "accepted": [
+            "like"
+          ],
+          "hint": "Choose the simple verb.",
+          "explanation": "We like English.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Read and complete. We ________ English."
+        },
+        {
+          "id": "ENG-SENTENCES-019",
+          "q": "Find the correct word. The cats ________ small.",
+          "answer": "are",
+          "accepted": [
+            "are"
+          ],
+          "hint": "Use are for more than one cat.",
+          "explanation": "The cats are small.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Find the correct word. The cats ________ small."
+        },
+        {
+          "id": "ENG-SENTENCES-020",
+          "q": "Choose the word that fits. My mother ________ cooking.",
+          "answer": "is",
+          "accepted": [
+            "is"
+          ],
+          "hint": "Use is before an -ing action.",
+          "explanation": "My mother is cooking.",
+          "difficulty": "mudah",
+          "uasa": "CEFR / UASA",
+          "dskp": "Malaysian Year 2 CEFR",
+          "question": "Choose the word that fits. My mother ________ cooking."
+        },
+        {
+          "id": "ENG-SENTENCES-021",
           "q": "Complete the sentence. I ________ a pupil.",
           "answer": "am",
           "accepted": [
@@ -5675,294 +5955,14 @@ export const englishSubject = {
           ],
           "hint": "Use am with I.",
           "explanation": "I am a pupil.",
-          "difficulty": "mudah",
+          "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
           "question": "Complete the sentence. I ________ a pupil."
         },
         {
-          "id": "ENG-SENTENCES-002",
-          "q": "Complete the sentence. She ________ my friend.",
-          "answer": "is",
-          "accepted": [
-            "is"
-          ],
-          "hint": "Use is with she.",
-          "explanation": "She is my friend.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. She ________ my friend."
-        },
-        {
-          "id": "ENG-SENTENCES-003",
-          "q": "Complete the sentence. They ________ happy.",
-          "answer": "are",
-          "accepted": [
-            "are"
-          ],
-          "hint": "Use are with they.",
-          "explanation": "They are happy.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. They ________ happy."
-        },
-        {
-          "id": "ENG-SENTENCES-004",
-          "q": "Complete the sentence. This is ________ apple.",
-          "answer": "an",
-          "accepted": [
-            "an"
-          ],
-          "hint": "Use an before a vowel sound.",
-          "explanation": "an apple is correct.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. This is ________ apple."
-        },
-        {
-          "id": "ENG-SENTENCES-005",
-          "q": "Complete the sentence. This is ________ book.",
-          "answer": "a",
-          "accepted": [
-            "a"
-          ],
-          "hint": "Use a before a consonant sound.",
-          "explanation": "a book is correct.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. This is ________ book."
-        },
-        {
-          "id": "ENG-SENTENCES-006",
-          "q": "Complete the sentence. I ________ to school every day.",
-          "answer": "go",
-          "accepted": [
-            "go"
-          ],
-          "hint": "Choose the action word.",
-          "explanation": "I go to school every day.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. I ________ to school every day."
-        },
-        {
-          "id": "ENG-SENTENCES-007",
-          "q": "Complete the sentence. He ________ a red cap.",
-          "answer": "has",
-          "accepted": [
-            "has"
-          ],
-          "hint": "Use has for he.",
-          "explanation": "He has a red cap.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. He ________ a red cap."
-        },
-        {
-          "id": "ENG-SENTENCES-008",
-          "q": "Complete the sentence. We ________ English.",
-          "answer": "like",
-          "accepted": [
-            "like"
-          ],
-          "hint": "Choose the simple verb.",
-          "explanation": "We like English.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. We ________ English."
-        },
-        {
-          "id": "ENG-SENTENCES-009",
-          "q": "Complete the sentence. The cats ________ small.",
-          "answer": "are",
-          "accepted": [
-            "are"
-          ],
-          "hint": "Use are for more than one cat.",
-          "explanation": "The cats are small.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. The cats ________ small."
-        },
-        {
-          "id": "ENG-SENTENCES-010",
-          "q": "Complete the sentence. My mother ________ cooking.",
-          "answer": "is",
-          "accepted": [
-            "is"
-          ],
-          "hint": "Use is before an -ing action.",
-          "explanation": "My mother is cooking.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence. My mother ________ cooking."
-        },
-        {
-          "id": "ENG-SENTENCES-011",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. I ________ a pupil.",
-          "answer": "am",
-          "accepted": [
-            "am"
-          ],
-          "hint": "Use am with I.",
-          "explanation": "I am a pupil.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. I ________ a pupil."
-        },
-        {
-          "id": "ENG-SENTENCES-012",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. She ________ my friend.",
-          "answer": "is",
-          "accepted": [
-            "is"
-          ],
-          "hint": "Use is with she.",
-          "explanation": "She is my friend.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. She ________ my friend."
-        },
-        {
-          "id": "ENG-SENTENCES-013",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. They ________ happy.",
-          "answer": "are",
-          "accepted": [
-            "are"
-          ],
-          "hint": "Use are with they.",
-          "explanation": "They are happy.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. They ________ happy."
-        },
-        {
-          "id": "ENG-SENTENCES-014",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ apple.",
-          "answer": "an",
-          "accepted": [
-            "an"
-          ],
-          "hint": "Use an before a vowel sound.",
-          "explanation": "an apple is correct.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ apple."
-        },
-        {
-          "id": "ENG-SENTENCES-015",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ book.",
-          "answer": "a",
-          "accepted": [
-            "a"
-          ],
-          "hint": "Use a before a consonant sound.",
-          "explanation": "a book is correct.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. This is ________ book."
-        },
-        {
-          "id": "ENG-SENTENCES-016",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. I ________ to school every day.",
-          "answer": "go",
-          "accepted": [
-            "go"
-          ],
-          "hint": "Choose the action word.",
-          "explanation": "I go to school every day.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. I ________ to school every day."
-        },
-        {
-          "id": "ENG-SENTENCES-017",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. He ________ a red cap.",
-          "answer": "has",
-          "accepted": [
-            "has"
-          ],
-          "hint": "Use has for he.",
-          "explanation": "He has a red cap.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. He ________ a red cap."
-        },
-        {
-          "id": "ENG-SENTENCES-018",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. We ________ English.",
-          "answer": "like",
-          "accepted": [
-            "like"
-          ],
-          "hint": "Choose the simple verb.",
-          "explanation": "We like English.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. We ________ English."
-        },
-        {
-          "id": "ENG-SENTENCES-019",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. The cats ________ small.",
-          "answer": "are",
-          "accepted": [
-            "are"
-          ],
-          "hint": "Use are for more than one cat.",
-          "explanation": "The cats are small.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. The cats ________ small."
-        },
-        {
-          "id": "ENG-SENTENCES-020",
-          "q": "Choose the correct word to complete this sentence: Complete the sentence. My mother ________ cooking.",
-          "answer": "is",
-          "accepted": [
-            "is"
-          ],
-          "hint": "Use is before an -ing action.",
-          "explanation": "My mother is cooking.",
-          "difficulty": "mudah",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the correct word to complete this sentence: Complete the sentence. My mother ________ cooking."
-        },
-        {
-          "id": "ENG-SENTENCES-021",
-          "q": "Complete the sentence with the best word: Complete the sentence. I ________ a pupil.",
-          "answer": "am",
-          "accepted": [
-            "am"
-          ],
-          "hint": "Use am with I.",
-          "explanation": "I am a pupil.",
-          "difficulty": "sederhana",
-          "uasa": "CEFR / UASA",
-          "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. I ________ a pupil."
-        },
-        {
           "id": "ENG-SENTENCES-022",
-          "q": "Complete the sentence with the best word: Complete the sentence. She ________ my friend.",
+          "q": "Fill in the blank. She ________ my friend.",
           "answer": "is",
           "accepted": [
             "is"
@@ -5972,11 +5972,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. She ________ my friend."
+          "question": "Fill in the blank. She ________ my friend."
         },
         {
           "id": "ENG-SENTENCES-023",
-          "q": "Complete the sentence with the best word: Complete the sentence. They ________ happy.",
+          "q": "Read the sentence. They ________ happy.",
           "answer": "are",
           "accepted": [
             "are"
@@ -5986,11 +5986,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. They ________ happy."
+          "question": "Read the sentence. They ________ happy."
         },
         {
           "id": "ENG-SENTENCES-024",
-          "q": "Complete the sentence with the best word: Complete the sentence. This is ________ apple.",
+          "q": "Look at the sentence. This is ________ apple.",
           "answer": "an",
           "accepted": [
             "an"
@@ -6000,11 +6000,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. This is ________ apple."
+          "question": "Look at the sentence. This is ________ apple."
         },
         {
           "id": "ENG-SENTENCES-025",
-          "q": "Complete the sentence with the best word: Complete the sentence. This is ________ book.",
+          "q": "Choose the correct answer. This is ________ book.",
           "answer": "a",
           "accepted": [
             "a"
@@ -6014,11 +6014,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. This is ________ book."
+          "question": "Choose the correct answer. This is ________ book."
         },
         {
           "id": "ENG-SENTENCES-026",
-          "q": "Complete the sentence with the best word: Complete the sentence. I ________ to school every day.",
+          "q": "Pick the best answer. I ________ to school every day.",
           "answer": "go",
           "accepted": [
             "go"
@@ -6028,11 +6028,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. I ________ to school every day."
+          "question": "Pick the best answer. I ________ to school every day."
         },
         {
           "id": "ENG-SENTENCES-027",
-          "q": "Complete the sentence with the best word: Complete the sentence. He ________ a red cap.",
+          "q": "Choose the correct word. He ________ a red cap.",
           "answer": "has",
           "accepted": [
             "has"
@@ -6042,11 +6042,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. He ________ a red cap."
+          "question": "Choose the correct word. He ________ a red cap."
         },
         {
           "id": "ENG-SENTENCES-028",
-          "q": "Complete the sentence with the best word: Complete the sentence. We ________ English.",
+          "q": "Read and complete. We ________ English.",
           "answer": "like",
           "accepted": [
             "like"
@@ -6056,11 +6056,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. We ________ English."
+          "question": "Read and complete. We ________ English."
         },
         {
           "id": "ENG-SENTENCES-029",
-          "q": "Complete the sentence with the best word: Complete the sentence. The cats ________ small.",
+          "q": "Find the correct word. The cats ________ small.",
           "answer": "are",
           "accepted": [
             "are"
@@ -6070,11 +6070,11 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. The cats ________ small."
+          "question": "Find the correct word. The cats ________ small."
         },
         {
           "id": "ENG-SENTENCES-030",
-          "q": "Complete the sentence with the best word: Complete the sentence. My mother ________ cooking.",
+          "q": "Write the missing word. My mother ________ cooking.",
           "answer": "is",
           "accepted": [
             "is"
@@ -6084,7 +6084,7 @@ export const englishSubject = {
           "difficulty": "sederhana",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Complete the sentence with the best word: Complete the sentence. My mother ________ cooking."
+          "question": "Write the missing word. My mother ________ cooking."
         },
         {
           "id": "ENG-SENTENCES-031",

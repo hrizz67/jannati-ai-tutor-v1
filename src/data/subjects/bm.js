@@ -6430,7 +6430,7 @@ export const bmSubject = {
       "questions": [
         {
           "id": "BM-AYAT-001",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu?",
+          "q": "Kenal pasti jenis ayat berikut. Siapakah nama kamu?",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6440,11 +6440,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Siapakah nama kamu?"
+          "question": "Kenal pasti jenis ayat berikut. Siapakah nama kamu?"
         },
         {
           "id": "BM-AYAT-002",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!",
+          "q": "Kenal pasti jenis ayat di bawah. Wah, cantiknya lukisan kamu!",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6454,11 +6454,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu!"
+          "question": "Kenal pasti jenis ayat di bawah. Wah, cantiknya lukisan kamu!"
         },
         {
           "id": "BM-AYAT-003",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu.",
+          "q": "Kenal pasti jenis ayat ini. Tolong tutup pintu itu.",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6468,11 +6468,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu."
+          "question": "Kenal pasti jenis ayat ini. Tolong tutup pintu itu."
         },
         {
           "id": "BM-AYAT-004",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?",
+          "q": "Kenal pasti jenis ayat ini dengan teliti. Bilakah kamu pergi ke sekolah?",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6482,11 +6482,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah?"
+          "question": "Kenal pasti jenis ayat ini dengan teliti. Bilakah kamu pergi ke sekolah?"
         },
         {
           "id": "BM-AYAT-005",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!",
+          "q": "Kenal pasti jenis ayat di bawah dengan teliti. Aduh, sakitnya kaki saya!",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6496,11 +6496,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya!"
+          "question": "Kenal pasti jenis ayat di bawah dengan teliti. Aduh, sakitnya kaki saya!"
         },
         {
           "id": "BM-AYAT-006",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas.",
+          "q": "Mari kita baca ayat ini. Sila beratur di luar kelas.",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6510,11 +6510,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas."
+          "question": "Mari kita baca ayat ini. Sila beratur di luar kelas."
         },
         {
           "id": "BM-AYAT-007",
-          "q": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?",
+          "q": "Mari kita lihat ayat di bawah. Di manakah beg saya?",
           "answer": "manakah",
           "accepted": [
             "manakah"
@@ -6524,11 +6524,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata tanya dalam ayat ini? Di manakah beg saya?"
+          "question": "Mari kita lihat ayat di bawah. Di manakah beg saya?"
         },
         {
           "id": "BM-AYAT-008",
-          "q": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?",
+          "q": "Perhatikan ayat ini. Mengapakah kamu menangis?",
           "answer": "mengapakah",
           "accepted": [
             "mengapakah"
@@ -6538,11 +6538,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah kata tanya dalam ayat ini? Mengapakah kamu menangis?"
+          "question": "Perhatikan ayat ini. Mengapakah kamu menangis?"
         },
         {
           "id": "BM-AYAT-009",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu.",
+          "q": "Teliti ayat ini baik-baik. ________ padamkan lampu itu.",
           "answer": "Tolong",
           "accepted": [
             "Tolong"
@@ -6552,11 +6552,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu."
+          "question": "Teliti ayat ini baik-baik. ________ padamkan lampu itu."
         },
         {
           "id": "BM-AYAT-010",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu!",
+          "q": "Perhatikan ayat di bawah dengan teliti. ________, besarnya rumah itu!",
           "answer": "Wah",
           "accepted": [
             "Wah"
@@ -6566,11 +6566,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu!"
+          "question": "Perhatikan ayat di bawah dengan teliti. ________, besarnya rumah itu!"
         },
         {
           "id": "BM-AYAT-011",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 2)",
+          "q": "Mari kita baca ayat berikut. Siapakah nama kamu? (Latihan 2)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6580,11 +6580,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 2)"
+          "question": "Mari kita baca ayat berikut. Siapakah nama kamu? (Latihan 2)"
         },
         {
           "id": "BM-AYAT-012",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 2)",
+          "q": "Mari kita lihat ayat di bawah. Wah, cantiknya lukisan kamu! (Latihan 2)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6594,11 +6594,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 2)"
+          "question": "Mari kita lihat ayat di bawah. Wah, cantiknya lukisan kamu! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-013",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 2)",
+          "q": "Baca ayat ini. Tolong tutup pintu itu. (Latihan 2)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6608,11 +6608,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 2)"
+          "question": "Baca ayat ini. Tolong tutup pintu itu. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-014",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 2)",
+          "q": "Baca ayat ini dengan cermat. Bilakah kamu pergi ke sekolah? (Latihan 2)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6622,11 +6622,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 2)"
+          "question": "Baca ayat ini dengan cermat. Bilakah kamu pergi ke sekolah? (Latihan 2)"
         },
         {
           "id": "BM-AYAT-015",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 2)",
+          "q": "Baca ayat di bawah dengan teliti. Aduh, sakitnya kaki saya! (Latihan 2)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6636,11 +6636,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 2)"
+          "question": "Baca ayat di bawah dengan teliti. Aduh, sakitnya kaki saya! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-016",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 2)",
+          "q": "Teliti ayat berikut. Sila beratur di luar kelas. (Latihan 2)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6650,11 +6650,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 2)"
+          "question": "Teliti ayat berikut. Sila beratur di luar kelas. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-017",
-          "q": "Dalam ayat \"Di manakah beg saya?\", apakah kata tanya?",
+          "q": "Mari kita lihat ayat ini: Di manakah beg saya yang biru? Apakah kata tanya?",
           "answer": "manakah",
           "accepted": [
             "manakah"
@@ -6664,11 +6664,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Di manakah beg saya?\", apakah kata tanya?"
+          "question": "Mari kita lihat ayat ini: Di manakah beg saya yang biru? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-018",
-          "q": "Dalam ayat \"Mengapakah kamu menangis?\", apakah kata tanya?",
+          "q": "Mari kita lihat ayat ini: Mengapakah kamu menangis sekarang? Apakah kata tanya?",
           "answer": "mengapakah",
           "accepted": [
             "mengapakah"
@@ -6678,11 +6678,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam ayat \"Mengapakah kamu menangis?\", apakah kata tanya?"
+          "question": "Mari kita lihat ayat ini: Mengapakah kamu menangis sekarang? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-019",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 2)",
+          "q": "Bacalah ayat ini baik-baik. ________ padamkan lampu itu. (Latihan 2)",
           "answer": "Tolong",
           "accepted": [
             "Tolong"
@@ -6692,11 +6692,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 2)"
+          "question": "Bacalah ayat ini baik-baik. ________ padamkan lampu itu. (Latihan 2)"
         },
         {
           "id": "BM-AYAT-020",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 2)",
+          "q": "Bacalah ayat di bawah dengan teliti. ________, besarnya rumah itu! (Latihan 2)",
           "answer": "Wah",
           "accepted": [
             "Wah"
@@ -6706,11 +6706,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 2)"
+          "question": "Bacalah ayat di bawah dengan teliti. ________, besarnya rumah itu! (Latihan 2)"
         },
         {
           "id": "BM-AYAT-021",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 3)",
+          "q": "Di halaman belakang rumah, Aina sedang menyiram pokok bunga merah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6720,11 +6720,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 3)"
+          "question": "Di halaman belakang rumah, Aina sedang menyiram pokok bunga merah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-022",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 3)",
+          "q": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6734,11 +6734,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 3)"
+          "question": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-023",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 3)",
+          "q": "Di dapur, ibu sedang menyediakan nasi goreng untuk keluarga yang lapar itu. Apakah yang dimasak oleh ibu? (Latihan 3)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6748,11 +6748,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 3)"
+          "question": "Di dapur, ibu sedang menyediakan nasi goreng untuk keluarga yang lapar itu. Apakah yang dimasak oleh ibu? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-024",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 3)",
+          "q": "Ketika hujan turun dengan lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6762,11 +6762,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 3)"
+          "question": "Ketika hujan turun dengan lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-025",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 3)",
+          "q": "Semasa ibunya menunggu, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6776,11 +6776,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 3)"
+          "question": "Semasa ibunya menunggu, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-026",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 3)",
+          "q": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi dengan ceria. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6790,11 +6790,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 3)"
+          "question": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi dengan ceria. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-027",
-          "q": "Pilih kata tanya yang terdapat dalam ayat: Di manakah beg saya?",
+          "q": "Tentukan jenis ayat di bawah.",
           "answer": "manakah",
           "accepted": [
             "manakah"
@@ -6804,11 +6804,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata tanya yang terdapat dalam ayat: Di manakah beg saya?"
+          "question": "Tentukan jenis ayat di bawah."
         },
         {
           "id": "BM-AYAT-028",
-          "q": "Pilih kata tanya yang terdapat dalam ayat: Mengapakah kamu menangis?",
+          "q": "Tentukan jenis ayat ini.",
           "answer": "mengapakah",
           "accepted": [
             "mengapakah"
@@ -6818,11 +6818,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata tanya yang terdapat dalam ayat: Mengapakah kamu menangis?"
+          "question": "Tentukan jenis ayat ini."
         },
         {
           "id": "BM-AYAT-029",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 3)",
+          "q": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu yang sejuk. Di manakah kucing itu tidur? (Latihan 3)",
           "answer": "Tolong",
           "accepted": [
             "Tolong"
@@ -6832,11 +6832,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 3)"
+          "question": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu yang sejuk. Di manakah kucing itu tidur? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-030",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 3)",
+          "q": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah dengan kemas. Apakah yang disiapkan oleh Iman? (Latihan 3)",
           "answer": "Wah",
           "accepted": [
             "Wah"
@@ -6846,11 +6846,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 3)"
+          "question": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah dengan kemas. Apakah yang disiapkan oleh Iman? (Latihan 3)"
         },
         {
           "id": "BM-AYAT-031",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 4)",
+          "q": "Perhatikan ayat ini dan fikirkan jenisnya. Siapakah nama kamu? (Latihan 4)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6860,11 +6860,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 4)"
+          "question": "Perhatikan ayat ini dan fikirkan jenisnya. Siapakah nama kamu? (Latihan 4)"
         },
         {
           "id": "BM-AYAT-032",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 4)",
+          "q": "Kenal pasti jenis ayat yang betul. Wah, cantiknya lukisan kamu! (Latihan 4)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6874,11 +6874,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 4)"
+          "question": "Kenal pasti jenis ayat yang betul. Wah, cantiknya lukisan kamu! (Latihan 4)"
         },
         {
           "id": "BM-AYAT-033",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 4)",
+          "q": "Kenal pasti jenis ayat di bawah dengan teliti. Tolong tutup pintu itu. (Latihan 4)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6888,11 +6888,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 4)"
+          "question": "Kenal pasti jenis ayat di bawah dengan teliti. Tolong tutup pintu itu. (Latihan 4)"
         },
         {
           "id": "BM-AYAT-034",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 4)",
+          "q": "Baca ayat di bawah. Bilakah kamu pergi ke sekolah? (Latihan 4)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -6902,11 +6902,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 4)"
+          "question": "Baca ayat di bawah. Bilakah kamu pergi ke sekolah? (Latihan 4)"
         },
         {
           "id": "BM-AYAT-035",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 4)",
+          "q": "Baca ayat ini dan tentukan jenisnya. Aduh, sakitnya kaki saya! (Latihan 4)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -6916,11 +6916,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 4)"
+          "question": "Baca ayat ini dan tentukan jenisnya. Aduh, sakitnya kaki saya! (Latihan 4)"
         },
         {
           "id": "BM-AYAT-036",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 4)",
+          "q": "Ayat ini jenis yang mana? Sila beratur di luar kelas. (Latihan 4)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -6930,11 +6930,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 4)"
+          "question": "Ayat ini jenis yang mana? Sila beratur di luar kelas. (Latihan 4)"
         },
         {
           "id": "BM-AYAT-037",
-          "q": "Baca ayat ini: Di manakah beg saya? Apakah kata tanya?",
+          "q": "Mari kita lihat ayat ini: Di manakah beg saya? Apakah kata tanya?",
           "answer": "manakah",
           "accepted": [
             "manakah"
@@ -6944,11 +6944,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Di manakah beg saya? Apakah kata tanya?"
+          "question": "Mari kita lihat ayat ini: Di manakah beg saya? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-038",
-          "q": "Baca ayat ini: Mengapakah kamu menangis? Apakah kata tanya?",
+          "q": "Mari kita lihat ayat ini: Mengapakah kamu menangis? Apakah kata tanya?",
           "answer": "mengapakah",
           "accepted": [
             "mengapakah"
@@ -6958,11 +6958,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat ini: Mengapakah kamu menangis? Apakah kata tanya?"
+          "question": "Mari kita lihat ayat ini: Mengapakah kamu menangis? Apakah kata tanya?"
         },
         {
           "id": "BM-AYAT-039",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 4)",
+          "q": "Lengkapkan ayat dengan kata perintah yang sesuai. ________ padamkan lampu itu. (Latihan 5)",
           "answer": "Tolong",
           "accepted": [
             "Tolong"
@@ -6972,11 +6972,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 4)"
+          "question": "Lengkapkan ayat dengan kata perintah yang sesuai. ________ padamkan lampu itu. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-040",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 4)",
+          "q": "Lengkapkan ayat dengan kata seru yang sesuai. ________, besarnya rumah itu! (Latihan 5)",
           "answer": "Wah",
           "accepted": [
             "Wah"
@@ -6986,11 +6986,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 4)"
+          "question": "Lengkapkan ayat dengan kata seru yang sesuai. ________, besarnya rumah itu! (Latihan 5)"
         },
         {
           "id": "BM-AYAT-041",
-          "q": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 5)",
+          "q": "Pilih jenis ayat yang betul. Siapakah nama kamu? (Latihan 5)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -7000,11 +7000,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Siapakah nama kamu? (Latihan 5)"
+          "question": "Pilih jenis ayat yang betul. Siapakah nama kamu? (Latihan 5)"
         },
         {
           "id": "BM-AYAT-042",
-          "q": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 5)",
+          "q": "Mari kita teliti ayat ini. Wah, cantiknya lukisan kamu! (Latihan 5)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -7014,11 +7014,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Wah, cantiknya lukisan kamu! (Latihan 5)"
+          "question": "Mari kita teliti ayat ini. Wah, cantiknya lukisan kamu! (Latihan 5)"
         },
         {
           "id": "BM-AYAT-043",
-          "q": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 5)",
+          "q": "Baca ayat ini dan fikirkan jenisnya. Tolong tutup pintu itu. (Latihan 5)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -7028,11 +7028,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Tolong tutup pintu itu. (Latihan 5)"
+          "question": "Baca ayat ini dan fikirkan jenisnya. Tolong tutup pintu itu. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-044",
-          "q": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 5)",
+          "q": "Baca ayat ini dengan cermat. Bilakah kamu pergi ke sekolah? (Latihan 5)",
           "answer": "ayat tanya",
           "accepted": [
             "ayat tanya"
@@ -7042,11 +7042,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Bilakah kamu pergi ke sekolah? (Latihan 5)"
+          "question": "Baca ayat ini dengan cermat. Bilakah kamu pergi ke sekolah? (Latihan 5)"
         },
         {
           "id": "BM-AYAT-045",
-          "q": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 5)",
+          "q": "Baca ayat ini dan fikirkan jenisnya. Aduh, sakitnya kaki saya! (Latihan 5)",
           "answer": "ayat seruan",
           "accepted": [
             "ayat seruan"
@@ -7056,11 +7056,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Aduh, sakitnya kaki saya! (Latihan 5)"
+          "question": "Baca ayat ini dan fikirkan jenisnya. Aduh, sakitnya kaki saya! (Latihan 5)"
         },
         {
           "id": "BM-AYAT-046",
-          "q": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 5)",
+          "q": "Tentukan jenis ayat yang betul. Sila beratur di luar kelas. (Latihan 5)",
           "answer": "ayat perintah",
           "accepted": [
             "ayat perintah"
@@ -7070,11 +7070,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah jenis ayat ini? Sila beratur di luar kelas. (Latihan 5)"
+          "question": "Tentukan jenis ayat yang betul. Sila beratur di luar kelas. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-047",
-          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Di manakah beg saya? Jawapan bagi kata tanya ialah ________.",
+          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mari kita lihat ayat ini: Di manakah beg saya? Jawapan bagi kata tanya ialah ________.",
           "answer": "manakah",
           "accepted": [
             "manakah"
@@ -7084,11 +7084,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Di manakah beg saya? Jawapan bagi kata tanya ialah ________."
+          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mari kita lihat ayat ini: Di manakah beg saya? Jawapan bagi kata tanya ialah ________."
         },
         {
           "id": "BM-AYAT-048",
-          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________.",
+          "q": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mari kita lihat ayat ini: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________.",
           "answer": "mengapakah",
           "accepted": [
             "mengapakah"
@@ -7098,11 +7098,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________."
+          "question": "Soalan ulang kaji Ayat Tanya, Seruan dan Perintah: Mari kita lihat ayat ini: Mengapakah kamu menangis? Jawapan bagi kata tanya ialah ________."
         },
         {
           "id": "BM-AYAT-049",
-          "q": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 5)",
+          "q": "Isi tempat kosong dengan kata perintah yang sesuai. Ibu berkata, ________ padamkan lampu itu. (Latihan 5)",
           "answer": "Tolong",
           "accepted": [
             "Tolong"
@@ -7112,11 +7112,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat perintah. ________ padamkan lampu itu. (Latihan 5)"
+          "question": "Isi tempat kosong dengan kata perintah yang sesuai. Ibu berkata, ________ padamkan lampu itu. (Latihan 5)"
         },
         {
           "id": "BM-AYAT-050",
-          "q": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 5)",
+          "q": "Isi tempat kosong dengan kata seru yang sesuai. Wah, cantiknya bunga itu! (Latihan 5)",
           "answer": "Wah",
           "accepted": [
             "Wah"
@@ -7126,7 +7126,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat seruan. ________, besarnya rumah itu! (Latihan 5)"
+          "question": "Isi tempat kosong dengan kata seru yang sesuai. Wah, cantiknya bunga itu! (Latihan 5)"
         }
       ]
     },
@@ -7277,7 +7277,7 @@ export const bmSubject = {
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-011",
-          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)",
+          "q": "Di halaman belakang rumah, Aina sedang menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7287,11 +7287,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)"
+          "question": "Di halaman belakang rumah, Aina sedang menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-012",
-          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)",
+          "q": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7301,11 +7301,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)"
+          "question": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-013",
-          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)",
+          "q": "Di dapur, ibu sedang menyediakan nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7315,11 +7315,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)"
+          "question": "Di dapur, ibu sedang menyediakan nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-014",
-          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 2)",
+          "q": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7329,11 +7329,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 2)"
+          "question": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-015",
-          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)",
+          "q": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7343,11 +7343,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)"
+          "question": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-016",
-          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)",
+          "q": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7357,11 +7357,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)"
+          "question": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-017",
-          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)",
+          "q": "Di belakang rumah, ayah sedang menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7371,11 +7371,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)"
+          "question": "Di belakang rumah, ayah sedang menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-018",
-          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7385,11 +7385,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-019",
-          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 2)",
+          "q": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu. Di manakah kucing itu tidur? (Latihan 2)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7399,11 +7399,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 2)"
+          "question": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu. Di manakah kucing itu tidur? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-020",
-          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 2)",
+          "q": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 2)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7413,11 +7413,11 @@ export const bmSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 2)"
+          "question": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 2)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-021",
-          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
+          "q": "Aina sedang menyiram pokok bunga di halaman belakang rumah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7427,11 +7427,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
+          "question": "Aina sedang menyiram pokok bunga di halaman belakang rumah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-022",
-          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)",
+          "q": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7441,11 +7441,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)"
+          "question": "Selepas tamat sekolah, Danish membeli roti di kedai kampung berhampiran rumah. Di manakah Danish membeli roti? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-023",
-          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)",
+          "q": "Ibu sedang memasak nasi goreng di dapur untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7455,11 +7455,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)"
+          "question": "Ibu sedang memasak nasi goreng di dapur untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-024",
-          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
+          "q": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7469,11 +7469,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
+          "question": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-025",
-          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)",
+          "q": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7483,11 +7483,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)"
+          "question": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-026",
-          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
+          "q": "Pada pagi setiap Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7497,11 +7497,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
+          "question": "Pada pagi setiap Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-027",
-          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)",
+          "q": "Ayah sedang menanam pokok cili di belakang rumah untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7511,11 +7511,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)"
+          "question": "Ayah sedang menanam pokok cili di belakang rumah untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-028",
-          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7525,11 +7525,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-029",
-          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 3)",
+          "q": "Kucing putih itu tidur di bawah kerusi ruang tamu pada waktu tengah hari. Di manakah kucing itu tidur? (Latihan 3)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7539,11 +7539,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 3)"
+          "question": "Kucing putih itu tidur di bawah kerusi ruang tamu pada waktu tengah hari. Di manakah kucing itu tidur? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-030",
-          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 3)",
+          "q": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 3)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7553,11 +7553,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 3)"
+          "question": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 3)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-031",
-          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)",
+          "q": "Baca ayat ini dan fikirkan jenisnya. Siapakah nama kamu? (Latihan 4)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7567,11 +7567,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 4)"
+          "question": "Baca ayat ini dan fikirkan jenisnya. Siapakah nama kamu? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-032",
-          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)",
+          "q": "Setelah tamat sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7581,11 +7581,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)"
+          "question": "Setelah tamat sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-033",
-          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)",
+          "q": "Ibu sedang menyediakan nasi goreng di dapur untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7595,11 +7595,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)"
+          "question": "Ibu sedang menyediakan nasi goreng di dapur untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-034",
-          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 4)",
+          "q": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7609,11 +7609,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 4)"
+          "question": "Ketika hujan turun lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-035",
-          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 4)",
+          "q": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah yang sunyi. Apakah yang dibaca oleh Sara? (Latihan 4)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7623,11 +7623,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 4)"
+          "question": "Semasa menunggu ibunya, Sara sedang membaca buku cerita di perpustakaan sekolah yang sunyi. Apakah yang dibaca oleh Sara? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-036",
-          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)",
+          "q": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7637,11 +7637,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)"
+          "question": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-037",
-          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)",
+          "q": "Di belakang rumah, ayah sedang menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7651,11 +7651,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)"
+          "question": "Di belakang rumah, ayah sedang menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-038",
-          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7665,11 +7665,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-039",
-          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 4)",
+          "q": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu. Di manakah kucing itu tidur? (Latihan 4)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7679,11 +7679,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 4)"
+          "question": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu. Di manakah kucing itu tidur? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-040",
-          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 4)",
+          "q": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 4)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7693,11 +7693,11 @@ export const bmSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 4)"
+          "question": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah. Apakah yang disiapkan oleh Iman? (Latihan 4)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-041",
-          "q": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)",
+          "q": "Aina menyiram pokok bunga di halaman belakang rumah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)",
           "answer": "Aina",
           "accepted": [
             "Aina"
@@ -7707,11 +7707,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di halaman rumah, Aina menyiram pokok bunga pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)"
+          "question": "Aina menyiram pokok bunga di halaman belakang rumah pada waktu petang. Siapakah yang menyiram pokok bunga? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-042",
-          "q": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)",
+          "q": "Selepas tamat sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)",
           "answer": "kedai",
           "accepted": [
             "kedai"
@@ -7721,11 +7721,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Selepas sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)"
+          "question": "Selepas tamat sekolah, Danish membeli roti di kedai berhampiran rumah. Di manakah Danish membeli roti? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-043",
-          "q": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 5)",
+          "q": "Ibu sedang memasak nasi goreng di dapur untuk keluarga yang lapar hari ini. Apakah yang dimasak oleh ibu? (Latihan 5)",
           "answer": "nasi goreng",
           "accepted": [
             "nasi goreng"
@@ -7735,11 +7735,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di dapur, ibu memasak nasi goreng untuk keluarga yang lapar. Apakah yang dimasak oleh ibu? (Latihan 5)"
+          "question": "Ibu sedang memasak nasi goreng di dapur untuk keluarga yang lapar hari ini. Apakah yang dimasak oleh ibu? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-044",
-          "q": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 5)",
+          "q": "Ketika hujan turun dengan lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)",
           "answer": "hari hujan",
           "accepted": [
             "hari hujan"
@@ -7749,11 +7749,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim memakai baju hujan ketika hujan turun dengan lebat. Mengapakah Hakim memakai baju hujan? (Latihan 5)"
+          "question": "Ketika hujan turun dengan lebat, Hakim memakai baju hujan. Mengapakah Hakim memakai baju hujan? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-045",
-          "q": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 5)",
+          "q": "Baca ayat ini dan fikirkan jenisnya. Aduh, sakitnya kaki saya! (Latihan 5)",
           "answer": "buku cerita",
           "accepted": [
             "buku cerita"
@@ -7763,11 +7763,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa menunggu ibu, Sara membaca buku cerita di perpustakaan sekolah. Apakah yang dibaca oleh Sara? (Latihan 5)"
+          "question": "Baca ayat ini dan fikirkan jenisnya. Aduh, sakitnya kaki saya! (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-046",
-          "q": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 5)",
+          "q": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi dengan ceria. Bilakah murid-murid membersihkan kelas? (Latihan 5)",
           "answer": "hari Jumaat",
           "accepted": [
             "hari Jumaat"
@@ -7777,11 +7777,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada hari Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi. Bilakah murid-murid membersihkan kelas? (Latihan 5)"
+          "question": "Setiap pagi Jumaat, murid-murid membersihkan kelas sebelum loceng akhir berbunyi dengan ceria. Bilakah murid-murid membersihkan kelas? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-047",
-          "q": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)",
+          "q": "Di belakang rumah, ayah sedang menanam pokok cili dalam pasu besar untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)",
           "answer": "pokok cili",
           "accepted": [
             "pokok cili"
@@ -7791,11 +7791,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di belakang rumah, ayah menanam pokok cili untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)"
+          "question": "Di belakang rumah, ayah sedang menanam pokok cili dalam pasu besar untuk dijaga setiap hari. Apakah yang ditanam oleh ayah? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-048",
-          "q": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 5)",
+          "q": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni yang menyeronokkan. Dengan siapakah Farah berkongsi pensel? (Latihan 5)",
           "answer": "Mira",
           "accepted": [
             "Mira"
@@ -7805,11 +7805,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di kelas, Farah berkongsi pensel dengan Mira semasa waktu seni. Dengan siapakah Farah berkongsi pensel? (Latihan 5)"
+          "question": "Di kelas, Farah berkongsi pensel dengan Mira ketika waktu seni yang menyeronokkan. Dengan siapakah Farah berkongsi pensel? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-049",
-          "q": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 5)",
+          "q": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu yang sejuk. Di manakah kucing itu tidur? (Latihan 5)",
           "answer": "bawah kerusi",
           "accepted": [
             "bawah kerusi"
@@ -7819,11 +7819,11 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada tengah hari, kucing putih itu tidur di bawah kerusi di ruang tamu. Di manakah kucing itu tidur? (Latihan 5)"
+          "question": "Ketika tengah hari, kucing putih itu tidur di bawah kerusi ruang tamu yang sejuk. Di manakah kucing itu tidur? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-050",
-          "q": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 5)",
+          "q": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah dengan kemas. Apakah yang disiapkan oleh Iman? (Latihan 5)",
           "answer": "kerja sekolah",
           "accepted": [
             "kerja sekolah"
@@ -7833,7 +7833,7 @@ export const bmSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman menyiapkan kerja sekolah sebelum keluar bermain di taman. Apakah yang disiapkan oleh Iman? (Latihan 5)"
+          "question": "Sebelum keluar bermain di taman, Iman menyiapkan kerja sekolah dengan kemas. Apakah yang disiapkan oleh Iman? (Latihan 5)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-051",
@@ -7932,7 +7932,7 @@ export const bmSubject = {
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-056",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 6)",
+          "q": "Mari kita baca ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 6)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -7947,11 +7947,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 6)"
+          "question": "Mari kita baca ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 6)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-057",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 7)",
+          "q": "Mari kita lihat ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 7)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -7966,11 +7966,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 7)"
+          "question": "Mari kita lihat ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 7)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-058",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 8)",
+          "q": "Teliti ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 8) (Set Pemahaman 8)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -7985,11 +7985,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 8)"
+          "question": "Teliti ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-059",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 9)",
+          "q": "Teliti ayat ini dengan cermat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 9)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8004,11 +8004,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 9)"
+          "question": "Teliti ayat ini dengan cermat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 9)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-060",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 10)",
+          "q": "Teliti ayat di bawah dengan cermat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 10)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8023,11 +8023,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 10)"
+          "question": "Teliti ayat di bawah dengan cermat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 10)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-061",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 11)",
+          "q": "Baca ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 11)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8042,11 +8042,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 11)"
+          "question": "Baca ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 11)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-062",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 12)",
+          "q": "Perhatikan ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 12) (Set Pemahaman 12)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8061,11 +8061,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 12)"
+          "question": "Perhatikan ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-063",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 13)",
+          "q": "Kenal pasti ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 13) (Set Pemahaman 13)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8080,11 +8080,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 13)"
+          "question": "Kenal pasti ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-064",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 14)",
+          "q": "Baca ayat ini dengan cermat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 14)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8099,11 +8099,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 14)"
+          "question": "Baca ayat ini dengan cermat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 14)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-065",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 15)",
+          "q": "Baca ayat di bawah dengan cermat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 15)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8118,11 +8118,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 15)"
+          "question": "Baca ayat di bawah dengan cermat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 15)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-066",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 16)",
+          "q": "Kenal pasti ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 16) (Set Pemahaman 16)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8137,11 +8137,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 16)"
+          "question": "Kenal pasti ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia?"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-067",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 17)",
+          "q": "Teliti ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 17)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8156,11 +8156,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 17)"
+          "question": "Teliti ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 17)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-068",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 18)",
+          "q": "Teliti ayat ini dengan cermat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 18)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8175,11 +8175,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 18)"
+          "question": "Teliti ayat ini dengan cermat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 18)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-069",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 19)",
+          "q": "Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 19)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8194,11 +8194,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 19)"
+          "question": "Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 19)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-070",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 20)",
+          "q": "Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 20)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8213,11 +8213,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 20)"
+          "question": "Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 20)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-071",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 21)",
+          "q": "Lihat ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 21)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8232,11 +8232,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 21)"
+          "question": "Lihat ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 21)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-072",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 22)",
+          "q": "Lihat ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 22)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8251,11 +8251,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 22)"
+          "question": "Lihat ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 22)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-073",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 23)",
+          "q": "Lihat ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 23)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8270,11 +8270,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 23)"
+          "question": "Lihat ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 23)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-074",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 24)",
+          "q": "Lihat ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 24)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8289,11 +8289,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 24)"
+          "question": "Lihat ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 24)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-075",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 25)",
+          "q": "Lihat ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 25)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8308,11 +8308,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 25)"
+          "question": "Lihat ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 25)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-076",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 26)",
+          "q": "Kenal pasti ayat ini. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 26)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8327,11 +8327,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 26)"
+          "question": "Kenal pasti ayat ini. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 26)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-077",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 27)",
+          "q": "Kenal pasti ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 27)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8346,11 +8346,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 27)"
+          "question": "Kenal pasti ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 27)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-078",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 28)",
+          "q": "Kenal pasti ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 28)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8365,11 +8365,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 28)"
+          "question": "Kenal pasti ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 28)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-079",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 29)",
+          "q": "Kenal pasti ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 29)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8384,11 +8384,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 29)"
+          "question": "Kenal pasti ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 29)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-080",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 30)",
+          "q": "Kenal pasti ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 30)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8403,11 +8403,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 30)"
+          "question": "Kenal pasti ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 30)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-081",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 31)",
+          "q": "Fahami ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 31)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8422,11 +8422,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 31)"
+          "question": "Fahami ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 31)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-082",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 32)",
+          "q": "Fahami ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 32)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8441,11 +8441,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 32)"
+          "question": "Fahami ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 32)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-083",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 33)",
+          "q": "Fahami ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 33)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8460,11 +8460,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 33)"
+          "question": "Fahami ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 33)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-084",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 34)",
+          "q": "Fahami ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 34)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8479,11 +8479,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 34)"
+          "question": "Fahami ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 34)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-085",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 35)",
+          "q": "Fahami ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 35)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8498,11 +8498,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 35)"
+          "question": "Fahami ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 35)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-086",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 36)",
+          "q": "Cari ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 36)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8517,11 +8517,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 36)"
+          "question": "Cari ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 36)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-087",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 37)",
+          "q": "Cari ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 37)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8536,11 +8536,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 37)"
+          "question": "Cari ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 37)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-088",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 38)",
+          "q": "Cari ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 38)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8555,11 +8555,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 38)"
+          "question": "Cari ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 38)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-089",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 39)",
+          "q": "Cari ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 39)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8574,11 +8574,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 39)"
+          "question": "Cari ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 39)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-090",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 40)",
+          "q": "Cari ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 40)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8593,11 +8593,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 40)"
+          "question": "Cari ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 40)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-091",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 41)",
+          "q": "Tentukan ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 41)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8612,11 +8612,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 41)"
+          "question": "Tentukan ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 41)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-092",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 42)",
+          "q": "Tentukan ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 42)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8631,11 +8631,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 42)"
+          "question": "Tentukan ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 42)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-093",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 43)",
+          "q": "Tentukan ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 43)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8650,11 +8650,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 43)"
+          "question": "Tentukan ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 43)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-094",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 44)",
+          "q": "Tentukan ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 44)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8669,11 +8669,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 44)"
+          "question": "Tentukan ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 44)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-095",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 45)",
+          "q": "Tentukan ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 45)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8688,11 +8688,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 45)"
+          "question": "Tentukan ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 45)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-096",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 46)",
+          "q": "Pilih ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 46)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8707,11 +8707,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 46)"
+          "question": "Pilih ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 46)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-097",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 47)",
+          "q": "Pilih ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 47)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8726,11 +8726,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 47)"
+          "question": "Pilih ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 47)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-098",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 48)",
+          "q": "Pilih ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 48)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8745,11 +8745,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 48)"
+          "question": "Pilih ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 48)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-099",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 49)",
+          "q": "Pilih ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 49)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8764,11 +8764,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 49)"
+          "question": "Pilih ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 49)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-100",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 50)",
+          "q": "Pilih ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 50)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8783,11 +8783,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 50)"
+          "question": "Pilih ayat di bawah dengan teliti. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 50)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-101",
-          "q": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 51)",
+          "q": "Mari kita lihat ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 51)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8802,11 +8802,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 51)"
+          "question": "Mari kita lihat ayat berikut. Pada hari Isnin, Aina membaca buku cerita di kantin. Apakah aktiviti Aina? (Set Pemahaman 51)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-102",
-          "q": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 52)",
+          "q": "Mari kita lihat ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 52)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8821,11 +8821,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 52)"
+          "question": "Mari kita lihat ayat di bawah. Pada hari Selasa, Hakim membawa bekal ke sekolah di padang. Apakah aktiviti Hakim? (Set Pemahaman 52)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-103",
-          "q": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 53)",
+          "q": "Mari kita lihat ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 53)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8840,11 +8840,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 53)"
+          "question": "Mari kita lihat ayat ini. Pada hari Rabu, Faris membaca buku cerita di bilik sains. Apakah aktiviti Faris? (Set Pemahaman 53)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-104",
-          "q": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 54)",
+          "q": "Mari kita lihat ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 54)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8859,11 +8859,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 54)"
+          "question": "Mari kita lihat ayat ini dengan teliti. Pada hari Khamis, Liyana membawa bekal ke sekolah di pasar tani. Apakah aktiviti Liyana? (Set Pemahaman 54)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-105",
-          "q": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 55)",
+          "q": "Mari kita lihat ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 55)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8878,11 +8878,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 55)"
+          "question": "Mari kita lihat ayat di bawah dengan teliti. Pada hari Jumaat, Iman membaca buku cerita di dewan sekolah. Apakah aktiviti Iman? (Set Pemahaman 55)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-106",
-          "q": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 56)",
+          "q": "Mari kita baca ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 56)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8897,11 +8897,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 56)"
+          "question": "Mari kita baca ayat berikut. Pada hari Isnin, Sofia membawa bekal ke sekolah di bilik muzik. Apakah aktiviti Sofia? (Set Pemahaman 56)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-107",
-          "q": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 57)",
+          "q": "Mari kita baca ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 57)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8916,11 +8916,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 57)"
+          "question": "Mari kita baca ayat di bawah. Pada hari Selasa, Adam membaca buku cerita di rumah nenek. Apakah aktiviti Adam? (Set Pemahaman 57)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-108",
-          "q": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 58)",
+          "q": "Mari kita baca ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 58)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8935,11 +8935,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 58)"
+          "question": "Mari kita baca ayat ini. Pada hari Rabu, Qistina membawa bekal ke sekolah di perpustakaan. Apakah aktiviti Qistina? (Set Pemahaman 58)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-109",
-          "q": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 59)",
+          "q": "Mari kita baca ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 59)",
           "answer": "membaca buku cerita",
           "accepted": [
             "membaca buku cerita"
@@ -8954,11 +8954,11 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 59)"
+          "question": "Mari kita baca ayat ini dengan teliti. Pada hari Khamis, Rizqi membaca buku cerita di surau. Apakah aktiviti Rizqi? (Set Pemahaman 59)"
         },
         {
           "id": "BM-PEMAHAMAN_PENULISAN-110",
-          "q": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 60)",
+          "q": "Mari kita baca ayat berikut. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 60)",
           "answer": "membawa bekal ke sekolah",
           "accepted": [
             "membawa bekal ke sekolah"
@@ -8973,7 +8973,7 @@ export const bmSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Baca ayat. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 60)"
+          "question": "Mari kita baca ayat berikut. Pada hari Jumaat, Nadia membawa bekal ke sekolah di taman permainan. Apakah aktiviti Nadia? (Set Pemahaman 60)"
         }
       ]
     },
