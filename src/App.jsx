@@ -2256,6 +2256,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       const nextResult = compareBacaan(passage.text, transcriptBufferRef.current);
       finalResultRef.current = nextResult;
       setResult(nextResult);
+      finalizeBacaanSession(nextResult, transcriptBufferRef.current);
     };
     recognition.onend = () => {
       if (sessionFinalizedRef.current) {
@@ -2266,6 +2267,9 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       const nextResult = finalResultRef.current && typeof finalResultRef.current === 'object'
         ? normalizeBacaanResult(finalResultRef.current)
         : (bufferedTranscript ? compareBacaan(passage.text, bufferedTranscript) : createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'));
+      if (!bufferedTranscript && finalResultRef.current) {
+        return finalizeBacaanSession(nextResult, '');
+      }
       finalizeBacaanSession(nextResult, bufferedTranscript);
     };
     try {
