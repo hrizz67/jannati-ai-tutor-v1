@@ -50,10 +50,10 @@ const nilai = ["berdisiplin", "bertanggungjawab", "berani berkata tidak", "priha
 const orangDipercayai = ["guru", "ibu bapa", "penjaga", "ahli keluarga dewasa"];
 
 const kebersihanPairs = [
-  ["sebelum makan di kantin", "basuh tangan dengan sabun", "Tangan yang bersih mengurangkan kuman masuk ke dalam badan."],
-  ["selepas keluar dari tandas", "basuh tangan dengan sabun", "Mencuci tangan selepas tandas membantu mencegah penyakit."],
-  ["sebelum tidur pada waktu malam", "gosok gigi", "Gosok gigi sebelum tidur membantu mencegah gigi berlubang."],
-  ["selepas bangun pagi", "mandi dan pakai pakaian bersih", "Mandi dan pakaian bersih membuat badan segar dan selesa."],
+  ["sebelum makan di kantin", "basuh tangan dengan sabun", "Tangan yang bersih membantu mengurangkan kuman dalam badan."],
+  ["selepas keluar dari tandas", "basuh tangan dengan sabun", "Mencuci tangan selepas tandas membantu menjaga kesihatan diri."],
+  ["sebelum tidur pada waktu malam", "gosok gigi", "Menggosok gigi sebelum tidur membantu menjaga gigi daripada berlubang."],
+  ["selepas bangun pagi", "mandi dan pakai pakaian bersih", "Mandi dan memakai pakaian bersih membuat badan lebih segar."],
   ["kuku sudah panjang", "potong kuku", "Kuku pendek lebih bersih dan tidak mudah menyimpan kotoran."],
   ["rambut kusut sebelum ke sekolah", "sikat rambut", "Rambut yang kemas membantu murid menjaga kebersihan diri."],
   ["stoking berbau selepas bersukan", "tukar stoking bersih", "Stoking bersih membantu kaki tidak berbau dan lebih selesa."],

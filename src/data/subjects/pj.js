@@ -52,10 +52,10 @@ const fitnessOptions = ["daya tahan", "kekuatan", "kelenturan", "kelajuan", "imb
 const valuesOptions = ["bekerjasama", "ikut giliran", "jujur", "menghormati rakan", "berhati-hati", "berdisiplin", "aktif setiap hari"];
 
 const pergerakanAsas = [
-  ask("Apakah pergerakan yang sesuai apabila murid bergerak perlahan dari satu tempat ke tempat lain?", "berjalan", actionOptions, "Fikirkan pergerakan kaki yang tidak laju.", "Berjalan ialah pergerakan asas yang mudah dan selamat untuk bergerak perlahan."),
-  ask("Apakah pergerakan yang menggunakan kedua-dua kaki untuk menolak badan ke atas?", "melompat", actionOptions, "Badan naik dari lantai seketika.", "Melompat menggunakan kaki untuk menolak badan ke atas dan mendarat dengan terkawal."),
-  ask("Murid bergerak laju ke garisan penamat. Apakah pergerakan itu?", "berlari", actionOptions, "Pergerakan ini lebih laju daripada berjalan.", "Berlari membantu murid bergerak pantas tetapi perlu menjaga ruang dan keselamatan."),
-  ask("Apakah pergerakan apabila badan dipusing sedikit ke kiri atau kanan?", "mengilas", actionOptions, "Pinggang dan bahu bergerak ke sisi.", "Mengilas ialah pergerakan bukan lokomotor yang melibatkan putaran badan."),
+  ask("Apakah pergerakan yang sesuai apabila murid bergerak perlahan dari satu tempat ke tempat lain?", "berjalan", actionOptions, "Pilih pergerakan kaki yang tidak laju.", "Berjalan membantu murid bergerak dengan tenang dan selamat."),
+  ask("Apakah pergerakan yang menggunakan kedua-dua kaki untuk menolak badan ke atas?", "melompat", actionOptions, "Badan akan naik seketika dari lantai.", "Melompat menggunakan kaki untuk menolak badan ke atas dan mendarat dengan terkawal."),
+  ask("Murid bergerak laju ke garisan penamat. Apakah pergerakan itu?", "berlari", actionOptions, "Bandingkan dengan berjalan.", "Berlari membantu murid bergerak pantas tetapi perlu menjaga ruang dan keselamatan."),
+  ask("Apakah pergerakan apabila badan dipusing sedikit ke kiri atau kanan?", "mengilas", actionOptions, "Pinggang dan bahu bergerak ke sisi.", "Mengilas ialah pergerakan bukan lokomotor yang memusingkan badan di tempat sendiri."),
   ask("Apakah pergerakan apabila murid menundukkan badan untuk mengambil bola di lantai?", "membongkok", actionOptions, "Badan direndahkan ke hadapan.", "Membongkok perlu dibuat dengan lutut sedikit dibengkokkan supaya badan lebih stabil."),
   ask("Apakah pergerakan apabila tangan menolak bola besar ke hadapan?", "menolak", actionOptions, "Objek bergerak menjauhi badan.", "Menolak ialah kemahiran asas menggunakan daya dari tangan atau badan."),
   ask("Apakah pergerakan apabila murid menarik tali ke arah badan?", "menarik", actionOptions, "Objek bergerak mendekati badan.", "Menarik memerlukan genggaman yang baik dan postur badan yang stabil."),
