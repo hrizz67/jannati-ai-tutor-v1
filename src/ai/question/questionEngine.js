@@ -50,9 +50,6 @@ export function buildQuestionSession(options = {}) {
   const featureFlags = getQuestionFeatureFlags(options.featureFlags || {});
   const enabled = isQuestionIntelligenceEnabled(featureFlags);
   const useTemplate = (featureFlags.QUESTION_TEMPLATE_ENGINE === true) || (featureFlags.USE_TEMPLATE_ENGINE === true);
-  // debug log indicating template engine mode
-  try { console.log && console.log(`Template Engine Mode: ${useTemplate ? 'ON' : 'OFF'}`); } catch(e) {}
-
   if (!enabled) return legacyQuestionSession({ ...options, count, sessionSeed });
 
   if (useTemplate) {

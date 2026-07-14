@@ -3,7 +3,7 @@ export const subjectList = [
     "id": "bm",
     "title": "Bahasa Melayu Tahun 2",
     "short": "BM",
-    "icon": "📚",
+    "icon": "\u{1F4DA}",
     "color": "green",
     "topicCount": 10,
     "questionCount": 500
@@ -12,7 +12,7 @@ export const subjectList = [
     "id": "math",
     "title": "Matematik Tahun 2",
     "short": "Math",
-    "icon": "📐",
+    "icon": "\u{1F4D0}",
     "color": "blue",
     "topicCount": 10,
     "questionCount": 500
@@ -21,7 +21,7 @@ export const subjectList = [
     "id": "english",
     "title": "English Year 2",
     "short": "English",
-    "icon": "🔤",
+    "icon": "\u{1F524}",
     "color": "purple",
     "topicCount": 10,
     "questionCount": 500
@@ -30,7 +30,7 @@ export const subjectList = [
     "id": "sains",
     "title": "Sains Tahun 2",
     "short": "Sains",
-    "icon": "🔬",
+    "icon": "\u{1F52C}",
     "color": "orange",
     "topicCount": 10,
     "questionCount": 500
@@ -39,7 +39,7 @@ export const subjectList = [
     "id": "arab",
     "title": "Bahasa Arab Tahun 2",
     "short": "Arab",
-    "icon": "🇸🇦",
+    "icon": "\u{1F1F8}\u{1F1E6}",
     "color": "teal",
     "topicCount": 10,
     "questionCount": 500
@@ -48,7 +48,7 @@ export const subjectList = [
     "id": "islam",
     "title": "Pendidikan Islam Tahun 2",
     "short": "Islam",
-    "icon": "☪️",
+    "icon": "\u{262A}\u{FE0F}",
     "color": "green",
     "topicCount": 10,
     "questionCount": 500
@@ -57,7 +57,7 @@ export const subjectList = [
     "id": "pj",
     "title": "Pendidikan Jasmani Tahun 2",
     "short": "PJ",
-    "icon": "🏃",
+    "icon": "\u{1F3C3}",
     "color": "orange",
     "topicCount": 10,
     "questionCount": 500
@@ -66,7 +66,7 @@ export const subjectList = [
     "id": "pk",
     "title": "Pendidikan Kesihatan Tahun 2",
     "short": "PK",
-    "icon": "❤️",
+    "icon": "\u{2764}\u{FE0F}",
     "color": "red",
     "topicCount": 10,
     "questionCount": 500

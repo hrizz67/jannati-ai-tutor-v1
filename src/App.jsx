@@ -10,17 +10,10 @@ import JannaAvatar from './components/JannaAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import GamificationSummary from './components/GamificationSummary.jsx';
 import { explainAnswer } from './ai/explainEngine';
-import { buildRecommendation, isWeakTopic, updateStoredRecommendation } from './ai/recommendationEngine';
+import { updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
 import { loadProfile as loadAdaptiveStudentProfile, resetProfile as resetAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
-import { rankStrongTopics, rankWeakTopics, explainWeakness } from './ai/adaptive/weakTopicEngine';
-import { generateRecommendation } from './ai/adaptive/recommendationEngine';
-import { getWeeklySummary } from './ai/adaptive/weeklyAnalyticsEngine';
-import { getAllSubjectAnalytics, getBestSubject, getWeakestSubject, getSubjectAttentionSummary } from './ai/adaptive/subjectAnalyticsEngine';
-import { generateParentReport } from './ai/adaptive/parentReportEngine';
-import { getTodayRevision } from './ai/revision/revisionPlannerEngine';
-import { getReviewQueue } from './ai/revision/spacedRepetitionEngine';
-import { getRecommendedDifficulty, buildDifficultyPlan } from './ai/revision/difficultyEngine';
+import { rankStrongTopics, rankWeakTopics } from './ai/adaptive/weakTopicEngine';
 import { getPredictionProfile } from './ai/prediction/predictionProfile';
 import { getReadiness } from './ai/prediction/readinessEngine';
 import { buildStudyPlan } from './ai/prediction/studyPlanEngine';
@@ -31,28 +24,20 @@ import { buildPersonalityResponse } from './ai/personality/personalityEngine.js'
 import { buildLearningObservation } from './ai/observation/learningObservationEngine.js';
 import { buildNarrativeBundle } from './ai/narrative/narrativeEngine.js';
 import { speak, stop as stopVoice } from './ai/voice/voiceEngine.js';
-import { buildMixedRevisionSession } from './ai/revision/mixedRevisionEngine';
-import { buildRevisionCalendar } from './ai/revision/revisionCalendarEngine';
-import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from './ai/adaptive/masteryEngine';
+import { buildMasteryMap, summarizeMastery } from './ai/adaptive/masteryEngine';
 import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/adaptive/adaptivePracticeEngine';
-import { buildLessonPlan } from './ai/adaptive/lessonPlanner';
 import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
-import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './ai/adaptive/knowledgeGraph';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
-import { formatStudyTime, loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
-import { printParentReport } from './utils/printReport';
-import { buildStudentIntelligence, getStudentLevel, loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
+import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
+import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
-import { buildTeacherPortalSnapshot } from './curriculum/curriculumEngine';
-import { buildCurriculumCoverage } from './curriculum/coverageEngine';
-import { recommendMissingSkSp, summarizeUasaCoverage } from './curriculum/uasaEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatStatus, formatTopicName } from './utils/displayFormatter';
-import HomeDashboard from './dashboard/HomeDashboard';
+const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
@@ -1509,7 +1494,7 @@ export default function App() {
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} />{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -2115,9 +2100,6 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     }
     recognitionRef.current = null;
     setMendengar(false);
-    if (import.meta?.env?.DEV) {
-      console.debug('[BacaanCoach] disposed recognition');
-    }
   };
 
   const finalizeBacaanSession = (nextResult, nextTranscript = '') => {
@@ -2129,12 +2111,6 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     setResult(nextResult);
     setMendengar(false);
     disposeRecognition();
-    if (import.meta?.env?.DEV) {
-      console.debug('[BacaanCoach] finalized', {
-        reason: nextResult?.errorCode || nextResult?.status || 'completed',
-        transcript: nextTranscript
-      });
-    }
   };
 
   useEffect(() => {
@@ -2199,17 +2175,6 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   useEffect(() => () => {
     disposeRecognition();
   }, []);
-
-  useEffect(() => {
-    if (import.meta?.env?.DEV) {
-      console.debug('[BacaanCoach]', {
-        passageId,
-        language: passage?.language || 'unknown',
-        passageTitle: passage?.title || 'unknown',
-        normalizedResume: safeNormalizedResume
-      });
-    }
-  }, [passageId, passage?.language, passage?.title, safeNormalizedResume]);
 
   function startMendengar() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2923,18 +2888,6 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
     explanation: typeof result.explanation === 'string' ? result.explanation : '',
     ...result
   } : null;
-
-  useEffect(() => {
-    if (import.meta?.env?.DEV) {
-      console.debug('[MenulisCoach]', {
-        language: set?.language || 'bm',
-        mode,
-        task: safeTask?.label || '',
-        resume: Boolean(resume),
-        resumeState: resume?.state || null
-      });
-    }
-  }, [mode, resume, safeTask?.label, set?.language]);
 
   useEffect(() => {
     if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;

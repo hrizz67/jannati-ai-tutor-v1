@@ -274,9 +274,6 @@ export function recordQuestionResult(profile, result = {}) {
   } = result || {};
 
   if (!questionId || !subjectId || !topicId) {
-    if (isDev) {
-      console.debug?.('[adaptiveSessionEngine] Skipped adaptive record because questionId, subjectId or topicId was missing.');
-    }
     return {
       profile: saveAdaptiveProfile(nextProfile),
       summary: {
