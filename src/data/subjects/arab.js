@@ -25,6 +25,13 @@ const fill = (q, answer, hint, explanation, accepted) => ({
   accepted,
 });
 
+const hijaiyahHintVariants = [
+  "Lihat bentuk huruf dengan teliti.",
+  "Perhatikan huruf Arab ini.",
+  "Cuba ingat nama huruf ini.",
+  "Sebut huruf ini dengan betul.",
+];
+
 const hijaiyahLetters = [
   ["ا", "alif"], ["ب", "ba"], ["ت", "ta"], ["ث", "sa"], ["ج", "jim"],
   ["ح", "ha"], ["خ", "kha"], ["د", "dal"], ["ذ", "zal"], ["ر", "ra"],
@@ -35,8 +42,14 @@ const hijaiyahLetters = [
 ];
 
 const hurufHijaiyahQuestions = [
-  ...hijaiyahLetters.map(([letter, name]) =>
-    fill(`Nama huruf Arab ${letter} ialah ________.`, name, "Perhatikan bentuk huruf.", `Huruf ${letter} dinamakan ${name}.`, [name, letter])
+  ...hijaiyahLetters.map(([letter, name], index) =>
+    fill(
+      `Nama huruf Arab ${letter} ialah ________.`,
+      name,
+      hijaiyahHintVariants[index % hijaiyahHintVariants.length],
+      `Ini huruf ${name}.`,
+      [name, letter]
+    )
   ),
   fill("Huruf hijaiyah pertama ialah ________.", "ا", "Ingat huruf alif.", "Huruf hijaiyah pertama ialah alif, ا.", ["ا", "alif"]),
   fill("Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.", "ي", "Ingat huruf ya.", "Huruf ya ditulis ي.", ["ي", "ya"]),
