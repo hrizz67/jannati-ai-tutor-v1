@@ -41,6 +41,39 @@ export function extractSpeechTranscript(event) {
     .trim();
 }
 
+export function collectSpeechTranscriptFragments(event, seenResultKeys = new Set(), startIndex = 0) {
+  const results = event?.results ? Array.from(event.results) : [];
+  const safeStartIndex = Number.isInteger(startIndex) && startIndex > 0 ? startIndex : 0;
+  const nextFinalFragments = [];
+  let interimTranscript = '';
+
+  results.slice(safeStartIndex).forEach((result, offset) => {
+    if (!result) return;
+    const absoluteIndex = safeStartIndex + offset;
+    const alternatives = Array.from(result);
+    const transcript = alternatives
+      .map(alternative => typeof alternative?.transcript === 'string' ? alternative.transcript.trim() : '')
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    if (!transcript) return;
+    const key = `${absoluteIndex}|${result.isFinal ? '1' : '0'}|${transcript}`;
+    if (seenResultKeys?.has?.(key)) return;
+    seenResultKeys?.add?.(key);
+    if (result.isFinal) {
+      nextFinalFragments.push(transcript);
+      return;
+    }
+    interimTranscript = transcript;
+  });
+
+  return {
+    nextFinalFragments,
+    interimTranscript,
+    hasTranscript: Boolean(nextFinalFragments.length || interimTranscript)
+  };
+}
+
 function disposeRecognitionInstance(instance) {
   if (!instance) return;
   try {
@@ -328,6 +361,7 @@ export default {
   createSpeechSession,
   cancelActiveSpeechRecognition,
   extractSpeechTranscript,
+  collectSpeechTranscriptFragments,
   isSpeechAvailable,
   supportsSpeechRecognition,
   speakAnswerPrompt

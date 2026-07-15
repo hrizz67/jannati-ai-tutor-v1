@@ -29,7 +29,7 @@ import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/a
 import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
-import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
+import { collectSpeechTranscriptFragments as collectSpeechTranscriptFragmentsShared, createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
 import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
@@ -2053,7 +2053,12 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const [sessionEmptyFailures, setSessionEmptyFailures] = useState(0);
   const recognitionRef = useRef(null);
   const cleanupTimerRef = useRef(null);
+  const silenceTimerRef = useRef(null);
   const transcriptBufferRef = useRef('');
+  const finalFragmentsRef = useRef([]);
+  const interimTranscriptRef = useRef('');
+  const seenResultKeysRef = useRef(new Set());
+  const hasAnyTranscriptRef = useRef(false);
   const finalResultRef = useRef(null);
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
@@ -2080,16 +2085,41 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const isSupportedSpeech = Boolean(recognitionSupported);
   const createEmptyResult = (message = 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.') => createEmptyBacaanResult(message);
 
-  const clearBacaanTimer = () => {
+  const clearBacaanTimeout = () => {
     if (cleanupTimerRef.current) {
       clearTimeout(cleanupTimerRef.current);
       cleanupTimerRef.current = null;
     }
   };
 
+  const clearSilenceTimer = () => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+  };
+
+  const getBufferedTranscript = () => {
+    const finalTranscript = finalFragmentsRef.current.join(' ').trim();
+    const interimTranscript = typeof interimTranscriptRef.current === 'string' ? interimTranscriptRef.current.trim() : '';
+    if (!finalTranscript) return interimTranscript;
+    if (!interimTranscript) return finalTranscript;
+    if (finalTranscript === interimTranscript) return finalTranscript;
+    if (finalTranscript.endsWith(interimTranscript)) return finalTranscript;
+    return [finalTranscript, interimTranscript].filter(Boolean).join(' ').trim();
+  };
+
+  const syncBufferedTranscript = () => {
+    const bufferedTranscript = getBufferedTranscript();
+    transcriptBufferRef.current = bufferedTranscript;
+    setTranscript(bufferedTranscript);
+    return bufferedTranscript;
+  };
+
   const disposeRecognition = () => {
     const recognition = recognitionRef.current;
-    clearBacaanTimer();
+    clearSilenceTimer();
+    clearBacaanTimeout();
     if (!recognition) return;
     try {
       recognition.onstart = null;
@@ -2117,7 +2147,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const finalizeBacaanSession = (nextResult, nextTranscript = '') => {
     if (sessionFinalizedRef.current) return;
     sessionFinalizedRef.current = true;
-    clearBacaanTimer();
+    clearSilenceTimer();
+    clearBacaanTimeout();
     finalResultRef.current = nextResult;
     setTranscript(nextTranscript);
     setResult(nextResult);
@@ -2132,12 +2163,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   useEffect(() => {
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
+    disposeRecognition();
+    resetBacaanSession();
     setTranscript('');
     setResult(null);
-    sessionFinalizedRef.current = false;
     setSessionEmptyFailures(0);
-    finalResultRef.current = null;
-    transcriptBufferRef.current = '';
   }, [passageId]);
 
   useEffect(() => {
@@ -2188,14 +2218,36 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     disposeRecognition();
   }, []);
 
+  function resetBacaanSession() {
+    clearSilenceTimer();
+    clearBacaanTimeout();
+    sessionFinalizedRef.current = false;
+    finalResultRef.current = null;
+    transcriptBufferRef.current = '';
+    finalFragmentsRef.current = [];
+    interimTranscriptRef.current = '';
+    seenResultKeysRef.current = new Set();
+    hasAnyTranscriptRef.current = false;
+  }
+
+  function scheduleBacaanSilenceStop(recognition) {
+    clearSilenceTimer();
+    silenceTimerRef.current = window.setTimeout(() => {
+      if (sessionFinalizedRef.current) return;
+      try {
+        recognition?.stop?.();
+      } catch {
+        // Ignore silence-stop errors.
+      }
+    }, 1800);
+  }
+
   function startMendengar() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
     stopVoice();
     disposeRecognition();
-    sessionFinalizedRef.current = false;
-    transcriptBufferRef.current = '';
-    finalResultRef.current = null;
+    resetBacaanSession();
     setResult(null);
     setTranscript('');
     const recognition = new SpeechRecognition();
@@ -2209,6 +2261,16 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       if (sessionFinalizedRef.current) return;
       const error = event?.error || 'unknown_error';
       if (error === 'aborted') return;
+      const bufferedTranscript = getBufferedTranscript();
+      if (bufferedTranscript) {
+        clearSilenceTimer();
+        try {
+          recognition?.stop?.();
+        } catch {
+          // Ignore stop errors after buffered transcript.
+        }
+        return;
+      }
       if (error === 'no-speech') {
         finalizeBacaanSession(createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '');
         setSessionEmptyFailures(prev => prev + 1);
@@ -2226,36 +2288,51 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     };
     recognition.onresult = event => {
       if (sessionFinalizedRef.current) return;
-      const text = extractSpeechTranscriptShared(event);
-      if (!text) return;
-      transcriptBufferRef.current = [transcriptBufferRef.current, text].filter(Boolean).join(' ').trim();
-      setTranscript(transcriptBufferRef.current);
-      const nextResult = compareBacaan(passage.text, transcriptBufferRef.current);
+      const { nextFinalFragments, interimTranscript, hasTranscript } = collectSpeechTranscriptFragmentsShared(event, seenResultKeysRef.current, Number.isInteger(event?.resultIndex) ? event.resultIndex : 0);
+      if (!hasTranscript) return;
+      hasAnyTranscriptRef.current = true;
+      if (nextFinalFragments.length) {
+        finalFragmentsRef.current = [...finalFragmentsRef.current, ...nextFinalFragments];
+      }
+      interimTranscriptRef.current = interimTranscript;
+      const bufferedTranscript = syncBufferedTranscript();
+      if (!bufferedTranscript) return;
+      const nextResult = compareBacaan(passage.text, bufferedTranscript);
       finalResultRef.current = nextResult;
       setResult(nextResult);
-      finalizeBacaanSession(nextResult, transcriptBufferRef.current);
+      scheduleBacaanSilenceStop(recognition);
     };
     recognition.onend = () => {
       if (sessionFinalizedRef.current) {
         disposeRecognition();
         return;
       }
-      const bufferedTranscript = typeof transcriptBufferRef.current === 'string' ? transcriptBufferRef.current.trim() : '';
+      clearSilenceTimer();
+      const bufferedTranscript = getBufferedTranscript();
       const nextResult = finalResultRef.current && typeof finalResultRef.current === 'object'
         ? normalizeBacaanResult(finalResultRef.current)
         : (bufferedTranscript ? compareBacaan(passage.text, bufferedTranscript) : createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'));
-      if (!bufferedTranscript && finalResultRef.current) {
-        return finalizeBacaanSession(nextResult, '');
+      if (bufferedTranscript || hasAnyTranscriptRef.current || finalResultRef.current) {
+        finalizeBacaanSession(nextResult, bufferedTranscript);
+        return;
       }
-      finalizeBacaanSession(nextResult, bufferedTranscript);
+      finalizeBacaanSession(createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '');
     };
     try {
+      clearBacaanTimeout();
       cleanupTimerRef.current = window.setTimeout(() => {
         if (!sessionFinalizedRef.current) {
-          finalizeBacaanSession(
-            transcriptBufferRef.current ? compareBacaan(passage.text, transcriptBufferRef.current) : createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'),
-            transcriptBufferRef.current
-          );
+          const bufferedTranscript = getBufferedTranscript();
+          try {
+            recognition?.stop?.();
+          } catch {
+            // Ignore timeout stop errors.
+          }
+          if (bufferedTranscript) {
+            finalizeBacaanSession(compareBacaan(passage.text, bufferedTranscript), bufferedTranscript);
+            return;
+          }
+          finalizeBacaanSession(createEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '');
         }
       }, 9000);
       recognition.start();

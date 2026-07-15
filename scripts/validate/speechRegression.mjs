@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { extractSpeechTranscript, createSpeechSession, cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
+import { extractSpeechTranscript, collectSpeechTranscriptFragments, createSpeechSession, cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
 import { speak, stop as stopVoice } from '../../src/ai/voice/voiceEngine.js';
 
 class FakeRecognition {
@@ -54,7 +54,47 @@ function makeResult(...alternatives) {
   alternatives.forEach((alternative, index) => {
     result[index] = alternative;
   });
+  result.isFinal = alternatives[0]?.isFinal !== false;
   return result;
+}
+
+function createTranscriptAccumulator() {
+  const seenResultKeys = new Set();
+  let finalFragments = [];
+  let interimTranscript = '';
+
+  function combineTranscript() {
+    const finalTranscript = finalFragments.join(' ').trim();
+    const safeInterim = typeof interimTranscript === 'string' ? interimTranscript.trim() : '';
+    if (!finalTranscript) return safeInterim;
+    if (!safeInterim) return finalTranscript;
+    if (finalTranscript === safeInterim) return finalTranscript;
+    if (finalTranscript.endsWith(safeInterim)) return finalTranscript;
+    return [finalTranscript, safeInterim].filter(Boolean).join(' ').trim();
+  }
+
+  return {
+    push(event, resultIndex = 0) {
+      const nextState = collectSpeechTranscriptFragments(event, seenResultKeys, resultIndex);
+      if (nextState.nextFinalFragments.length) {
+        finalFragments = [...finalFragments, ...nextState.nextFinalFragments];
+      }
+      interimTranscript = nextState.interimTranscript;
+      return combineTranscript();
+    },
+    snapshot() {
+      return {
+        final: finalFragments.join(' ').trim(),
+        interim: interimTranscript,
+        combined: combineTranscript()
+      };
+    },
+    clear() {
+      finalFragments = [];
+      interimTranscript = '';
+      seenResultKeys.clear();
+    }
+  };
 }
 
 function makeEvent(results) {
@@ -130,6 +170,61 @@ async function main() {
       results: { 0: makeResult({ transcript: 'Ali' }), 2: makeResult({ transcript: 'ke sekolah' }), length: 3 }
     }),
     'Ali ke sekolah'
+  );
+
+  const bacaanAccumulator = createTranscriptAccumulator();
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'Ayah pergi ke pasar' })], resultIndex: 0 }),
+    'Ayah pergi ke pasar',
+    'Single sentence should remain intact.'
+  );
+  assert.deepEqual(
+    {
+      final: bacaanAccumulator.snapshot().final,
+      interim: bacaanAccumulator.snapshot().interim
+    },
+    { final: 'Ayah pergi ke pasar', interim: '' },
+    'Single sentence should be buffered as final text.'
+  );
+
+  bacaanAccumulator.clear();
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'Ayah pergi ke pasar' })], resultIndex: 0 }),
+    'Ayah pergi ke pasar',
+    'First sentence should be buffered.'
+  );
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'Ayah pergi ke pasar' }), makeResult({ transcript: 'kemudian ke kedai' })], resultIndex: 1 }),
+    'Ayah pergi ke pasar kemudian ke kedai',
+    'Second sentence should append without dropping the first.'
+  );
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'Ayah pergi ke pasar' }), makeResult({ transcript: 'kemudian ke kedai' })], resultIndex: 0 }),
+    'Ayah pergi ke pasar kemudian ke kedai',
+    'Repeated cumulative results should not duplicate transcript fragments.'
+  );
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'Ayah pergi ke pasar', isFinal: true }), makeResult({ transcript: 'kemudian ke kedai', isFinal: false })], resultIndex: 1 }),
+    'Ayah pergi ke pasar kemudian ke kedai',
+    'Final plus interim fragments should stay visible together until end.'
+  );
+  assert.equal(
+    bacaanAccumulator.snapshot().final,
+    'Ayah pergi ke pasar kemudian ke kedai',
+    'Final buffer should keep the whole spoken phrase.'
+  );
+  assert.equal(
+    bacaanAccumulator.snapshot().interim,
+    'kemudian ke kedai',
+    'Interim fragment should remain available until finalization.'
+  );
+  bacaanAccumulator.clear();
+  assert.equal(bacaanAccumulator.push({ results: [], resultIndex: 0 }), '', 'Empty transcript stream should stay empty.');
+  bacaanAccumulator.clear();
+  assert.equal(
+    bacaanAccumulator.push({ results: [makeResult({ transcript: 'mereka semua' })], resultIndex: 0 }),
+    'mereka semua',
+    'Valid transcript should not be lost when only one sentence is present.'
   );
 
   const validResults = [];
