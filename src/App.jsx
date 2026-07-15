@@ -7,6 +7,7 @@ const AITeacherModal = React.lazy(() => import('./components/ai/AITeacherModal')
 import BrandLogo from './components/BrandLogo';
 import MascotCard from './components/MascotCard';
 import JannaAvatar from './components/JannaAvatar';
+import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import GamificationSummary from './components/GamificationSummary.jsx';
 import { explainAnswer } from './ai/explainEngine';
@@ -57,7 +58,7 @@ const storageRecoveryEvents = [];
 
 const defaultProfile = {
   name: '',
-  avatar: '??',
+  avatar: 'janna',
   year: 'Tahun 2',
   isDemo: false,
   xp: 0,
@@ -78,7 +79,7 @@ function createDemoProfile() {
   return {
     ...defaultProfile,
     name: 'Demo Murid',
-    avatar: '??',
+    avatar: 'janna',
     year: 'Tahun 2',
     isDemo: true,
     createdAt: new Date().toISOString()
@@ -141,10 +142,16 @@ function loadResume() {
 }
 
 function normalizeStars(value) {
-  const text = String(value || '').replace(/[\u2606\u2729]/g, '?').replace(/\s+/g, '').trim();
-  if (!text) return '???';
-  const clean = text.replace(/[^\u2B50??]+/gu, '');
-  return clean || '???';
+  const text = String(value ?? '').replace(/\s+/g, '').trim();
+  if (!text) return '☆☆☆';
+  if (/^[★☆]+$/.test(text)) return text;
+  const score = Number(text);
+  if (Number.isFinite(score)) return getStars(score);
+  const count = (text.match(/[★⭐]/g) || []).length;
+  if (count >= 3) return '★★★';
+  if (count === 2) return '★★';
+  if (count === 1) return '★';
+  return '☆☆☆';
 }
 
 function getTopicDisplayName(topic = {}, fallback = '-') {
@@ -297,10 +304,53 @@ function progressKey(subjectId, topicId) {
 }
 
 function getStars(score = 0) {
-  if (score >= 90) return '???';
-  if (score >= 70) return '??';
-  if (score >= 50) return '?';
-  return '???';
+  if (score >= 90) return '★★★';
+  if (score >= 70) return '★★';
+  if (score >= 50) return '★';
+  return '☆☆☆';
+}
+
+function RewardBadgeIcon({ className = '' }) {
+  return (
+    <svg
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 64 64"
+      width="1em"
+      height="1em"
+    >
+      <path d="M20 6h10l2 12-12 8-12-8 2-12h10Z" fill="#E2A81B" />
+      <path d="M34 6h10l2 12-12 8-12-8 2-12h10Z" fill="#F4B400" />
+      <circle cx="32" cy="34" r="20" fill="#F7C948" />
+      <path
+        d="M32 22l3.58 7.25 8 1.16-5.79 5.64 1.37 7.97L32 39.25l-7.16 3.77 1.37-7.97-5.79-5.64 8-1.16L32 22Z"
+        fill="#FFF8D6"
+      />
+      <circle cx="32" cy="34" r="19" fill="none" stroke="rgba(255,255,255,.65)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function AdaptivePracticeBadgeIcon({ className = '' }) {
+  return (
+    <svg
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 64 64"
+      width="1em"
+      height="1em"
+    >
+      <path
+        d="M32 8l5.4 13.3L51 27l-13.6 5.8L32 46l-5.4-13.2L13 27l13.6-5.7L32 8Z"
+        fill="#3CB371"
+      />
+      <path d="M32 18l3.1 7.6L43 29l-7.9 3.4L32 40l-3.1-7.6L21 29l7.9-3.4L32 18Z" fill="#FFF" opacity=".9" />
+      <circle cx="49" cy="15" r="3" fill="#F4D35E" />
+      <circle cx="14" cy="50" r="2.5" fill="#F4D35E" />
+    </svg>
+  );
 }
 
 function getGrade(score = 0) {
@@ -509,7 +559,7 @@ export default function App() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
-  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [] });
+  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
   const [chatOpen, setChatOpen] = useState(false);
   const [explainOpen, setExplainOpen] = useState(false);
   const [explainData, setExplainData] = useState(null);
@@ -832,7 +882,7 @@ export default function App() {
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
     const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
+    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
     startSession.adaptiveSessionId = adaptiveSessionId;
 
     setActiveSubject(subject);
@@ -917,7 +967,7 @@ export default function App() {
           id: resume.subjectId || 'adaptive',
           title: resume.metadata?.displayTitle || 'Latihan AI',
           short: 'AI',
-          icon: '??',
+          icon: <AdaptivePracticeBadgeIcon />,
           topics: [
             {
               id: resume.topicId || `adaptive_${resume.sessionId || resume.session?.adaptiveSessionId || 'resume'}`,
@@ -1056,7 +1106,7 @@ export default function App() {
       id: 'adaptive',
       title: 'Latihan AI',
       short: 'AI',
-      icon: '??',
+      icon: <AdaptivePracticeBadgeIcon />,
       topics: [
         {
           id: `adaptive_${session.sessionId}`,
@@ -1654,10 +1704,13 @@ function BetaFeedbackButton() {
 
 function Login({ onStart }) {
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('??');
-  const avatars = ['??', '??', '??', '??'];
+  const [avatar, setAvatar] = useState('janna');
+  const avatars = [
+    { id: 'janna', label: 'Janna', icon: <JannaAvatar size={36} /> },
+    { id: 'jati', label: 'Jati', icon: <JatiAvatar size={36} /> }
+  ];
 
-  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item} type="button" className={item === avatar ? '' : 'secondary'} onClick={() => setAvatar(item)}>{item}</button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar</button></section></main>;
+  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar</button></section></main>;
 }
 
 function LoadingSkeleton() {
@@ -1698,14 +1751,14 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       ? personality?.motivation || 'Hampir betul. Jom kemaskan jawapan sedikit lagi.'
       : feedback?.status === 'hint'
         ? `Petunjuk ${coachToneLabel}`
-        : personality?.farewell || 'Tak mengapa ?? Mari kita cuba sekali lagi.';
+        : personality?.farewell || 'Tak mengapa. Mari kita cuba sekali lagi.';
   const feedbackTitle = feedback?.status === 'correct'
     ? 'Syabas!'
     : feedback?.status === 'almost'
       ? 'Hampir betul'
       : feedback?.status === 'hint'
         ? `Petunjuk ${coachToneLabel}`
-        : 'Tak mengapa ??';
+      : 'Tak mengapa.';
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = sanitizeAiText(safeCoachingDecision?.hint || question?.hint || 'Cari kata kunci penting.');
@@ -1816,8 +1869,8 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
     }
   ];
 
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '??' : '??'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa ??')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa ?? Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
-  }
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce"><RewardBadgeIcon /></div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa. Cuba lagi.')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa. Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+}
 
 function AiTutorChat({ profile, selectedSubject, onTutup }) {
   const safeSubject = selectedSubject || { short: 'Subjek ini', title: 'Subjek ini', topics: [] };
@@ -1940,7 +1993,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setResult(null);
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>?? Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = [

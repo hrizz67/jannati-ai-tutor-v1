@@ -30,10 +30,10 @@ export function progressKey(subjectId, topicId) {
 }
 
 export function getStars(score = 0) {
-  if (score >= 90) return '⭐⭐⭐';
-  if (score >= 70) return '⭐⭐';
-  if (score >= 50) return '?';
-  return '⭐⭐⭐';
+  if (score >= 90) return '★★★';
+  if (score >= 70) return '★★';
+  if (score >= 50) return '★';
+  return '☆☆☆';
 }
 
 export function getGrade(score = 0) {
