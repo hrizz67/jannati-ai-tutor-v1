@@ -27,7 +27,14 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
               <h2>Ajar Saya</h2>
             </div>
           </div>
-          <button className="ghost" type="button" onClick={onTutup}>✕</button>
+          <button
+            className="ghost modal-close-button"
+            type="button"
+            onClick={onTutup}
+            aria-label="Tutup"
+          >
+            ×
+          </button>
         </div>
 
         <div className="ai-explain-body">

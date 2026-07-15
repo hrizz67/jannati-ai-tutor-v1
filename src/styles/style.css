@@ -174,8 +174,8 @@ textarea {
   }
 
   .beta-feedback-fab {
-    right: calc(10px + env(safe-area-inset-right, 0px));
-    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    right: calc(12px + env(safe-area-inset-right, 0px));
+    bottom: calc(104px + env(safe-area-inset-bottom, 0px));
     padding: 10px 12px;
     font-size: 13px;
     max-width: calc(100vw - 20px);
@@ -904,6 +904,11 @@ button:active {
   background: #ffffff;
   box-shadow: 0 8px 16px rgba(8,122,59,.08);
   margin-bottom: 12px !important;
+}
+
+.subject-illustration {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .subject-card b {
@@ -1975,6 +1980,33 @@ textarea[dir="rtl"] {
   margin-top: 2px;
 }
 
+.modal-close-button {
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 999px;
+  flex: 0 0 44px;
+  align-self: flex-start;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.voice-button {
+  min-height: 44px;
+  padding: 0 12px;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 900;
+  align-items: center;
+}
+
+.voice-button svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
 .explain-answer-box,
 .explain-section,
 .explain-encouragement {
@@ -2082,6 +2114,22 @@ textarea[dir="rtl"] {
     max-height: calc(100vh - 20px);
     border-radius: 24px 24px 18px 18px;
     padding: 15px;
+  }
+
+  .ai-explain-head {
+    gap: 10px;
+  }
+
+  .modal-close-button {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 22px;
+  }
+
+  .voice-button {
+    padding: 0 10px;
+    gap: 6px;
   }
 }
 

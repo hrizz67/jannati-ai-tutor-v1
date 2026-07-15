@@ -151,7 +151,7 @@ export function Stat({ icon, label, value }) {
 }
 
 export function SubjectIllustration({ subject }) {
-  return <span className="subject-illustration" aria-hidden="true">{subject.title || formatSubjectName(subject.id)}</span>;
+  return <span className="subject-illustration" aria-hidden="true">{subject.icon || '📘'}</span>;
 }
 
 export function SettingsPanel({ onExportBetaReport, onReset }) {

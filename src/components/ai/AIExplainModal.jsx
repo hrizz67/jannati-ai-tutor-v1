@@ -30,7 +30,14 @@ export default function AIExplainModal({ open, data, question, character = 'jati
               <h2>Terangkan</h2>
             </div>
           </div>
-          <button className="ghost" type="button" onClick={onTutup}>✕</button>
+          <button
+            className="ghost modal-close-button"
+            type="button"
+            onClick={onTutup}
+            aria-label="Tutup"
+          >
+            ×
+          </button>
         </div>
 
         <div className="ai-explain-body">
