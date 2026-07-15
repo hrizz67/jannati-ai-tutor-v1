@@ -31,6 +31,10 @@ function createEmptySpeechResult(errorCode = 'no-result', message = 'Suara belum
   };
 }
 
+function defaultResultFactory(transcript, expectedAnswer, acceptedAnswers) {
+  return matchSpeechAnswer(transcript, expectedAnswer, acceptedAnswers);
+}
+
 export function extractSpeechTranscript(event) {
   const results = event?.results ? Array.from(event.results) : [];
   return results
@@ -57,7 +61,7 @@ export function collectSpeechTranscriptFragments(event, seenResultKeys = new Set
       .join(' ')
       .trim();
     if (!transcript) return;
-    const key = `${absoluteIndex}|${result.isFinal ? '1' : '0'}|${transcript}`;
+    const key = `${result.isFinal ? '1' : '0'}|${transcript}`;
     if (seenResultKeys?.has?.(key)) return;
     seenResultKeys?.add?.(key);
     if (result.isFinal) {
@@ -74,7 +78,7 @@ export function collectSpeechTranscriptFragments(event, seenResultKeys = new Set
   };
 }
 
-function disposeRecognitionInstance(instance) {
+function disposeRecognitionInstance(instance, { delayAbortMs = 0 } = {}) {
   if (!instance) return;
   try {
     instance.onstart = null;
@@ -90,6 +94,16 @@ function disposeRecognitionInstance(instance) {
   } catch {
     // Ignore stop errors.
   }
+  if (delayAbortMs > 0) {
+    setTimeout(() => {
+      try {
+        instance.abort?.();
+      } catch {
+        // Ignore delayed abort errors.
+      }
+    }, delayAbortMs);
+    return;
+  }
   try {
     instance.abort?.();
   } catch {
@@ -101,8 +115,19 @@ export function createSpeechSession({
   expectedAnswer = '',
   acceptedAnswers = [],
   lang = 'ms-MY',
+  continuous = false,
+  interimResults = false,
+  multiUtterance = false,
+  silenceDelayMs = 9000,
+  hardTimeoutMs = 9000,
+  resultFactory = defaultResultFactory,
   onChange = null,
+  onListening = null,
+  onTranscript = null,
   onResult = null,
+  onComplete = null,
+  onEmpty = null,
+  onStopped = null,
   onError = null
 } = {}) {
   const Recognition = getSpeechRecognitionConstructor();
@@ -111,9 +136,13 @@ export function createSpeechSession({
   let state = createState();
   let receivedResult = false;
   let transcriptBuffer = '';
+  let finalFragments = [];
+  let interimTranscript = '';
+  let seenResultKeys = new Set();
   let finalized = false;
   let emptyResultEmitted = false;
-  let timeoutId = null;
+  let silenceTimeoutId = null;
+  let hardTimeoutId = null;
 
   function emit(nextState) {
     state = {
@@ -123,26 +152,87 @@ export function createSpeechSession({
     onChange?.(state);
   }
 
+  function emitTranscript(transcript = '') {
+    const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
+    emit({
+      status: safeTranscript ? 'processing' : state.status,
+      transcript: safeTranscript,
+      error: ''
+    });
+    onTranscript?.(safeTranscript, state);
+    return safeTranscript;
+  }
+
+  function clearTimers() {
+    if (silenceTimeoutId) {
+      clearTimeout(silenceTimeoutId);
+      silenceTimeoutId = null;
+    }
+    if (hardTimeoutId) {
+      clearTimeout(hardTimeoutId);
+      hardTimeoutId = null;
+    }
+  }
+
+  function getBufferedTranscript() {
+    if (!multiUtterance) {
+      return typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
+    }
+    const finalTranscript = finalFragments.join(' ').trim();
+    const safeInterim = typeof interimTranscript === 'string' ? interimTranscript.trim() : '';
+    if (!finalTranscript) return safeInterim;
+    if (!safeInterim) return finalTranscript;
+    if (finalTranscript === safeInterim) return finalTranscript;
+    if (finalTranscript.endsWith(safeInterim)) return finalTranscript;
+    return [finalTranscript, safeInterim].filter(Boolean).join(' ').trim();
+  }
+
+  function buildResult(transcript) {
+    try {
+      const nextResult = resultFactory?.(transcript, expectedAnswer, acceptedAnswers);
+      if (nextResult && typeof nextResult === 'object') {
+        return nextResult;
+      }
+    } catch {
+      // Fall back to the default matcher below.
+    }
+    return defaultResultFactory(transcript, expectedAnswer, acceptedAnswers);
+  }
+
   function finalize(transcript = '', reason = 'completed') {
     if (finalized) return state.result || createEmptySpeechResult();
     finalized = true;
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    const result = matchSpeechAnswer(transcript, expectedAnswer, acceptedAnswers);
-    const nextState = {
-      status: reason,
-      transcript: result.transcript,
-      confidence: result.confidence,
-      correct: result.correct,
-      error: '',
-      result
-    };
+    clearTimers();
+    const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
+    transcriptBuffer = safeTranscript;
+    const result = safeTranscript ? buildResult(safeTranscript) : createEmptySpeechResult();
+    const nextState = safeTranscript
+      ? {
+          status: reason,
+          transcript: typeof result.transcript === 'string' ? result.transcript : safeTranscript,
+          confidence: Number.isFinite(Number(result.confidence)) ? Number(result.confidence) : 0,
+          correct: Boolean(result.correct),
+          error: '',
+          result
+        }
+      : {
+          status: 'empty',
+          transcript: '',
+          confidence: 0,
+          correct: false,
+          error: result.errorCode || 'no-result',
+          result
+        };
     emit(nextState);
     onResult?.(result);
-    disposeRecognitionInstance(recognition);
+    if (safeTranscript) {
+      onComplete?.(result);
+    } else {
+      onEmpty?.(result);
+    }
+    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
     recognition = null;
+    onStopped?.(reason);
     return result;
   }
 
@@ -150,10 +240,7 @@ export function createSpeechSession({
     if (finalized || emptyResultEmitted) return state.result || createEmptySpeechResult(errorCode, message);
     emptyResultEmitted = true;
     finalized = true;
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
+    clearTimers();
     const result = createEmptySpeechResult(errorCode, message);
     emit({
       status: 'empty',
@@ -164,8 +251,10 @@ export function createSpeechSession({
       result
     });
     onResult?.(result);
-    disposeRecognitionInstance(recognition);
+    onEmpty?.(result);
+    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
     recognition = null;
+    onStopped?.('empty');
     return result;
   }
 
@@ -187,17 +276,19 @@ export function createSpeechSession({
 
   function cancel() {
     try {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      clearTimers();
     } catch {
       // Ignore abort errors.
     }
+    finalized = true;
     transcriptBuffer = '';
-    disposeRecognitionInstance(recognition);
+    finalFragments = [];
+    interimTranscript = '';
+    seenResultKeys = new Set();
+    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
     cleanup();
     emit({ status: 'idle' });
+    onStopped?.('cancelled');
   }
 
   function start() {
@@ -225,22 +316,57 @@ export function createSpeechSession({
     activeSpeechRecognitionCancel = cancel;
     receivedResult = false;
     transcriptBuffer = '';
+    finalFragments = [];
+    interimTranscript = '';
+    seenResultKeys = new Set();
     finalized = false;
     emptyResultEmitted = false;
     const nextRecognition = new Recognition();
     recognition = nextRecognition;
     nextRecognition.lang = lang;
-    nextRecognition.interimResults = false;
-    nextRecognition.continuous = false;
+    nextRecognition.interimResults = multiUtterance ? true : Boolean(interimResults);
+    nextRecognition.continuous = multiUtterance ? true : Boolean(continuous);
     nextRecognition.maxAlternatives = 1;
 
-    nextRecognition.onstart = () => emit({ status: 'listening', error: '' });
+    nextRecognition.onstart = () => {
+      emit({ status: 'listening', error: '' });
+      onListening?.(state);
+    };
     nextRecognition.onresult = event => {
+      if (multiUtterance) {
+        const { nextFinalFragments, interimTranscript: nextInterimTranscript, hasTranscript } = collectSpeechTranscriptFragments(event, seenResultKeys, Number.isInteger(event?.resultIndex) ? event.resultIndex : 0);
+        if (!hasTranscript) return;
+        receivedResult = true;
+        if (nextFinalFragments.length) {
+          finalFragments = [...finalFragments, ...nextFinalFragments];
+        }
+        interimTranscript = nextInterimTranscript;
+        transcriptBuffer = getBufferedTranscript();
+        emitTranscript(transcriptBuffer);
+        if (silenceTimeoutId) {
+          clearTimeout(silenceTimeoutId);
+        }
+        silenceTimeoutId = setTimeout(() => {
+          if (finalized || recognition !== nextRecognition) return;
+          const bufferedTranscript = getBufferedTranscript();
+          if (bufferedTranscript) {
+            try {
+              nextRecognition.stop?.();
+            } catch {
+              // Ignore silence-stop errors.
+            }
+            return;
+          }
+          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
+        }, Math.max(0, Number(silenceDelayMs) || 0));
+        return;
+      }
       const transcript = extractSpeechTranscript(event);
       if (transcript) {
         receivedResult = true;
         transcriptBuffer = [transcriptBuffer, transcript].filter(Boolean).join(' ').trim();
         emit({ status: 'processing', transcript: transcriptBuffer });
+        emitTranscript(transcriptBuffer);
         finalize(transcriptBuffer, 'completed');
         return;
       }
@@ -265,19 +391,24 @@ export function createSpeechSession({
         emitEmptyResult('Kebenaran mikrofon diperlukan untuk latihan ini.', error);
         return;
       }
+      if (multiUtterance && transcriptBuffer) {
+        try {
+          nextRecognition.stop?.();
+        } catch {
+          // Ignore soft stop errors.
+        }
+        return;
+      }
       emit({ status: 'error', error });
       onError?.(error);
     };
     nextRecognition.onend = () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      clearTimers();
       if (finalized) {
         cleanup();
         return;
       }
-      const bufferedTranscript = typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
+      const bufferedTranscript = getBufferedTranscript();
       if (bufferedTranscript) {
         finalize(bufferedTranscript, 'completed');
       } else if (!receivedResult || state.status === 'listening' || state.status === 'processing') {
@@ -289,31 +420,26 @@ export function createSpeechSession({
     };
 
     try {
-      timeoutId = setTimeout(() => {
-        if (!finalized && state.status === 'listening') {
-          const bufferedTranscript = typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
-          if (bufferedTranscript) {
-            finalize(bufferedTranscript, 'completed');
-            return;
-          }
-        }
-        if (!finalized && state.status === 'listening' && !receivedResult) {
+      hardTimeoutId = setTimeout(() => {
+        if (finalized) return;
+        const bufferedTranscript = getBufferedTranscript();
+        if (bufferedTranscript) {
           try {
             recognition?.stop?.();
           } catch {
             // Ignore timeout stop errors.
           }
+          return;
+        }
+        if (state.status === 'listening' && !receivedResult) {
           emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
         }
-      }, 9000);
+      }, Math.max(0, Number(hardTimeoutMs) || 0));
       nextRecognition.start();
       return state;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'start_failed';
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      clearTimers();
       emit({ status: 'idle', error: message });
       onError?.(message);
       cleanup();
