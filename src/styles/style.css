@@ -1503,10 +1503,20 @@ button:active {
   padding: 18px;
 }
 
-.reading-target.rtl {
+.reading-target.rtl,
+[lang="ar"]:not(textarea) {
   direction: rtl;
   text-align: right;
   font-size: 28px;
+  font-family: system-ui, "Segoe UI", Tahoma, Arial, "Noto Sans Arabic", sans-serif;
+  unicode-bidi: plaintext;
+}
+
+textarea[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: system-ui, "Segoe UI", Tahoma, Arial, "Noto Sans Arabic", sans-serif;
+  unicode-bidi: plaintext;
 }
 
 .reading-result h2 {

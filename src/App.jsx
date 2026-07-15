@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
@@ -56,7 +56,7 @@ const storageRecoveryEvents = [];
 
 const defaultProfile = {
   name: '',
-  avatar: '👦',
+  avatar: '??',
   year: 'Tahun 2',
   isDemo: false,
   xp: 0,
@@ -77,7 +77,7 @@ function createDemoProfile() {
   return {
     ...defaultProfile,
     name: 'Demo Murid',
-    avatar: '👦',
+    avatar: '??',
     year: 'Tahun 2',
     isDemo: true,
     createdAt: new Date().toISOString()
@@ -140,10 +140,10 @@ function loadResume() {
 }
 
 function normalizeStars(value) {
-  const text = String(value || '').replace(/[\u2606\u2729]/g, '⭐').replace(/\s+/g, '').trim();
-  if (!text) return '⭐⭐⭐';
-  const clean = text.replace(/[^\u2B50⭐★]+/gu, '');
-  return clean || '⭐⭐⭐';
+  const text = String(value || '').replace(/[\u2606\u2729]/g, '?').replace(/\s+/g, '').trim();
+  if (!text) return '???';
+  const clean = text.replace(/[^\u2B50??]+/gu, '');
+  return clean || '???';
 }
 
 function getTopicDisplayName(topic = {}, fallback = '-') {
@@ -296,10 +296,10 @@ function progressKey(subjectId, topicId) {
 }
 
 function getStars(score = 0) {
-  if (score >= 90) return '⭐⭐⭐';
-  if (score >= 70) return '⭐⭐';
-  if (score >= 50) return '⭐';
-  return '☆☆☆';
+  if (score >= 90) return '???';
+  if (score >= 70) return '??';
+  if (score >= 50) return '?';
+  return '???';
 }
 
 function getGrade(score = 0) {
@@ -508,7 +508,7 @@ export default function App() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
-  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
+  const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [] });
   const [chatOpen, setChatOpen] = useState(false);
   const [explainOpen, setExplainOpen] = useState(false);
   const [explainData, setExplainData] = useState(null);
@@ -831,7 +831,7 @@ export default function App() {
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
     const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
+    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '???', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
     startSession.adaptiveSessionId = adaptiveSessionId;
 
     setActiveSubject(subject);
@@ -916,7 +916,7 @@ export default function App() {
           id: resume.subjectId || 'adaptive',
           title: resume.metadata?.displayTitle || 'Latihan AI',
           short: 'AI',
-          icon: '🤖',
+          icon: '??',
           topics: [
             {
               id: resume.topicId || `adaptive_${resume.sessionId || resume.session?.adaptiveSessionId || 'resume'}`,
@@ -1055,7 +1055,7 @@ export default function App() {
       id: 'adaptive',
       title: 'Latihan AI',
       short: 'AI',
-      icon: '🤖',
+      icon: '??',
       topics: [
         {
           id: `adaptive_${session.sessionId}`,
@@ -1653,8 +1653,8 @@ function BetaFeedbackButton() {
 
 function Login({ onStart }) {
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('👦');
-  const avatars = ['👦', '👧', '🧒', '🙂'];
+  const [avatar, setAvatar] = useState('??');
+  const avatars = ['??', '??', '??', '??'];
 
   return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item} type="button" className={item === avatar ? '' : 'secondary'} onClick={() => setAvatar(item)}>{item}</button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar</button></section></main>;
 }
@@ -1697,14 +1697,14 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       ? personality?.motivation || 'Hampir betul. Jom kemaskan jawapan sedikit lagi.'
       : feedback?.status === 'hint'
         ? `Petunjuk ${coachToneLabel}`
-        : personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi.';
+        : personality?.farewell || 'Tak mengapa ?? Mari kita cuba sekali lagi.';
   const feedbackTitle = feedback?.status === 'correct'
     ? 'Syabas!'
     : feedback?.status === 'almost'
       ? 'Hampir betul'
       : feedback?.status === 'hint'
         ? `Petunjuk ${coachToneLabel}`
-        : 'Tak mengapa 😊';
+        : 'Tak mengapa ??';
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = sanitizeAiText(safeCoachingDecision?.hint || question?.hint || 'Cari kata kunci penting.');
@@ -1815,7 +1815,7 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
     }
   ];
 
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '🎉' : '💪'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa 😊')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa 😊 Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce">{passed ? '??' : '??'}</div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa ??')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa ?? Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
   }
 
 function AiTutorChat({ profile, selectedSubject, onTutup }) {
@@ -1939,7 +1939,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setResult(null);
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>🏆 Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>?? Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = [
@@ -1964,8 +1964,8 @@ const readingPassages = [
     language: 'arab',
     label: 'Bahasa Arab',
     speechLang: 'ar-SA',
-    title: 'Ø§Ù„Ù†Øµ Ø§Ù„Ø¹Ø±Ø¨ÙŠ',
-    text: 'Ø°Ù‡Ø¨ Ø¹Ù„ÙŠ Ø¥Ù„Ù‰ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©. Ù‚Ø±Ø£ ÙƒØªØ§Ø¨Ù‹Ø§ Ø¬Ø¯ÙŠØ¯Ù‹Ø§. ÙƒØªØ¨ ÙˆØ§Ø¬Ø¨Ù‡ ÙÙŠ Ø§Ù„Ø¨ÙŠØª.'
+    title: 'النص العربي',
+    text: 'ذهب علي إلى المدرسة. قرأ كتابًا جديدًا. كتب واجبه في البيت.'
   }
 ];
 
@@ -1983,6 +1983,16 @@ function splitBacaanWords(text = '') {
     raw: word,
     normalized: normalizeBacaanWord(word)
   })).filter(word => word.normalized);
+}
+
+function containsArabicText(value = '') {
+  return /[\p{Script=Arabic}]/u.test(String(value ?? ''));
+}
+
+function safeArabicCoachText(value, fallback = '') {
+  const text = String(value ?? '').trim();
+  if (!text) return fallback;
+  return containsArabicText(text) ? text : fallback;
 }
 
 function compareBacaan(targetText = '', transcript = '') {
@@ -2057,7 +2067,9 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   };
   const safeResult = normalizeBacaanResult(result);
   const hasResult = Boolean(result);
-  const safePassageText = typeof passage?.text === 'string' ? passage.text : '';
+  const safePassageText = passage?.language === 'arab'
+    ? safeArabicCoachText(passage?.text, 'Tiada petikan bacaan tersedia buat masa ini.')
+    : typeof passage?.text === 'string' ? passage.text : '';
   const safeTranscript = typeof transcript === 'string' ? transcript : '';
   const safeWords = Array.isArray(safeResult.words) ? safeResult.words : [];
   const safeMatched = Array.isArray(safeResult.matched) ? safeResult.matched : [];
@@ -2277,13 +2289,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     onClearResume?.();
   }
 
-  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check">{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
+return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
 }
 
 const listeningSets = [
   { id: 'bm', language: 'BM', speechLang: 'ms-MY', title: 'BM Mendengar', prompt: 'Ibu beli roti dan susu di kedai.', choose: { question: 'Apa yang ibu beli?', options: ['Roti dan susu', 'Buku dan pensel', 'Ikan dan nasi'], answer: 'Roti dan susu' }, arrange: ['Ibu', 'beli', 'roti'], spell: 'susu', answer: { question: 'Di mana ibu membeli barang?', accepted: ['kedai', 'di kedai'] } },
   { id: 'english', language: 'Bahasa Inggeris', speechLang: 'en-US', title: 'Bahasa Inggeris Mendengar', prompt: 'The boy reads a book under the tree.', choose: { question: 'What does the boy read?', options: ['A book', 'A letter', 'A menu'], answer: 'A book' }, arrange: ['The', 'boy', 'reads'], spell: 'tree', answer: { question: 'Where is the boy?', accepted: ['under the tree', 'tree'] } },
-  { id: 'arab', language: 'Arabic', speechLang: 'ar-SA', title: 'Bahasa Arab Mendengar', prompt: 'Ø°Ù‡Ø¨ Ø¹Ù„ÙŠ Ø¥Ù„Ù‰ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.', choose: { question: 'Siapa yang disebut?', options: ['Ø¹Ù„ÙŠ', 'Ø£Ø­Ù…Ø¯', 'Ø³Ø§Ø±Ø©'], answer: 'Ø¹Ù„ÙŠ' }, arrange: ['Ø°Ù‡Ø¨', 'Ø¹Ù„ÙŠ', 'Ø¥Ù„Ù‰'], spell: 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©', answer: { question: 'Tulis satu perkataan yang didengar.', accepted: ['Ø§Ù„Ù…Ø¯Ø±Ø³Ø©', 'Ù…Ø¯Ø±Ø³Ø©'] } }
+  { id: 'arab', language: 'Bahasa Arab', speechLang: 'ar-SA', title: 'Bahasa Arab Mendengar', prompt: 'ذهب علي إلى المدرسة.', choose: { question: 'Siapa yang disebut?', options: ['علي', 'أحمد', 'سارة'], answer: 'علي' }, arrange: ['ذهب', 'علي', 'إلى'], spell: 'المدرسة', answer: { question: 'Tulis satu perkataan yang didengar.', accepted: ['المدرسة', 'مدرسة'] } }
 ];
 
 function normalizeMendengar(text = '') {
@@ -2425,14 +2437,14 @@ const speakingPrompts = [
   },
   {
     id: 'arab',
-    language: 'Arabic',
+    language: 'Bahasa Arab',
     speechLang: 'ar-SA',
     title: 'Bahasa Arab Bertutur',
     prompts: {
-      intro: { label: 'Kenalkan diri', text: 'Ø§Ø³Ù…ÙŠ Ø¹Ù„ÙŠ.', keywords: ['Ø§Ø³Ù…ÙŠ', 'Ø¹Ù„ÙŠ'] },
-      describe: { label: 'Ceritakan gambar atau arahan', text: 'Ù‡Ø°Ø§ ÙƒØªØ§Ø¨ Ø¬Ø¯ÙŠØ¯.', keywords: ['Ù‡Ø°Ø§', 'ÙƒØªØ§Ø¨', 'Ø¬Ø¯ÙŠØ¯'] },
-      answer: { label: 'Jawab soalan mudah', text: 'Ù†Ø¹Ù…', keywords: ['Ù†Ø¹Ù…'] },
-      repeat: { label: 'Ulang ayat', text: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.', keywords: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©'] }
+      intro: { label: 'Kenalkan diri', text: 'اسمي علي.', keywords: ['اسمي', 'علي'] },
+      describe: { label: 'Ceritakan gambar atau arahan', text: 'هذا كتاب جديد.', keywords: ['هذا', 'كتاب', 'جديد'] },
+      answer: { label: 'Jawab soalan mudah', text: 'نعم', keywords: ['نعم'] },
+      repeat: { label: 'Ulang ayat', text: 'أنا أحب المدرسة.', keywords: ['أنا', 'أحب', 'المدرسة'] }
     }
   }
 ];
@@ -2531,6 +2543,9 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const safeModeKey = safeModeKeys.join('|');
   const prompt = promptBank?.[mode] || promptBank?.intro || Object.values(promptBank)[0] || { label: 'Soalan', text: '', keywords: [] };
   const safePrompt = prompt && typeof prompt === 'object' ? prompt : { label: 'Soalan', text: '', keywords: [] };
+  const safePromptText = set?.id === 'arab'
+    ? safeArabicCoachText(safePrompt?.text, 'Latihan Bertutur tidak mempunyai arahan yang sah buat masa ini.')
+    : typeof safePrompt?.text === 'string' ? safePrompt.text : '';
   const safeKeywords = Array.isArray(safePrompt.keywords) ? safePrompt.keywords : [];
   const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
   const safeResult = result && typeof result === 'object' ? result : { status: 'idle', score: 0, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], transcript: '', confidence: 0, correct: false, errorCode: '', message: '' };
@@ -2798,7 +2813,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     onClearResume?.();
   }
 
-  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safePrompt?.text || ''}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Pengecaman suara automatik tidak stabil pada Safari. Gunakan transkrip manual.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{safeResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check">{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
+  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safePromptText}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Pengecaman suara automatik tidak stabil pada Safari. Gunakan transkrip manual.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{safeResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<button onClick={saveBertutur}>Simpan Keputusan Bertutur</button></section>}</main>;
 }
 
 const writingSets = [
@@ -2830,15 +2845,15 @@ const writingSets = [
   },
   {
     id: 'arab',
-    language: 'Arabic',
+    language: 'Bahasa Arab',
     title: 'Bahasa Arab Menulis',
-    dictionary: ['Ø¨ÙŠØª', 'Ù…Ø¯Ø±Ø³Ø©', 'ÙƒØªØ§Ø¨', 'Ù‚Ù„Ù…', 'Ø·Ø§Ù„Ø¨', 'Ù…Ø¹Ù„Ù…', 'Ø¨Ø§Ø¨', 'Ù…Ø§Ø¡', 'Ø´Ù…Ø³', 'Ù‚Ù…Ø±', 'Ø£Ù…', 'Ø£Ø¨', 'ØµØ¯ÙŠÙ‚'],
+    dictionary: ['بيت', 'مدرسة', 'كتاب', 'قلم', 'طالب', 'معلم', 'باب', 'ماء', 'شمس', 'قمر', 'أم', 'أب', 'صديق'],
     tasks: {
-      arrange: { label: 'Susun ayat', prompt: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.', words: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©'], answer: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©', keywords: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨', 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©'] },
-      blank: { label: 'Isi tempat kosong', prompt: 'Ø£Ù†Ø§ Ø£Ø­Ø¨ ____.', answer: 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©', keywords: ['Ø§Ù„Ù…Ø¯Ø±Ø³Ø©'] },
-      short: { label: 'Jawapan pendek', prompt: 'Ù…Ù† Ù‡Ø°Ø§ØŸ', keywords: ['Ø¹Ù„ÙŠ'] },
-      build: { label: 'Bina ayat', prompt: 'Ø§ÙƒØªØ¨ Ø¬Ù…Ù„Ø© Ø¹Ù† Ø§Ù„ÙƒØªØ§Ø¨.', keywords: ['ÙƒØªØ§Ø¨', 'Ø¬Ø¯ÙŠØ¯'] },
-      paragraph: { label: 'Perenggan mudah', prompt: 'Ø§ÙƒØªØ¨ Ø¬Ù…Ù„ØªÙŠÙ† Ù‚ØµÙŠØ±ØªÙŠÙ†.', keywords: ['Ø£Ù†Ø§', 'Ø£Ø­Ø¨'] }
+      arrange: { label: 'Susun ayat', prompt: 'أنا أحب المدرسة.', words: ['أنا', 'أحب', 'المدرسة'], answer: 'أنا أحب المدرسة', keywords: ['أنا', 'أحب', 'المدرسة'] },
+      blank: { label: 'Isi tempat kosong', prompt: 'أنا أحب ____.', answer: 'المدرسة', keywords: ['المدرسة'] },
+      short: { label: 'Jawapan pendek', prompt: 'من هذا؟', keywords: ['علي'] },
+      build: { label: 'Bina ayat', prompt: 'اكتب جملة عن الكتاب.', keywords: ['كتاب', 'جديد'] },
+      paragraph: { label: 'Perenggan mudah', prompt: 'اكتب جملتين قصيرتين.', keywords: ['أنا', 'أحب'] }
     }
   }
 ];
@@ -2879,6 +2894,9 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const safeTasks = set?.tasks && typeof set.tasks === 'object' ? set.tasks : {};
   const safeModes = Object.entries(safeTasks).map(([id, value]) => ({ id, label: value?.label || id }));
   const safeTask = safeTasks[mode] || safeTasks.arrange || Object.values(safeTasks).find(Boolean) || null;
+  const safeTaskPrompt = set?.id === 'arab'
+    ? safeArabicCoachText(safeTask?.prompt, 'Latihan Menulis tidak mempunyai tugas yang sah buat masa ini.')
+    : typeof safeTask?.prompt === 'string' ? safeTask.prompt : 'Tiada tugas menulis tersedia buat masa ini.';
   const safeMode = safeTasks[mode] ? mode : (safeTasks.arrange ? 'arrange' : Object.keys(safeTasks)[0] || '');
   const safeResult = result && typeof result === 'object' ? {
     score: Number(result.score) || 0,
@@ -2980,12 +2998,13 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
 
-  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`}>{safeTask?.prompt || 'Tiada tugas menulis tersedia buat masa ini.'}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{safeResult ? <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span><span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span></div><div className="word-check reading-word-check">{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{safeResult.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{safeResult.explanation}</p></div></section> : <section className="card"><p className="eyebrow">Keputusan Menulis</p><h2>Belum ada keputusan.</h2><p>Semak tulisan untuk melihat analisis.</p></section>}</main>;
+  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeTaskPrompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{safeResult ? <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span><span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{safeResult.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{safeResult.explanation}</p></div></section> : <section className="card"><p className="eyebrow">Keputusan Menulis</p><h2>Belum ada keputusan.</h2><p>Semak tulisan untuk melihat analisis.</p></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {
   return <div className="stat"><span className="stat-icon">{icon}</span><b>{value}</b><span>{label}</span></div>;
 }
+
 
 
 
