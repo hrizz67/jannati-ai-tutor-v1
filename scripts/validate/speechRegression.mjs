@@ -97,6 +97,223 @@ function createTranscriptAccumulator() {
   };
 }
 
+function createBacaanAttemptHarness(targetText = 'Ayah pergi ke pasar kemudian ke kedai') {
+  const finalFragmentsRef = { current: [] };
+  const interimTranscriptRef = { current: '' };
+  const seenResultKeysRef = { current: new Set() };
+  const hasAnyTranscriptRef = { current: false };
+  const sessionFinalizedRef = { current: false };
+  const recognitionRef = { current: null };
+  const cleanupTimerRef = { current: null };
+  const silenceTimerRef = { current: null };
+  const transcriptRef = { current: '' };
+  const resultRef = { current: null };
+  const sessionCounterRef = { current: 0 };
+  const activeSessionIdRef = { current: 0 };
+
+  function makeEmptyResult(message = 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.') {
+    return {
+      status: 'empty',
+      transcript: '',
+      correct: false,
+      confidence: 0,
+      matched: [],
+      matchedKeywords: [],
+      tertinggal: [],
+      missingWords: [],
+      missed: [],
+      words: [],
+      errorCode: 'no-result',
+      message,
+      score: 0
+    };
+  }
+
+  function clearTimer(ref) {
+    if (ref.current) {
+      clearTimeout(ref.current);
+      ref.current = null;
+    }
+  }
+
+  function resetSessionState() {
+    const sessionId = ++sessionCounterRef.current;
+    activeSessionIdRef.current = sessionId;
+    clearTimer(silenceTimerRef);
+    clearTimer(cleanupTimerRef);
+    finalFragmentsRef.current = [];
+    interimTranscriptRef.current = '';
+    seenResultKeysRef.current = new Set();
+    hasAnyTranscriptRef.current = false;
+    sessionFinalizedRef.current = false;
+    transcriptRef.current = '';
+    resultRef.current = null;
+    return sessionId;
+  }
+
+  function isActiveSession(sessionId) {
+    return sessionId && sessionId === activeSessionIdRef.current;
+  }
+
+  function bufferedTranscript() {
+    const finalTranscript = finalFragmentsRef.current.join(' ').trim();
+    const interimTranscript = typeof interimTranscriptRef.current === 'string' ? interimTranscriptRef.current.trim() : '';
+    if (!finalTranscript) return interimTranscript;
+    if (!interimTranscript) return finalTranscript;
+    if (finalTranscript === interimTranscript) return finalTranscript;
+    if (finalTranscript.endsWith(interimTranscript)) return finalTranscript;
+    return [finalTranscript, interimTranscript].filter(Boolean).join(' ').trim();
+  }
+
+  function finalize(sessionId, nextTranscript, status = 'completed') {
+    if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return resultRef.current;
+    sessionFinalizedRef.current = true;
+    clearTimer(silenceTimerRef);
+    clearTimer(cleanupTimerRef);
+    const transcript = typeof nextTranscript === 'string' ? nextTranscript.trim() : '';
+    transcriptRef.current = transcript;
+    resultRef.current = transcript
+      ? {
+          status,
+          transcript,
+          correct: true,
+          confidence: 100,
+          matched: [],
+          matchedKeywords: [],
+          tertinggal: [],
+          missingWords: [],
+          missed: [],
+          words: [],
+          errorCode: '',
+          message: '',
+          score: 100
+        }
+      : makeEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.');
+    return resultRef.current;
+  }
+
+  function start() {
+    const sessionId = resetSessionState();
+    const recognition = new FakeRecognition();
+    recognitionRef.current = recognition;
+    const fireSilenceTimeout = () => {
+      if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return;
+      recognition.stop?.();
+    };
+    const fireHardTimeout = () => {
+      if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return;
+      const transcript = bufferedTranscript();
+      recognition.stop?.();
+      finalize(sessionId, transcript, transcript ? 'completed' : 'empty');
+    };
+    recognition.onstart = () => {
+      if (!isActiveSession(sessionId)) return;
+    };
+    recognition.onresult = event => {
+      if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return;
+      const { nextFinalFragments, interimTranscript, hasTranscript } = collectSpeechTranscriptFragments(event, seenResultKeysRef.current, Number.isInteger(event?.resultIndex) ? event.resultIndex : 0);
+      if (!hasTranscript) return;
+      hasAnyTranscriptRef.current = true;
+      if (nextFinalFragments.length) {
+        finalFragmentsRef.current = [...finalFragmentsRef.current, ...nextFinalFragments];
+      }
+      interimTranscriptRef.current = interimTranscript;
+      transcriptRef.current = bufferedTranscript();
+      clearTimer(silenceTimerRef);
+      silenceTimerRef.current = { sessionId, fire: fireSilenceTimeout };
+      if (transcriptRef.current) {
+        resultRef.current = {
+          status: 'processing',
+          transcript: transcriptRef.current,
+          correct: false,
+          confidence: 0,
+          score: 0,
+          matched: [],
+          matchedKeywords: [],
+          tertinggal: [],
+          missingWords: [],
+          missed: [],
+          words: [],
+          errorCode: '',
+          message: ''
+        };
+      }
+    };
+    recognition.onerror = event => {
+      if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return;
+      const error = event?.error || 'unknown_error';
+      if (error === 'aborted') return;
+      const transcript = bufferedTranscript();
+      if (transcript) {
+        recognition.stop?.();
+        return;
+      }
+      if (error === 'no-speech') {
+        finalize(sessionId, '', 'empty');
+        return;
+      }
+      if (error === 'audio-capture') {
+        finalize(sessionId, '', 'empty');
+        return;
+      }
+      if (error === 'not-allowed' || error === 'service-not-allowed') {
+        finalize(sessionId, '', 'empty');
+        return;
+      }
+      finalize(sessionId, '', 'error');
+    };
+    recognition.onend = () => {
+      if (!isActiveSession(sessionId) || sessionFinalizedRef.current) return;
+      const transcript = bufferedTranscript();
+      finalize(sessionId, transcript, 'completed');
+    };
+    cleanupTimerRef.current = { sessionId, fire: fireHardTimeout };
+    recognition.start();
+    return {
+      sessionId,
+      recognition,
+      fireSilenceTimeout,
+      fireHardTimeout,
+      get transcript() {
+        return transcriptRef.current;
+      },
+      get result() {
+        return resultRef.current;
+      },
+      get activeSessionId() {
+        return activeSessionIdRef.current;
+      },
+      resetSessionState,
+      invalidate() {
+        activeSessionIdRef.current = ++sessionCounterRef.current;
+      },
+      dispose() {
+        activeSessionIdRef.current = ++sessionCounterRef.current;
+        clearTimer(silenceTimerRef);
+        clearTimer(cleanupTimerRef);
+        recognition.onstart = null;
+        recognition.onresult = null;
+        recognition.onerror = null;
+        recognition.onend = null;
+        recognition.onnomatch = null;
+        try {
+          recognition.stop?.();
+        } catch {
+          // ignore
+        }
+        try {
+          recognition.abort?.();
+        } catch {
+          // ignore
+        }
+        recognitionRef.current = null;
+      }
+    };
+  }
+
+  return { start, resetSessionState, state: { finalFragmentsRef, interimTranscriptRef, seenResultKeysRef, hasAnyTranscriptRef, sessionFinalizedRef, recognitionRef, cleanupTimerRef, silenceTimerRef, transcriptRef, resultRef, sessionCounterRef, activeSessionIdRef } };
+}
+
 function makeEvent(results) {
   return { results };
 }
@@ -226,6 +443,81 @@ async function main() {
     'mereka semua',
     'Valid transcript should not be lost when only one sentence is present.'
   );
+
+  const bacaanHarness = createBacaanAttemptHarness();
+  const attempt1 = bacaanHarness.start();
+  assert.equal(FakeRecognition.instances.length, 1, 'First attempt should create one recognition instance.');
+  attempt1.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt1.recognition.emitEnd();
+  assert.equal(attempt1.transcript, 'Ayah pergi ke pasar', 'Attempt 1 transcript should be preserved.');
+  assert.equal(attempt1.result.status, 'completed', 'Attempt 1 should complete successfully.');
+  attempt1.dispose();
+
+  const attempt2 = bacaanHarness.start();
+  assert.equal(FakeRecognition.instances.length, 2, 'Second attempt should create a fresh recognition instance.');
+  attempt2.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt2.recognition.emitEnd();
+  assert.equal(attempt2.transcript, 'Ayah pergi ke pasar', 'Attempt 2 should accept the same sentence.');
+  assert.equal(attempt2.result.status, 'completed', 'Attempt 2 should also complete successfully.');
+  attempt2.dispose();
+
+  const attempt3 = bacaanHarness.start();
+  attempt3.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt3.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' }), makeResult({ transcript: 'kemudian ke kedai' })], 1);
+  attempt3.recognition.emitEnd();
+  assert.equal(attempt3.transcript, 'Ayah pergi ke pasar kemudian ke kedai', 'Multi-sentence attempt should keep both sentences.');
+  assert.equal(attempt3.result.status, 'completed', 'Multi-sentence attempt should complete.');
+  attempt3.dispose();
+
+  const attempt4 = bacaanHarness.start();
+  attempt4.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt4.recognition.emitEnd();
+  attempt4.dispose();
+  const attempt5 = bacaanHarness.start();
+  attempt5.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt5.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' }), makeResult({ transcript: 'kemudian ke kedai' })], 1);
+  attempt5.recognition.emitEnd();
+  assert.equal(attempt5.transcript, 'Ayah pergi ke pasar kemudian ke kedai', 'Retry after one sentence should still allow two sentences.');
+  assert.equal(attempt5.result.status, 'completed', 'Retry attempt should complete.');
+  attempt5.dispose();
+
+  const attempt6 = bacaanHarness.start();
+  attempt6.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' }), makeResult({ transcript: 'kemudian ke kedai' })], 1);
+  attempt6.recognition.emitEnd();
+  attempt6.dispose();
+  const attempt7 = bacaanHarness.start();
+  attempt7.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt7.recognition.emitEnd();
+  assert.equal(attempt7.transcript, 'Ayah pergi ke pasar', 'Retry after two sentences should still allow one sentence.');
+  attempt7.dispose();
+
+  const attempt8 = bacaanHarness.start();
+  const oldOnEndRecognition = attempt8.recognition;
+  const attempt9 = bacaanHarness.start();
+  oldOnEndRecognition.emitEnd();
+  attempt9.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt9.recognition.emitEnd();
+  assert.equal(attempt9.transcript, 'Ayah pergi ke pasar', 'Old onend should not interfere with the new attempt.');
+  attempt9.dispose();
+
+  const attempt10 = bacaanHarness.start();
+  const oldTimeout = attempt10.fireHardTimeout;
+  const attempt11 = bacaanHarness.start();
+  oldTimeout();
+  attempt11.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt11.recognition.emitEnd();
+  assert.equal(attempt11.transcript, 'Ayah pergi ke pasar', 'Old timeout should not interfere with the new attempt.');
+  attempt11.dispose();
+
+  const attempt12 = bacaanHarness.start();
+  attempt12.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt12.recognition.emitEnd();
+  attempt12.dispose();
+  const attempt13 = bacaanHarness.start();
+  attempt13.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  attempt13.recognition.emitEnd();
+  assert.equal(attempt13.transcript, 'Ayah pergi ke pasar', 'Identical transcript in a new session should still be accepted.');
+  attempt13.dispose();
 
   const validResults = [];
   const validChanges = [];
