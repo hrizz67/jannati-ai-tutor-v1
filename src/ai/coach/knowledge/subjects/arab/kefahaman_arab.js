@@ -15,7 +15,7 @@ export default createKnowledgePack({
     "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
     "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
   ],
-  "simpleExplanation": "Kefahaman Arab ialah memahami petikan atau ayat pendek dalam bahasa Arab.",
+  "simpleExplanation": "Kefahaman Arab ialah membaca petikan ringkas dan memahami maksudnya.",
   "examples": [
     "النص القصير",
     "المدرسة",
@@ -218,5 +218,47 @@ export default createKnowledgePack({
     "Tidak membezakan huruf bertitik.",
     "Menyebut tanpa latihan yang cukup.",
     "Membaca dari arah yang salah."
+  ],
+  "pronunciationGuide": [
+    "Sebut perkataan Arab dengan jelas dan perlahan.",
+    "Ikut sebutan guru satu demi satu.",
+    "Baca frasa penting berulang kali.",
+    "Gunakan intonasi yang tenang.",
+    "Fokus pada bunyi huruf yang betul."
+  ],
+  "readingSteps": [
+    "Baca tajuk dan petikan dahulu.",
+    "Cari kata kunci dalam soalan.",
+    "Padankan jawapan dengan ayat yang sesuai.",
+    "Baca semula petikan jika perlu.",
+    "Semak maksud keseluruhan sebelum menjawab."
+  ],
+  "letterBreakdown": [
+    "نَصّ = petikan",
+    "قِصَير = pendek",
+    "كِتَاب = buku",
+    "قَلَم = pen",
+    "مَدْرَسَة = sekolah"
+  ],
+  "listeningTips": [
+    "Dengar petikan dengan penuh perhatian.",
+    "Cari perkataan yang kamu kenal.",
+    "Ulang bunyi selepas guru.",
+    "Fahami makna sebelum memilih jawapan.",
+    "Dengar kata kunci dengan teliti."
+  ],
+  "speakingPractice": [
+    "Baca petikan pendek dengan jelas.",
+    "Sebut kata kunci satu demi satu.",
+    "Latih menjawab soalan secara ringkas.",
+    "Gunakan suara yang tenang dan jelas.",
+    "Ulang bacaan bersama guru."
+  ],
+  "writingPractice": [
+    "Salin kata kunci daripada petikan.",
+    "Tulis dari kanan ke kiri.",
+    "Semak titik dan baris.",
+    "Tuliskan jawapan pendek dengan kemas.",
+    "Bandingkan tulisan dengan contoh."
   ]
 });

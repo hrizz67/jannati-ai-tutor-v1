@@ -97,6 +97,25 @@ const knowledge = createKnowledgePack({
       "Amazing effort! You did very well."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Read the sentence.",
+    "Look for the describing word.",
+    "Check if the word tells us how something looks or feels.",
+    "Choose the word that describes the noun.",
+    "Say the adjective aloud to check it fits."
+  ],
+  "wordMeaning": [
+    "adjective = describing word",
+    "tells us how something looks, feels or seems"
+  ],
+  "exampleSentences": [
+    "The bag is big.",
+    "The flower is red.",
+    "The kitten is cute.",
+    "The soup is hot.",
+    "The sky is blue."
+  ],
   "relatedTopics": [
     "nouns",
     "verbs",

@@ -15,7 +15,7 @@ export default createKnowledgePack({
     "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
     "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
   ],
-  "simpleExplanation": "Huruf hijaiyah ialah huruf bahasa Arab yang perlu dikenali dan disebut dengan betul.",
+  "simpleExplanation": "Huruf Hijaiyah ialah huruf Arab yang perlu dikenali, dibaca dan disebut dengan betul.",
   "examples": [
     "ا",
     "ب",
@@ -97,6 +97,42 @@ export default createKnowledgePack({
       "Fantastic! Kamu telah melakukan yang terbaik."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Baca huruf dengan perlahan dari kanan ke kiri.",
+    "Perhatikan bentuk huruf dan titiknya.",
+    "Dengar sebutan huruf dengan teliti.",
+    "Padankan huruf dengan bunyi yang betul.",
+    "Ulang semula untuk pastikan jawapan tepat."
+  ],
+  "pronunciationGuide": [
+    "Sebut alif dengan jelas.",
+    "Dengar bunyi ba, ta dan tha dengan perlahan.",
+    "Ikut sebutan guru satu demi satu.",
+    "Latih bunyi huruf yang hampir sama.",
+    "Gunakan suara yang tenang dan jelas."
+  ],
+  "readingSteps": [
+    "Baca dari kanan ke kiri.",
+    "Kenal pasti huruf satu demi satu.",
+    "Gabungkan huruf secara perlahan.",
+    "Ulang bacaan dengan guru.",
+    "Semak semula huruf yang dipilih."
+  ],
+  "letterBreakdown": [
+    "ا ialah alif.",
+    "ب ialah ba.",
+    "ت ialah ta.",
+    "ث ialah tha.",
+    "ج ialah jim."
+  ],
+  "listeningTips": [
+    "Dengar bunyi huruf dengan teliti.",
+    "Bezakan huruf yang hampir sama.",
+    "Ulang bunyi yang didengar.",
+    "Ikut bacaan guru dengan sabar.",
+    "Fokus pada sebutan yang jelas."
+  ],
   "relatedTopics": [
     "mufradat",
     "ayat_mudah_arab",

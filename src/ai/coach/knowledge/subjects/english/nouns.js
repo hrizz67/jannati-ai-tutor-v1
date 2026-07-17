@@ -97,6 +97,25 @@ const knowledge = createKnowledgePack({
       "Amazing effort! You did very well."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Read the sentence.",
+    "Look for the naming word.",
+    "Check if the word names a person, animal, place or thing.",
+    "Choose the word that names something.",
+    "Say the noun aloud to check it sounds right."
+  ],
+  "wordMeaning": [
+    "noun = naming word",
+    "person, animal, place or thing"
+  ],
+  "exampleSentences": [
+    "The cat is sleeping on the chair.",
+    "My teacher reads a book.",
+    "We play in the school field.",
+    "The bag is on the table.",
+    "The boy carries a pencil."
+  ],
   "relatedTopics": [
     "verbs",
     "adjectives",

@@ -97,6 +97,25 @@ const knowledge = createKnowledgePack({
       "Amazing effort! You did very well."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Read the short text slowly.",
+    "Look for the important word or idea.",
+    "Check the question carefully.",
+    "Choose the answer that matches the text.",
+    "Read again if you need to confirm the detail."
+  ],
+  "wordMeaning": [
+    "reading = understanding written words",
+    "reading helps us learn new ideas"
+  ],
+  "exampleSentences": [
+    "Read the sentence and answer the question.",
+    "Look at the short paragraph.",
+    "Find the main idea in the text.",
+    "Choose the detail that matches the passage.",
+    "Read carefully before answering."
+  ],
   "relatedTopics": [
     "sentences",
     "nouns",

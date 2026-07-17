@@ -15,7 +15,7 @@ export default createKnowledgePack({
     "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
     "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
   ],
-  "simpleExplanation": "Ayat mudah Arab ialah ayat pendek yang senang dibaca dan difahami.",
+  "simpleExplanation": "Ayat Mudah Arab ialah ayat pendek yang senang dibaca, disebut dan difahami.",
   "examples": [
     "أحمد يقرأ الكتاب",
     "الولد في المدرسة",
@@ -97,6 +97,42 @@ export default createKnowledgePack({
       "Fantastic! Kamu telah melakukan yang terbaik."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Baca ayat mudah dengan perlahan.",
+    "Kenal pasti perkataan penting.",
+    "Padankan ayat dengan maksud yang betul.",
+    "Dengar sebutan sebelum memilih.",
+    "Semak ayat sekali lagi sebelum jawab."
+  ],
+  "pronunciationGuide": [
+    "Sebut ayat mudah dengan jelas.",
+    "Ikut bunyi perkataan satu demi satu.",
+    "Jangan baca terlalu laju.",
+    "Latih sebutan dengan guru.",
+    "Ulang ayat untuk lebih yakin."
+  ],
+  "readingSteps": [
+    "Baca dari kanan ke kiri.",
+    "Pecahkan ayat kepada perkataan kecil.",
+    "Padankan setiap perkataan dengan makna.",
+    "Ulang ayat secara perlahan.",
+    "Semak keseluruhan maksud."
+  ],
+  "letterBreakdown": [
+    "Kenal huruf pada setiap perkataan.",
+    "Cari huruf bertitik dan tidak bertitik.",
+    "Perhatikan bentuk huruf awal dan akhir.",
+    "Bandingkan perkataan yang hampir sama.",
+    "Gunakan bacaan berulang."
+  ],
+  "listeningTips": [
+    "Dengar ayat dengan teliti.",
+    "Cari perkataan yang paling dikenali.",
+    "Ulang bunyi yang didengar.",
+    "Minta guru membacanya sekali lagi.",
+    "Fokus pada makna keseluruhan."
+  ],
   "relatedTopics": [
     "huruf_hijaiyah",
     "mufradat",

@@ -209,6 +209,35 @@ const knowledge = createKnowledgePack({
     "Di mana haiwan ini tinggal?",
     "Bolehkah kamu beri bukti daripada gambar?"
   ],
+
+  "whyQuestions": [
+    "Mengapa haiwan perlu makanan?",
+    "Mengapa sesetengah haiwan hidup di air?",
+    "Mengapa haiwan mempunyai ciri yang berbeza?",
+    "Mengapa burung mempunyai sayap?",
+    "Mengapa haiwan memerlukan tempat tinggal yang sesuai?"
+  ],
+  "predictionQuestions": [
+    "Apa yang akan berlaku jika haiwan tidak mendapat air?",
+    "Apa yang mungkin berlaku jika haiwan tiada tempat berlindung?",
+    "Apa yang akan berlaku jika ikan keluar dari air terlalu lama?",
+    "Apa yang mungkin berlaku jika burung tidak boleh terbang?",
+    "Apa yang akan berubah jika haiwan hidup di habitat lain?"
+  ],
+  "comparisonQuestions": [
+    "Bandingkan haiwan darat dan haiwan air.",
+    "Bandingkan burung dan ikan.",
+    "Bandingkan haiwan berbulu dan haiwan bersisik.",
+    "Bandingkan cara bergerak haiwan yang berbeza.",
+    "Bandingkan haiwan yang hidup di ladang dan di hutan."
+  ],
+  "realLifeApplications": [
+    "Menjaga haiwan peliharaan dengan baik.",
+    "Memerhati haiwan di zoo atau ladang.",
+    "Memberi makanan yang sesuai kepada haiwan.",
+    "Menjaga kebersihan selepas memegang haiwan.",
+    "Mengenal haiwan dalam buku dan gambar."
+  ],
   "relatedTopics": [
     "tumbuhan",
     "manusia",

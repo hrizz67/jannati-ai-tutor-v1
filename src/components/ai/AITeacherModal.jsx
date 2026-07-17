@@ -37,9 +37,15 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
   const misconceptions = safeList(data.misconceptions);
   const evidenceQuestions = safeList(data.evidenceQuestions);
   const pronunciationTips = safeList(data.pronunciationTips);
+  const pronunciationGuide = safeList(data.pronunciationGuide);
+  const readingSteps = safeList(data.readingSteps);
+  const letterBreakdown = safeList(data.letterBreakdown);
+  const listeningTips = safeList(data.listeningTips);
   const letterRecognitionTips = safeList(data.letterRecognitionTips);
   const writingTips = safeList(data.writingTips);
   const vocabularyGroups = safeList(data.vocabularyGroups);
+  const wordMeaning = safeList(data.wordMeaning);
+  const exampleSentences = safeList(data.exampleSentences);
   const translationHints = safeList(data.translationHints);
   const readingPractice = safeList(data.readingPractice);
   const listeningPractice = safeList(data.listeningPractice);
@@ -51,6 +57,10 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
   const ayahOrHadithReference = safeList(data.ayahOrHadithReference);
   const reflectionQuestions = safeList(data.reflectionQuestions);
   const goodDeedsIdeas = safeList(data.goodDeedsIdeas);
+  const whyQuestions = safeList(data.whyQuestions);
+  const predictionQuestions = safeList(data.predictionQuestions);
+  const comparisonQuestions = safeList(data.comparisonQuestions);
+  const realLifeApplications = safeList(data.realLifeApplications);
   const practicePrompt = data.practicePrompt || followUpQuestions[0] || 'Cuba sekali lagi selepas membaca penerangan ini.';
   const voiceText = [
     data.explanation,
@@ -68,9 +78,15 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
     ...misconceptions,
     ...evidenceQuestions,
     ...pronunciationTips,
+    ...pronunciationGuide,
+    ...readingSteps,
+    ...letterBreakdown,
+    ...listeningTips,
     ...letterRecognitionTips,
     ...writingTips,
     ...vocabularyGroups,
+    ...wordMeaning,
+    ...exampleSentences,
     ...translationHints,
     ...readingPractice,
     ...listeningPractice,
@@ -82,6 +98,10 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
     ...ayahOrHadithReference,
     ...reflectionQuestions,
     ...goodDeedsIdeas,
+    ...whyQuestions,
+    ...predictionQuestions,
+    ...comparisonQuestions,
+    ...realLifeApplications,
     ...commonMistakes,
     ...followUpQuestions,
     ...memoryTips,
@@ -132,9 +152,15 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
           {renderListSection('Salah faham biasa', misconceptions)}
           {renderListSection('Soalan bukti', evidenceQuestions)}
           {renderListSection('Tip sebutan', pronunciationTips)}
+          {renderListSection('Panduan sebutan', pronunciationGuide)}
+          {renderListSection('Langkah baca', readingSteps)}
+          {renderListSection('Pecahan huruf', letterBreakdown)}
+          {renderListSection('Tip dengar', listeningTips)}
           {renderListSection('Kenal huruf', letterRecognitionTips)}
           {renderListSection('Tip tulisan', writingTips)}
           {renderListSection('Kumpulan kosa kata', vocabularyGroups)}
+          {renderListSection('Maksud kata', wordMeaning)}
+          {renderListSection('Ayat contoh', exampleSentences)}
           {renderListSection('Petunjuk terjemahan', translationHints)}
           {renderListSection('Latihan baca', readingPractice)}
           {renderListSection('Latihan dengar', listeningPractice)}
@@ -146,6 +172,10 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
           {renderListSection('Rujukan ayat/hadis', ayahOrHadithReference)}
           {renderListSection('Soalan renungan', reflectionQuestions)}
           {renderListSection('Idea amal baik', goodDeedsIdeas)}
+          {renderListSection('Soalan kenapa', whyQuestions)}
+          {renderListSection('Soalan ramalan', predictionQuestions)}
+          {renderListSection('Soalan banding', comparisonQuestions)}
+          {renderListSection('Aplikasi kehidupan', realLifeApplications)}
           {renderListSection('Kesilapan biasa', commonMistakes)}
           {renderListSection('Soalan susulan', followUpQuestions)}
 

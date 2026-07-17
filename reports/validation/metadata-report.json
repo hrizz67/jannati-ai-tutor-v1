@@ -1,12 +1,12 @@
 {
   "validator": "metadata",
-  "generatedAt": "2026-07-05T06:38:51.631Z",
+  "generatedAt": "2026-07-17T15:31:00.191Z",
   "status": "pass",
   "totals": {
     "files": 9,
     "subjects": 8,
-    "topics": 80,
-    "questions": 4000,
+    "topics": 85,
+    "questions": 4600,
     "infos": 0,
     "errors": 0,
     "warnings": 0

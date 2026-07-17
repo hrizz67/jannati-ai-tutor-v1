@@ -204,6 +204,35 @@ const knowledge = createKnowledgePack({
     "Apa yang dilakukan oleh anggota ini?",
     "Bagaimana kamu tahu jawapannya?"
   ],
+
+  "whyQuestions": [
+    "Mengapa kita perlu makan makanan sihat?",
+    "Mengapa kita perlu tidur cukup?",
+    "Mengapa badan perlu bergerak?",
+    "Mengapa kita perlu minum air?",
+    "Mengapa kita menjaga kebersihan badan?"
+  ],
+  "predictionQuestions": [
+    "Apa yang akan berlaku jika kita tidak tidur cukup?",
+    "Apa yang mungkin berlaku jika kita tidak makan seimbang?",
+    "Apa yang akan terjadi jika kita kurang minum air?",
+    "Apa yang mungkin berlaku jika kita tidak bersenam?",
+    "Apa yang akan berubah jika kita menjaga badan dengan baik?"
+  ],
+  "comparisonQuestions": [
+    "Bandingkan badan sihat dan badan letih.",
+    "Bandingkan makanan sihat dan makanan kurang sihat.",
+    "Bandingkan aktiviti aktif dan aktiviti rehat.",
+    "Bandingkan tangan bersih dan tangan kotor.",
+    "Bandingkan amalan sihat dan amalan tidak sihat."
+  ],
+  "realLifeApplications": [
+    "Makan sarapan sebelum ke sekolah.",
+    "Bersenam ringan setiap hari.",
+    "Minum air kosong yang mencukupi.",
+    "Menjaga kebersihan diri di rumah dan sekolah.",
+    "Berat badan dan emosi yang sihat bermula dengan rutin baik."
+  ],
   "relatedTopics": [
     "haiwan",
     "bumi",

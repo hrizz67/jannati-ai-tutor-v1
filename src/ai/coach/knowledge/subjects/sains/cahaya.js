@@ -205,6 +205,35 @@ const knowledge = createKnowledgePack({
     "Apakah sumber cahaya yang kamu nampak?",
     "Bagaimana cahaya membantu kita?"
   ],
+
+  "whyQuestions": [
+    "Mengapa kita boleh melihat benda dengan cahaya?",
+    "Mengapa lampu membantu kita pada waktu malam?",
+    "Mengapa bayang-bayang terbentuk?",
+    "Mengapa kita perlu berhati-hati dengan cahaya yang terlalu terang?",
+    "Mengapa cahaya penting dalam kehidupan harian?"
+  ],
+  "predictionQuestions": [
+    "Apa yang akan berlaku jika tiada cahaya?",
+    "Apa yang mungkin berlaku jika lampu padam?",
+    "Apa yang akan terjadi pada bayang-bayang jika cahaya bergerak?",
+    "Apa yang mungkin berlaku jika cahaya disekat?",
+    "Apa yang akan berubah jika sumber cahaya dekat dengan objek?"
+  ],
+  "comparisonQuestions": [
+    "Bandingkan cahaya semula jadi dan cahaya buatan.",
+    "Bandingkan bayang-bayang pendek dan panjang.",
+    "Bandingkan tempat terang dan tempat gelap.",
+    "Bandingkan lampu dan matahari.",
+    "Bandingkan objek yang menyekat cahaya dan yang tidak menyekat cahaya."
+  ],
+  "realLifeApplications": [
+    "Menggunakan lampu ketika gelap.",
+    "Membaca di tempat yang cukup terang.",
+    "Menjaga keselamatan semasa keluar pada waktu malam.",
+    "Memerhati bayang-bayang di halaman.",
+    "Menggunakan cahaya dengan selamat di rumah."
+  ],
   "relatedTopics": [
     "bumi",
     "bunyi",

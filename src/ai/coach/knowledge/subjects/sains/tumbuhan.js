@@ -208,6 +208,35 @@ const knowledge = createKnowledgePack({
     "Mengapa kamu memilih jawapan itu?",
     "Boleh kamu tunjuk bahagian tumbuhan?"
   ],
+
+  "whyQuestions": [
+    "Mengapa tumbuhan perlu air?",
+    "Mengapa tumbuhan memerlukan cahaya matahari?",
+    "Mengapa daun penting kepada tumbuhan?",
+    "Mengapa akar perlu berada dalam tanah?",
+    "Mengapa tumbuhan hijau berbeza daripada pokok berbunga?"
+  ],
+  "predictionQuestions": [
+    "Apa yang akan berlaku jika tumbuhan tidak disiram?",
+    "Apa yang mungkin berlaku jika tumbuhan tidak mendapat cahaya?",
+    "Apa yang akan terjadi jika daun layu?",
+    "Apa yang mungkin berlaku jika tanah terlalu kering?",
+    "Apa yang akan berubah jika tumbuhan dijaga dengan baik?"
+  ],
+  "comparisonQuestions": [
+    "Bandingkan tumbuhan tinggi dan tumbuhan rendah.",
+    "Bandingkan daun besar dan daun kecil.",
+    "Bandingkan akar dan daun.",
+    "Bandingkan tumbuhan yang subur dan yang layu.",
+    "Bandingkan pokok berbunga dan pokok tidak berbunga."
+  ],
+  "realLifeApplications": [
+    "Menyiram pokok di rumah atau sekolah.",
+    "Menjaga tanaman kecil di pasu.",
+    "Melihat tumbuhan di taman.",
+    "Menanam biji benih dengan guru.",
+    "Menjaga kebersihan kawasan pokok."
+  ],
   "relatedTopics": [
     "haiwan",
     "bumi",

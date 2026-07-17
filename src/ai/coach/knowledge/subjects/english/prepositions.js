@@ -97,6 +97,25 @@ const knowledge = createKnowledgePack({
       "Amazing effort! You did very well."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Read the sentence.",
+    "Look for the word that shows position.",
+    "Check where the object is placed.",
+    "Choose the preposition that fits the picture or sentence.",
+    "Read the full sentence again to check."
+  ],
+  "wordMeaning": [
+    "preposition = position word",
+    "shows place, direction or time"
+  ],
+  "exampleSentences": [
+    "The ball is under the table.",
+    "The cat is on the chair.",
+    "The bird is in the tree.",
+    "The boy stands beside his friend.",
+    "The bag is behind the door."
+  ],
   "relatedTopics": [
     "sentences",
     "reading",

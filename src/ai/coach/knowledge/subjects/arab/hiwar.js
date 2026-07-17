@@ -15,7 +15,7 @@ export default createKnowledgePack({
     "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
     "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
   ],
-  "simpleExplanation": "Hiwar ialah dialog ringkas antara dua orang.",
+  "simpleExplanation": "Hiwar ialah perbualan ringkas antara dua orang dalam bahasa Arab.",
   "examples": [
     "السلام عليكم",
     "وعليكم السلام",
@@ -97,6 +97,42 @@ export default createKnowledgePack({
       "Fantastic! Kamu telah melakukan yang terbaik."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Dengar dialog dengan perlahan.",
+    "Kenal pasti siapa yang bercakap.",
+    "Cari maksud ayat yang sesuai.",
+    "Padankan respons dengan situasi.",
+    "Semak semula dialog sebelum menjawab."
+  ],
+  "pronunciationGuide": [
+    "Sebut dialog dengan intonasi yang jelas.",
+    "Ikut nada pertanyaan dan jawapan.",
+    "Latih bunyi perkataan Arab yang mudah.",
+    "Baca bersama rakan atau guru.",
+    "Ulang dialog secara berpasangan."
+  ],
+  "readingSteps": [
+    "Baca dialog dari kanan ke kiri.",
+    "Kenal pasti ayat soal dan ayat jawap.",
+    "Padankan dialog dengan maksud.",
+    "Ulang bacaan dengan teliti.",
+    "Semak pilihan yang paling sesuai."
+  ],
+  "letterBreakdown": [
+    "Perhatikan huruf pada perkataan utama.",
+    "Cari bunyi yang hampir sama.",
+    "Lihat tanda dan titik huruf.",
+    "Pecahkan perkataan kepada huruf.",
+    "Kenal bunyi setiap perkataan."
+  ],
+  "listeningTips": [
+    "Dengar dialog dengan fokus.",
+    "Cari perkataan yang paling mudah difahami.",
+    "Ulang sebutan yang betul.",
+    "Latih mendengar bersama guru.",
+    "Fahami maksud keseluruhan dialog."
+  ],
   "relatedTopics": [
     "mufradat",
     "ayat_mudah_arab",

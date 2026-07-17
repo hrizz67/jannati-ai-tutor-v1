@@ -204,6 +204,35 @@ const knowledge = createKnowledgePack({
     "Mengapa kamu pilih jawapan itu?",
     "Apa yang menghasilkan bunyi itu?"
   ],
+
+  "whyQuestions": [
+    "Mengapa kita boleh mendengar bunyi?",
+    "Mengapa bunyi menjadi kuat atau perlahan?",
+    "Mengapa bunyi bergerak melalui udara?",
+    "Mengapa kita perlu menjaga bunyi kuat?",
+    "Mengapa suara boleh berbeza antara satu sama lain?"
+  ],
+  "predictionQuestions": [
+    "Apa yang akan berlaku jika tiada bunyi?",
+    "Apa yang mungkin berlaku jika benda dipukul kuat?",
+    "Apa yang akan terjadi jika kita menutup telinga?",
+    "Apa yang mungkin berlaku jika alat muzik dimainkan perlahan?",
+    "Apa yang akan berubah jika sumber bunyi bergerak lebih dekat?"
+  ],
+  "comparisonQuestions": [
+    "Bandingkan bunyi kuat dan bunyi perlahan.",
+    "Bandingkan bunyi tinggi dan bunyi rendah.",
+    "Bandingkan suara manusia dan bunyi alat muzik.",
+    "Bandingkan bunyi alam dan bunyi buatan.",
+    "Bandingkan bunyi yang jelas dan bunyi yang samar."
+  ],
+  "realLifeApplications": [
+    "Mendengar guru bercakap di kelas.",
+    "Menggunakan loceng untuk memberi isyarat.",
+    "Mengenal bunyi di rumah dan di sekolah.",
+    "Menjaga bunyi supaya tidak terlalu kuat.",
+    "Mengenal bunyi alat muzik dengan teliti."
+  ],
   "relatedTopics": [
     "cahaya",
     "manusia",

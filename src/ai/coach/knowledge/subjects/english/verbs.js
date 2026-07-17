@@ -97,6 +97,25 @@ const knowledge = createKnowledgePack({
       "Amazing effort! You did very well."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Read the sentence.",
+    "Look for the action word.",
+    "Check what the person or thing is doing.",
+    "Choose the word that shows an action.",
+    "Say the verb aloud to check it fits."
+  ],
+  "wordMeaning": [
+    "verb = action word",
+    "shows what someone or something does"
+  ],
+  "exampleSentences": [
+    "The boy runs to school.",
+    "The cat jumps over the box.",
+    "Mother cooks dinner.",
+    "The bird flies high.",
+    "We play in the field."
+  ],
   "relatedTopics": [
     "nouns",
     "adjectives",

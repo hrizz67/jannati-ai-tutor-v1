@@ -15,7 +15,7 @@ export default createKnowledgePack({
     "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
     "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
   ],
-  "simpleExplanation": "Mufradat ialah perkataan Arab yang kita pelajari dan gunakan.",
+  "simpleExplanation": "Mufradat ialah perkataan Arab yang kita baca, sebut dan fahami maknanya.",
   "examples": [
     "كتاب",
     "مدرسة",
@@ -97,6 +97,42 @@ export default createKnowledgePack({
       "Fantastic! Kamu telah melakukan yang terbaik."
     ]
   },
+
+  "problemSolvingSteps": [
+    "Baca perkataan Arab dengan perlahan.",
+    "Perhatikan makna yang diberi.",
+    "Padankan perkataan dengan maksud yang betul.",
+    "Dengar sebutan jika ada.",
+    "Semak pilihan sebelum menjawab."
+  ],
+  "pronunciationGuide": [
+    "Sebut perkataan Arab dengan bunyi yang jelas.",
+    "Ikut sebutan guru satu demi satu.",
+    "Baca perlahan supaya tidak tertukar bunyi.",
+    "Latih perkataan baharu berulang kali.",
+    "Gunakan contoh harian untuk membantu sebutan."
+  ],
+  "readingSteps": [
+    "Baca perkataan Arab dari kanan ke kiri.",
+    "Kenal pasti huruf utama dalam perkataan.",
+    "Padankan dengan maksud Melayu.",
+    "Ulang bacaan beberapa kali.",
+    "Semak sama ada bunyi dan makna sepadan."
+  ],
+  "letterBreakdown": [
+    "Perhatikan huruf pertama perkataan.",
+    "Cari titik pada huruf.",
+    "Lihat bentuk huruf yang hampir sama.",
+    "Pisahkan perkataan kepada huruf kecil.",
+    "Kenal bunyi setiap huruf."
+  ],
+  "listeningTips": [
+    "Dengar sebutan perkataan dengan teliti.",
+    "Bandingkan bunyi yang hampir sama.",
+    "Ulang bunyi yang betul.",
+    "Minta guru sebut sekali lagi jika perlu.",
+    "Fokus pada perkataan yang didengar."
+  ],
   "relatedTopics": [
     "huruf_hijaiyah",
     "ayat_mudah_arab",

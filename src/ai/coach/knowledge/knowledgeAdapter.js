@@ -7,12 +7,61 @@ const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV
 
 const FIELD_PRIORITY = {
   math: ['workedExamples', 'problemSolvingSteps', 'examples', 'extraExamples'],
-  sains: ['scientificFacts', 'investigationIdeas', 'observationPrompts', 'examples', 'extraExamples'],
-  arab: ['pronunciationTips', 'readingPractice', 'speakingPractice', 'writingPractice', 'examples', 'extraExamples'],
+  sains: ['scientificFacts', 'whyQuestions', 'predictionQuestions', 'comparisonQuestions', 'realLifeApplications', 'investigationIdeas', 'observationPrompts', 'examples', 'extraExamples'],
+  arab: ['pronunciationGuide', 'readingSteps', 'letterBreakdown', 'listeningTips', 'pronunciationTips', 'readingPractice', 'speakingPractice', 'writingPractice', 'examples', 'extraExamples'],
+  english: ['wordMeaning', 'exampleSentences', 'examples', 'extraExamples'],
   islam: ['dailyPractice', 'adabApplications', 'realLifeExamples', 'examples', 'extraExamples'],
   pj: ['movementSteps', 'warmUpIdeas', 'fitnessActivities', 'gameApplications', 'dailyMovementIdeas', 'examples', 'extraExamples'],
   pk: ['healthyHabits', 'dailyPractice', 'hygieneSteps', 'nutritionTips', 'realLifeScenarios', 'bodyCare', 'examples', 'extraExamples'],
   default: ['examples', 'extraExamples']
+};
+
+const SUBJECT_TONE = {
+  math: {
+    correct: 'Bagus! Mari kita kira langkah demi langkah.',
+    retry: 'Jom semak kiraan perlahan-lahan.',
+    excellent: 'Hebat! Kamu semakin cekap mengira.'
+  },
+  bm: {
+    correct: 'Bagus! Mari bina ayat yang lebih kemas.',
+    retry: 'Jom semak ayat dengan teliti.',
+    excellent: 'Hebat! Kamu semakin mahir berbahasa.'
+  },
+  english: {
+    correct: "Great! Let's practise the sentence together.",
+    retry: 'Take another careful look at the sentence.',
+    excellent: 'Excellent! You are getting better at English.'
+  },
+  sains: {
+    correct: 'Hebat! Mari fikir seperti seorang saintis.',
+    retry: 'Jom perhati semula dengan lebih teliti.',
+    excellent: 'Cemerlang! Kamu membuat pemerhatian yang baik.'
+  },
+  arab: {
+    correct: 'Bagus! Mari sebut huruf dengan betul.',
+    retry: 'Jom sebut semula dengan perlahan.',
+    excellent: 'Hebat! Sebutan kamu semakin baik.'
+  },
+  islam: {
+    correct: 'Alhamdulillah, mari kita fahami pengajaran ini.',
+    retry: 'Jom baca semula dengan tenang.',
+    excellent: 'Masya-Allah, kamu sangat tekun belajar.'
+  },
+  pj: {
+    correct: 'Bagus! Ingat keselamatan semasa bergerak.',
+    retry: 'Jom semak langkah pergerakan dengan selamat.',
+    excellent: 'Hebat! Kawalan badan kamu semakin baik.'
+  },
+  pk: {
+    correct: 'Bagus! Amalkan gaya hidup sihat.',
+    retry: 'Jom lihat semula pilihan yang paling sihat.',
+    excellent: 'Hebat! Kamu memahami penjagaan diri dengan baik.'
+  },
+  default: {
+    correct: 'Bagus! Kamu sedang belajar dengan baik.',
+    retry: 'Jom cuba semula dengan teliti.',
+    excellent: 'Hebat! Teruskan usaha kamu.'
+  }
 };
 
 const lastSelectionMap = new Map();
@@ -107,6 +156,10 @@ function getPriorityFields(subjectId) {
   return FIELD_PRIORITY[subjectId] || FIELD_PRIORITY.default;
 }
 
+function getSubjectTone(subjectId = 'default') {
+  return SUBJECT_TONE[subjectId] || SUBJECT_TONE.default;
+}
+
 function collectPrioritizedText(pack, subjectId) {
   if (!pack) return [];
   const values = [];
@@ -143,11 +196,23 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
   const memoryTips = rotateList(dedupeText(toDisplayText(pack.memoryTips)), `${subjectId}:${topicId}:memoryTips`);
   const commonMistakes = rotateList(dedupeText(toDisplayText(pack.commonMistakes)), `${subjectId}:${topicId}:commonMistakes`);
   const followUpQuestions = rotateList(dedupeText(toDisplayText(pack.followUpQuestions)), `${subjectId}:${topicId}:followUpQuestions`);
+  const problemSolvingSteps = rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${subjectId}:${topicId}:problemSolvingSteps`);
+  const pronunciationGuide = rotateList(dedupeText(toDisplayText(pack.pronunciationGuide)), `${subjectId}:${topicId}:pronunciationGuide`);
+  const readingSteps = rotateList(dedupeText(toDisplayText(pack.readingSteps)), `${subjectId}:${topicId}:readingSteps`);
+  const letterBreakdown = rotateList(dedupeText(toDisplayText(pack.letterBreakdown)), `${subjectId}:${topicId}:letterBreakdown`);
+  const listeningTips = rotateList(dedupeText(toDisplayText(pack.listeningTips)), `${subjectId}:${topicId}:listeningTips`);
+  const wordMeaning = rotateList(dedupeText(toDisplayText(pack.wordMeaning)), `${subjectId}:${topicId}:wordMeaning`);
+  const exampleSentences = rotateList(dedupeText(toDisplayText(pack.exampleSentences)), `${subjectId}:${topicId}:exampleSentences`);
+  const whyQuestions = rotateList(dedupeText(toDisplayText(pack.whyQuestions)), `${subjectId}:${topicId}:whyQuestions`);
+  const predictionQuestions = rotateList(dedupeText(toDisplayText(pack.predictionQuestions)), `${subjectId}:${topicId}:predictionQuestions`);
+  const comparisonQuestions = rotateList(dedupeText(toDisplayText(pack.comparisonQuestions)), `${subjectId}:${topicId}:comparisonQuestions`);
+  const realLifeApplications = rotateList(dedupeText(toDisplayText(pack.realLifeApplications)), `${subjectId}:${topicId}:realLifeApplications`);
   const encouragementStatus = result?.status === 'correct' ? 'correct' : result?.status === 'excellent' ? 'excellent' : 'retry';
   const encouragement = selectString(
     dedupeText(asArray(pack.encouragement?.[encouragementStatus])),
     `${subjectId}:${topicId}:encouragement:${encouragementStatus}`
   );
+  const subjectTone = getSubjectTone(subjectId);
   const questionAnswer = sanitizeAiText(question?.answer || '');
   const hintSources = dedupeText([
     ...toDisplayText(pack.tips),
@@ -173,21 +238,22 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     mistakeContext
   };
   const encouragementOverride = (() => {
+    const toneLead = subjectTone[encouragementStatus] || subjectTone.default || '';
     if (result?.status === 'correct' || result?.status === 'excellent') {
-      if (topicStatus === 'mastered') return 'Hebat! Kamu sudah kuasai topik ini. Teruskan ke cabaran seterusnya.';
-      if (topicStatus === 'good') return 'Bagus! Kamu sudah semakin yakin dengan topik ini.';
-      return encouragement || 'Hebat! Teruskan usaha kamu.';
+      if (topicStatus === 'mastered') return [toneLead, 'Kamu sudah kuasai topik ini. Teruskan ke cabaran seterusnya.', encouragement].filter(Boolean).join(' ');
+      if (topicStatus === 'good') return [toneLead, 'Kamu sudah semakin yakin dengan topik ini.', encouragement].filter(Boolean).join(' ');
+      return [toneLead, encouragement || 'Teruskan usaha kamu.'].filter(Boolean).join(' ');
     }
     if (topicStatus === 'weak') {
-      return encouragement || 'Tak mengapa. Kita belajar perlahan-lahan satu langkah demi satu langkah.';
+      return [toneLead, encouragement || 'Tak mengapa. Kita belajar perlahan-lahan satu langkah demi satu langkah.'].filter(Boolean).join(' ');
     }
     if (topicStatus === 'needs_practice') {
-      return encouragement || 'Jom ulang sedikit lagi supaya kamu lebih yakin.';
+      return [toneLead, encouragement || 'Jom ulang sedikit lagi supaya kamu lebih yakin.'].filter(Boolean).join(' ');
     }
     if (topicStatus === 'mastered') {
-      return encouragement || 'Kamu sudah menguasai topik ini dengan baik.';
+      return [toneLead, encouragement || 'Kamu sudah menguasai topik ini dengan baik.'].filter(Boolean).join(' ');
     }
-    return encouragement || (result?.status === 'correct' ? 'Hebat! Teruskan usaha kamu.' : 'Tak mengapa. Kita cuba sekali lagi.');
+    return [toneLead, encouragement || (result?.status === 'correct' ? 'Hebat! Teruskan usaha kamu.' : 'Tak mengapa. Kita cuba sekali lagi.')].filter(Boolean).join(' ');
   })();
   const profileHint = topicStatus === 'mastered'
     ? 'Kamu sudah kuat dalam topik ini. Kita fokus pada kefahaman ringkas dan semak semula.'
@@ -215,7 +281,7 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     encouragement: encouragementOverride,
     encouragementMessage: encouragementOverride,
     followUpQuestions,
-    practicePrompt: [practicePrompt, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || practicePrompt,
+    practicePrompt: [subjectTone[topicStatus === 'mastered' ? 'excellent' : 'retry'] || subjectTone.default?.retry || '', practicePrompt, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || practicePrompt,
     answerLine: questionAnswer ? `Jawapan: ${questionAnswer}` : '',
     correctAnswer: questionAnswer,
     workedExamples: rotateList(dedupeText(toDisplayText(pack.workedExamples)), `${subjectId}:${topicId}:workedExamples`),
@@ -238,6 +304,16 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     speakingPractice: rotateList(dedupeText(toDisplayText(pack.speakingPractice)), `${subjectId}:${topicId}:speakingPractice`),
     writingPractice: rotateList(dedupeText(toDisplayText(pack.writingPractice)), `${subjectId}:${topicId}:writingPractice`),
     commonPronunciationMistakes: rotateList(dedupeText(toDisplayText(pack.commonPronunciationMistakes)), `${subjectId}:${topicId}:commonPronunciationMistakes`),
+    pronunciationGuide,
+    readingSteps,
+    letterBreakdown,
+    listeningTips,
+    wordMeaning,
+    exampleSentences,
+    whyQuestions,
+    predictionQuestions,
+    comparisonQuestions,
+    realLifeApplications,
     dailyPractice: rotateList(dedupeText(toDisplayText(pack.dailyPractice)), `${subjectId}:${topicId}:dailyPractice`),
     adabApplications: rotateList(dedupeText(toDisplayText(pack.adabApplications)), `${subjectId}:${topicId}:adabApplications`),
     realLifeExamples: rotateList(dedupeText(toDisplayText(pack.realLifeExamples)), `${subjectId}:${topicId}:realLifeExamples`),
