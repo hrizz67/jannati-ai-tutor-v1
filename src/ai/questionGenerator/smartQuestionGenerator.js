@@ -26,6 +26,7 @@ export function buildSmartQuestionDecision(candidates = [], options = {}) {
   const subjectName = selectedQuestion?.subjectTitle || options.subject?.title || formatSubjectName(subjectId);
 
   return {
+    selectedQuestion,
     question: selectedQuestion,
     topic: selectedQuestion
       ? {
@@ -42,6 +43,9 @@ export function buildSmartQuestionDecision(candidates = [], options = {}) {
     variationSeed: smartMeta.variationSeed || createSmartQuestionSeed([subjectId, topicId, questions.length, state.variationSeed || 0]),
     selectionReason: smartMeta.selectionReason || 'Latihan dipilih secara seimbang.',
     uasaWeight: smartMeta.uasaWeight || 0,
+    priorityScore: smartMeta.priorityScore || 0,
+    confidenceLevel: smartMeta.confidenceLevel || 'medium',
+    mistakeReason: smartMeta.mistakeReason || '',
     questions,
     revisionQueue: selection.revisionQueue || [],
     ranked: selection.ranked || questions,

@@ -1,7 +1,5 @@
-import { buildRevisionQueue } from './revisionQueue.js';
-import { buildUasaPlan } from './uasaPlanner.js';
-import { sortQuestionsByPriority } from './questionPriority.js';
 import { buildQuestionSignature } from './repeatGuard.js';
+import { rankAdaptiveQuestions } from '../adaptive/index.js';
 
 function uniqueQuestions(candidates = []) {
   const seen = new Set();
@@ -14,23 +12,27 @@ function uniqueQuestions(candidates = []) {
 }
 
 export function selectSmartQuestions(candidates = [], options = {}) {
-  const profile = options.profile || {};
-  const revisionQueue = Array.isArray(options.revisionQueue)
-    ? options.revisionQueue
-    : buildRevisionQueue(profile, options);
-  const sourceQuestions = options.mode === 'uasa'
-    ? buildUasaPlan(candidates, { ...options, revisionQueue }).questions
-    : candidates;
-  const source = uniqueQuestions(sourceQuestions);
-  const ranked = sortQuestionsByPriority(source, {
-    ...options,
-    revisionQueue
-  });
+  const source = uniqueQuestions(candidates);
+  let ranked = source;
+  let statistics = null;
+  try {
+    const adaptive = rankAdaptiveQuestions(source, options);
+    if (Array.isArray(adaptive.questions) && adaptive.questions.length) {
+      ranked = adaptive.questions;
+    }
+    statistics = adaptive.statistics || null;
+  } catch {
+    ranked = source;
+  }
   const count = Math.max(0, Number(options.count || ranked.length) || ranked.length);
   return {
     questions: count > 0 ? ranked.slice(0, count) : [],
     ranked,
-    revisionQueue
+    revisionQueue: Array.isArray(options.revisionQueue)
+      ? options.revisionQueue
+      : Array.isArray(statistics?.revisionPlan?.subjects)
+        ? statistics.revisionPlan.subjects.flatMap(subject => subject?.topics || [])
+        : []
   };
 }
 
