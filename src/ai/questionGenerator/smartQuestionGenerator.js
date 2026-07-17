@@ -49,6 +49,11 @@ export function buildSmartQuestionDecision(candidates = [], options = {}) {
     questions,
     revisionQueue: selection.revisionQueue || [],
     ranked: selection.ranked || questions,
+    quality: selection.quality || {
+      rejected: [],
+      warnings: [],
+      fallbackUsed: false
+    },
     state
   };
 }

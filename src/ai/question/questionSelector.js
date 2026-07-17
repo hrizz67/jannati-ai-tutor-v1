@@ -1,6 +1,7 @@
 import { duplicateCheck, rememberDuplicateState } from './duplicateDetector.js';
 import { buildHistorySet } from './historyEngine.js';
 import { rankAdaptiveQuestions } from '../adaptive/index.js';
+import { rankQuestionQuality, selectQualityQuestions } from '../questionQuality/index.js';
 
 function historyCheck(question = {}, history = buildHistorySet()) {
   const metadata = question.qip?.metadata || {};
@@ -30,10 +31,36 @@ export function selectQuestions(candidates = [], options = {}) {
   } catch {
     // Fall back to the original order when adaptive ranking is unavailable.
   }
+  try {
+    const qualityRanked = rankQuestionQuality(orderedCandidates, {
+      ...options,
+      count,
+      recentQuestionIds: Array.isArray(options.recentQuestionIds) ? options.recentQuestionIds : [],
+      recentTemplates: Array.isArray(options.recentTemplates) ? options.recentTemplates : [],
+      recentStyles: Array.isArray(options.recentStyles) ? options.recentStyles : []
+    });
+    if (Array.isArray(qualityRanked) && qualityRanked.length) {
+      orderedCandidates = qualityRanked;
+    }
+  } catch {
+    // Keep adaptive ordering when quality ranking is unavailable.
+  }
+  let qualitySelection = { questions: orderedCandidates, ranked: orderedCandidates, rejected: [], warnings: [], fallbackUsed: false };
+  try {
+    qualitySelection = selectQualityQuestions(orderedCandidates, {
+      ...options,
+      count,
+      recentQuestionIds: Array.isArray(options.recentQuestionIds) ? options.recentQuestionIds : [],
+      recentTemplates: Array.isArray(options.recentTemplates) ? options.recentTemplates : [],
+      recentStyles: Array.isArray(options.recentStyles) ? options.recentStyles : []
+    });
+  } catch {
+    // Use the quality-ranked order if the selection helper is unavailable.
+  }
   const selected = [];
   const rejected = [];
 
-  for (const candidate of orderedCandidates) {
+  for (const candidate of qualitySelection.questions || orderedCandidates) {
     if (selected.length >= count) break;
     const duplicate = duplicateCheck(candidate, duplicateState);
     const historyResult = historyCheck(candidate, history);
@@ -55,6 +82,26 @@ export function selectQuestions(candidates = [], options = {}) {
         duplicate: duplicate.reasons,
         history: historyResult
       });
+    }
+  }
+
+  if (selected.length < count && Array.isArray(qualitySelection.ranked)) {
+    for (const candidate of qualitySelection.ranked) {
+      if (selected.length >= count) break;
+      if (selected.some(item => item.id === candidate.id)) continue;
+      const duplicate = duplicateCheck(candidate, duplicateState);
+      const historyResult = historyCheck(candidate, history);
+      const conflict = duplicate.reasons.length || hasHistoryConflict(historyResult);
+      selected.push({
+        ...candidate,
+        qip: {
+          ...(candidate.qip || {}),
+          reasonSelected: conflict ? 'Question bank exhausted fallback' : 'QIP foundation selector accepted',
+          duplicateCheck: duplicate.reasons.length ? duplicate.reasons : ['pass'],
+          historyCheck: historyResult
+        }
+      });
+      rememberDuplicateState(candidate, duplicateState);
     }
   }
 
