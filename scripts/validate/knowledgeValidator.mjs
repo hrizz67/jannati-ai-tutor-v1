@@ -181,9 +181,8 @@ function pushCountIssue(issues, severity, code, message, context, actual, minimu
 
 async function loadSubjectData() {
   const subjectsModule = await import(`${pathToFileURL(path.join(root, 'src', 'data', 'subjects', 'index.js')).href}?v=${Date.now()}`);
-  const registryModule = await import(`${pathToFileURL(path.join(root, 'src', 'ai', 'coach', 'knowledge', 'registry', 'knowledgeRegistry.js')).href}?v=${Date.now()}`);
   const loaderModule = await import(`${pathToFileURL(path.join(root, 'src', 'ai', 'coach', 'knowledge', 'loader', 'knowledgeLoader.js')).href}?v=${Date.now()}`);
-  return { subjectsModule, registryModule, loaderModule };
+  return { subjectsModule, loaderModule };
 }
 
 function validatePackShape(pack, subjectId, topicId, subjectName, topicTitle, canonicalIds, aliasMap, issues) {
@@ -464,11 +463,11 @@ function markdownTable(rows, headers) {
 }
 
 async function main() {
-  const { subjectsModule, registryModule, loaderModule } = await loadSubjectData();
+  const { subjectsModule, loaderModule } = await loadSubjectData();
   const subjects = await subjectsModule.loadAllSubjects();
   const subjectList = subjectsModule.subjectList || [];
-  const registry = registryModule.KNOWLEDGE_REGISTRY;
   const loadKnowledge = loaderModule.loadKnowledge;
+  const loadKnowledgeMap = loaderModule.loadKnowledgeMap;
 
   const issues = [];
   const aliasFindings = [];
@@ -481,7 +480,8 @@ async function main() {
   const aliasLookup = new Map();
 
   for (const subject of subjects) {
-    const registryTopics = Object.keys(registry[subject.id] || {});
+    const subjectRegistry = await loadKnowledgeMap(subject.id);
+    const registryTopics = Object.keys(subjectRegistry || {});
     const canonicalTopics = Array.isArray(subject.topics) ? subject.topics : [];
     canonicalTopics.forEach(topic => knownTopicIds.add(topic.id));
     registryTopics.forEach(topicId => allRegistryTopicIds.add(topicId));
@@ -489,7 +489,7 @@ async function main() {
     const aliasMap = new Map();
     const seenRegistryObjects = new WeakMap();
     for (const registryTopicId of registryTopics) {
-      const value = registry[subject.id]?.[registryTopicId];
+      const value = subjectRegistry?.[registryTopicId];
       if (!value || typeof value !== 'object') continue;
       if (!seenRegistryObjects.has(value)) {
         seenRegistryObjects.set(value, registryTopicId);
@@ -506,7 +506,7 @@ async function main() {
       if (!inRegistry) {
         issues.push(issue('Critical', 'MISSING_PACK', 'Topic id is missing from registry.', expected));
       }
-      const pack = loadKnowledge(subject.id, topic.id);
+      const pack = await loadKnowledge(subject.id, topic.id);
       allPacks.push(pack);
       validatePackShape(pack, subject.id, topic.id, subject.title, topic.title, canonicalIds, aliasMap, issues);
       validateRelatedTopics(pack, subject.id, canonicalIds, aliasIds, new Set(allRegistryTopicIds), issues);
@@ -515,7 +515,7 @@ async function main() {
     }
 
     for (const alias of aliasIds) {
-      const aliasPack = loadKnowledge(subject.id, alias);
+      const aliasPack = await loadKnowledge(subject.id, alias);
       aliasFindings.push({
         subjectId: subject.id,
         alias,

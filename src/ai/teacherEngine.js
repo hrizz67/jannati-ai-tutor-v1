@@ -1,4 +1,6 @@
 import { detectLearningCategory, getLearningExamples, getLearningMemoryTip, sanitizeAiText } from './learningCopy.js';
+import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
+import { getMistakeContext } from './mistakes/index.js';
 
 const TEACHING_RULES = {
   person: {
@@ -72,6 +74,19 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {} } 
   const commonMistakes = (Array.isArray(explanationData.commonMistakes) && explanationData.commonMistakes.length ? explanationData.commonMistakes : rule.commonMistakes)
     .map(item => sanitizeAiText(item));
   const practicePrompt = sanitizeAiText(explanationData.practicePrompt || rule.practicePrompt);
+  const studentProfile = getStudentProfileSummary('default');
+  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
+  const topicStatus = topicProgress?.status || 'new';
+  const mistakeContext = getMistakeContext(studentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
+  const profileAwarePracticePrompt = topicStatus === 'mastered'
+    ? 'Kamu sudah mahir. Cuba soalan yang lebih mencabar.'
+    : mistakeContext.repeatedMistakes > 1
+      ? 'Kita ulang kesilapan yang sama perlahan-lahan.'
+      : topicStatus === 'weak'
+      ? 'Kita ulang asasnya perlahan-lahan.'
+      : topicStatus === 'needs_practice'
+        ? 'Ulang sekali lagi langkah yang penting.'
+        : practicePrompt;
 
   return {
     category: rule.category,
@@ -79,6 +94,14 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {} } 
     examples,
     commonMistakes,
     memoryTip,
-    practicePrompt
+    practicePrompt: profileAwarePracticePrompt,
+    learningProfile: {
+      studentId: studentProfile.studentId || 'default',
+      topicStatus,
+      accuracy: studentProfile.summary?.accuracy || 0,
+      weakTopics: studentProfile.weakTopics || [],
+      strongTopics: studentProfile.strongTopics || [],
+      mistakeContext
+    }
   };
 }

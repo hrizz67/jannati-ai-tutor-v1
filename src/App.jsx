@@ -21,7 +21,7 @@ import { buildStudyPlan } from './ai/prediction/studyPlanEngine';
 import { forecastMastery } from './ai/prediction/masteryForecastEngine';
 import { buildCoachingDecision } from './ai/coach/coachingEngine';
 import { buildTeachingStrategy } from './ai/coach/adaptiveTeachingEngine';
-import { buildCoachKnowledgeData } from './ai/coach/knowledge/knowledgeAdapter';
+import { buildCoachKnowledgeData, fetchCoachKnowledgeData } from './ai/coach/knowledge/knowledgeAdapter';
 import { buildPersonalityResponse } from './ai/personality/personalityEngine.js';
 import { buildLearningObservation } from './ai/observation/learningObservationEngine.js';
 import { buildNarrativeBundle } from './ai/narrative/narrativeEngine.js';
@@ -566,6 +566,7 @@ export default function App() {
   const [explainData, setExplainData] = useState(null);
   const [teacherOpen, setTeacherOpen] = useState(false);
   const [teacherData, setTeacherData] = useState(null);
+  const [coachKnowledgeData, setCoachKnowledgeData] = useState(null);
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const adaptiveSessionRef = useRef(null);
@@ -1143,6 +1144,41 @@ export default function App() {
     return activeTopic?.questions?.[questionIndex];
   }
 
+  useEffect(() => {
+    let cancelled = false;
+    const question = currentQuestion();
+
+    if (screen !== 'quiz' || !activeSubject?.id || !activeTopic?.id || !question) {
+      setCoachKnowledgeData(null);
+      return undefined;
+    }
+
+    setCoachKnowledgeData(buildCoachKnowledgeData({
+      subjectId: activeSubject.id,
+      topicId: activeTopic.id,
+      question,
+      result: feedback || {},
+      userAnswer: answer
+    }));
+
+    void fetchCoachKnowledgeData({
+      subjectId: activeSubject.id,
+      topicId: activeTopic.id,
+      question,
+      result: feedback || {},
+      userAnswer: answer
+    }).then(nextData => {
+      if (cancelled) return;
+      if (nextData) {
+        setCoachKnowledgeData(nextData);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [screen, activeSubject?.id, activeTopic?.id, questionIndex, feedback?.status]);
+
   function autoSave(nextIndex = questionIndex, nextSession = session) {
     if (!activeSubject || !activeTopic) return;
     const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
@@ -1240,7 +1276,20 @@ export default function App() {
 
     nextSession.xp += xp;
     nextSession.coins += coins;
-    nextSession.answers.push({ questionId: question.id, answer, status: result.status, correctAnswer: question.answer });
+    nextSession.answers.push({
+      questionId: question.id,
+      subjectId: question.subjectId || activeSubject?.id || null,
+      subjectTitle: question.subjectTitle || activeSubject?.title || null,
+      subjectShort: question.subjectShort || activeSubject?.short || null,
+      topicId: question.topicId || activeTopic?.id || null,
+      topicTitle: question.topicTitle || activeTopic?.title || null,
+      answer,
+      status: result.status,
+      correctAnswer: question.answer,
+      attemptNumber,
+      timeSpentMs: timeSpent * 1000,
+      answeredAt
+    });
     nextSession.questions = [...(nextSession.questions || []), question];
     saveQuestionHistory(question);
     const adaptiveSubjectId = question.subjectId || activeSubject?.id;
@@ -1280,31 +1329,52 @@ export default function App() {
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback) return;
-    const knowledgeData = buildCoachKnowledgeData({
+    const fallbackData = buildCoachKnowledgeData({
       subjectId: activeSubject?.id,
       topicId: activeTopic?.id,
       question,
       result: feedback,
       userAnswer: answer
     });
-    setExplainData(knowledgeData || explainAnswer({ question, topic: activeTopic, result: feedback, userAnswer: answer }));
+    setExplainData(fallbackData || explainAnswer({ question, topic: activeTopic, result: feedback, userAnswer: answer }));
     setExplainOpen(true);
+    void fetchCoachKnowledgeData({
+      subjectId: activeSubject?.id,
+      topicId: activeTopic?.id,
+      question,
+      result: feedback,
+      userAnswer: answer
+    }).then(nextData => {
+      if (nextData) setExplainData(nextData);
+    });
   }
 
   function openTeacher() {
     const question = currentQuestion();
     if (!question) return;
-    const knowledgeData = buildCoachKnowledgeData({
+    const fallbackData = buildCoachKnowledgeData({
       subjectId: activeSubject?.id,
       topicId: activeTopic?.id,
       question,
       result: feedback || {},
       userAnswer: answer
     });
-    const nextExplainData = knowledgeData || explainData || explainAnswer({ question, topic: activeTopic, result: feedback || {}, userAnswer: answer });
+    const nextExplainData = fallbackData || explainData || explainAnswer({ question, topic: activeTopic, result: feedback || {}, userAnswer: answer });
     setExplainData(nextExplainData);
-    setTeacherData(knowledgeData || teachAnswer({ question, topic: activeTopic, explanationData: nextExplainData }));
+    setTeacherData(fallbackData || teachAnswer({ question, topic: activeTopic, explanationData: nextExplainData }));
     setTeacherOpen(true);
+    void fetchCoachKnowledgeData({
+      subjectId: activeSubject?.id,
+      topicId: activeTopic?.id,
+      question,
+      result: feedback || {},
+      userAnswer: answer
+    }).then(nextData => {
+      if (nextData) {
+        setExplainData(nextData);
+        setTeacherData(nextData);
+      }
+    });
   }
 
   function tryAgainQuestion() {
@@ -1542,17 +1612,10 @@ export default function App() {
 
   if (screen === 'quiz') {
     const question = currentQuestion();
-    const quizCoachKnowledge = buildCoachKnowledgeData({
-      subjectId: activeSubject?.id,
-      topicId: activeTopic?.id,
-      question,
-      result: feedback || {},
-      userAnswer: answer
-    });
-    const safeHint = sanitizeAiText(quizCoachKnowledge?.hint || coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
+    const safeHint = sanitizeAiText(coachKnowledgeData?.hint || coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -1742,7 +1805,7 @@ function LoadingSkeleton() {
   </main>;
 }
 
-function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, coachDecision, teachingStrategy, personality, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {
+function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, coachDecision, teachingStrategy, personality, coachKnowledgeData, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {
   const question = topic.questions[questionIndex];
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
   const debugRow = question?.qde || {};
@@ -1783,12 +1846,6 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       : 'Tak mengapa.';
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
-  const coachKnowledgeData = useMemo(() => buildCoachKnowledgeData({
-    subjectId: subject?.id,
-    topicId: topic?.id,
-    question,
-    result: feedback || {}
-  }), [subject?.id, topic?.id, question?.id, question?.answer, question?.hint, question?.explanation, feedback?.status]);
   const safeHint = sanitizeAiText(coachKnowledgeData?.hint || safeCoachingDecision?.hint || question?.hint || 'Cari kata kunci penting.');
   const safeQuestionExplanation = sanitizeAiText(question?.explanation || question?.hint || '');
   const [speechState, setSpeechState] = useState('idle');

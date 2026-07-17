@@ -1,5 +1,6 @@
 import { generateRecommendation } from '../adaptive/recommendationEngine.js';
 import { rankWeakTopics } from '../adaptive/weakTopicEngine.js';
+import { getMistakeContext } from '../mistakes/index.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
@@ -106,13 +107,26 @@ function buildCandidateList(profile = {}) {
   const weakMap = getWeakTopicMap(profile);
   const recentMap = getRecentTopicMap(profile);
   const today = localDateKey();
+  const mistakeContext = getMistakeContext(profile, '', '');
 
   return records.map(entry => {
     const topic = normalizeTopic(entry, weakMap, recentMap, today);
     const priority = calculateRevisionPriority(topic);
+    const topicKey = `${entry.subjectId}_${entry.topicId}`;
+    const repeatedMistakeBonus = Math.max(
+      0,
+      Math.min(
+        20,
+        (profile.mistakes?.byTopic?.[`${entry.subjectId}:${entry.topicId}`]?.count || 0) * 4 +
+        (profile.mistakes?.byType?.[mistakeContext.focusMistake]?.count || 0) * 2
+      )
+    );
     return {
       ...topic,
-      priority
+      priority: clamp(priority + repeatedMistakeBonus, 0, 100),
+      repeatedMistakeCount: profile.mistakes?.byTopic?.[`${entry.subjectId}:${entry.topicId}`]?.count || 0,
+      focusMistake: profile.mistakes?.byTopic?.[`${entry.subjectId}:${entry.topicId}`]?.mistakeType || mistakeContext.focusMistake || 'UNKNOWN_MISTAKE',
+      topicKey
     };
   }).sort((a, b) => {
     if (b.priority !== a.priority) return b.priority - a.priority;
@@ -260,7 +274,7 @@ export function generateRevisionPlan(profile = {}, options = {}) {
   const totalQuestions = subjects.reduce((sum, subject) => sum + subject.questions, 0) || planSize;
   const estimatedMinutes = estimateRevisionTime({ subjects, totalQuestions });
   const summary = selected.length
-    ? `Fokus pada ${selected[0].title} dan topik yang kurang dikuasai hari ini.`
+    ? `Fokus pada ${selected[0].title} dan ulang topik yang masih kerap salah hari ini.`
     : 'Belum cukup data untuk pelan ulang kaji.';
 
   return {

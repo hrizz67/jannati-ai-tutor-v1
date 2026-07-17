@@ -3,6 +3,8 @@ import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
 import { rememberQuestionHistory } from './diversity/sessionHistoryEngine';
 import { rememberQuestionIntelligenceHistory } from './question/questionEngine.js';
 import { loadMemory as loadStudentMemory } from './memory/memoryStorage.js';
+import { applyActivityCompletion, applyQuestionCompletions, loadStudentProfile, resolveStudentId, saveStudentProfile } from './profile/index.js';
+import { recordMistakes } from './mistakes/index.js';
 
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
@@ -167,6 +169,7 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
 export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent = 0, session = {}, studySeconds = 0 }) {
   const previous = loadAIMemory();
   const next = buildAIMemory(profile, [subject], previous);
+  const studentId = resolveStudentId(profile, 'default');
   const lesson = {
     subjectId: subject.id,
     subject: subject.short || subject.title,
@@ -189,6 +192,62 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
     lastLesson: lesson,
     studyTime: Math.max(0, previous.studyTime || 0) + Math.max(0, studySeconds || 0)
   });
+
+  const studentProfile = loadStudentProfile(studentId, profile);
+  const completionRows = Array.isArray(session.answers) ? session.answers : [];
+  const questionCompletions = completionRows.map(entry => ({
+    studentId,
+    subjectId: entry.subjectId || subject.id,
+    subjectTitle: entry.subjectTitle || subject.title,
+    subjectShort: entry.subjectShort || subject.short,
+    topicId: entry.topicId || topic.id,
+    topicTitle: entry.topicTitle || topic.title,
+    questionId: entry.questionId || null,
+    correct: entry.status === 'correct' || entry.status === 'excellent',
+    attemptNumber: entry.attemptNumber || 1,
+    responseTimeMs: entry.timeSpentMs || entry.timeSpent || entry.responseTimeMs || 0,
+    answeredAt: entry.answeredAt || lesson.date,
+    date: entry.answeredAt || lesson.date
+  }));
+  const updatedStudentProfile = applyActivityCompletion(
+    applyQuestionCompletions(studentProfile, questionCompletions),
+    {
+      studentId,
+      completedAt: lesson.date,
+      studySeconds
+    }
+  );
+  const sessionQuestions = Array.isArray(session.questions) ? session.questions : [];
+  const questionById = new Map(sessionQuestions.map(question => [question?.id, question]));
+  const mistakeInputs = completionRows
+    .filter(entry => entry && entry.status && entry.status !== 'correct' && entry.status !== 'excellent')
+    .map(entry => {
+      const matchedQuestion = questionById.get(entry.questionId) || topic.questions?.find(question => question.id === entry.questionId) || {};
+      return {
+        studentId,
+        subjectId: entry.subjectId || subject.id,
+        topicId: entry.topicId || topic.id,
+        subTopic: matchedQuestion.subTopic || matchedQuestion.subtopic || matchedQuestion.sub_topic || '',
+        subject: {
+          id: entry.subjectId || subject.id,
+          title: entry.subjectTitle || subject.title || '',
+          short: entry.subjectShort || subject.short || ''
+        },
+        topic: {
+          id: entry.topicId || topic.id,
+          title: entry.topicTitle || topic.title || '',
+          difficulty: matchedQuestion.difficulty || topic.difficulty || 'medium'
+        },
+        questionId: entry.questionId || matchedQuestion.id || null,
+        question: matchedQuestion,
+        answer: entry.answer || '',
+        correctAnswer: entry.correctAnswer || matchedQuestion.answer || '',
+        difficultyLevel: matchedQuestion.difficulty || topic.difficulty || 'medium',
+        timestamp: entry.answeredAt || lesson.date
+      };
+    });
+  const updatedMistakeProfile = recordMistakes(updatedStudentProfile, mistakeInputs);
+  saveStudentProfile(updatedMistakeProfile, studentId);
 }
 
 export function saveQuestionHistory(questions = []) {
@@ -220,6 +279,14 @@ export function saveReadingMemory(result = {}, profile = null, subjects = []) {
     ...base,
     readingHistory: [readingResult, ...(base.readingHistory || [])].slice(0, 20)
   });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: readingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
 }
 
 export function saveListeningMemory(result = {}, profile = null, subjects = []) {
@@ -239,6 +306,14 @@ export function saveListeningMemory(result = {}, profile = null, subjects = []) 
     ...base,
     listeningHistory: [listeningResult, ...(base.listeningHistory || [])].slice(0, 20)
   });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: listeningResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
 }
 
 export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
@@ -259,6 +334,14 @@ export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
     ...base,
     speakingHistory: [speakingResult, ...(base.speakingHistory || [])].slice(0, 20)
   });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: speakingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
 }
 
 export function saveWritingMemory(result = {}, profile = null, subjects = []) {
@@ -281,6 +364,14 @@ export function saveWritingMemory(result = {}, profile = null, subjects = []) {
     ...base,
     writingHistory: [writingResult, ...(base.writingHistory || [])].slice(0, 20)
   });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: writingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
 }
 
 export function formatStudyTime(seconds = 0) {

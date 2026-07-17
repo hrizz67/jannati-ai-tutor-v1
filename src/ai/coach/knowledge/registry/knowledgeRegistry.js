@@ -1,33 +1,22 @@
-import bmKnowledge from '../subjects/bm/index.js';
-import englishKnowledge from '../subjects/english/index.js';
-import mathKnowledge from '../subjects/math/index.js';
-import scienceKnowledge from '../subjects/sains/index.js';
-import arabKnowledge from '../subjects/arab/index.js';
-import islamKnowledge from '../subjects/islam/index.js';
-import pjKnowledge from '../subjects/pj/index.js';
-import pkKnowledge from '../subjects/pk/index.js';
-
-export const KNOWLEDGE_REGISTRY = {
-  bm: bmKnowledge,
-  english: englishKnowledge,
-  math: mathKnowledge,
-  sains: scienceKnowledge,
-  arab: arabKnowledge,
-  islam: islamKnowledge,
-  pj: pjKnowledge,
-  pk: pkKnowledge
+export const KNOWLEDGE_SUBJECT_LOADERS = {
+  bm: () => import('../subjects/bm/index.js'),
+  english: () => import('../subjects/english/index.js'),
+  math: () => import('../subjects/math/index.js'),
+  sains: () => import('../subjects/sains/index.js'),
+  arab: () => import('../subjects/arab/index.js'),
+  islam: () => import('../subjects/islam/index.js'),
+  pj: () => import('../subjects/pj/index.js'),
+  pk: () => import('../subjects/pk/index.js')
 };
 
-export function listKnowledgeSubjects() {
-  return Object.keys(KNOWLEDGE_REGISTRY);
-}
+export const KNOWLEDGE_SUBJECT_IDS = Object.keys(KNOWLEDGE_SUBJECT_LOADERS);
 
-export function listKnowledgeTopics(subjectId) {
-  return Object.keys(KNOWLEDGE_REGISTRY[subjectId] || {});
+export function getKnowledgeSubjectLoader(subjectId) {
+  return KNOWLEDGE_SUBJECT_LOADERS[subjectId] || null;
 }
 
 export default {
-  KNOWLEDGE_REGISTRY,
-  listKnowledgeSubjects,
-  listKnowledgeTopics
+  KNOWLEDGE_SUBJECT_LOADERS,
+  KNOWLEDGE_SUBJECT_IDS,
+  getKnowledgeSubjectLoader
 };

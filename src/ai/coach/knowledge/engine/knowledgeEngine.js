@@ -1,40 +1,29 @@
-import { loadKnowledge } from '../loader/knowledgeLoader.js';
-import { listKnowledgeSubjects, listKnowledgeTopics, KNOWLEDGE_REGISTRY } from '../registry/knowledgeRegistry.js';
+import { loadKnowledge, peekKnowledge } from '../loader/knowledgeLoader.js';
 
-export function getKnowledgePack(subjectId, topicId) {
+export async function getKnowledgePack(subjectId, topicId) {
   return loadKnowledge(subjectId, topicId);
 }
 
-export function getKnowledgeSummary(subjectId, topicId) {
-  const pack = loadKnowledge(subjectId, topicId);
+export async function getKnowledgeSummary(subjectId, topicId) {
+  const pack = await loadKnowledge(subjectId, topicId);
   return {
     subjectId: pack.subjectId,
     topicId: pack.topicId,
-    explanationCount: pack.explanations.length,
-    exampleCount: pack.examples.length,
-    memoryTipCount: pack.memoryTips.length,
-    tipCount: pack.tips.length,
-    mistakeCount: pack.commonMistakes.length,
-    encouragementCount: Object.values(pack.encouragement).reduce((sum, list) => sum + list.length, 0)
+    explanationCount: Array.isArray(pack.explanations) ? pack.explanations.length : 0,
+    exampleCount: Array.isArray(pack.examples) ? pack.examples.length : 0,
+    memoryTipCount: Array.isArray(pack.memoryTips) ? pack.memoryTips.length : 0,
+    tipCount: Array.isArray(pack.tips) ? pack.tips.length : 0,
+    mistakeCount: Array.isArray(pack.commonMistakes) ? pack.commonMistakes.length : 0,
+    encouragementCount: Object.values(pack.encouragement || {}).reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0)
   };
 }
 
-export function getAvailableKnowledgeSubjects() {
-  return listKnowledgeSubjects();
-}
-
-export function getAvailableKnowledgeTopics(subjectId) {
-  return listKnowledgeTopics(subjectId);
-}
-
-export function getKnowledgeRegistry() {
-  return KNOWLEDGE_REGISTRY;
+export function getCachedKnowledgePack(subjectId, topicId) {
+  return peekKnowledge(subjectId, topicId);
 }
 
 export default {
   getKnowledgePack,
   getKnowledgeSummary,
-  getAvailableKnowledgeSubjects,
-  getAvailableKnowledgeTopics,
-  getKnowledgeRegistry
+  getCachedKnowledgePack
 };

@@ -1,4 +1,6 @@
 import { detectLearningCategory, getLearningExamples, sanitizeAiText } from './learningCopy.js';
+import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
+import { getMistakeContext } from './mistakes/index.js';
 
 const CATEGORY_RULES = {
   person: {
@@ -71,8 +73,25 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const hint = sanitizeAiText(question.hint || rule.hint);
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
   const commonMistakes = (rule.commonMistakes || []).map(item => sanitizeAiText(item));
+  const studentProfile = getStudentProfileSummary('default');
+  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
+  const topicStatus = topicProgress?.status || 'new';
+  const mistakeContext = getMistakeContext(studentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
   const wasCorrect = result.status === 'correct';
   const wasAlmost = result.status === 'almost';
+  const encouragementBase = wasCorrect
+    ? (topicStatus === 'mastered'
+    ? 'Hebat! Kamu sudah kuasai topik ini.'
+    : topicStatus === 'good'
+        ? 'Bagus! Kamu semakin yakin.'
+        : 'Hebat! Teruskan usaha kamu.')
+      : wasAlmost
+        ? 'Sedikit lagi. Kamu hampir berjaya.'
+      : mistakeContext.repeatedMistakes > 1
+        ? 'Tak mengapa. Kita fokus pada kesilapan yang sama sedikit demi sedikit.'
+        : topicStatus === 'weak'
+        ? 'Tak mengapa. Kita ulang perlahan-lahan.'
+        : 'Tak mengapa. Kita cuba sekali lagi.';
 
   return {
     category,
@@ -82,12 +101,16 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     examples,
     commonMistakes,
     memoryTip: sanitizeAiText(question.memoryTip || ''),
-    encouragement: wasCorrect
-      ? 'Hebat! Teruskan usaha kamu.'
-      : wasAlmost
-        ? 'Sedikit lagi. Kamu hampir berjaya.'
-        : 'Tak mengapa. Kita cuba sekali lagi.',
+    encouragement: encouragementBase,
     answerLine: `Jawapan: ${correctAnswer}`,
-    correctAnswer
+    correctAnswer,
+    learningProfile: {
+      studentId: studentProfile.studentId || 'default',
+      topicStatus,
+      accuracy: studentProfile.summary?.accuracy || 0,
+      weakTopics: studentProfile.weakTopics || [],
+      strongTopics: studentProfile.strongTopics || [],
+      mistakeContext
+    }
   };
 }

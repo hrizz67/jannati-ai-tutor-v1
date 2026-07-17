@@ -1,5 +1,7 @@
-import { loadKnowledge, hasKnowledge } from './loader/knowledgeLoader.js';
+import { loadKnowledge, peekKnowledge, primeKnowledgePack } from './loader/knowledgeLoader.js';
 import { sanitizeAiText } from '../../learningCopy.js';
+import { getStudentProfileSummary, getTopicProgress, getSubjectProgress, generateRevisionPlan } from '../../profile/index.js';
+import { getMistakeContext } from '../../mistakes/index.js';
 
 const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
@@ -20,22 +22,20 @@ function logKnowledgeEvent(message, payload = {}) {
   console.log('[knowledge-engine]', message, payload);
 }
 
-function safeArray(value) {
-  if (!Array.isArray(value)) return [];
-  return value.filter(item => item !== null && item !== undefined && item !== '').map(item => item);
+function asArray(value) {
+  return Array.isArray(value) ? value.filter(item => item !== null && item !== undefined && item !== '') : [];
 }
 
 function toDisplayText(value) {
-  if (value === null || value === undefined) return '';
+  if (value === null || value === undefined) return [];
+
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-    return sanitizeAiText(String(value));
+    const text = sanitizeAiText(String(value));
+    return text ? [text] : [];
   }
 
   if (Array.isArray(value)) {
-    return value
-      .flatMap(item => toDisplayText(item))
-      .map(item => sanitizeAiText(String(item)))
-      .filter(Boolean);
+    return value.flatMap(entry => toDisplayText(entry)).filter(Boolean);
   }
 
   if (typeof value === 'object') {
@@ -61,64 +61,251 @@ function toDisplayText(value) {
       value.text,
       value.description
     ];
-    const text = candidates.map(item => sanitizeAiText(String(item || '').trim())).find(Boolean);
-    if (text) return [text];
+    const direct = candidates.map(item => sanitizeAiText(String(item || '').trim())).find(Boolean);
+    if (direct) return [direct];
     return Object.values(value).flatMap(entry => toDisplayText(entry)).filter(Boolean);
   }
 
-  return [sanitizeAiText(String(value))];
+  const text = sanitizeAiText(String(value));
+  return text ? [text] : [];
 }
 
 function dedupeText(items = []) {
-  const result = [];
   const seen = new Set();
+  const result = [];
   for (const item of items) {
     const text = sanitizeAiText(String(item || '').trim());
-    if (!text || seen.has(text.toLowerCase())) continue;
-    seen.add(text.toLowerCase());
+    if (!text) continue;
+    const key = text.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
     result.push(text);
   }
   return result;
 }
 
 function rotateList(items = [], key = '') {
-  const list = safeArray(items);
+  const list = asArray(items);
   if (list.length <= 1) return list.slice();
 
   const state = lastSelectionMap.get(key) || { index: 0, last: '' };
   const start = state.index % list.length;
   const rotated = list.slice(start).concat(list.slice(0, start));
   const first = sanitizeAiText(String(rotated[0] || '').trim());
-  const nextIndex = first && first === state.last ? (start + 1) % list.length : (start + 1) % list.length;
-  lastSelectionMap.set(key, { index: nextIndex, last: first });
+  lastSelectionMap.set(key, {
+    index: (start + 1) % list.length,
+    last: first
+  });
   return rotated;
 }
 
 function selectString(items = [], key = '') {
-  const rotated = rotateList(items, key);
-  const first = rotated[0];
-  return sanitizeAiText(String(first || '').trim());
+  return rotateList(items, key)[0] || '';
 }
 
-function getPack(subjectId, topicId) {
+function getPriorityFields(subjectId) {
+  return FIELD_PRIORITY[subjectId] || FIELD_PRIORITY.default;
+}
+
+function collectPrioritizedText(pack, subjectId) {
+  if (!pack) return [];
+  const values = [];
+  for (const field of getPriorityFields(subjectId)) {
+    values.push(...toDisplayText(pack[field]));
+  }
+  if (!values.length) values.push(...toDisplayText(pack.examples));
+  if (!values.length) values.push(...toDisplayText(pack.extraExamples));
+  return dedupeText(values);
+}
+
+function buildPackData(pack, subjectId, topicId, question = {}, result = {}, userAnswer = '') {
+  if (!pack) return null;
+  const studentProfile = getStudentProfileSummary('default');
+  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', subjectId, topicId, studentProfile);
+  const subjectProgress = getSubjectProgress(studentProfile.studentId || 'default', subjectId, studentProfile);
+  const revisionPlan = generateRevisionPlan(studentProfile.studentId || 'default', { limit: 6 }, studentProfile);
+  const mistakeContext = getMistakeContext(studentProfile, subjectId, topicId);
+  const topicStatus = topicProgress?.status || 'new';
+
+  const teacherExplanation = selectString(
+    dedupeText([
+      ...asArray(pack.teacherExplanation),
+      ...asArray(pack.explanations),
+      ...toDisplayText(pack.simpleExplanation)
+    ]),
+    `${subjectId}:${topicId}:teacherExplanation`
+  );
+
+  const simpleExplanation = sanitizeAiText(pack.simpleExplanation || teacherExplanation || question?.explanation || question?.hint || 'Jawapan ini sesuai dengan soalan.');
+  const examples = rotateList(collectPrioritizedText(pack, subjectId), `${subjectId}:${topicId}:examples`);
+  const extraExamples = rotateList(dedupeText(toDisplayText(pack.extraExamples)), `${subjectId}:${topicId}:extraExamples`);
+  const tips = rotateList(dedupeText(toDisplayText(pack.tips)), `${subjectId}:${topicId}:tips`);
+  const memoryTips = rotateList(dedupeText(toDisplayText(pack.memoryTips)), `${subjectId}:${topicId}:memoryTips`);
+  const commonMistakes = rotateList(dedupeText(toDisplayText(pack.commonMistakes)), `${subjectId}:${topicId}:commonMistakes`);
+  const followUpQuestions = rotateList(dedupeText(toDisplayText(pack.followUpQuestions)), `${subjectId}:${topicId}:followUpQuestions`);
+  const encouragementStatus = result?.status === 'correct' ? 'correct' : result?.status === 'excellent' ? 'excellent' : 'retry';
+  const encouragement = selectString(
+    dedupeText(asArray(pack.encouragement?.[encouragementStatus])),
+    `${subjectId}:${topicId}:encouragement:${encouragementStatus}`
+  );
+  const questionAnswer = sanitizeAiText(question?.answer || '');
+  const hintSources = dedupeText([
+    ...toDisplayText(pack.tips),
+    ...toDisplayText(pack.memoryTips),
+    ...toDisplayText(pack.commonMistakes)
+  ]);
+  const hint = selectString(hintSources, `${subjectId}:${topicId}:hint`) || sanitizeAiText(question?.hint || 'Cari kata kunci penting dalam soalan.');
+  const practicePrompt = followUpQuestions[0] || sanitizeAiText(question?.hint || 'Cuba sekali lagi selepas membaca penerangan ini.');
+  const learningProfile = {
+    studentId: studentProfile.studentId || 'default',
+    name: studentProfile.name || '',
+    accuracy: studentProfile.summary?.accuracy || 0,
+    currentStreak: studentProfile.summary?.currentStreak || 0,
+    longestStreak: studentProfile.summary?.longestStreak || 0,
+    strongestTopic: studentProfile.strongestTopic || null,
+    weakestTopic: studentProfile.weakestTopic || null,
+    topicStatus,
+    subjectProgress,
+    topicProgress,
+    weakTopics: studentProfile.weakTopics || [],
+    strongTopics: studentProfile.strongTopics || [],
+    revisionPlan,
+    mistakeContext
+  };
+  const encouragementOverride = (() => {
+    if (result?.status === 'correct' || result?.status === 'excellent') {
+      if (topicStatus === 'mastered') return 'Hebat! Kamu sudah kuasai topik ini. Teruskan ke cabaran seterusnya.';
+      if (topicStatus === 'good') return 'Bagus! Kamu sudah semakin yakin dengan topik ini.';
+      return encouragement || 'Hebat! Teruskan usaha kamu.';
+    }
+    if (topicStatus === 'weak') {
+      return encouragement || 'Tak mengapa. Kita belajar perlahan-lahan satu langkah demi satu langkah.';
+    }
+    if (topicStatus === 'needs_practice') {
+      return encouragement || 'Jom ulang sedikit lagi supaya kamu lebih yakin.';
+    }
+    if (topicStatus === 'mastered') {
+      return encouragement || 'Kamu sudah menguasai topik ini dengan baik.';
+    }
+    return encouragement || (result?.status === 'correct' ? 'Hebat! Teruskan usaha kamu.' : 'Tak mengapa. Kita cuba sekali lagi.');
+  })();
+  const profileHint = topicStatus === 'mastered'
+    ? 'Kamu sudah kuat dalam topik ini. Kita fokus pada kefahaman ringkas dan semak semula.'
+    : topicStatus === 'weak'
+      ? 'Topik ini masih perlukan latihan. Baca perlahan-lahan dan ikut langkah kecil.'
+      : '';
+  const mistakeHint = mistakeContext?.repeatedMistakes > 1
+    ? 'Nampaknya kesilapan yang sama sering berulang. Cuba ikut satu langkah pada satu masa.'
+    : '';
+
+  return {
+    source: 'knowledge',
+    subjectId: subjectId || null,
+    topicId: topicId || null,
+    displayName: pack.displayName || '',
+    teacherExplanation,
+    explanation: teacherExplanation || simpleExplanation,
+    simpleExplanation: [simpleExplanation, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || simpleExplanation,
+    hint: [hint, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || hint,
+    examples,
+    extraExamples,
+    tips,
+    memoryTips,
+    commonMistakes,
+    encouragement: encouragementOverride,
+    encouragementMessage: encouragementOverride,
+    followUpQuestions,
+    practicePrompt: [practicePrompt, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || practicePrompt,
+    answerLine: questionAnswer ? `Jawapan: ${questionAnswer}` : '',
+    correctAnswer: questionAnswer,
+    workedExamples: rotateList(dedupeText(toDisplayText(pack.workedExamples)), `${subjectId}:${topicId}:workedExamples`),
+    problemSolvingSteps: rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${subjectId}:${topicId}:problemSolvingSteps`),
+    scientificFacts: rotateList(dedupeText(toDisplayText(pack.scientificFacts)), `${subjectId}:${topicId}:scientificFacts`),
+    observationPrompts: rotateList(dedupeText(toDisplayText(pack.observationPrompts)), `${subjectId}:${topicId}:observationPrompts`),
+    comparisonPrompts: rotateList(dedupeText(toDisplayText(pack.comparisonPrompts)), `${subjectId}:${topicId}:comparisonPrompts`),
+    investigationIdeas: rotateList(dedupeText(toDisplayText(pack.investigationIdeas)), `${subjectId}:${topicId}:investigationIdeas`),
+    realLifeConnections: rotateList(dedupeText(toDisplayText(pack.realLifeConnections)), `${subjectId}:${topicId}:realLifeConnections`),
+    safetyNotes: rotateList(dedupeText(toDisplayText(pack.safetyNotes)), `${subjectId}:${topicId}:safetyNotes`),
+    misconceptions: rotateList(dedupeText(toDisplayText(pack.misconceptions)), `${subjectId}:${topicId}:misconceptions`),
+    evidenceQuestions: rotateList(dedupeText(toDisplayText(pack.evidenceQuestions)), `${subjectId}:${topicId}:evidenceQuestions`),
+    pronunciationTips: rotateList(dedupeText(toDisplayText(pack.pronunciationTips)), `${subjectId}:${topicId}:pronunciationTips`),
+    letterRecognitionTips: rotateList(dedupeText(toDisplayText(pack.letterRecognitionTips)), `${subjectId}:${topicId}:letterRecognitionTips`),
+    writingTips: rotateList(dedupeText(toDisplayText(pack.writingTips)), `${subjectId}:${topicId}:writingTips`),
+    vocabularyGroups: rotateList(dedupeText(toDisplayText(pack.vocabularyGroups)), `${subjectId}:${topicId}:vocabularyGroups`),
+    translationHints: rotateList(dedupeText(toDisplayText(pack.translationHints)), `${subjectId}:${topicId}:translationHints`),
+    readingPractice: rotateList(dedupeText(toDisplayText(pack.readingPractice)), `${subjectId}:${topicId}:readingPractice`),
+    listeningPractice: rotateList(dedupeText(toDisplayText(pack.listeningPractice)), `${subjectId}:${topicId}:listeningPractice`),
+    speakingPractice: rotateList(dedupeText(toDisplayText(pack.speakingPractice)), `${subjectId}:${topicId}:speakingPractice`),
+    writingPractice: rotateList(dedupeText(toDisplayText(pack.writingPractice)), `${subjectId}:${topicId}:writingPractice`),
+    commonPronunciationMistakes: rotateList(dedupeText(toDisplayText(pack.commonPronunciationMistakes)), `${subjectId}:${topicId}:commonPronunciationMistakes`),
+    dailyPractice: rotateList(dedupeText(toDisplayText(pack.dailyPractice)), `${subjectId}:${topicId}:dailyPractice`),
+    adabApplications: rotateList(dedupeText(toDisplayText(pack.adabApplications)), `${subjectId}:${topicId}:adabApplications`),
+    realLifeExamples: rotateList(dedupeText(toDisplayText(pack.realLifeExamples)), `${subjectId}:${topicId}:realLifeExamples`),
+    ayahOrHadithReference: rotateList(dedupeText(toDisplayText(pack.ayahOrHadithReference)), `${subjectId}:${topicId}:ayahOrHadithReference`),
+    reflectionQuestions: rotateList(dedupeText(toDisplayText(pack.reflectionQuestions)), `${subjectId}:${topicId}:reflectionQuestions`),
+    goodDeedsIdeas: rotateList(dedupeText(toDisplayText(pack.goodDeedsIdeas)), `${subjectId}:${topicId}:goodDeedsIdeas`),
+    userAnswer: sanitizeAiText(userAnswer || ''),
+    learningProfile,
+    packLoaded: true
+  };
+}
+
+function getCachedPackOrEmpty(subjectId, topicId) {
+  return peekKnowledge(subjectId, topicId) || null;
+}
+
+export function getKnowledgePack(subjectId, topicId) {
+  return getCachedPackOrEmpty(subjectId, topicId);
+}
+
+export function getTeacherExplanation(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.teacherExplanation || '';
+}
+
+export function getExamples(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.examples || [];
+}
+
+export function getExtraExamples(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.extraExamples || [];
+}
+
+export function getTips(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.tips || [];
+}
+
+export function getMemoryTips(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.memoryTips || [];
+}
+
+export function getCommonMistakes(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.commonMistakes || [];
+}
+
+export function getEncouragement(subjectId, topicId) {
+  const pack = getCachedPackOrEmpty(subjectId, topicId);
+  return pack?.encouragement || { correct: [], retry: [], excellent: [] };
+}
+
+export function getFollowUpQuestions(subjectId, topicId) {
+  return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.followUpQuestions || [];
+}
+
+export async function fetchCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '' } = {}) {
   if (!subjectId || !topicId) {
     logKnowledgeEvent('missing topic', { subjectId: subjectId || null, topicId: topicId || null });
     return null;
   }
 
   try {
-    if (!hasKnowledge(subjectId, topicId)) {
+    const pack = await loadKnowledge(subjectId, topicId);
+    if (!pack || !pack.subjectId) {
       logKnowledgeEvent('fallback used', { subjectId, topicId, reason: 'knowledge-pack-missing' });
       return null;
     }
-
-    const pack = loadKnowledge(subjectId, topicId);
-    logKnowledgeEvent('knowledge pack loaded', {
-      subjectId,
-      topicId,
-      displayName: pack?.displayName || ''
-    });
-    return pack;
+    logKnowledgeEvent('knowledge pack loaded', { subjectId, topicId, displayName: pack.displayName || '' });
+    primeKnowledgePack(subjectId, topicId, pack);
+    return buildPackData(pack, subjectId, topicId, question, result, userAnswer);
   } catch (error) {
     logKnowledgeEvent('fallback used', {
       subjectId,
@@ -130,183 +317,14 @@ function getPack(subjectId, topicId) {
   }
 }
 
-function getPriorityFields(subjectId) {
-  return FIELD_PRIORITY[subjectId] || FIELD_PRIORITY.default;
-}
-
-function collectPrioritizedText(pack, subjectId) {
-  if (!pack) return [];
-
-  const fields = getPriorityFields(subjectId);
-  const values = [];
-  for (const field of fields) {
-    values.push(...toDisplayText(pack[field]));
-  }
-
-  if (!values.length) {
-    values.push(...toDisplayText(pack.examples));
-  }
-
-  if (!values.length) {
-    values.push(...toDisplayText(pack.extraExamples));
-  }
-
-  return dedupeText(values);
-}
-
-function pickEncouragement(pack, subjectId, topicId, status = 'correct') {
-  const pool = pack?.encouragement || {};
-  const key = `${subjectId || 'subject'}:${topicId || 'topic'}:encouragement:${status}`;
-  const list = status === 'excellent'
-    ? safeArray(pool.excellent)
-    : status === 'retry'
-      ? safeArray(pool.retry)
-      : safeArray(pool.correct);
-  const selected = selectString(list, key);
-  return selected || '';
-}
-
-function buildHintFromPack(pack, subjectId, topicId) {
-  const fields = [
-    ...toDisplayText(pack?.tips),
-    ...toDisplayText(pack?.memoryTips),
-    ...toDisplayText(pack?.commonMistakes)
-  ];
-  const selected = selectString(dedupeText(fields), `${subjectId || 'subject'}:${topicId || 'topic'}:hint`);
-  return selected || '';
-}
-
-export function getKnowledgePack(subjectId, topicId) {
-  return getPack(subjectId, topicId);
-}
-
-export function getTeacherExplanation(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return '';
-  const explanations = [
-    ...safeArray(pack.teacherExplanation),
-    ...safeArray(pack.explanations),
-    ...toDisplayText(pack.simpleExplanation)
-  ];
-  return selectString(dedupeText(explanations), `${subjectId || 'subject'}:${topicId || 'topic'}:teacherExplanation`);
-}
-
-export function getExamples(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = collectPrioritizedText(pack, subjectId);
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:examples`);
-}
-
-export function getExtraExamples(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = dedupeText(toDisplayText(pack.extraExamples));
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:extraExamples`);
-}
-
-export function getTips(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = dedupeText(toDisplayText(pack.tips));
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:tips`);
-}
-
-export function getMemoryTips(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = dedupeText(toDisplayText(pack.memoryTips));
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:memoryTips`);
-}
-
-export function getCommonMistakes(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = dedupeText(toDisplayText(pack.commonMistakes));
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:commonMistakes`);
-}
-
-export function getEncouragement(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  return pack?.encouragement || { correct: [], retry: [], excellent: [] };
-}
-
-export function getFollowUpQuestions(subjectId, topicId) {
-  const pack = getPack(subjectId, topicId);
-  if (!pack) return [];
-  const list = dedupeText(toDisplayText(pack.followUpQuestions));
-  return rotateList(list, `${subjectId || 'subject'}:${topicId || 'topic'}:followUpQuestions`);
-}
-
 export function buildCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '' } = {}) {
-  const pack = getPack(subjectId, topicId);
+  const pack = getCachedPackOrEmpty(subjectId, topicId);
   if (!pack) return null;
+  return buildPackData(pack, subjectId, topicId, question, result, userAnswer);
+}
 
-  const teacherExplanation = getTeacherExplanation(subjectId, topicId);
-  const simpleExplanation = sanitizeAiText(pack.simpleExplanation || teacherExplanation || question?.explanation || question?.hint || 'Jawapan ini sesuai dengan soalan.');
-  const examples = getExamples(subjectId, topicId);
-  const extraExamples = getExtraExamples(subjectId, topicId);
-  const tips = getTips(subjectId, topicId);
-  const memoryTips = getMemoryTips(subjectId, topicId);
-  const commonMistakes = getCommonMistakes(subjectId, topicId);
-  const followUpQuestions = getFollowUpQuestions(subjectId, topicId);
-  const encouragementStatus = result?.status === 'correct'
-    ? 'correct'
-    : result?.status === 'excellent'
-      ? 'excellent'
-      : 'retry';
-  const encouragement = pickEncouragement(pack, subjectId, topicId, encouragementStatus);
-  const hint = buildHintFromPack(pack, subjectId, topicId) || sanitizeAiText(question?.hint || '');
-  const questionAnswer = sanitizeAiText(question?.answer || '');
-  const practicePrompt = followUpQuestions[0] || sanitizeAiText(question?.hint || 'Cuba sekali lagi selepas membaca penerangan ini.');
-
-  return {
-    source: 'knowledge',
-    subjectId: subjectId || null,
-    topicId: topicId || null,
-    displayName: pack.displayName || '',
-    teacherExplanation,
-    explanation: teacherExplanation || simpleExplanation,
-    simpleExplanation,
-    hint: hint || sanitizeAiText(question?.hint || 'Cari kata kunci penting dalam soalan.'),
-    examples,
-    extraExamples,
-    tips,
-    memoryTips,
-    commonMistakes,
-    encouragement,
-    encouragementMessage: encouragement,
-    followUpQuestions,
-    practicePrompt,
-    answerLine: questionAnswer ? `Jawapan: ${questionAnswer}` : '',
-    correctAnswer: questionAnswer,
-    workedExamples: rotateList(dedupeText(toDisplayText(pack.workedExamples)), `${subjectId || 'subject'}:${topicId || 'topic'}:workedExamples`),
-    problemSolvingSteps: rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${subjectId || 'subject'}:${topicId || 'topic'}:problemSolvingSteps`),
-    scientificFacts: rotateList(dedupeText(toDisplayText(pack.scientificFacts)), `${subjectId || 'subject'}:${topicId || 'topic'}:scientificFacts`),
-    observationPrompts: rotateList(dedupeText(toDisplayText(pack.observationPrompts)), `${subjectId || 'subject'}:${topicId || 'topic'}:observationPrompts`),
-    comparisonPrompts: rotateList(dedupeText(toDisplayText(pack.comparisonPrompts)), `${subjectId || 'subject'}:${topicId || 'topic'}:comparisonPrompts`),
-    investigationIdeas: rotateList(dedupeText(toDisplayText(pack.investigationIdeas)), `${subjectId || 'subject'}:${topicId || 'topic'}:investigationIdeas`),
-    realLifeConnections: rotateList(dedupeText(toDisplayText(pack.realLifeConnections)), `${subjectId || 'subject'}:${topicId || 'topic'}:realLifeConnections`),
-    safetyNotes: rotateList(dedupeText(toDisplayText(pack.safetyNotes)), `${subjectId || 'subject'}:${topicId || 'topic'}:safetyNotes`),
-    misconceptions: rotateList(dedupeText(toDisplayText(pack.misconceptions)), `${subjectId || 'subject'}:${topicId || 'topic'}:misconceptions`),
-    evidenceQuestions: rotateList(dedupeText(toDisplayText(pack.evidenceQuestions)), `${subjectId || 'subject'}:${topicId || 'topic'}:evidenceQuestions`),
-    pronunciationTips: rotateList(dedupeText(toDisplayText(pack.pronunciationTips)), `${subjectId || 'subject'}:${topicId || 'topic'}:pronunciationTips`),
-    letterRecognitionTips: rotateList(dedupeText(toDisplayText(pack.letterRecognitionTips)), `${subjectId || 'subject'}:${topicId || 'topic'}:letterRecognitionTips`),
-    writingTips: rotateList(dedupeText(toDisplayText(pack.writingTips)), `${subjectId || 'subject'}:${topicId || 'topic'}:writingTips`),
-    vocabularyGroups: rotateList(dedupeText(toDisplayText(pack.vocabularyGroups)), `${subjectId || 'subject'}:${topicId || 'topic'}:vocabularyGroups`),
-    translationHints: rotateList(dedupeText(toDisplayText(pack.translationHints)), `${subjectId || 'subject'}:${topicId || 'topic'}:translationHints`),
-    readingPractice: rotateList(dedupeText(toDisplayText(pack.readingPractice)), `${subjectId || 'subject'}:${topicId || 'topic'}:readingPractice`),
-    listeningPractice: rotateList(dedupeText(toDisplayText(pack.listeningPractice)), `${subjectId || 'subject'}:${topicId || 'topic'}:listeningPractice`),
-    speakingPractice: rotateList(dedupeText(toDisplayText(pack.speakingPractice)), `${subjectId || 'subject'}:${topicId || 'topic'}:speakingPractice`),
-    writingPractice: rotateList(dedupeText(toDisplayText(pack.writingPractice)), `${subjectId || 'subject'}:${topicId || 'topic'}:writingPractice`),
-    commonPronunciationMistakes: rotateList(dedupeText(toDisplayText(pack.commonPronunciationMistakes)), `${subjectId || 'subject'}:${topicId || 'topic'}:commonPronunciationMistakes`),
-    dailyPractice: rotateList(dedupeText(toDisplayText(pack.dailyPractice)), `${subjectId || 'subject'}:${topicId || 'topic'}:dailyPractice`),
-    adabApplications: rotateList(dedupeText(toDisplayText(pack.adabApplications)), `${subjectId || 'subject'}:${topicId || 'topic'}:adabApplications`),
-    realLifeExamples: rotateList(dedupeText(toDisplayText(pack.realLifeExamples)), `${subjectId || 'subject'}:${topicId || 'topic'}:realLifeExamples`),
-    ayahOrHadithReference: rotateList(dedupeText(toDisplayText(pack.ayahOrHadithReference)), `${subjectId || 'subject'}:${topicId || 'topic'}:ayahOrHadithReference`),
-    reflectionQuestions: rotateList(dedupeText(toDisplayText(pack.reflectionQuestions)), `${subjectId || 'subject'}:${topicId || 'topic'}:reflectionQuestions`),
-    goodDeedsIdeas: rotateList(dedupeText(toDisplayText(pack.goodDeedsIdeas)), `${subjectId || 'subject'}:${topicId || 'topic'}:goodDeedsIdeas`)
-  };
+export async function prefetchCoachKnowledgePack(subjectId, topicId, question = {}, result = {}, userAnswer = '') {
+  return fetchCoachKnowledgeData({ subjectId, topicId, question, result, userAnswer });
 }
 
 export default {
@@ -319,5 +337,7 @@ export default {
   getCommonMistakes,
   getEncouragement,
   getFollowUpQuestions,
-  buildCoachKnowledgeData
+  buildCoachKnowledgeData,
+  fetchCoachKnowledgeData,
+  prefetchCoachKnowledgePack
 };
