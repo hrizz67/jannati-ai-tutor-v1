@@ -20,7 +20,7 @@
 
 - Missing field failures: 0
 - Minimum-count failures: 0
-- Duplicate-content findings: 193
+- Duplicate-content findings: 185
 - Placeholder findings: 0
 - Language-specific findings: 0
 
@@ -45,7 +45,7 @@
 
 ## Duplicate-content findings
 
-193 duplicate-content groups recorded in the JSON report.
+185 duplicate-content groups recorded in the JSON report.
 
 ## Placeholder findings
 

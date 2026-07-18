@@ -12,7 +12,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-NOMBOR-001",
-          "q": "Apakah nombor selepas 113?",
+          "q": "Berapakah nombor selepas 113?",
           "answer": "114",
           "accepted": [
             "114"
@@ -22,11 +22,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 113?"
+          "question": "Berapakah nombor selepas 113?"
         },
         {
           "id": "MATH-NOMBOR-002",
-          "q": "Apakah nombor sebelum 134?",
+          "q": "Berapakah nombor sebelum 134?",
           "answer": "133",
           "accepted": [
             "133"
@@ -36,11 +36,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 134?"
+          "question": "Berapakah nombor sebelum 134?"
         },
         {
           "id": "MATH-NOMBOR-003",
-          "q": "100 + 30 + 9 = ________.",
+          "q": "Berapakah jawapan bagi 100 + 30 + 9?",
           "answer": "139",
           "accepted": [
             "139"
@@ -50,11 +50,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "100 + 30 + 9 = ________."
+          "question": "Berapakah jawapan bagi 100 + 30 + 9?"
         },
         {
           "id": "MATH-NOMBOR-004",
-          "q": "Nombor manakah yang paling kecil: 152, 135, 161?",
+          "q": "Berapakah nombor yang paling kecil antara 152, 135 dan 161?",
           "answer": "135",
           "accepted": [
             "135"
@@ -64,11 +64,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 152, 135, 161?"
+          "question": "Berapakah nombor yang paling kecil antara 152, 135 dan 161?"
         },
         {
           "id": "MATH-NOMBOR-005",
-          "q": "Apakah nilai digit puluh dalam nombor 165?",
+          "q": "Berapakah nilai digit puluh dalam nombor 165?",
           "answer": "60",
           "accepted": [
             "60"
@@ -78,11 +78,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 165?"
+          "question": "Berapakah nilai digit puluh dalam nombor 165?"
         },
         {
           "id": "MATH-NOMBOR-006",
-          "q": "Apakah nombor selepas 178?",
+          "q": "Berapakah nombor selepas 178?",
           "answer": "179",
           "accepted": [
             "179"
@@ -92,11 +92,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 178?"
+          "question": "Berapakah nombor selepas 178?"
         },
         {
           "id": "MATH-NOMBOR-007",
-          "q": "Apakah nombor sebelum 199?",
+          "q": "Berapakah nombor sebelum 199?",
           "answer": "198",
           "accepted": [
             "198"
@@ -106,11 +106,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 199?"
+          "question": "Berapakah nombor sebelum 199?"
         },
         {
           "id": "MATH-NOMBOR-008",
-          "q": "200 + 0 + 4 = ________.",
+          "q": "Berapakah jawapan bagi 200 + 0 + 4?",
           "answer": "204",
           "accepted": [
             "204"
@@ -120,11 +120,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "200 + 0 + 4 = ________."
+          "question": "Berapakah jawapan bagi 200 + 0 + 4?"
         },
         {
           "id": "MATH-NOMBOR-009",
-          "q": "Nombor manakah yang paling kecil: 217, 200, 226?",
+          "q": "Berapakah nombor yang paling kecil antara 217, 200 dan 226?",
           "answer": "200",
           "accepted": [
             "200"
@@ -134,11 +134,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 217, 200, 226?"
+          "question": "Berapakah nombor yang paling kecil antara 217, 200 dan 226?"
         },
         {
           "id": "MATH-NOMBOR-010",
-          "q": "Apakah nilai digit puluh dalam nombor 230?",
+          "q": "Berapakah nilai digit puluh dalam nombor 230?",
           "answer": "30",
           "accepted": [
             "30"
@@ -148,11 +148,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 230?"
+          "question": "Berapakah nilai digit puluh dalam nombor 230?"
         },
         {
           "id": "MATH-NOMBOR-011",
-          "q": "Apakah nombor selepas 243?",
+          "q": "Berapakah nombor selepas 243?",
           "answer": "244",
           "accepted": [
             "244"
@@ -162,11 +162,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 243?"
+          "question": "Berapakah nombor selepas 243?"
         },
         {
           "id": "MATH-NOMBOR-012",
-          "q": "Apakah nombor sebelum 264?",
+          "q": "Berapakah nombor sebelum 264?",
           "answer": "263",
           "accepted": [
             "263"
@@ -176,11 +176,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 264?"
+          "question": "Berapakah nombor sebelum 264?"
         },
         {
           "id": "MATH-NOMBOR-013",
-          "q": "200 + 60 + 9 = ________.",
+          "q": "Berapakah jawapan bagi 200 + 60 + 9?",
           "answer": "269",
           "accepted": [
             "269"
@@ -190,11 +190,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "200 + 60 + 9 = ________."
+          "question": "Berapakah jawapan bagi 200 + 60 + 9?"
         },
         {
           "id": "MATH-NOMBOR-014",
-          "q": "Nombor manakah yang paling kecil: 282, 265, 291?",
+          "q": "Berapakah nombor yang paling kecil antara 282, 265 dan 291?",
           "answer": "265",
           "accepted": [
             "265"
@@ -204,11 +204,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 282, 265, 291?"
+          "question": "Berapakah nombor yang paling kecil antara 282, 265 dan 291?"
         },
         {
           "id": "MATH-NOMBOR-015",
-          "q": "Apakah nilai digit puluh dalam nombor 295?",
+          "q": "Berapakah nilai digit puluh dalam nombor 295?",
           "answer": "90",
           "accepted": [
             "90"
@@ -218,11 +218,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 295?"
+          "question": "Berapakah nilai digit puluh dalam nombor 295?"
         },
         {
           "id": "MATH-NOMBOR-016",
-          "q": "Apakah nombor selepas 308?",
+          "q": "Berapakah nombor selepas 308?",
           "answer": "309",
           "accepted": [
             "309"
@@ -232,11 +232,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 308?"
+          "question": "Berapakah nombor selepas 308?"
         },
         {
           "id": "MATH-NOMBOR-017",
-          "q": "Apakah nombor sebelum 329?",
+          "q": "Berapakah nombor sebelum 329?",
           "answer": "328",
           "accepted": [
             "328"
@@ -246,11 +246,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 329?"
+          "question": "Berapakah nombor sebelum 329?"
         },
         {
           "id": "MATH-NOMBOR-018",
-          "q": "300 + 30 + 4 = ________.",
+          "q": "Berapakah jawapan bagi 300 + 30 + 4?",
           "answer": "334",
           "accepted": [
             "334"
@@ -260,11 +260,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "300 + 30 + 4 = ________."
+          "question": "Berapakah jawapan bagi 300 + 30 + 4?"
         },
         {
           "id": "MATH-NOMBOR-019",
-          "q": "Nombor manakah yang paling kecil: 347, 330, 356?",
+          "q": "Berapakah nombor yang paling kecil antara 347, 330 dan 356?",
           "answer": "330",
           "accepted": [
             "330"
@@ -274,11 +274,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 347, 330, 356?"
+          "question": "Berapakah nombor yang paling kecil antara 347, 330 dan 356?"
         },
         {
           "id": "MATH-NOMBOR-020",
-          "q": "Apakah nilai digit puluh dalam nombor 360?",
+          "q": "Berapakah nilai digit puluh dalam nombor 360?",
           "answer": "60",
           "accepted": [
             "60"
@@ -288,11 +288,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 360?"
+          "question": "Berapakah nilai digit puluh dalam nombor 360?"
         },
         {
           "id": "MATH-NOMBOR-021",
-          "q": "Apakah nombor selepas 373?",
+          "q": "Berapakah nombor selepas 373?",
           "answer": "374",
           "accepted": [
             "374"
@@ -302,11 +302,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 373?"
+          "question": "Berapakah nombor selepas 373?"
         },
         {
           "id": "MATH-NOMBOR-022",
-          "q": "Apakah nombor sebelum 394?",
+          "q": "Berapakah nombor sebelum 394?",
           "answer": "393",
           "accepted": [
             "393"
@@ -316,11 +316,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 394?"
+          "question": "Berapakah nombor sebelum 394?"
         },
         {
           "id": "MATH-NOMBOR-023",
-          "q": "300 + 90 + 9 = ________.",
+          "q": "Berapakah jawapan bagi 300 + 90 + 9?",
           "answer": "399",
           "accepted": [
             "399"
@@ -330,11 +330,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "300 + 90 + 9 = ________."
+          "question": "Berapakah jawapan bagi 300 + 90 + 9?"
         },
         {
           "id": "MATH-NOMBOR-024",
-          "q": "Nombor manakah yang paling kecil: 412, 395, 421?",
+          "q": "Berapakah nombor yang paling kecil antara 412, 395 dan 421?",
           "answer": "395",
           "accepted": [
             "395"
@@ -344,11 +344,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 412, 395, 421?"
+          "question": "Berapakah nombor yang paling kecil antara 412, 395 dan 421?"
         },
         {
           "id": "MATH-NOMBOR-025",
-          "q": "Apakah nilai digit puluh dalam nombor 425?",
+          "q": "Berapakah nilai digit puluh dalam nombor 425?",
           "answer": "20",
           "accepted": [
             "20"
@@ -358,11 +358,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 425?"
+          "question": "Berapakah nilai digit puluh dalam nombor 425?"
         },
         {
           "id": "MATH-NOMBOR-026",
-          "q": "Apakah nombor selepas 438?",
+          "q": "Berapakah nombor selepas 438?",
           "answer": "439",
           "accepted": [
             "439"
@@ -372,11 +372,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 438?"
+          "question": "Berapakah nombor selepas 438?"
         },
         {
           "id": "MATH-NOMBOR-027",
-          "q": "Apakah nombor sebelum 459?",
+          "q": "Berapakah nombor sebelum 459?",
           "answer": "458",
           "accepted": [
             "458"
@@ -386,11 +386,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 459?"
+          "question": "Berapakah nombor sebelum 459?"
         },
         {
           "id": "MATH-NOMBOR-028",
-          "q": "400 + 60 + 4 = ________.",
+          "q": "Berapakah jawapan bagi 400 + 60 + 4?",
           "answer": "464",
           "accepted": [
             "464"
@@ -400,11 +400,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "400 + 60 + 4 = ________."
+          "question": "Berapakah jawapan bagi 400 + 60 + 4?"
         },
         {
           "id": "MATH-NOMBOR-029",
-          "q": "Nombor manakah yang paling kecil: 477, 460, 486?",
+          "q": "Berapakah nombor yang paling kecil antara 477, 460 dan 486?",
           "answer": "460",
           "accepted": [
             "460"
@@ -414,11 +414,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 477, 460, 486?"
+          "question": "Berapakah nombor yang paling kecil antara 477, 460 dan 486?"
         },
         {
           "id": "MATH-NOMBOR-030",
-          "q": "Apakah nilai digit puluh dalam nombor 490?",
+          "q": "Berapakah nilai digit puluh dalam nombor 490?",
           "answer": "90",
           "accepted": [
             "90"
@@ -428,11 +428,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 490?"
+          "question": "Berapakah nilai digit puluh dalam nombor 490?"
         },
         {
           "id": "MATH-NOMBOR-031",
-          "q": "Apakah nombor selepas 503?",
+          "q": "Berapakah nombor selepas 503?",
           "answer": "504",
           "accepted": [
             "504"
@@ -442,11 +442,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 503?"
+          "question": "Berapakah nombor selepas 503?"
         },
         {
           "id": "MATH-NOMBOR-032",
-          "q": "Apakah nombor sebelum 524?",
+          "q": "Berapakah nombor sebelum 524?",
           "answer": "523",
           "accepted": [
             "523"
@@ -456,11 +456,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 524?"
+          "question": "Berapakah nombor sebelum 524?"
         },
         {
           "id": "MATH-NOMBOR-033",
-          "q": "500 + 20 + 9 = ________.",
+          "q": "Berapakah jawapan bagi 500 + 20 + 9?",
           "answer": "529",
           "accepted": [
             "529"
@@ -470,11 +470,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "500 + 20 + 9 = ________."
+          "question": "Berapakah jawapan bagi 500 + 20 + 9?"
         },
         {
           "id": "MATH-NOMBOR-034",
-          "q": "Nombor manakah yang paling kecil: 542, 525, 551?",
+          "q": "Berapakah nombor yang paling kecil antara 542, 525 dan 551?",
           "answer": "525",
           "accepted": [
             "525"
@@ -484,11 +484,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 542, 525, 551?"
+          "question": "Berapakah nombor yang paling kecil antara 542, 525 dan 551?"
         },
         {
           "id": "MATH-NOMBOR-035",
-          "q": "Apakah nilai digit puluh dalam nombor 555?",
+          "q": "Berapakah nilai digit puluh dalam nombor 555?",
           "answer": "50",
           "accepted": [
             "50"
@@ -498,11 +498,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 555?"
+          "question": "Berapakah nilai digit puluh dalam nombor 555?"
         },
         {
           "id": "MATH-NOMBOR-036",
-          "q": "Apakah nombor selepas 568?",
+          "q": "Berapakah nombor selepas 568?",
           "answer": "569",
           "accepted": [
             "569"
@@ -512,11 +512,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 568?"
+          "question": "Berapakah nombor selepas 568?"
         },
         {
           "id": "MATH-NOMBOR-037",
-          "q": "Apakah nombor sebelum 589?",
+          "q": "Berapakah nombor sebelum 589?",
           "answer": "588",
           "accepted": [
             "588"
@@ -526,11 +526,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 589?"
+          "question": "Berapakah nombor sebelum 589?"
         },
         {
           "id": "MATH-NOMBOR-038",
-          "q": "500 + 90 + 4 = ________.",
+          "q": "Berapakah jawapan bagi 500 + 90 + 4?",
           "answer": "594",
           "accepted": [
             "594"
@@ -540,11 +540,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "500 + 90 + 4 = ________."
+          "question": "Berapakah jawapan bagi 500 + 90 + 4?"
         },
         {
           "id": "MATH-NOMBOR-039",
-          "q": "Nombor manakah yang paling kecil: 607, 590, 616?",
+          "q": "Berapakah nombor yang paling kecil antara 607, 590 dan 616?",
           "answer": "590",
           "accepted": [
             "590"
@@ -554,11 +554,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 607, 590, 616?"
+          "question": "Berapakah nombor yang paling kecil antara 607, 590 dan 616?"
         },
         {
           "id": "MATH-NOMBOR-040",
-          "q": "Apakah nilai digit puluh dalam nombor 620?",
+          "q": "Berapakah nilai digit puluh dalam nombor 620?",
           "answer": "20",
           "accepted": [
             "20"
@@ -568,11 +568,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 620?"
+          "question": "Berapakah nilai digit puluh dalam nombor 620?"
         },
         {
           "id": "MATH-NOMBOR-041",
-          "q": "Apakah nombor selepas 633?",
+          "q": "Berapakah nombor selepas 633?",
           "answer": "634",
           "accepted": [
             "634"
@@ -582,11 +582,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 633?"
+          "question": "Berapakah nombor selepas 633?"
         },
         {
           "id": "MATH-NOMBOR-042",
-          "q": "Apakah nombor sebelum 654?",
+          "q": "Berapakah nombor sebelum 654?",
           "answer": "653",
           "accepted": [
             "653"
@@ -596,11 +596,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 654?"
+          "question": "Berapakah nombor sebelum 654?"
         },
         {
           "id": "MATH-NOMBOR-043",
-          "q": "600 + 50 + 9 = ________.",
+          "q": "Berapakah jawapan bagi 600 + 50 + 9?",
           "answer": "659",
           "accepted": [
             "659"
@@ -610,11 +610,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "600 + 50 + 9 = ________."
+          "question": "Berapakah jawapan bagi 600 + 50 + 9?"
         },
         {
           "id": "MATH-NOMBOR-044",
-          "q": "Nombor manakah yang paling kecil: 672, 655, 681?",
+          "q": "Berapakah nombor yang paling kecil antara 672, 655 dan 681?",
           "answer": "655",
           "accepted": [
             "655"
@@ -624,11 +624,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 672, 655, 681?"
+          "question": "Berapakah nombor yang paling kecil antara 672, 655 dan 681?"
         },
         {
           "id": "MATH-NOMBOR-045",
-          "q": "Apakah nilai digit puluh dalam nombor 685?",
+          "q": "Berapakah nilai digit puluh dalam nombor 685?",
           "answer": "80",
           "accepted": [
             "80"
@@ -638,11 +638,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 685?"
+          "question": "Berapakah nilai digit puluh dalam nombor 685?"
         },
         {
           "id": "MATH-NOMBOR-046",
-          "q": "Apakah nombor selepas 698?",
+          "q": "Berapakah nombor selepas 698?",
           "answer": "699",
           "accepted": [
             "699"
@@ -652,11 +652,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor selepas 698?"
+          "question": "Berapakah nombor selepas 698?"
         },
         {
           "id": "MATH-NOMBOR-047",
-          "q": "Apakah nombor sebelum 719?",
+          "q": "Berapakah nombor sebelum 719?",
           "answer": "718",
           "accepted": [
             "718"
@@ -666,11 +666,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nombor sebelum 719?"
+          "question": "Berapakah nombor sebelum 719?"
         },
         {
           "id": "MATH-NOMBOR-048",
-          "q": "700 + 20 + 4 = ________.",
+          "q": "Berapakah jawapan bagi 700 + 20 + 4?",
           "answer": "724",
           "accepted": [
             "724"
@@ -680,11 +680,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "700 + 20 + 4 = ________."
+          "question": "Berapakah jawapan bagi 700 + 20 + 4?"
         },
         {
           "id": "MATH-NOMBOR-049",
-          "q": "Nombor manakah yang paling kecil: 737, 720, 746?",
+          "q": "Berapakah nombor yang paling kecil antara 737, 720 dan 746?",
           "answer": "720",
           "accepted": [
             "720"
@@ -694,11 +694,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nombor manakah yang paling kecil: 737, 720, 746?"
+          "question": "Berapakah nombor yang paling kecil antara 737, 720 dan 746?"
         },
         {
           "id": "MATH-NOMBOR-050",
-          "q": "Apakah nilai digit puluh dalam nombor 750?",
+          "q": "Berapakah nilai digit puluh dalam nombor 750?",
           "answer": "50",
           "accepted": [
             "50"
@@ -708,7 +708,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah nilai digit puluh dalam nombor 750?"
+          "question": "Berapakah nilai digit puluh dalam nombor 750?"
         }
       ]
     },
@@ -719,7 +719,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-TAMBAH-001",
-          "q": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Berapakah jumlah pensel Danish?",
+          "q": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Cari jumlah pensel Danish?",
           "answer": "35",
           "accepted": [
             "35"
@@ -729,11 +729,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Berapakah jumlah pensel Danish?"
+          "question": "Danish ada 25 pensel. Ibu memberi 10 pensel lagi. Cari jumlah pensel Danish?"
         },
         {
           "id": "MATH-TAMBAH-002",
-          "q": "32 + 14 = ________.",
+          "q": "Cari jawapan bagi 32 + 14.",
           "answer": "46",
           "accepted": [
             "46"
@@ -743,11 +743,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "32 + 14 = ________."
+          "question": "Cari jawapan bagi 32 + 14."
         },
         {
           "id": "MATH-TAMBAH-003",
-          "q": "Di rak ada 39 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 39 buku cerita dan 18 buku latihan. Nyatakan jumlah buku di rak itu.",
           "answer": "57",
           "accepted": [
             "57"
@@ -757,11 +757,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 39 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 39 buku cerita dan 18 buku latihan. Nyatakan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-004",
-          "q": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Berapakah jumlah kad Sara?",
+          "q": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Tentukan jumlah kad Sara?",
           "answer": "68",
           "accepted": [
             "68"
@@ -771,11 +771,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Berapakah jumlah kad Sara?"
+          "question": "Sara ada 46 kad. Ibu memberi 22 kad lagi. Tentukan jumlah kad Sara?"
         },
         {
           "id": "MATH-TAMBAH-005",
-          "q": "53 + 26 = ________.",
+          "q": "Berapakah hasil tambah bagi 53 + 26?",
           "answer": "79",
           "accepted": [
             "79"
@@ -785,11 +785,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "53 + 26 = ________."
+          "question": "Berapakah hasil tambah bagi 53 + 26?"
         },
         {
           "id": "MATH-TAMBAH-006",
-          "q": "Di rak ada 60 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 60 buku cerita dan 30 buku latihan. Hitung jumlah buku di rak itu.",
           "answer": "90",
           "accepted": [
             "90"
@@ -799,11 +799,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 60 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 60 buku cerita dan 30 buku latihan. Hitung jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-007",
-          "q": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Berapakah jumlah kuih Iman?",
+          "q": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Hitung jumlah kuih Iman?",
           "answer": "101",
           "accepted": [
             "101"
@@ -813,11 +813,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Berapakah jumlah kuih Iman?"
+          "question": "Iman ada 67 kuih. Ibu memberi 34 kuih lagi. Hitung jumlah kuih Iman?"
         },
         {
           "id": "MATH-TAMBAH-008",
-          "q": "74 + 38 = ________.",
+          "q": "Tuliskan hasil tambah 74 + 38.",
           "answer": "112",
           "accepted": [
             "112"
@@ -827,11 +827,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "74 + 38 = ________."
+          "question": "Tuliskan hasil tambah 74 + 38."
         },
         {
           "id": "MATH-TAMBAH-009",
-          "q": "Di rak ada 81 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 81 buku cerita dan 6 buku latihan. Tentukan jumlah buku di rak itu.",
           "answer": "87",
           "accepted": [
             "87"
@@ -841,11 +841,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 81 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 81 buku cerita dan 6 buku latihan. Tentukan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-010",
-          "q": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Berapakah jumlah guli Aina?",
+          "q": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Apakah jumlah guli Aina?",
           "answer": "98",
           "accepted": [
             "98"
@@ -855,11 +855,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Berapakah jumlah guli Aina?"
+          "question": "Aina ada 88 guli. Ibu memberi 10 guli lagi. Apakah jumlah guli Aina?"
         },
         {
           "id": "MATH-TAMBAH-011",
-          "q": "95 + 14 = ________.",
+          "q": "Hitung jumlah 95 dan 14.",
           "answer": "109",
           "accepted": [
             "109"
@@ -869,11 +869,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "95 + 14 = ________."
+          "question": "Hitung jumlah 95 dan 14."
         },
         {
           "id": "MATH-TAMBAH-012",
-          "q": "Di rak ada 102 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 102 buku cerita dan 18 buku latihan. Cari jumlah buku di rak itu.",
           "answer": "120",
           "accepted": [
             "120"
@@ -883,11 +883,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 102 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 102 buku cerita dan 18 buku latihan. Cari jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-013",
-          "q": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Berapakah jumlah pelekat Irfan?",
+          "q": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Nyatakan jumlah pelekat Irfan?",
           "answer": "131",
           "accepted": [
             "131"
@@ -897,11 +897,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Berapakah jumlah pelekat Irfan?"
+          "question": "Irfan ada 109 pelekat. Ibu memberi 22 pelekat lagi. Nyatakan jumlah pelekat Irfan?"
         },
         {
           "id": "MATH-TAMBAH-014",
-          "q": "116 + 26 = ________.",
+          "q": "Selesaikan 116 + 26 = ________.",
           "answer": "142",
           "accepted": [
             "142"
@@ -911,11 +911,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "116 + 26 = ________."
+          "question": "Selesaikan 116 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-015",
-          "q": "Di rak ada 123 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 123 buku cerita dan 30 buku latihan. Apakah jumlah buku di rak itu?",
           "answer": "153",
           "accepted": [
             "153"
@@ -925,11 +925,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 123 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 123 buku cerita dan 30 buku latihan. Apakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-016",
-          "q": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Berapakah jumlah epal Farah?",
+          "q": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Cari jumlah epal Farah?",
           "answer": "164",
           "accepted": [
             "164"
@@ -939,11 +939,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Berapakah jumlah epal Farah?"
+          "question": "Farah ada 130 epal. Ibu memberi 34 epal lagi. Cari jumlah epal Farah?"
         },
         {
           "id": "MATH-TAMBAH-017",
-          "q": "137 + 38 = ________.",
+          "q": "Cari jawapan bagi 137 + 38.",
           "answer": "175",
           "accepted": [
             "175"
@@ -953,11 +953,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "137 + 38 = ________."
+          "question": "Cari jawapan bagi 137 + 38."
         },
         {
           "id": "MATH-TAMBAH-018",
-          "q": "Di rak ada 144 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 144 buku cerita dan 6 buku latihan. Nyatakan jumlah buku di rak itu.",
           "answer": "150",
           "accepted": [
             "150"
@@ -967,11 +967,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 144 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 144 buku cerita dan 6 buku latihan. Nyatakan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-019",
-          "q": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Berapakah jumlah kerang Rafiq?",
+          "q": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Tentukan jumlah kerang Rafiq?",
           "answer": "161",
           "accepted": [
             "161"
@@ -981,11 +981,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Berapakah jumlah kerang Rafiq?"
+          "question": "Rafiq ada 151 kerang. Ibu memberi 10 kerang lagi. Tentukan jumlah kerang Rafiq?"
         },
         {
           "id": "MATH-TAMBAH-020",
-          "q": "158 + 14 = ________.",
+          "q": "Berapakah hasil tambah bagi 158 + 14?",
           "answer": "172",
           "accepted": [
             "172"
@@ -995,11 +995,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "158 + 14 = ________."
+          "question": "Berapakah hasil tambah bagi 158 + 14?"
         },
         {
           "id": "MATH-TAMBAH-021",
-          "q": "Di rak ada 165 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 165 buku cerita dan 18 buku latihan. Hitung jumlah buku di rak itu.",
           "answer": "183",
           "accepted": [
             "183"
@@ -1009,11 +1009,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 165 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 165 buku cerita dan 18 buku latihan. Hitung jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-022",
-          "q": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Berapakah jumlah buku Mira?",
+          "q": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Hitung jumlah buku Mira?",
           "answer": "194",
           "accepted": [
             "194"
@@ -1023,11 +1023,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Berapakah jumlah buku Mira?"
+          "question": "Mira ada 172 buku. Ibu memberi 22 buku lagi. Hitung jumlah buku Mira?"
         },
         {
           "id": "MATH-TAMBAH-023",
-          "q": "179 + 26 = ________.",
+          "q": "Tuliskan hasil tambah 179 + 26.",
           "answer": "205",
           "accepted": [
             "205"
@@ -1037,11 +1037,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "179 + 26 = ________."
+          "question": "Tuliskan hasil tambah 179 + 26."
         },
         {
           "id": "MATH-TAMBAH-024",
-          "q": "Di rak ada 186 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 186 buku cerita dan 30 buku latihan. Tentukan jumlah buku di rak itu.",
           "answer": "216",
           "accepted": [
             "216"
@@ -1051,11 +1051,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 186 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 186 buku cerita dan 30 buku latihan. Tentukan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-025",
-          "q": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Berapakah jumlah manggis Hakim?",
+          "q": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Apakah jumlah manggis Hakim?",
           "answer": "227",
           "accepted": [
             "227"
@@ -1065,11 +1065,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Berapakah jumlah manggis Hakim?"
+          "question": "Hakim ada 193 manggis. Ibu memberi 34 manggis lagi. Apakah jumlah manggis Hakim?"
         },
         {
           "id": "MATH-TAMBAH-026",
-          "q": "200 + 38 = ________.",
+          "q": "Hitung jumlah 200 dan 38.",
           "answer": "238",
           "accepted": [
             "238"
@@ -1079,11 +1079,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "200 + 38 = ________."
+          "question": "Hitung jumlah 200 dan 38."
         },
         {
           "id": "MATH-TAMBAH-027",
-          "q": "Di rak ada 207 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 207 buku cerita dan 6 buku latihan. Cari jumlah buku di rak itu.",
           "answer": "213",
           "accepted": [
             "213"
@@ -1093,11 +1093,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 207 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 207 buku cerita dan 6 buku latihan. Cari jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-028",
-          "q": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Berapakah jumlah bunga Zara?",
+          "q": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Nyatakan jumlah bunga Zara?",
           "answer": "224",
           "accepted": [
             "224"
@@ -1107,11 +1107,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Berapakah jumlah bunga Zara?"
+          "question": "Zara ada 214 bunga. Ibu memberi 10 bunga lagi. Nyatakan jumlah bunga Zara?"
         },
         {
           "id": "MATH-TAMBAH-029",
-          "q": "221 + 14 = ________.",
+          "q": "Selesaikan 221 + 14 = ________.",
           "answer": "235",
           "accepted": [
             "235"
@@ -1121,11 +1121,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "221 + 14 = ________."
+          "question": "Selesaikan 221 + 14 = ________."
         },
         {
           "id": "MATH-TAMBAH-030",
-          "q": "Di rak ada 228 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 228 buku cerita dan 18 buku latihan. Apakah jumlah buku di rak itu?",
           "answer": "246",
           "accepted": [
             "246"
@@ -1135,11 +1135,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 228 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 228 buku cerita dan 18 buku latihan. Apakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-031",
-          "q": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Berapakah jumlah pensel Danish?",
+          "q": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Cari jumlah pensel Danish?",
           "answer": "257",
           "accepted": [
             "257"
@@ -1149,11 +1149,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Berapakah jumlah pensel Danish?"
+          "question": "Danish ada 235 pensel. Ibu memberi 22 pensel lagi. Cari jumlah pensel Danish?"
         },
         {
           "id": "MATH-TAMBAH-032",
-          "q": "242 + 26 = ________.",
+          "q": "Cari jawapan bagi 242 + 26.",
           "answer": "268",
           "accepted": [
             "268"
@@ -1163,11 +1163,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "242 + 26 = ________."
+          "question": "Cari jawapan bagi 242 + 26."
         },
         {
           "id": "MATH-TAMBAH-033",
-          "q": "Di rak ada 249 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 249 buku cerita dan 30 buku latihan. Nyatakan jumlah buku di rak itu.",
           "answer": "279",
           "accepted": [
             "279"
@@ -1177,11 +1177,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 249 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 249 buku cerita dan 30 buku latihan. Nyatakan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-034",
-          "q": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Berapakah jumlah kad Sara?",
+          "q": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Tentukan jumlah kad Sara?",
           "answer": "290",
           "accepted": [
             "290"
@@ -1191,11 +1191,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Berapakah jumlah kad Sara?"
+          "question": "Sara ada 256 kad. Ibu memberi 34 kad lagi. Tentukan jumlah kad Sara?"
         },
         {
           "id": "MATH-TAMBAH-035",
-          "q": "263 + 38 = ________.",
+          "q": "Berapakah hasil tambah bagi 263 + 38?",
           "answer": "301",
           "accepted": [
             "301"
@@ -1205,11 +1205,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "263 + 38 = ________."
+          "question": "Berapakah hasil tambah bagi 263 + 38?"
         },
         {
           "id": "MATH-TAMBAH-036",
-          "q": "Di rak ada 270 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 270 buku cerita dan 6 buku latihan. Hitung jumlah buku di rak itu.",
           "answer": "276",
           "accepted": [
             "276"
@@ -1219,11 +1219,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 270 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 270 buku cerita dan 6 buku latihan. Hitung jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-037",
-          "q": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Berapakah jumlah kuih Iman?",
+          "q": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Hitung jumlah kuih Iman?",
           "answer": "287",
           "accepted": [
             "287"
@@ -1233,11 +1233,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Berapakah jumlah kuih Iman?"
+          "question": "Iman ada 277 kuih. Ibu memberi 10 kuih lagi. Hitung jumlah kuih Iman?"
         },
         {
           "id": "MATH-TAMBAH-038",
-          "q": "284 + 14 = ________.",
+          "q": "Tuliskan hasil tambah 284 + 14.",
           "answer": "298",
           "accepted": [
             "298"
@@ -1247,11 +1247,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "284 + 14 = ________."
+          "question": "Tuliskan hasil tambah 284 + 14."
         },
         {
           "id": "MATH-TAMBAH-039",
-          "q": "Di rak ada 291 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 291 buku cerita dan 18 buku latihan. Tentukan jumlah buku di rak itu.",
           "answer": "309",
           "accepted": [
             "309"
@@ -1261,11 +1261,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 291 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 291 buku cerita dan 18 buku latihan. Tentukan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-040",
-          "q": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Berapakah jumlah guli Aina?",
+          "q": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Apakah jumlah guli Aina?",
           "answer": "320",
           "accepted": [
             "320"
@@ -1275,11 +1275,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Berapakah jumlah guli Aina?"
+          "question": "Aina ada 298 guli. Ibu memberi 22 guli lagi. Apakah jumlah guli Aina?"
         },
         {
           "id": "MATH-TAMBAH-041",
-          "q": "305 + 26 = ________.",
+          "q": "Hitung jumlah 305 dan 26.",
           "answer": "331",
           "accepted": [
             "331"
@@ -1289,11 +1289,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "305 + 26 = ________."
+          "question": "Hitung jumlah 305 dan 26."
         },
         {
           "id": "MATH-TAMBAH-042",
-          "q": "Di rak ada 312 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 312 buku cerita dan 30 buku latihan. Cari jumlah buku di rak itu.",
           "answer": "342",
           "accepted": [
             "342"
@@ -1303,11 +1303,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 312 buku cerita dan 30 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 312 buku cerita dan 30 buku latihan. Cari jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-043",
-          "q": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Berapakah jumlah pelekat Irfan?",
+          "q": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Nyatakan jumlah pelekat Irfan?",
           "answer": "353",
           "accepted": [
             "353"
@@ -1317,11 +1317,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Berapakah jumlah pelekat Irfan?"
+          "question": "Irfan ada 319 pelekat. Ibu memberi 34 pelekat lagi. Nyatakan jumlah pelekat Irfan?"
         },
         {
           "id": "MATH-TAMBAH-044",
-          "q": "326 + 38 = ________.",
+          "q": "Selesaikan 326 + 38 = ________.",
           "answer": "364",
           "accepted": [
             "364"
@@ -1331,11 +1331,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "326 + 38 = ________."
+          "question": "Selesaikan 326 + 38 = ________."
         },
         {
           "id": "MATH-TAMBAH-045",
-          "q": "Di rak ada 333 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 333 buku cerita dan 6 buku latihan. Apakah jumlah buku di rak itu?",
           "answer": "339",
           "accepted": [
             "339"
@@ -1345,11 +1345,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 333 buku cerita dan 6 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 333 buku cerita dan 6 buku latihan. Apakah jumlah buku di rak itu?"
         },
         {
           "id": "MATH-TAMBAH-046",
-          "q": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Berapakah jumlah epal Farah?",
+          "q": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Cari jumlah epal Farah?",
           "answer": "350",
           "accepted": [
             "350"
@@ -1359,11 +1359,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Berapakah jumlah epal Farah?"
+          "question": "Farah ada 340 epal. Ibu memberi 10 epal lagi. Cari jumlah epal Farah?"
         },
         {
           "id": "MATH-TAMBAH-047",
-          "q": "347 + 14 = ________.",
+          "q": "Cari jawapan bagi 347 + 14.",
           "answer": "361",
           "accepted": [
             "361"
@@ -1373,11 +1373,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "347 + 14 = ________."
+          "question": "Cari jawapan bagi 347 + 14."
         },
         {
           "id": "MATH-TAMBAH-048",
-          "q": "Di rak ada 354 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?",
+          "q": "Di rak ada 354 buku cerita dan 18 buku latihan. Nyatakan jumlah buku di rak itu.",
           "answer": "372",
           "accepted": [
             "372"
@@ -1387,11 +1387,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rak ada 354 buku cerita dan 18 buku latihan. Berapakah jumlah buku di rak itu?"
+          "question": "Di rak ada 354 buku cerita dan 18 buku latihan. Nyatakan jumlah buku di rak itu."
         },
         {
           "id": "MATH-TAMBAH-049",
-          "q": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Berapakah jumlah kerang Rafiq?",
+          "q": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Tentukan jumlah kerang Rafiq?",
           "answer": "383",
           "accepted": [
             "383"
@@ -1401,11 +1401,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Berapakah jumlah kerang Rafiq?"
+          "question": "Rafiq ada 361 kerang. Ibu memberi 22 kerang lagi. Tentukan jumlah kerang Rafiq?"
         },
         {
           "id": "MATH-TAMBAH-050",
-          "q": "368 + 26 = ________.",
+          "q": "Berapakah hasil tambah bagi 368 + 26?",
           "answer": "394",
           "accepted": [
             "394"
@@ -1415,11 +1415,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "368 + 26 = ________."
+          "question": "Berapakah hasil tambah bagi 368 + 26?"
         },
         {
           "id": "MATH-TAMBAH-051",
-          "q": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Berapakah jumlah setem Nadia?",
+          "q": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Cari jumlah setem Nadia?",
           "answer": "25",
           "accepted": [
             "25"
@@ -1429,11 +1429,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Berapakah jumlah setem Nadia?"
+          "question": "Nadia ada 18 setem. Ayah memberi 7 setem lagi. Cari jumlah setem Nadia?"
         },
         {
           "id": "MATH-TAMBAH-052",
-          "q": "24 + 13 = ________.",
+          "q": "Cari jawapan bagi 24 + 13.",
           "answer": "37",
           "accepted": [
             "37"
@@ -1443,7 +1443,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "24 + 13 = ________."
+          "question": "Cari jawapan bagi 24 + 13."
         },
         {
           "id": "MATH-TAMBAH-053",
@@ -1461,7 +1461,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-054",
-          "q": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Berapakah jumlah gundu Faris?",
+          "q": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Tentukan jumlah gundu Faris?",
           "answer": "49",
           "accepted": [
             "49"
@@ -1471,11 +1471,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Berapakah jumlah gundu Faris?"
+          "question": "Faris ada 41 gundu. Kakak memberi 8 gundu lagi. Tentukan jumlah gundu Faris?"
         },
         {
           "id": "MATH-TAMBAH-055",
-          "q": "27 + 22 = ________.",
+          "q": "Berapakah hasil tambah bagi 27 + 22?",
           "answer": "49",
           "accepted": [
             "49"
@@ -1485,7 +1485,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "27 + 22 = ________."
+          "question": "Berapakah hasil tambah bagi 27 + 22?"
         },
         {
           "id": "MATH-TAMBAH-056",
@@ -1503,7 +1503,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-057",
-          "q": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Berapakah jumlah pelekat Lina?",
+          "q": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Hitung jumlah pelekat Lina?",
           "answer": "59",
           "accepted": [
             "59"
@@ -1513,11 +1513,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Berapakah jumlah pelekat Lina?"
+          "question": "Lina ada 43 pelekat. Ibu saudara memberi 16 pelekat lagi. Hitung jumlah pelekat Lina?"
         },
         {
           "id": "MATH-TAMBAH-058",
-          "q": "28 + 31 = ________.",
+          "q": "Tuliskan hasil tambah 28 + 31.",
           "answer": "59",
           "accepted": [
             "59"
@@ -1527,7 +1527,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "28 + 31 = ________."
+          "question": "Tuliskan hasil tambah 28 + 31."
         },
         {
           "id": "MATH-TAMBAH-059",
@@ -1545,7 +1545,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-060",
-          "q": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Berapakah jumlah manik Qistina?",
+          "q": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Apakah jumlah manik Qistina?",
           "answer": "69",
           "accepted": [
             "69"
@@ -1555,11 +1555,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Berapakah jumlah manik Qistina?"
+          "question": "Qistina ada 54 manik. Nenek memberi 15 manik lagi. Apakah jumlah manik Qistina?"
         },
         {
           "id": "MATH-TAMBAH-061",
-          "q": "39 + 24 = ________.",
+          "q": "Hitung jumlah 39 dan 24.",
           "answer": "63",
           "accepted": [
             "63"
@@ -1569,7 +1569,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "39 + 24 = ________."
+          "question": "Hitung jumlah 39 dan 24."
         },
         {
           "id": "MATH-TAMBAH-062",
@@ -1587,7 +1587,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-063",
-          "q": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Berapakah jumlah kad ucapan Haziq?",
+          "q": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Nyatakan jumlah kad ucapan Haziq?",
           "answer": "80",
           "accepted": [
             "80"
@@ -1597,11 +1597,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Berapakah jumlah kad ucapan Haziq?"
+          "question": "Haziq ada 67 kad ucapan. Guru memberi 13 kad ucapan lagi. Nyatakan jumlah kad ucapan Haziq?"
         },
         {
           "id": "MATH-TAMBAH-064",
-          "q": "44 + 26 = ________.",
+          "q": "Selesaikan 44 + 26 = ________.",
           "answer": "70",
           "accepted": [
             "70"
@@ -1611,7 +1611,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "44 + 26 = ________."
+          "question": "Selesaikan 44 + 26 = ________."
         },
         {
           "id": "MATH-TAMBAH-065",
@@ -1629,7 +1629,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-066",
-          "q": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Berapakah jumlah syiling Umairah?",
+          "q": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Cari jumlah syiling Umairah?",
           "answer": "194",
           "accepted": [
             "194"
@@ -1639,11 +1639,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Berapakah jumlah syiling Umairah?"
+          "question": "Umairah ada 175 syiling. Datuk memberi 19 syiling lagi. Cari jumlah syiling Umairah?"
         },
         {
           "id": "MATH-TAMBAH-067",
-          "q": "189 + 24 = ________.",
+          "q": "Cari jawapan bagi 189 + 24.",
           "answer": "213",
           "accepted": [
             "213"
@@ -1653,7 +1653,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "189 + 24 = ________."
+          "question": "Cari jawapan bagi 189 + 24."
         },
         {
           "id": "MATH-TAMBAH-068",
@@ -1671,7 +1671,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-069",
-          "q": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Berapakah jumlah reben Safiyyah?",
+          "q": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Tentukan jumlah reben Safiyyah?",
           "answer": "243",
           "accepted": [
             "243"
@@ -1681,11 +1681,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Berapakah jumlah reben Safiyyah?"
+          "question": "Safiyyah ada 218 reben. Ibu memberi 25 reben lagi. Tentukan jumlah reben Safiyyah?"
         },
         {
           "id": "MATH-TAMBAH-070",
-          "q": "227 + 16 = ________.",
+          "q": "Berapakah hasil tambah bagi 227 + 16?",
           "answer": "243",
           "accepted": [
             "243"
@@ -1695,7 +1695,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "227 + 16 = ________."
+          "question": "Berapakah hasil tambah bagi 227 + 16?"
         },
         {
           "id": "MATH-TAMBAH-071",
@@ -1713,7 +1713,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-072",
-          "q": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Berapakah jumlah syiling Qalish?",
+          "q": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Hitung jumlah syiling Qalish?",
           "answer": "267",
           "accepted": [
             "267"
@@ -1723,11 +1723,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Berapakah jumlah syiling Qalish?"
+          "question": "Qalish ada 249 syiling emas mainan. Abang memberi 18 syiling lagi. Hitung jumlah syiling Qalish?"
         },
         {
           "id": "MATH-TAMBAH-073",
-          "q": "258 + 29 = ________.",
+          "q": "Tuliskan hasil tambah 258 + 29.",
           "answer": "287",
           "accepted": [
             "287"
@@ -1737,7 +1737,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "258 + 29 = ________."
+          "question": "Tuliskan hasil tambah 258 + 29."
         },
         {
           "id": "MATH-TAMBAH-074",
@@ -1755,7 +1755,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-075",
-          "q": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Berapakah jumlah manik Najla?",
+          "q": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Apakah jumlah manik Najla?",
           "answer": "301",
           "accepted": [
             "301"
@@ -1765,11 +1765,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Berapakah jumlah manik Najla?"
+          "question": "Najla ada 276 manik kaca. Mak cik memberi 25 manik lagi. Apakah jumlah manik Najla?"
         },
         {
           "id": "MATH-TAMBAH-076",
-          "q": "285 + 17 = ________.",
+          "q": "Hitung jumlah 285 dan 17.",
           "answer": "302",
           "accepted": [
             "302"
@@ -1779,7 +1779,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "285 + 17 = ________."
+          "question": "Hitung jumlah 285 dan 17."
         },
         {
           "id": "MATH-TAMBAH-077",
@@ -1797,7 +1797,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-078",
-          "q": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Berapakah jumlah butang Aisyah?",
+          "q": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Nyatakan jumlah butang Aisyah?",
           "answer": "327",
           "accepted": [
             "327"
@@ -1807,11 +1807,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Berapakah jumlah butang Aisyah?"
+          "question": "Aisyah ada 308 butang. Nenek memberi 19 butang lagi. Nyatakan jumlah butang Aisyah?"
         },
         {
           "id": "MATH-TAMBAH-079",
-          "q": "317 + 28 = ________.",
+          "q": "Selesaikan 317 + 28 = ________.",
           "answer": "345",
           "accepted": [
             "345"
@@ -1821,7 +1821,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "317 + 28 = ________."
+          "question": "Selesaikan 317 + 28 = ________."
         },
         {
           "id": "MATH-TAMBAH-080",
@@ -1839,7 +1839,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-081",
-          "q": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Berapakah jumlah kad Aminah?",
+          "q": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Cari jumlah kad Aminah?",
           "answer": "429",
           "accepted": [
             "429"
@@ -1849,11 +1849,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Berapakah jumlah kad Aminah?"
+          "question": "Aminah ada 402 keping kad nombor. Cikgu memberi 27 keping kad lagi. Cari jumlah kad Aminah?"
         },
         {
           "id": "MATH-TAMBAH-082",
-          "q": "418 + 36 = ________.",
+          "q": "Cari jawapan bagi 418 + 36.",
           "answer": "454",
           "accepted": [
             "454"
@@ -1863,7 +1863,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "418 + 36 = ________."
+          "question": "Cari jawapan bagi 418 + 36."
         },
         {
           "id": "MATH-TAMBAH-083",
@@ -1881,7 +1881,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-084",
-          "q": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Berapakah jumlah syiling Harith?",
+          "q": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Tentukan jumlah syiling Harith?",
           "answer": "470",
           "accepted": [
             "470"
@@ -1891,11 +1891,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Berapakah jumlah syiling Harith?"
+          "question": "Harith ada 452 syiling. Bapa memberi 18 syiling lagi. Tentukan jumlah syiling Harith?"
         },
         {
           "id": "MATH-TAMBAH-085",
-          "q": "467 + 25 = ________.",
+          "q": "Berapakah hasil tambah bagi 467 + 25?",
           "answer": "492",
           "accepted": [
             "492"
@@ -1905,7 +1905,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "467 + 25 = ________."
+          "question": "Berapakah hasil tambah bagi 467 + 25?"
         },
         {
           "id": "MATH-TAMBAH-086",
@@ -1923,7 +1923,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-087",
-          "q": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Berapakah jumlah manik Balqis?",
+          "q": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Hitung jumlah manik Balqis?",
           "answer": "534",
           "accepted": [
             "534"
@@ -1933,11 +1933,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Berapakah jumlah manik Balqis?"
+          "question": "Balqis ada 506 manik huruf. Kakaknya memberi 28 manik lagi. Hitung jumlah manik Balqis?"
         },
         {
           "id": "MATH-TAMBAH-088",
-          "q": "523 + 17 = ________.",
+          "q": "Tuliskan hasil tambah 523 + 17.",
           "answer": "540",
           "accepted": [
             "540"
@@ -1947,7 +1947,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "523 + 17 = ________."
+          "question": "Tuliskan hasil tambah 523 + 17."
         },
         {
           "id": "MATH-TAMBAH-089",
@@ -1965,7 +1965,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-090",
-          "q": "Aina mengumpul 25 bahan bertema wang. Kemudian dia menambah 11 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM25. Kemudian dia menambah RM11 lagi. Berapakah jumlah wang Aina?",
           "answer": "36",
           "accepted": [
             "36"
@@ -1975,11 +1975,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 25 bahan bertema wang. Kemudian dia menambah 11 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM25. Kemudian dia menambah RM11 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-091",
-          "q": "32 + 16 = ________.",
+          "q": "Hitung jumlah 32 dan 16.",
           "answer": "48",
           "accepted": [
             "48"
@@ -1989,7 +1989,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "32 + 16 = ________."
+          "question": "Hitung jumlah 32 dan 16."
         },
         {
           "id": "MATH-TAMBAH-092",
@@ -2035,7 +2035,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-095",
-          "q": "Aina mengumpul 60 bahan bertema masa. Kemudian dia menambah 36 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM60. Kemudian dia menambah RM36 lagi. Berapakah jumlah wang Aina?",
           "answer": "96",
           "accepted": [
             "96"
@@ -2045,11 +2045,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 60 bahan bertema masa. Kemudian dia menambah 36 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM60. Kemudian dia menambah RM36 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-096",
-          "q": "67 + 41 = ________.",
+          "q": "Hitung jumlah 67 dan 41.",
           "answer": "108",
           "accepted": [
             "108"
@@ -2059,7 +2059,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "67 + 41 = ________."
+          "question": "Hitung jumlah 67 dan 41."
         },
         {
           "id": "MATH-TAMBAH-097",
@@ -2105,7 +2105,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-100",
-          "q": "Aina mengumpul 95 bahan bertema wang. Kemudian dia menambah 61 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM95. Kemudian dia menambah RM61 lagi. Berapakah jumlah wang Aina?",
           "answer": "156",
           "accepted": [
             "156"
@@ -2115,11 +2115,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 95 bahan bertema wang. Kemudian dia menambah 61 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM95. Kemudian dia menambah RM61 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-101",
-          "q": "102 + 66 = ________.",
+          "q": "Hitung jumlah 102 dan 66.",
           "answer": "168",
           "accepted": [
             "168"
@@ -2129,7 +2129,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "102 + 66 = ________."
+          "question": "Hitung jumlah 102 dan 66."
         },
         {
           "id": "MATH-TAMBAH-102",
@@ -2175,7 +2175,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-105",
-          "q": "Aina mengumpul 130 bahan bertema masa. Kemudian dia menambah 86 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM130. Kemudian dia menambah RM86 lagi. Berapakah jumlah wang Aina?",
           "answer": "216",
           "accepted": [
             "216"
@@ -2185,11 +2185,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 130 bahan bertema masa. Kemudian dia menambah 86 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM130. Kemudian dia menambah RM86 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-106",
-          "q": "137 + 91 = ________.",
+          "q": "Hitung jumlah 137 dan 91.",
           "answer": "228",
           "accepted": [
             "228"
@@ -2199,7 +2199,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "137 + 91 = ________."
+          "question": "Hitung jumlah 137 dan 91."
         },
         {
           "id": "MATH-TAMBAH-107",
@@ -2245,7 +2245,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-110",
-          "q": "Aina mengumpul 165 bahan bertema wang. Kemudian dia menambah 111 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM165. Kemudian dia menambah RM111 lagi. Berapakah jumlah wang Aina?",
           "answer": "276",
           "accepted": [
             "276"
@@ -2255,11 +2255,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 165 bahan bertema wang. Kemudian dia menambah 111 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM165. Kemudian dia menambah RM111 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-111",
-          "q": "172 + 116 = ________.",
+          "q": "Hitung jumlah 172 dan 116.",
           "answer": "288",
           "accepted": [
             "288"
@@ -2269,7 +2269,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "172 + 116 = ________."
+          "question": "Hitung jumlah 172 dan 116."
         },
         {
           "id": "MATH-TAMBAH-112",
@@ -2315,7 +2315,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-115",
-          "q": "Aina mengumpul 200 bahan bertema masa. Kemudian dia menambah 136 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM200. Kemudian dia menambah RM136 lagi. Berapakah jumlah wang Aina?",
           "answer": "336",
           "accepted": [
             "336"
@@ -2325,11 +2325,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 200 bahan bertema masa. Kemudian dia menambah 136 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM200. Kemudian dia menambah RM136 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-116",
-          "q": "207 + 141 = ________.",
+          "q": "Hitung jumlah 207 dan 141.",
           "answer": "348",
           "accepted": [
             "348"
@@ -2339,7 +2339,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "207 + 141 = ________."
+          "question": "Hitung jumlah 207 dan 141."
         },
         {
           "id": "MATH-TAMBAH-117",
@@ -2385,7 +2385,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-120",
-          "q": "Aina mengumpul 235 bahan bertema wang. Kemudian dia menambah 161 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM235. Kemudian dia menambah RM161 lagi. Berapakah jumlah wang Aina?",
           "answer": "396",
           "accepted": [
             "396"
@@ -2395,11 +2395,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 235 bahan bertema wang. Kemudian dia menambah 161 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM235. Kemudian dia menambah RM161 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-121",
-          "q": "242 + 166 = ________.",
+          "q": "Hitung jumlah 242 dan 166.",
           "answer": "408",
           "accepted": [
             "408"
@@ -2409,7 +2409,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "242 + 166 = ________."
+          "question": "Hitung jumlah 242 dan 166."
         },
         {
           "id": "MATH-TAMBAH-122",
@@ -2455,7 +2455,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TAMBAH-125",
-          "q": "Aina mengumpul 270 bahan bertema masa. Kemudian dia menambah 6 lagi. Berapakah jumlah bahan Aina?",
+          "q": "Aina mempunyai RM270. Kemudian dia menambah RM6 lagi. Berapakah jumlah wang Aina?",
           "answer": "276",
           "accepted": [
             "276"
@@ -2465,11 +2465,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina mengumpul 270 bahan bertema masa. Kemudian dia menambah 6 lagi. Berapakah jumlah bahan Aina?"
+          "question": "Aina mempunyai RM270. Kemudian dia menambah RM6 lagi. Berapakah jumlah wang Aina?"
         },
         {
           "id": "MATH-TAMBAH-126",
-          "q": "277 + 11 = ________.",
+          "q": "Hitung jumlah 277 dan 11.",
           "answer": "288",
           "accepted": [
             "288"
@@ -2479,7 +2479,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "277 + 11 = ________."
+          "question": "Hitung jumlah 277 dan 11."
         }
       ]
     },
@@ -2490,7 +2490,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-TOLAK-001",
-          "q": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Berapakah baki pelekat Danish?",
+          "q": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Hitung baki pelekat Danish?",
           "answer": "35",
           "accepted": [
             "35"
@@ -2500,11 +2500,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Berapakah baki pelekat Danish?"
+          "question": "Danish ada 46 pelekat. Dia memberikan 11 pelekat kepada kawannya. Hitung baki pelekat Danish?"
         },
         {
           "id": "MATH-TOLAK-002",
-          "q": "57 - 17 = ________.",
+          "q": "Cari jawapan bagi 57 - 17.",
           "answer": "40",
           "accepted": [
             "40"
@@ -2514,11 +2514,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "57 - 17 = ________."
+          "question": "Cari jawapan bagi 57 - 17."
         },
         {
           "id": "MATH-TOLAK-003",
-          "q": "Ada 68 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Tentukan bilangan murid yang masih di dewan selepas 68 murid keluar.",
           "answer": "45",
           "accepted": [
             "45"
@@ -2528,11 +2528,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 68 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Tentukan bilangan murid yang masih di dewan selepas 68 murid keluar."
         },
         {
           "id": "MATH-TOLAK-004",
-          "q": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Berapakah baki epal Sara?",
+          "q": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Tentukan baki epal Sara?",
           "answer": "50",
           "accepted": [
             "50"
@@ -2542,11 +2542,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Berapakah baki epal Sara?"
+          "question": "Sara ada 79 epal. Dia memberikan 29 epal kepada kawannya. Tentukan baki epal Sara?"
         },
         {
           "id": "MATH-TOLAK-005",
-          "q": "90 - 35 = ________.",
+          "q": "Berapakah baki bagi 90 - 35?",
           "answer": "55",
           "accepted": [
             "55"
@@ -2556,11 +2556,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "90 - 35 = ________."
+          "question": "Berapakah baki bagi 90 - 35?"
         },
         {
           "id": "MATH-TOLAK-006",
-          "q": "Ada 101 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Hitung bilangan murid yang masih di dewan selepas 101 murid keluar.",
           "answer": "60",
           "accepted": [
             "60"
@@ -2570,11 +2570,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 101 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Hitung bilangan murid yang masih di dewan selepas 101 murid keluar."
         },
         {
           "id": "MATH-TOLAK-007",
-          "q": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Berapakah baki kerang Iman?",
+          "q": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Cari baki kerang Iman?",
           "answer": "65",
           "accepted": [
             "65"
@@ -2584,11 +2584,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Berapakah baki kerang Iman?"
+          "question": "Iman ada 112 kerang. Dia memberikan 47 kerang kepada kawannya. Cari baki kerang Iman?"
         },
         {
           "id": "MATH-TOLAK-008",
-          "q": "75 - 5 = ________.",
+          "q": "Tentukan baki selepas 75 ditolak 5.",
           "answer": "70",
           "accepted": [
             "70"
@@ -2598,11 +2598,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "75 - 5 = ________."
+          "question": "Tentukan baki selepas 75 ditolak 5."
         },
         {
           "id": "MATH-TOLAK-009",
-          "q": "Ada 86 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Apakah bilangan murid yang masih di dewan selepas 86 murid keluar?",
           "answer": "75",
           "accepted": [
             "75"
@@ -2612,11 +2612,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 86 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Apakah bilangan murid yang masih di dewan selepas 86 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-010",
-          "q": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Berapakah baki buku Aina?",
+          "q": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Apakah baki buku Aina?",
           "answer": "80",
           "accepted": [
             "80"
@@ -2626,11 +2626,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Berapakah baki buku Aina?"
+          "question": "Aina ada 97 buku. Dia memberikan 17 buku kepada kawannya. Apakah baki buku Aina?"
         },
         {
           "id": "MATH-TOLAK-011",
-          "q": "108 - 23 = ________.",
+          "q": "Hitung baki 108 tolak 23.",
           "answer": "85",
           "accepted": [
             "85"
@@ -2640,11 +2640,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "108 - 23 = ________."
+          "question": "Hitung baki 108 tolak 23."
         },
         {
           "id": "MATH-TOLAK-012",
-          "q": "Ada 119 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Cari bilangan murid yang masih di dewan selepas 119 murid keluar.",
           "answer": "90",
           "accepted": [
             "90"
@@ -2654,11 +2654,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 119 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Cari bilangan murid yang masih di dewan selepas 119 murid keluar."
         },
         {
           "id": "MATH-TOLAK-013",
-          "q": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Berapakah baki manggis Irfan?",
+          "q": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Nyatakan baki manggis Irfan?",
           "answer": "95",
           "accepted": [
             "95"
@@ -2668,11 +2668,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Berapakah baki manggis Irfan?"
+          "question": "Irfan ada 130 manggis. Dia memberikan 35 manggis kepada kawannya. Nyatakan baki manggis Irfan?"
         },
         {
           "id": "MATH-TOLAK-014",
-          "q": "141 - 41 = ________.",
+          "q": "Selesaikan 141 - 41 = ________.",
           "answer": "100",
           "accepted": [
             "100"
@@ -2682,11 +2682,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "141 - 41 = ________."
+          "question": "Selesaikan 141 - 41 = ________."
         },
         {
           "id": "MATH-TOLAK-015",
-          "q": "Ada 152 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Berapakah bilangan murid yang masih di dewan selepas 152 murid keluar?",
           "answer": "105",
           "accepted": [
             "105"
@@ -2696,11 +2696,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 152 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Berapakah bilangan murid yang masih di dewan selepas 152 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-016",
-          "q": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Berapakah baki bunga Farah?",
+          "q": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Hitung baki bunga Farah?",
           "answer": "110",
           "accepted": [
             "110"
@@ -2710,11 +2710,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Berapakah baki bunga Farah?"
+          "question": "Farah ada 115 bunga. Dia memberikan 5 bunga kepada kawannya. Hitung baki bunga Farah?"
         },
         {
           "id": "MATH-TOLAK-017",
-          "q": "126 - 11 = ________.",
+          "q": "Cari jawapan bagi 126 - 11.",
           "answer": "115",
           "accepted": [
             "115"
@@ -2724,11 +2724,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "126 - 11 = ________."
+          "question": "Cari jawapan bagi 126 - 11."
         },
         {
           "id": "MATH-TOLAK-018",
-          "q": "Ada 137 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Tentukan bilangan murid yang masih di dewan selepas 137 murid keluar.",
           "answer": "120",
           "accepted": [
             "120"
@@ -2738,11 +2738,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 137 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Tentukan bilangan murid yang masih di dewan selepas 137 murid keluar."
         },
         {
           "id": "MATH-TOLAK-019",
-          "q": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Berapakah baki pensel Rafiq?",
+          "q": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Tentukan baki pensel Rafiq?",
           "answer": "125",
           "accepted": [
             "125"
@@ -2752,11 +2752,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Berapakah baki pensel Rafiq?"
+          "question": "Rafiq ada 148 pensel. Dia memberikan 23 pensel kepada kawannya. Tentukan baki pensel Rafiq?"
         },
         {
           "id": "MATH-TOLAK-020",
-          "q": "159 - 29 = ________.",
+          "q": "Berapakah baki bagi 159 - 29?",
           "answer": "130",
           "accepted": [
             "130"
@@ -2766,11 +2766,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "159 - 29 = ________."
+          "question": "Berapakah baki bagi 159 - 29?"
         },
         {
           "id": "MATH-TOLAK-021",
-          "q": "Ada 170 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Hitung bilangan murid yang masih di dewan selepas 170 murid keluar.",
           "answer": "135",
           "accepted": [
             "135"
@@ -2780,11 +2780,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 170 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Hitung bilangan murid yang masih di dewan selepas 170 murid keluar."
         },
         {
           "id": "MATH-TOLAK-022",
-          "q": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Berapakah baki kad Mira?",
+          "q": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Cari baki kad Mira?",
           "answer": "140",
           "accepted": [
             "140"
@@ -2794,11 +2794,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Berapakah baki kad Mira?"
+          "question": "Mira ada 181 kad. Dia memberikan 41 kad kepada kawannya. Cari baki kad Mira?"
         },
         {
           "id": "MATH-TOLAK-023",
-          "q": "192 - 47 = ________.",
+          "q": "Tentukan baki selepas 192 ditolak 47.",
           "answer": "145",
           "accepted": [
             "145"
@@ -2808,11 +2808,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "192 - 47 = ________."
+          "question": "Tentukan baki selepas 192 ditolak 47."
         },
         {
           "id": "MATH-TOLAK-024",
-          "q": "Ada 155 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Apakah bilangan murid yang masih di dewan selepas 155 murid keluar?",
           "answer": "150",
           "accepted": [
             "150"
@@ -2822,11 +2822,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 155 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Apakah bilangan murid yang masih di dewan selepas 155 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-025",
-          "q": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Berapakah baki kuih Hakim?",
+          "q": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Apakah baki kuih Hakim?",
           "answer": "155",
           "accepted": [
             "155"
@@ -2836,11 +2836,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Berapakah baki kuih Hakim?"
+          "question": "Hakim ada 166 kuih. Dia memberikan 11 kuih kepada kawannya. Apakah baki kuih Hakim?"
         },
         {
           "id": "MATH-TOLAK-026",
-          "q": "177 - 17 = ________.",
+          "q": "Hitung baki 177 tolak 17.",
           "answer": "160",
           "accepted": [
             "160"
@@ -2850,11 +2850,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "177 - 17 = ________."
+          "question": "Hitung baki 177 tolak 17."
         },
         {
           "id": "MATH-TOLAK-027",
-          "q": "Ada 188 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Cari bilangan murid yang masih di dewan selepas 188 murid keluar.",
           "answer": "165",
           "accepted": [
             "165"
@@ -2864,11 +2864,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 188 murid di dewan. 23 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Cari bilangan murid yang masih di dewan selepas 188 murid keluar."
         },
         {
           "id": "MATH-TOLAK-028",
-          "q": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Berapakah baki guli Zara?",
+          "q": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Nyatakan baki guli Zara?",
           "answer": "170",
           "accepted": [
             "170"
@@ -2878,11 +2878,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Berapakah baki guli Zara?"
+          "question": "Zara ada 199 guli. Dia memberikan 29 guli kepada kawannya. Nyatakan baki guli Zara?"
         },
         {
           "id": "MATH-TOLAK-029",
-          "q": "210 - 35 = ________.",
+          "q": "Selesaikan 210 - 35 = ________.",
           "answer": "175",
           "accepted": [
             "175"
@@ -2892,11 +2892,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "210 - 35 = ________."
+          "question": "Selesaikan 210 - 35 = ________."
         },
         {
           "id": "MATH-TOLAK-030",
-          "q": "Ada 221 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Berapakah bilangan murid yang masih di dewan selepas 221 murid keluar?",
           "answer": "180",
           "accepted": [
             "180"
@@ -2906,11 +2906,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 221 murid di dewan. 41 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Berapakah bilangan murid yang masih di dewan selepas 221 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-031",
-          "q": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Berapakah baki pelekat Danish?",
+          "q": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Hitung baki pelekat Danish?",
           "answer": "185",
           "accepted": [
             "185"
@@ -2920,11 +2920,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Berapakah baki pelekat Danish?"
+          "question": "Danish ada 232 pelekat. Dia memberikan 47 pelekat kepada kawannya. Hitung baki pelekat Danish?"
         },
         {
           "id": "MATH-TOLAK-032",
-          "q": "195 - 5 = ________.",
+          "q": "Cari jawapan bagi 195 - 5.",
           "answer": "190",
           "accepted": [
             "190"
@@ -2934,11 +2934,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "195 - 5 = ________."
+          "question": "Cari jawapan bagi 195 - 5."
         },
         {
           "id": "MATH-TOLAK-033",
-          "q": "Ada 206 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Tentukan bilangan murid yang masih di dewan selepas 206 murid keluar.",
           "answer": "195",
           "accepted": [
             "195"
@@ -2948,11 +2948,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 206 murid di dewan. 11 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Tentukan bilangan murid yang masih di dewan selepas 206 murid keluar."
         },
         {
           "id": "MATH-TOLAK-034",
-          "q": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Berapakah baki epal Sara?",
+          "q": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Tentukan baki epal Sara?",
           "answer": "200",
           "accepted": [
             "200"
@@ -2962,11 +2962,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Berapakah baki epal Sara?"
+          "question": "Sara ada 217 epal. Dia memberikan 17 epal kepada kawannya. Tentukan baki epal Sara?"
         },
         {
           "id": "MATH-TOLAK-035",
-          "q": "228 - 23 = ________.",
+          "q": "Berapakah baki bagi 228 - 23?",
           "answer": "205",
           "accepted": [
             "205"
@@ -2976,11 +2976,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "228 - 23 = ________."
+          "question": "Berapakah baki bagi 228 - 23?"
         },
         {
           "id": "MATH-TOLAK-036",
-          "q": "Ada 239 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Hitung bilangan murid yang masih di dewan selepas 239 murid keluar.",
           "answer": "210",
           "accepted": [
             "210"
@@ -2990,11 +2990,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 239 murid di dewan. 29 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Hitung bilangan murid yang masih di dewan selepas 239 murid keluar."
         },
         {
           "id": "MATH-TOLAK-037",
-          "q": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Berapakah baki kerang Iman?",
+          "q": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Cari baki kerang Iman?",
           "answer": "215",
           "accepted": [
             "215"
@@ -3004,11 +3004,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Berapakah baki kerang Iman?"
+          "question": "Iman ada 250 kerang. Dia memberikan 35 kerang kepada kawannya. Cari baki kerang Iman?"
         },
         {
           "id": "MATH-TOLAK-038",
-          "q": "261 - 41 = ________.",
+          "q": "Tentukan baki selepas 261 ditolak 41.",
           "answer": "220",
           "accepted": [
             "220"
@@ -3018,11 +3018,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "261 - 41 = ________."
+          "question": "Tentukan baki selepas 261 ditolak 41."
         },
         {
           "id": "MATH-TOLAK-039",
-          "q": "Ada 272 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Apakah bilangan murid yang masih di dewan selepas 272 murid keluar?",
           "answer": "225",
           "accepted": [
             "225"
@@ -3032,11 +3032,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 272 murid di dewan. 47 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Apakah bilangan murid yang masih di dewan selepas 272 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-040",
-          "q": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Berapakah baki buku Aina?",
+          "q": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Apakah baki buku Aina?",
           "answer": "230",
           "accepted": [
             "230"
@@ -3046,11 +3046,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Berapakah baki buku Aina?"
+          "question": "Aina ada 235 buku. Dia memberikan 5 buku kepada kawannya. Apakah baki buku Aina?"
         },
         {
           "id": "MATH-TOLAK-041",
-          "q": "246 - 11 = ________.",
+          "q": "Hitung baki 246 tolak 11.",
           "answer": "235",
           "accepted": [
             "235"
@@ -3060,11 +3060,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "246 - 11 = ________."
+          "question": "Hitung baki 246 tolak 11."
         },
         {
           "id": "MATH-TOLAK-042",
-          "q": "Ada 257 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Cari bilangan murid yang masih di dewan selepas 257 murid keluar.",
           "answer": "240",
           "accepted": [
             "240"
@@ -3074,11 +3074,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 257 murid di dewan. 17 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Cari bilangan murid yang masih di dewan selepas 257 murid keluar."
         },
         {
           "id": "MATH-TOLAK-043",
-          "q": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Berapakah baki manggis Irfan?",
+          "q": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Nyatakan baki manggis Irfan?",
           "answer": "245",
           "accepted": [
             "245"
@@ -3088,11 +3088,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Berapakah baki manggis Irfan?"
+          "question": "Irfan ada 268 manggis. Dia memberikan 23 manggis kepada kawannya. Nyatakan baki manggis Irfan?"
         },
         {
           "id": "MATH-TOLAK-044",
-          "q": "279 - 29 = ________.",
+          "q": "Selesaikan 279 - 29 = ________.",
           "answer": "250",
           "accepted": [
             "250"
@@ -3102,11 +3102,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "279 - 29 = ________."
+          "question": "Selesaikan 279 - 29 = ________."
         },
         {
           "id": "MATH-TOLAK-045",
-          "q": "Ada 290 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Berapakah bilangan murid yang masih di dewan selepas 290 murid keluar?",
           "answer": "255",
           "accepted": [
             "255"
@@ -3116,11 +3116,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 290 murid di dewan. 35 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Berapakah bilangan murid yang masih di dewan selepas 290 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-046",
-          "q": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Berapakah baki bunga Farah?",
+          "q": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Hitung baki bunga Farah?",
           "answer": "260",
           "accepted": [
             "260"
@@ -3130,11 +3130,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Berapakah baki bunga Farah?"
+          "question": "Farah ada 301 bunga. Dia memberikan 41 bunga kepada kawannya. Hitung baki bunga Farah?"
         },
         {
           "id": "MATH-TOLAK-047",
-          "q": "312 - 47 = ________.",
+          "q": "Cari jawapan bagi 312 - 47.",
           "answer": "265",
           "accepted": [
             "265"
@@ -3144,11 +3144,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "312 - 47 = ________."
+          "question": "Cari jawapan bagi 312 - 47."
         },
         {
           "id": "MATH-TOLAK-048",
-          "q": "Ada 275 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?",
+          "q": "Tentukan bilangan murid yang masih di dewan selepas 275 murid keluar.",
           "answer": "270",
           "accepted": [
             "270"
@@ -3158,11 +3158,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 275 murid di dewan. 5 murid keluar. Berapakah murid yang masih di dewan?"
+          "question": "Tentukan bilangan murid yang masih di dewan selepas 275 murid keluar."
         },
         {
           "id": "MATH-TOLAK-049",
-          "q": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Berapakah baki pensel Rafiq?",
+          "q": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Tentukan baki pensel Rafiq?",
           "answer": "275",
           "accepted": [
             "275"
@@ -3172,11 +3172,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Berapakah baki pensel Rafiq?"
+          "question": "Rafiq ada 286 pensel. Dia memberikan 11 pensel kepada kawannya. Tentukan baki pensel Rafiq?"
         },
         {
           "id": "MATH-TOLAK-050",
-          "q": "297 - 17 = ________.",
+          "q": "Berapakah baki bagi 297 - 17?",
           "answer": "280",
           "accepted": [
             "280"
@@ -3186,11 +3186,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "297 - 17 = ________."
+          "question": "Berapakah baki bagi 297 - 17?"
         },
         {
           "id": "MATH-TOLAK-051",
-          "q": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Berapakah baki pelekat Nadia?",
+          "q": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Hitung baki pelekat Nadia?",
           "answer": "71",
           "accepted": [
             "71"
@@ -3200,11 +3200,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Berapakah baki pelekat Nadia?"
+          "question": "Nadia ada 83 pelekat. Dia memberikan 12 pelekat kepada rakannya. Hitung baki pelekat Nadia?"
         },
         {
           "id": "MATH-TOLAK-052",
-          "q": "94 - 21 = ________.",
+          "q": "Cari jawapan bagi 94 - 21.",
           "answer": "73",
           "accepted": [
             "73"
@@ -3214,11 +3214,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "94 - 21 = ________."
+          "question": "Cari jawapan bagi 94 - 21."
         },
         {
           "id": "MATH-TOLAK-053",
-          "q": "Ada 105 murid di kantin. 14 murid pulang ke kelas. Berapakah murid yang masih di kantin?",
+          "q": "Tentukan bilangan murid yang masih di kantin selepas 105 murid keluar.",
           "answer": "91",
           "accepted": [
             "91"
@@ -3228,11 +3228,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 105 murid di kantin. 14 murid pulang ke kelas. Berapakah murid yang masih di kantin?"
+          "question": "Tentukan bilangan murid yang masih di kantin selepas 105 murid keluar."
         },
         {
           "id": "MATH-TOLAK-054",
-          "q": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Berapakah baki syiling Hakim?",
+          "q": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Tentukan baki syiling Hakim?",
           "answer": "93",
           "accepted": [
             "93"
@@ -3242,11 +3242,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Berapakah baki syiling Hakim?"
+          "question": "Hakim ada 116 syiling. Dia memberikan 23 syiling kepada adiknya. Tentukan baki syiling Hakim?"
         },
         {
           "id": "MATH-TOLAK-055",
-          "q": "127 - 15 = ________.",
+          "q": "Berapakah baki bagi 127 - 15?",
           "answer": "112",
           "accepted": [
             "112"
@@ -3256,11 +3256,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "127 - 15 = ________."
+          "question": "Berapakah baki bagi 127 - 15?"
         },
         {
           "id": "MATH-TOLAK-056",
-          "q": "Ada 138 murid di gelanggang. 24 murid masuk ke perpustakaan. Berapakah murid yang masih di gelanggang?",
+          "q": "Hitung bilangan murid yang masih di gelanggang selepas 138 murid keluar.",
           "answer": "114",
           "accepted": [
             "114"
@@ -3270,11 +3270,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 138 murid di gelanggang. 24 murid masuk ke perpustakaan. Berapakah murid yang masih di gelanggang?"
+          "question": "Hitung bilangan murid yang masih di gelanggang selepas 138 murid keluar."
         },
         {
           "id": "MATH-TOLAK-057",
-          "q": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Berapakah baki manik Dhiya?",
+          "q": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Cari baki manik Dhiya?",
           "answer": "133",
           "accepted": [
             "133"
@@ -3284,11 +3284,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Berapakah baki manik Dhiya?"
+          "question": "Dhiya ada 149 manik. Dia memberikan 16 manik kepada sepupunya. Cari baki manik Dhiya?"
         },
         {
           "id": "MATH-TOLAK-058",
-          "q": "160 - 25 = ________.",
+          "q": "Tentukan baki selepas 160 ditolak 25.",
           "answer": "135",
           "accepted": [
             "135"
@@ -3298,11 +3298,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "160 - 25 = ________."
+          "question": "Tentukan baki selepas 160 ditolak 25."
         },
         {
           "id": "MATH-TOLAK-059",
-          "q": "Ada 171 murid di dewan bacaan. 18 murid bergerak ke makmal. Berapakah murid yang masih di dewan bacaan?",
+          "q": "Apakah bilangan murid yang masih di dewan bacaan selepas 171 murid keluar?",
           "answer": "153",
           "accepted": [
             "153"
@@ -3312,11 +3312,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 171 murid di dewan bacaan. 18 murid bergerak ke makmal. Berapakah murid yang masih di dewan bacaan?"
+          "question": "Apakah bilangan murid yang masih di dewan bacaan selepas 171 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-060",
-          "q": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Berapakah baki setem Mikael?",
+          "q": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Apakah baki setem Mikael?",
           "answer": "155",
           "accepted": [
             "155"
@@ -3326,11 +3326,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Berapakah baki setem Mikael?"
+          "question": "Mikael ada 182 setem. Dia memberikan 27 setem kepada kawannya. Apakah baki setem Mikael?"
         },
         {
           "id": "MATH-TOLAK-061",
-          "q": "193 - 19 = ________.",
+          "q": "Hitung baki 193 tolak 19.",
           "answer": "174",
           "accepted": [
             "174"
@@ -3340,11 +3340,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "193 - 19 = ________."
+          "question": "Hitung baki 193 tolak 19."
         },
         {
           "id": "MATH-TOLAK-062",
-          "q": "Ada 204 murid di padang. 28 murid masuk ke bilik darjah. Berapakah murid yang masih di padang?",
+          "q": "Cari bilangan murid yang masih di padang selepas 204 murid keluar.",
           "answer": "176",
           "accepted": [
             "176"
@@ -3354,11 +3354,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 204 murid di padang. 28 murid masuk ke bilik darjah. Berapakah murid yang masih di padang?"
+          "question": "Cari bilangan murid yang masih di padang selepas 204 murid keluar."
         },
         {
           "id": "MATH-TOLAK-063",
-          "q": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Berapakah baki kad Taufiq?",
+          "q": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Nyatakan baki kad Taufiq?",
           "answer": "204",
           "accepted": [
             "204"
@@ -3368,11 +3368,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Berapakah baki kad Taufiq?"
+          "question": "Taufiq ada 215 kad. Dia memberikan 11 kad kepada abangnya. Nyatakan baki kad Taufiq?"
         },
         {
           "id": "MATH-TOLAK-064",
-          "q": "226 - 22 = ________.",
+          "q": "Selesaikan 226 - 22 = ________.",
           "answer": "204",
           "accepted": [
             "204"
@@ -3382,11 +3382,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "226 - 22 = ________."
+          "question": "Selesaikan 226 - 22 = ________."
         },
         {
           "id": "MATH-TOLAK-065",
-          "q": "Ada 237 murid di dewan serbaguna. 13 murid pergi berlatih koir. Berapakah murid yang masih di dewan serbaguna?",
+          "q": "Berapakah bilangan murid yang masih di dewan serbaguna selepas 237 murid keluar?",
           "answer": "224",
           "accepted": [
             "224"
@@ -3396,11 +3396,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 237 murid di dewan serbaguna. 13 murid pergi berlatih koir. Berapakah murid yang masih di dewan serbaguna?"
+          "question": "Berapakah bilangan murid yang masih di dewan serbaguna selepas 237 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-066",
-          "q": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Berapakah baki butang Qaseh?",
+          "q": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Hitung baki butang Qaseh?",
           "answer": "224",
           "accepted": [
             "224"
@@ -3410,11 +3410,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Berapakah baki butang Qaseh?"
+          "question": "Qaseh ada 248 butang. Dia memberikan 24 butang kepada jirannya. Hitung baki butang Qaseh?"
         },
         {
           "id": "MATH-TOLAK-067",
-          "q": "259 - 35 = ________.",
+          "q": "Cari jawapan bagi 259 - 35.",
           "answer": "224",
           "accepted": [
             "224"
@@ -3424,11 +3424,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "259 - 35 = ________."
+          "question": "Cari jawapan bagi 259 - 35."
         },
         {
           "id": "MATH-TOLAK-068",
-          "q": "Ada 270 murid di balai ilmu. 17 murid pulang ke rumah. Berapakah murid yang masih di balai ilmu?",
+          "q": "Tentukan bilangan murid yang masih di balai ilmu selepas 270 murid keluar.",
           "answer": "253",
           "accepted": [
             "253"
@@ -3438,11 +3438,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 270 murid di balai ilmu. 17 murid pulang ke rumah. Berapakah murid yang masih di balai ilmu?"
+          "question": "Tentukan bilangan murid yang masih di balai ilmu selepas 270 murid keluar."
         },
         {
           "id": "MATH-TOLAK-069",
-          "q": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Berapakah baki penanda buku Hana?",
+          "q": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Tentukan baki penanda buku Hana?",
           "answer": "255",
           "accepted": [
             "255"
@@ -3452,11 +3452,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Berapakah baki penanda buku Hana?"
+          "question": "Hana ada 281 penanda buku. Dia memberikan 26 penanda buku kepada adiknya. Tentukan baki penanda buku Hana?"
         },
         {
           "id": "MATH-TOLAK-070",
-          "q": "292 - 37 = ________.",
+          "q": "Berapakah baki bagi 292 - 37?",
           "answer": "255",
           "accepted": [
             "255"
@@ -3466,11 +3466,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "292 - 37 = ________."
+          "question": "Berapakah baki bagi 292 - 37?"
         },
         {
           "id": "MATH-TOLAK-071",
-          "q": "Ada 303 murid di gelanggang tertutup. 18 murid masuk ke kelas muzik. Berapakah murid yang masih di gelanggang tertutup?",
+          "q": "Hitung bilangan murid yang masih di gelanggang tertutup selepas 303 murid keluar.",
           "answer": "285",
           "accepted": [
             "285"
@@ -3480,11 +3480,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 303 murid di gelanggang tertutup. 18 murid masuk ke kelas muzik. Berapakah murid yang masih di gelanggang tertutup?"
+          "question": "Hitung bilangan murid yang masih di gelanggang tertutup selepas 303 murid keluar."
         },
         {
           "id": "MATH-TOLAK-072",
-          "q": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Berapakah baki riben Alya?",
+          "q": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Cari baki riben Alya?",
           "answer": "285",
           "accepted": [
             "285"
@@ -3494,11 +3494,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Berapakah baki riben Alya?"
+          "question": "Alya ada 314 riben. Dia memberikan 29 riben kepada sepupunya. Cari baki riben Alya?"
         },
         {
           "id": "MATH-TOLAK-073",
-          "q": "325 - 16 = ________.",
+          "q": "Tentukan baki selepas 325 ditolak 16.",
           "answer": "309",
           "accepted": [
             "309"
@@ -3508,11 +3508,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "325 - 16 = ________."
+          "question": "Tentukan baki selepas 325 ditolak 16."
         },
         {
           "id": "MATH-TOLAK-074",
-          "q": "Ada 336 murid di astaka. 27 murid naik bas. Berapakah murid yang masih di astaka?",
+          "q": "Apakah bilangan murid yang masih di astaka selepas 336 murid keluar?",
           "answer": "309",
           "accepted": [
             "309"
@@ -3522,11 +3522,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 336 murid di astaka. 27 murid naik bas. Berapakah murid yang masih di astaka?"
+          "question": "Apakah bilangan murid yang masih di astaka selepas 336 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-075",
-          "q": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Berapakah baki syiling Izzah?",
+          "q": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Apakah baki syiling Izzah?",
           "answer": "328",
           "accepted": [
             "328"
@@ -3536,11 +3536,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Berapakah baki syiling Izzah?"
+          "question": "Izzah ada 347 syiling perak. Dia memberikan 19 syiling kepada kawannya. Apakah baki syiling Izzah?"
         },
         {
           "id": "MATH-TOLAK-076",
-          "q": "358 - 28 = ________.",
+          "q": "Hitung baki 358 tolak 28.",
           "answer": "330",
           "accepted": [
             "330"
@@ -3550,11 +3550,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "358 - 28 = ________."
+          "question": "Hitung baki 358 tolak 28."
         },
         {
           "id": "MATH-TOLAK-077",
-          "q": "Ada 369 murid di dataran. 15 murid pergi ke surau. Berapakah murid yang masih di dataran?",
+          "q": "Cari bilangan murid yang masih di dataran selepas 369 murid keluar.",
           "answer": "354",
           "accepted": [
             "354"
@@ -3564,11 +3564,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 369 murid di dataran. 15 murid pergi ke surau. Berapakah murid yang masih di dataran?"
+          "question": "Cari bilangan murid yang masih di dataran selepas 369 murid keluar."
         },
         {
           "id": "MATH-TOLAK-078",
-          "q": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Berapakah baki klip kertas Husna?",
+          "q": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Nyatakan baki klip kertas Husna?",
           "answer": "354",
           "accepted": [
             "354"
@@ -3578,11 +3578,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Berapakah baki klip kertas Husna?"
+          "question": "Husna ada 380 klip kertas. Dia memberikan 26 klip kertas kepada rakannya. Nyatakan baki klip kertas Husna?"
         },
         {
           "id": "MATH-TOLAK-079",
-          "q": "391 - 17 = ________.",
+          "q": "Selesaikan 391 - 17 = ________.",
           "answer": "374",
           "accepted": [
             "374"
@@ -3592,11 +3592,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "391 - 17 = ________."
+          "question": "Selesaikan 391 - 17 = ________."
         },
         {
           "id": "MATH-TOLAK-080",
-          "q": "Ada 402 murid di dewan bacaan utama. 28 murid keluar untuk latihan. Berapakah murid yang masih di dewan bacaan utama?",
+          "q": "Berapakah bilangan murid yang masih di dewan bacaan utama selepas 402 murid keluar?",
           "answer": "374",
           "accepted": [
             "374"
@@ -3606,11 +3606,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 402 murid di dewan bacaan utama. 28 murid keluar untuk latihan. Berapakah murid yang masih di dewan bacaan utama?"
+          "question": "Berapakah bilangan murid yang masih di dewan bacaan utama selepas 402 murid keluar?"
         },
         {
           "id": "MATH-TOLAK-081",
-          "q": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Berapakah baki pelekat Imran?",
+          "q": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Hitung baki pelekat Imran?",
           "answer": "384",
           "accepted": [
             "384"
@@ -3620,11 +3620,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Berapakah baki pelekat Imran?"
+          "question": "Imran ada 413 pelekat kereta. Dia memberikan 29 pelekat kepada sepupunya. Hitung baki pelekat Imran?"
         },
         {
           "id": "MATH-TOLAK-082",
-          "q": "424 - 38 = ________.",
+          "q": "Cari jawapan bagi 424 - 38.",
           "answer": "386",
           "accepted": [
             "386"
@@ -3634,11 +3634,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "424 - 38 = ________."
+          "question": "Cari jawapan bagi 424 - 38."
         },
         {
           "id": "MATH-TOLAK-083",
-          "q": "Ada 435 murid di auditorium. 16 murid pergi ke bilik rehat. Berapakah murid yang masih di auditorium?",
+          "q": "Tentukan bilangan murid yang masih di auditorium selepas 435 murid keluar.",
           "answer": "419",
           "accepted": [
             "419"
@@ -3648,11 +3648,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 435 murid di auditorium. 16 murid pergi ke bilik rehat. Berapakah murid yang masih di auditorium?"
+          "question": "Tentukan bilangan murid yang masih di auditorium selepas 435 murid keluar."
         },
         {
           "id": "MATH-TOLAK-084",
-          "q": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Berapakah baki manik Nurin?",
+          "q": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Tentukan baki manik Nurin?",
           "answer": "419",
           "accepted": [
             "419"
@@ -3662,11 +3662,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Berapakah baki manik Nurin?"
+          "question": "Nurin ada 446 manik kayu. Dia memberikan 27 manik kepada adiknya. Tentukan baki manik Nurin?"
         },
         {
           "id": "MATH-TOLAK-085",
-          "q": "457 - 18 = ________.",
+          "q": "Berapakah baki bagi 457 - 18?",
           "answer": "439",
           "accepted": [
             "439"
@@ -3676,11 +3676,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "457 - 18 = ________."
+          "question": "Berapakah baki bagi 457 - 18?"
         },
         {
           "id": "MATH-TOLAK-086",
-          "q": "Ada 468 murid di dewan utama. 29 murid ke bilik sains. Berapakah murid yang masih di dewan utama?",
+          "q": "Hitung bilangan murid yang masih di dewan utama selepas 468 murid keluar.",
           "answer": "439",
           "accepted": [
             "439"
@@ -3690,11 +3690,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 468 murid di dewan utama. 29 murid ke bilik sains. Berapakah murid yang masih di dewan utama?"
+          "question": "Hitung bilangan murid yang masih di dewan utama selepas 468 murid keluar."
         },
         {
           "id": "MATH-TOLAK-087",
-          "q": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Berapakah baki kad Farisya?",
+          "q": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Cari baki kad Farisya?",
           "answer": "442",
           "accepted": [
             "442"
@@ -3704,11 +3704,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Berapakah baki kad Farisya?"
+          "question": "Farisya ada 479 kad warna. Dia memberikan 37 kad kepada kawannya. Cari baki kad Farisya?"
         },
         {
           "id": "MATH-TOLAK-088",
-          "q": "490 - 28 = ________.",
+          "q": "Tentukan baki selepas 490 ditolak 28.",
           "answer": "462",
           "accepted": [
             "462"
@@ -3718,7 +3718,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "490 - 28 = ________."
+          "question": "Tentukan baki selepas 490 ditolak 28."
         },
         {
           "id": "MATH-TOLAK-089",
@@ -3736,7 +3736,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-090",
-          "q": "Faris mempunyai 49 koleksi bertema wang. Dia memberikan 9 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM49. Dia memberikan RM9 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "40",
           "accepted": [
             "40"
@@ -3746,11 +3746,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 49 koleksi bertema wang. Dia memberikan 9 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM49. Dia memberikan RM9 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-091",
-          "q": "58 - 13 = ________.",
+          "q": "Hitung baki 58 tolak 13.",
           "answer": "45",
           "accepted": [
             "45"
@@ -3760,7 +3760,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "58 - 13 = ________."
+          "question": "Hitung baki 58 tolak 13."
         },
         {
           "id": "MATH-TOLAK-092",
@@ -3778,7 +3778,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-093",
-          "q": "Semasa latihan alat tulis, pasukan mendapat 76 mata kemudian ditolak 21 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 76 mata ditolak 21 mata?",
           "answer": "55",
           "accepted": [
             "55"
@@ -3788,7 +3788,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan alat tulis, pasukan mendapat 76 mata kemudian ditolak 21 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 76 mata ditolak 21 mata?"
         },
         {
           "id": "MATH-TOLAK-094",
@@ -3806,7 +3806,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-095",
-          "q": "Faris mempunyai 94 koleksi bertema masa. Dia memberikan 29 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM94. Dia memberikan RM29 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "65",
           "accepted": [
             "65"
@@ -3816,11 +3816,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 94 koleksi bertema masa. Dia memberikan 29 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM94. Dia memberikan RM29 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-096",
-          "q": "103 - 33 = ________.",
+          "q": "Hitung baki 103 tolak 33.",
           "answer": "70",
           "accepted": [
             "70"
@@ -3830,7 +3830,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "103 - 33 = ________."
+          "question": "Hitung baki 103 tolak 33."
         },
         {
           "id": "MATH-TOLAK-097",
@@ -3848,7 +3848,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-098",
-          "q": "Semasa latihan makanan, pasukan mendapat 121 mata kemudian ditolak 41 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 121 mata ditolak 41 mata?",
           "answer": "80",
           "accepted": [
             "80"
@@ -3858,7 +3858,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan makanan, pasukan mendapat 121 mata kemudian ditolak 41 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 121 mata ditolak 41 mata?"
         },
         {
           "id": "MATH-TOLAK-099",
@@ -3876,7 +3876,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-100",
-          "q": "Faris mempunyai 139 koleksi bertema wang. Dia memberikan 49 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM139. Dia memberikan RM49 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "90",
           "accepted": [
             "90"
@@ -3886,11 +3886,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 139 koleksi bertema wang. Dia memberikan 49 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM139. Dia memberikan RM49 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-101",
-          "q": "148 - 53 = ________.",
+          "q": "Hitung baki 148 tolak 53.",
           "answer": "95",
           "accepted": [
             "95"
@@ -3900,7 +3900,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "148 - 53 = ________."
+          "question": "Hitung baki 148 tolak 53."
         },
         {
           "id": "MATH-TOLAK-102",
@@ -3918,7 +3918,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-103",
-          "q": "Semasa latihan alat tulis, pasukan mendapat 166 mata kemudian ditolak 61 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 166 mata ditolak 61 mata?",
           "answer": "105",
           "accepted": [
             "105"
@@ -3928,7 +3928,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan alat tulis, pasukan mendapat 166 mata kemudian ditolak 61 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 166 mata ditolak 61 mata?"
         },
         {
           "id": "MATH-TOLAK-104",
@@ -3946,7 +3946,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-105",
-          "q": "Faris mempunyai 184 koleksi bertema masa. Dia memberikan 69 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM184. Dia memberikan RM69 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "115",
           "accepted": [
             "115"
@@ -3956,11 +3956,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 184 koleksi bertema masa. Dia memberikan 69 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM184. Dia memberikan RM69 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-106",
-          "q": "193 - 73 = ________.",
+          "q": "Hitung baki 193 tolak 73.",
           "answer": "120",
           "accepted": [
             "120"
@@ -3970,7 +3970,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "193 - 73 = ________."
+          "question": "Hitung baki 193 tolak 73."
         },
         {
           "id": "MATH-TOLAK-107",
@@ -3988,7 +3988,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-108",
-          "q": "Semasa latihan makanan, pasukan mendapat 211 mata kemudian ditolak 81 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 211 mata ditolak 81 mata?",
           "answer": "130",
           "accepted": [
             "130"
@@ -3998,7 +3998,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan makanan, pasukan mendapat 211 mata kemudian ditolak 81 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 211 mata ditolak 81 mata?"
         },
         {
           "id": "MATH-TOLAK-109",
@@ -4016,7 +4016,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-110",
-          "q": "Faris mempunyai 229 koleksi bertema wang. Dia memberikan 89 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM229. Dia memberikan RM89 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "140",
           "accepted": [
             "140"
@@ -4026,11 +4026,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 229 koleksi bertema wang. Dia memberikan 89 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM229. Dia memberikan RM89 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-111",
-          "q": "238 - 93 = ________.",
+          "q": "Hitung baki 238 tolak 93.",
           "answer": "145",
           "accepted": [
             "145"
@@ -4040,7 +4040,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "238 - 93 = ________."
+          "question": "Hitung baki 238 tolak 93."
         },
         {
           "id": "MATH-TOLAK-112",
@@ -4058,7 +4058,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-113",
-          "q": "Semasa latihan alat tulis, pasukan mendapat 256 mata kemudian ditolak 101 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 256 mata ditolak 101 mata?",
           "answer": "155",
           "accepted": [
             "155"
@@ -4068,7 +4068,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan alat tulis, pasukan mendapat 256 mata kemudian ditolak 101 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 256 mata ditolak 101 mata?"
         },
         {
           "id": "MATH-TOLAK-114",
@@ -4086,7 +4086,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-115",
-          "q": "Faris mempunyai 274 koleksi bertema masa. Dia memberikan 109 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM274. Dia memberikan RM109 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "165",
           "accepted": [
             "165"
@@ -4096,11 +4096,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 274 koleksi bertema masa. Dia memberikan 109 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM274. Dia memberikan RM109 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-116",
-          "q": "283 - 113 = ________.",
+          "q": "Hitung baki 283 tolak 113.",
           "answer": "170",
           "accepted": [
             "170"
@@ -4110,7 +4110,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "283 - 113 = ________."
+          "question": "Hitung baki 283 tolak 113."
         },
         {
           "id": "MATH-TOLAK-117",
@@ -4128,7 +4128,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-118",
-          "q": "Semasa latihan makanan, pasukan mendapat 301 mata kemudian ditolak 121 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 301 mata ditolak 121 mata?",
           "answer": "180",
           "accepted": [
             "180"
@@ -4138,7 +4138,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan makanan, pasukan mendapat 301 mata kemudian ditolak 121 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 301 mata ditolak 121 mata?"
         },
         {
           "id": "MATH-TOLAK-119",
@@ -4156,7 +4156,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-120",
-          "q": "Faris mempunyai 319 koleksi bertema wang. Dia memberikan 129 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM319. Dia memberikan RM129 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "190",
           "accepted": [
             "190"
@@ -4166,11 +4166,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 319 koleksi bertema wang. Dia memberikan 129 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM319. Dia memberikan RM129 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-121",
-          "q": "328 - 133 = ________.",
+          "q": "Hitung baki 328 tolak 133.",
           "answer": "195",
           "accepted": [
             "195"
@@ -4180,7 +4180,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "328 - 133 = ________."
+          "question": "Hitung baki 328 tolak 133."
         },
         {
           "id": "MATH-TOLAK-122",
@@ -4198,7 +4198,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-123",
-          "q": "Semasa latihan alat tulis, pasukan mendapat 346 mata kemudian ditolak 141 mata. Skor akhir ialah ________.",
+          "q": "Berapakah skor akhir selepas 346 mata ditolak 141 mata?",
           "answer": "205",
           "accepted": [
             "205"
@@ -4208,7 +4208,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa latihan alat tulis, pasukan mendapat 346 mata kemudian ditolak 141 mata. Skor akhir ialah ________."
+          "question": "Berapakah skor akhir selepas 346 mata ditolak 141 mata?"
         },
         {
           "id": "MATH-TOLAK-124",
@@ -4226,7 +4226,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-125",
-          "q": "Faris mempunyai 364 koleksi bertema masa. Dia memberikan 149 kepada adiknya. Baki Faris ialah ________.",
+          "q": "Faris mempunyai RM364. Dia memberikan RM149 kepada adiknya. Berapakah baki wang Faris?",
           "answer": "215",
           "accepted": [
             "215"
@@ -4236,11 +4236,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Faris mempunyai 364 koleksi bertema masa. Dia memberikan 149 kepada adiknya. Baki Faris ialah ________."
+          "question": "Faris mempunyai RM364. Dia memberikan RM149 kepada adiknya. Berapakah baki wang Faris?"
         },
         {
           "id": "MATH-TOLAK-126",
-          "q": "373 - 153 = ________.",
+          "q": "Hitung baki 373 tolak 153.",
           "answer": "220",
           "accepted": [
             "220"
@@ -4250,7 +4250,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "373 - 153 = ________."
+          "question": "Hitung baki 373 tolak 153."
         }
       ]
     },
@@ -4261,7 +4261,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-DARAB-001",
-          "q": "2 x 3 = ________.",
+          "q": "Berapakah hasil darab 2 dengan 3?",
           "answer": "6",
           "accepted": [
             "6"
@@ -4271,11 +4271,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 3 = ________."
+          "question": "Berapakah hasil darab 2 dengan 3?"
         },
         {
           "id": "MATH-DARAB-002",
-          "q": "2 x 5 = ________.",
+          "q": "Berapakah hasil darab 2 dengan 5?",
           "answer": "10",
           "accepted": [
             "10"
@@ -4285,11 +4285,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 5 = ________."
+          "question": "Berapakah hasil darab 2 dengan 5?"
         },
         {
           "id": "MATH-DARAB-003",
-          "q": "3 x 4 = ________.",
+          "q": "Berapakah hasil darab 3 dengan 4?",
           "answer": "12",
           "accepted": [
             "12"
@@ -4299,11 +4299,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 x 4 = ________."
+          "question": "Berapakah hasil darab 3 dengan 4?"
         },
         {
           "id": "MATH-DARAB-004",
-          "q": "4 x 5 = ________.",
+          "q": "Berapakah hasil darab 4 dengan 5?",
           "answer": "20",
           "accepted": [
             "20"
@@ -4313,11 +4313,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 x 5 = ________."
+          "question": "Berapakah hasil darab 4 dengan 5?"
         },
         {
           "id": "MATH-DARAB-005",
-          "q": "5 x 6 = ________.",
+          "q": "Berapakah hasil darab 5 dengan 6?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4327,11 +4327,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 x 6 = ________."
+          "question": "Berapakah hasil darab 5 dengan 6?"
         },
         {
           "id": "MATH-DARAB-006",
-          "q": "10 x 3 = ________.",
+          "q": "Berapakah hasil darab 10 dengan 3?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4341,11 +4341,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "10 x 3 = ________."
+          "question": "Berapakah hasil darab 10 dengan 3?"
         },
         {
           "id": "MATH-DARAB-007",
-          "q": "3 x 7 = ________.",
+          "q": "Berapakah hasil darab 3 dengan 7?",
           "answer": "21",
           "accepted": [
             "21"
@@ -4355,11 +4355,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 x 7 = ________."
+          "question": "Berapakah hasil darab 3 dengan 7?"
         },
         {
           "id": "MATH-DARAB-008",
-          "q": "4 x 6 = ________.",
+          "q": "Berapakah hasil darab 4 dengan 6?",
           "answer": "24",
           "accepted": [
             "24"
@@ -4369,11 +4369,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 x 6 = ________."
+          "question": "Berapakah hasil darab 4 dengan 6?"
         },
         {
           "id": "MATH-DARAB-009",
-          "q": "5 x 8 = ________.",
+          "q": "Berapakah hasil darab 5 dengan 8?",
           "answer": "40",
           "accepted": [
             "40"
@@ -4383,11 +4383,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 x 8 = ________."
+          "question": "Berapakah hasil darab 5 dengan 8?"
         },
         {
           "id": "MATH-DARAB-010",
-          "q": "Hitung 2 x 9 dan isi jawapan.",
+          "q": "Berapakah hasil darab 2 dengan 9?",
           "answer": "18",
           "accepted": [
             "18"
@@ -4397,11 +4397,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hitung 2 x 9 dan isi jawapan."
+          "question": "Berapakah hasil darab 2 dengan 9?"
         },
         {
           "id": "MATH-DARAB-011",
-          "q": "Ada 3 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 3 pinggan dan setiap pinggan ada 2 kuih?",
           "answer": "6",
           "accepted": [
             "6"
@@ -4411,11 +4411,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 3 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 3 pinggan dan setiap pinggan ada 2 kuih?"
         },
         {
           "id": "MATH-DARAB-012",
-          "q": "Ada 5 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 5 pinggan dan setiap pinggan ada 2 kuih?",
           "answer": "10",
           "accepted": [
             "10"
@@ -4425,11 +4425,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 5 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 5 pinggan dan setiap pinggan ada 2 kuih?"
         },
         {
           "id": "MATH-DARAB-013",
-          "q": "Ada 4 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 4 pinggan dan setiap pinggan ada 3 kuih?",
           "answer": "12",
           "accepted": [
             "12"
@@ -4439,11 +4439,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 4 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 4 pinggan dan setiap pinggan ada 3 kuih?"
         },
         {
           "id": "MATH-DARAB-014",
-          "q": "Ada 5 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 5 pinggan dan setiap pinggan ada 4 kuih?",
           "answer": "20",
           "accepted": [
             "20"
@@ -4453,11 +4453,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 5 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 5 pinggan dan setiap pinggan ada 4 kuih?"
         },
         {
           "id": "MATH-DARAB-015",
-          "q": "Ada 6 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 6 pinggan dan setiap pinggan ada 5 kuih?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4467,11 +4467,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 6 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 6 pinggan dan setiap pinggan ada 5 kuih?"
         },
         {
           "id": "MATH-DARAB-016",
-          "q": "Ada 3 pinggan. Setiap pinggan ada 10 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 3 pinggan dan setiap pinggan ada 10 kuih?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4481,11 +4481,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 3 pinggan. Setiap pinggan ada 10 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 3 pinggan dan setiap pinggan ada 10 kuih?"
         },
         {
           "id": "MATH-DARAB-017",
-          "q": "Ada 7 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 7 pinggan dan setiap pinggan ada 3 kuih?",
           "answer": "21",
           "accepted": [
             "21"
@@ -4495,11 +4495,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 7 pinggan. Setiap pinggan ada 3 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 7 pinggan dan setiap pinggan ada 3 kuih?"
         },
         {
           "id": "MATH-DARAB-018",
-          "q": "Ada 6 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 6 pinggan dan setiap pinggan ada 4 kuih?",
           "answer": "24",
           "accepted": [
             "24"
@@ -4509,11 +4509,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 6 pinggan. Setiap pinggan ada 4 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 6 pinggan dan setiap pinggan ada 4 kuih?"
         },
         {
           "id": "MATH-DARAB-019",
-          "q": "Ada 8 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 8 pinggan dan setiap pinggan ada 5 kuih?",
           "answer": "40",
           "accepted": [
             "40"
@@ -4523,11 +4523,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 8 pinggan. Setiap pinggan ada 5 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 8 pinggan dan setiap pinggan ada 5 kuih?"
         },
         {
           "id": "MATH-DARAB-020",
-          "q": "Ada 9 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?",
+          "q": "Berapakah jumlah kuih jika ada 9 pinggan dan setiap pinggan ada 2 kuih?",
           "answer": "18",
           "accepted": [
             "18"
@@ -4537,11 +4537,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 9 pinggan. Setiap pinggan ada 2 kuih. Berapakah jumlah kuih?"
+          "question": "Berapakah jumlah kuih jika ada 9 pinggan dan setiap pinggan ada 2 kuih?"
         },
         {
           "id": "MATH-DARAB-021",
-          "q": "3 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 2 objek? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -4551,11 +4551,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 2 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-022",
-          "q": "5 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 2 objek? ________ objek.",
           "answer": "10",
           "accepted": [
             "10"
@@ -4565,11 +4565,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 2 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-023",
-          "q": "4 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 4 kumpulan yang masing-masing ada 3 objek? ________ objek.",
           "answer": "12",
           "accepted": [
             "12"
@@ -4579,11 +4579,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 4 kumpulan yang masing-masing ada 3 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-024",
-          "q": "5 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 4 objek? ________ objek.",
           "answer": "20",
           "accepted": [
             "20"
@@ -4593,11 +4593,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 4 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-025",
-          "q": "6 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 5 objek? ________ objek.",
           "answer": "30",
           "accepted": [
             "30"
@@ -4607,11 +4607,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 5 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-026",
-          "q": "3 kumpulan dengan 10 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 10 objek? ________ objek.",
           "answer": "30",
           "accepted": [
             "30"
@@ -4621,11 +4621,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 kumpulan dengan 10 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 10 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-027",
-          "q": "7 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 7 kumpulan yang masing-masing ada 3 objek? ________ objek.",
           "answer": "21",
           "accepted": [
             "21"
@@ -4635,11 +4635,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "7 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 7 kumpulan yang masing-masing ada 3 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-028",
-          "q": "6 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 4 objek? ________ objek.",
           "answer": "24",
           "accepted": [
             "24"
@@ -4649,11 +4649,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 4 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-029",
-          "q": "8 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 8 kumpulan yang masing-masing ada 5 objek? ________ objek.",
           "answer": "40",
           "accepted": [
             "40"
@@ -4663,11 +4663,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "8 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 8 kumpulan yang masing-masing ada 5 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-030",
-          "q": "9 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 9 kumpulan yang masing-masing ada 2 objek? ________ objek.",
           "answer": "18",
           "accepted": [
             "18"
@@ -4677,11 +4677,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "9 kumpulan dengan 2 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 9 kumpulan yang masing-masing ada 2 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-031",
-          "q": "2 + 2 + 2 + 2 = ________.",
+          "q": "Berapakah jumlah jika 2 + 2 + 2 + 2?",
           "answer": "8",
           "accepted": [
             "8"
@@ -4691,7 +4691,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 + 2 + 2 + 2 = ________."
+          "question": "Berapakah jumlah jika 2 + 2 + 2 + 2?"
         },
         {
           "id": "MATH-DARAB-032",
@@ -4709,7 +4709,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-033",
-          "q": "3 + 3 + 3 + 3 = ________.",
+          "q": "Berapakah jumlah jika 3 + 3 + 3 + 3?",
           "answer": "12",
           "accepted": [
             "12"
@@ -4719,11 +4719,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 + 3 + 3 + 3 = ________."
+          "question": "Berapakah jumlah jika 3 + 3 + 3 + 3?"
         },
         {
           "id": "MATH-DARAB-034",
-          "q": "4 + 4 + 4 + 4 = ________.",
+          "q": "Berapakah jumlah jika 4 + 4 + 4 + 4?",
           "answer": "16",
           "accepted": [
             "16"
@@ -4733,11 +4733,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 + 4 + 4 + 4 = ________."
+          "question": "Berapakah jumlah jika 4 + 4 + 4 + 4?"
         },
         {
           "id": "MATH-DARAB-035",
-          "q": "5 + 5 + 5 + 5 = ________.",
+          "q": "Berapakah jumlah jika 5 + 5 + 5 + 5?",
           "answer": "20",
           "accepted": [
             "20"
@@ -4747,11 +4747,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 + 5 + 5 + 5 = ________."
+          "question": "Berapakah jumlah jika 5 + 5 + 5 + 5?"
         },
         {
           "id": "MATH-DARAB-036",
-          "q": "10 + 10 + 10 + 10 = ________.",
+          "q": "Berapakah jumlah jika 10 + 10 + 10 + 10?",
           "answer": "40",
           "accepted": [
             "40"
@@ -4761,7 +4761,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "10 + 10 + 10 + 10 = ________."
+          "question": "Berapakah jumlah jika 10 + 10 + 10 + 10?"
         },
         {
           "id": "MATH-DARAB-037",
@@ -4821,7 +4821,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-041",
-          "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 3 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 3 kotak?",
           "answer": "6",
           "accepted": [
             "6"
@@ -4831,11 +4831,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 3 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 3 kotak?"
         },
         {
           "id": "MATH-DARAB-042",
-          "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 5 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 5 kotak?",
           "answer": "10",
           "accepted": [
             "10"
@@ -4845,11 +4845,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 5 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 5 kotak?"
         },
         {
           "id": "MATH-DARAB-043",
-          "q": "Satu kotak ada 3 pensel. Berapakah pensel dalam 4 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 3 pensel dan ada 4 kotak?",
           "answer": "12",
           "accepted": [
             "12"
@@ -4859,11 +4859,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 3 pensel. Berapakah pensel dalam 4 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 3 pensel dan ada 4 kotak?"
         },
         {
           "id": "MATH-DARAB-044",
-          "q": "Satu kotak ada 4 pensel. Berapakah pensel dalam 5 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 4 pensel dan ada 5 kotak?",
           "answer": "20",
           "accepted": [
             "20"
@@ -4873,11 +4873,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 4 pensel. Berapakah pensel dalam 5 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 4 pensel dan ada 5 kotak?"
         },
         {
           "id": "MATH-DARAB-045",
-          "q": "Satu kotak ada 5 pensel. Berapakah pensel dalam 6 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 5 pensel dan ada 6 kotak?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4887,11 +4887,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 5 pensel. Berapakah pensel dalam 6 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 5 pensel dan ada 6 kotak?"
         },
         {
           "id": "MATH-DARAB-046",
-          "q": "Satu kotak ada 10 pensel. Berapakah pensel dalam 3 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 10 pensel dan ada 3 kotak?",
           "answer": "30",
           "accepted": [
             "30"
@@ -4901,11 +4901,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 10 pensel. Berapakah pensel dalam 3 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 10 pensel dan ada 3 kotak?"
         },
         {
           "id": "MATH-DARAB-047",
-          "q": "Satu kotak ada 3 pensel. Berapakah pensel dalam 7 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 3 pensel dan ada 7 kotak?",
           "answer": "21",
           "accepted": [
             "21"
@@ -4915,11 +4915,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 3 pensel. Berapakah pensel dalam 7 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 3 pensel dan ada 7 kotak?"
         },
         {
           "id": "MATH-DARAB-048",
-          "q": "Satu kotak ada 4 pensel. Berapakah pensel dalam 6 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 4 pensel dan ada 6 kotak?",
           "answer": "24",
           "accepted": [
             "24"
@@ -4929,11 +4929,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 4 pensel. Berapakah pensel dalam 6 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 4 pensel dan ada 6 kotak?"
         },
         {
           "id": "MATH-DARAB-049",
-          "q": "Satu kotak ada 5 pensel. Berapakah pensel dalam 8 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 5 pensel dan ada 8 kotak?",
           "answer": "40",
           "accepted": [
             "40"
@@ -4943,11 +4943,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 5 pensel. Berapakah pensel dalam 8 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 5 pensel dan ada 8 kotak?"
         },
         {
           "id": "MATH-DARAB-050",
-          "q": "Satu kotak ada 2 pensel. Berapakah pensel dalam 9 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 9 kotak?",
           "answer": "18",
           "accepted": [
             "18"
@@ -4957,11 +4957,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 2 pensel. Berapakah pensel dalam 9 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 2 pensel dan ada 9 kotak?"
         },
         {
           "id": "MATH-DARAB-051",
-          "q": "6 x 3 = ________.",
+          "q": "Berapakah hasil darab 6 dengan 3?",
           "answer": "18",
           "accepted": [
             "18"
@@ -4971,11 +4971,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 x 3 = ________."
+          "question": "Berapakah hasil darab 6 dengan 3?"
         },
         {
           "id": "MATH-DARAB-052",
-          "q": "7 x 4 = ________.",
+          "q": "Berapakah hasil darab 7 dengan 4?",
           "answer": "28",
           "accepted": [
             "28"
@@ -4985,11 +4985,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "7 x 4 = ________."
+          "question": "Berapakah hasil darab 7 dengan 4?"
         },
         {
           "id": "MATH-DARAB-053",
-          "q": "8 x 3 = ________.",
+          "q": "Berapakah hasil darab 8 dengan 3?",
           "answer": "24",
           "accepted": [
             "24"
@@ -4999,11 +4999,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "8 x 3 = ________."
+          "question": "Berapakah hasil darab 8 dengan 3?"
         },
         {
           "id": "MATH-DARAB-054",
-          "q": "9 x 4 = ________.",
+          "q": "Berapakah hasil darab 9 dengan 4?",
           "answer": "36",
           "accepted": [
             "36"
@@ -5013,11 +5013,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "9 x 4 = ________."
+          "question": "Berapakah hasil darab 9 dengan 4?"
         },
         {
           "id": "MATH-DARAB-055",
-          "q": "6 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 6 objek? ________ objek.",
           "answer": "36",
           "accepted": [
             "36"
@@ -5027,11 +5027,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 6 kumpulan yang masing-masing ada 6 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-056",
-          "q": "7 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 7 kumpulan yang masing-masing ada 5 objek? ________ objek.",
           "answer": "35",
           "accepted": [
             "35"
@@ -5041,11 +5041,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "7 kumpulan dengan 5 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 7 kumpulan yang masing-masing ada 5 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-057",
-          "q": "8 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 8 kumpulan yang masing-masing ada 4 objek? ________ objek.",
           "answer": "32",
           "accepted": [
             "32"
@@ -5055,11 +5055,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "8 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 8 kumpulan yang masing-masing ada 4 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-058",
-          "q": "9 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 9 kumpulan yang masing-masing ada 3 objek? ________ objek.",
           "answer": "27",
           "accepted": [
             "27"
@@ -5069,7 +5069,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "9 kumpulan dengan 3 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 9 kumpulan yang masing-masing ada 3 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-059",
@@ -5269,7 +5269,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-073",
-          "q": "5 kumpulan dengan 7 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 7 objek? ________ objek.",
           "answer": "35",
           "accepted": [
             "35"
@@ -5279,11 +5279,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 kumpulan dengan 7 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 5 kumpulan yang masing-masing ada 7 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-074",
-          "q": "4 kumpulan dengan 8 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 4 kumpulan yang masing-masing ada 8 objek? ________ objek.",
           "answer": "32",
           "accepted": [
             "32"
@@ -5293,11 +5293,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 kumpulan dengan 8 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 4 kumpulan yang masing-masing ada 8 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-075",
-          "q": "3 kumpulan dengan 9 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 9 objek? ________ objek.",
           "answer": "27",
           "accepted": [
             "27"
@@ -5307,11 +5307,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 kumpulan dengan 9 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 3 kumpulan yang masing-masing ada 9 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-076",
-          "q": "2 x 11 = ________.",
+          "q": "Berapakah hasil darab 2 dengan 11?",
           "answer": "22",
           "accepted": [
             "22"
@@ -5321,11 +5321,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 11 = ________."
+          "question": "Berapakah hasil darab 2 dengan 11?"
         },
         {
           "id": "MATH-DARAB-077",
-          "q": "3 x 12 = ________.",
+          "q": "Berapakah hasil darab 3 dengan 12?",
           "answer": "36",
           "accepted": [
             "36"
@@ -5335,11 +5335,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "3 x 12 = ________."
+          "question": "Berapakah hasil darab 3 dengan 12?"
         },
         {
           "id": "MATH-DARAB-078",
-          "q": "4 x 11 = ________.",
+          "q": "Berapakah hasil darab 4 dengan 11?",
           "answer": "44",
           "accepted": [
             "44"
@@ -5349,11 +5349,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 x 11 = ________."
+          "question": "Berapakah hasil darab 4 dengan 11?"
         },
         {
           "id": "MATH-DARAB-079",
-          "q": "5 x 11 = ________.",
+          "q": "Berapakah hasil darab 5 dengan 11?",
           "answer": "55",
           "accepted": [
             "55"
@@ -5363,11 +5363,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "5 x 11 = ________."
+          "question": "Berapakah hasil darab 5 dengan 11?"
         },
         {
           "id": "MATH-DARAB-080",
-          "q": "6 x 11 = ________.",
+          "q": "Berapakah hasil darab 6 dengan 11?",
           "answer": "66",
           "accepted": [
             "66"
@@ -5377,11 +5377,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 x 11 = ________."
+          "question": "Berapakah hasil darab 6 dengan 11?"
         },
         {
           "id": "MATH-DARAB-081",
-          "q": "Satu kotak ada 12 pensel. Berapakah pensel dalam 4 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 12 pensel dan ada 4 kotak?",
           "answer": "48",
           "accepted": [
             "48"
@@ -5391,11 +5391,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 12 pensel. Berapakah pensel dalam 4 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 12 pensel dan ada 4 kotak?"
         },
         {
           "id": "MATH-DARAB-082",
-          "q": "Satu kotak ada 15 pensel. Berapakah pensel dalam 3 kotak?",
+          "q": "Berapakah jumlah pensel jika satu kotak ada 15 pensel dan ada 3 kotak?",
           "answer": "45",
           "accepted": [
             "45"
@@ -5405,7 +5405,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu kotak ada 15 pensel. Berapakah pensel dalam 3 kotak?"
+          "question": "Berapakah jumlah pensel jika satu kotak ada 15 pensel dan ada 3 kotak?"
         },
         {
           "id": "MATH-DARAB-083",
@@ -5423,7 +5423,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-084",
-          "q": "12 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 12 kumpulan yang masing-masing ada 4 objek? ________ objek.",
           "answer": "48",
           "accepted": [
             "48"
@@ -5433,11 +5433,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "12 kumpulan dengan 4 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 12 kumpulan yang masing-masing ada 4 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-085",
-          "q": "11 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek.",
+          "q": "Berapakah jumlah objek bagi 11 kumpulan yang masing-masing ada 6 objek? ________ objek.",
           "answer": "66",
           "accepted": [
             "66"
@@ -5447,7 +5447,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "11 kumpulan dengan 6 objek setiap kumpulan bersamaan ________ objek."
+          "question": "Berapakah jumlah objek bagi 11 kumpulan yang masing-masing ada 6 objek? ________ objek."
         },
         {
           "id": "MATH-DARAB-086",
@@ -5493,7 +5493,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-089",
-          "q": "Satu set wang mengandungi 5 objek. Jika ada 3 set, berapakah jumlah objek?",
+          "q": "Satu set wang mengandungi RM 5. Jika ada 3 set, berapakah jumlah wang? RM ________.",
           "answer": "15",
           "accepted": [
             "15"
@@ -5503,11 +5503,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set wang mengandungi 5 objek. Jika ada 3 set, berapakah jumlah objek?"
+          "question": "Satu set wang mengandungi RM 5. Jika ada 3 set, berapakah jumlah wang? RM ________."
         },
         {
           "id": "MATH-DARAB-090",
-          "q": "4 x 8 = ________.",
+          "q": "Berapakah hasil darab 4 dengan 8?",
           "answer": "32",
           "accepted": [
             "32"
@@ -5517,11 +5517,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 x 8 = ________."
+          "question": "Berapakah hasil darab 4 dengan 8?"
         },
         {
           "id": "MATH-DARAB-091",
-          "q": "Semasa aktiviti buku, murid membuat 5 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 5 baris dengan 10 orang setiap baris? ________ orang.",
           "answer": "50",
           "accepted": [
             "50"
@@ -5531,11 +5531,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti buku, murid membuat 5 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 5 baris dengan 10 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-092",
-          "q": "6 x 4 = ________.",
+          "q": "Berapakah hasil darab 6 dengan 4?",
           "answer": "24",
           "accepted": [
             "24"
@@ -5545,11 +5545,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 x 4 = ________."
+          "question": "Berapakah hasil darab 6 dengan 4?"
         },
         {
           "id": "MATH-DARAB-093",
-          "q": "Dalam tema permainan, ada 7 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "q": "Berapakah jumlah item jika ada 7 kumpulan dan setiap kumpulan ada 7 item? ________ item.",
           "answer": "49",
           "accepted": [
             "49"
@@ -5559,11 +5559,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam tema permainan, ada 7 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+          "question": "Berapakah jumlah item jika ada 7 kumpulan dan setiap kumpulan ada 7 item? ________ item."
         },
         {
           "id": "MATH-DARAB-094",
-          "q": "Satu set masa mengandungi 10 objek. Jika ada 8 set, berapakah jumlah objek?",
+          "q": "Satu set masa mengandungi 10 minit. Jika ada 8 set, berapakah jumlah minit? ________ minit.",
           "answer": "80",
           "accepted": [
             "80"
@@ -5573,11 +5573,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set masa mengandungi 10 objek. Jika ada 8 set, berapakah jumlah objek?"
+          "question": "Satu set masa mengandungi 10 minit. Jika ada 8 set, berapakah jumlah minit? ________ minit."
         },
         {
           "id": "MATH-DARAB-095",
-          "q": "9 x 3 = ________.",
+          "q": "Berapakah hasil darab 9 dengan 3?",
           "answer": "27",
           "accepted": [
             "27"
@@ -5587,11 +5587,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "9 x 3 = ________."
+          "question": "Berapakah hasil darab 9 dengan 3?"
         },
         {
           "id": "MATH-DARAB-096",
-          "q": "Semasa aktiviti haiwan, murid membuat 10 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 10 baris dengan 6 orang setiap baris? ________ orang.",
           "answer": "60",
           "accepted": [
             "60"
@@ -5601,11 +5601,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti haiwan, murid membuat 10 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 10 baris dengan 6 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-097",
-          "q": "2 x 9 = ________.",
+          "q": "Berapakah hasil darab 2 dengan 9?",
           "answer": "18",
           "accepted": [
             "18"
@@ -5615,7 +5615,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "2 x 9 = ________."
+          "question": "Berapakah hasil darab 2 dengan 9?"
         },
         {
           "id": "MATH-DARAB-098",
@@ -5633,7 +5633,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-099",
-          "q": "Satu set wang mengandungi 5 objek. Jika ada 4 set, berapakah jumlah objek?",
+          "q": "Satu set wang mengandungi RM 5. Jika ada 4 set, berapakah jumlah wang? RM ________.",
           "answer": "20",
           "accepted": [
             "20"
@@ -5643,11 +5643,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set wang mengandungi 5 objek. Jika ada 4 set, berapakah jumlah objek?"
+          "question": "Satu set wang mengandungi RM 5. Jika ada 4 set, berapakah jumlah wang? RM ________."
         },
         {
           "id": "MATH-DARAB-100",
-          "q": "Cari hasil bagi 5 x 8.",
+          "q": "Berapakah hasil darab 5 dengan 8?",
           "answer": "40",
           "accepted": [
             "40"
@@ -5657,11 +5657,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari hasil bagi 5 x 8."
+          "question": "Berapakah hasil darab 5 dengan 8?"
         },
         {
           "id": "MATH-DARAB-101",
-          "q": "Semasa aktiviti buku, murid membuat 6 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 6 baris dengan 10 orang setiap baris? ________ orang.",
           "answer": "60",
           "accepted": [
             "60"
@@ -5671,11 +5671,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti buku, murid membuat 6 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 6 baris dengan 10 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-102",
-          "q": "Tentukan hasil 7 x 4.",
+          "q": "Berapakah hasil darab 7 dengan 4?",
           "answer": "28",
           "accepted": [
             "28"
@@ -5685,11 +5685,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tentukan hasil 7 x 4."
+          "question": "Berapakah hasil darab 7 dengan 4?"
         },
         {
           "id": "MATH-DARAB-103",
-          "q": "Dalam tema permainan, ada 8 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "q": "Berapakah jumlah item jika ada 8 kumpulan dan setiap kumpulan ada 7 item? ________ item.",
           "answer": "56",
           "accepted": [
             "56"
@@ -5699,11 +5699,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam tema permainan, ada 8 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+          "question": "Berapakah jumlah item jika ada 8 kumpulan dan setiap kumpulan ada 7 item? ________ item."
         },
         {
           "id": "MATH-DARAB-104",
-          "q": "Satu set masa mengandungi 10 objek. Jika ada 9 set, berapakah jumlah objek?",
+          "q": "Satu set masa mengandungi 10 minit. Jika ada 9 set, berapakah jumlah minit? ________ minit.",
           "answer": "90",
           "accepted": [
             "90"
@@ -5713,11 +5713,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set masa mengandungi 10 objek. Jika ada 9 set, berapakah jumlah objek?"
+          "question": "Satu set masa mengandungi 10 minit. Jika ada 9 set, berapakah jumlah minit? ________ minit."
         },
         {
           "id": "MATH-DARAB-105",
-          "q": "Berapakah 10 x 3?",
+          "q": "Berapakah hasil darab 10 dengan 3?",
           "answer": "30",
           "accepted": [
             "30"
@@ -5727,11 +5727,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Berapakah 10 x 3?"
+          "question": "Berapakah hasil darab 10 dengan 3?"
         },
         {
           "id": "MATH-DARAB-106",
-          "q": "Semasa aktiviti haiwan, murid membuat 2 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 2 baris dengan 6 orang setiap baris? ________ orang.",
           "answer": "12",
           "accepted": [
             "12"
@@ -5741,7 +5741,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti haiwan, murid membuat 2 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 2 baris dengan 6 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-107",
@@ -5773,7 +5773,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-109",
-          "q": "Satu set wang mengandungi 5 objek. Jika ada 5 set, berapakah jumlah objek?",
+          "q": "Satu set wang mengandungi RM 5. Jika ada 5 set, berapakah jumlah wang? RM ________.",
           "answer": "25",
           "accepted": [
             "25"
@@ -5783,11 +5783,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set wang mengandungi 5 objek. Jika ada 5 set, berapakah jumlah objek?"
+          "question": "Satu set wang mengandungi RM 5. Jika ada 5 set, berapakah jumlah wang? RM ________."
         },
         {
           "id": "MATH-DARAB-110",
-          "q": "6 x 8 = ________.",
+          "q": "Berapakah hasil darab 6 dengan 8?",
           "answer": "48",
           "accepted": [
             "48"
@@ -5797,11 +5797,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "6 x 8 = ________."
+          "question": "Berapakah hasil darab 6 dengan 8?"
         },
         {
           "id": "MATH-DARAB-111",
-          "q": "Semasa aktiviti buku, murid membuat 7 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 7 baris dengan 10 orang setiap baris? ________ orang.",
           "answer": "70",
           "accepted": [
             "70"
@@ -5811,11 +5811,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti buku, murid membuat 7 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 7 baris dengan 10 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-112",
-          "q": "8 x 4 = ________.",
+          "q": "Berapakah hasil darab 8 dengan 4?",
           "answer": "32",
           "accepted": [
             "32"
@@ -5825,11 +5825,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "8 x 4 = ________."
+          "question": "Berapakah hasil darab 8 dengan 4?"
         },
         {
           "id": "MATH-DARAB-113",
-          "q": "Dalam tema permainan, ada 9 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "q": "Berapakah jumlah item jika ada 9 kumpulan dan setiap kumpulan ada 7 item? ________ item.",
           "answer": "63",
           "accepted": [
             "63"
@@ -5839,11 +5839,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam tema permainan, ada 9 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+          "question": "Berapakah jumlah item jika ada 9 kumpulan dan setiap kumpulan ada 7 item? ________ item."
         },
         {
           "id": "MATH-DARAB-114",
-          "q": "Satu set masa mengandungi 10 objek. Jika ada 10 set, berapakah jumlah objek?",
+          "q": "Satu set masa mengandungi 10 minit. Jika ada 10 set, berapakah jumlah minit? ________ minit.",
           "answer": "100",
           "accepted": [
             "100"
@@ -5853,7 +5853,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set masa mengandungi 10 objek. Jika ada 10 set, berapakah jumlah objek?"
+          "question": "Satu set masa mengandungi 10 minit. Jika ada 10 set, berapakah jumlah minit? ________ minit."
         },
         {
           "id": "MATH-DARAB-115",
@@ -5871,7 +5871,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-116",
-          "q": "Semasa aktiviti haiwan, murid membuat 3 baris dengan 6 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 3 baris dengan 6 orang setiap baris? ________ orang.",
           "answer": "18",
           "accepted": [
             "18"
@@ -5881,11 +5881,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti haiwan, murid membuat 3 baris dengan 6 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 3 baris dengan 6 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-117",
-          "q": "4 x 9 = ________.",
+          "q": "Berapakah hasil darab 4 dengan 9?",
           "answer": "36",
           "accepted": [
             "36"
@@ -5895,7 +5895,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 x 9 = ________."
+          "question": "Berapakah hasil darab 4 dengan 9?"
         },
         {
           "id": "MATH-DARAB-118",
@@ -5913,7 +5913,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-119",
-          "q": "Satu set wang mengandungi 5 objek. Jika ada 6 set, berapakah jumlah objek?",
+          "q": "Satu set wang mengandungi RM 5. Jika ada 6 set, berapakah jumlah wang? RM ________.",
           "answer": "30",
           "accepted": [
             "30"
@@ -5923,11 +5923,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set wang mengandungi 5 objek. Jika ada 6 set, berapakah jumlah objek?"
+          "question": "Satu set wang mengandungi RM 5. Jika ada 6 set, berapakah jumlah wang? RM ________."
         },
         {
           "id": "MATH-DARAB-120",
-          "q": "7 x 8 = ________.",
+          "q": "Berapakah hasil darab 7 dengan 8?",
           "answer": "56",
           "accepted": [
             "56"
@@ -5937,11 +5937,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "7 x 8 = ________."
+          "question": "Berapakah hasil darab 7 dengan 8?"
         },
         {
           "id": "MATH-DARAB-121",
-          "q": "Semasa aktiviti buku, murid membuat 8 baris dengan 10 orang setiap baris. Jumlah murid ialah ________.",
+          "q": "Berapakah jumlah murid jika murid membuat 8 baris dengan 10 orang setiap baris? ________ orang.",
           "answer": "80",
           "accepted": [
             "80"
@@ -5951,11 +5951,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Semasa aktiviti buku, murid membuat 8 baris dengan 10 orang setiap baris. Jumlah murid ialah ________."
+          "question": "Berapakah jumlah murid jika murid membuat 8 baris dengan 10 orang setiap baris? ________ orang."
         },
         {
           "id": "MATH-DARAB-122",
-          "q": "Cari jawapan bagi 9 x 4.",
+          "q": "Berapakah hasil darab 9 dengan 4?",
           "answer": "36",
           "accepted": [
             "36"
@@ -5965,11 +5965,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi 9 x 4."
+          "question": "Berapakah hasil darab 9 dengan 4?"
         },
         {
           "id": "MATH-DARAB-123",
-          "q": "Dalam tema permainan, ada 10 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________.",
+          "q": "Berapakah jumlah item jika ada 10 kumpulan dan setiap kumpulan ada 7 item? ________ item.",
           "answer": "70",
           "accepted": [
             "70"
@@ -5979,11 +5979,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam tema permainan, ada 10 kumpulan dan setiap kumpulan ada 7 item. Jumlah item ialah ________."
+          "question": "Berapakah jumlah item jika ada 10 kumpulan dan setiap kumpulan ada 7 item? ________ item."
         },
         {
           "id": "MATH-DARAB-124",
-          "q": "Satu set masa mengandungi 10 objek. Jika ada 2 set, berapakah jumlah objek?",
+          "q": "Satu set masa mengandungi 10 minit. Jika ada 2 set, berapakah jumlah minit? ________ minit.",
           "answer": "20",
           "accepted": [
             "20"
@@ -5993,7 +5993,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Satu set masa mengandungi 10 objek. Jika ada 2 set, berapakah jumlah objek?"
+          "question": "Satu set masa mengandungi 10 minit. Jika ada 2 set, berapakah jumlah minit? ________ minit."
         }
       ]
     },
@@ -6004,7 +6004,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-BAHAGI-001",
-          "q": "12 bahagi 2 = ________.",
+          "q": "Berapakah hasil bahagi 12 dengan 2?",
           "answer": "6",
           "accepted": [
             "6"
@@ -6014,11 +6014,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "12 bahagi 2 = ________."
+          "question": "Berapakah hasil bahagi 12 dengan 2?"
         },
         {
           "id": "MATH-BAHAGI-002",
-          "q": "15 bahagi 3 = ________.",
+          "q": "Berapakah hasil bahagi 15 dengan 3?",
           "answer": "5",
           "accepted": [
             "5"
@@ -6028,11 +6028,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "15 bahagi 3 = ________."
+          "question": "Berapakah hasil bahagi 15 dengan 3?"
         },
         {
           "id": "MATH-BAHAGI-003",
-          "q": "20 bahagi 4 = ________.",
+          "q": "Berapakah hasil bahagi 20 dengan 4?",
           "answer": "5",
           "accepted": [
             "5"
@@ -6042,11 +6042,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "20 bahagi 4 = ________."
+          "question": "Berapakah hasil bahagi 20 dengan 4?"
         },
         {
           "id": "MATH-BAHAGI-004",
-          "q": "25 bahagi 5 = ________.",
+          "q": "Berapakah hasil bahagi 25 dengan 5?",
           "answer": "5",
           "accepted": [
             "5"
@@ -6056,11 +6056,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "25 bahagi 5 = ________."
+          "question": "Berapakah hasil bahagi 25 dengan 5?"
         },
         {
           "id": "MATH-BAHAGI-005",
-          "q": "30 bahagi 5 = ________.",
+          "q": "Berapakah hasil bahagi 30 dengan 5?",
           "answer": "6",
           "accepted": [
             "6"
@@ -6070,11 +6070,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "30 bahagi 5 = ________."
+          "question": "Berapakah hasil bahagi 30 dengan 5?"
         },
         {
           "id": "MATH-BAHAGI-006",
-          "q": "18 bahagi 3 = ________.",
+          "q": "Berapakah hasil bahagi 18 dengan 3?",
           "answer": "6",
           "accepted": [
             "6"
@@ -6084,11 +6084,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "18 bahagi 3 = ________."
+          "question": "Berapakah hasil bahagi 18 dengan 3?"
         },
         {
           "id": "MATH-BAHAGI-007",
-          "q": "24 bahagi 4 = ________.",
+          "q": "Berapakah hasil bahagi 24 dengan 4?",
           "answer": "6",
           "accepted": [
             "6"
@@ -6098,11 +6098,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "24 bahagi 4 = ________."
+          "question": "Berapakah hasil bahagi 24 dengan 4?"
         },
         {
           "id": "MATH-BAHAGI-008",
-          "q": "40 bahagi 10 = ________.",
+          "q": "Berapakah hasil bahagi 40 dengan 10?",
           "answer": "4",
           "accepted": [
             "4"
@@ -6112,11 +6112,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "40 bahagi 10 = ________."
+          "question": "Berapakah hasil bahagi 40 dengan 10?"
         },
         {
           "id": "MATH-BAHAGI-009",
-          "q": "16 bahagi 2 = ________.",
+          "q": "Berapakah hasil bahagi 16 dengan 2?",
           "answer": "8",
           "accepted": [
             "8"
@@ -6126,11 +6126,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "16 bahagi 2 = ________."
+          "question": "Berapakah hasil bahagi 16 dengan 2?"
         },
         {
           "id": "MATH-BAHAGI-010",
-          "q": "36 bahagi 6 = ________.",
+          "q": "Berapakah hasil bahagi 36 dengan 6?",
           "answer": "6",
           "accepted": [
             "6"
@@ -6140,11 +6140,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "36 bahagi 6 = ________."
+          "question": "Berapakah hasil bahagi 36 dengan 6?"
         },
         {
           "id": "MATH-BAHAGI-011",
-          "q": "12 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 12 gula-gula dikongsi sama rata kepada 2 murid? ________ gula-gula.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6154,11 +6154,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "12 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 12 gula-gula dikongsi sama rata kepada 2 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-012",
-          "q": "15 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 15 gula-gula dikongsi sama rata kepada 3 murid? ________ gula-gula.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6168,11 +6168,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "15 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 15 gula-gula dikongsi sama rata kepada 3 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-013",
-          "q": "20 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 20 gula-gula dikongsi sama rata kepada 4 murid? ________ gula-gula.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6182,11 +6182,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "20 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 20 gula-gula dikongsi sama rata kepada 4 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-014",
-          "q": "25 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 25 gula-gula dikongsi sama rata kepada 5 murid? ________ gula-gula.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6196,11 +6196,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "25 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 25 gula-gula dikongsi sama rata kepada 5 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-015",
-          "q": "30 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 30 gula-gula dikongsi sama rata kepada 5 murid? ________ gula-gula.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6210,11 +6210,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "30 gula-gula dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 30 gula-gula dikongsi sama rata kepada 5 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-016",
-          "q": "18 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 18 gula-gula dikongsi sama rata kepada 3 murid? ________ gula-gula.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6224,11 +6224,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "18 gula-gula dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 18 gula-gula dikongsi sama rata kepada 3 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-017",
-          "q": "24 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 24 gula-gula dikongsi sama rata kepada 4 murid? ________ gula-gula.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6238,11 +6238,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "24 gula-gula dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 24 gula-gula dikongsi sama rata kepada 4 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-018",
-          "q": "40 gula-gula dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 40 gula-gula dikongsi sama rata kepada 10 murid? ________ gula-gula.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6252,11 +6252,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "40 gula-gula dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 40 gula-gula dikongsi sama rata kepada 10 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-019",
-          "q": "16 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 16 gula-gula dikongsi sama rata kepada 2 murid? ________ gula-gula.",
           "answer": "8",
           "accepted": [
             "8"
@@ -6266,11 +6266,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "16 gula-gula dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 16 gula-gula dikongsi sama rata kepada 2 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-020",
-          "q": "36 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 36 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6280,11 +6280,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "36 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 36 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-021",
-          "q": "Ada 12 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 12 biji epal yang dimasukkan sama banyak ke dalam 2 bakul? ________ biji epal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6294,11 +6294,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 12 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 12 biji epal yang dimasukkan sama banyak ke dalam 2 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-022",
-          "q": "Ada 15 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 15 biji epal yang dimasukkan sama banyak ke dalam 3 bakul? ________ biji epal.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6308,11 +6308,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 15 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 15 biji epal yang dimasukkan sama banyak ke dalam 3 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-023",
-          "q": "Ada 20 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 20 biji epal yang dimasukkan sama banyak ke dalam 4 bakul? ________ biji epal.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6322,11 +6322,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 20 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 20 biji epal yang dimasukkan sama banyak ke dalam 4 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-024",
-          "q": "Ada 25 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 25 biji epal yang dimasukkan sama banyak ke dalam 5 bakul? ________ biji epal.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6336,11 +6336,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 25 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 25 biji epal yang dimasukkan sama banyak ke dalam 5 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-025",
-          "q": "Ada 30 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 30 biji epal yang dimasukkan sama banyak ke dalam 5 bakul? ________ biji epal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6350,11 +6350,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 30 biji epal. Epal itu dimasukkan sama banyak ke dalam 5 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 30 biji epal yang dimasukkan sama banyak ke dalam 5 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-026",
-          "q": "Ada 18 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 18 biji epal yang dimasukkan sama banyak ke dalam 3 bakul? ________ biji epal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6364,11 +6364,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 18 biji epal. Epal itu dimasukkan sama banyak ke dalam 3 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 18 biji epal yang dimasukkan sama banyak ke dalam 3 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-027",
-          "q": "Ada 24 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 24 biji epal yang dimasukkan sama banyak ke dalam 4 bakul? ________ biji epal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6378,11 +6378,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 24 biji epal. Epal itu dimasukkan sama banyak ke dalam 4 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 24 biji epal yang dimasukkan sama banyak ke dalam 4 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-028",
-          "q": "Ada 40 biji epal. Epal itu dimasukkan sama banyak ke dalam 10 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 40 biji epal yang dimasukkan sama banyak ke dalam 10 bakul? ________ biji epal.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6392,11 +6392,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 40 biji epal. Epal itu dimasukkan sama banyak ke dalam 10 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 40 biji epal yang dimasukkan sama banyak ke dalam 10 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-029",
-          "q": "Ada 16 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 16 biji epal yang dimasukkan sama banyak ke dalam 2 bakul? ________ biji epal.",
           "answer": "8",
           "accepted": [
             "8"
@@ -6406,11 +6406,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 16 biji epal. Epal itu dimasukkan sama banyak ke dalam 2 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 16 biji epal yang dimasukkan sama banyak ke dalam 2 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-030",
-          "q": "Ada 36 biji epal. Epal itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji epal.",
+          "q": "Berapakah bilangan biji epal setiap bakul jika ada 36 biji epal yang dimasukkan sama banyak ke dalam 6 bakul? ________ biji epal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6420,11 +6420,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 36 biji epal. Epal itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji epal."
+          "question": "Berapakah bilangan biji epal setiap bakul jika ada 36 biji epal yang dimasukkan sama banyak ke dalam 6 bakul? ________ biji epal."
         },
         {
           "id": "MATH-BAHAGI-031",
-          "q": "Jika 12 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 12 objek dibahagi kepada 2 kumpulan? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6434,11 +6434,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 12 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 12 objek dibahagi kepada 2 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-032",
-          "q": "Jika 15 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 15 objek dibahagi kepada 3 kumpulan? ________ objek.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6448,11 +6448,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 15 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 15 objek dibahagi kepada 3 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-033",
-          "q": "Jika 20 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 20 objek dibahagi kepada 4 kumpulan? ________ objek.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6462,11 +6462,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 20 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 20 objek dibahagi kepada 4 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-034",
-          "q": "Jika 25 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 25 objek dibahagi kepada 5 kumpulan? ________ objek.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6476,11 +6476,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 25 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 25 objek dibahagi kepada 5 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-035",
-          "q": "Jika 30 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 30 objek dibahagi kepada 5 kumpulan? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6490,11 +6490,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 30 objek dibahagi kepada kumpulan 5, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 30 objek dibahagi kepada 5 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-036",
-          "q": "Jika 18 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 18 objek dibahagi kepada 3 kumpulan? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6504,11 +6504,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 18 objek dibahagi kepada kumpulan 3, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 18 objek dibahagi kepada 3 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-037",
-          "q": "Jika 24 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 24 objek dibahagi kepada 4 kumpulan? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6518,11 +6518,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 24 objek dibahagi kepada kumpulan 4, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 24 objek dibahagi kepada 4 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-038",
-          "q": "Jika 40 objek dibahagi kepada kumpulan 10, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 40 objek dibahagi kepada 10 kumpulan? ________ objek.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6532,11 +6532,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 40 objek dibahagi kepada kumpulan 10, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 40 objek dibahagi kepada 10 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-039",
-          "q": "Jika 16 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 16 objek dibahagi kepada 2 kumpulan? ________ objek.",
           "answer": "8",
           "accepted": [
             "8"
@@ -6546,11 +6546,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 16 objek dibahagi kepada kumpulan 2, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 16 objek dibahagi kepada 2 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-040",
-          "q": "Jika 36 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 36 objek dibahagi kepada 6 kumpulan? ________ objek.",
           "answer": "6",
           "accepted": [
             "6"
@@ -6560,7 +6560,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 36 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 36 objek dibahagi kepada 6 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-041",
@@ -6704,7 +6704,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-051",
-          "q": "42 bahagi 6 = ________.",
+          "q": "Berapakah hasil bahagi 42 dengan 6?",
           "answer": "7",
           "accepted": [
             "7"
@@ -6714,11 +6714,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "42 bahagi 6 = ________."
+          "question": "Berapakah hasil bahagi 42 dengan 6?"
         },
         {
           "id": "MATH-BAHAGI-052",
-          "q": "49 bahagi 7 = ________.",
+          "q": "Berapakah hasil bahagi 49 dengan 7?",
           "answer": "7",
           "accepted": [
             "7"
@@ -6728,11 +6728,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "49 bahagi 7 = ________."
+          "question": "Berapakah hasil bahagi 49 dengan 7?"
         },
         {
           "id": "MATH-BAHAGI-053",
-          "q": "54 bahagi 6 = ________.",
+          "q": "Berapakah hasil bahagi 54 dengan 6?",
           "answer": "9",
           "accepted": [
             "9"
@@ -6742,11 +6742,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "54 bahagi 6 = ________."
+          "question": "Berapakah hasil bahagi 54 dengan 6?"
         },
         {
           "id": "MATH-BAHAGI-054",
-          "q": "56 bahagi 7 = ________.",
+          "q": "Berapakah hasil bahagi 56 dengan 7?",
           "answer": "8",
           "accepted": [
             "8"
@@ -6756,11 +6756,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "56 bahagi 7 = ________."
+          "question": "Berapakah hasil bahagi 56 dengan 7?"
         },
         {
           "id": "MATH-BAHAGI-055",
-          "q": "63 bahagi 9 = ________.",
+          "q": "Berapakah hasil bahagi 63 dengan 9?",
           "answer": "7",
           "accepted": [
             "7"
@@ -6770,11 +6770,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "63 bahagi 9 = ________."
+          "question": "Berapakah hasil bahagi 63 dengan 9?"
         },
         {
           "id": "MATH-BAHAGI-056",
-          "q": "72 bahagi 8 = ________.",
+          "q": "Berapakah hasil bahagi 72 dengan 8?",
           "answer": "9",
           "accepted": [
             "9"
@@ -6784,11 +6784,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "72 bahagi 8 = ________."
+          "question": "Berapakah hasil bahagi 72 dengan 8?"
         },
         {
           "id": "MATH-BAHAGI-057",
-          "q": "81 bahagi 9 = ________.",
+          "q": "Berapakah hasil bahagi 81 dengan 9?",
           "answer": "9",
           "accepted": [
             "9"
@@ -6798,11 +6798,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "81 bahagi 9 = ________."
+          "question": "Berapakah hasil bahagi 81 dengan 9?"
         },
         {
           "id": "MATH-BAHAGI-058",
-          "q": "24 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 24 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6812,11 +6812,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "24 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 24 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-059",
-          "q": "28 gula-gula dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 28 gula-gula dikongsi sama rata kepada 7 murid? ________ gula-gula.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6826,11 +6826,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "28 gula-gula dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 28 gula-gula dikongsi sama rata kepada 7 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-060",
-          "q": "42 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 42 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula.",
           "answer": "7",
           "accepted": [
             "7"
@@ -6840,11 +6840,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "42 gula-gula dikongsi sama rata kepada 6 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 42 gula-gula dikongsi sama rata kepada 6 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-061",
-          "q": "45 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 45 gula-gula dikongsi sama rata kepada 9 murid? ________ gula-gula.",
           "answer": "5",
           "accepted": [
             "5"
@@ -6854,11 +6854,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "45 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 45 gula-gula dikongsi sama rata kepada 9 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-062",
-          "q": "56 gula-gula dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 56 gula-gula dikongsi sama rata kepada 8 murid? ________ gula-gula.",
           "answer": "7",
           "accepted": [
             "7"
@@ -6868,11 +6868,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "56 gula-gula dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 56 gula-gula dikongsi sama rata kepada 8 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-063",
-          "q": "63 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula.",
+          "q": "Berapakah bilangan gula-gula setiap murid jika 63 gula-gula dikongsi sama rata kepada 9 murid? ________ gula-gula.",
           "answer": "7",
           "accepted": [
             "7"
@@ -6882,11 +6882,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "63 gula-gula dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ gula-gula."
+          "question": "Berapakah bilangan gula-gula setiap murid jika 63 gula-gula dikongsi sama rata kepada 9 murid? ________ gula-gula."
         },
         {
           "id": "MATH-BAHAGI-064",
-          "q": "Ada 32 biji oren. Oren itu dimasukkan sama banyak ke dalam 8 bakul. Setiap bakul ada ________ biji oren.",
+          "q": "Berapakah bilangan biji oren setiap bakul jika ada 32 biji oren yang dimasukkan sama banyak ke dalam 8 bakul? ________ biji oren.",
           "answer": "4",
           "accepted": [
             "4"
@@ -6896,11 +6896,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 32 biji oren. Oren itu dimasukkan sama banyak ke dalam 8 bakul. Setiap bakul ada ________ biji oren."
+          "question": "Berapakah bilangan biji oren setiap bakul jika ada 32 biji oren yang dimasukkan sama banyak ke dalam 8 bakul? ________ biji oren."
         },
         {
           "id": "MATH-BAHAGI-065",
-          "q": "Ada 54 biji oren. Oren itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji oren.",
+          "q": "Berapakah bilangan biji oren setiap bakul jika ada 54 biji oren yang dimasukkan sama banyak ke dalam 6 bakul? ________ biji oren.",
           "answer": "9",
           "accepted": [
             "9"
@@ -6910,11 +6910,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 54 biji oren. Oren itu dimasukkan sama banyak ke dalam 6 bakul. Setiap bakul ada ________ biji oren."
+          "question": "Berapakah bilangan biji oren setiap bakul jika ada 54 biji oren yang dimasukkan sama banyak ke dalam 6 bakul? ________ biji oren."
         },
         {
           "id": "MATH-BAHAGI-066",
-          "q": "Jika 42 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 42 objek dibahagi kepada 6 kumpulan? ________ objek.",
           "answer": "7",
           "accepted": [
             "7"
@@ -6924,11 +6924,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 42 objek dibahagi kepada kumpulan 6, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 42 objek dibahagi kepada 6 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-067",
-          "q": "Jika 49 objek dibahagi kepada kumpulan 7, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 49 objek dibahagi kepada 7 kumpulan? ________ objek.",
           "answer": "7",
           "accepted": [
             "7"
@@ -6938,11 +6938,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 49 objek dibahagi kepada kumpulan 7, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 49 objek dibahagi kepada 7 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-068",
-          "q": "Jika 64 objek dibahagi kepada kumpulan 8, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 64 objek dibahagi kepada 8 kumpulan? ________ objek.",
           "answer": "8",
           "accepted": [
             "8"
@@ -6952,11 +6952,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 64 objek dibahagi kepada kumpulan 8, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 64 objek dibahagi kepada 8 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-069",
-          "q": "Jika 72 objek dibahagi kepada kumpulan 9, setiap kumpulan ada ________ objek.",
+          "q": "Berapakah bilangan objek setiap kumpulan jika 72 objek dibahagi kepada 9 kumpulan? ________ objek.",
           "answer": "8",
           "accepted": [
             "8"
@@ -6966,11 +6966,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jika 72 objek dibahagi kepada kumpulan 9, setiap kumpulan ada ________ objek."
+          "question": "Berapakah bilangan objek setiap kumpulan jika 72 objek dibahagi kepada 9 kumpulan? ________ objek."
         },
         {
           "id": "MATH-BAHAGI-070",
-          "q": "56 bahagi 8 = ________.",
+          "q": "Berapakah hasil bahagi 56 dengan 8?",
           "answer": "7",
           "accepted": [
             "7"
@@ -6980,11 +6980,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "56 bahagi 8 = ________."
+          "question": "Berapakah hasil bahagi 56 dengan 8?"
         },
         {
           "id": "MATH-BAHAGI-071",
-          "q": "63 bahagi 7 = ________.",
+          "q": "Berapakah hasil bahagi 63 dengan 7?",
           "answer": "9",
           "accepted": [
             "9"
@@ -6994,11 +6994,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "63 bahagi 7 = ________."
+          "question": "Berapakah hasil bahagi 63 dengan 7?"
         },
         {
           "id": "MATH-BAHAGI-072",
-          "q": "90 bahagi 9 = ________.",
+          "q": "Berapakah hasil bahagi 90 dengan 9?",
           "answer": "10",
           "accepted": [
             "10"
@@ -7008,11 +7008,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "90 bahagi 9 = ________."
+          "question": "Berapakah hasil bahagi 90 dengan 9?"
         },
         {
           "id": "MATH-BAHAGI-073",
-          "q": "Ada 48 roti. Roti itu diagihkan sama rata kepada 6 keluarga. Setiap keluarga menerima ________ roti.",
+          "q": "Berapakah bilangan roti setiap keluarga jika ada 48 roti diagihkan sama rata kepada 6 keluarga? ________ roti.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7022,11 +7022,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 48 roti. Roti itu diagihkan sama rata kepada 6 keluarga. Setiap keluarga menerima ________ roti."
+          "question": "Berapakah bilangan roti setiap keluarga jika ada 48 roti diagihkan sama rata kepada 6 keluarga? ________ roti."
         },
         {
           "id": "MATH-BAHAGI-074",
-          "q": "Ada 54 roti. Roti itu diagihkan sama rata kepada 9 keluarga. Setiap keluarga menerima ________ roti.",
+          "q": "Berapakah bilangan roti setiap keluarga jika ada 54 roti diagihkan sama rata kepada 9 keluarga? ________ roti.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7036,11 +7036,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 54 roti. Roti itu diagihkan sama rata kepada 9 keluarga. Setiap keluarga menerima ________ roti."
+          "question": "Berapakah bilangan roti setiap keluarga jika ada 54 roti diagihkan sama rata kepada 9 keluarga? ________ roti."
         },
         {
           "id": "MATH-BAHAGI-075",
-          "q": "Ada 72 pensel. Pensel itu dibahagi sama rata kepada 8 murid. Setiap murid mendapat ________ pensel.",
+          "q": "Berapakah bilangan pensel setiap murid jika ada 72 pensel dibahagi sama rata kepada 8 murid? ________ pensel.",
           "answer": "9",
           "accepted": [
             "9"
@@ -7050,11 +7050,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 72 pensel. Pensel itu dibahagi sama rata kepada 8 murid. Setiap murid mendapat ________ pensel."
+          "question": "Berapakah bilangan pensel setiap murid jika ada 72 pensel dibahagi sama rata kepada 8 murid? ________ pensel."
         },
         {
           "id": "MATH-BAHAGI-076",
-          "q": "Ada 63 pensel warna. Pensel itu dibahagi sama rata kepada 7 murid. Setiap murid mendapat ________ pensel warna.",
+          "q": "Berapakah bilangan pensel warna setiap murid jika ada 63 pensel warna dibahagi sama rata kepada 7 murid? ________ pensel warna.",
           "answer": "9",
           "accepted": [
             "9"
@@ -7064,7 +7064,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 63 pensel warna. Pensel itu dibahagi sama rata kepada 7 murid. Setiap murid mendapat ________ pensel warna."
+          "question": "Berapakah bilangan pensel warna setiap murid jika ada 63 pensel warna dibahagi sama rata kepada 7 murid? ________ pensel warna."
         },
         {
           "id": "MATH-BAHAGI-077",
@@ -7124,7 +7124,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-081",
-          "q": "84 bahagi 7 = ________.",
+          "q": "Berapakah hasil bahagi 84 dengan 7?",
           "answer": "12",
           "accepted": [
             "12"
@@ -7134,11 +7134,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "84 bahagi 7 = ________."
+          "question": "Berapakah hasil bahagi 84 dengan 7?"
         },
         {
           "id": "MATH-BAHAGI-082",
-          "q": "96 bahagi 8 = ________.",
+          "q": "Berapakah hasil bahagi 96 dengan 8?",
           "answer": "12",
           "accepted": [
             "12"
@@ -7148,11 +7148,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "96 bahagi 8 = ________."
+          "question": "Berapakah hasil bahagi 96 dengan 8?"
         },
         {
           "id": "MATH-BAHAGI-083",
-          "q": "108 bahagi 9 = ________.",
+          "q": "Berapakah hasil bahagi 108 dengan 9?",
           "answer": "12",
           "accepted": [
             "12"
@@ -7162,11 +7162,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "108 bahagi 9 = ________."
+          "question": "Berapakah hasil bahagi 108 dengan 9?"
         },
         {
           "id": "MATH-BAHAGI-084",
-          "q": "Ada 84 biskut. Biskut itu dikongsi sama rata kepada 7 bekas. Setiap bekas ada ________ biskut.",
+          "q": "Berapakah bilangan biskut setiap bekas jika ada 84 biskut dikongsi sama rata kepada 7 bekas? ________ biskut.",
           "answer": "12",
           "accepted": [
             "12"
@@ -7176,11 +7176,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 84 biskut. Biskut itu dikongsi sama rata kepada 7 bekas. Setiap bekas ada ________ biskut."
+          "question": "Berapakah bilangan biskut setiap bekas jika ada 84 biskut dikongsi sama rata kepada 7 bekas? ________ biskut."
         },
         {
           "id": "MATH-BAHAGI-085",
-          "q": "Ada 96 manik. Manik itu dikongsi sama rata kepada 8 bekas. Setiap bekas ada ________ manik.",
+          "q": "Berapakah bilangan manik setiap bekas jika ada 96 manik dikongsi sama rata kepada 8 bekas? ________ manik.",
           "answer": "12",
           "accepted": [
             "12"
@@ -7190,7 +7190,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ada 96 manik. Manik itu dikongsi sama rata kepada 8 bekas. Setiap bekas ada ________ manik."
+          "question": "Berapakah bilangan manik setiap bekas jika ada 96 manik dikongsi sama rata kepada 8 bekas? ________ manik."
         },
         {
           "id": "MATH-BAHAGI-086",
@@ -7222,7 +7222,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-088",
-          "q": "4 item bertema sekolah dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 4 murid dalam kumpulan dan setiap murid mendapat 2 item? ________ item.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7232,11 +7232,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "4 item bertema sekolah dikongsi sama rata kepada 2 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 4 murid dalam kumpulan dan setiap murid mendapat 2 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-089",
-          "q": "Dalam aktiviti wang, 12 objek dibahagi sama rata kepada 3 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah jumlah ringgit setiap kumpulan jika 12 ringgit dibahagi sama rata kepada 3 kumpulan? RM ________.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7246,7 +7246,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti wang, 12 objek dibahagi sama rata kepada 3 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah jumlah ringgit setiap kumpulan jika 12 ringgit dibahagi sama rata kepada 3 kumpulan? RM ________."
         },
         {
           "id": "MATH-BAHAGI-090",
@@ -7264,7 +7264,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-091",
-          "q": "Keluarga menyusun 40 bahan buku ke dalam 5 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan buku bagi setiap bekas jika 40 buku disusun sama banyak ke dalam 5 bekas? ________ buku.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7274,7 +7274,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 40 bahan buku ke dalam 5 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan buku bagi setiap bekas jika 40 buku disusun sama banyak ke dalam 5 bekas? ________ buku."
         },
         {
           "id": "MATH-BAHAGI-092",
@@ -7292,7 +7292,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-093",
-          "q": "28 item bertema permainan dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 28 murid dalam kumpulan dan setiap murid mendapat 7 item? ________ item.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7302,11 +7302,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "28 item bertema permainan dikongsi sama rata kepada 7 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 28 murid dalam kumpulan dan setiap murid mendapat 7 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-094",
-          "q": "Dalam aktiviti masa, 48 objek dibahagi sama rata kepada 8 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah bilangan minit setiap kumpulan jika 48 minit dibahagi sama rata kepada 8 kumpulan? ________ minit.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7316,7 +7316,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti masa, 48 objek dibahagi sama rata kepada 8 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah bilangan minit setiap kumpulan jika 48 minit dibahagi sama rata kepada 8 kumpulan? ________ minit."
         },
         {
           "id": "MATH-BAHAGI-095",
@@ -7334,7 +7334,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-096",
-          "q": "Keluarga menyusun 20 bahan haiwan ke dalam 10 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 20 bahan haiwan disusun sama banyak ke dalam 10 bekas? ________ bahan haiwan.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7344,7 +7344,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 20 bahan haiwan ke dalam 10 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 20 bahan haiwan disusun sama banyak ke dalam 10 bekas? ________ bahan haiwan."
         },
         {
           "id": "MATH-BAHAGI-097",
@@ -7362,7 +7362,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-098",
-          "q": "18 item bertema sekolah dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 18 murid dalam kumpulan dan setiap murid mendapat 3 item? ________ item.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7372,11 +7372,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "18 item bertema sekolah dikongsi sama rata kepada 3 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 18 murid dalam kumpulan dan setiap murid mendapat 3 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-099",
-          "q": "Dalam aktiviti wang, 32 objek dibahagi sama rata kepada 4 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah jumlah ringgit setiap kumpulan jika 32 ringgit dibahagi sama rata kepada 4 kumpulan? RM ________.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7386,7 +7386,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti wang, 32 objek dibahagi sama rata kepada 4 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah jumlah ringgit setiap kumpulan jika 32 ringgit dibahagi sama rata kepada 4 kumpulan? RM ________."
         },
         {
           "id": "MATH-BAHAGI-100",
@@ -7404,7 +7404,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-101",
-          "q": "Keluarga menyusun 24 bahan buku ke dalam 6 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan buku bagi setiap bekas jika 24 buku disusun sama banyak ke dalam 6 bekas? ________ buku.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7414,7 +7414,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 24 bahan buku ke dalam 6 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan buku bagi setiap bekas jika 24 buku disusun sama banyak ke dalam 6 bekas? ________ buku."
         },
         {
           "id": "MATH-BAHAGI-102",
@@ -7432,7 +7432,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-103",
-          "q": "64 item bertema permainan dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 64 murid dalam kumpulan dan setiap murid mendapat 8 item? ________ item.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7442,11 +7442,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "64 item bertema permainan dikongsi sama rata kepada 8 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 64 murid dalam kumpulan dan setiap murid mendapat 8 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-104",
-          "q": "Dalam aktiviti masa, 18 objek dibahagi sama rata kepada 9 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah bilangan minit setiap kumpulan jika 18 minit dibahagi sama rata kepada 9 kumpulan? ________ minit.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7456,7 +7456,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti masa, 18 objek dibahagi sama rata kepada 9 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah bilangan minit setiap kumpulan jika 18 minit dibahagi sama rata kepada 9 kumpulan? ________ minit."
         },
         {
           "id": "MATH-BAHAGI-105",
@@ -7474,7 +7474,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-106",
-          "q": "Keluarga menyusun 12 bahan haiwan ke dalam 2 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 12 bahan haiwan disusun sama banyak ke dalam 2 bekas? ________ bahan haiwan.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7484,7 +7484,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 12 bahan haiwan ke dalam 2 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 12 bahan haiwan disusun sama banyak ke dalam 2 bekas? ________ bahan haiwan."
         },
         {
           "id": "MATH-BAHAGI-107",
@@ -7502,7 +7502,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-108",
-          "q": "8 item bertema sekolah dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 8 murid dalam kumpulan dan setiap murid mendapat 4 item? ________ item.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7512,11 +7512,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "8 item bertema sekolah dikongsi sama rata kepada 4 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 8 murid dalam kumpulan dan setiap murid mendapat 4 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-109",
-          "q": "Dalam aktiviti wang, 20 objek dibahagi sama rata kepada 5 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah jumlah ringgit setiap kumpulan jika 20 ringgit dibahagi sama rata kepada 5 kumpulan? RM ________.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7526,7 +7526,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti wang, 20 objek dibahagi sama rata kepada 5 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah jumlah ringgit setiap kumpulan jika 20 ringgit dibahagi sama rata kepada 5 kumpulan? RM ________."
         },
         {
           "id": "MATH-BAHAGI-110",
@@ -7544,7 +7544,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-111",
-          "q": "Keluarga menyusun 56 bahan buku ke dalam 7 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan buku bagi setiap bekas jika 56 buku disusun sama banyak ke dalam 7 bekas? ________ buku.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7554,7 +7554,7 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 56 bahan buku ke dalam 7 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan buku bagi setiap bekas jika 56 buku disusun sama banyak ke dalam 7 bekas? ________ buku."
         },
         {
           "id": "MATH-BAHAGI-112",
@@ -7572,7 +7572,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-113",
-          "q": "36 item bertema permainan dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 36 murid dalam kumpulan dan setiap murid mendapat 9 item? ________ item.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7582,11 +7582,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "36 item bertema permainan dikongsi sama rata kepada 9 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 36 murid dalam kumpulan dan setiap murid mendapat 9 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-114",
-          "q": "Dalam aktiviti masa, 60 objek dibahagi sama rata kepada 10 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah bilangan minit setiap kumpulan jika 60 minit dibahagi sama rata kepada 10 kumpulan? ________ minit.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7596,7 +7596,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti masa, 60 objek dibahagi sama rata kepada 10 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah bilangan minit setiap kumpulan jika 60 minit dibahagi sama rata kepada 10 kumpulan? ________ minit."
         },
         {
           "id": "MATH-BAHAGI-115",
@@ -7614,7 +7614,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-116",
-          "q": "Keluarga menyusun 6 bahan haiwan ke dalam 3 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 6 bahan haiwan disusun sama banyak ke dalam 3 bekas? ________ bahan haiwan.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7624,7 +7624,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 6 bahan haiwan ke dalam 3 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan bahan haiwan bagi setiap bekas jika 6 bahan haiwan disusun sama banyak ke dalam 3 bekas? ________ bahan haiwan."
         },
         {
           "id": "MATH-BAHAGI-117",
@@ -7642,7 +7642,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-118",
-          "q": "30 item bertema sekolah dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 30 murid dalam kumpulan dan setiap murid mendapat 5 item? ________ item.",
           "answer": "6",
           "accepted": [
             "6"
@@ -7652,11 +7652,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "30 item bertema sekolah dikongsi sama rata kepada 5 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 30 murid dalam kumpulan dan setiap murid mendapat 5 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-119",
-          "q": "Dalam aktiviti wang, 48 objek dibahagi sama rata kepada 6 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah jumlah ringgit setiap kumpulan jika 48 ringgit dibahagi sama rata kepada 6 kumpulan? RM ________.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7666,7 +7666,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti wang, 48 objek dibahagi sama rata kepada 6 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah jumlah ringgit setiap kumpulan jika 48 ringgit dibahagi sama rata kepada 6 kumpulan? RM ________."
         },
         {
           "id": "MATH-BAHAGI-120",
@@ -7684,7 +7684,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-121",
-          "q": "Keluarga menyusun 32 bahan buku ke dalam 8 bekas sama banyak. Setiap bekas ada ________ bahan.",
+          "q": "Berapakah bilangan buku bagi setiap bekas jika 32 buku disusun sama banyak ke dalam 8 bekas? ________ buku.",
           "answer": "4",
           "accepted": [
             "4"
@@ -7694,7 +7694,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Keluarga menyusun 32 bahan buku ke dalam 8 bekas sama banyak. Setiap bekas ada ________ bahan."
+          "question": "Berapakah bilangan buku bagi setiap bekas jika 32 buku disusun sama banyak ke dalam 8 bekas? ________ buku."
         },
         {
           "id": "MATH-BAHAGI-122",
@@ -7712,7 +7712,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-BAHAGI-123",
-          "q": "80 item bertema permainan dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ item.",
+          "q": "Berapakah jumlah item jika ada 80 murid dalam kumpulan dan setiap murid mendapat 10 item? ________ item.",
           "answer": "8",
           "accepted": [
             "8"
@@ -7722,11 +7722,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "80 item bertema permainan dikongsi sama rata kepada 10 murid. Setiap murid mendapat ________ item."
+          "question": "Berapakah jumlah item jika ada 80 murid dalam kumpulan dan setiap murid mendapat 10 item? ________ item."
         },
         {
           "id": "MATH-BAHAGI-124",
-          "q": "Dalam aktiviti masa, 4 objek dibahagi sama rata kepada 2 kumpulan. Setiap kumpulan mendapat ________ objek.",
+          "q": "Berapakah bilangan minit setiap kumpulan jika 4 minit dibahagi sama rata kepada 2 kumpulan? ________ minit.",
           "answer": "2",
           "accepted": [
             "2"
@@ -7736,7 +7736,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam aktiviti masa, 4 objek dibahagi sama rata kepada 2 kumpulan. Setiap kumpulan mendapat ________ objek."
+          "question": "Berapakah bilangan minit setiap kumpulan jika 4 minit dibahagi sama rata kepada 2 kumpulan? ________ minit."
         }
       ]
     },
@@ -8454,7 +8454,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-MASA-001",
-          "q": "Hari selepas Selasa ialah hari ________.",
+          "q": "Tentukan hari selepas Selasa.",
           "answer": "Rabu",
           "accepted": [
             "Rabu"
@@ -8464,11 +8464,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Selasa ialah hari ________."
+          "question": "Tentukan hari selepas Selasa."
         },
         {
           "id": "MATH-MASA-002",
-          "q": "Hari sebelum Rabu ialah hari ________.",
+          "q": "Hari apakah sebelum Rabu?",
           "answer": "Selasa",
           "accepted": [
             "Selasa"
@@ -8478,11 +8478,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Rabu ialah hari ________."
+          "question": "Hari apakah sebelum Rabu?"
         },
         {
           "id": "MATH-MASA-003",
-          "q": "Jam menunjukkan pukul 4. Satu jam kemudian ialah pukul ________.",
+          "q": "Berapakah waktu satu jam selepas pukul 4?",
           "answer": "5",
           "accepted": [
             "5"
@@ -8492,11 +8492,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 4. Satu jam kemudian ialah pukul ________."
+          "question": "Berapakah waktu satu jam selepas pukul 4?"
         },
         {
           "id": "MATH-MASA-004",
-          "q": "Kelas bermula pukul 5 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Pukul 5 ialah waktu mula kelas. Berapakah waktu tamat selepas 2 jam?",
           "answer": "7",
           "accepted": [
             "7"
@@ -8506,11 +8506,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 5 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Pukul 5 ialah waktu mula kelas. Berapakah waktu tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-005",
-          "q": "Dalam satu minggu ada ________ hari.",
+          "q": "Tuliskan jumlah hari dalam satu minggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -8520,11 +8520,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dalam satu minggu ada ________ hari."
+          "question": "Tuliskan jumlah hari dalam satu minggu."
         },
         {
           "id": "MATH-MASA-006",
-          "q": "Hari selepas Ahad ialah hari ________.",
+          "q": "Berapakah hari selepas Ahad?",
           "answer": "Isnin",
           "accepted": [
             "Isnin"
@@ -8534,11 +8534,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Ahad ialah hari ________."
+          "question": "Berapakah hari selepas Ahad?"
         },
         {
           "id": "MATH-MASA-007",
-          "q": "Hari sebelum Isnin ialah hari ________.",
+          "q": "Tentukan hari sebelum Isnin.",
           "answer": "Ahad",
           "accepted": [
             "Ahad"
@@ -8548,11 +8548,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Isnin ialah hari ________."
+          "question": "Tentukan hari sebelum Isnin."
         },
         {
           "id": "MATH-MASA-008",
-          "q": "Jam menunjukkan pukul 9. Satu jam kemudian ialah pukul ________.",
+          "q": "Jika jam menunjukkan pukul 9, berapakah waktu selepas 1 jam?",
           "answer": "10",
           "accepted": [
             "10"
@@ -8562,11 +8562,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 9. Satu jam kemudian ialah pukul ________."
+          "question": "Jika jam menunjukkan pukul 9, berapakah waktu selepas 1 jam?"
         },
         {
           "id": "MATH-MASA-009",
-          "q": "Kelas bermula pukul 10 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Apabila kelas bermula pukul 10, berapakah waktu tamatnya selepas 2 jam?",
           "answer": "12",
           "accepted": [
             "12"
@@ -8576,11 +8576,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 10 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Apabila kelas bermula pukul 10, berapakah waktu tamatnya selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-010",
-          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari.",
+          "q": "Berapa hari ada dalam satu minggu?",
           "answer": "7",
           "accepted": [
             "7"
@@ -8590,11 +8590,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari."
+          "question": "Berapa hari ada dalam satu minggu?"
         },
         {
           "id": "MATH-MASA-011",
-          "q": "Hari selepas Jumaat ialah hari ________.",
+          "q": "Lihat susunan hari: apakah hari selepas Jumaat?",
           "answer": "Sabtu",
           "accepted": [
             "Sabtu"
@@ -8604,11 +8604,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Jumaat ialah hari ________."
+          "question": "Lihat susunan hari: apakah hari selepas Jumaat?"
         },
         {
           "id": "MATH-MASA-012",
-          "q": "Hari sebelum Sabtu ialah hari ________.",
+          "q": "Berapakah hari sebelum Sabtu?",
           "answer": "Jumaat",
           "accepted": [
             "Jumaat"
@@ -8618,11 +8618,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Sabtu ialah hari ________."
+          "question": "Berapakah hari sebelum Sabtu?"
         },
         {
           "id": "MATH-MASA-013",
-          "q": "Jam menunjukkan pukul 3. Satu jam kemudian ialah pukul ________.",
+          "q": "Perhatikan jam pada pukul 3. Berapakah satu jam kemudian?",
           "answer": "4",
           "accepted": [
             "4"
@@ -8632,11 +8632,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 3. Satu jam kemudian ialah pukul ________."
+          "question": "Perhatikan jam pada pukul 3. Berapakah satu jam kemudian?"
         },
         {
           "id": "MATH-MASA-014",
-          "q": "Kelas bermula pukul 4 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Kelas bermula pukul 4. Berapakah waktu tamat selepas 2 jam?",
           "answer": "6",
           "accepted": [
             "6"
@@ -8646,11 +8646,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 4 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Kelas bermula pukul 4. Berapakah waktu tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-015",
-          "q": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari.",
+          "q": "Nyatakan bilangan hari bagi satu minggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -8660,11 +8660,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari."
+          "question": "Nyatakan bilangan hari bagi satu minggu."
         },
         {
           "id": "MATH-MASA-016",
-          "q": "Hari selepas Rabu ialah hari ________.",
+          "q": "Selepas Rabu, hari apakah seterusnya?",
           "answer": "Khamis",
           "accepted": [
             "Khamis"
@@ -8674,11 +8674,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Rabu ialah hari ________."
+          "question": "Selepas Rabu, hari apakah seterusnya?"
         },
         {
           "id": "MATH-MASA-017",
-          "q": "Hari sebelum Khamis ialah hari ________.",
+          "q": "Lihat susunan hari: apakah hari sebelum Khamis?",
           "answer": "Rabu",
           "accepted": [
             "Rabu"
@@ -8688,11 +8688,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Khamis ialah hari ________."
+          "question": "Lihat susunan hari: apakah hari sebelum Khamis?"
         },
         {
           "id": "MATH-MASA-018",
-          "q": "Jam menunjukkan pukul 8. Satu jam kemudian ialah pukul ________.",
+          "q": "Jam menunjukkan pukul 8. Berapakah waktu satu jam selepas itu?",
           "answer": "9",
           "accepted": [
             "9"
@@ -8702,11 +8702,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 8. Satu jam kemudian ialah pukul ________."
+          "question": "Jam menunjukkan pukul 8. Berapakah waktu satu jam selepas itu?"
         },
         {
           "id": "MATH-MASA-019",
-          "q": "Kelas bermula pukul 9 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Jika kelas bermula pukul 9, pukul berapakah tamat selepas 2 jam?",
           "answer": "11",
           "accepted": [
             "11"
@@ -8716,11 +8716,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 9 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Jika kelas bermula pukul 9, pukul berapakah tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-020",
-          "q": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari.",
+          "q": "Satu minggu ada berapa hari?",
           "answer": "7",
           "accepted": [
             "7"
@@ -8730,11 +8730,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari."
+          "question": "Satu minggu ada berapa hari?"
         },
         {
           "id": "MATH-MASA-021",
-          "q": "Hari selepas Isnin ialah hari ________.",
+          "q": "Bolehkah kamu nyatakan hari selepas Isnin?",
           "answer": "Selasa",
           "accepted": [
             "Selasa"
@@ -8744,11 +8744,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Isnin ialah hari ________."
+          "question": "Bolehkah kamu nyatakan hari selepas Isnin?"
         },
         {
           "id": "MATH-MASA-022",
-          "q": "Hari sebelum Selasa ialah hari ________.",
+          "q": "Sebelum Selasa, hari apakah?",
           "answer": "Isnin",
           "accepted": [
             "Isnin"
@@ -8758,11 +8758,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Selasa ialah hari ________."
+          "question": "Sebelum Selasa, hari apakah?"
         },
         {
           "id": "MATH-MASA-023",
-          "q": "Jam menunjukkan pukul 2. Satu jam kemudian ialah pukul ________.",
+          "q": "Pukul 2 pada jam. Berapakah waktu satu jam selepas itu?",
           "answer": "3",
           "accepted": [
             "3"
@@ -8772,11 +8772,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 2. Satu jam kemudian ialah pukul ________."
+          "question": "Pukul 2 pada jam. Berapakah waktu satu jam selepas itu?"
         },
         {
           "id": "MATH-MASA-024",
-          "q": "Kelas bermula pukul 3 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Kelas bermula pukul 3. Berapakah waktu tamat selepas 2 jam?",
           "answer": "5",
           "accepted": [
             "5"
@@ -8786,11 +8786,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 3 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Kelas bermula pukul 3. Berapakah waktu tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-025",
-          "q": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari.",
+          "q": "Kira bilangan hari dalam satu minggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -8800,11 +8800,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari."
+          "question": "Kira bilangan hari dalam satu minggu."
         },
         {
           "id": "MATH-MASA-026",
-          "q": "Hari selepas Sabtu ialah hari ________.",
+          "q": "Hari apakah selepas Sabtu?",
           "answer": "Ahad",
           "accepted": [
             "Ahad"
@@ -8814,11 +8814,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Sabtu ialah hari ________."
+          "question": "Hari apakah selepas Sabtu?"
         },
         {
           "id": "MATH-MASA-027",
-          "q": "Hari sebelum Ahad ialah hari ________.",
+          "q": "Bolehkah kamu nyatakan hari sebelum Ahad?",
           "answer": "Sabtu",
           "accepted": [
             "Sabtu"
@@ -8828,11 +8828,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Ahad ialah hari ________."
+          "question": "Bolehkah kamu nyatakan hari sebelum Ahad?"
         },
         {
           "id": "MATH-MASA-028",
-          "q": "Jam menunjukkan pukul 7. Satu jam kemudian ialah pukul ________.",
+          "q": "Baca jam ini: pukul 7. Berapakah masa satu jam kemudian?",
           "answer": "8",
           "accepted": [
             "8"
@@ -8842,11 +8842,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 7. Satu jam kemudian ialah pukul ________."
+          "question": "Baca jam ini: pukul 7. Berapakah masa satu jam kemudian?"
         },
         {
           "id": "MATH-MASA-029",
-          "q": "Kelas bermula pukul 8 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Kelas bermula pukul 8. Berapakah waktu tamat selepas 2 jam?",
           "answer": "10",
           "accepted": [
             "10"
@@ -8856,11 +8856,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 8 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Kelas bermula pukul 8. Berapakah waktu tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-030",
-          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 6)",
+          "q": "Dalam satu minggu, berapakah jumlah hari?",
           "answer": "7",
           "accepted": [
             "7"
@@ -8870,11 +8870,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 6)"
+          "question": "Dalam satu minggu, berapakah jumlah hari?"
         },
         {
           "id": "MATH-MASA-031",
-          "q": "Hari selepas Khamis ialah hari ________.",
+          "q": "Tentukan hari selepas Khamis.",
           "answer": "Jumaat",
           "accepted": [
             "Jumaat"
@@ -8884,11 +8884,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari selepas Khamis ialah hari ________."
+          "question": "Tentukan hari selepas Khamis."
         },
         {
           "id": "MATH-MASA-032",
-          "q": "Hari sebelum Jumaat ialah hari ________.",
+          "q": "Hari apakah sebelum Jumaat?",
           "answer": "Khamis",
           "accepted": [
             "Khamis"
@@ -8898,11 +8898,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Hari sebelum Jumaat ialah hari ________."
+          "question": "Hari apakah sebelum Jumaat?"
         },
         {
           "id": "MATH-MASA-033",
-          "q": "Jam menunjukkan pukul 1. Satu jam kemudian ialah pukul ________.",
+          "q": "Berapakah waktu satu jam selepas pukul 1?",
           "answer": "2",
           "accepted": [
             "2"
@@ -8912,11 +8912,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 1. Satu jam kemudian ialah pukul ________."
+          "question": "Berapakah waktu satu jam selepas pukul 1?"
         },
         {
           "id": "MATH-MASA-034",
-          "q": "Kelas bermula pukul 2 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Pukul 2 ialah waktu mula kelas. Berapakah waktu tamat selepas 2 jam?",
           "answer": "4",
           "accepted": [
             "4"
@@ -8926,11 +8926,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 2 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Pukul 2 ialah waktu mula kelas. Berapakah waktu tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-035",
-          "q": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari. (Latihan 7)",
+          "q": "Tuliskan jumlah hari dalam satu minggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -8940,11 +8940,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Masa dan Waktu: Dalam satu minggu ada ________ hari. (Latihan 7)"
+          "question": "Tuliskan jumlah hari dalam satu minggu."
         },
         {
           "id": "MATH-MASA-036",
-          "q": "Kira dengan teliti: Hari selepas Selasa ialah hari ________.",
+          "q": "Berapakah hari selepas Selasa?",
           "answer": "Rabu",
           "accepted": [
             "Rabu"
@@ -8954,11 +8954,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari selepas Selasa ialah hari ________."
+          "question": "Berapakah hari selepas Selasa?"
         },
         {
           "id": "MATH-MASA-037",
-          "q": "Kira dengan teliti: Hari sebelum Rabu ialah hari ________.",
+          "q": "Tentukan hari sebelum Rabu.",
           "answer": "Selasa",
           "accepted": [
             "Selasa"
@@ -8968,11 +8968,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari sebelum Rabu ialah hari ________."
+          "question": "Tentukan hari sebelum Rabu."
         },
         {
           "id": "MATH-MASA-038",
-          "q": "Jam menunjukkan pukul 6. Satu jam kemudian ialah pukul ________.",
+          "q": "Jika jam menunjukkan pukul 6, berapakah waktu selepas 1 jam?",
           "answer": "7",
           "accepted": [
             "7"
@@ -8982,11 +8982,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 6. Satu jam kemudian ialah pukul ________."
+          "question": "Jika jam menunjukkan pukul 6, berapakah waktu selepas 1 jam?"
         },
         {
           "id": "MATH-MASA-039",
-          "q": "Kelas bermula pukul 7 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Apabila kelas bermula pukul 7, berapakah waktu tamatnya selepas 2 jam?",
           "answer": "9",
           "accepted": [
             "9"
@@ -8996,11 +8996,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 7 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Apabila kelas bermula pukul 7, berapakah waktu tamatnya selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-040",
-          "q": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari. (Latihan 8)",
+          "q": "Berapa hari ada dalam satu minggu?",
           "answer": "7",
           "accepted": [
             "7"
@@ -9010,11 +9010,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Dalam satu minggu ada ________ hari. (Latihan 8)"
+          "question": "Berapa hari ada dalam satu minggu?"
         },
         {
           "id": "MATH-MASA-041",
-          "q": "Kira dengan teliti: Hari selepas Ahad ialah hari ________.",
+          "q": "Lihat susunan hari: apakah hari selepas Ahad?",
           "answer": "Isnin",
           "accepted": [
             "Isnin"
@@ -9024,11 +9024,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari selepas Ahad ialah hari ________."
+          "question": "Lihat susunan hari: apakah hari selepas Ahad?"
         },
         {
           "id": "MATH-MASA-042",
-          "q": "Kira dengan teliti: Hari sebelum Isnin ialah hari ________.",
+          "q": "Berapakah hari sebelum Isnin?",
           "answer": "Ahad",
           "accepted": [
             "Ahad"
@@ -9038,11 +9038,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari sebelum Isnin ialah hari ________."
+          "question": "Berapakah hari sebelum Isnin?"
         },
         {
           "id": "MATH-MASA-043",
-          "q": "Jam menunjukkan pukul 11. Satu jam kemudian ialah pukul ________.",
+          "q": "Perhatikan jam pada pukul 11. Berapakah satu jam kemudian?",
           "answer": "12",
           "accepted": [
             "12"
@@ -9052,11 +9052,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 11. Satu jam kemudian ialah pukul ________."
+          "question": "Perhatikan jam pada pukul 11. Berapakah satu jam kemudian?"
         },
         {
           "id": "MATH-MASA-044",
-          "q": "Kelas bermula pukul 1 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Berapakah waktu tamat 2 jam selepas kelas mula pada pukul 1?",
           "answer": "3",
           "accepted": [
             "3"
@@ -9066,11 +9066,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 1 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Berapakah waktu tamat 2 jam selepas kelas mula pada pukul 1?"
         },
         {
           "id": "MATH-MASA-045",
-          "q": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari. (Latihan 9)",
+          "q": "Nyatakan bilangan hari bagi satu minggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -9080,11 +9080,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Masa dan Waktu ini: Dalam satu minggu ada ________ hari. (Latihan 9)"
+          "question": "Nyatakan bilangan hari bagi satu minggu."
         },
         {
           "id": "MATH-MASA-046",
-          "q": "Kira dengan teliti: Hari selepas Jumaat ialah hari ________.",
+          "q": "Selepas Jumaat, hari apakah seterusnya?",
           "answer": "Sabtu",
           "accepted": [
             "Sabtu"
@@ -9094,11 +9094,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari selepas Jumaat ialah hari ________."
+          "question": "Selepas Jumaat, hari apakah seterusnya?"
         },
         {
           "id": "MATH-MASA-047",
-          "q": "Kira dengan teliti: Hari sebelum Sabtu ialah hari ________.",
+          "q": "Lihat susunan hari: apakah hari sebelum Sabtu?",
           "answer": "Jumaat",
           "accepted": [
             "Jumaat"
@@ -9108,11 +9108,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Hari sebelum Sabtu ialah hari ________."
+          "question": "Lihat susunan hari: apakah hari sebelum Sabtu?"
         },
         {
           "id": "MATH-MASA-048",
-          "q": "Jam menunjukkan pukul 5. Satu jam kemudian ialah pukul ________.",
+          "q": "Jam menunjukkan pukul 5. Berapakah waktu satu jam selepas itu?",
           "answer": "6",
           "accepted": [
             "6"
@@ -9122,11 +9122,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Jam menunjukkan pukul 5. Satu jam kemudian ialah pukul ________."
+          "question": "Jam menunjukkan pukul 5. Berapakah waktu satu jam selepas itu?"
         },
         {
           "id": "MATH-MASA-049",
-          "q": "Kelas bermula pukul 6 dan tamat 2 jam kemudian. Kelas tamat pukul ________.",
+          "q": "Jika kelas bermula pukul 6, pukul berapakah tamat selepas 2 jam?",
           "answer": "8",
           "accepted": [
             "8"
@@ -9136,11 +9136,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kelas bermula pukul 6 dan tamat 2 jam kemudian. Kelas tamat pukul ________."
+          "question": "Jika kelas bermula pukul 6, pukul berapakah tamat selepas 2 jam?"
         },
         {
           "id": "MATH-MASA-050",
-          "q": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 10)",
+          "q": "Satu minggu ada berapa hari?",
           "answer": "7",
           "accepted": [
             "7"
@@ -9150,7 +9150,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Dalam satu minggu ada ________ hari. (Latihan 10)"
+          "question": "Satu minggu ada berapa hari?"
         }
       ]
     },
@@ -9161,7 +9161,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-PANJANG-001",
-          "q": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Hitung jumlah panjang dua reben itu.",
           "answer": "15",
           "accepted": [
             "15"
@@ -9171,11 +9171,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 11 cm. Reben biru panjangnya 4 cm. Hitung jumlah panjang dua reben itu."
         },
         {
           "id": "MATH-PANJANG-002",
-          "q": "Tali sepanjang 17 cm dipotong 5 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 17 cm dipotong 5 cm. Cari baki tali selepas dipotong.",
           "answer": "12",
           "accepted": [
             "12"
@@ -9185,11 +9185,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 17 cm dipotong 5 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 17 cm dipotong 5 cm. Cari baki tali selepas dipotong."
         },
         {
           "id": "MATH-PANJANG-003",
-          "q": "Manakah lebih panjang, 13 cm atau 19 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 13 cm dan 19 cm.",
           "answer": "19",
           "accepted": [
             "19"
@@ -9199,11 +9199,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 13 cm atau 19 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 13 cm dan 19 cm."
         },
         {
           "id": "MATH-PANJANG-004",
-          "q": "1 meter bersamaan ________ cm.",
+          "q": "Tuliskan bilangan cm yang sama dengan 1 meter.",
           "answer": "100",
           "accepted": [
             "100"
@@ -9213,11 +9213,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "1 meter bersamaan ________ cm."
+          "question": "Tuliskan bilangan cm yang sama dengan 1 meter."
         },
         {
           "id": "MATH-PANJANG-005",
-          "q": "Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Gunakan pembaris untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9227,11 +9227,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pembaris sesuai digunakan untuk mengukur ________."
+          "question": "Gunakan pembaris untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-006",
-          "q": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Berapakah jumlah panjang kedua-dua reben itu?",
           "answer": "25",
           "accepted": [
             "25"
@@ -9241,11 +9241,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 16 cm. Reben biru panjangnya 9 cm. Berapakah jumlah panjang kedua-dua reben itu?"
         },
         {
           "id": "MATH-PANJANG-007",
-          "q": "Tali sepanjang 27 cm dipotong 10 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 27 cm dipotong 10 cm. Hitung baki tali itu.",
           "answer": "17",
           "accepted": [
             "17"
@@ -9255,11 +9255,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 27 cm dipotong 10 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 27 cm dipotong 10 cm. Hitung baki tali itu."
         },
         {
           "id": "MATH-PANJANG-008",
-          "q": "Manakah lebih panjang, 18 cm atau 29 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 18 cm dan 29 cm.",
           "answer": "29",
           "accepted": [
             "29"
@@ -9269,11 +9269,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 18 cm atau 29 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 18 cm dan 29 cm."
         },
         {
           "id": "MATH-PANJANG-009",
-          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm.",
+          "q": "Kira nilai 1 meter dalam sentimeter (cm).",
           "answer": "100",
           "accepted": [
             "100"
@@ -9283,11 +9283,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm."
+          "question": "Kira nilai 1 meter dalam sentimeter (cm)."
         },
         {
           "id": "MATH-PANJANG-010",
-          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Benda apakah yang sesuai diukur dengan pembaris?",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9297,11 +9297,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________."
+          "question": "Benda apakah yang sesuai diukur dengan pembaris?"
         },
         {
           "id": "MATH-PANJANG-011",
-          "q": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Baca ukuran reben dan kira jumlahnya.",
           "answer": "26",
           "accepted": [
             "26"
@@ -9311,11 +9311,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Baca ukuran reben dan kira jumlahnya."
         },
         {
           "id": "MATH-PANJANG-012",
-          "q": "Tali sepanjang 28 cm dipotong 6 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 28 cm dipotong 6 cm. Berapakah baki tali itu?",
           "answer": "22",
           "accepted": [
             "22"
@@ -9325,11 +9325,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 28 cm dipotong 6 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 28 cm dipotong 6 cm. Berapakah baki tali itu?"
         },
         {
           "id": "MATH-PANJANG-013",
-          "q": "Manakah lebih panjang, 23 cm atau 30 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 23 cm dan 30 cm.",
           "answer": "30",
           "accepted": [
             "30"
@@ -9339,11 +9339,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 23 cm atau 30 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 23 cm dan 30 cm."
         },
         {
           "id": "MATH-PANJANG-014",
-          "q": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm.",
+          "q": "1 meter bersamaan berapa sentimeter (cm)?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9353,11 +9353,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm."
+          "question": "1 meter bersamaan berapa sentimeter (cm)?"
         },
         {
           "id": "MATH-PANJANG-015",
-          "q": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Pilih alat yang sesuai untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9367,11 +9367,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________."
+          "question": "Pilih alat yang sesuai untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-016",
-          "q": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Tentukan jumlah panjang dua reben itu.",
           "answer": "36",
           "accepted": [
             "36"
@@ -9381,11 +9381,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 26 cm. Reben biru panjangnya 10 cm. Tentukan jumlah panjang dua reben itu."
         },
         {
           "id": "MATH-PANJANG-017",
-          "q": "Tali sepanjang 38 cm dipotong 11 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 38 cm dipotong 11 cm. Baca panjang asal dan panjang dipotong, kemudian kira baki.",
           "answer": "27",
           "accepted": [
             "27"
@@ -9395,11 +9395,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 38 cm dipotong 11 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 38 cm dipotong 11 cm. Baca panjang asal dan panjang dipotong, kemudian kira baki."
         },
         {
           "id": "MATH-PANJANG-018",
-          "q": "Manakah lebih panjang, 28 cm atau 31 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 28 cm dan 31 cm.",
           "answer": "31",
           "accepted": [
             "31"
@@ -9409,11 +9409,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 28 cm atau 31 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 28 cm dan 31 cm."
         },
         {
           "id": "MATH-PANJANG-019",
-          "q": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm.",
+          "q": "Nyatakan bilangan sentimeter (cm) bagi 1 meter.",
           "answer": "100",
           "accepted": [
             "100"
@@ -9423,11 +9423,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm."
+          "question": "Nyatakan bilangan sentimeter (cm) bagi 1 meter."
         },
         {
           "id": "MATH-PANJANG-020",
-          "q": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Apakah alat yang kita gunakan untuk mengukur ________?",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9437,11 +9437,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________."
+          "question": "Apakah alat yang kita gunakan untuk mengukur ________?"
         },
         {
           "id": "MATH-PANJANG-021",
-          "q": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Apakah jumlah panjang dua reben itu?",
           "answer": "37",
           "accepted": [
             "37"
@@ -9451,11 +9451,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 31 cm. Reben biru panjangnya 6 cm. Apakah jumlah panjang dua reben itu?"
         },
         {
           "id": "MATH-PANJANG-022",
-          "q": "Tali sepanjang 39 cm dipotong 7 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 39 cm dipotong 7 cm. Tentukan baki tali yang tinggal.",
           "answer": "32",
           "accepted": [
             "32"
@@ -9465,11 +9465,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 39 cm dipotong 7 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 39 cm dipotong 7 cm. Tentukan baki tali yang tinggal."
         },
         {
           "id": "MATH-PANJANG-023",
-          "q": "Manakah lebih panjang, 33 cm atau 41 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 33 cm dan 41 cm.",
           "answer": "41",
           "accepted": [
             "41"
@@ -9479,11 +9479,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 33 cm atau 41 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 33 cm dan 41 cm."
         },
         {
           "id": "MATH-PANJANG-024",
-          "q": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm.",
+          "q": "Dalam 1 meter, ada berapakah sentimeter (cm)?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9493,11 +9493,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm."
+          "question": "Dalam 1 meter, ada berapakah sentimeter (cm)?"
         },
         {
           "id": "MATH-PANJANG-025",
-          "q": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________.",
+          "q": "Nyatakan alat yang sesuai untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9507,11 +9507,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________."
+          "question": "Nyatakan alat yang sesuai untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-026",
-          "q": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Cari jumlah panjang kedua-dua reben.",
           "answer": "47",
           "accepted": [
             "47"
@@ -9521,11 +9521,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 36 cm. Reben biru panjangnya 11 cm. Cari jumlah panjang kedua-dua reben."
         },
         {
           "id": "MATH-PANJANG-027",
-          "q": "Tali sepanjang 40 cm dipotong 3 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 40 cm dipotong 3 cm. Apakah baki tali itu selepas dipotong?",
           "answer": "37",
           "accepted": [
             "37"
@@ -9535,11 +9535,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 40 cm dipotong 3 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 40 cm dipotong 3 cm. Apakah baki tali itu selepas dipotong?"
         },
         {
           "id": "MATH-PANJANG-028",
-          "q": "Manakah lebih panjang, 38 cm atau 42 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 38 cm dan 42 cm.",
           "answer": "42",
           "accepted": [
             "42"
@@ -9549,11 +9549,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 38 cm atau 42 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 38 cm dan 42 cm."
         },
         {
           "id": "MATH-PANJANG-029",
-          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 6)",
+          "q": "Perhatikan unit panjang: 1 meter = berapa cm?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9563,11 +9563,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 6)"
+          "question": "Perhatikan unit panjang: 1 meter = berapa cm?"
         },
         {
           "id": "MATH-PANJANG-030",
-          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 6)",
+          "q": "Apakah alat yang sesuai digunakan untuk mengukur ________?",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9577,11 +9577,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 6)"
+          "question": "Apakah alat yang sesuai digunakan untuk mengukur ________?"
         },
         {
           "id": "MATH-PANJANG-031",
-          "q": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Hitung jumlah panjang dua reben itu.",
           "answer": "48",
           "accepted": [
             "48"
@@ -9591,11 +9591,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 41 cm. Reben biru panjangnya 7 cm. Hitung jumlah panjang dua reben itu."
         },
         {
           "id": "MATH-PANJANG-032",
-          "q": "Tali sepanjang 50 cm dipotong 8 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 50 cm dipotong 8 cm. Cari baki tali selepas dipotong.",
           "answer": "42",
           "accepted": [
             "42"
@@ -9605,11 +9605,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 50 cm dipotong 8 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 50 cm dipotong 8 cm. Cari baki tali selepas dipotong."
         },
         {
           "id": "MATH-PANJANG-033",
-          "q": "Manakah lebih panjang, 43 cm atau 52 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 43 cm dan 52 cm.",
           "answer": "52",
           "accepted": [
             "52"
@@ -9619,11 +9619,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 43 cm atau 52 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 43 cm dan 52 cm."
         },
         {
           "id": "MATH-PANJANG-034",
-          "q": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm. (Latihan 7)",
+          "q": "Tuliskan bilangan cm yang sama dengan 1 meter.",
           "answer": "100",
           "accepted": [
             "100"
@@ -9633,11 +9633,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Panjang: 1 meter bersamaan ________ cm. (Latihan 7)"
+          "question": "Tuliskan bilangan cm yang sama dengan 1 meter."
         },
         {
           "id": "MATH-PANJANG-035",
-          "q": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 7)",
+          "q": "Gunakan pembaris untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9647,11 +9647,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Panjang: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 7)"
+          "question": "Gunakan pembaris untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-036",
-          "q": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Berapakah jumlah panjang kedua-dua reben itu?",
           "answer": "49",
           "accepted": [
             "49"
@@ -9661,11 +9661,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 46 cm. Reben biru panjangnya 3 cm. Berapakah jumlah panjang kedua-dua reben itu?"
         },
         {
           "id": "MATH-PANJANG-037",
-          "q": "Tali sepanjang 51 cm dipotong 4 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 51 cm dipotong 4 cm. Hitung baki tali itu.",
           "answer": "47",
           "accepted": [
             "47"
@@ -9675,11 +9675,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 51 cm dipotong 4 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 51 cm dipotong 4 cm. Hitung baki tali itu."
         },
         {
           "id": "MATH-PANJANG-038",
-          "q": "Manakah lebih panjang, 48 cm atau 53 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 48 cm dan 53 cm.",
           "answer": "53",
           "accepted": [
             "53"
@@ -9689,11 +9689,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 48 cm atau 53 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 48 cm dan 53 cm."
         },
         {
           "id": "MATH-PANJANG-039",
-          "q": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm. (Latihan 8)",
+          "q": "Kira nilai 1 meter dalam sentimeter (cm).",
           "answer": "100",
           "accepted": [
             "100"
@@ -9703,11 +9703,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: 1 meter bersamaan ________ cm. (Latihan 8)"
+          "question": "Kira nilai 1 meter dalam sentimeter (cm)."
         },
         {
           "id": "MATH-PANJANG-040",
-          "q": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 8)",
+          "q": "Benda apakah yang sesuai diukur dengan pembaris?",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9717,11 +9717,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 8)"
+          "question": "Benda apakah yang sesuai diukur dengan pembaris?"
         },
         {
           "id": "MATH-PANJANG-041",
-          "q": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Baca ukuran reben dan kira jumlahnya.",
           "answer": "59",
           "accepted": [
             "59"
@@ -9731,11 +9731,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Baca ukuran reben dan kira jumlahnya."
         },
         {
           "id": "MATH-PANJANG-042",
-          "q": "Tali sepanjang 61 cm dipotong 9 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 61 cm dipotong 9 cm. Berapakah baki tali itu?",
           "answer": "52",
           "accepted": [
             "52"
@@ -9745,11 +9745,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 61 cm dipotong 9 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 61 cm dipotong 9 cm. Berapakah baki tali itu?"
         },
         {
           "id": "MATH-PANJANG-043",
-          "q": "Manakah lebih panjang, 53 cm atau 63 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 53 cm dan 63 cm.",
           "answer": "63",
           "accepted": [
             "63"
@@ -9759,11 +9759,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 53 cm atau 63 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 53 cm dan 63 cm."
         },
         {
           "id": "MATH-PANJANG-044",
-          "q": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm. (Latihan 9)",
+          "q": "1 meter bersamaan berapa sentimeter (cm)?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9773,11 +9773,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Panjang ini: 1 meter bersamaan ________ cm. (Latihan 9)"
+          "question": "1 meter bersamaan berapa sentimeter (cm)?"
         },
         {
           "id": "MATH-PANJANG-045",
-          "q": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 9)",
+          "q": "Pilih alat yang sesuai untuk mengukur ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9787,11 +9787,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Panjang ini: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 9)"
+          "question": "Pilih alat yang sesuai untuk mengukur ________."
         },
         {
           "id": "MATH-PANJANG-046",
-          "q": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm.",
+          "q": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Tentukan jumlah panjang dua reben itu.",
           "answer": "60",
           "accepted": [
             "60"
@@ -9801,11 +9801,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Jumlah panjang kedua-dua reben ialah ________ cm."
+          "question": "Reben merah panjangnya 56 cm. Reben biru panjangnya 4 cm. Tentukan jumlah panjang dua reben itu."
         },
         {
           "id": "MATH-PANJANG-047",
-          "q": "Tali sepanjang 62 cm dipotong 5 cm. Baki tali ialah ________ cm.",
+          "q": "Tali sepanjang 62 cm dipotong 5 cm. Baca panjang asal dan panjang dipotong, kemudian kira baki.",
           "answer": "57",
           "accepted": [
             "57"
@@ -9815,11 +9815,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tali sepanjang 62 cm dipotong 5 cm. Baki tali ialah ________ cm."
+          "question": "Tali sepanjang 62 cm dipotong 5 cm. Baca panjang asal dan panjang dipotong, kemudian kira baki."
         },
         {
           "id": "MATH-PANJANG-048",
-          "q": "Manakah lebih panjang, 58 cm atau 64 cm?",
+          "q": "Cari ukuran yang lebih panjang antara 58 cm dan 64 cm.",
           "answer": "64",
           "accepted": [
             "64"
@@ -9829,11 +9829,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Manakah lebih panjang, 58 cm atau 64 cm?"
+          "question": "Cari ukuran yang lebih panjang antara 58 cm dan 64 cm."
         },
         {
           "id": "MATH-PANJANG-049",
-          "q": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 10)",
+          "q": "Nyatakan bilangan sentimeter (cm) bagi 1 meter.",
           "answer": "100",
           "accepted": [
             "100"
@@ -9843,11 +9843,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: 1 meter bersamaan ________ cm. (Latihan 10)"
+          "question": "Nyatakan bilangan sentimeter (cm) bagi 1 meter."
         },
         {
           "id": "MATH-PANJANG-050",
-          "q": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 10)",
+          "q": "Apakah alat yang kita gunakan untuk mengukur ________?",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9857,7 +9857,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Pembaris sesuai digunakan untuk mengukur ________. (Latihan 10)"
+          "question": "Apakah alat yang kita gunakan untuk mengukur ________?"
         }
       ]
     },
@@ -9868,7 +9868,7 @@ export const mathSubject = {
       "questions": [
         {
           "id": "MATH-JISIM_ISI_PADU-001",
-          "q": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Hitung jumlah jisim dua bakul itu.",
           "answer": "5",
           "accepted": [
             "5"
@@ -9878,11 +9878,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Hitung jumlah jisim dua bakul itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-002",
-          "q": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Cari baki selepas digunakan.",
           "answer": "4",
           "accepted": [
             "4"
@@ -9892,11 +9892,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Cari baki selepas digunakan."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-003",
-          "q": "Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 5 L air. Botol B berisi 4 L air. Apakah jumlah air yang ada?",
           "answer": "9",
           "accepted": [
             "9"
@@ -9906,11 +9906,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 5 L air. Botol B berisi 4 L air. Apakah jumlah air yang ada?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-004",
-          "q": "Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 11 L air. 5 L air dituang keluar. Tentukan baki air yang tinggal.",
           "answer": "6",
           "accepted": [
             "6"
@@ -9920,11 +9920,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 11 L air. 5 L air dituang keluar. Tentukan baki air yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-005",
-          "q": "Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Baca situasi ini dan nyatakan alat untuk menimbang jisim.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -9934,11 +9934,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Alat yang sesuai untuk menimbang jisim ialah ________."
+          "question": "Baca situasi ini dan nyatakan alat untuk menimbang jisim."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-006",
-          "q": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Berapakah jumlah jisimnya?",
           "answer": "10",
           "accepted": [
             "10"
@@ -9948,11 +9948,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Berapakah jumlah jisimnya?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-007",
-          "q": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Hitung baki beras yang tinggal.",
           "answer": "9",
           "accepted": [
             "9"
@@ -9962,11 +9962,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Hitung baki beras yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-008",
-          "q": "Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 2 L air. Botol B berisi 4 L air. Cari jumlah isi padu air tersebut.",
           "answer": "6",
           "accepted": [
             "6"
@@ -9976,11 +9976,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 2 L air. Botol B berisi 4 L air. Cari jumlah isi padu air tersebut."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-009",
-          "q": "Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 8 L air. 5 L air dituang keluar. Apakah baki selepas air dituang keluar?",
           "answer": "3",
           "accepted": [
             "3"
@@ -9990,11 +9990,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 8 L air. 5 L air dituang keluar. Apakah baki selepas air dituang keluar?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-010",
-          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Apakah alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10004,11 +10004,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________."
+          "question": "Apakah alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-011",
-          "q": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlahkan jisim kedua-dua bakul itu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -10018,11 +10018,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 5 kg. Sebakul rambutan berjisim 2 kg. Jumlahkan jisim kedua-dua bakul itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-012",
-          "q": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Berapakah baki beras itu?",
           "answer": "6",
           "accepted": [
             "6"
@@ -10032,11 +10032,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 9 kg. Ibu menggunakan 3 kg beras. Berapakah baki beras itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-013",
-          "q": "Botol A berisi 7 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 7 L air. Botol B berisi 4 L air. Hitung jumlah air dalam dua botol itu.",
           "answer": "11",
           "accepted": [
             "11"
@@ -10046,11 +10046,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 7 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 7 L air. Botol B berisi 4 L air. Hitung jumlah air dalam dua botol itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-014",
-          "q": "Bekas berisi 13 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 13 L air. 5 L air dituang keluar. Cari baki selepas dituang keluar.",
           "answer": "8",
           "accepted": [
             "8"
@@ -10060,11 +10060,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 13 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 13 L air. 5 L air dituang keluar. Cari baki selepas dituang keluar."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-015",
-          "q": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Nyatakan alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10074,11 +10074,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________."
+          "question": "Nyatakan alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-016",
-          "q": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Tentukan jumlah jisim keseluruhan.",
           "answer": "4",
           "accepted": [
             "4"
@@ -10088,11 +10088,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 2 kg. Sebakul rambutan berjisim 2 kg. Tentukan jumlah jisim keseluruhan."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-017",
-          "q": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Kira baki beras daripada jumlah asal.",
           "answer": "3",
           "accepted": [
             "3"
@@ -10102,11 +10102,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 6 kg. Ibu menggunakan 3 kg beras. Kira baki beras daripada jumlah asal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-018",
-          "q": "Botol A berisi 4 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 4 L air. Botol B berisi 4 L air. Berapakah jumlah air itu?",
           "answer": "8",
           "accepted": [
             "8"
@@ -10116,11 +10116,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 4 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 4 L air. Botol B berisi 4 L air. Berapakah jumlah air itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-019",
-          "q": "Bekas berisi 10 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 10 L air. 5 L air dituang keluar. Hitung baki air yang tinggal.",
           "answer": "5",
           "accepted": [
             "5"
@@ -10130,11 +10130,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 10 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 10 L air. 5 L air dituang keluar. Hitung baki air yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-020",
-          "q": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Alat apakah yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10144,11 +10144,11 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________."
+          "question": "Alat apakah yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-021",
-          "q": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Apakah jumlah jisim barang itu?",
           "answer": "9",
           "accepted": [
             "9"
@@ -10158,11 +10158,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 7 kg. Sebakul rambutan berjisim 2 kg. Apakah jumlah jisim barang itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-022",
-          "q": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Tentukan baki yang tinggal.",
           "answer": "8",
           "accepted": [
             "8"
@@ -10172,11 +10172,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 11 kg. Ibu menggunakan 3 kg beras. Tentukan baki yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-023",
-          "q": "Botol A berisi 9 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Berapakah jumlah isi padu air apabila Botol A berisi 9 L dan Botol B berisi 4 L?",
           "answer": "13",
           "accepted": [
             "13"
@@ -10186,11 +10186,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 9 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Berapakah jumlah isi padu air apabila Botol A berisi 9 L dan Botol B berisi 4 L?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-024",
-          "q": "Bekas berisi 7 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 7 L air. 5 L air dituang keluar. Berapakah baki air itu?",
           "answer": "2",
           "accepted": [
             "2"
@@ -10200,11 +10200,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 7 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 7 L air. 5 L air dituang keluar. Berapakah baki air itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-025",
-          "q": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Pilih alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10214,11 +10214,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________."
+          "question": "Pilih alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-026",
-          "q": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Cari jumlah jisim mangga dan rambutan itu.",
           "answer": "6",
           "accepted": [
             "6"
@@ -10228,11 +10228,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 4 kg. Sebakul rambutan berjisim 2 kg. Cari jumlah jisim mangga dan rambutan itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-027",
-          "q": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Apakah baki selepas beras digunakan?",
           "answer": "5",
           "accepted": [
             "5"
@@ -10242,11 +10242,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 8 kg. Ibu menggunakan 3 kg beras. Apakah baki selepas beras digunakan?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-028",
-          "q": "Botol A berisi 6 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 6 L air. Botol B berisi 4 L air. Tentukan jumlah air keseluruhan.",
           "answer": "10",
           "accepted": [
             "10"
@@ -10256,11 +10256,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 6 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 6 L air. Botol B berisi 4 L air. Tentukan jumlah air keseluruhan."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-029",
-          "q": "Bekas berisi 12 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 12 L air. 5 L air dituang keluar. Kira baki air daripada jumlah asal.",
           "answer": "7",
           "accepted": [
             "7"
@@ -10270,11 +10270,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 12 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 12 L air. 5 L air dituang keluar. Kira baki air daripada jumlah asal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-030",
-          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 6)",
+          "q": "Apakah alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10284,11 +10284,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 6)"
+          "question": "Apakah alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-031",
-          "q": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Hitung jumlah jisim dua bakul itu.",
           "answer": "11",
           "accepted": [
             "11"
@@ -10298,11 +10298,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 9 kg. Sebakul rambutan berjisim 2 kg. Hitung jumlah jisim dua bakul itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-032",
-          "q": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Cari baki selepas digunakan.",
           "answer": "2",
           "accepted": [
             "2"
@@ -10312,11 +10312,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 5 kg. Ibu menggunakan 3 kg beras. Cari baki selepas digunakan."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-033",
-          "q": "Botol A berisi 3 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 3 L air. Botol B berisi 4 L air. Apakah jumlah air yang ada?",
           "answer": "7",
           "accepted": [
             "7"
@@ -10326,11 +10326,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 3 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 3 L air. Botol B berisi 4 L air. Apakah jumlah air yang ada?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-034",
-          "q": "Bekas berisi 9 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 9 L air. 5 L air dituang keluar. Tentukan baki air yang tinggal.",
           "answer": "4",
           "accepted": [
             "4"
@@ -10340,11 +10340,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 9 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 9 L air. 5 L air dituang keluar. Tentukan baki air yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-035",
-          "q": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 7)",
+          "q": "Nyatakan alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10354,11 +10354,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Soalan ulang kaji Jisim dan Isi Padu: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 7)"
+          "question": "Nyatakan alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-036",
-          "q": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Berapakah jumlah jisimnya?",
           "answer": "8",
           "accepted": [
             "8"
@@ -10368,11 +10368,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Sebakul mangga berjisim 6 kg. Sebakul rambutan berjisim 2 kg. Berapakah jumlah jisimnya?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-037",
-          "q": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Hitung baki beras yang tinggal.",
           "answer": "7",
           "accepted": [
             "7"
@@ -10382,11 +10382,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Beg beras berjisim 10 kg. Ibu menggunakan 3 kg beras. Hitung baki beras yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-038",
-          "q": "Botol A berisi 8 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Botol A berisi 8 L air. Botol B berisi 4 L air. Cari jumlah isi padu air tersebut.",
           "answer": "12",
           "accepted": [
             "12"
@@ -10396,11 +10396,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Botol A berisi 8 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Botol A berisi 8 L air. Botol B berisi 4 L air. Cari jumlah isi padu air tersebut."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-039",
-          "q": "Bekas berisi 14 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Bekas berisi 14 L air. 5 L air dituang keluar. Apakah baki selepas air dituang keluar?",
           "answer": "9",
           "accepted": [
             "9"
@@ -10410,11 +10410,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Bekas berisi 14 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Bekas berisi 14 L air. 5 L air dituang keluar. Apakah baki selepas air dituang keluar?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-040",
-          "q": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 8)",
+          "q": "Alat apakah yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10424,11 +10424,11 @@ export const mathSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Cari jawapan bagi ayat matematik ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 8)"
+          "question": "Alat apakah yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-041",
-          "q": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlahkan jisim kedua-dua bakul itu.",
           "answer": "5",
           "accepted": [
             "5"
@@ -10438,11 +10438,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Kira dengan teliti: Sebakul mangga berjisim 3 kg. Sebakul rambutan berjisim 2 kg. Jumlahkan jisim kedua-dua bakul itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-042",
-          "q": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Berapakah baki beras itu?",
           "answer": "4",
           "accepted": [
             "4"
@@ -10452,11 +10452,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Kira dengan teliti: Beg beras berjisim 7 kg. Ibu menggunakan 3 kg beras. Berapakah baki beras itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-043",
-          "q": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Hitung jumlah air dalam dua botol itu.",
           "answer": "9",
           "accepted": [
             "9"
@@ -10466,11 +10466,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Kira dengan teliti: Botol A berisi 5 L air. Botol B berisi 4 L air. Hitung jumlah air dalam dua botol itu."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-044",
-          "q": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Cari baki selepas dituang keluar.",
           "answer": "6",
           "accepted": [
             "6"
@@ -10480,11 +10480,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Kira dengan teliti: Bekas berisi 11 L air. 5 L air dituang keluar. Cari baki selepas dituang keluar."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-045",
-          "q": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 9)",
+          "q": "Pilih alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10494,11 +10494,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan latihan Jisim dan Isi Padu ini: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 9)"
+          "question": "Pilih alat yang sesuai untuk menimbang jisim ialah ________."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-046",
-          "q": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg.",
+          "q": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Tentukan jumlah jisim keseluruhan.",
           "answer": "10",
           "accepted": [
             "10"
@@ -10508,11 +10508,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Jumlah jisim ialah ________ kg."
+          "question": "Kira dengan teliti: Sebakul mangga berjisim 8 kg. Sebakul rambutan berjisim 2 kg. Tentukan jumlah jisim keseluruhan."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-047",
-          "q": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg.",
+          "q": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Kira baki beras daripada jumlah asal.",
           "answer": "9",
           "accepted": [
             "9"
@@ -10522,11 +10522,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Baki beras ialah ________ kg."
+          "question": "Kira dengan teliti: Beg beras berjisim 12 kg. Ibu menggunakan 3 kg beras. Kira baki beras daripada jumlah asal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-048",
-          "q": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L.",
+          "q": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Berapakah jumlah air itu?",
           "answer": "6",
           "accepted": [
             "6"
@@ -10536,11 +10536,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Jumlah air ialah ________ L."
+          "question": "Kira dengan teliti: Botol A berisi 2 L air. Botol B berisi 4 L air. Berapakah jumlah air itu?"
         },
         {
           "id": "MATH-JISIM_ISI_PADU-049",
-          "q": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L.",
+          "q": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Hitung baki air yang tinggal.",
           "answer": "3",
           "accepted": [
             "3"
@@ -10550,11 +10550,11 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Baki air ialah ________ L."
+          "question": "Kira dengan teliti: Bekas berisi 8 L air. 5 L air dituang keluar. Hitung baki air yang tinggal."
         },
         {
           "id": "MATH-JISIM_ISI_PADU-050",
-          "q": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 10)",
+          "q": "Apakah alat yang sesuai untuk menimbang jisim ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10564,7 +10564,7 @@ export const mathSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kira dengan teliti: Alat yang sesuai untuk menimbang jisim ialah ________. (Latihan 10)"
+          "question": "Apakah alat yang sesuai untuk menimbang jisim ialah ________."
         }
       ]
     },
