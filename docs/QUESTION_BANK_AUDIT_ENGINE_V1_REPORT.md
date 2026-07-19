@@ -6,8 +6,8 @@
 - Average quality score: 99
 - Critical: 0
 - High: 90
-- Medium: 182
-- Low: 4288
+- Medium: 180
+- Low: 4290
 
 ## Issues by Subject
 
@@ -15,7 +15,7 @@
 | --- | ---: |
 | Matematik Tahun 2 | 417 |
 | Bahasa Arab Tahun 2 | 343 |
-| Pendidikan Jasmani Tahun 2 | 328 |
+| Pendidikan Jasmani Tahun 2 | 326 |
 | Bahasa Melayu Tahun 2 | 318 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | English Year 2 | 201 |
@@ -31,7 +31,6 @@
 | missing_arabic_text | 90 |
 | ambiguous_operation | 39 |
 | identical_question_text | 5 |
-| missing_instruction | 2 |
 
 ## Top Repeated Patterns
 
