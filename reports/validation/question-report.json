@@ -1,25 +1,26 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-07-17T17:10:46.257Z",
+  "generatedAt": "2026-07-19T01:57:16.216Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
-    "questions": 4600,
+    "questions": 4560,
     "diversitySessions": 5000,
     "infos": 0,
     "errors": 0,
-    "warnings": 12
+    "warnings": 47
   },
   "difficultyCounts": {
-    "mudah": 1802,
-    "sederhana": 1829,
-    "sukar": 969
+    "mudah": 2044,
+    "sederhana": 1614,
+    "sukar": 852,
+    "easy": 50
   },
   "diversityDiagnostics": {
     "repeatedTemplates": 0,
     "repeatedNumberPatterns": 0,
-    "repeatedAnswerPatterns": 2977,
-    "repeatedContexts": 127,
+    "repeatedAnswerPatterns": 2613,
+    "repeatedContexts": 0,
     "repeatedDistractors": 0,
     "repeatedAnswerPositions": 0,
     "simulatedSessions": 5000,
@@ -27,22 +28,22 @@
     "failedSessions": 0,
     "averageDiversityScore": 71,
     "duplicatePercent": 0,
-    "diagnosticRepeatPercent": 0.13,
-    "averageSelectionTimeMs": 20.267,
+    "diagnosticRepeatPercent": 0,
+    "averageSelectionTimeMs": 28.886,
     "stemDiversity": 100,
-    "stemReuseRate": 0.13,
-    "repeatedStems": 127,
-    "contextDiversity": 15,
-    "nameReuseRate": 87.93,
-    "objectReuseRate": 16.37,
-    "contextReuseRate": 84.93,
+    "stemReuseRate": 0,
+    "repeatedStems": 0,
+    "contextDiversity": 16,
+    "nameReuseRate": 88.34,
+    "objectReuseRate": 14.54,
+    "contextReuseRate": 84.14,
     "unsafeContextChanges": 0,
     "unusedStemVariationGroups": [
       "sentence_building"
     ],
     "brokenStemMappings": 0,
     "topicBalance": {
-      "kata_nama_am": 840,
+      "kata_nama_am": 12500,
       "panjang": 2500,
       "numbers": 2500,
       "tumbuhan": 2500,
@@ -50,7 +51,6 @@
       "quran": 2500,
       "bukan_lokomotor": 2500,
       "uasa_kesihatan": 2500,
-      "imbuhan": 840,
       "darab": 2500,
       "nouns": 2500,
       "bahan": 2500,
@@ -58,7 +58,6 @@
       "ibadah": 2500,
       "rekreasi": 2500,
       "pencegahan_penyakit": 2500,
-      "penjodoh_bilangan": 840,
       "bentuk": 2500,
       "food": 2500,
       "air": 2500,
@@ -66,7 +65,6 @@
       "adab": 2500,
       "koordinasi": 2500,
       "pemakanan_sihat": 2500,
-      "kata_kerja": 840,
       "wang": 2500,
       "adjectives": 2500,
       "kemahiran_saintifik": 2500,
@@ -74,29 +72,19 @@
       "jawi": 2500,
       "pergerakan_asas": 2500,
       "kesihatan_persekitaran": 2500,
-      "uasa_kbat": 840,
       "tambah": 2500,
       "sentences": 2500,
       "bunyi": 2500,
       "nombor_arab": 2500,
       "jawi_perkataan": 2500,
       "keselamatan_aktiviti": 2500,
-      "kesihatan_mental_emosi": 2500,
-      "tatabahasa": 840,
-      "kata_hubung": 840,
-      "kata_ganti_nama": 840,
-      "simpulan_bahasa": 840,
-      "pemahaman_penulisan": 840,
-      "kata_sendi": 820,
-      "kata_nama_khas": 820,
-      "bina_ayat": 820,
-      "ayat": 820,
-      "kata_adjektif": 820
+      "kesihatan_mental_emosi": 2500
     },
     "difficultyBalance": {
-      "mudah": 43340,
-      "sederhana": 32136,
-      "sukar": 24524
+      "mudah": 41701,
+      "sederhana": 32354,
+      "sukar": 23445,
+      "easy": 2500
     }
   },
   "issues": [
@@ -105,11 +93,11 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "bm",
-        "topicId": "pemahaman_penulisan",
-        "questionId": "BM-PEMAHAMAN_PENULISAN-022",
-        "questionIndex": 21,
-        "duplicateOf": "bm:BM-AYAT-022"
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-097",
+        "questionIndex": 96,
+        "duplicateOf": "math:MATH-DARAB-010"
       }
     },
     {
@@ -117,11 +105,251 @@
       "code": "DUPLICATE_STEM",
       "message": "Duplicate question stem found.",
       "context": {
-        "subjectId": "bm",
-        "topicId": "pemahaman_penulisan",
-        "questionId": "BM-PEMAHAMAN_PENULISAN-045",
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-100",
+        "questionIndex": 99,
+        "duplicateOf": "math:MATH-DARAB-009"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-102",
+        "questionIndex": 101,
+        "duplicateOf": "math:MATH-DARAB-052"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-105",
+        "questionIndex": 104,
+        "duplicateOf": "math:MATH-DARAB-006"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "darab",
+        "questionId": "MATH-DARAB-122",
+        "questionIndex": 121,
+        "duplicateOf": "math:MATH-DARAB-054"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "masa",
+        "questionId": "MATH-MASA-035",
+        "questionIndex": 34,
+        "duplicateOf": "math:MATH-MASA-005"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "masa",
+        "questionId": "MATH-MASA-040",
+        "questionIndex": 39,
+        "duplicateOf": "math:MATH-MASA-010"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "masa",
+        "questionId": "MATH-MASA-045",
         "questionIndex": 44,
-        "duplicateOf": "bm:BM-AYAT-045"
+        "duplicateOf": "math:MATH-MASA-015"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "masa",
+        "questionId": "MATH-MASA-050",
+        "questionIndex": 49,
+        "duplicateOf": "math:MATH-MASA-020"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-034",
+        "questionIndex": 33,
+        "duplicateOf": "math:MATH-PANJANG-004"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-035",
+        "questionIndex": 34,
+        "duplicateOf": "math:MATH-PANJANG-005"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-039",
+        "questionIndex": 38,
+        "duplicateOf": "math:MATH-PANJANG-009"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-040",
+        "questionIndex": 39,
+        "duplicateOf": "math:MATH-PANJANG-010"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-044",
+        "questionIndex": 43,
+        "duplicateOf": "math:MATH-PANJANG-014"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-045",
+        "questionIndex": 44,
+        "duplicateOf": "math:MATH-PANJANG-015"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-049",
+        "questionIndex": 48,
+        "duplicateOf": "math:MATH-PANJANG-019"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "panjang",
+        "questionId": "MATH-PANJANG-050",
+        "questionIndex": 49,
+        "duplicateOf": "math:MATH-PANJANG-020"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "jisim_isi_padu",
+        "questionId": "MATH-JISIM_ISI_PADU-030",
+        "questionIndex": 29,
+        "duplicateOf": "math:MATH-JISIM_ISI_PADU-010"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "jisim_isi_padu",
+        "questionId": "MATH-JISIM_ISI_PADU-035",
+        "questionIndex": 34,
+        "duplicateOf": "math:MATH-JISIM_ISI_PADU-015"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "jisim_isi_padu",
+        "questionId": "MATH-JISIM_ISI_PADU-040",
+        "questionIndex": 39,
+        "duplicateOf": "math:MATH-JISIM_ISI_PADU-020"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "jisim_isi_padu",
+        "questionId": "MATH-JISIM_ISI_PADU-045",
+        "questionIndex": 44,
+        "duplicateOf": "math:MATH-JISIM_ISI_PADU-025"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_STEM",
+      "message": "Duplicate question stem found.",
+      "context": {
+        "subjectId": "math",
+        "topicId": "jisim_isi_padu",
+        "questionId": "MATH-JISIM_ISI_PADU-050",
+        "questionIndex": 49,
+        "duplicateOf": "math:MATH-JISIM_ISI_PADU-010"
       }
     },
     {
@@ -242,6 +470,171 @@
         "questionId": "ENG-SENTENCES-030",
         "questionIndex": 29,
         "duplicateOf": "english:ENG-SENTENCES-010"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-036",
+        "questionIndex": 35
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-037",
+        "questionIndex": 36
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-038",
+        "questionIndex": 37
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-039",
+        "questionIndex": 38
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-040",
+        "questionIndex": 39
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-041",
+        "questionIndex": 40
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-042",
+        "questionIndex": 41
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-043",
+        "questionIndex": 42
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-044",
+        "questionIndex": 43
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-045",
+        "questionIndex": 44
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-046",
+        "questionIndex": 45
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-047",
+        "questionIndex": 46
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-048",
+        "questionIndex": 47
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-049",
+        "questionIndex": 48
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_HINT",
+      "message": "Question is missing a hint.",
+      "context": {
+        "subjectId": "islam",
+        "topicId": "jawi",
+        "questionId": "ISLAM-JAWI-050",
+        "questionIndex": 49
       }
     }
   ]

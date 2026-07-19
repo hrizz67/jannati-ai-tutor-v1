@@ -1,3 +1,5 @@
+import { buildJawiQuestionMeta, buildLetterQuestion } from "../../ai/coach/knowledge/subjects/islam/jawi/questionBank.js";
+
 const difficultyFor = (index) => {
   if (index <= 20) return "mudah";
   if (index <= 40) return "sederhana";
@@ -12,17 +14,19 @@ const makeQuestions = (topicCode, items) =>
     accepted: item.accepted || [item.answer],
     hint: item.hint,
     explanation: item.explanation,
-    difficulty: difficultyFor(index + 1),
+    difficulty: item.difficulty || difficultyFor(index + 1),
     uasa: "UASA",
     dskp: "KSSR PI",
+    ...item,
   }));
 
-const fill = (q, answer, hint, explanation, accepted) => ({
+const fill = (q, answer, hint, explanation, accepted, extra = {}) => ({
   q,
   answer,
   hint,
   explanation,
   accepted,
+  ...extra,
 });
 
 const aqidahItems = [
@@ -211,9 +215,23 @@ const jawiLetters = [
 
 const jawiQuestions = [
   ...jawiLetters.slice(0, 35).map(([letter, name]) =>
-    fill(`Nama huruf Jawi ${letter} ialah ________.`, name, "Perhatikan bentuk huruf Jawi.", `Huruf ${letter} dinamakan ${name}.`)
+    buildJawiQuestionMeta(buildLetterQuestion(letter, name))
   ),
-  ...jawiLetters.slice(35).map(([q, answer, hint, explanation]) => fill(q, answer, hint, explanation)),
+  ...jawiLetters.slice(35).map(([q, answer, hint, explanation]) => buildJawiQuestionMeta({
+    question: q,
+    answer,
+    acceptedAnswers: [answer],
+    pronunciationHint: answer === "kanan" ? "ka-nan" : `${answer}`,
+    explanation,
+    commonMistake: answer === "kanan"
+      ? "Jangan baca Jawi dari kiri ke kanan."
+      : "Jangan tertukar bentuk huruf Jawi.",
+    memoryTip: answer === "kanan"
+      ? "Ingat: Jawi bergerak dari kanan ke kiri."
+      : `Ingat bentuk huruf ${answer}.`,
+    difficulty: "easy",
+    helper: answer === "kanan" ? "direction" : undefined,
+  })),
 ];
 
 const akhlakItems = [

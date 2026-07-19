@@ -10,54 +10,79 @@ export default createKnowledgePack({
     "Menggunakan mufradat mudah dalam ayat ringkas."
   ],
   "teacherExplanation": [
-    "Topik Mufradat membantu murid memahami asas yang dijelaskan dalam nota ini.",
-    "Guru boleh menerangkan Mufradat dengan contoh yang dekat dengan kehidupan harian murid.",
-    "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
-    "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
+    "Mufradat ialah perkataan Arab asas yang perlu dikenal, dibaca dan difahami maknanya.",
+    "Guru boleh menunjukkan perkataan Arab bersama makna Bahasa Melayu yang tepat.",
+    "Murid perlu membaca dengan perlahan dan memadankan perkataan dengan maksud yang betul.",
+    "Latihan ini sesuai untuk murid Tahun 2 kerana contoh yang diberi ringkas dan dekat dengan kehidupan harian."
   ],
-  "simpleExplanation": "Mufradat ialah perkataan Arab yang kita baca, sebut dan fahami maknanya.",
+  "simpleExplanation": "Mufradat ialah perkataan Arab yang dibaca dan dipadankan dengan makna yang betul.",
+  "explanations": [
+    "Setiap mufradat perlu dibaca dengan sebutan yang betul dan difahami maksudnya.",
+    "Guru boleh tunjuk perkataan Arab bersama makna Bahasa Melayu yang tepat.",
+    "Murid perlu memilih padanan yang benar, bukan hanya meneka bentuk perkataan.",
+    "Latihan ini membantu murid memahami perkataan Arab asas yang sering digunakan."
+  ],
   "examples": [
-    "كتاب",
-    "مدرسة",
-    "قلم",
-    "بيت",
-    "ولد",
-    "بنت",
-    "ماء",
-    "طعام",
-    "شمس",
-    "قمر"
+    "كِتَابٌ",
+    "مَدْرَسَةٌ",
+    "قَلَمٌ",
+    "بَيْتٌ",
+    "وَلَدٌ",
+    "بِنْتٌ",
+    "مَاءٌ",
+    "طَعَامٌ",
+    "شَمْسٌ",
+    "قَمَرٌ"
+  ],
+  "wordMeaning": [
+    "كِتَابٌ — buku",
+    "مَدْرَسَةٌ — sekolah",
+    "قَلَمٌ — pen",
+    "بَيْتٌ — rumah",
+    "وَلَدٌ — budak lelaki",
+    "بِنْتٌ — budak perempuan",
+    "مَاءٌ — air",
+    "طَعَامٌ — makanan",
+    "شَمْسٌ — matahari",
+    "قَمَرٌ — bulan"
   ],
   "extraExamples": [
-    "باب",
-    "كرسي",
-    "سبورة",
-    "حديقة",
-    "جديد",
-    "كبير",
-    "صغير",
-    "جميل"
+    "بَابٌ",
+    "كُرْسِيٌّ",
+    "سَبُّورَةٌ",
+    "حَدِيقَةٌ",
+    "جَدِيدٌ",
+    "كَبِيرٌ",
+    "صَغِيرٌ",
+    "جَمِيلٌ"
+  ],
+  "exampleSentences": [
+    "هٰذَا كِتَابٌ — Ini buku.",
+    "هٰذَا قَلَمٌ — Ini pen.",
+    "هٰذِهِ مَدْرَسَةٌ — Ini sekolah.",
+    "هٰذِهِ بِنْتٌ — Ini budak perempuan.",
+    "هٰذَا بَيْتٌ — Ini rumah."
   ],
   "tips": [
-    "Baca soalan tentang Mufradat dengan teliti.",
-    "Cari kata kunci yang berkaitan dengan topik ini.",
-    "Padankan jawapan dengan gambar atau situasi yang betul.",
-    "Ulang contoh ringkas supaya lebih mudah diingat.",
-    "Pilih jawapan yang paling hampir dengan topik ini."
+    "Baca perkataan Arab dan makna Melayu dengan teliti.",
+    "Cari padanan yang sama maksud, bukan yang hampir sama bunyinya.",
+    "Gunakan gambar atau ayat contoh untuk membantu pemahaman.",
+    "Ulang sebutan dan makna beberapa kali supaya mudah ingat.",
+    "Pilih jawapan yang sesuai dengan konteks perkataan."
   ],
   "memoryTips": [
-    "Ingat Mufradat melalui contoh mudah.",
-    "Ulang bacaan secara perlahan dan jelas.",
-    "Gunakan gambar atau situasi untuk membantu ingatan.",
-    "Kaitkan topik ini dengan pengalaman harian.",
-    "Buat latihan sedikit demi sedikit tetapi kerap."
+    "Ingat mufradat dengan memadankan satu perkataan Arab kepada satu maksud Melayu.",
+    "Sebut perlahan: baca, faham, dan padankan.",
+    "Kaitkan perkataan dengan benda yang selalu dilihat di rumah atau sekolah.",
+    "Ulang perkataan yang sama beberapa kali dalam satu latihan pendek.",
+    "Buat kad perkataan kecil untuk membantu hafalan."
   ],
   "commonMistakes": [
-    "Tersalah memilih jawapan yang tidak berkaitan dengan Mufradat.",
-    "Membaca soalan terlalu laju tanpa memerhati maklumat penting.",
-    "Mengabaikan kata kunci yang membantu jawapan.",
-    "Meneka tanpa melihat keseluruhan pilihan.",
-    "Keliru antara contoh yang hampir sama."
+    "Memilih makna yang tidak sepadan dengan perkataan Arab.",
+    "Tersalah membaca perkataan kerana terlalu laju.",
+    "Mengabaikan bentuk huruf Arab yang penting.",
+    "Menyamakan perkataan yang hampir sama tetapi berlainan makna.",
+    "Meneka tanpa memerhati keseluruhan pilihan jawapan."
   ],
   "encouragement": {
     "correct": [
@@ -100,28 +125,28 @@ export default createKnowledgePack({
 
   "problemSolvingSteps": [
     "Baca perkataan Arab dengan perlahan.",
-    "Perhatikan makna yang diberi.",
-    "Padankan perkataan dengan maksud yang betul.",
-    "Dengar sebutan jika ada.",
-    "Semak pilihan sebelum menjawab."
+    "Perhatikan huruf dan bentuk perkataan.",
+    "Cari maksud Bahasa Melayu yang sepadan.",
+    "Sebut perkataan itu dengan betul.",
+    "Semak pilihan jawapan sebelum memilih."
   ],
   "pronunciationGuide": [
-    "Sebut perkataan Arab dengan bunyi yang jelas.",
-    "Ikut sebutan guru satu demi satu.",
-    "Baca perlahan supaya tidak tertukar bunyi.",
-    "Latih perkataan baharu berulang kali.",
-    "Gunakan contoh harian untuk membantu sebutan."
+    "Sebut setiap perkataan Arab perlahan-lahan.",
+    "Ikut bacaan guru satu demi satu.",
+    "Dengar bunyi huruf yang hampir sama.",
+    "Latih perkataan baharu beberapa kali.",
+    "Gabungkan sebutan dengan makna yang betul."
   ],
   "readingSteps": [
     "Baca perkataan Arab dari kanan ke kiri.",
     "Kenal pasti huruf utama dalam perkataan.",
-    "Padankan dengan maksud Melayu.",
+    "Padankan dengan maksud Melayu yang sesuai.",
     "Ulang bacaan beberapa kali.",
     "Semak sama ada bunyi dan makna sepadan."
   ],
   "letterBreakdown": [
-    "Perhatikan huruf pertama perkataan.",
-    "Cari titik pada huruf.",
+    "Perhatikan huruf pertama dalam perkataan.",
+    "Cari titik pada huruf yang membezakannya.",
     "Lihat bentuk huruf yang hampir sama.",
     "Pisahkan perkataan kepada huruf kecil.",
     "Kenal bunyi setiap huruf."
@@ -130,7 +155,7 @@ export default createKnowledgePack({
     "Dengar sebutan perkataan dengan teliti.",
     "Bandingkan bunyi yang hampir sama.",
     "Ulang bunyi yang betul.",
-    "Minta guru sebut sekali lagi jika perlu.",
+    "Minta guru sebut semula jika perlu.",
     "Fokus pada perkataan yang didengar."
   ],
   "relatedTopics": [
@@ -187,68 +212,69 @@ export default createKnowledgePack({
     "Bolehkah kamu cuba semula dengan teliti?"
   ],
   "pronunciationTips": [
-    "Sebut أ dengan jelas.",
-    "Dengar أ dan ب dengan teliti.",
-    "Ulang bunyi Arab secara perlahan.",
+    "Sebut كِتَابٌ dengan jelas.",
+    "Dengar bunyi مَدْرَسَةٌ dengan teliti.",
+    "Ulang sebutan Arab secara perlahan.",
     "Latih sebutan bersama guru.",
-    "Perhatikan huruf Arab yang betul."
+    "Perhatikan huruf yang hampir sama."
   ],
   "letterRecognitionTips": [
-    "Perhatikan bentuk huruf dalam Mufradat.",
-    "Cari titik dan garis yang membezakan huruf.",
+    "Perhatikan huruf dalam كِتَابٌ.",
+    "Cari titik dan bentuk huruf yang membezakan قَلَمٌ dan كِتَابٌ.",
     "Bandingkan huruf yang hampir sama.",
     "Baca dari kanan ke kiri.",
     "Padankan bentuk dengan bunyi."
   ],
   "writingTips": [
-    "Tulis Mufradat dari kanan ke kiri.",
+    "Tulis كِتَابٌ dari kanan ke kiri.",
     "Ikut bentuk huruf dengan kemas.",
-    "Perhatikan sambungan dan titik.",
+    "Perhatikan titik dan sambungan huruf.",
     "Beri ruang yang cukup antara perkataan.",
     "Semak tulisan selepas menyalin."
   ],
   "vocabularyGroups": [
-    "orang",
-    "tempat",
-    "benda",
-    "makanan"
+    "كِتَابٌ",
+    "قَلَمٌ",
+    "بَيْتٌ",
+    "مَدْرَسَةٌ"
   ],
   "translationHints": [
-    "Padankan Mufradat dengan maksud Melayu.",
-    "Lihat gambar atau konteks ayat.",
-    "Cari perkataan yang seerti.",
-    "Gunakan petunjuk dalam ayat.",
-    "Baca perlahan sebelum memilih."
+    "Padankan setiap perkataan Arab dengan makna Melayu yang tepat.",
+    "Semak sama ada perkataan itu merujuk kepada orang, tempat atau benda.",
+    "Gunakan petunjuk dalam ayat untuk mencari maksud sebenar.",
+    "Baca perlahan dan bandingkan pilihan jawapan.",
+    "Pilih padanan yang paling tepat, bukan yang hampir sama sahaja."
   ],
   "readingPractice": [
-    "Baca contoh Mufradat satu demi satu.",
+    "Baca contoh كِتَابٌ satu demi satu.",
     "Padankan perkataan dengan maksud.",
     "Cari perkataan yang sama bentuk.",
     "Baca dari kanan ke kiri.",
     "Ulang dengan rakan atau guru."
   ],
   "listeningPractice": [
-    "Dengar sebutan Mufradat.",
+    "Dengar sebutan كِتَابٌ.",
     "Pilih perkataan yang disebut dengan betul.",
     "Bezakan bunyi yang hampir sama.",
     "Dengar contoh guru dengan teliti.",
     "Ulang bunyi yang dipelajari."
   ],
   "speakingPractice": [
-    "Sebut Mufradat dengan jelas.",
+    "Sebut كِتَابٌ dengan jelas.",
     "Ulang bunyi perkataan secara perlahan.",
     "Latih sebutan bersama guru.",
     "Baca dengan suara yang sesuai.",
     "Padankan sebutan dengan tulisan."
   ],
   "writingPractice": [
-    "Salin Mufradat dengan kemas.",
+    "Salin كِتَابٌ dengan kemas.",
     "Tulis dari kanan ke kiri.",
     "Perhatikan titik dan bentuk huruf.",
     "Semak ejaan selepas menulis.",
     "Latih tulisan secara berulang."
   ],
   "commonPronunciationMistakes": [
+    "Tertukar bunyi ك dan ق.",
     "Membaca terlalu laju.",
     "Tertukar bunyi huruf yang hampir sama.",
     "Tidak membezakan huruf bertitik.",

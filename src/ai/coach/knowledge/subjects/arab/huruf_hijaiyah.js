@@ -10,12 +10,18 @@ export default createKnowledgePack({
     "Menyebut huruf hijaiyah dengan sebutan asas yang tepat."
   ],
   "teacherExplanation": [
-    "Topik Huruf Hijaiyah membantu murid memahami asas yang dijelaskan dalam nota ini.",
-    "Guru boleh menerangkan Huruf Hijaiyah dengan contoh yang dekat dengan kehidupan harian murid.",
-    "Murid perlu membaca, memerhati dan memadankan maklumat dengan teliti.",
-    "Latihan ini sesuai untuk murid Tahun 2 kerana ayatnya ringkas dan jelas."
+    "Huruf Hijaiyah ialah huruf Arab asas yang perlu dikenali satu demi satu.",
+    "Guru boleh menunjukkan bentuk huruf, titik dan arah bacaan dengan jelas.",
+    "Murid perlu membaca dari kanan ke kiri sambil menyebut huruf dengan betul.",
+    "Latihan ini membantu murid membezakan huruf yang hampir sama."
   ],
-  "simpleExplanation": "Huruf Hijaiyah ialah huruf Arab yang perlu dikenali, dibaca dan disebut dengan betul.",
+  "simpleExplanation": "Huruf Hijaiyah ialah huruf Arab yang dibaca dari kanan ke kiri.",
+  "explanations": [
+    "Setiap huruf Hijaiyah mempunyai bentuk dan bunyi asas yang perlu dibaca dengan tepat.",
+    "Beberapa huruf hampir sama, jadi murid perlu melihat titik dan bentuknya dengan teliti.",
+    "Guru boleh membimbing murid menyebut huruf satu demi satu dari kanan ke kiri.",
+    "Latihan ini membantu murid mengenal huruf Arab dengan lebih yakin."
+  ],
   "examples": [
     "ا",
     "ب",
@@ -28,6 +34,18 @@ export default createKnowledgePack({
     "ر",
     "س"
   ],
+  "wordMeaning": [
+    "ا — alif",
+    "ب — ba",
+    "ت — ta",
+    "ث — tha",
+    "ج — jim",
+    "ح — ha",
+    "خ — kha",
+    "د — dal",
+    "ر — ra",
+    "س — sin"
+  ],
   "extraExamples": [
     "ش",
     "ص",
@@ -37,6 +55,13 @@ export default createKnowledgePack({
     "ع",
     "غ",
     "ف"
+  ],
+  "exampleSentences": [
+    "ا = alif",
+    "ب = ba",
+    "ت = ta",
+    "ث = tha",
+    "ج = jim"
   ],
   "tips": [
     "Baca soalan tentang Huruf Hijaiyah dengan teliti.",
@@ -214,11 +239,11 @@ export default createKnowledgePack({
     "huruf hampir sama"
   ],
   "translationHints": [
-    "Padankan Huruf Hijaiyah dengan maksud Melayu.",
-    "Lihat gambar atau konteks ayat.",
-    "Cari perkataan yang seerti.",
-    "Gunakan petunjuk dalam ayat.",
-    "Baca perlahan sebelum memilih."
+    "Padankan huruf dengan nama dan bunyinya yang betul.",
+    "Perhatikan titik, bentuk dan arah bacaan huruf.",
+    "Gunakan petunjuk visual untuk membezakan huruf yang hampir sama.",
+    "Baca perlahan sebelum memilih jawapan.",
+    "Pilih huruf yang sepadan dengan sebutan asas."
   ],
   "readingPractice": [
     "Baca contoh Huruf Hijaiyah satu demi satu.",

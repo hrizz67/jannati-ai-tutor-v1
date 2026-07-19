@@ -12,9 +12,14 @@ const makeQuestions = (topicCode, items) =>
     accepted: item.accepted || [item.answer],
     hint: item.hint,
     explanation: item.explanation,
+    pronunciationGuide: String(item.pronunciationGuide || item.translationHint || item.explanation || item.hint || "").trim(),
+    readingSteps: String(item.readingSteps || item.explanation || item.hint || "").trim(),
+    translation: String(item.translation || item.explanation || item.hint || "").trim(),
+    translationHint: String(item.translationHint || item.explanation || item.hint || "").trim(),
     difficulty: difficultyFor(index + 1),
     uasa: "UASA",
     dskp: "KSSR Arab",
+    ...item,
   }));
 
 const fill = (q, answer, hint, explanation, accepted) => ({
@@ -23,6 +28,28 @@ const fill = (q, answer, hint, explanation, accepted) => ({
   hint,
   explanation,
   accepted,
+});
+
+const makeHurufSupport = ({
+  question,
+  arabicText,
+  letterName,
+  pronunciationHint,
+  meaningExplanation,
+  writingGuidance,
+  commonMistake,
+  memoryTip,
+  rumiReference = letterName,
+}) => ({
+  question,
+  arabicText,
+  letterName,
+  rumiReference,
+  pronunciationHint,
+  meaningExplanation,
+  writingGuidance,
+  commonMistake,
+  memoryTip,
 });
 
 const hijaiyahHintVariants = [
@@ -41,39 +68,297 @@ const hijaiyahLetters = [
   ["ه", "ha"], ["و", "wau"], ["ي", "ya"],
 ];
 
-const hurufHijaiyahQuestions = [
-  ...hijaiyahLetters.map(([letter, name], index) =>
-    fill(
-      `Nama huruf Arab ${letter} ialah ________.`,
-      name,
+const hurufHijaiyahRawQuestions = [
+  ...hijaiyahLetters.map(([letter, name], index) => {
+    const answer = letter === "ه" ? "ه" : name;
+    const prompt = letter === "ه"
+      ? "Huruf Arab bagi bunyi ha lembut (ه) ialah ________."
+      : `Nama huruf Arab ${letter} ialah ________.`;
+    const explanation = letter === "ه" ? "Huruf ه dibunyikan ha lembut." : `Ini huruf ${name}.`;
+    return fill(
+      prompt,
+      answer,
       hijaiyahHintVariants[index % hijaiyahHintVariants.length],
-      `Ini huruf ${name}.`,
-      [name, letter]
-    )
-  ),
-  fill("Huruf hijaiyah pertama ialah ________.", "ا", "Ingat huruf alif.", "Huruf hijaiyah pertama ialah alif, ا.", ["ا", "alif"]),
-  fill("Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.", "ي", "Ingat huruf ya.", "Huruf ya ditulis ي.", ["ي", "ya"]),
-  fill("Huruf ب mempunyai satu titik di ________.", "bawah", "Lihat titik huruf ba.", "Huruf ba mempunyai satu titik di bawah."),
-  fill("Huruf ت mempunyai dua titik di ________.", "atas", "Lihat titik huruf ta.", "Huruf ta mempunyai dua titik di atas."),
-  fill("Huruf ث mempunyai tiga titik di ________.", "atas", "Lihat titik huruf sa.", "Huruf ث mempunyai tiga titik di atas."),
-  fill("Huruf ج mempunyai satu titik di ________.", "bawah", "Lihat titik huruf jim.", "Huruf jim mempunyai satu titik di bawah."),
-  fill("Huruf خ mempunyai satu titik di ________.", "atas", "Lihat titik huruf kha.", "Huruf kha mempunyai satu titik di atas."),
-  fill("Huruf ذ mempunyai satu titik di ________.", "atas", "Lihat titik huruf zal.", "Huruf zal mempunyai satu titik di atas."),
-  fill("Huruf ز mempunyai satu titik di ________.", "atas", "Lihat titik huruf zai.", "Huruf zai mempunyai satu titik di atas."),
-  fill("Huruf ش mempunyai tiga titik di ________.", "atas", "Lihat titik huruf syin.", "Huruf syin mempunyai tiga titik di atas."),
-  fill("Huruf ض mempunyai satu titik di ________.", "atas", "Lihat titik huruf dad.", "Huruf dad mempunyai satu titik di atas."),
-  fill("Huruf ظ mempunyai satu titik di ________.", "atas", "Lihat titik huruf zho.", "Huruf zho mempunyai satu titik di atas."),
-  fill("Huruf غ mempunyai satu titik di ________.", "atas", "Lihat titik huruf ghain.", "Huruf ghain mempunyai satu titik di atas."),
-  fill("Huruf ف mempunyai satu titik di ________.", "atas", "Lihat titik huruf fa.", "Huruf fa mempunyai satu titik di atas."),
-  fill("Huruf ق mempunyai dua titik di ________.", "atas", "Lihat titik huruf qaf.", "Huruf qaf mempunyai dua titik di atas."),
-  fill("Huruf ن mempunyai satu titik di ________.", "atas", "Lihat titik huruf nun.", "Huruf nun mempunyai satu titik di atas."),
+      explanation,
+      [answer]
+    );
+  }),
+  fill("Huruf hijaiyah pertama (ا) ialah ________.", "ا", "Ingat huruf alif.", "Huruf hijaiyah pertama ialah alif, ا."),
+  fill("Huruf hijaiyah terakhir yang biasa dipelajari (ي) ialah ________.", "ي", "Ingat huruf ya.", "Huruf ya ditulis ي."),
+  fill("Huruf ب mempunyai satu titik di ________. Huruf itu ialah ________.", "ب", "Lihat titik huruf ba.", "Huruf ba mempunyai satu titik di bawah.", ["ب"]),
+  fill("Huruf ت mempunyai dua titik di ________. Huruf itu ialah ________.", "ت", "Lihat titik huruf ta.", "Huruf ta mempunyai dua titik di atas.", ["ت"]),
+  fill("Huruf ث mempunyai tiga titik di ________. Huruf itu ialah ________.", "ث", "Lihat titik huruf sa.", "Huruf ث mempunyai tiga titik di atas.", ["ث"]),
+  fill("Huruf ج mempunyai satu titik di ________. Huruf itu ialah ________.", "ج", "Lihat titik huruf jim.", "Huruf jim mempunyai satu titik di bawah.", ["ج"]),
+  fill("Huruf خ mempunyai satu titik di ________. Huruf itu ialah ________.", "خ", "Lihat titik huruf kha.", "Huruf kha mempunyai satu titik di atas.", ["خ"]),
+  fill("Huruf ذ mempunyai satu titik di ________. Huruf itu ialah ________.", "ذ", "Lihat titik huruf zal.", "Huruf zal mempunyai satu titik di atas.", ["ذ"]),
+  fill("Huruf ز mempunyai satu titik di ________. Huruf itu ialah ________.", "ز", "Lihat titik huruf zai.", "Huruf zai mempunyai satu titik di atas.", ["ز"]),
+  fill("Huruf ش mempunyai tiga titik di ________. Huruf itu ialah ________.", "ش", "Lihat titik huruf syin.", "Huruf syin mempunyai tiga titik di atas.", ["ش"]),
+  fill("Huruf ض mempunyai satu titik di ________. Huruf itu ialah ________.", "ض", "Lihat titik huruf dad.", "Huruf dad mempunyai satu titik di atas.", ["ض"]),
+  fill("Huruf ظ mempunyai satu titik di ________. Huruf itu ialah ________.", "ظ", "Lihat titik huruf zho.", "Huruf zho mempunyai satu titik di atas.", ["ظ"]),
+  fill("Huruf غ mempunyai satu titik di ________. Huruf itu ialah ________.", "غ", "Lihat titik huruf ghain.", "Huruf ghain mempunyai satu titik di atas.", ["غ"]),
+  fill("Huruf ف mempunyai satu titik di ________. Huruf itu ialah ________.", "ف", "Lihat titik huruf fa.", "Huruf fa mempunyai satu titik di atas.", ["ف"]),
+  fill("Huruf ق mempunyai dua titik di ________. Huruf itu ialah ________.", "ق", "Lihat titik huruf qaf.", "Huruf qaf mempunyai dua titik di atas.", ["ق"]),
+  fill("Huruf ن mempunyai satu titik di ________. Huruf itu ialah ________.", "ن", "Lihat titik huruf nun.", "Huruf nun mempunyai satu titik di atas.", ["ن"]),
   fill("Tulisan Arab ditulis dari kanan ke ________.", "kiri", "Ingat arah tulisan Arab.", "Tulisan Arab ditulis dari kanan ke kiri."),
   fill("Baris atas dalam Arab disebut ________.", "fathah", "Fathah menghasilkan bunyi a.", "Fathah ialah baris atas."),
   fill("Baris bawah dalam Arab disebut ________.", "kasrah", "Kasrah menghasilkan bunyi i.", "Kasrah ialah baris bawah."),
   fill("Baris depan dalam Arab disebut ________.", "dammah", "Dammah menghasilkan bunyi u.", "Dammah ialah baris depan."),
-  fill("Huruf ا dibaca ________.", "alif", "Lihat bentuk huruf ا.", "ا ialah huruf alif."),
-  fill("Huruf م dibaca ________.", "mim", "Lihat bentuk huruf م.", "م ialah huruf mim."),
+  fill("Huruf ا dibaca ________.", "alif", "Lihat bentuk huruf ا.", "ا ialah huruf alif.", ["alif"]),
+  fill("Huruf م dibaca ________.", "mim", "Lihat bentuk huruf م.", "م ialah huruf mim.", ["mim"]),
 ];
+
+const hurufHijaiyahSupport = [
+  ...hijaiyahLetters.map(([letter, name]) => {
+    const question = letter === "ه"
+      ? "Huruf Arab bagi bunyi ha lembut (ه) ialah ________."
+      : `Nama huruf Arab ${letter} ialah ________.`;
+    const letterName = letter === "ه" ? "he" : name;
+    const pronunciationHint = letter === "ه" ? "Sebut ha lembut dengan jelas." : `Sebut ${name} dengan jelas.`;
+    const meaningExplanation = letter === "ه" ? "Huruf ه dibunyikan ha lembut." : `Huruf ${name} ditulis ${letter}.`;
+    const commonMistake = letter === "ه"
+      ? "Jangan tertukar ه dengan ح."
+      : `Jangan tertukar huruf ${name} dengan huruf yang hampir sama.`;
+    const memoryTip = letter === "ه"
+      ? "Ingat ه sebagai bunyi ha lembut."
+      : `Ingat ${name} sebagai huruf hijaiyah asas.`;
+    return makeHurufSupport({
+      question,
+      arabicText: letter,
+      letterName,
+      pronunciationHint,
+      meaningExplanation,
+      writingGuidance: `Tulis huruf ${letter} dari kanan ke kiri dengan kemas.`,
+      commonMistake,
+      memoryTip
+    });
+  }),
+  makeHurufSupport({
+    question: "Huruf hijaiyah pertama ialah ________.",
+    arabicText: "ا",
+    letterName: "alif",
+    pronunciationHint: "Sebut alif dengan jelas.",
+    meaningExplanation: "Huruf hijaiyah pertama ialah alif, ا.",
+    writingGuidance: "Tulis alif tegak dari kanan ke kiri.",
+    commonMistake: "Jangan tertukar alif dengan huruf hamzah.",
+    memoryTip: "Ingat alif sebagai huruf pertama dalam susunan hijaiyah."
+  }),
+  makeHurufSupport({
+    question: "Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.",
+    arabicText: "ي",
+    letterName: "ya",
+    pronunciationHint: "Sebut ya dengan lembut.",
+    meaningExplanation: "Huruf ya ditulis ي.",
+    writingGuidance: "Tulis ya dengan dua titik di bawah.",
+    commonMistake: "Jangan tertukar ya dengan nun atau ba.",
+    memoryTip: "Ingat ya sebagai huruf penutup dalam susunan hijaiyah."
+  }),
+  makeHurufSupport({
+    question: "Huruf ب mempunyai satu titik di ________.",
+    arabicText: "ب",
+    letterName: "ba",
+    pronunciationHint: "Sebut ba dengan satu bunyi ringkas.",
+    meaningExplanation: "Huruf ba mempunyai satu titik di bawah.",
+    writingGuidance: "Tulis ba dengan titik di bawah huruf.",
+    commonMistake: "Jangan tertukar ba dengan ta atau tha.",
+    memoryTip: "Ingat ba kerana titiknya berada di bawah."
+  }),
+  makeHurufSupport({
+    question: "Huruf ت mempunyai dua titik di ________.",
+    arabicText: "ت",
+    letterName: "ta",
+    pronunciationHint: "Sebut ta dengan dua titik jelas.",
+    meaningExplanation: "Huruf ta mempunyai dua titik di atas.",
+    writingGuidance: "Tulis ta dengan dua titik di atas huruf.",
+    commonMistake: "Jangan tertukar ta dengan ba atau tha.",
+    memoryTip: "Ingat ta kerana ada dua titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ث mempunyai tiga titik di ________.",
+    arabicText: "ث",
+    letterName: "tha",
+    pronunciationHint: "Sebut tha dengan lembut dan perlahan.",
+    meaningExplanation: "Huruf ث mempunyai tiga titik di atas.",
+    writingGuidance: "Tulis huruf ث dengan tiga titik di atas.",
+    commonMistake: "Jangan tertukar ث dengan ت atau ب.",
+    memoryTip: "Ingat ث kerana ada tiga titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ج mempunyai satu titik di ________.",
+    arabicText: "ج",
+    letterName: "jim",
+    pronunciationHint: "Sebut jim dengan jelas.",
+    meaningExplanation: "Huruf jim mempunyai satu titik di bawah.",
+    writingGuidance: "Tulis jim dengan titik di bawah huruf.",
+    commonMistake: "Jangan tertukar jim dengan ha atau kha.",
+    memoryTip: "Ingat jim kerana titiknya di bawah."
+  }),
+  makeHurufSupport({
+    question: "Huruf خ mempunyai satu titik di ________.",
+    arabicText: "خ",
+    letterName: "kha",
+    pronunciationHint: "Sebut kha dengan hembusan lembut.",
+    meaningExplanation: "Huruf kha mempunyai satu titik di atas.",
+    writingGuidance: "Tulis kha dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar kha dengan ha atau jim.",
+    memoryTip: "Ingat kha kerana ada titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ذ mempunyai satu titik di ________.",
+    arabicText: "ذ",
+    letterName: "zal",
+    pronunciationHint: "Sebut zal dengan lembut.",
+    meaningExplanation: "Huruf zal mempunyai satu titik di atas.",
+    writingGuidance: "Tulis zal dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar zal dengan dal.",
+    memoryTip: "Ingat zal kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ز mempunyai satu titik di ________.",
+    arabicText: "ز",
+    letterName: "zai",
+    pronunciationHint: "Sebut zai dengan jelas.",
+    meaningExplanation: "Huruf zai mempunyai satu titik di atas.",
+    writingGuidance: "Tulis zai dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar zai dengan ra atau dal.",
+    memoryTip: "Ingat zai kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ش mempunyai tiga titik di ________.",
+    arabicText: "ش",
+    letterName: "syin",
+    pronunciationHint: "Sebut syin dengan bunyi yang jelas.",
+    meaningExplanation: "Huruf syin mempunyai tiga titik di atas.",
+    writingGuidance: "Tulis syin dengan tiga titik di atas.",
+    commonMistake: "Jangan tertukar syin dengan sin.",
+    memoryTip: "Ingat syin kerana ada tiga titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ض mempunyai satu titik di ________.",
+    arabicText: "ض",
+    letterName: "dad",
+    pronunciationHint: "Sebut dad dengan kuat dan jelas.",
+    meaningExplanation: "Huruf dad mempunyai satu titik di atas.",
+    writingGuidance: "Tulis dad dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar dad dengan sad.",
+    memoryTip: "Ingat dad kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ظ mempunyai satu titik di ________.",
+    arabicText: "ظ",
+    letterName: "zho",
+    pronunciationHint: "Sebut zho dengan perlahan.",
+    meaningExplanation: "Huruf zho mempunyai satu titik di atas.",
+    writingGuidance: "Tulis zho dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar zho dengan tho.",
+    memoryTip: "Ingat zho kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf غ mempunyai satu titik di ________.",
+    arabicText: "غ",
+    letterName: "ghain",
+    pronunciationHint: "Sebut ghain dari kerongkong dengan perlahan.",
+    meaningExplanation: "Huruf ghain mempunyai satu titik di atas.",
+    writingGuidance: "Tulis ghain dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar ghain dengan ain.",
+    memoryTip: "Ingat ghain kerana ada titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ف mempunyai satu titik di ________.",
+    arabicText: "ف",
+    letterName: "fa",
+    pronunciationHint: "Sebut fa dengan jelas.",
+    meaningExplanation: "Huruf fa mempunyai satu titik di atas.",
+    writingGuidance: "Tulis fa dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar fa dengan qaf.",
+    memoryTip: "Ingat fa kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ق mempunyai dua titik di ________.",
+    arabicText: "ق",
+    letterName: "qaf",
+    pronunciationHint: "Sebut qaf dengan suara yang jelas.",
+    meaningExplanation: "Huruf qaf mempunyai dua titik di atas.",
+    writingGuidance: "Tulis qaf dengan dua titik di atas.",
+    commonMistake: "Jangan tertukar qaf dengan fa.",
+    memoryTip: "Ingat qaf kerana ada dua titik di atas."
+  }),
+  makeHurufSupport({
+    question: "Huruf ن mempunyai satu titik di ________.",
+    arabicText: "ن",
+    letterName: "nun",
+    pronunciationHint: "Sebut nun dengan lembut.",
+    meaningExplanation: "Huruf nun mempunyai satu titik di atas.",
+    writingGuidance: "Tulis nun dengan satu titik di atas.",
+    commonMistake: "Jangan tertukar nun dengan ba atau ta.",
+    memoryTip: "Ingat nun kerana titiknya di atas."
+  }),
+  makeHurufSupport({
+    question: "Tulisan Arab ditulis dari kanan ke ________.",
+    arabicText: "من اليمين إلى اليسار",
+    letterName: "arah tulisan Arab",
+    rumiReference: "kanan ke kiri",
+    pronunciationHint: "Baca arah tulisan dengan betul.",
+    meaningExplanation: "Tulisan Arab ditulis dari kanan ke kiri.",
+    writingGuidance: "Tulis baris Arab dari kanan ke kiri.",
+    commonMistake: "Jangan tulis Arab dari kiri ke kanan.",
+    memoryTip: "Ingat: Arab bergerak dari kanan ke kiri."
+  }),
+  makeHurufSupport({
+    question: "Baris atas dalam Arab disebut ________.",
+    arabicText: "فَتْحَة",
+    letterName: "fathah",
+    pronunciationHint: "Sebut fathah sebagai bunyi a.",
+    meaningExplanation: "Fathah ialah baris atas.",
+    writingGuidance: "Letakkan tanda atas huruf dengan kemas.",
+    commonMistake: "Jangan keliru antara fathah, kasrah dan dammah.",
+    memoryTip: "Fathah di atas, bunyinya a."
+  }),
+  makeHurufSupport({
+    question: "Baris bawah dalam Arab disebut ________.",
+    arabicText: "كَسْرَة",
+    letterName: "kasrah",
+    pronunciationHint: "Sebut kasrah sebagai bunyi i.",
+    meaningExplanation: "Kasrah ialah baris bawah.",
+    writingGuidance: "Letakkan tanda bawah huruf dengan betul.",
+    commonMistake: "Jangan tertukar kasrah dengan fathah.",
+    memoryTip: "Kasrah di bawah, bunyinya i."
+  }),
+  makeHurufSupport({
+    question: "Baris depan dalam Arab disebut ________.",
+    arabicText: "ضَمَّة",
+    letterName: "dammah",
+    pronunciationHint: "Sebut dammah sebagai bunyi u.",
+    meaningExplanation: "Dammah ialah baris depan.",
+    writingGuidance: "Letakkan tanda depan huruf dengan kemas.",
+    commonMistake: "Jangan tertukar dammah dengan fathah atau kasrah.",
+    memoryTip: "Dammah di depan, bunyinya u."
+  }),
+  makeHurufSupport({
+    question: "Huruf ا dibaca ________.",
+    arabicText: "ا",
+    letterName: "alif",
+    pronunciationHint: "Sebut alif dengan jelas.",
+    meaningExplanation: "ا ialah huruf alif.",
+    writingGuidance: "Tulis alif tegak dari kanan ke kiri.",
+    commonMistake: "Jangan tertukar alif dengan lam atau hamzah.",
+    memoryTip: "Ingat alif sebagai huruf tegak pertama."
+  }),
+  makeHurufSupport({
+    question: "Huruf م dibaca ________.",
+    arabicText: "م",
+    letterName: "mim",
+    pronunciationHint: "Sebut mim dengan lembut.",
+    meaningExplanation: "م ialah huruf mim.",
+    writingGuidance: "Tulis mim dengan bentuk bulat yang kemas.",
+    commonMistake: "Jangan tertukar mim dengan wau.",
+    memoryTip: "Ingat mim kerana bentuknya bulat."
+  }),
+];
+
+const hurufHijaiyahQuestions = hurufHijaiyahRawQuestions.map((item, index) => ({
+  ...item,
+  ...hurufHijaiyahSupport[index],
+}));
 
 const vocab = [
   ["كِتَابٌ", "buku"], ["قَلَمٌ", "pensel"], ["حَقِيبَةٌ", "beg"], ["مِسْطَرَةٌ", "pembaris"], ["مِمْحَاةٌ", "pemadam"],
@@ -89,7 +374,7 @@ const vocab = [
 ];
 
 const mufradatQuestions = vocab.map(([arabic, meaning]) =>
-  fill(`Perkataan Arab ${arabic} bermaksud ________.`, meaning, "Padankan perkataan Arab dengan maksudnya.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
+  fill(`Perkataan Arab ${arabic} bermaksud ________.`, meaning, "Padankan perkataan Arab dengan maksudnya.", `${arabic} bermaksud ${meaning}.`, [meaning])
 );
 
 const numbers = [
@@ -226,10 +511,10 @@ const simpleSentences = [
 
 const ayatMudahQuestions = [
   ...simpleSentences.map(([arabic, meaning]) =>
-    fill(`Ayat ${arabic} bermaksud ________.`, meaning, "Baca ayat Arab dan pilih maksud.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
+    fill(`Ayat ${arabic} bermaksud ________.`, meaning, "Baca ayat Arab dan pilih maksud.", `${arabic} bermaksud ${meaning}.`, [meaning])
   ),
   ...simpleSentences.map(([arabic, meaning]) =>
-    fill(`Bahasa Arab bagi ayat "${meaning}" ialah ________.`, arabic, "Padankan ayat Melayu dengan Arab.", `Ayat Arab yang betul ialah ${arabic}.`, [arabic, meaning])
+    fill(`Bahasa Arab bagi ayat "${meaning}" ialah ________. Rujukan ayat: ${arabic}`, arabic, "Padankan ayat Melayu dengan Arab.", `Ayat Arab yang betul ialah ${arabic}.`, [arabic])
   ),
 ];
 
@@ -243,10 +528,10 @@ const hiwarPairs = [
 
 const hiwarQuestions = [
   ...hiwarPairs.map(([arabic, meaning]) =>
-    fill(`Ungkapan ${arabic} bermaksud ________.`, meaning, "Padankan ungkapan dialog.", `${arabic} bermaksud ${meaning}.`, [meaning, arabic])
+    fill(`Ungkapan ${arabic} bermaksud ________.`, meaning, "Padankan ungkapan dialog.", `${arabic} bermaksud ${meaning}.`, [meaning])
   ),
   ...hiwarPairs.map(([arabic, meaning]) =>
-    fill(`Bahasa Arab bagi "${meaning}" ialah ________.`, arabic, "Pilih ungkapan Arab yang sesuai.", `Ungkapan Arab yang betul ialah ${arabic}.`, [arabic, meaning])
+    fill(`Bahasa Arab bagi "${meaning}" ialah ________. Contoh hiwar: ${arabic}`, arabic, "Pilih ungkapan Arab yang sesuai.", `Ungkapan Arab yang betul ialah ${arabic}.`, [arabic])
   ),
 ];
 
@@ -257,33 +542,61 @@ const comprehension = [
   ["الْكَلْبُ كَبِيرٌ", "Haiwan apakah dalam ayat ini?", "anjing", "كَلْبٌ bermaksud anjing."],
   ["الْقَلَمُ أَزْرَقُ", "Apakah warna pensel?", "biru", "أَزْرَقُ bermaksud biru."],
   ["الْحَقِيبَةُ حَمْرَاءُ", "Apakah warna beg?", "merah", "حَمْرَاءُ bermaksud merah."],
-  ["أَنَا أَكْتُبُ بِالْقَلَمِ", "Apakah yang digunakan untuk menulis?", "pensel", "قَلَمٌ bermaksud pensel."],
-  ["أَقْرَأُ كِتَابًا", "Apakah yang dibaca?", "buku", "كِتَابٌ bermaksud buku."],
-  ["أَشْرَبُ مَاءً", "Apakah yang diminum?", "air", "مَاءٌ bermaksud air."],
-  ["آكُلُ تُفَّاحًا", "Apakah buah yang dimakan?", "epal", "تُفَّاحٌ bermaksud epal."],
+  ["أَنَا أَكْتُبُ بِالْقَلَمِ", "Apakah alat yang digunakan untuk menulis?", "pen", "بِالْقَلَمِ bermaksud dengan pen."],
+  ["أَقْرَأُ كِتَابًا", "Apakah yang dibaca?", "buku", "كِتَابًا bermaksud buku."],
+  ["أَشْرَبُ مَاءً", "Apakah yang diminum?", "air", "مَاءً bermaksud air."],
+  ["آكُلُ تُفَّاحًا", "Apakah buah yang dimakan?", "epal", "تُفَّاحًا bermaksud epal."],
   ["أَبِي فِي الْبَيْتِ", "Siapakah di rumah?", "ayah", "أَبِي bermaksud ayah saya."],
-  ["أُمِّي فِي الْمَطْبَخِ", "Siapakah di dapur?", "ibu", "أُمِّي bermaksud ibu saya."],
-  ["الْمُعَلِّمُ فِي الْفَصْلِ", "Siapakah di kelas?", "guru lelaki", "مُعَلِّمٌ bermaksud guru lelaki."],
-  ["الطَّالِبُ فِي الْمَدْرَسَةِ", "Siapakah di sekolah?", "murid lelaki", "طَالِبٌ bermaksud murid lelaki."],
+  ["أُمِّي فِي الْمَطْبَخِ", "Siapakah di dapur?", "ibu", "أُمِّي bermaksud ibu saya."],
+  ["الْمُعَلِّمُ فِي الْفَصْلِ", "Siapakah di kelas?", "guru lelaki", "الْمُعَلِّمُ bermaksud guru lelaki."],
+  ["الطَّالِبُ فِي الْمَدْرَسَةِ", "Siapakah di sekolah?", "murid lelaki", "الطَّالِبُ bermaksud murid lelaki."],
   ["الْبِنْتُ تَقْرَأُ", "Apakah yang dibuat oleh budak perempuan?", "membaca", "تَقْرَأُ bermaksud membaca."],
   ["الْوَلَدُ يَكْتُبُ", "Apakah yang dibuat oleh budak lelaki?", "menulis", "يَكْتُبُ bermaksud menulis."],
   ["الْبَابُ مَفْتُوحٌ", "Apakah keadaan pintu?", "terbuka", "مَفْتُوحٌ bermaksud terbuka."],
-  ["الْكُرْسِيُّ جَدِيدٌ", "Apakah keadaan kerusi?", "baharu", "جَدِيدٌ bermaksud baharu."],
+  ["الْكُرْسِيُّ جَدِيدٌ", "Apakah keadaan kerusi?", "baharu", "جَدِيدٌ bermaksud baharu."],
   ["الْفَصْلُ نَظِيفٌ", "Apakah keadaan kelas?", "bersih", "نَظِيفٌ bermaksud bersih."],
   ["الْمَسْجِدُ قَرِيبٌ", "Apakah keadaan masjid?", "dekat", "قَرِيبٌ bermaksud dekat."],
   ["الْبَيْتُ بَعِيدٌ", "Apakah keadaan rumah?", "jauh", "بَعِيدٌ bermaksud jauh."],
-  ["عِنْدِي كِتَابٌ", "Apakah yang saya ada?", "buku", "كِتَابٌ bermaksud buku."],
-  ["عِنْدِي قَلَمٌ", "Apakah yang saya ada?", "pensel", "قَلَمٌ bermaksud pensel."],
-  ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah di dalam beg saya?", "pemadam", "مِمْحَاةٌ bermaksud pemadam."],
-  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah di dalam kelas saya?", "papan putih", "سَبُّورَةٌ bermaksud papan putih."],
+  ["عِنْدِي كِتَابٌ", "Apakah frasa Arab bagi saya ada buku?", "Saya ada buku.", "عِنْدِي كِتَابٌ bermaksud saya ada buku."],
+  ["عِنْدِي قَلَمٌ", "Apakah frasa Arab bagi saya ada pen?", "Saya ada pen.", "عِنْدِي قَلَمٌ bermaksud saya ada pen."],
+  ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah perkataan Arab bagi pemadam?", "pemadam", "مِمْحَاةٌ bermaksud pemadam."],
+  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah perkataan Arab bagi papan putih?", "papan putih", "سَبُّورَةٌ bermaksud papan putih."],
+];
+
+const comprehensionFollowUps = [
+  ["هَذَا بَيْتٌ كَبِيرٌ", "Apakah perkataan Arab bagi rumah?", "بَيْتٌ", "بَيْتٌ bermaksud rumah."],
+  ["هَذِهِ مَدْرَسَةٌ نَظِيفَةٌ", "Apakah perkataan Arab bagi sekolah?", "مَدْرَسَةٌ", "مَدْرَسَةٌ bermaksud sekolah."],
+  ["الْقِطُّ صَغِيرٌ", "Apakah perkataan Arab bagi kucing?", "قِطٌّ", "قِطٌّ bermaksud kucing."],
+  ["الْكَلْبُ كَبِيرٌ", "Apakah perkataan Arab bagi anjing?", "كَلْبٌ", "كَلْبٌ bermaksud anjing."],
+  ["الْقَلَمُ أَزْرَقُ", "Apakah perkataan Arab bagi biru?", "أَزْرَقُ", "أَزْرَقُ bermaksud biru."],
+  ["الْحَقِيبَةُ حَمْرَاءُ", "Apakah perkataan Arab bagi merah?", "حَمْرَاءُ", "حَمْرَاءُ bermaksud merah."],
+  ["أَنَا أَكْتُبُ بِالْقَلَمِ", "Apakah frasa Arab bagi dengan pen?", "بِالْقَلَمِ", "بِالْقَلَمِ bermaksud dengan pen."],
+  ["أَقْرَأُ كِتَابًا", "Apakah perkataan Arab bagi buku?", "كِتَابًا", "كِتَابًا bermaksud buku."],
+  ["أَشْرَبُ مَاءً", "Apakah perkataan Arab bagi air?", "مَاءً", "مَاءً bermaksud air."],
+  ["آكُلُ تُفَّاحًا", "Apakah perkataan Arab bagi epal?", "تُفَّاحًا", "تُفَّاحًا bermaksud epal."],
+  ["أَبِي فِي الْبَيْتِ", "Apakah perkataan Arab bagi ayah?", "أَبِي", "أَبِي bermaksud ayah saya."],
+  ["أُمِّي فِي الْمَطْبَخِ", "Apakah perkataan Arab bagi ibu?", "أُمِّي", "أُمِّي bermaksud ibu saya."],
+  ["الْمُعَلِّمُ فِي الْفَصْلِ", "Apakah perkataan Arab bagi guru lelaki?", "الْمُعَلِّمُ", "الْمُعَلِّمُ bermaksud guru lelaki."],
+  ["الطَّالِبُ فِي الْمَدْرَسَةِ", "Apakah perkataan Arab bagi murid lelaki?", "الطَّالِبُ", "الطَّالِبُ bermaksud murid lelaki."],
+  ["الْبِنْتُ تَقْرَأُ", "Apakah perkataan Arab bagi membaca?", "تَقْرَأُ", "تَقْرَأُ bermaksud membaca."],
+  ["الْوَلَدُ يَكْتُبُ", "Apakah perkataan Arab bagi menulis?", "يَكْتُبُ", "يَكْتُبُ bermaksud menulis."],
+  ["الْبَابُ مَفْتُوحٌ", "Apakah perkataan Arab bagi terbuka?", "مَفْتُوحٌ", "مَفْتُوحٌ bermaksud terbuka."],
+  ["الْكُرْسِيُّ جَدِيدٌ", "Apakah perkataan Arab bagi baharu?", "جَدِيدٌ", "جَدِيدٌ bermaksud baharu."],
+  ["الْفَصْلُ نَظِيفٌ", "Apakah perkataan Arab bagi bersih?", "نَظِيفٌ", "نَظِيفٌ bermaksud bersih."],
+  ["الْمَسْجِدُ قَرِيبٌ", "Apakah perkataan Arab bagi dekat?", "قَرِيبٌ", "قَرِيبٌ bermaksud dekat."],
+  ["الْبَيْتُ بَعِيدٌ", "Apakah perkataan Arab bagi jauh?", "بَعِيدٌ", "بَعِيدٌ bermaksud jauh."],
+  ["عِنْدِي كِتَابٌ", "Apakah frasa Arab bagi saya ada buku?", "عِنْدِي كِتَابٌ", "عِنْدِي كِتَابٌ bermaksud saya ada buku."],
+  ["عِنْدِي قَلَمٌ", "Apakah frasa Arab bagi saya ada pen?", "عِنْدِي قَلَمٌ", "عِنْدِي قَلَمٌ bermaksud saya ada pen."],
+  ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah perkataan Arab bagi pemadam?", "مِمْحَاةٌ", "مِمْحَاةٌ bermaksud pemadam."],
+  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah perkataan Arab bagi papan putih?", "سَبُّورَةٌ", "سَبُّورَةٌ bermaksud papan putih."],
 ];
 
 const kefahamanQuestions = [
   ...comprehension.map(([arabic, question, answer, explanation]) =>
     fill(`${arabic}. ${question} ________.`, answer, "Baca ayat Arab dan cari maklumat penting.", explanation)
   ),
-  ...comprehension.map(([arabic, question, answer, explanation]) =>
-    fill(`Dalam ayat ${arabic}, jawapan bagi soalan "${question}" ialah ________.`, answer, "Cari perkataan utama dalam ayat.", explanation)
+  ...comprehensionFollowUps.map(([arabic, question, answer, explanation]) =>
+    fill(`Baca ayat ${arabic}. ${question} ________.`, answer, "Cari perkataan Arab yang tepat dalam ayat.", explanation)
   ),
 ];
 

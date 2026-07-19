@@ -2,20 +2,20 @@
 
 ## Summary
 
-- Total repair suggestions: 2726
+- Total repair suggestions: 2391
 - P1 repair list: 2
-- P2/P3 suggestions: 2724
+- P2/P3 suggestions: 2389
 - Estimated cleanup priority: MEDIUM
 
 ## Suggestions by Subject
 
 | Subject | Suggestion Count |
 | --- | ---: |
-| Bahasa Melayu Tahun 2 | 653 |
 | English Year 2 | 422 |
 | Matematik Tahun 2 | 417 |
 | Bahasa Arab Tahun 2 | 343 |
 | Pendidikan Jasmani Tahun 2 | 328 |
+| Bahasa Melayu Tahun 2 | 318 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | Pendidikan Islam Tahun 2 | 140 |
 | Sains Tahun 2 | 109 |
@@ -24,7 +24,7 @@
 
 | Issue Type | Suggestion Count |
 | --- | ---: |
-| same_answer_pattern_repeated | 2290 |
+| same_answer_pattern_repeated | 1955 |
 | multiple_possible_answers | 281 |
 | missing_arabic_text | 90 |
 | ambiguous_operation | 39 |
@@ -39,10 +39,10 @@
 
 ## Top Recurring Problems
 
-- Bahasa Melayu Tahun 2 / same_answer_pattern_repeated (P3): 653
 - English Year 2 / same_answer_pattern_repeated (P3): 403
 - Matematik Tahun 2 / same_answer_pattern_repeated (P3): 373
 - Pendidikan Jasmani Tahun 2 / same_answer_pattern_repeated (P3): 326
+- Bahasa Melayu Tahun 2 / same_answer_pattern_repeated (P3): 318
 - Pendidikan Kesihatan Tahun 2 / same_answer_pattern_repeated (P3): 314
 - Bahasa Arab Tahun 2 / multiple_possible_answers (P2): 231
 - Sains Tahun 2 / same_answer_pattern_repeated (P3): 109
