@@ -1,32 +1,98 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { EmptyState } from './dashboardHelpers.jsx';
-import { loadAIMemory } from '../ai/memoryEngine';
-import { getAllSubjectAnalytics, getBestSubject, getWeakestSubject, getSubjectAttentionSummary } from '../ai/adaptive/subjectAnalyticsEngine';
-import { rankStrongTopics, rankWeakTopics, explainWeakness } from '../ai/adaptive/weakTopicEngine';
-import { buildParentAnalytics } from '../ai/parentAnalytics/parentAnalyticsEngine';
+import {
+  buildParentSummary,
+  buildRecommendationSummary,
+  buildRevisionSummary,
+  createMockParentProfile,
+  readSubjectInsight,
+  resolveParentProfile
+} from '../parentInsights/index.js';
 import { printParentReport } from '../utils/printReport';
-import { clampPercent, formatActivityStatus, formatAttentionLevel, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, formatTrend } from '../utils/displayFormatter';
+import {
+  clampPercent,
+  formatActivityStatus,
+  formatStatus,
+  formatStudyMinutes,
+  formatSubjectName,
+  formatTopicName
+} from '../utils/displayFormatter';
 import MetricCard from '../components/MetricCard.jsx';
 
-function getOverallAccuracy(profile = {}) {
-  const total = Number(profile.totalQuestions || 0);
-  const correct = Number(profile.correctQuestions || 0);
-  return total > 0 ? Math.round((correct / total) * 100) : 0;
+const SUBJECTS = [
+  { id: 'math', label: 'Matematik' },
+  { id: 'bm', label: 'Bahasa Melayu' },
+  { id: 'english', label: 'English' },
+  { id: 'sains', label: 'Science' },
+  { id: 'islam', label: 'Pendidikan Islam' },
+  { id: 'arab', label: 'Bahasa Arab' },
+  { id: 'pj', label: 'PJK' }
+];
+
+const RECOMMENDATION_TEXT = {
+  review: 'Perlu ulang kaji',
+  normal_practice: 'Teruskan latihan',
+  increase_difficulty: 'Bersedia untuk tahap seterusnya'
+};
+
+function safeNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
 }
 
-function getParentStatusBadge(accuracy) {
-  if (accuracy >= 90) return '🌟 Cemerlang';
-  if (accuracy >= 75) return '👍 Baik';
-  return '📘 Perlu Ditingkatkan';
+function safePercent(value) {
+  return clampPercent(Math.max(0, Math.min(100, safeNumber(value, 0))));
 }
 
-function compactTopicList(items = []) {
-  return items.slice(0, 3).map(item => formatTopicName(item.title || item.topicId)).join(', ') || '-';
+function safeText(value, fallback = '-') {
+  const text = String(value ?? '').trim();
+  return text && text !== 'undefined' && text !== 'null' ? text : fallback;
+}
+
+function formatRelativeTiming(item = {}) {
+  if (!item) return 'Tarikh belum tersedia';
+  if (item.isOverdue) {
+    const overdueDays = Math.max(1, safeNumber(item.overdueDays, 1));
+    return `Lewat ${overdueDays} hari`;
+  }
+  const dueInDays = Math.max(0, safeNumber(item.dueInDays, 0));
+  if (dueInDays === 0) return 'Hari ini';
+  if (dueInDays === 1) return 'Esok';
+  return `${dueInDays} hari lagi`;
+}
+
+function getSubjectMastery(subjectInsight = {}) {
+  const topics = Array.isArray(subjectInsight.topics) ? subjectInsight.topics : [];
+  if (!topics.length) return 0;
+  const total = topics.reduce((sum, topic) => sum + safeNumber(topic.mastery, 0), 0);
+  return safePercent(Math.round(total / topics.length));
+}
+
+function buildMockGuardProfile(profile, allowMock) {
+  const safeProfile = profile && typeof profile === 'object' ? profile : null;
+  if (safeProfile) return safeProfile;
+  return allowMock ? createMockParentProfile() : null;
+}
+
+function resolveInitialSubjectId(profile = null) {
+  if (profile && typeof profile === 'object') {
+    for (const subject of SUBJECTS) {
+      const topicMap = profile?.subjects?.[subject.id]?.topics;
+      if (topicMap && typeof topicMap === 'object' && Object.keys(topicMap).length > 0) {
+        return subject.id;
+      }
+      const legacyTopics = profile?.topics?.[subject.id];
+      if (legacyTopics && typeof legacyTopics === 'object' && Object.keys(legacyTopics).length > 0) {
+        return subject.id;
+      }
+    }
+  }
+  return SUBJECTS[0]?.id || 'bm';
 }
 
 export default function ParentDashboard({
   profile,
-  adaptiveProfile,
+  adaptiveProfile, // retained for compatibility; data now flows through Parent Insights only
   aiMemory = null,
   learningObservation = null,
   predictionProfile = null,
@@ -38,40 +104,66 @@ export default function ParentDashboard({
   onStartAdaptivePractice,
   onBack
 }) {
-  const [selectedSubjectId, setSelectedSubjectId] = useState(allSubjects[0]?.id || 'bm');
-  const memory = aiMemory || loadAIMemory();
-  const activeAdaptiveProfile = useMemo(() => adaptiveProfile || profile.adaptiveProfile || profile, [adaptiveProfile, profile]);
+  const allowMock = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
-  const parentAnalytics = useMemo(() => buildParentAnalytics(activeAdaptiveProfile, {
-    memory,
-    observation: learningObservation || {},
-    predictionProfile: predictionProfile || {},
-    narrativeBundle: narrativeBundle || {},
-    gamificationProfile: gamificationProfile || {},
-    readiness: readiness || {}
-  }), [activeAdaptiveProfile, memory, learningObservation, predictionProfile, narrativeBundle, gamificationProfile, readiness]);
+  const sourceProfile = useMemo(() => buildMockGuardProfile(profile, allowMock), [profile, allowMock]);
+  const insightsProfile = useMemo(() => resolveParentProfile(sourceProfile, { allowMock }), [sourceProfile, allowMock]);
+  const summary = useMemo(() => buildParentSummary(insightsProfile), [insightsProfile]);
+  const recommendationSummary = useMemo(() => buildRecommendationSummary(insightsProfile), [insightsProfile]);
+  const revisionSummary = useMemo(() => buildRevisionSummary(insightsProfile), [insightsProfile]);
+  const initialSelectedSubjectId = useMemo(() => resolveInitialSubjectId(insightsProfile || sourceProfile), [insightsProfile, sourceProfile]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState(initialSelectedSubjectId);
 
-  const subjectAnalytics = useMemo(() => getAllSubjectAnalytics(activeAdaptiveProfile), [activeAdaptiveProfile]);
-  const bestSubject = useMemo(() => parentAnalytics.subjectComparison.strongest || getBestSubject(activeAdaptiveProfile), [parentAnalytics.subjectComparison.strongest, activeAdaptiveProfile]);
-  const weakestSubject = useMemo(() => parentAnalytics.subjectComparison.needsAttention || getWeakestSubject(activeAdaptiveProfile), [parentAnalytics.subjectComparison.needsAttention, activeAdaptiveProfile]);
-  const selectedSubjectAnalytics = subjectAnalytics.find(subject => subject.subjectId === selectedSubjectId) || subjectAnalytics[0] || null;
-  const selectedAttention = selectedSubjectAnalytics ? getSubjectAttentionSummary(activeAdaptiveProfile, selectedSubjectAnalytics.subjectId) : null;
-  const weakTopics = useMemo(() => rankWeakTopics(activeAdaptiveProfile, { limit: 8 }), [activeAdaptiveProfile]);
-  const strongTopics = useMemo(() => rankStrongTopics(activeAdaptiveProfile, { limit: 8 }), [activeAdaptiveProfile]);
-  const reportHasData = parentAnalytics.weeklyTrend.hasData || parentAnalytics.subjectComparison.hasData || parentAnalytics.studyHabit.hasData || parentAnalytics.timeline.hasData;
-  const overallAccuracy = getOverallAccuracy(activeAdaptiveProfile);
-  const statusBadge = getParentStatusBadge(overallAccuracy);
-  const consistencyLevel = parentAnalytics.studyHabit.consistencyScore === 'Konsisten'
-    ? 'good'
-    : parentAnalytics.studyHabit.consistencyScore === 'Sederhana'
-      ? 'developing'
-      : parentAnalytics.studyHabit.consistencyScore === 'Rendah'
-        ? 'needs_attention'
-        : 'insufficient_data';
-  const readingHistory = memory.readingHistory || [];
-  const listeningHistory = memory.listeningHistory || [];
-  const speakingHistory = memory.speakingHistory || [];
-  const writingHistory = memory.writingHistory || [];
+  const subjectInsights = useMemo(() => SUBJECTS.map(subject => {
+    const insight = readSubjectInsight(insightsProfile, subject.id, { allowMock });
+    const topics = Array.isArray(insight.topics) ? insight.topics : [];
+    const mastery = getSubjectMastery(insight);
+    const attempts = safeNumber(insight.performance?.attempts, 0);
+    const accuracy = attempts > 0
+      ? safePercent(Math.round((safeNumber(insight.performance?.correct, 0) / attempts) * 100))
+      : 0;
+    return {
+      ...subject,
+      insight,
+      topics,
+      mastery,
+      accuracy,
+      attempts,
+      hasData: topics.length > 0 || attempts > 0
+    };
+  }), [insightsProfile, allowMock]);
+
+  const selectedSubject = subjectInsights.find(subject => subject.id === selectedSubjectId)
+    || subjectInsights[0]
+    || null;
+
+  useEffect(() => {
+    if (!subjectInsights.length) return;
+    const selectedHasData = subjectInsights.some(subject => subject.id === selectedSubjectId && subject.hasData);
+    if (!selectedHasData) {
+      const firstWithData = subjectInsights.find(subject => subject.hasData);
+      if (firstWithData && firstWithData.id !== selectedSubjectId) {
+        setSelectedSubjectId(firstWithData.id);
+      }
+    }
+  }, [subjectInsights, selectedSubjectId]);
+
+  const weakTopics = recommendationSummary.weakestSubjects || [];
+  const strongSubjects = recommendationSummary.strongestSubjects || [];
+  const focusTopics = recommendationSummary.focusTopics || [];
+  const aiRecommendations = recommendationSummary.aiRecommendations || [];
+  const overdueReviews = Array.isArray(revisionSummary.overdueReviews) ? [...revisionSummary.overdueReviews] : [];
+  const upcomingReviews = Array.isArray(revisionSummary.upcomingReviewSchedule) ? [...revisionSummary.upcomingReviewSchedule] : [];
+  const revisionItems = [...overdueReviews, ...upcomingReviews].sort((left, right) => {
+    if (left.isOverdue !== right.isOverdue) return left.isOverdue ? -1 : 1;
+    if (left.isOverdue && right.isOverdue) return (right.overdueDays || 0) - (left.overdueDays || 0);
+    if ((left.dueInDays || 0) !== (right.dueInDays || 0)) return (left.dueInDays || 0) - (right.dueInDays || 0);
+    return String(left.subjectId || '').localeCompare(String(right.subjectId || ''));
+  });
+  const reportHasData = Boolean(summary.questionsAnswered || summary.correct || summary.wrong || subjectInsights.some(subject => subject.hasData));
+
+  const overallAccuracy = summary.accuracy || 0;
+  const statusBadge = overallAccuracy >= 90 ? '🌟 Cemerlang' : overallAccuracy >= 75 ? '👍 Baik' : '📘 Perlu Ditingkatkan';
 
   return (
     <main className="app">
@@ -84,204 +176,171 @@ export default function ParentDashboard({
         <p className="eyebrow">Ringkasan Prestasi Anak</p>
         <h2>Ringkasan Prestasi Anak</h2>
         <div className="metric-grid">
-          <MetricCard value={profile.name || activeAdaptiveProfile.name || 'Murid'} label="Nama Murid" />
-          <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={readiness?.message || 'Masih memerlukan sokongan.'} />
-          <MetricCard value={Number(activeAdaptiveProfile.xp || profile.xp || 0)} label="XP" />
-          <MetricCard value={Number(activeAdaptiveProfile.streak || profile.streak || 0)} label="Streak" />
-          <MetricCard value={Number(activeAdaptiveProfile.totalQuestions || 0)} label="Jumlah Soalan" />
-          <MetricCard value={Number(activeAdaptiveProfile.correctQuestions || 0)} label="Jumlah Betul" />
-          <MetricCard value={`${clampPercent(overallAccuracy)}%`} label="Ketepatan" />
-          <MetricCard value={formatStudyMinutes(activeAdaptiveProfile.studyMinutes || 0)} label="Masa Belajar" />
+          <MetricCard value={safeText(summary.name, 'Murid')} label="Nama Murid" />
+          <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
+          <MetricCard value={safeNumber(summary.questionsAnswered, 0)} label="Soalan Dijawab" />
+          <MetricCard value={`${safePercent(summary.accuracy)}%`} label="Ketepatan" />
+          <MetricCard value={formatStudyMinutes(summary.studyTime || 0)} label="Masa Belajar" />
+          <MetricCard value={safeNumber(summary.streak?.current, 0)} label="Streak Semasa" />
+          <MetricCard value={safeNumber(summary.streak?.longest, 0)} label="Streak Terpanjang" />
+          <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
         </div>
         <div className="status-badge-row">
           <span className="badge">{statusBadge}</span>
-          <span className="badge">{parentAnalytics.weeklyTrend.trend?.message || 'Belum cukup data untuk analisis trend.'}</span>
+          <span className="badge">{reportHasData ? 'Data tersedia untuk analisis.' : 'Belum cukup data untuk analisis terperinci.'}</span>
         </div>
       </section>
 
       <section className="card">
-        <p className="eyebrow">Trend Mingguan</p>
-        <h2>Trend Mingguan</h2>
-        <div className="metric-grid">
-          <MetricCard value={parentAnalytics.weeklyTrend.totals.questions} label="Soalan 7 Hari" subtitle={parentAnalytics.weeklyTrend.compact.questionsLabel} />
-          <MetricCard value={`${clampPercent(parentAnalytics.weeklyTrend.totals.accuracy)}%`} label="Ketepatan 7 Hari" subtitle={parentAnalytics.weeklyTrend.compact.accuracyLabel} />
-          <MetricCard value={formatStudyMinutes(parentAnalytics.weeklyTrend.totals.studyMinutes)} label="Masa Belajar" subtitle={parentAnalytics.weeklyTrend.compact.studyMinutesLabel} />
-          <MetricCard value={parentAnalytics.weeklyTrend.totals.activeDays} label="Hari Aktif" subtitle={parentAnalytics.weeklyTrend.compact.missionsLabel} />
-          <MetricCard value={formatTrend(parentAnalytics.weeklyTrend.trend?.direction || 'insufficient_data')} label="Trend" subtitle={parentAnalytics.weeklyTrend.compact.trendLabel} />
-        </div>
-        <div className="timeline" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '0.5rem' }}>
-          {parentAnalytics.weeklyTrend.daily.map(day => (
-            <div className="report-box" key={day.date} style={{ padding: '0.75rem' }}>
-              <h3 style={{ marginBottom: '0.25rem' }}>{day.date.slice(5)}</h3>
-              <b>{day.questions}</b>
-              <span>{day.active ? `${clampPercent(day.accuracy)}%` : 'Aktif'}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="card">
-        <p className="eyebrow">Perbandingan Subjek</p>
-        <h2>Perbandingan Subjek</h2>
-        {subjectAnalytics.length ? (
+        <p className="eyebrow">Subjek dan Penguasaan</p>
+        <h2>Subjek dan Penguasaan</h2>
+        {subjectInsights.some(subject => subject.hasData) ? (
           <>
             <div className="metric-grid">
-              <MetricCard value={formatSubjectName(bestSubject?.subjectId)} label="Subjek Terbaik" subtitle={bestSubject ? `${clampPercent(bestSubject.mastery)}%` : 'Belum cukup data'} />
-              <MetricCard value={formatSubjectName(parentAnalytics.subjectComparison.developing?.subjectId || weakestSubject?.subjectId)} label="Sedang Berkembang" subtitle={parentAnalytics.subjectComparison.developing ? `${clampPercent(parentAnalytics.subjectComparison.developing.mastery)}%` : 'Belum cukup data'} />
-              <MetricCard value={formatSubjectName(weakestSubject?.subjectId)} label="Perlu Perhatian" subtitle={weakestSubject ? `${clampPercent(weakestSubject.mastery)}%` : 'Belum cukup data'} />
-              <MetricCard value={formatAttentionLevel(selectedAttention?.attentionLevel)} label="Keutamaan" subtitle={selectedAttention?.message || 'Belum cukup data'} />
+              {subjectInsights.map(subject => (
+                <MetricCard
+                  key={subject.id}
+                  value={subject.hasData ? `${safePercent(subject.mastery)}%` : '—'}
+                  label={subject.label}
+                  subtitle={subject.hasData ? `${subject.attempts} soalan` : 'Belum ada penguasaan'}
+                />
+              ))}
             </div>
             <div className="subject-report-grid">
-              {subjectAnalytics.map(subject => (
+              {subjectInsights.map(subject => (
                 <button
                   type="button"
-                  key={subject.subjectId}
-                  className={`report-box ${selectedSubjectId === subject.subjectId ? 'selected-subject' : ''}`}
-                  onClick={() => setSelectedSubjectId(subject.subjectId)}
+                  key={subject.id}
+                  className={`report-box ${selectedSubjectId === subject.id ? 'selected-subject' : ''}`}
+                  onClick={() => setSelectedSubjectId(subject.id)}
+                  aria-pressed={selectedSubjectId === subject.id}
                 >
-                  <h3>{formatSubjectName(subject.subjectId)}</h3>
-                  {subject.totalQuestions > 0 ? (
-                    <b>{clampPercent(subject.accuracy)}%</b>
+                  <h3>{subject.label}</h3>
+                  {subject.hasData ? (
+                    <b>{safePercent(subject.mastery)}%</b>
                   ) : (
                     <span className="subject-status-empty">Belum Dimulakan</span>
                   )}
-                  <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
-                  <span>{subject.totalQuestions > 0 ? `${subject.totalQuestions} soalan` : '0 soalan'} • {formatAttentionLevel(subject.attentionLevel)}</span>
+                  <div
+                    className="mini-progress"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={subject.hasData ? safePercent(subject.mastery) : 0}
+                    aria-label={`${subject.label} mastery`}
+                  >
+                    <div style={{ width: `${subject.hasData ? safePercent(subject.mastery) : 0}%` }} />
+                  </div>
+                  <span>{subject.hasData ? `${subject.attempts} soalan` : '0 soalan'} • {subject.hasData ? `Penguasaan ${safePercent(subject.mastery)}%` : 'Belum ada data'}</span>
                 </button>
               ))}
             </div>
-            {selectedSubjectAnalytics && (
+            {selectedSubject && (
               <div className="timeline">
                 <div className="timeline-item">
-                  <span>{formatSubjectName(selectedSubjectAnalytics.subjectId)}</span>
-                  <b>{formatStatus(selectedSubjectAnalytics.status)}</b>
-                  <em>Penguasaan {clampPercent(selectedSubjectAnalytics.mastery)}% • Keyakinan {clampPercent(selectedSubjectAnalytics.confidence)}%</em>
-                  <p>{formatTrend(selectedSubjectAnalytics.trend.direction)} • {selectedSubjectAnalytics.trend.message}</p>
+                  <span>{selectedSubject.label}</span>
+                  <b>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Belum ada penguasaan'}</b>
+                  <em>{selectedSubject.hasData ? `${selectedSubject.attempts} soalan • ${safePercent(selectedSubject.accuracy)}% ketepatan` : 'Tiada data tersedia'}</em>
+                  <p>{selectedSubject.hasData ? `Topik tersedia: ${selectedSubject.topics.length}` : 'Murid belum mempunyai rekod untuk subjek ini.'}</p>
                 </div>
                 <div className="timeline-item">
                   <span>Topik Lemah</span>
-                  <b>{compactTopicList(selectedSubjectAnalytics.weakTopics)}</b>
-                  <em>{selectedSubjectAnalytics.weakTopics.length} topik</em>
-                  <p>{selectedSubjectAnalytics.weakTopics[0] ? explainWeakness(selectedSubjectAnalytics.weakTopics[0]).message : 'Belum cukup data untuk analisis subjek.'}</p>
+                  <b>{selectedSubject.topics.length ? selectedSubject.topics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : 'Belum ada topik lemah'}</b>
+                  <em>{selectedSubject.topics.length} topik</em>
+                  <p>{selectedSubject.topics[0] ? `Fokus pada ${formatTopicName(selectedSubject.topics[0].topicId)}.` : 'Topik lemah akan muncul selepas murid membuat lebih banyak latihan.'}</p>
                 </div>
                 <div className="timeline-item">
-                  <span>Topik Kuat</span>
-                  <b>{compactTopicList(selectedSubjectAnalytics.strongTopics)}</b>
-                  <em>{selectedSubjectAnalytics.strongTopics.length} topik</em>
-                  <p>{selectedSubjectAnalytics.trend.message}</p>
-                </div>
-                <div className="timeline-item">
-                  <span>Cadangan Fokus</span>
-                  <b>{formatTopicName(selectedSubjectAnalytics.weakTopics[0]?.topicId) || '-'}</b>
-                  <em>{formatAttentionLevel(selectedSubjectAnalytics.attentionLevel)}</em>
-                  <p>{selectedSubjectAnalytics.weakTopics[0] ? 'Fokus pada topik ini dahulu.' : 'Belum cukup data untuk analisis subjek.'}</p>
+                  <span>Cadangan Ibu Bapa</span>
+                  <b>{selectedSubject.hasData ? (selectedSubject.mastery >= 85 ? 'Naik aras latihan' : selectedSubject.mastery >= 60 ? 'Teruskan latihan' : 'Ulang kaji') : 'Belum ada cadangan'}</b>
+                  <em>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Tiada data'}</em>
+                  <p>{selectedSubject.hasData ? 'Gunakan maklumat ini untuk sokongan di rumah.' : 'Murid perlu mula menjawab soalan untuk cadangan muncul.'}</p>
                 </div>
               </div>
             )}
           </>
         ) : (
-          <EmptyState title="Belum cukup data untuk analisis subjek." message="Mulakan latihan untuk melihat analisis subjek." actionLabel="Mula Latihan AI" onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />
+          <EmptyState
+            title="Belum ada penguasaan subjek"
+            message={allowMock
+              ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
+              : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+          />
         )}
       </section>
 
       <section className="card">
-        <p className="eyebrow">Tabiat Belajar</p>
-        <h2>Tabiat Belajar</h2>
+        <p className="eyebrow">Fokus dan Cadangan</p>
+        <h2>Fokus dan Cadangan</h2>
         <div className="metric-grid">
-          <MetricCard className="study-habit-card" value={parentAnalytics.studyHabit.studyFrequency} label="Hari Aktif" subtitle={parentAnalytics.studyHabit.summary} />
-          <MetricCard className="study-habit-card" value={parentAnalytics.studyHabit.averageSessionLabel} label="Purata Sesi" subtitle="Masa purata setiap sesi." />
-          <MetricCard className="study-habit-card study-habit-card-status" value={formatStatus(consistencyLevel)} label="Konsistensi" subtitle="Prestasi semakin stabil." />
-          <MetricCard className="study-habit-card" value={parentAnalytics.timeline.items.length} label="Aktiviti Terkini" subtitle={`${parentAnalytics.timeline.items.length} aktiviti telah direkodkan.`} />
+          <MetricCard value={safeText(weakTopics[0]?.subjectId ? formatSubjectName(weakTopics[0].subjectId) : '', '—')} label="Subjek Paling Lemah" subtitle={weakTopics[0] ? `${safePercent(weakTopics[0].mastery)}%` : 'Tiada data'} />
+          <MetricCard value={safeText(strongSubjects[0]?.subjectId ? formatSubjectName(strongSubjects[0].subjectId) : '', '—')} label="Subjek Terkuat" subtitle={strongSubjects[0] ? `${safePercent(strongSubjects[0].mastery)}%` : 'Tiada data'} />
+          <MetricCard value={safeText(focusTopics[0]?.topicId ? formatTopicName(focusTopics[0].topicId) : '', '—')} label="Topik Fokus" subtitle={focusTopics[0] ? `${safePercent(focusTopics[0].mastery)}%` : 'Tiada data'} />
+          <MetricCard value={RECOMMENDATION_TEXT[aiRecommendations[0]?.recommendationKey] || '—'} label="Cadangan AI" subtitle={aiRecommendations[0]?.recommendation || 'Tiada cadangan'} />
         </div>
-      </section>
-
-      <section className="card">
-        <p className="eyebrow">Cadangan AI</p>
-        <h2>Cadangan AI</h2>
-        <div className="metric-grid">
-          <MetricCard value={formatTopicName(parentAnalytics.recommendation.topicName)} label="Topik Disyorkan" subtitle={parentAnalytics.recommendation.summary} />
-          <MetricCard value={parentAnalytics.recommendation.estimatedMinutes ? `${parentAnalytics.recommendation.estimatedMinutes} min` : '15 min'} label="Anggaran Masa" subtitle={parentAnalytics.recommendation.compact.readiness} />
-          <MetricCard value={formatStatus(parentAnalytics.recommendation.readinessLevel)} label="Kesediaan" subtitle={parentAnalytics.recommendation.compact.topic} />
-          <MetricCard value={parentAnalytics.improvement.strongestTopic?.title || 'Belum cukup data'} label="Topik Terbaik" subtitle={parentAnalytics.improvement.summary} />
-        </div>
-      </section>
-
-      <section className="card">
-        <p className="eyebrow">Laporan AI</p>
-        <h2>Laporan AI</h2>
-        {reportHasData ? (
-          <>
-            <div className="metric-grid">
-              <MetricCard value={`${parentAnalytics.weeklyTrend.totals.questions}`} label="Ringkasan Mingguan" subtitle={parentAnalytics.summary} />
-              <MetricCard value={`${parentAnalytics.subjectComparison.ranking.length}`} label="Subjek Dianalisis" subtitle={parentAnalytics.subjectComparison.strongest ? formatSubjectName(parentAnalytics.subjectComparison.strongest.subjectId) : 'Belum cukup data'} />
-              <MetricCard value={`${parentAnalytics.improvement.weakestTopic ? '1' : '0'}`} label="Perlu Diperbaiki" subtitle={parentAnalytics.improvement.summary || 'Belum cukup data'} />
-              <MetricCard value={parentAnalytics.recommendation.estimatedMinutes ? `${parentAnalytics.recommendation.estimatedMinutes} min` : '15 min'} label="Cadangan AI" subtitle={parentAnalytics.recommendation.summary} />
-            </div>
-            <div className="timeline">{parentAnalytics.timeline.items.slice(0, 3).map((item, index) => <div className="timeline-item" key={`timeline-${index}`}><span>{item.title}</span><b>{item.subtitle}</b><em>{item.message}</em></div>)}</div>
-            <div className="timeline">
-              <div className="timeline-item"><span>Galakan</span><b>{narrativeBundle?.encouragement || parentAnalytics.summary}</b><em>Motivasi Harian</em></div>
-              <div className="timeline-item"><span>Matlamat Seterusnya</span><b>{parentAnalytics.recommendation.topicName ? `Ulang kaji ${parentAnalytics.recommendation.topicName}` : 'Mulakan latihan harian'}</b><em>{parentAnalytics.recommendation.estimatedMinutes} min</em></div>
-            </div>
-          </>
+        {focusTopics.length ? (
+          <div className="parent-topic-list">
+            {focusTopics.slice(0, 4).map(topic => (
+              <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}>
+                <b>{formatTopicName(topic.topicId)}</b>
+                <span>{formatSubjectName(topic.subjectId)} • {RECOMMENDATION_TEXT[topic.recommendationKey] || topic.recommendation}</span>
+              </div>
+            ))}
+          </div>
         ) : (
-          <EmptyState title="Belum ada rekod pembelajaran." message="AI memerlukan lebih banyak data pembelajaran sebelum laporan boleh dijana." actionLabel="Mula Latihan AI" onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />
+          <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." />
         )}
       </section>
 
       <section className="card">
-        <h2>Sejarah Bacaan</h2>
-        <div className="timeline">
-          {readingHistory.length ? readingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct} betul • {item.missed} tertinggal</em></div>) : <EmptyState title="Belum ada rekod bacaan" message="Sesi bacaan yang disimpan akan muncul di sini untuk semakan ibu bapa." />}
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>Sejarah Mendengar</h2>
-        <div className="timeline">
-          {listeningHistory.length ? listeningHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.correct}/{item.total} betul • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod mendengar" message="Keputusan latihan mendengar akan muncul selepas percubaan pertama disimpan." />}
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>Sejarah Bertutur</h2>
-        <div className="timeline">
-          {speakingHistory.length ? speakingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.mode}</em></div>) : <EmptyState title="Belum ada rekod bertutur" message="Latihan bertutur akan disenaraikan di sini selepas disimpan." />}
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>Sejarah Menulis</h2>
-        <div className="timeline">
-          {writingHistory.length ? writingHistory.map((item, index) => <div className="timeline-item" key={index}><span>{(item.date || '').slice(0, 10)}</span><b>{item.title} - {item.language}</b><em>{item.score}% • {item.matchedKeywords}/{item.totalKeywords} kata kunci • {item.spellingIssues} isu ejaan</em></div>) : <EmptyState title="Belum ada rekod menulis" message="Keputusan latihan menulis akan muncul selepas sesi disimpan." />}
-        </div>
-      </section>
-
-      <section className="parent-two-col">
-        <section className="card">
-          <h2>Topik Lemah</h2>
+        <p className="eyebrow">Jadual Ulang Kaji</p>
+        <h2>Jadual Ulang Kaji</h2>
+        {revisionItems.length ? (
           <div className="parent-topic-list">
-            {weakTopics.length ? weakTopics.slice(0, 8).map(topic => <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik lemah" message="Topik lemah akan muncul selepas murid membuat lebih banyak latihan." />}
+            {revisionItems.slice(0, 8).map(item => (
+              <div className={`parent-topic-item ${item.isOverdue ? 'strong' : ''}`} key={`${item.subjectId}-${item.topicId}-${item.nextReviewAt}`}>
+                <b>{formatTopicName(item.topicId)}</b>
+                <span>{formatSubjectName(item.subjectId)} • {formatRelativeTiming(item)}</span>
+                <span>Keutamaan {safePercent(item.priority)}%</span>
+                <em>{item.isOverdue ? `Lewat ${Math.max(1, safeNumber(item.overdueDays, 1))} hari` : item.nextReviewAt ? new Date(item.nextReviewAt).toLocaleDateString('ms-MY') : 'Tarikh belum tersedia'}</em>
+              </div>
+            ))}
           </div>
-        </section>
-        <section className="card">
-          <h2>Topik Kuat</h2>
-          <div className="parent-topic-list">
-            {strongTopics.length ? strongTopics.slice(0, 8).map(topic => <div className="parent-topic-item strong" key={`${topic.subjectId}-${topic.topicId}`}><b>{formatTopicName(topic.title || topic.topicId)}</b><span>{formatSubjectName(topic.subject || topic.subjectId)} • {topic.best}%</span></div>) : <EmptyState title="Belum ada topik kuat" message="Topik kuat akan muncul apabila skor mencapai tahap penguasaan." />}
-          </div>
-        </section>
+        ) : (
+          <EmptyState title="Belum ada jadual ulang kaji" message="Jadual akan muncul selepas murid mempunyai data penguasaan." />
+        )}
       </section>
 
       <section className="card">
+        <p className="eyebrow">Sejarah UASA</p>
         <h2>Sejarah UASA</h2>
         <div className="timeline">
-          {(profile.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {item.grade}</b><em>{clampPercent(item.score)}% • {item.total} soalan</em></div>) : <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />}
+          {(profile?.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => (
+            <div className="timeline-item" key={index}>
+              <span>{safeText(item.date)}</span>
+              <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
+              <em>{safePercent(item.score)}% • {safeNumber(item.total, 0)} soalan</em>
+            </div>
+          )) : (
+            <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />
+          )}
         </div>
       </section>
 
       <section className="card">
+        <p className="eyebrow">Aktiviti Terkini</p>
         <h2>Aktiviti Terkini</h2>
         <div className="timeline">
-          {(profile.history || []).length === 0 ? <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." /> : profile.history.slice(0, 10).map((item, index) => <div className="timeline-item" key={index}><span>{item.date}</span><b>{formatSubjectName(item.subject)} - {item.topic}</b><em>{Number.isFinite(Number(item.percent)) ? `${clampPercent(item.percent)}% ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em></div>)}
+          {(profile?.history || []).length === 0 ? (
+            <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." />
+          ) : (
+            profile.history.slice(0, 10).map((item, index) => (
+              <div className="timeline-item" key={index}>
+                <span>{safeText(item.date)}</span>
+                <b>{formatSubjectName(item.subject)} - {safeText(item.topic)}</b>
+                <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
+              </div>
+            ))
+          )}
         </div>
       </section>
 

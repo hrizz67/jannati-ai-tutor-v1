@@ -21,7 +21,7 @@ import { buildStudyPlan } from './ai/prediction/studyPlanEngine';
 import { forecastMastery } from './ai/prediction/masteryForecastEngine';
 import { buildCoachingDecision } from './ai/coach/coachingEngine';
 import { buildTeachingStrategy } from './ai/coach/adaptiveTeachingEngine';
-import { buildCoachKnowledgeData, fetchCoachKnowledgeData } from './ai/coach/knowledge/knowledgeAdapter';
+import { buildCoachAdapterData, getCoachExplainData, getCoachTeacherData } from './ai/coach/coachAdapter';
 import { buildPersonalityResponse } from './ai/personality/personalityEngine.js';
 import { buildLearningObservation } from './ai/observation/learningObservationEngine.js';
 import { buildNarrativeBundle } from './ai/narrative/narrativeEngine.js';
@@ -1153,25 +1153,16 @@ export default function App() {
       return undefined;
     }
 
-    setCoachKnowledgeData(buildCoachKnowledgeData({
+    void buildCoachAdapterData('explain', {
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
       question,
       result: feedback || {},
-      userAnswer: answer
-    }));
-
-    void fetchCoachKnowledgeData({
-      subjectId: activeSubject.id,
-      topicId: activeTopic.id,
-      question,
-      result: feedback || {},
-      userAnswer: answer
+      userAnswer: answer,
+      topic: activeTopic
     }).then(nextData => {
       if (cancelled) return;
-      if (nextData) {
-        setCoachKnowledgeData(nextData);
-      }
+      if (nextData) setCoachKnowledgeData(nextData);
     });
 
     return () => {
@@ -1329,21 +1320,21 @@ export default function App() {
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback) return;
-    const fallbackData = buildCoachKnowledgeData({
-      subjectId: activeSubject?.id,
-      topicId: activeTopic?.id,
+    const fallbackData = explainAnswer({
       question,
+      topic: activeTopic,
       result: feedback,
       userAnswer: answer
     });
-    setExplainData(fallbackData || explainAnswer({ question, topic: activeTopic, result: feedback, userAnswer: answer }));
+    setExplainData(fallbackData);
     setExplainOpen(true);
-    void fetchCoachKnowledgeData({
+    void getCoachExplainData({
       subjectId: activeSubject?.id,
       topicId: activeTopic?.id,
       question,
       result: feedback,
-      userAnswer: answer
+      userAnswer: answer,
+      topic: activeTopic
     }).then(nextData => {
       if (nextData) setExplainData(nextData);
     });
@@ -1352,28 +1343,31 @@ export default function App() {
   function openTeacher() {
     const question = currentQuestion();
     if (!question) return;
-    const fallbackData = buildCoachKnowledgeData({
-      subjectId: activeSubject?.id,
-      topicId: activeTopic?.id,
+    const fallbackExplainData = explainAnswer({
       question,
+      topic: activeTopic,
       result: feedback || {},
       userAnswer: answer
     });
-    const nextExplainData = fallbackData || explainData || explainAnswer({ question, topic: activeTopic, result: feedback || {}, userAnswer: answer });
-    setExplainData(nextExplainData);
-    setTeacherData(fallbackData || teachAnswer({ question, topic: activeTopic, explanationData: nextExplainData }));
+    const fallbackTeacherData = teachAnswer({
+      question,
+      topic: activeTopic,
+      explanationData: fallbackExplainData
+    });
+    setExplainData(fallbackExplainData);
+    setTeacherData(fallbackTeacherData);
     setTeacherOpen(true);
-    void fetchCoachKnowledgeData({
+    void getCoachTeacherData({
       subjectId: activeSubject?.id,
       topicId: activeTopic?.id,
       question,
       result: feedback || {},
-      userAnswer: answer
+      userAnswer: answer,
+      topic: activeTopic
     }).then(nextData => {
-      if (nextData) {
-        setExplainData(nextData);
-        setTeacherData(nextData);
-      }
+      if (!nextData) return;
+      setExplainData(nextData);
+      setTeacherData(nextData);
     });
   }
 

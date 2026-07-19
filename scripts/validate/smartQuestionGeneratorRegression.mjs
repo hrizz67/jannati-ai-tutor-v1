@@ -5,6 +5,29 @@ import { createDefaultSmartQuestionState } from '../../src/ai/questionGenerator/
 import { getRecommendedDifficulty, calculateDifficultyScore } from '../../src/ai/questionGenerator/difficultyEngine.js';
 import { buildRevisionQueue } from '../../src/ai/questionGenerator/revisionQueue.js';
 
+const TRACE = String(process.env.SMART_GENERATOR_TRACE || '').trim() === '1';
+
+function traceScenario(label, decision, extras = {}) {
+  if (!TRACE) return;
+  const summary = {
+    label,
+    subject: extras.subject || '',
+    topic: extras.topic || '',
+    seed: extras.seed ?? '',
+    requestedProfile: extras.requestedProfile || {},
+    candidateIds: Array.isArray(extras.candidateIds) ? extras.candidateIds : [],
+    rejectedCandidateIds: Array.isArray(extras.rejectedCandidateIds) ? extras.rejectedCandidateIds : [],
+    rejectionReasons: Array.isArray(extras.rejectionReasons) ? extras.rejectionReasons : [],
+    retryCount: Number(extras.retryCount || 0),
+    finalSelectedId: decision?.question?.id || '',
+    recentHistorySnapshot: Array.isArray(extras.recentHistorySnapshot) ? extras.recentHistorySnapshot : [],
+    order: Array.isArray(decision?.questions) ? decision.questions.map(item => item?.id).filter(Boolean) : [],
+    repeatScore: decision?.question?.smartQuestion?.repeatScore ?? null,
+    selectionReason: decision?.selectionReason || ''
+  };
+  console.log(JSON.stringify(summary, null, 2));
+}
+
 const sampleQuestions = [
   {
     id: 'Q1',
@@ -145,6 +168,21 @@ const repeatDecision = buildSmartQuestionSession(sampleQuestions, {
   subject: { id: 'bm', title: 'Bahasa Melayu' },
   topic: { id: 'kata_kerja', title: 'Kata Kerja' },
   mode: 'quiz'
+});
+
+traceScenario('repeat-guard', repeatDecision, {
+  subject: 'bm',
+  topic: 'kata_kerja',
+  seed: repeatState.variationSeed || 0,
+  requestedProfile: {
+    streak: 0,
+    topics: {}
+  },
+  candidateIds: sampleQuestions.map(item => item.id),
+  rejectedCandidateIds: [],
+  rejectionReasons: [],
+  retryCount: 0,
+  recentHistorySnapshot: repeatState.lastQuestions
 });
 
 assert.notEqual(repeatDecision.question?.id, 'Q1', 'Repeat guard should avoid the most recent question.');

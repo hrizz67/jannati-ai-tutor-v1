@@ -465,6 +465,58 @@ export function generateRecommendation(profile, options = {}) {
   };
 }
 
+export function recommendAdaptiveAction(input = {}) {
+  const mastery = clamp(toNumber(input.mastery, 0), 0, 100);
+  const revisionPriority = clamp(toNumber(input.revisionPriority, 0), 0, 100);
+  const attempts = toNumber(input.attempts, 0);
+  const incorrect = toNumber(input.incorrect, 0);
+  const usedHintCount = toNumber(input.usedHintCount, 0);
+  const usedExplainCount = toNumber(input.usedExplainCount, 0);
+
+  if (mastery < 60) {
+    return {
+      recommendation: 'review',
+      recommendationKey: 'review',
+      action: 'review',
+      reason: 'Penguasaan masih rendah, ulang semula topik ini.',
+      revisionPriority: clamp(Math.round(65 + (60 - mastery) * 0.5 + revisionPriority * 0.25), 0, 100),
+      mastery,
+      attempts,
+      incorrect,
+      usedHintCount,
+      usedExplainCount
+    };
+  }
+
+  if (mastery <= 85) {
+    return {
+      recommendation: 'normal practice',
+      recommendationKey: 'normal_practice',
+      action: 'normal_practice',
+      reason: 'Teruskan latihan biasa untuk mengukuhkan penguasaan.',
+      revisionPriority: clamp(Math.round(35 + revisionPriority * 0.3), 0, 100),
+      mastery,
+      attempts,
+      incorrect,
+      usedHintCount,
+      usedExplainCount
+    };
+  }
+
+  return {
+    recommendation: 'increase difficulty or move to next topic',
+    recommendationKey: 'increase_difficulty',
+    action: 'advance',
+    reason: 'Penguasaan tinggi, boleh naik aras atau ke topik seterusnya.',
+    revisionPriority: clamp(Math.round(10 + revisionPriority * 0.15), 0, 100),
+    mastery,
+    attempts,
+    incorrect,
+    usedHintCount,
+    usedExplainCount
+  };
+}
+
 export default {
   DEFAULT_RECOMMENDATION_CONFIG,
   allocateQuestions,

@@ -123,9 +123,12 @@ export function calculateMastery(record = {}) {
   const wrong = toNumber(record.wrong, 0);
   const averageTime = toNumber(record.averageTime, 0);
   const xp = toNumber(record.xp, 0);
+  const usedHintCount = toNumber(record.usedHintCount ?? record.hintsUsed ?? 0, 0);
+  const usedExplainCount = toNumber(record.usedExplainCount ?? record.explanationsUsed ?? 0, 0);
   const difficultyScore = difficultyWeight(record.difficulty);
   const attemptFloor = clamp(total * 2.5, 0, 20);
   const errorPenalty = clamp(wrong * 5.5, 0, 22);
+  const supportPenalty = clamp((usedHintCount * 1.5) + (usedExplainCount * 1.2), 0, 12);
   const speedBonus = averageTime > 0 ? clamp(18 - Math.floor(averageTime / 15), 0, 18) : 0;
   const xpBonus = clamp(Math.floor(xp / 18), 0, 20);
   const recencyBonus = record.lastPlayed ? 4 : 0;
@@ -140,7 +143,8 @@ export function calculateMastery(record = {}) {
     recencyBonus +
     recentTrend(record) * 0.35 +
     (difficultyScore - 1) * 12 -
-    errorPenalty,
+    errorPenalty -
+    supportPenalty,
     0,
     100
   ));
@@ -150,16 +154,19 @@ export function calculateConfidence(record = {}) {
   const total = toNumber(record.total, 0);
   const accuracy = calculateAccuracy(record);
   const mastery = toNumber(record.mastery, calculateMastery(record));
+  const usedHintCount = toNumber(record.usedHintCount ?? record.hintsUsed ?? 0, 0);
+  const usedExplainCount = toNumber(record.usedExplainCount ?? record.explanationsUsed ?? 0, 0);
   const streakFactor = clamp(total * 6, 0, 30);
   const certaintyFactor = clamp(accuracy * 0.22 + mastery * 0.22, 0, 44);
   const experienceFactor = clamp(Math.max(0, total - 1) * 4, 0, 24);
   const timeFactor = record.averageTime ? clamp(18 - Math.floor(record.averageTime / 18), 0, 12) : 0;
+  const supportPenalty = clamp((usedHintCount * 1.1) + (usedExplainCount * 0.9), 0, 12);
 
   return Math.round(clamp(
     streakFactor + certaintyFactor + experienceFactor + timeFactor,
     0,
     100
-  ));
+  ) - supportPenalty);
 }
 
 export function getTopicMastery(profile = {}, subjectId, topicId) {

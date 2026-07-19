@@ -297,6 +297,15 @@ export function rankQuestionQuality(candidates = [], options = {}) {
 export function selectQualityQuestions(candidates = [], options = {}) {
   const count = Math.max(0, Number(options.count || candidates.length) || candidates.length);
   const ranked = rankQuestionQuality(candidates, options);
+  const recentQuestionIdSet = new Set(
+    (Array.isArray(options.recentQuestionIds) ? options.recentQuestionIds : [])
+      .map(value => String(value ?? '').trim())
+      .filter(Boolean)
+  );
+  const preferredRanked = recentQuestionIdSet.size
+    ? ranked.filter(question => !recentQuestionIdSet.has(String(question.id || question.questionId || '').trim()))
+    : ranked;
+  const selectionRanked = preferredRanked.length ? preferredRanked : ranked;
   const selected = [];
   const rejected = [];
   const warnings = [];
@@ -304,7 +313,7 @@ export function selectQualityQuestions(candidates = [], options = {}) {
   const recentTemplates = Array.isArray(options.recentTemplates) ? [...options.recentTemplates] : [];
   const recentQuestionIds = Array.isArray(options.recentQuestionIds) ? [...options.recentQuestionIds] : [];
 
-  for (const question of ranked) {
+  for (const question of selectionRanked) {
     const quality = question.quality || {};
     const templateId = String(question.qip?.metadata?.templateId || question.templateId || '');
     const style = String(question.questionStyle || '');

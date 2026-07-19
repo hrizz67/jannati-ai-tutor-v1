@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
 
 function safeList(value) {
-  return Array.isArray(value) ? value.filter(Boolean) : [];
+  if (Array.isArray(value)) return value.filter(Boolean).map(item => String(item));
+  if (value === null || value === undefined || value === '') return [];
+  return [String(value)];
 }
 
 function renderListSection(title, items) {
@@ -18,11 +20,31 @@ function renderListSection(title, items) {
 }
 
 export default function AITeacherModal({ open, data, character = 'jati', onTutup, onLatih }) {
+  const closeButtonRef = useRef(null);
+  const restoreFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    restoreFocusRef.current = document.activeElement;
+    const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
+    function onKeyDown(event) {
+      if (event.key === 'Escape') onTutup?.();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus?.();
+    };
+  }, [open, onTutup]);
+
   if (!open || !data) return null;
 
   const examples = safeList(data.examples);
   const extraExamples = safeList(data.extraExamples);
+  const steps = safeList(data.steps);
   const tips = safeList(data.tips);
+  const learningTip = safeList(data.learningTip);
   const memoryTips = safeList(Array.isArray(data.memoryTips) && data.memoryTips.length ? data.memoryTips : (data.memoryTip ? [data.memoryTip] : []));
   const commonMistakes = safeList(data.commonMistakes);
   const followUpQuestions = safeList(data.followUpQuestions);
@@ -65,8 +87,10 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
   const voiceText = [
     data.explanation,
     ...tips,
+    ...learningTip,
     ...examples,
     ...extraExamples,
+    ...steps,
     ...workedExamples,
     ...problemSolvingSteps,
     ...scientificFacts,
@@ -120,6 +144,7 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
             </div>
           </div>
           <button
+            ref={closeButtonRef}
             className="ghost modal-close-button"
             type="button"
             onClick={onTutup}
@@ -138,7 +163,9 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
 
           <MascotCard character={character} mood="teaching" size="md" animation="gentle" message="Jom belajar langkah demi langkah." />
 
+          {renderListSection('Langkah', steps)}
           {renderListSection('Tip', tips)}
+          {renderListSection('Tip belajar', learningTip)}
           {renderListSection('Contoh', examples)}
           {renderListSection('Contoh lain', extraExamples)}
           {renderListSection('Worked examples', workedExamples)}

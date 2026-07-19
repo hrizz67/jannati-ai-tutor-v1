@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
 
 function safeList(value) {
-  return Array.isArray(value) ? value.filter(Boolean) : [];
+  if (Array.isArray(value)) return value.filter(Boolean).map(item => String(item));
+  if (value === null || value === undefined || value === '') return [];
+  return [String(value)];
 }
 
 function renderListSection(title, items) {
@@ -18,11 +20,31 @@ function renderListSection(title, items) {
 }
 
 export default function AIExplainModal({ open, data, question, character = 'jati', onTutup, onTryAgain, onTeach }) {
+  const closeButtonRef = useRef(null);
+  const restoreFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    restoreFocusRef.current = document.activeElement;
+    const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
+    function onKeyDown(event) {
+      if (event.key === 'Escape') onTutup?.();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus?.();
+    };
+  }, [open, onTutup]);
+
   if (!open || !data) return null;
 
   const examples = safeList(data.examples);
   const extraExamples = safeList(data.extraExamples);
+  const steps = safeList(data.steps);
   const tips = safeList(data.tips);
+  const learningTip = safeList(data.learningTip);
   const memoryTips = safeList(Array.isArray(data.memoryTips) && data.memoryTips.length ? data.memoryTips : (data.memoryTip ? [data.memoryTip] : []));
   const commonMistakes = safeList(data.commonMistakes);
   const followUpQuestions = safeList(data.followUpQuestions);
@@ -67,8 +89,10 @@ export default function AIExplainModal({ open, data, question, character = 'jati
     data.simpleExplanation,
     data.hint,
     ...tips,
+    ...learningTip,
     ...examples,
     ...extraExamples,
+    ...steps,
     ...workedExamples,
     ...problemSolvingSteps,
     ...scientificFacts,
@@ -123,6 +147,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
             </div>
           </div>
           <button
+            ref={closeButtonRef}
             className="ghost modal-close-button"
             type="button"
             onClick={onTutup}
@@ -151,7 +176,9 @@ export default function AIExplainModal({ open, data, question, character = 'jati
             <p>{data.hint || 'Cari kata kunci penting dalam soalan.'}</p>
           </div>
 
+          {renderListSection('Langkah', steps)}
           {renderListSection('Tip', tips)}
+          {renderListSection('Tip belajar', learningTip)}
           {renderListSection('Contoh lain', extraExamples)}
           {renderListSection('Contoh', examples)}
           {renderListSection('Worked examples', workedExamples)}

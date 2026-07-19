@@ -12,8 +12,31 @@ function uniqueQuestions(candidates = []) {
   });
 }
 
+function collectRecentQuestionIds(options = {}) {
+  const ids = new Set();
+  const add = value => {
+    const id = String(value ?? '').trim();
+    if (id) ids.add(id);
+  };
+
+  if (Array.isArray(options.recentQuestionIds)) {
+    options.recentQuestionIds.forEach(add);
+  }
+
+  const smartState = options.smartState && typeof options.smartState === 'object' ? options.smartState : null;
+  if (smartState) {
+    const history = Array.isArray(smartState.history) ? smartState.history : [];
+    const lastQuestions = Array.isArray(smartState.lastQuestions) ? smartState.lastQuestions : [];
+    history.forEach(item => add(item?.questionId || item?.id));
+    lastQuestions.forEach(item => add(item?.questionId || item?.id));
+  }
+
+  return [...ids];
+}
+
 export function selectSmartQuestions(candidates = [], options = {}) {
   const source = uniqueQuestions(candidates);
+  const recentQuestionIds = collectRecentQuestionIds(options);
   let ranked = source;
   let statistics = null;
   try {
@@ -28,7 +51,7 @@ export function selectSmartQuestions(candidates = [], options = {}) {
   try {
     const qualityRanked = rankQuestionQuality(ranked, {
       ...options,
-      recentQuestionIds: Array.isArray(options.recentQuestionIds) ? options.recentQuestionIds : [],
+      recentQuestionIds,
       recentTemplates: Array.isArray(options.recentTemplates) ? options.recentTemplates : [],
       recentStyles: Array.isArray(options.recentStyles) ? options.recentStyles : []
     });
@@ -43,7 +66,7 @@ export function selectSmartQuestions(candidates = [], options = {}) {
     qualitySelection = selectQualityQuestions(ranked, {
       ...options,
       count: Math.max(0, Number(options.count || ranked.length) || ranked.length),
-      recentQuestionIds: Array.isArray(options.recentQuestionIds) ? options.recentQuestionIds : [],
+      recentQuestionIds,
       recentTemplates: Array.isArray(options.recentTemplates) ? options.recentTemplates : [],
       recentStyles: Array.isArray(options.recentStyles) ? options.recentStyles : []
     });
