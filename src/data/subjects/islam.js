@@ -514,8 +514,8 @@ const jawiWords = [
 
 const jawiPerkataanQuestions = jawiWords.map(([jawi, rumi], index) =>
   index === 33
-    ? fill(`Dalam tulisan Jawi, ${jawi} sepadan dengan bacaan Rumi ________.`, rumi, "Perhatikan semula huruf Jawi dan sebutannya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
-    : fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
+    ? fill(`Dalam tulisan Jawi, ${jawi} sepadan dengan bacaan Rumi ________.`, rumi, "Perhatikan semula huruf Jawi dan sebutannya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi])
+    : fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi])
 );
 
 export const islamSubject = {

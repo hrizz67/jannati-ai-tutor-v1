@@ -6,8 +6,8 @@
 - Average quality score: 99
 - Critical: 0
 - High: 90
-- Medium: 232
-- Low: 4238
+- Medium: 182
+- Low: 4288
 
 ## Issues by Subject
 
@@ -19,15 +19,15 @@
 | Bahasa Melayu Tahun 2 | 318 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | English Year 2 | 201 |
-| Pendidikan Islam Tahun 2 | 140 |
 | Sains Tahun 2 | 109 |
+| Pendidikan Islam Tahun 2 | 92 |
 
 ## Issues by Category
 
 | Category | Issue Count |
 | --- | ---: |
-| same_answer_pattern_repeated | 1753 |
-| multiple_possible_answers | 281 |
+| same_answer_pattern_repeated | 1755 |
+| multiple_possible_answers | 231 |
 | missing_arabic_text | 90 |
 | ambiguous_operation | 39 |
 | identical_question_text | 5 |
@@ -41,7 +41,6 @@
 - Bahasa Arab Tahun 2 / Ahli Keluarga / multiple_possible_answers: 50
 - Bahasa Arab Tahun 2 / Haiwan / multiple_possible_answers: 50
 - Bahasa Arab Tahun 2 / Anggota Badan / multiple_possible_answers: 50
-- Pendidikan Islam Tahun 2 / Perkataan Jawi / multiple_possible_answers: 50
 - Matematik Tahun 2 / Bentuk 2D dan 3D / same_answer_pattern_repeated: 44
 - Bahasa Melayu Tahun 2 / Kata Sendi Nama / same_answer_pattern_repeated: 42
 - English Year 2 / Simple Sentences / same_answer_pattern_repeated: 42
@@ -55,6 +54,7 @@
 - English Year 2 / Numbers / same_answer_pattern_repeated: 38
 - Bahasa Melayu Tahun 2 / Tatabahasa / same_answer_pattern_repeated: 37
 - Pendidikan Jasmani Tahun 2 / Gaya Hidup Aktif / same_answer_pattern_repeated: 37
+- Pendidikan Kesihatan Tahun 2 / Kebersihan Diri / same_answer_pattern_repeated: 37
 
 ## Critical Questions
 
