@@ -51,4 +51,8 @@ export {
   buildSpacedRevisionSchedule
 } from './spacedRevision.js';
 
+export {
+  explainWeakness
+} from './weakTopicEngine.js';
+
 export default {};

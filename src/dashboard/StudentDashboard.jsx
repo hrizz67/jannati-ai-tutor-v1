@@ -1,6 +1,6 @@
 import React from 'react';
 import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dashboardHelpers.jsx';
-import { explainWeakness } from '../ai/adaptive/weakTopicEngine';
+import { explainWeakness } from '../ai/adaptive/index.js';
 import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 

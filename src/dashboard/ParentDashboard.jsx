@@ -18,6 +18,8 @@ import {
   formatTopicName
 } from '../utils/displayFormatter';
 import MetricCard from '../components/MetricCard.jsx';
+import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx';
+import { createStudyPlannerPayload } from '../studyPlanner/index.js';
 
 const SUBJECTS = [
   { id: 'math', label: 'Matematik' },
@@ -111,6 +113,31 @@ export default function ParentDashboard({
   const summary = useMemo(() => buildParentSummary(insightsProfile), [insightsProfile]);
   const recommendationSummary = useMemo(() => buildRecommendationSummary(insightsProfile), [insightsProfile]);
   const revisionSummary = useMemo(() => buildRevisionSummary(insightsProfile), [insightsProfile]);
+  const studyPlannerPayload = useMemo(() => {
+    try {
+      return createStudyPlannerPayload(insightsProfile, {
+        availableStudyMinutes: summary.studyTime || 20,
+        date: new Date()
+      });
+    } catch (error) {
+      return {
+        plannerVersion: 1,
+        generatedAt: new Date().toISOString(),
+        onboarding: false,
+        availableStudyMinutes: 0,
+        parentSummary: summary,
+        dailyPlan: { onboarding: false, availableMinutes: 0, blocks: [] },
+        weeklyPlan: { startDate: new Date().toISOString(), days: [] },
+        parentSummaryText: 'Pelan belajar tidak dapat dijana.',
+        recentActivity: [],
+        signals: { candidateCount: 0, focusCount: 0, overdueCount: 0 },
+        error: {
+          code: 'study_planner_unavailable',
+          message: safeText(error?.message, 'Pelan belajar tidak dapat dijana.')
+        }
+      };
+    }
+  }, [insightsProfile, summary.studyTime, summary]);
   const initialSelectedSubjectId = useMemo(() => resolveInitialSubjectId(insightsProfile || sourceProfile), [insightsProfile, sourceProfile]);
   const [selectedSubjectId, setSelectedSubjectId] = useState(initialSelectedSubjectId);
 
@@ -309,6 +336,8 @@ export default function ParentDashboard({
           <EmptyState title="Belum ada jadual ulang kaji" message="Jadual akan muncul selepas murid mempunyai data penguasaan." />
         )}
       </section>
+
+      <StudyPlannerPanel planner={studyPlannerPayload} />
 
       <section className="card">
         <p className="eyebrow">Sejarah UASA</p>
