@@ -20,16 +20,8 @@ import {
 import MetricCard from '../components/MetricCard.jsx';
 import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx';
 import { createStudyPlannerPayload } from '../studyPlanner/index.js';
-
-const SUBJECTS = [
-  { id: 'math', label: 'Matematik' },
-  { id: 'bm', label: 'Bahasa Melayu' },
-  { id: 'english', label: 'English' },
-  { id: 'sains', label: 'Science' },
-  { id: 'islam', label: 'Pendidikan Islam' },
-  { id: 'arab', label: 'Bahasa Arab' },
-  { id: 'pj', label: 'PJK' }
-];
+import { subjectList as registrySubjectList } from '../data/subjects/index.js';
+import { getStudentDisplayName } from '../utils/displayFormatter';
 
 const RECOMMENDATION_TEXT = {
   review: 'Perlu ulang kaji',
@@ -76,9 +68,9 @@ function buildMockGuardProfile(profile, allowMock) {
   return allowMock ? createMockParentProfile() : null;
 }
 
-function resolveInitialSubjectId(profile = null) {
+function resolveInitialSubjectId(profile = null, subjects = []) {
   if (profile && typeof profile === 'object') {
-    for (const subject of SUBJECTS) {
+    for (const subject of subjects) {
       const topicMap = profile?.subjects?.[subject.id]?.topics;
       if (topicMap && typeof topicMap === 'object' && Object.keys(topicMap).length > 0) {
         return subject.id;
@@ -89,7 +81,7 @@ function resolveInitialSubjectId(profile = null) {
       }
     }
   }
-  return SUBJECTS[0]?.id || 'bm';
+  return subjects[0]?.id || 'bm';
 }
 
 export default function ParentDashboard({
@@ -113,6 +105,8 @@ export default function ParentDashboard({
   const summary = useMemo(() => buildParentSummary(insightsProfile), [insightsProfile]);
   const recommendationSummary = useMemo(() => buildRecommendationSummary(insightsProfile), [insightsProfile]);
   const revisionSummary = useMemo(() => buildRevisionSummary(insightsProfile), [insightsProfile]);
+  const subjectCatalog = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : registrySubjectList), [allSubjects]);
+  const studentName = getStudentDisplayName(insightsProfile || sourceProfile, 'Murid');
   const studyPlannerPayload = useMemo(() => {
     try {
       return createStudyPlannerPayload(insightsProfile, {
@@ -138,10 +132,10 @@ export default function ParentDashboard({
       };
     }
   }, [insightsProfile, summary.studyTime, summary]);
-  const initialSelectedSubjectId = useMemo(() => resolveInitialSubjectId(insightsProfile || sourceProfile), [insightsProfile, sourceProfile]);
+  const initialSelectedSubjectId = useMemo(() => resolveInitialSubjectId(insightsProfile || sourceProfile, subjectCatalog), [insightsProfile, sourceProfile, subjectCatalog]);
   const [selectedSubjectId, setSelectedSubjectId] = useState(initialSelectedSubjectId);
 
-  const subjectInsights = useMemo(() => SUBJECTS.map(subject => {
+  const subjectInsights = useMemo(() => subjectCatalog.map(subject => {
     const insight = readSubjectInsight(insightsProfile, subject.id, { allowMock });
     const topics = Array.isArray(insight.topics) ? insight.topics : [];
     const mastery = getSubjectMastery(insight);
@@ -158,7 +152,7 @@ export default function ParentDashboard({
       attempts,
       hasData: topics.length > 0 || attempts > 0
     };
-  }), [insightsProfile, allowMock]);
+  }), [insightsProfile, allowMock, subjectCatalog]);
 
   const selectedSubject = subjectInsights.find(subject => subject.id === selectedSubjectId)
     || subjectInsights[0]
@@ -203,7 +197,7 @@ export default function ParentDashboard({
         <p className="eyebrow">Ringkasan Prestasi Anak</p>
         <h2>Ringkasan Prestasi Anak</h2>
         <div className="metric-grid">
-          <MetricCard value={safeText(summary.name, 'Murid')} label="Nama Murid" />
+          <MetricCard value={safeText(summary.name || studentName, 'Murid')} label="Nama Murid" />
           <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
           <MetricCard value={safeNumber(summary.questionsAnswered, 0)} label="Soalan Dijawab" />
           <MetricCard value={`${safePercent(summary.accuracy)}%`} label="Ketepatan" />

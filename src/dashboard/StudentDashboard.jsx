@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dashboardHelpers.jsx';
-import { explainWeakness } from '../ai/adaptive/index.js';
-import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { buildAdaptiveLearningSnapshot, explainWeakness } from '../ai/index.js';
+import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 
 export default function StudentDashboard({
@@ -21,12 +21,17 @@ export default function StudentDashboard({
   gamificationProfile = null,
   onStartAdaptivePractice
 }) {
-  const name = adaptiveProfile?.name || profile.name || 'Anak';
+  const name = getStudentDisplayName(adaptiveProfile?.name ? adaptiveProfile : profile, 'Murid');
   const topWeak = adaptiveWeakTopics.slice(0, 5);
   const topStrong = adaptiveStrongTopics.slice(0, 5);
-  const recommendationLead = studyPlan?.notes || 'Ikuti latihan yang seimbang hari ini.';
+  const adaptiveSnapshot = React.useMemo(() => {
+    const focus = adaptiveRecommendationFocus || topWeak[0] || null;
+    if (!focus?.subjectId || !focus?.topicId) return null;
+    return buildAdaptiveLearningSnapshot(adaptiveProfile || profile, focus.subjectId, focus.topicId);
+  }, [adaptiveProfile, profile, adaptiveRecommendationFocus, topWeak]);
+  const recommendationLead = studyPlan?.notes || adaptiveSnapshot?.reason || 'Ikuti latihan yang seimbang hari ini.';
   const recommendationFocusText = adaptiveRecommendationFocus
-    ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} ? ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+    ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} — ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
     : '';
 
   return (
@@ -123,7 +128,7 @@ export default function StudentDashboard({
           {studyPlan
             ? `${recommendationLead}${recommendationFocusText ? ` ${recommendationFocusText}` : ''}`
             : adaptiveRecommendationFocus
-              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} ? ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} — ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
               : 'Fokus utama belum tersedia.'}
         </p>
         <div className="mastery-summary-grid">

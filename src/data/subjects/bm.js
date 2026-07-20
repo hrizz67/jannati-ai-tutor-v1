@@ -2,7 +2,7 @@ export const bmSubject = {
   "id": "bm",
   "title": "Bahasa Melayu Tahun 2",
   "short": "BM",
-  "icon": "??",
+  "icon": "📘",
   "color": "green",
   "topics": [
     {

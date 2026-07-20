@@ -1,24 +1,41 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
 import BrandLogo from '../components/BrandLogo';
+import IconGlyph from '../components/IconGlyph.jsx';
 import MascotCard from '../components/MascotCard';
 import JannaAvatar from '../components/JannaAvatar';
-import { formatStudyTime, loadAIMemory } from '../ai/memoryEngine';
-import { buildRecommendation, isWeakTopic } from '../ai/recommendationEngine';
-import { buildAdaptiveRecommendation } from '../ai/adaptiveEngine';
-import { buildMasteryMap, summarizeMastery, MASTERY_STATUS } from '../ai/adaptive/masteryEngine';
-import { buildLessonPlan } from '../ai/adaptive/lessonPlanner';
-import { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from '../ai/adaptive/knowledgeGraph';
-import { rankStrongTopics, rankWeakTopics, explainWeakness } from '../ai/adaptive/weakTopicEngine';
-import { generateRecommendation } from '../ai/adaptive/recommendationEngine';
-import { getWeeklySummary } from '../ai/adaptive/weeklyAnalyticsEngine';
-import { getAllSubjectAnalytics, getBestSubject, getWeakestSubject, getSubjectAttentionSummary } from '../ai/adaptive/subjectAnalyticsEngine';
-import { generateParentReport } from '../ai/adaptive/parentReportEngine';
-import { getTodayRevision } from '../ai/revision/revisionPlannerEngine';
-import { getReviewQueue } from '../ai/revision/spacedRepetitionEngine';
-import { getRecommendedDifficulty, buildDifficultyPlan } from '../ai/revision/difficultyEngine';
-import { buildMixedRevisionSession } from '../ai/revision/mixedRevisionEngine';
-import { buildRevisionCalendar } from '../ai/revision/revisionCalendarEngine';
-import { buildStudentIntelligence, getStudentLevel } from '../ai/studentIntelligence';
+import { getStudentDisplayName } from '../utils/displayFormatter';
+import {
+  formatStudyTime,
+  loadAIMemory,
+  buildRecommendation,
+  isWeakTopic,
+  buildAdaptiveRecommendation,
+  buildMasteryMap,
+  summarizeMastery,
+  MASTERY_STATUS,
+  buildLessonPlan,
+  getBlockedPrerequisites,
+  getDependencyArrow,
+  isTopicUnlockedByGraph,
+  rankStrongTopics,
+  rankWeakTopics,
+  explainWeakness,
+  generateRecommendation,
+  getWeeklySummary,
+  getAllSubjectAnalytics,
+  getBestSubject,
+  getWeakestSubject,
+  getSubjectAttentionSummary,
+  generateParentReport,
+  getTodayRevision,
+  getReviewQueue,
+  getRecommendedDifficulty,
+  buildDifficultyPlan,
+  buildMixedRevisionSession,
+  buildRevisionCalendar,
+  buildStudentIntelligence,
+  getStudentLevel
+} from '../ai/index.js';
 import { recommendMissingSkSp, summarizeUasaCoverage } from '../curriculum/uasaEngine';
 import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
 import { buildTeacherPortalSnapshot } from '../curriculum/curriculumEngine';
@@ -133,15 +150,18 @@ export function EmptyState({ title, message, actionLabel, onAction }) {
 
 export function DashboardHeader({ profile, level, levelProgress }) {
   const studentYear = profile.year || 'Tahun 2';
+  const studentName = getStudentDisplayName(profile, 'Murid');
   return <header className="brand-app-header">
     <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">{studentYear}</p><h1>Jannati AI Tutor</h1></div></div>
     <div className="brand-student-strip">
       <JannaAvatar size={48} className="student-avatar" />
-      <div><b>{profile.name || 'Anak'}</b><small>{studentYear}</small></div>
+      <div><b title={studentName}>{studentName}</b><small>{studentYear}</small></div>
       <span className="achievement-chip">Tahap {level}</span>
       <span className="achievement-chip">Bintang {getStars(levelProgress)}</span>
       <span className="achievement-chip">Streak {profile.streak || 0}</span>
-      <button type="button" className="icon-button" aria-label="Notifikasi">!</button>
+      <button type="button" className="icon-button" aria-label="Notifikasi">
+        <IconGlyph name="bell" />
+      </button>
     </div>
   </header>;
 }
@@ -218,6 +238,7 @@ export {
   formatStudyTime,
   loadAIMemory
 };
+
 
 
 

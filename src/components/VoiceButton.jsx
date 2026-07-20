@@ -1,6 +1,5 @@
-import React from 'react';
-import { speak } from '../ai/voice/voiceEngine.js';
-import { supportsVoice } from '../ai/voice/voiceCapability.js';
+﻿import React from 'react';
+import { speak, supportsVoice } from '../ai/index.js';
 
 function VoiceIcon() {
   return (
@@ -26,3 +25,4 @@ export default function VoiceButton({ text = '', label = 'Baca', className = '',
     </button>
   );
 }
+

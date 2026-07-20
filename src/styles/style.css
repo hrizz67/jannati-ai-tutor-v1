@@ -2214,3 +2214,516 @@ textarea[dir="rtl"] {
     max-width: calc(100vw - 20px);
   }
 }
+
+.study-planner-panel,
+.gamification-panel {
+  overflow: hidden;
+}
+
+.study-planner-summary,
+.gamification-summary-grid {
+  align-items: stretch;
+}
+
+.study-planner-summary > div,
+.gamification-summary-grid > div {
+  min-width: 0;
+}
+
+.study-planner-notes,
+.gamification-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.study-planner-notes span,
+.gamification-meta span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.daily-plan-card,
+.weekly-plan-list,
+.study-block-item,
+.gamification-achievement-block {
+  min-width: 0;
+}
+
+.study-block-item {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(8, 122, 59, .12);
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(180deg, #ffffff, #f8fff8);
+}
+
+.study-block-item.compact {
+  padding: 12px;
+}
+
+.study-block-item-head {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.study-block-item-head b,
+.study-block-item-head span,
+.study-block-item p,
+.study-block-meta span,
+.weekly-plan-day summary span,
+.weekly-plan-day summary b {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.study-block-item p {
+  margin: 0;
+}
+
+.study-block-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.weekly-plan-day {
+  min-width: 0;
+}
+
+.weekly-plan-day summary {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  min-width: 0;
+}
+
+.weekly-plan-day summary::-webkit-details-marker {
+  display: none;
+}
+
+.gamification-panel .achievement-badge,
+.gamification-panel .level-progress,
+.gamification-panel .reward-summary,
+.gamification-panel .gamification-meta {
+  min-width: 0;
+}
+
+.gamification-panel .achievement-badge {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1024px) {
+  .study-planner-summary,
+  .gamification-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .study-planner-summary,
+  .gamification-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .study-planner-notes,
+  .gamification-meta {
+    display: grid;
+  }
+}
+
+.icon-glyph {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  vertical-align: middle;
+}
+
+.nav,
+.quick-actions button,
+.card .actions button,
+.resume-card .actions button,
+.daily-card button,
+.icon-button,
+.achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.nav .icon-glyph,
+.quick-actions button .icon-glyph,
+.card .actions button .icon-glyph,
+.resume-card .actions button .icon-glyph,
+.daily-card button .icon-glyph {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-button {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+.icon-button .icon-glyph {
+  width: 20px;
+  height: 20px;
+}
+
+.stat {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .nav,
+  .quick-actions button,
+  .card .actions button,
+  .resume-card .actions button,
+  .daily-card button {
+    justify-content: center;
+  }
+}
+
+:root {
+  --motion-fast: 140ms;
+  --motion-normal: 220ms;
+  --motion-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.subject-quick-switch-shell {
+  position: sticky;
+  top: 12px;
+  z-index: 18;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+  min-width: 0;
+  width: 100%;
+  margin: 12px 0 4px;
+}
+
+.subject-quick-switch {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 8px 18px 10px 12px;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 18px;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.subject-quick-switch::-webkit-scrollbar {
+  display: none;
+}
+
+.subject-quick-pill {
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  color: #123;
+  border: 1px solid rgba(15,138,67,.14);
+  scroll-snap-align: start;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.subject-switch-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  margin: auto 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.96);
+  color: #0f8a43;
+  border: 1px solid rgba(15,138,67,.16);
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.subject-switch-arrow:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.subject-switch-arrow:hover,
+.subject-switch-arrow:focus-visible {
+  transform: translateY(-1px);
+}
+
+.subject-quick-pill.active {
+  background: linear-gradient(135deg, #0f8a43, #006b32);
+  color: #fff;
+  border-color: transparent;
+}
+
+.subject-quick-pill:hover,
+.subject-quick-pill:focus-visible,
+.nav:hover,
+.nav:focus-visible,
+.quick-actions button:hover,
+.quick-actions button:focus-visible,
+.card .actions button:hover,
+.card .actions button:focus-visible,
+.resume-card .actions button:hover,
+.resume-card .actions button:focus-visible,
+.daily-card button:hover,
+.daily-card button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.subject-quick-pill .subject-quick-pill-icon,
+.subject-quick-pill .subject-quick-pill-text {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.subject-quick-pill .subject-quick-pill-text {
+  white-space: nowrap;
+}
+
+.dashboard-disclosure {
+  margin: 12px 0;
+  border: 1px solid rgba(15, 138, 67, .12);
+  border-radius: 22px;
+  background: rgba(255,255,255,.94);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.dashboard-disclosure > summary {
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(15, 138, 67, .08);
+}
+
+.dashboard-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-disclosure > summary span {
+  font-weight: 900;
+  color: var(--green);
+}
+
+.dashboard-disclosure > summary small {
+  color: var(--muted);
+}
+
+.dashboard-disclosure[open] > summary {
+  background: linear-gradient(135deg, #f4fff7, #fff);
+}
+
+.dashboard-disclosure > :not(summary) {
+  padding: 16px;
+}
+
+.mastery-summary-grid,
+.subject-report-grid,
+.metric-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.card,
+.profile {
+  transition: transform var(--motion-normal) var(--ease-out), box-shadow var(--motion-normal) var(--ease-out), border-color var(--motion-normal) var(--ease-out);
+}
+
+.card:hover,
+.profile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 138, 67, .16);
+}
+
+.nav,
+.quick-actions button,
+.card .actions button,
+.resume-card .actions button,
+.daily-card button,
+.subject-quick-pill,
+.icon-button {
+  transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out), background-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out), opacity var(--motion-fast) var(--ease-out);
+}
+
+.nav:active,
+.quick-actions button:active,
+.card .actions button:active,
+.resume-card .actions button:active,
+.daily-card button:active,
+.subject-quick-pill:active,
+.icon-button:active {
+  transform: translateY(0) scale(.98);
+}
+
+.icon-glyph[data-motion='hover'],
+.subject-quick-pill:hover .icon-glyph,
+.nav:hover .icon-glyph,
+.quick-actions button:hover .icon-glyph,
+.card .actions button:hover .icon-glyph,
+.resume-card .actions button:hover .icon-glyph,
+.daily-card button:hover .icon-glyph {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.icon-glyph[data-motion='pulse'] {
+  animation: iconPulse 1.8s var(--ease-out) infinite;
+}
+
+.icon-glyph[data-motion='celebrate'] {
+  animation: iconCelebrate 900ms var(--ease-bounce-soft) 1;
+}
+
+.icon-glyph[data-motion='shine'] {
+  animation: iconShine 900ms var(--ease-out) 1;
+}
+
+.icon-glyph[data-motion='breath'] {
+  animation: iconBreath 2.8s var(--ease-out) infinite;
+}
+
+.icon-glyph[data-motion='sound'] {
+  animation: iconSound 1.4s var(--ease-out) infinite;
+}
+
+.icon-glyph[data-motion='load'] {
+  animation: iconLoad 1.2s var(--ease-out) infinite;
+}
+
+.icon-glyph[data-active='true'] {
+  animation: iconPop 360ms var(--ease-bounce-soft) 1;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes iconCelebrate {
+  0% { transform: scale(.8) rotate(-10deg); opacity: 0; }
+  60% { transform: scale(1.12) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+@keyframes iconShine {
+  0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+  35% { transform: scale(1.08) rotate(8deg); filter: brightness(1.12); }
+  100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+}
+
+@keyframes iconBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes iconSound {
+  0%, 100% { transform: translateX(0); opacity: .85; }
+  50% { transform: translateX(1px) scale(1.06); opacity: 1; }
+}
+
+@keyframes iconLoad {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.04); }
+}
+
+@keyframes iconPop {
+  0% { transform: scale(0.88); }
+  70% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+  .subject-quick-switch-shell {
+    gap: 6px;
+  }
+
+  .subject-quick-switch {
+    margin-top: 8px;
+    padding-inline: 6px 16px 2px 8px;
+  }
+
+  .subject-quick-pill {
+    min-height: 44px;
+    padding: 9px 12px;
+  }
+
+  .subject-switch-arrow {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .dashboard-disclosure > summary {
+    padding: 12px 14px;
+  }
+
+  .dashboard-disclosure > :not(summary) {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-normal: 0ms;
+    --motion-slow: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card:hover,
+  .profile:hover,
+  .subject-quick-pill:hover,
+  .nav:hover,
+  .quick-actions button:hover,
+  .card .actions button:hover,
+  .resume-card .actions button:hover,
+  .daily-card button:hover,
+  .subject-quick-pill:hover .icon-glyph,
+  .nav:hover .icon-glyph,
+  .quick-actions button:hover .icon-glyph,
+  .card .actions button:hover .icon-glyph,
+  .resume-card .actions button:hover .icon-glyph,
+  .daily-card button:hover .icon-glyph {
+    transform: none !important;
+    filter: none !important;
+  }
+}

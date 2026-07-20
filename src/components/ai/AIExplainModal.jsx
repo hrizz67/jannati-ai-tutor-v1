@@ -181,7 +181,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
           {renderListSection('Tip belajar', learningTip)}
           {renderListSection('Contoh lain', extraExamples)}
           {renderListSection('Contoh', examples)}
-          {renderListSection('Worked examples', workedExamples)}
+          {renderListSection('Contoh langkah demi langkah', workedExamples)}
           {renderListSection('Langkah penyelesaian', problemSolvingSteps)}
           {renderListSection('Fakta sains', scientificFacts)}
           {renderListSection('Pemerhatian', observationPrompts)}

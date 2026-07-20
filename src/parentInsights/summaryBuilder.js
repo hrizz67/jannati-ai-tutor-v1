@@ -1,4 +1,5 @@
 import { resolveParentProfile } from './insightsService.js';
+import { getStudentDisplayName } from '../utils/displayFormatter.js';
 
 function toNumber(value, fallback = 0) {
   const number = Number(value);
@@ -16,7 +17,7 @@ export function buildParentSummary(profile = null) {
 
   return {
     studentId: nextProfile?.studentId || '',
-    name: nextProfile?.name || '',
+    name: getStudentDisplayName(nextProfile, 'Murid'),
     questionsAnswered,
     correct,
     wrong,

@@ -1,6 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { EmptyState, SettingsPanel, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
-import { formatStudyTime } from '../ai/memoryEngine';
+import IconGlyph from '../components/IconGlyph.jsx';
+import { formatStudyTime } from '../ai/index.js';
 import MetricCard from '../components/MetricCard.jsx';
 import { clampPercent, formatAttentionLevel, formatActivityStatus, formatPriority, formatStatus, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 
@@ -193,13 +194,13 @@ export default function AnalyticsDashboard({
       <section className="card daily-card">
         <p className="eyebrow">Cabaran Harian</p>
         <h2>Cabaran Hari Ini</h2>
-        <div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}>✅ {item.label}</span>)}</div>
-        <button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? '✅ Cabaran Harian Selesai' : '🎁 Tebus Bonus +50 XP +20 Syiling'}</button>
+        <div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}><IconGlyph name="check" motion="hover" /> <span>{item.label}</span></span>)}</div>
+        <button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? <><IconGlyph name="check" motion="celebrate" /> <span>Cabaran Harian Selesai</span></> : <><IconGlyph name="gift" motion="celebrate" /> <span>Tebus Bonus +50 XP +20 Syiling</span></>}</button>
       </section>
 
       <section className="card">
         <p className="eyebrow">Pilih Subjek</p>
-        <h2>📚 Subjek Tahun 2</h2>
+        <h2><IconGlyph name="book" motion="hover" /> <span>Subjek Tahun 2</span></h2>
         <div className="subject-grid">{subjectList.map(subject => {
           const loadedSubject = allSubjects.find(item => item.id === subject.id);
           const progress = loadedSubject ? Math.round((loadedSubject.topics.filter(topic => (profile.progress?.[`${loadedSubject.id}_${topic.id}`]?.best || 0) >= 80).length / Math.max(1, loadedSubject.topics.length)) * 100) : 0;
@@ -219,7 +220,7 @@ export default function AnalyticsDashboard({
 
       <section className="card stats-panel">
         <p className="eyebrow">Statistik {formatSubjectName(selectedSubject?.id)}</p>
-        <h2>📊 Ringkasan Kemajuan</h2>
+        <h2><IconGlyph name="chart" motion="hover" /> <span>Ringkasan Kemajuan</span></h2>
         <div className="metric-grid">
           <MetricCard value={`${clampPercent(averageScore)}%`} label="Purata" />
           <MetricCard value={completed} label="Topik Siap" />
@@ -232,17 +233,18 @@ export default function AnalyticsDashboard({
 
       <section className="card uasa-card">
         <p className="eyebrow">Latihan UASA</p>
-        <h2>🏆 Simulator UASA {formatSubjectName(selectedSubject?.id)}</h2>
+        <h2><IconGlyph name="trophy" motion="celebrate" /> <span>Simulator UASA {formatSubjectName(selectedSubject?.id)}</span></h2>
         <p>Latihan campuran mengikut topik.</p>
         <button onClick={onOpenUasa}>Mula Simulator UASA</button>
       </section>
 
       <section className="card">
         <p className="eyebrow">Sambung Automatik</p>
-        <h2>▶ Sambung Latihan</h2>
+        <h2><IconGlyph name="play" motion="hover" /> <span>Sambung Latihan</span></h2>
         <p>Subjek: <b>{resume?.subjectId ? formatSubjectName(resume.subjectId) : '-'}</b><br />Soalan: <b>{(resume?.questionIndex || 0) + 1}</b></p>
-        <div className="actions"><button onClick={onResume}>▶ Sambung</button><button className="secondary" onClick={onRestartResume}>🔄 Mula Semula</button></div>
+        <div className="actions"><button onClick={onResume}><IconGlyph name="play" motion="hover" /> <span>Sambung</span></button><button className="secondary" onClick={onRestartResume}><IconGlyph name="repeat" motion="hover" /> <span>Mula Semula</span></button></div>
       </section>
     </>
   );
 }
+

@@ -56,12 +56,12 @@ export default function GamificationPanel({
       )}
 
       <div className="mastery-summary-grid gamification-summary-grid">
-        <div><b>{xp}</b><span>Current XP</span></div>
-        <div><b>{level}</b><span>Current Level</span></div>
-        <div><b>{progressPercent}%</b><span>Progress to Next Level</span></div>
-        <div><b>{currentStreak}</b><span>Current Streak</span></div>
-        <div><b>{bestStreak}</b><span>Best Streak</span></div>
-        <div><b>{totalAchievements}</b><span>Total Achievements</span></div>
+        <div><b>{xp}</b><span>XP Semasa</span></div>
+        <div><b>{level}</b><span>Tahap Semasa</span></div>
+        <div><b>{progressPercent}%</b><span>Kemajuan ke Tahap Seterusnya</span></div>
+        <div><b>{currentStreak}</b><span>Streak Semasa</span></div>
+        <div><b>{bestStreak}</b><span>Streak Terbaik</span></div>
+        <div><b>{totalAchievements}</b><span>Jumlah Pencapaian</span></div>
       </div>
 
       <LevelProgress
@@ -72,19 +72,22 @@ export default function GamificationPanel({
       />
 
       <div className="gamification-achievement-block">
-        <p className="eyebrow">Latest Achievement</p>
+        <p className="eyebrow">Pencapaian Terkini</p>
         <AchievementBadge achievement={latestAchievement} />
         {!latestAchievement && (
           <p className="memory-last" role="status">Belum ada pencapaian</p>
         )}
       </div>
 
-      <div className="recommend-meta gamification-meta">
-        <span>XP semasa: <b>{xp}</b></span>
-        <span>Tahap semasa: <b>{level}</b></span>
-        <span>Streak: <b>{currentStreak}</b></span>
-        <span>Pencapaian: <b>{totalAchievements}</b></span>
-      </div>
+      <details className="gamification-details">
+        <summary><span>Butiran Lanjut</span><small>Lihat ringkasan XP dan streak penuh</small></summary>
+        <div className="recommend-meta gamification-meta">
+          <span>XP semasa: <b>{xp}</b></span>
+          <span>Tahap semasa: <b>{level}</b></span>
+          <span>Streak: <b>{currentStreak}</b></span>
+          <span>Pencapaian: <b>{totalAchievements}</b></span>
+        </div>
+      </details>
     </section>
   );
 }

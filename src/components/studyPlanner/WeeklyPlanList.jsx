@@ -12,22 +12,23 @@ function safeNumber(value, fallback = 0) {
 }
 
 export default function WeeklyPlanList({ weeklyPlan = null, className = '' }) {
+  const titleId = 'weekly-plan-list-title';
   const days = Array.isArray(weeklyPlan?.days) ? weeklyPlan.days : [];
 
   if (!weeklyPlan) {
     return (
-      <section className={`card weekly-plan-list ${className}`.trim()} aria-labelledby="weekly-plan-title">
+      <section className={`card weekly-plan-list ${className}`.trim()} aria-labelledby={titleId}>
         <p className="eyebrow">Pelan Mingguan</p>
-        <h3 id="weekly-plan-title">Pelan Mingguan</h3>
+        <h3 id={titleId}>Pelan Mingguan</h3>
         <p className="memory-last" role="status">Pelan mingguan belum tersedia.</p>
       </section>
     );
   }
 
   return (
-    <section className={`card weekly-plan-list ${className}`.trim()} aria-labelledby="weekly-plan-title">
+    <section className={`card weekly-plan-list ${className}`.trim()} aria-labelledby={titleId}>
       <p className="eyebrow">Pelan Mingguan</p>
-      <h3 id="weekly-plan-title">Pelan Mingguan</h3>
+      <h3 id={titleId}>Pelan Mingguan</h3>
       {days.length ? (
         <div className="parent-topic-list weekly-plan-day-list">
           {days.slice(0, 7).map((day, index) => {

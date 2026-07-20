@@ -12,24 +12,25 @@ function safeNumber(value, fallback = 0) {
 }
 
 export default function DailyPlanCard({ plan = null, className = '' }) {
+  const titleId = 'daily-plan-card-title';
   const blocks = Array.isArray(plan?.blocks) ? plan.blocks : [];
   const onboarding = Boolean(plan?.onboarding);
   const availableMinutes = safeNumber(plan?.availableMinutes, 0);
 
   if (!plan) {
     return (
-      <section className={`card daily-plan-card ${className}`.trim()} aria-labelledby="daily-plan-title">
+      <section className={`card daily-plan-card ${className}`.trim()} aria-labelledby={titleId}>
         <p className="eyebrow">Pelan Hari Ini</p>
-        <h3 id="daily-plan-title">Pelan Hari Ini</h3>
+        <h3 id={titleId}>Pelan Hari Ini</h3>
         <p className="memory-last" role="status">Pelan belum tersedia.</p>
       </section>
     );
   }
 
   return (
-    <section className={`card daily-plan-card ${className}`.trim()} aria-labelledby="daily-plan-title">
+    <section className={`card daily-plan-card ${className}`.trim()} aria-labelledby={titleId}>
       <p className="eyebrow">Pelan Hari Ini</p>
-      <h3 id="daily-plan-title">{onboarding ? 'Pelan Permulaan Hari Ini' : 'Pelan Hari Ini'}</h3>
+      <h3 id={titleId}>{onboarding ? 'Pelan Permulaan Hari Ini' : 'Pelan Hari Ini'}</h3>
       <p className="memory-last" role="status">
         {onboarding
           ? 'Pelan permulaan ini membantu murid membina rutin belajar yang seimbang.'

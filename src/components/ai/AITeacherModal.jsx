@@ -168,7 +168,7 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
           {renderListSection('Tip belajar', learningTip)}
           {renderListSection('Contoh', examples)}
           {renderListSection('Contoh lain', extraExamples)}
-          {renderListSection('Worked examples', workedExamples)}
+          {renderListSection('Contoh langkah demi langkah', workedExamples)}
           {renderListSection('Langkah penyelesaian', problemSolvingSteps)}
           {renderListSection('Fakta sains', scientificFacts)}
           {renderListSection('Pemerhatian', observationPrompts)}

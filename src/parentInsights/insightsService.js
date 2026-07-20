@@ -2,11 +2,12 @@ import { getAdaptivePerformanceSummary, getSubjectPerformance, getTopicPerforman
 import { calculateMastery } from '../ai/adaptive/masteryEngine.js';
 import { recommendAdaptiveAction } from '../ai/adaptive/recommendationEngine.js';
 import { buildSpacedRevisionSchedule } from '../ai/adaptive/spacedRevision.js';
+import { getStudentDisplayName } from '../utils/displayFormatter.js';
 
-export function createMockParentProfile() {
+export function createMockParentProfile(baseProfile = null) {
   return {
     studentId: 'mock-parent-insights',
-    name: 'Murid',
+    name: getStudentDisplayName(baseProfile, 'Murid'),
     totals: {
       questionsAnswered: 0,
       correct: 0,
@@ -53,7 +54,7 @@ export function resolveParentProfile(profile = null, options = {}) {
     return profile;
   }
   if (isDevelopmentMode(options)) {
-    return createMockParentProfile();
+    return createMockParentProfile(profile);
   }
   return null;
 }
@@ -86,7 +87,7 @@ export function readAdaptiveInsights(profile = null, options = {}) {
   return {
     profile: {
       studentId: nextProfile.studentId || '',
-      name: nextProfile.name || '',
+      name: getStudentDisplayName(nextProfile, 'Murid'),
       year: nextProfile.year || 'Tahun 2'
     },
     performance: summary,

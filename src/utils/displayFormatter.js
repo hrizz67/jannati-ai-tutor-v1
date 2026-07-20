@@ -115,10 +115,24 @@ function normalizeKey(value) {
   return String(value || '').trim().toLowerCase();
 }
 
+function normalizeName(value) {
+  if (typeof value !== 'string') return '';
+  const text = value.trim();
+  if (!text) return '';
+  const lower = text.toLowerCase();
+  if (lower === 'undefined' || lower === 'null') return '';
+  return text;
+}
+
 export function formatSubjectName(subjectId) {
   const key = normalizeKey(subjectId);
   if (SUBJECT_LABELS[key]) return SUBJECT_LABELS[key];
   return toTitleCase(key || subjectId);
+}
+
+export function getStudentDisplayName(profile = null, fallback = 'Murid') {
+  const name = profile && typeof profile === 'object' ? normalizeName(profile.name) : '';
+  return name || normalizeName(fallback) || 'Murid';
 }
 
 export function formatTopicName(topicId) {

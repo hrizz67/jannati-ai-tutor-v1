@@ -143,7 +143,7 @@ async function main() {
     },
     {
       name: 'StudentDashboard public adaptive surface',
-      pass: matchesAny(sources.studentDashboard, ['../ai/adaptive/index.js']) &&
+      pass: matchesAny(sources.studentDashboard, ['../ai/index.js', '../ai/adaptive/index.js']) &&
         !matchesAny(sources.studentDashboard, ['../ai/adaptive/weakTopicEngine'])
     },
     {

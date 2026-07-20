@@ -25,6 +25,7 @@ function buildSectionMessage(planner = {}) {
 }
 
 export default function StudyPlannerPanel({ planner = null, className = '' }) {
+  const titleId = 'study-planner-panel-title';
   const dailyPlan = planner?.dailyPlan || null;
   const weeklyPlan = planner?.weeklyPlan || null;
   const onboarding = Boolean(planner?.onboarding);
@@ -36,18 +37,18 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
 
   if (!planner) {
     return (
-      <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby="study-planner-title">
+      <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
         <p className="eyebrow">Pelan Belajar</p>
-        <h2 id="study-planner-title">Pelan Belajar</h2>
+        <h2 id={titleId}>Pelan Belajar</h2>
         <p className="memory-last" role="status">Pelan belajar belum tersedia.</p>
       </section>
     );
   }
 
   return (
-    <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby="study-planner-title">
+    <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
       <p className="eyebrow">Pelan Belajar</p>
-      <h2 id="study-planner-title">Pelan Belajar</h2>
+      <h2 id={titleId}>Pelan Belajar</h2>
       <p className="memory-last" role="status">{buildSectionMessage(planner)}</p>
       {plannerError && (
         <p className="memory-last" role="status">
