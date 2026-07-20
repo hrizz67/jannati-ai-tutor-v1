@@ -1,5 +1,5 @@
-import { MASTERY_STATUS } from './adaptive/masteryEngine';
-import { isTopicUnlockedByGraph } from './adaptive/knowledgeGraph';
+import { MASTERY_STATUS } from './adaptive/masteryEngine.js';
+import { isTopicUnlockedByGraph } from './adaptive/knowledgeGraph.js';
 
 function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;

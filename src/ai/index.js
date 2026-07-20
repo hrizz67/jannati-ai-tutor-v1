@@ -7,6 +7,7 @@ export { buildMasteryMap, summarizeMastery } from './adaptive/masteryEngine.js';
 export { MASTERY_STATUS } from './adaptive/masteryEngine.js';
 export { buildLessonPlan } from './adaptive/lessonPlanner.js';
 export { buildAdaptiveLearningSnapshot, recordAdaptiveResponse, requestNextAdaptiveQuestion } from './adaptive/adaptiveController.js';
+export { getTutorResponse } from './tutorResponseEngine.js';
 export { getBlockedPrerequisites, getDependencyArrow, isTopicUnlockedByGraph } from './adaptive/knowledgeGraph.js';
 export { rankStrongTopics, rankWeakTopics, explainWeakness } from './adaptive/weakTopicEngine.js';
 export { generateRecommendation } from './adaptive/recommendationEngine.js';

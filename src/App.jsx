@@ -10,6 +10,7 @@ import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import GamificationSummary from './components/GamificationSummary.jsx';
+import TutorAIModal from './components/ai/TutorAIModal.jsx';
 import { explainAnswer } from './ai/explainEngine';
 import { updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -39,7 +40,7 @@ import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, s
 import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
-import { clampPercent, formatStatus, formatTopicName } from './utils/displayFormatter';
+import { clampPercent, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
@@ -505,22 +506,8 @@ function getNextTopic(subject, topic) {
   return currentIndex >= 0 ? subject.topics[currentIndex + 1] || null : null;
 }
 
-function aiReply(message, profile, selectedSubject) {
-  const text = String(message || '').toLowerCase();
-  const safeSubject = selectedSubject || { short: 'subjek ini', title: 'Subjek ini', topics: [] };
-  const avg = getSubjectAverage(profile, safeSubject);
-  const recommended = getRecommendedTopic(profile, safeSubject) || safeSubject.topics?.[0] || { title: 'topik ini' };
-  if (text.includes('uasa') || text.includes('peperiksaan')) {
-    return `Untuk UASA ${safeSubject.short || safeSubject.title}, purata sekarang ${avg}%. Cuba latihan topik dahulu, kemudian buat Simulator UASA.`;
-  }
-  if (text.includes('lemah') || text.includes('ulang')) {
-    return `Saya cadangkan ulang ${recommended.title || 'topik ini'}. Sasarkan sekurang-kurangnya 80%.`;
-  }
-  return `Hari ini saya cadangkan belajar ${recommended.title || 'topik ini'}. Guna Petunjuk jika susah.`;
-}
-
 function buildPredictionGreeting(profile, predictionProfile, readiness, studyPlan) {
-  const name = profile.name || 'Anak';
+  const name = getStudentDisplayName(profile, 'Murid');
   const readinessText = readiness?.message || 'Teruskan usaha kamu hari ini.';
   const focusText = studyPlan?.notes || 'Ikut cadangan latihan yang seimbang.';
   const teachingStyle = predictionProfile?.teachingStrategy?.teachingStyle || 'guided';
@@ -1582,7 +1569,31 @@ export default function App() {
     setScreen('dashboard');
   }
 
-  const chatWidget = chatOpen && selectedSubject ? <AiTutorChat profile={profile} selectedSubject={selectedSubject} onTutup={() => setChatOpen(false)} /> : null;
+  const tutorWeakTopics = rankWeakTopics(adaptiveProfile, { limit: 5, includeLowConfidence: true });
+  const tutorStrongTopics = rankStrongTopics(adaptiveProfile, { limit: 5 });
+  const chatSubject = activeSubject || selectedSubject;
+  const chatWidget = chatOpen && chatSubject ? (
+    <TutorAIModal
+      open={chatOpen}
+      profile={profile}
+      adaptiveProfile={adaptiveProfile}
+      selectedSubject={chatSubject}
+      selectedTopic={activeTopic}
+      question={currentQuestion()}
+      answer={answer}
+      feedback={feedback}
+      attemptCount={currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0}
+      hintsUsed={feedback?.status === 'hint' ? 1 : 0}
+      learningObservation={learningObservation}
+      predictionProfile={predictionProfile}
+      readiness={readiness}
+      studyPlan={studyPlan}
+      gamificationProfile={gamificationProfile}
+      weakTopics={tutorWeakTopics}
+      strongTopics={tutorStrongTopics}
+      onTutup={() => setChatOpen(false)}
+    />
+  ) : null;
   const predictionGreeting = buildPredictionGreeting(profile, predictionProfile, readiness, studyPlan);
   const aiSummary = {
     strongestTopic: learningObservation?.strongestTopic || rankStrongTopics(adaptiveProfile, { limit: 1 })[0] || null,
@@ -1949,28 +1960,6 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
   ];
 
   return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce"><RewardBadgeIcon /></div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa. Cuba lagi.')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa. Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
-}
-
-function AiTutorChat({ profile, selectedSubject, onTutup }) {
-  const safeSubject = selectedSubject || { short: 'Subjek ini', title: 'Subjek ini', topics: [] };
-  const [messages, setMessages] = useState(() => {
-    const greeting = aiReply('halo', profile, safeSubject);
-    return [{ role: 'ai', text: greeting || 'Halo! Jom belajar bersama.' }];
-  });
-  const [input, setInput] = useState('');
-
-  const quickPrompts = ['Apa topik lemah saya?', 'Apa cadangan ulang kaji?', 'Bagaimana UASA saya?'];
-
-  function submitMessage(text = input) {
-    const value = text.trim();
-    if (!value) return;
-    const reply = aiReply(value, profile, safeSubject);
-    setMessages(prev => [...(Array.isArray(prev) ? prev : []), { role: 'user', text: value }, { role: 'ai', text: reply || 'Baik, mari kita cuba cara lain.' }]);
-    setInput('');
-  }
-
-  const safeMessages = Array.isArray(messages) ? messages.filter(Boolean) : [];
-  return <div className="ai-chat-overlay" role="dialog" aria-modal="true" aria-label="Tutor AI"><section className="ai-chat"><header className="ai-chat-head"><div className="ai-chat-brand"><JannaAvatar size={72} className="ai-chat-avatar" /><div className="ai-chat-brand-copy"><small className="eyebrow">JANNA</small><strong>Rakan Pembelajaran AI</strong><span>Syabas! Teruskan usaha kamu.</span></div></div><strong className="ai-chat-title">Tutor AI</strong><button type="button" className="secondary" onClick={onTutup}>Tutup</button></header><div className="ai-chat-body">{safeMessages.map((message, index) => <div key={`${message?.role || 'ai'}-${index}`} className={`chat-bubble ${message?.role || 'ai'}`}>{message?.text || ''}</div>)}</div><div className="quick-prompts">{quickPrompts.map(prompt => <button key={prompt} type="button" onClick={() => submitMessage(prompt)}>{prompt}</button>)}</div><div className="ai-chat-input"><input value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); submitMessage(); } }} placeholder="Tanya Guru AI..." autoFocus /><button type="button" onClick={() => submitMessage()}>Hantar</button></div></section></div>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {

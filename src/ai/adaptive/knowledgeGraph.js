@@ -1,6 +1,6 @@
-import { MASTERY_STATUS } from './masteryEngine';
-import { getSubjectPrerequisites } from './curriculumGraph';
-import { formatTopicName } from '../../utils/displayFormatter';
+import { MASTERY_STATUS } from './masteryEngine.js';
+import { getSubjectPrerequisites } from './curriculumGraph.js';
+import { formatTopicName } from '../../utils/displayFormatter.js';
 
 function topicKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;

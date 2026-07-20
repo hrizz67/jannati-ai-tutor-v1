@@ -1,81 +1,107 @@
 # V3 AI Coach Integration
 
-## Integration Diagram
+## Summary
 
-```mermaid
-flowchart TD
-  A["AI Explain Modal / AI Teacher Modal"] --> B["Coach Adapter"]
-  B --> C["coachController()"]
-  C --> D["Explanation"]
-  C --> E["Hint"]
-  C --> F["Learning Tip"]
-  C --> G["Praise"]
-  C --> H["Knowledge Engine"]
-  H --> I["Subject / Topic Pack"]
-  I --> C
-```
+Tutor AI modal is now connected to the existing learning engine through the public AI barrel:
 
-## Adapter Responsibilities
+- `src/ai/index.js` → `getTutorResponse(...)`
+- `src/components/ai/TutorAIModal.jsx`
 
-The adapter layer acts as the bridge between the existing UI and the new v3 coach architecture.
+The modal keeps the existing workflow and only changes the response source, loading states, and fallback handling.
 
-It is responsible for:
+## Public AI Function
 
-- accepting the current modal context
-- calling `coachController()`
-- normalising the returned data shape for the existing modals
-- falling back to the legacy explanation and teaching engines when knowledge data is incomplete
-- logging lightweight development-only diagnostics
+Used public entry point:
 
-### Development logging
+- `getTutorResponse(options)`
 
-Logged in development only:
+Implemented in:
 
+- `src/ai/tutorResponseEngine.js`
+
+Re-exported from:
+
+- `src/ai/index.js`
+
+## Context Passed Into the Coach
+
+The modal forwards the following context fields:
+
+- student profile
 - subject
 - topic
-- response time
-- whether a fallback was used
+- question
+- student answer
+- correct answer
+- correctness flag
+- attempt count
+- hints used
+- weak topics
+- strong topics
+- learning observation
+- prediction profile
+- readiness summary
+- study plan
+- gamification profile
+- conversation history
+- prompt text
+- intent
 
-Production builds remain quiet.
+## Supported Intents
 
----
+- `general`
+- `weak_topic`
+- `revision_plan`
+- `uasa_summary`
+- `hint`
+- `question_help`
+- `wrong_answer_coaching`
+- `correct_answer_reinforcement`
 
-## Fallback Flow
+## Fallback Behavior
 
-If the knowledge response is incomplete or unavailable:
+If the coach engine cannot produce a ready response, the modal now falls back safely to deterministic Malay guidance.
 
-1. The adapter keeps the existing modal open.
-2. It fills any missing fields from the current fallback engines.
-3. It preserves the old user workflow.
-4. It avoids blank or broken teaching content.
+Fallback covers:
 
-Fallback priorities:
+- missing subject/topic
+- unknown subject
+- malformed payloads
+- incomplete knowledge output
+- engine failure
 
-1. Coach v3 data
-2. Knowledge Engine fallback
-3. Legacy explanation / teaching engine
+The UI never shows:
 
-This ensures that users still receive:
+- `undefined`
+- `null`
+- `[object Object]`
 
-- hint
-- learning tip
-- praise
+## Accessibility Updates
 
-even if one layer returns incomplete content.
+- dialog semantics with `role="dialog"`
+- `aria-modal="true"`
+- labelled title and body
+- Escape key closes the modal
+- focus trap inside the dialog
+- focus restoration to the opener
+- polite live region for status updates
 
----
+## Sanitized UASA Wording
 
-## Future API Integration Path
+`sanitizeAiText(...)` removes the literal acronym `UASA` from generated prose, so the intent still works but the displayed copy may appear as a general progress summary. The audit now checks the summary content instead of the acronym alone.
 
-The current adapter is intentionally thin so that a future API-backed coach service can be introduced without changing the UI.
+## Validation Results
 
-Future directions:
+- `node scripts/validate/aiTutorIntegrationAudit.mjs` → PASS
+- `node scripts/validate/dashboardConsistencyAudit.mjs` → PASS
+- `node scripts/validate/compactUiAudit.mjs` → PASS
+- `node scripts/validate/productionPolish.mjs` → PASS
+- `node scripts/validate/uiAudit.mjs` → PASS
+- `node scripts/validate/v3ReleaseCandidateAudit.mjs` → PASS
+- `npm run build` → PASS
 
-- replace local coachController calls with remote API calls
-- keep the adapter interface unchanged
-- preserve the same modal data contract
-- support caching for repeated modal opens
-- add analytics for coach response quality
+## Remaining Limitations
 
-This keeps the application ready for a future networked coach layer while protecting the current workflow.
+- Node still reports module-type warnings for some ES module files because `package.json` does not declare `"type": "module"`.
+- The production build still warns about large chunks, which is pre-existing bundle pressure rather than a regression from this modal integration.
 

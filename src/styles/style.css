@@ -404,6 +404,12 @@ textarea {
   border-radius: 18px;
   max-width: 82%;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chat-bubble-text {
+  margin: 0;
 }
 
 .chat-bubble.ai {
@@ -416,6 +422,73 @@ textarea {
   background: #087a3b;
   color: white;
   justify-self: end;
+}
+
+.chat-bubble-loading {
+  display: grid;
+  gap: 8px;
+}
+
+.chat-typing {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.chat-typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .35;
+  animation: chatTypingPulse 1.2s infinite ease-in-out;
+}
+
+.chat-typing span:nth-child(2) {
+  animation-delay: .15s;
+}
+
+.chat-typing span:nth-child(3) {
+  animation-delay: .3s;
+}
+
+@keyframes chatTypingPulse {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: .35;
+  }
+  40% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+.chat-suggestions {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.chat-status {
+  margin: 0 16px;
+  padding: 10px 0 0;
+  font-size: 13px;
+  color: #40634d;
+  min-height: 20px;
+}
+
+.chat-status-loading {
+  color: #0f8a43;
+}
+
+.chat-status-error {
+  color: #8a3a1a;
+}
+
+.chat-status-fallback {
+  color: #8a6b12;
 }
 
 .quick-prompts {
