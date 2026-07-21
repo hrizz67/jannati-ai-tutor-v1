@@ -2,20 +2,66 @@ import React, { useEffect, useRef } from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
+import { sanitizeChildFacingText } from '../../utils/childText.js';
+
+const GENERIC_TEXTS = [
+  'jawapan ini sesuai dengan soalan',
+  'cari kata kunci penting dalam soalan',
+  'baca soalan perlahan-lahan dan cari kata kunci',
+  'kamu sedang belajar dengan baik',
+  'tak mengapa kita cuba sekali lagi',
+  'bagus teruskan usaha kamu',
+  'jangan risau',
+  'jom kita fahami bersama'
+];
+
+function normalizeText(value, fallback = '') {
+  if (value === null || value === undefined) return fallback;
+  if (Array.isArray(value)) return normalizeText(value[0], fallback);
+  const text = sanitizeChildFacingText(String(value).replace(/\s+/g, ' ').trim());
+  return text && text !== 'undefined' && text !== 'null' ? text : fallback;
+}
 
 function safeList(value) {
-  if (Array.isArray(value)) return value.filter(Boolean).map(item => String(item));
+  if (Array.isArray(value)) return value.filter(Boolean).map(item => normalizeText(item, '')).filter(Boolean);
   if (value === null || value === undefined || value === '') return [];
-  return [String(value)];
+  return [normalizeText(value, '')].filter(Boolean);
+}
+
+function isGenericText(value = '') {
+  const text = normalizeText(value, '');
+  if (!text) return true;
+  const lower = text.toLowerCase();
+  return GENERIC_TEXTS.some(item => lower.includes(item));
+}
+
+function pickMeaningfulText(...values) {
+  for (const value of values) {
+    const text = normalizeText(value, '');
+    if (text && !isGenericText(text)) return text;
+  }
+  return '';
 }
 
 function renderListSection(title, items) {
-  if (!items.length) return null;
+  const filtered = safeList(items).filter(item => !isGenericText(item));
+  if (!filtered.length) return null;
   return (
-    <div className="explain-section">
+    <section className="explain-section">
       <h3>{title}</h3>
-      <ul>{items.map((item, index) => <li key={`${title}-${index}`}>{item}</li>)}</ul>
-    </div>
+      <ul>{filtered.map((item, index) => <li key={`${title}-${index}`}>{item}</li>)}</ul>
+    </section>
+  );
+}
+
+function renderTextSection(title, value) {
+  const text = pickMeaningfulText(value);
+  if (!text) return null;
+  return (
+    <section className="explain-section">
+      <h3>{title}</h3>
+      <p>{text}</p>
+    </section>
   );
 }
 
@@ -26,6 +72,8 @@ export default function AIExplainModal({ open, data, question, character = 'jati
   useEffect(() => {
     if (!open) return undefined;
     restoreFocusRef.current = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
     function onKeyDown(event) {
       if (event.key === 'Escape') onTutup?.();
@@ -34,106 +82,42 @@ export default function AIExplainModal({ open, data, question, character = 'jati
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
       restoreFocusRef.current?.focus?.();
     };
   }, [open, onTutup]);
 
   if (!open || !data) return null;
 
-  const examples = safeList(data.examples);
-  const extraExamples = safeList(data.extraExamples);
-  const steps = safeList(data.steps);
-  const tips = safeList(data.tips);
-  const learningTip = safeList(data.learningTip);
-  const memoryTips = safeList(Array.isArray(data.memoryTips) && data.memoryTips.length ? data.memoryTips : (data.memoryTip ? [data.memoryTip] : []));
-  const commonMistakes = safeList(data.commonMistakes);
+  const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
+  const summary = pickMeaningfulText(sections.summary, data.shortText, data.explanation, data.simpleExplanation, `Mari kita semak soalan ini bersama-sama.`);
+  const whyCorrect = pickMeaningfulText(sections.whyCorrect, data.explanation, data.simpleExplanation);
+  const hint = pickMeaningfulText(sections.hint, data.hint, 'Cari kata kunci penting dalam soalan.');
+  const steps = safeList(sections.steps || data.steps);
+  const examples = safeList(sections.example ? [sections.example] : data.examples);
+  const extraExamples = safeList(data.extraExamples).filter(item => !isGenericText(item));
+  const commonMistakes = safeList(sections.commonMistake ? [sections.commonMistake] : data.commonMistakes);
+  const memoryTips = safeList(sections.memoryTip ? [sections.memoryTip] : (Array.isArray(data.memoryTips) && data.memoryTips.length ? data.memoryTips : (data.memoryTip ? [data.memoryTip] : [])));
   const followUpQuestions = safeList(data.followUpQuestions);
-  const workedExamples = safeList(data.workedExamples);
-  const problemSolvingSteps = safeList(data.problemSolvingSteps);
-  const scientificFacts = safeList(data.scientificFacts);
-  const observationPrompts = safeList(data.observationPrompts);
-  const comparisonPrompts = safeList(data.comparisonPrompts);
-  const investigationIdeas = safeList(data.investigationIdeas);
-  const realLifeConnections = safeList(data.realLifeConnections);
-  const safetyNotes = safeList(data.safetyNotes);
-  const misconceptions = safeList(data.misconceptions);
-  const evidenceQuestions = safeList(data.evidenceQuestions);
-  const pronunciationTips = safeList(data.pronunciationTips);
-  const pronunciationGuide = safeList(data.pronunciationGuide);
-  const readingSteps = safeList(data.readingSteps);
-  const letterBreakdown = safeList(data.letterBreakdown);
-  const listeningTips = safeList(data.listeningTips);
-  const letterRecognitionTips = safeList(data.letterRecognitionTips);
-  const writingTips = safeList(data.writingTips);
-  const vocabularyGroups = safeList(data.vocabularyGroups);
-  const wordMeaning = safeList(data.wordMeaning);
-  const exampleSentences = safeList(data.exampleSentences);
-  const translationHints = safeList(data.translationHints);
-  const readingPractice = safeList(data.readingPractice);
-  const listeningPractice = safeList(data.listeningPractice);
-  const speakingPractice = safeList(data.speakingPractice);
-  const writingPractice = safeList(data.writingPractice);
-  const dailyPractice = safeList(data.dailyPractice);
-  const adabApplications = safeList(data.adabApplications);
-  const realLifeExamples = safeList(data.realLifeExamples);
-  const ayahOrHadithReference = safeList(data.ayahOrHadithReference);
-  const reflectionQuestions = safeList(data.reflectionQuestions);
-  const goodDeedsIdeas = safeList(data.goodDeedsIdeas);
-  const whyQuestions = safeList(data.whyQuestions);
-  const predictionQuestions = safeList(data.predictionQuestions);
-  const comparisonQuestions = safeList(data.comparisonQuestions);
-  const realLifeApplications = safeList(data.realLifeApplications);
+  const coachMessage = pickMeaningfulText(sections.coachMessage, data.encouragement, 'Kamu sedang belajar dengan baik.');
+  const answerText = pickMeaningfulText(sections.correctAnswer, data.correctAnswer, question?.answer);
+  const showCorrectAnswer = data.showCorrectAnswer !== false && Boolean(answerText);
 
   const voiceText = [
-    data.explanation,
-    data.simpleExplanation,
-    data.hint,
-    ...tips,
-    ...learningTip,
+    summary,
+    whyCorrect,
+    hint,
+    ...steps,
     ...examples,
     ...extraExamples,
-    ...steps,
-    ...workedExamples,
-    ...problemSolvingSteps,
-    ...scientificFacts,
-    ...observationPrompts,
-    ...comparisonPrompts,
-    ...investigationIdeas,
-    ...realLifeConnections,
-    ...safetyNotes,
-    ...misconceptions,
-    ...evidenceQuestions,
-    ...pronunciationTips,
-    ...pronunciationGuide,
-    ...readingSteps,
-    ...letterBreakdown,
-    ...listeningTips,
-    ...letterRecognitionTips,
-    ...writingTips,
-    ...vocabularyGroups,
-    ...wordMeaning,
-    ...exampleSentences,
-    ...translationHints,
-    ...readingPractice,
-    ...listeningPractice,
-    ...speakingPractice,
-    ...writingPractice,
-    ...dailyPractice,
-    ...adabApplications,
-    ...realLifeExamples,
-    ...ayahOrHadithReference,
-    ...reflectionQuestions,
-    ...goodDeedsIdeas,
-    ...whyQuestions,
-    ...predictionQuestions,
-    ...comparisonQuestions,
-    ...realLifeApplications,
     ...commonMistakes,
-    ...followUpQuestions,
     ...memoryTips,
-    data.encouragement,
-    question?.answer ? `Jawapan betul ${question.answer}` : ''
+    ...followUpQuestions,
+    coachMessage,
+    showCorrectAnswer ? `Jawapan betul ${answerText}` : ''
   ].filter(Boolean).join('. ');
+
+  const advancedHasContent = steps.length || examples.length || extraExamples.length || commonMistakes.length || memoryTips.length || followUpQuestions.length;
 
   return (
     <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
@@ -159,76 +143,34 @@ export default function AIExplainModal({ open, data, question, character = 'jati
 
         <div className="ai-explain-body">
           <VoiceButton text={voiceText} label="Baca Penerangan" title="Baca penerangan AI" className="voice-inline" />
-          <div className="explain-section">
-            <h3>Kenapa jawapan itu betul</h3>
-            <p>{data.explanation || 'Jawapan ini sesuai dengan soalan.'}</p>
-          </div>
+          {renderTextSection('Penerangan mudah', summary)}
+          {renderTextSection('Kenapa jawapan itu betul', whyCorrect)}
 
-          <div className="explain-section">
-            <h3>Penerangan mudah</h3>
-            <p>{data.simpleExplanation || data.explanation || 'Jawapan ini sesuai dengan soalan.'}</p>
-          </div>
+          <MascotCard character={character} mood="thinking" size="md" animation="gentle" message={pickMeaningfulText(whyCorrect, hint, summary, coachMessage, 'Jom kita fahami bersama.')} />
 
-          <MascotCard character={character} mood="thinking" size="md" animation="gentle" message="Jom kita fahami bersama." />
+          {renderTextSection('Petunjuk', hint)}
 
-          <div className="explain-section">
-            <h3>Petunjuk</h3>
-            <p>{data.hint || 'Cari kata kunci penting dalam soalan.'}</p>
-          </div>
+          {showCorrectAnswer && (
+            <section className="explain-section">
+              <h3>Jawapan betul</h3>
+              <div className="explain-answer-box">
+                <span>Jawapan betul</span>
+                <b>{answerText}</b>
+              </div>
+            </section>
+          )}
 
-          {renderListSection('Langkah', steps)}
-          {renderListSection('Tip', tips)}
-          {renderListSection('Tip belajar', learningTip)}
-          {renderListSection('Contoh lain', extraExamples)}
-          {renderListSection('Contoh', examples)}
-          {renderListSection('Contoh langkah demi langkah', workedExamples)}
-          {renderListSection('Langkah penyelesaian', problemSolvingSteps)}
-          {renderListSection('Fakta sains', scientificFacts)}
-          {renderListSection('Pemerhatian', observationPrompts)}
-          {renderListSection('Perbandingan', comparisonPrompts)}
-          {renderListSection('Penyiasatan', investigationIdeas)}
-          {renderListSection('Kaitan kehidupan', realLifeConnections)}
-          {renderListSection('Nota keselamatan', safetyNotes)}
-          {renderListSection('Salah faham biasa', misconceptions)}
-          {renderListSection('Soalan bukti', evidenceQuestions)}
-          {renderListSection('Tip sebutan', pronunciationTips)}
-          {renderListSection('Panduan sebutan', pronunciationGuide)}
-          {renderListSection('Langkah baca', readingSteps)}
-          {renderListSection('Pecahan huruf', letterBreakdown)}
-          {renderListSection('Tip dengar', listeningTips)}
-          {renderListSection('Kenal huruf', letterRecognitionTips)}
-          {renderListSection('Tip tulisan', writingTips)}
-          {renderListSection('Kumpulan kosa kata', vocabularyGroups)}
-          {renderListSection('Maksud kata', wordMeaning)}
-          {renderListSection('Ayat contoh', exampleSentences)}
-          {renderListSection('Petunjuk terjemahan', translationHints)}
-          {renderListSection('Latihan baca', readingPractice)}
-          {renderListSection('Latihan dengar', listeningPractice)}
-          {renderListSection('Latihan sebut', speakingPractice)}
-          {renderListSection('Latihan tulis', writingPractice)}
-          {renderListSection('Amalan harian', dailyPractice)}
-          {renderListSection('Aplikasi adab', adabApplications)}
-          {renderListSection('Contoh kehidupan', realLifeExamples)}
-          {renderListSection('Rujukan ayat/hadis', ayahOrHadithReference)}
-          {renderListSection('Soalan renungan', reflectionQuestions)}
-          {renderListSection('Idea amal baik', goodDeedsIdeas)}
-          {renderListSection('Soalan kenapa', whyQuestions)}
-          {renderListSection('Soalan ramalan', predictionQuestions)}
-          {renderListSection('Soalan banding', comparisonQuestions)}
-          {renderListSection('Aplikasi kehidupan', realLifeApplications)}
-          {renderListSection('Kesilapan biasa', commonMistakes)}
-          {renderListSection('Soalan susulan', followUpQuestions)}
+          <details className="explain-details">
+            <summary>Lihat penerangan lanjut</summary>
+          {renderListSection('Contoh langkah demi langkah', steps)}
+            {renderListSection('Contoh', examples)}
+            {renderListSection('Contoh lain', extraExamples)}
+            {renderListSection('Kesilapan biasa', commonMistakes)}
+            {renderListSection('Tip ingatan', memoryTips)}
+            {renderListSection('Soalan susulan', followUpQuestions)}
+          </details>
 
-          <div className="explain-section">
-            <h3>Tip ingatan</h3>
-            <ul>{memoryTips.length ? memoryTips.map((tip, index) => <li key={`memory-${index}`}>{tip}</li>) : <li>Ulang baca soalan dengan teliti.</li>}</ul>
-          </div>
-
-          <p className="explain-encouragement">{data.encouragement || 'Kamu sedang belajar dengan baik.'}</p>
-          <div className="explain-answer-box">
-            <span>Jawapan betul</span>
-            <b>{question?.answer || '-'}</b>
-          </div>
+          <p className="explain-encouragement">{pickMeaningfulText(coachMessage, whyCorrect, summary)}</p>
         </div>
 
         <div className="ai-explain-footer actions">

@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import BrandLogo from '../BrandLogo';
 import JannaAvatar from '../JannaAvatar';
-import { getTutorResponse } from '../../ai/index.js';
-import { clampPercent, formatSubjectName, formatTopicName, getStudentDisplayName } from '../../utils/displayFormatter';
+import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
+import { getTutorResponse } from '../../utils/tutorResponseService.js';
+import { sanitizeChildFacingText } from '../../utils/childText.js';
 
-const FALLBACK_MESSAGE = 'Saya belum dapat memproses soalan itu sekarang. Cuba tanya dengan ayat yang lebih ringkas.';
+const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
 
 function normalizeText(value, fallback = '') {
   if (value === null || value === undefined) return fallback;
   if (Array.isArray(value)) return normalizeText(value[0], fallback);
-  const text = String(value).replace(/\s+/g, ' ').trim();
+  const text = sanitizeChildFacingText(String(value).replace(/\s+/g, ' ').trim());
   return text && text !== 'undefined' && text !== 'null' ? text : fallback;
 }
 
@@ -19,6 +21,78 @@ function normalizeList(value) {
     .filter(Boolean)
     .map(item => normalizeText(item, ''))
     .filter(Boolean);
+}
+
+function hasMeaningfulText(value) {
+  const text = normalizeText(value, '');
+  return Boolean(text && text !== 'undefined' && text !== 'null');
+}
+
+function buildQuestionContext(question, answer, feedback, selectedTopic, selectedSubject, overrides = {}) {
+  const questionText = normalizeText(
+    overrides.questionText ||
+    question?.q ||
+    question?.question ||
+    question?.stem ||
+    question?.text ||
+    '',
+    ''
+  );
+  const instruction = normalizeText(
+    overrides.instruction ||
+    question?.instruction ||
+    question?.direction ||
+    question?.prompt ||
+    '',
+    ''
+  );
+  const options = normalizeList(Array.isArray(overrides.options) && overrides.options.length ? overrides.options : question?.options || question?.choices || []);
+  const expectedAnswer = normalizeText(
+    overrides.expectedAnswer ||
+    question?.answer ||
+    question?.correctAnswer ||
+    '',
+    ''
+  );
+  const learnerAnswer = normalizeText(overrides.learnerAnswer || answer || '', '');
+  const isCorrect = typeof feedback?.status === 'string'
+    ? feedback.status === 'correct'
+    : Boolean(feedback?.correct || feedback?.isCorrect);
+  const explanationMode = normalizeText(
+    overrides.explanationMode ||
+    feedback?.status ||
+    (isCorrect ? 'correct_answer_reinforcement' : ''),
+    ''
+  );
+  const currentLearningObjective = normalizeText(
+    overrides.currentLearningObjective ||
+    selectedTopic?.learningObjective ||
+    selectedTopic?.objective ||
+    question?.learningObjective ||
+    question?.objective ||
+    '',
+    ''
+  );
+  const topicLabel = getHumanReadableTopic({
+    subject: selectedSubject,
+    topic: selectedTopic,
+    question,
+    metadata: {
+      topicId: selectedTopic?.id || '',
+      displayName: selectedTopic?.title || selectedTopic?.name || ''
+    }
+  });
+  return {
+    questionText,
+    instruction,
+    options,
+    expectedAnswer,
+    learnerAnswer,
+    isCorrect,
+    explanationMode,
+    currentLearningObjective,
+    topicLabel: normalizeText(topicLabel, 'topik semasa')
+  };
 }
 
 function getFocusableElements(container) {
@@ -68,6 +142,13 @@ export default function TutorAIModal({
   question,
   answer,
   feedback,
+  questionText,
+  instruction,
+  options,
+  expectedAnswer,
+  learnerAnswer,
+  explanationMode,
+  currentLearningObjective,
   attemptCount = 0,
   hintsUsed = 0,
   learningObservation,
@@ -96,14 +177,32 @@ export default function TutorAIModal({
   const activeSubject = selectedSubject || null;
   const activeTopic = selectedTopic || null;
   const currentQuestion = question || null;
-  const questionText = normalizeText(currentQuestion?.q || currentQuestion?.question || '', '');
-  const currentAnswer = normalizeText(answer, '');
-  const correctAnswer = normalizeText(currentQuestion?.answer || currentQuestion?.correctAnswer || '', '');
-  const isCorrect = typeof feedback?.status === 'string'
-    ? feedback.status === 'correct'
-    : Boolean(feedback?.correct || feedback?.isCorrect);
+  const questionContext = buildQuestionContext(
+    currentQuestion,
+    hasMeaningfulText(learnerAnswer) ? learnerAnswer : answer,
+    feedback,
+    activeTopic,
+    activeSubject,
+    {
+      questionText,
+      instruction,
+      options,
+      expectedAnswer,
+      learnerAnswer,
+      explanationMode,
+      currentLearningObjective
+    }
+  );
+  const normalizedQuestionText = normalizeText(questionText || questionContext.questionText, '');
+  const normalizedInstruction = normalizeText(instruction || questionContext.instruction, '');
+  const normalizedOptions = normalizeList(Array.isArray(options) && options.length ? options : questionContext.options);
+  const normalizedExpectedAnswer = normalizeText(expectedAnswer || questionContext.expectedAnswer || currentQuestion?.answer || currentQuestion?.correctAnswer || '', '');
+  const normalizedLearnerAnswer = normalizeText(learnerAnswer || answer || '', '');
+  const normalizedExplanationMode = normalizeText(explanationMode || questionContext.explanationMode, '');
+  const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
+  const isCorrect = questionContext.isCorrect;
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
-  const topicLabel = activeTopic?.title || formatTopicName(activeTopic?.id);
+  const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
 
   const sessionKey = useMemo(() => [
     studentProfile?.studentId || studentProfile?.name || '',
@@ -115,6 +214,8 @@ export default function TutorAIModal({
   useEffect(() => {
     if (!open) return undefined;
     openerRef.current = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
     function onKeyDown(event) {
       if (event.key === 'Escape') {
@@ -140,6 +241,7 @@ export default function TutorAIModal({
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
       openerRef.current?.focus?.();
     };
   }, [open, onTutup]);
@@ -161,8 +263,15 @@ export default function TutorAIModal({
           subject: activeSubject,
           topic: activeTopic,
           question: currentQuestion,
-          studentAnswer: currentAnswer,
-          correctAnswer,
+          questionText: normalizedQuestionText,
+          instruction: normalizedInstruction,
+          options: normalizedOptions,
+          expectedAnswer: normalizedExpectedAnswer,
+          learnerAnswer: normalizedLearnerAnswer,
+          studentAnswer: normalizedLearnerAnswer,
+          correctAnswer: normalizedExpectedAnswer,
+          explanationMode: normalizedExplanationMode,
+          currentLearningObjective: normalizedLearningObjective,
           isCorrect,
           attemptCount,
           hintsUsed,
@@ -180,8 +289,8 @@ export default function TutorAIModal({
           gamificationProfile
         });
         if (cancelled || requestIdRef.current !== started) return;
-        const greeting = normalizeText(response?.text, `Hai ${studentName}, saya sedia membantu.`);
-        setMessages([{ role: 'ai', text: greeting, suggestions: normalizeList(response?.suggestions) }]);
+        const greeting = normalizeText(response?.shortText || response?.text, `Hai ${studentName}, saya sedia membantu.`);
+        setMessages([{ role: 'ai', text: greeting, suggestions: normalizeList(response?.suggestedActions || response?.suggestions) }]);
         setStatus(response?.fallbackUsed ? 'fallback' : 'success');
         setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
       } catch (err) {
@@ -208,8 +317,8 @@ export default function TutorAIModal({
     activeSubject,
     activeTopic,
     currentQuestion,
-    currentAnswer,
-    correctAnswer,
+    normalizedLearnerAnswer,
+    normalizedExpectedAnswer,
     isCorrect,
     weakTopics,
     strongTopics,
@@ -219,7 +328,12 @@ export default function TutorAIModal({
     learningObservation,
     predictionProfile,
     gamificationProfile,
-    studentName
+    studentName,
+    normalizedQuestionText,
+    normalizedInstruction,
+    normalizedOptions,
+    normalizedExplanationMode,
+    normalizedLearningObjective
   ]);
 
   useEffect(() => {
@@ -227,6 +341,24 @@ export default function TutorAIModal({
     if (!body) return;
     body.scrollTop = body.scrollHeight;
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (!open || !(typeof import.meta !== 'undefined' && import.meta.env?.DEV)) return;
+    const missing = [];
+    if (!normalizedQuestionText) missing.push('questionText');
+    if (!normalizedInstruction) missing.push('instruction');
+    if (!normalizedExpectedAnswer) missing.push('expectedAnswer');
+    if (!normalizedLearningObjective) missing.push('currentLearningObjective');
+    if (!activeSubject?.id) missing.push('subject');
+    if (!activeTopic?.id) missing.push('topic');
+    if (missing.length) {
+      console.warn('[TutorAIModal] missing exercise context', {
+        missing,
+        subjectId: activeSubject?.id || '',
+        topicId: activeTopic?.id || ''
+      });
+    }
+  }, [open, normalizedQuestionText, normalizedInstruction, normalizedExpectedAnswer, normalizedLearningObjective, activeSubject?.id, activeTopic?.id]);
 
   async function sendMessage(rawText = input, intent = 'general') {
     const text = normalizeText(rawText, '');
@@ -243,8 +375,15 @@ export default function TutorAIModal({
         subject: activeSubject,
         topic: activeTopic,
         question: currentQuestion,
-        studentAnswer: currentAnswer,
-        correctAnswer,
+        questionText: normalizedQuestionText,
+        instruction: normalizedInstruction,
+        options: normalizedOptions,
+        expectedAnswer: normalizedExpectedAnswer,
+        learnerAnswer: normalizedLearnerAnswer,
+        studentAnswer: normalizedLearnerAnswer,
+        correctAnswer: normalizedExpectedAnswer,
+        explanationMode: normalizedExplanationMode,
+        currentLearningObjective: normalizedLearningObjective,
         isCorrect,
         attemptCount,
         hintsUsed,
@@ -264,8 +403,8 @@ export default function TutorAIModal({
       if (requestIdRef.current !== started) return;
       setMessages(prev => [...prev, {
         role: 'ai',
-        text: normalizeText(response?.text, FALLBACK_MESSAGE),
-        suggestions: normalizeList(response?.suggestions)
+        text: normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE),
+        suggestions: normalizeList(response?.suggestedActions || response?.suggestions)
       }]);
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
       setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
@@ -288,7 +427,13 @@ export default function TutorAIModal({
 
   if (!open) return null;
 
-  const quickPrompts = [
+  const exercisePrompts = [
+    { label: 'Beri saya petunjuk', intent: 'hint' },
+    { label: 'Terangkan soalan ini', intent: 'question_help' },
+    { label: 'Kenapa jawapan saya salah?', intent: 'wrong_answer_coaching', hidden: !attemptCount },
+    { label: 'Beri contoh mudah', intent: 'example_request' }
+  ].filter(item => !item.hidden);
+  const analyticsPrompts = [
     { label: 'Apa topik lemah saya?', intent: 'weak_topic' },
     { label: 'Apa cadangan ulang kaji?', intent: 'revision_plan' },
     { label: 'Bagaimana UASA saya?', intent: 'uasa_summary' }
@@ -299,7 +444,7 @@ export default function TutorAIModal({
     : status === 'error'
       ? error || FALLBACK_MESSAGE
       : status === 'fallback'
-        ? 'Menggunakan jawapan sandaran yang selamat.'
+        ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : FALLBACK_MESSAGE)
         : 'Tutor AI sedia membantu.';
 
   return (
@@ -344,7 +489,7 @@ export default function TutorAIModal({
         </div>
 
         <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
-          {quickPrompts.map(prompt => (
+          {exercisePrompts.map(prompt => (
             <button
               key={prompt.label}
               type="button"
@@ -355,6 +500,22 @@ export default function TutorAIModal({
             </button>
           ))}
         </div>
+
+        <details className="quick-prompts-analytics">
+          <summary>Lihat kemajuan saya</summary>
+          <div className="quick-prompts" aria-label="Prompt kemajuan Tutor AI">
+            {analyticsPrompts.map(prompt => (
+              <button
+                key={prompt.label}
+                type="button"
+                onClick={() => handlePromptClick(prompt.label, prompt.intent)}
+                disabled={loading}
+              >
+                {prompt.label}
+              </button>
+            ))}
+          </div>
+        </details>
 
         <div className="ai-chat-input">
           <input

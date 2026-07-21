@@ -1,12 +1,4 @@
-const SUBJECT_ORDER = new Map([
-  ['math', 'Matematik'],
-  ['bm', 'Bahasa Melayu'],
-  ['english', 'English'],
-  ['sains', 'Science'],
-  ['islam', 'Pendidikan Islam'],
-  ['arab', 'Bahasa Arab'],
-  ['pj', 'PJK']
-]);
+import { formatSubjectName } from '../utils/displayFormatter.js';
 
 function toNumber(value, fallback = 0) {
   const number = Number(value);
@@ -19,7 +11,7 @@ function safeText(value, fallback = '') {
 }
 
 export function getSubjectLabel(subjectId = '') {
-  return SUBJECT_ORDER.get(String(subjectId || '').trim().toLowerCase()) || safeText(subjectId, 'Subjek');
+  return formatSubjectName(subjectId) || safeText(subjectId, 'Subjek');
 }
 
 export function scoreStudyPriority(input = {}, context = {}) {

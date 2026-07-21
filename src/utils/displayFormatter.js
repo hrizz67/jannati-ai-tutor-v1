@@ -3,9 +3,11 @@ const SUBJECT_LABELS = {
   math: 'Matematik',
   english: 'Bahasa Inggeris',
   sains: 'Sains',
+  science: 'Sains',
   islam: 'Pendidikan Islam',
   arab: 'Bahasa Arab',
-  pj: 'Pendidikan Jasmani dan Kesihatan'
+  pj: 'Pendidikan Jasmani dan Kesihatan',
+  pjk: 'Pendidikan Jasmani dan Kesihatan'
 };
 
 const TOPIC_LABELS = {
@@ -124,6 +126,19 @@ function normalizeName(value) {
   return text;
 }
 
+function looksInternalIdentifier(value) {
+  const text = normalizeName(String(value || ''));
+  if (!text) return false;
+  if (/^[a-f0-9]{8,}(-[a-f0-9]{4,}){2,}$/i.test(text)) return true;
+  if (/^[a-z]+_[a-z0-9]+(?:_[a-z0-9]+)*(?:_\d+)?(?:_[a-z0-9]+)?$/i.test(text)) return true;
+  if (/adaptive|uuid|storage|session|engine|react|key|cache|lesson|practice|generated/i.test(text)) return true;
+  return /\d{5,}/.test(text);
+}
+
+function toReadableSlugLabel(value) {
+  return toTitleCase(String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, match => match.toUpperCase()));
+}
+
 export function formatSubjectName(subjectId) {
   const key = normalizeKey(subjectId);
   if (SUBJECT_LABELS[key]) return SUBJECT_LABELS[key];
@@ -139,6 +154,56 @@ export function formatTopicName(topicId) {
   const key = normalizeKey(topicId);
   if (TOPIC_LABELS[key]) return TOPIC_LABELS[key];
   return toTitleCase(key || topicId);
+}
+
+export function getHumanReadableTopic({ subject = null, topic = null, question = null, metadata = null } = {}) {
+  const subjectId = normalizeKey(subject?.id || subject?.subjectId || subject);
+  const topicId = normalizeName(topic?.id || topic?.topicId || topic?.slug || topic?.key || topic?.name || topic?.title || metadata?.topicId || metadata?.topic || question?.topicId || question?.topic || question?.subjectTopic || '');
+  const rawCandidates = [
+    metadata?.displayName,
+    metadata?.title,
+    topic?.displayName,
+    topic?.title,
+    topic?.name,
+    question?.topicTitle,
+    question?.topicName,
+    question?.topicLabel
+  ].map(normalizeName).filter(Boolean);
+
+  for (const candidate of rawCandidates) {
+    if (!looksInternalIdentifier(candidate)) return candidate;
+  }
+
+  const candidate = topicId || normalizeName(metadata?.subjectTopic || metadata?.topicName || '', '');
+  if (!candidate) return 'topik semasa';
+
+  const lower = candidate.toLowerCase();
+  if (/adaptive/.test(lower)) return 'Latihan Adaptif';
+
+  if (subjectId === 'english') {
+    if (/nouns?/.test(lower) && /common/.test(lower)) return 'Common Nouns';
+    if (/nouns?/.test(lower) && /proper/.test(lower)) return 'Proper Nouns';
+    if (/reading/.test(lower) && /comprehension/.test(lower)) return 'Reading Comprehension';
+    if (/simple/.test(lower) && /sentence/.test(lower)) return 'Simple Sentences';
+    if (/preposition/.test(lower)) return 'Prepositions';
+    if (/verb/.test(lower)) return 'Verbs';
+    if (/adjective/.test(lower)) return 'Adjectives';
+  }
+
+  if (subjectId === 'bm') {
+    if (/kata[_\s-]?nama[_\s-]?khas/.test(lower)) return 'Kata Nama Khas';
+    if (/kata[_\s-]?nama[_\s-]?am/.test(lower)) return 'Kata Nama Am';
+    if (/kata[_\s-]?kerja/.test(lower)) return 'Kata Kerja';
+    if (/kata[_\s-]?adjektif/.test(lower)) return 'Kata Adjektif';
+    if (/kata[_\s-]?sendi/.test(lower)) return 'Kata Sendi Nama';
+    if (/kata[_\s-]?hubung/.test(lower)) return 'Kata Hubung';
+    if (/penjodoh[_\s-]?bilangan/.test(lower)) return 'Penjodoh Bilangan';
+    if (/tatabahasa/.test(lower)) return 'Tatabahasa';
+    if (/pemahaman/.test(lower) && /penulisan/.test(lower)) return 'Pemahaman dan Penulisan';
+  }
+
+  const readable = toReadableSlugLabel(candidate.replace(new RegExp(`^${subjectId}[_-]?`, 'i'), ''));
+  return looksInternalIdentifier(candidate) ? (readable || 'topik semasa') : candidate;
 }
 
 export function formatStatus(status) {

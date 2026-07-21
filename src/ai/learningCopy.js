@@ -50,6 +50,20 @@ export function sanitizeAiText(value = '') {
   return raw;
 }
 
+export function sanitizeChildFacingText(value = '') {
+  const raw = sanitizeAiText(String(value || ''))
+    .replace(/\b[A-Za-z]+_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*(?:_[A-Za-z0-9-]+)?\b/g, '')
+    .replace(/\b[0-9a-f]{8,}(?:-[0-9a-f]{4,}){3}-[0-9a-f]{12}\b/gi, '')
+    .replace(/\[object Object\]/g, '')
+    .replace(/\bundefined\b/gi, '')
+    .replace(/\bnull\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([.,!?;:])/g, '$1')
+    .replace(/([.,!?;:])\1+/g, '$1')
+    .trim();
+  return raw;
+}
+
 export function detectLearningCategory(question = {}, topic = {}) {
   const text = normalize([
     topic?.id,
@@ -86,4 +100,3 @@ export function getLearningMemoryTip(question = {}, topic = {}) {
   const category = detectLearningCategory(question, topic);
   return MEMORY_TIPS[category] || MEMORY_TIPS.generic;
 }
-

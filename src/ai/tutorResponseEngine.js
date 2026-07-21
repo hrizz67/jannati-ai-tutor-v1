@@ -1,21 +1,58 @@
 import { buildCoachResponse } from './coach/v3/coachController.js';
 import { rankStrongTopics, rankWeakTopics } from './adaptive/weakTopicEngine.js';
 import { buildRecommendation } from './recommendationEngine.js';
-import { clampPercent, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter.js';
-import { sanitizeAiText } from './learningCopy.js';
+import {
+  clampPercent,
+  formatSubjectName,
+  formatTopicName,
+  getHumanReadableTopic,
+  getStudentDisplayName
+} from '../utils/displayFormatter.js';
+import {
+  detectLearningCategory,
+  getLearningExamples,
+  getLearningMemoryTip,
+  sanitizeChildFacingText
+} from './learningCopy.js';
 
-const DEFAULT_FALLBACK = 'Saya belum dapat memproses soalan itu sekarang. Cuba tanya dengan ayat yang lebih ringkas.';
+const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+
+const CATEGORY_COMMON_MISTAKES = {
+  person: ['Memilih nama tempat.', 'Memilih perkataan yang bukan nama orang.'],
+  place: ['Memilih nama orang.', 'Memilih kata kerja atau sifat.'],
+  animal: ['Memilih benda atau tempat.', 'Memilih perkataan yang bukan haiwan.'],
+  object: ['Memilih nama orang.', 'Memilih kata kerja.'],
+  verb: ['Memilih kata nama.', 'Memilih kata adjektif.'],
+  adjective: ['Memilih nama benda.', 'Memilih perbuatan.'],
+  penjodoh: ['Memilih kata nama biasa.', 'Menggunakan penjodoh yang tidak sesuai.'],
+  simpulan: ['Membaca setiap perkataan secara literal.', 'Memilih frasa yang tiada maksud khas.'],
+  conjunction: ['Memilih kata sendi nama.', 'Memilih kata nama.'],
+  sendi: ['Memilih kata kerja.', 'Memilih kata hubung.'],
+  generic: ['Menjawab terlalu cepat.', 'Tidak semak ayat penuh.']
+};
+
+const INTENT_STEPS = {
+  hint: ['Cari kata kunci penting dalam soalan.', 'Bandingkan pilihan jawapan dengan kata kunci.'],
+  question_help: ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.', 'Semak jawapan dengan ayat penuh.'],
+  wrong_answer_coaching: ['Semak semula jawapan yang kamu pilih.', 'Cari petunjuk dalam ayat.', 'Bandingkan dengan maksud soalan.'],
+  correct_answer_reinforcement: ['Ulang sebab jawapan itu betul.', 'Cuba soalan yang sedikit lebih mencabar.'],
+  weak_topic: ['Lihat topik yang paling lemah dahulu.', 'Ulang satu langkah pada satu masa.'],
+  revision_plan: ['Ikut topik keutamaan hari ini.', 'Buat ulang kaji ringkas dahulu.'],
+  uasa_summary: ['Semak skor dan topik yang perlu dikuatkan.', 'Rancang ulang kaji sebelum simulasi seterusnya.'],
+  example_request: ['Baca contoh mudah.', 'Bandingkan dengan soalan yang sedang kamu jawab.'],
+  general: ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.']
+};
 
 function normalizeText(value, fallback = '') {
   if (value === null || value === undefined) return fallback;
   if (Array.isArray(value)) return normalizeText(value[0], fallback);
   if (typeof value === 'object') {
-    if (typeof value.text === 'string' || typeof value.text === 'number') return sanitizeAiText(String(value.text));
-    if (typeof value.label === 'string' || typeof value.label === 'number') return sanitizeAiText(String(value.label));
-    if (typeof value.value === 'string' || typeof value.value === 'number') return sanitizeAiText(String(value.value));
+    if (typeof value.text === 'string' || typeof value.text === 'number') return normalizeText(value.text, fallback);
+    if (typeof value.label === 'string' || typeof value.label === 'number') return normalizeText(value.label, fallback);
+    if (typeof value.value === 'string' || typeof value.value === 'number') return normalizeText(value.value, fallback);
     return fallback;
   }
-  const text = sanitizeAiText(String(value).trim());
+  const text = sanitizeChildFacingText(String(value).trim());
   return text || fallback;
 }
 
@@ -35,8 +72,9 @@ function normalizeList(value) {
   return result;
 }
 
-function getQuestionText(question = {}) {
+function getQuestionText(question = {}, explicit = '') {
   return normalizeText(
+    explicit ||
     question?.q ||
     question?.question ||
     question?.stem ||
@@ -46,14 +84,35 @@ function getQuestionText(question = {}) {
   );
 }
 
-function getCorrectAnswer(question = {}, fallback = '') {
+function getInstruction(question = {}, explicit = '') {
   return normalizeText(
-    question?.answer ||
-    question?.correctAnswer ||
-    question?.acceptedAnswers?.[0] ||
-    fallback ||
+    explicit ||
+    question?.instruction ||
+    question?.direction ||
+    question?.prompt ||
+    question?.task ||
     ''
   );
+}
+
+function getOptions(question = {}, explicit = []) {
+  if (Array.isArray(explicit) && explicit.length) return normalizeList(explicit);
+  return normalizeList(question?.options || question?.choices || question?.answers || []);
+}
+
+function getExpectedAnswer(question = {}, explicit = '') {
+  return normalizeText(
+    explicit ||
+    question?.answer ||
+    question?.correctAnswer ||
+    question?.expectedAnswer ||
+    question?.acceptedAnswers?.[0] ||
+    ''
+  );
+}
+
+function getLearnerAnswer(explicit = '', question = {}) {
+  return normalizeText(explicit || question?.learnerAnswer || question?.studentAnswer || question?.answerAttempt || '', '');
 }
 
 function getSubjectContext(subject = {}, subjectId = '') {
@@ -72,79 +131,38 @@ function getTopicContext(topic = {}, topicId = '') {
     id: resolvedId,
     title: normalizeText(topic?.title || topic?.name || formatTopicName(resolvedId), resolvedId),
     note: normalizeText(topic?.note || topic?.description || '', ''),
+    objective: normalizeText(
+      topic?.objective ||
+      topic?.learningObjective ||
+      topic?.currentLearningObjective ||
+      '',
+      ''
+    ),
     questions: Array.isArray(topic?.questions) ? topic.questions : []
   };
 }
 
+function resolveTopicLabel({ subject = null, topic = null, question = null, metadata = null } = {}) {
+  const label = getHumanReadableTopic({ subject, topic, question, metadata });
+  return normalizeText(label, 'topik semasa');
+}
+
 function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}) {
-  const direct = normalizeText(intent, '').toLowerCase();
+  const direct = String(intent ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
   if (direct) return direct;
 
-  const text = normalizeText(prompt, '').toLowerCase();
+  const text = String(prompt ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
   if (/topik\s+lemah|weak_topic|lemah/.test(text)) return 'weak_topic';
   if (/ulang\s*kaji|revision_plan|cadangan ulang kaji|cadangan/.test(text)) return 'revision_plan';
   if (/uasa|summary/.test(text)) return 'uasa_summary';
-  if (/petunjuk|hint/.test(text)) return 'hint';
+  if (/beri\s+saya\s+petunjuk|petunjuk|hint/.test(text)) return 'hint';
+  if (/kenapa\s+jawapan\s+saya\s+salah|wrong_answer_coaching|salah/.test(text)) return 'wrong_answer_coaching';
   if (/terangkan|jelaskan|soalan ini|question help/.test(text)) return 'question_help';
-  if (/salah/.test(text)) return 'wrong_answer_coaching';
+  if (/beri\s+contoh\s+mudah|contoh\s+mudah|example/.test(text)) return 'example_request';
   if (/betul|correct/.test(text)) return 'correct_answer_reinforcement';
   if (typeof isCorrect === 'boolean') return isCorrect ? 'correct_answer_reinforcement' : 'wrong_answer_coaching';
   if (getQuestionText(question)) return 'question_help';
   return 'general';
-}
-
-function formatTopicList(topics = [], limit = 3) {
-  return normalizeList(topics)
-    .slice(0, limit)
-    .map(item => {
-      if (typeof item === 'object' && item) {
-        const subjectId = item.subjectId || item.subject || '';
-        const topicId = item.topicId || item.topic || item.id || '';
-        const title = normalizeText(item.title || item.name || formatTopicName(topicId), topicId);
-        const subjectLabel = normalizeText(item.subjectTitle || item.subjectLabel || formatSubjectName(subjectId), subjectId);
-        const mastery = Number.isFinite(Number(item.mastery)) ? clampPercent(Number(item.mastery)) : null;
-        return `${subjectLabel} — ${title}${mastery === null ? '' : ` (${mastery}%)`}`;
-      }
-      return normalizeText(item, '');
-    })
-    .filter(Boolean);
-}
-
-function pickBestWeakTopic(weakTopics = [], profile = {}, subject = {}) {
-  const fallbackSubjectId = subject?.id || '';
-  const topByRank = Array.isArray(weakTopics) ? weakTopics.filter(Boolean) : [];
-  if (topByRank.length) return topByRank[0];
-  const ranked = rankWeakTopics(profile || {}, {
-    subjectId: fallbackSubjectId || undefined,
-    limit: 1,
-    includeLowConfidence: true
-  });
-  return ranked[0] || null;
-}
-
-function pickBestStrongTopic(strongTopics = [], profile = {}, subject = {}) {
-  const fallbackSubjectId = subject?.id || '';
-  const topByRank = Array.isArray(strongTopics) ? strongTopics.filter(Boolean) : [];
-  if (topByRank.length) return topByRank[0];
-  const ranked = rankStrongTopics(profile || {}, {
-    subjectId: fallbackSubjectId || undefined,
-    limit: 1
-  });
-  return ranked[0] || null;
-}
-
-function buildUasaSummary(profile = {}, studyPlan = null, readiness = null) {
-  const history = Array.isArray(profile?.uasaHistory) ? profile.uasaHistory.filter(Boolean) : [];
-  const latest = history[0] || null;
-  const best = history.reduce((acc, item) => Math.max(acc, Number(item?.score) || 0), 0);
-  return {
-    latestScore: Number(latest?.score) || 0,
-    bestScore: best,
-    attempts: history.length,
-    readinessLevel: readiness?.level || 'needs_support',
-    readinessMessage: readiness?.message || 'Belum cukup data UASA.',
-    studyNote: normalizeText(studyPlan?.notes || '', '')
-  };
 }
 
 function buildSuggestionList(intent, context = {}) {
@@ -192,114 +210,305 @@ function buildSuggestionList(intent, context = {}) {
         'Bandingkan soalan dengan jawapan kamu.',
         'Gunakan penjelasan mudah untuk faham maksudnya.'
       ];
+    case 'example_request':
+      return [
+        'Baca contoh mudah dulu.',
+        'Cari persamaan dengan soalan semasa.',
+        'Cuba jawab dengan gaya yang sama.'
+      ];
     default:
-      return generic;
+      return context.questionText ? ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.', 'Semak jawapan dengan maksud soalan.'] : generic;
   }
 }
 
-function buildContextualText(intent, {
-  studentName,
+function getCategoryRule(question = {}, topic = {}) {
+  const category = detectLearningCategory(question, topic);
+  const commonMistakes = CATEGORY_COMMON_MISTAKES[category] || CATEGORY_COMMON_MISTAKES.generic;
+  const example = getLearningExamples(question, topic)[0] || '';
+  const memoryTip = getLearningMemoryTip(question, topic);
+  return {
+    category,
+    commonMistakes,
+    example,
+    memoryTip
+  };
+}
+
+function buildContextualSections({
+  intent,
+  questionText,
+  instruction,
+  options,
   subject,
   topic,
+  topicLabel,
   question,
   answer,
+  learnerAnswer,
   isCorrect,
-  attemptCount = 0,
-  hintsUsed = 0,
+  attemptCount,
+  hintsUsed,
   coachResponse,
-  weakTopics,
-  strongTopics,
   studyPlan,
   readiness,
   adaptiveRecommendation,
-  profile
-} = {}) {
+  profile,
+  explanationMode,
+  currentLearningObjective,
+  weakTopics = [],
+  strongTopics = []
+}) {
+  const categoryRule = getCategoryRule(question, topic);
   const subjectLabel = subject?.title || formatSubjectName(subject?.id);
-  const topicLabel = topic?.title || formatTopicName(topic?.id);
-  const questionText = getQuestionText(question);
-  const correctAnswer = getCorrectAnswer(question, answer);
-  const explanation = normalizeText(coachResponse?.explanation?.explanation || coachResponse?.explanation || '', '');
-  const simpleExplanation = normalizeText(coachResponse?.explanation?.simpleExplanation || coachResponse?.simpleExplanation || '', '');
-  const hint = normalizeText(coachResponse?.hint?.hint || coachResponse?.hint || '', '');
-  const praise = normalizeText(coachResponse?.praise?.praise || coachResponse?.praise || '', '');
-  const learningTip = normalizeText(coachResponse?.learningTip || coachResponse?.tips?.spotlight || '', '');
-  const steps = normalizeList(coachResponse?.steps || []);
-  const weakTopic = pickBestWeakTopic(weakTopics, profile, subject);
-  const strongTopic = pickBestStrongTopic(strongTopics, profile, subject);
-  const uasaSummary = buildUasaSummary(profile, studyPlan, readiness);
-  const recommendationReason = normalizeText(adaptiveRecommendation?.reason || studyPlan?.notes || readiness?.message || '', '');
+  const resolvedQuestion = questionText || getQuestionText(question);
+  const resolvedInstruction = instruction || getInstruction(question);
+  const resolvedOptions = options.length ? options : getOptions(question);
+  const expectedAnswer = getExpectedAnswer(question, answer);
+  const learner = getLearnerAnswer(learnerAnswer, question);
+  const explanationText = normalizeText(
+    coachResponse?.explanation?.explanation ||
+    coachResponse?.explanation ||
+    coachResponse?.simpleExplanation ||
+    question?.explanation ||
+    ''
+  );
+  const simpleExplanationText = normalizeText(
+    coachResponse?.explanation?.simpleExplanation ||
+    coachResponse?.simpleExplanation ||
+    explanationText ||
+    question?.simpleExplanation ||
+    ''
+  );
+  const hintText = normalizeText(
+    coachResponse?.hint?.hint ||
+    coachResponse?.hint ||
+    question?.hint ||
+    categoryRule.memoryTip ||
+    'Cari kata kunci penting dalam soalan.'
+  );
+  const praiseText = normalizeText(
+    coachResponse?.praise?.praise ||
+    coachResponse?.praise ||
+    'Bagus! Teruskan usaha kamu.'
+  );
+  const learningTipText = normalizeText(
+    coachResponse?.learningTip ||
+    coachResponse?.tips?.spotlight ||
+    categoryRule.memoryTip ||
+    'Fokus pada kata kunci penting.'
+  );
+  const coachKnowledge = coachResponse?.knowledge || {};
+  const steps = normalizeList(
+    coachResponse?.steps ||
+    coachKnowledge?.steps ||
+    coachKnowledge?.learningSteps ||
+    INTENT_STEPS[intent] ||
+    INTENT_STEPS.general
+  );
+  const commonMistake = normalizeText(
+    coachKnowledge?.commonMistakes?.[0] ||
+    coachResponse?.commonMistakes?.[0] ||
+    categoryRule.commonMistakes?.[0] ||
+    ''
+  );
+  const example = normalizeText(
+    coachKnowledge?.examples?.[0] ||
+    coachResponse?.examples?.[0] ||
+    categoryRule.example ||
+    (resolvedQuestion ? resolvedQuestion : '')
+  );
+  const memoryTip = normalizeText(
+    coachKnowledge?.memoryTips?.[0] ||
+    coachResponse?.memoryTips?.[0] ||
+    categoryRule.memoryTip ||
+    getLearningMemoryTip(question, topic)
+  );
+  const learningObjective = normalizeText(currentLearningObjective || topic?.objective || topic?.learningObjective || topic?.currentLearningObjective || '', '');
+  const weakTopic = Array.isArray(weakTopics) && weakTopics.length
+    ? weakTopics[0]
+    : Array.isArray(profile?.weakTopics)
+      ? profile.weakTopics[0] || null
+      : null;
+  const strongTopic = Array.isArray(strongTopics) && strongTopics.length
+    ? strongTopics[0]
+    : Array.isArray(profile?.strongTopics)
+      ? profile.strongTopics[0] || null
+      : null;
+  const weakTopicLabel = weakTopic
+    ? normalizeText(
+        getHumanReadableTopic({
+          subject: { id: weakTopic.subjectId || subject?.id || '' },
+          topic: { id: weakTopic.topicId || '' },
+          metadata: {
+            topicId: weakTopic.topicId || '',
+            displayName: weakTopic.topicTitle || weakTopic.title || ''
+          }
+        }) || formatTopicName(weakTopic.topicId || ''),
+        ''
+      )
+    : '';
+  const strongTopicLabel = strongTopic
+    ? normalizeText(
+        getHumanReadableTopic({
+          subject: { id: strongTopic.subjectId || subject?.id || '' },
+          topic: { id: strongTopic.topicId || '' },
+          metadata: {
+            topicId: strongTopic.topicId || '',
+            displayName: strongTopic.topicTitle || strongTopic.title || ''
+          }
+        }) || formatTopicName(strongTopic.topicId || ''),
+        ''
+      )
+    : '';
+  const recommendationReason = normalizeText(
+    adaptiveRecommendation?.reason ||
+    studyPlan?.notes ||
+    readiness?.message ||
+    ''
+  );
+  const isHintIntent = intent === 'hint';
+  const safeHintLead = sanitizeChildFacingText(
+    hintText || 'Cari kata kunci penting dalam soalan.'
+  );
 
-  switch (intent) {
-    case 'weak_topic': {
-      const weakText = weakTopic
-        ? `${formatSubjectName(weakTopic.subjectId)} — ${formatTopicName(weakTopic.topicId)}${Number.isFinite(Number(weakTopic.mastery)) ? ` (${clampPercent(weakTopic.mastery)}%)` : ''}`
-        : `${subjectLabel} ${topicLabel}`.trim();
-      const detail = weakTopic?.reason || weakTopic?.message || recommendationReason || 'Topik ini masih memerlukan lebih banyak latihan.';
-      return `${studentName ? `${studentName}, ` : ''}topik lemah kamu ialah ${weakText}. ${detail}`;
-    }
-    case 'revision_plan': {
-      const planText = recommendationReason || 'Ikut pelan ulang kaji yang seimbang hari ini.';
-      const focusText = buildRecommendation(profile || {}, subject || {});
-      const focus = focusText?.recommendedTitle || focusText?.recommendedTopicId;
-      return `${studentName ? `${studentName}, ` : ''}cadangan ulang kaji: ${planText}${focus ? ` Fokus pada ${focus}.` : ''}`;
-    }
-    case 'uasa_summary': {
-      return `${studentName ? `${studentName}, ` : ''}Ringkasan UASA kamu: markah terkini ${uasaSummary.latestScore}%, terbaik ${uasaSummary.bestScore}%, dan ${uasaSummary.attempts} rekod telah disimpan. ${uasaSummary.readinessMessage}`;
-    }
-    case 'hint': {
-      const firstStep = steps[0] ? ` Langkah pertama: ${steps[0]}.` : '';
-      return `${studentName ? `${studentName}, ` : ''}petunjuk untuk ${subjectLabel}${topicLabel ? `, ${topicLabel}` : ''}: ${hint || 'Baca soalan perlahan-lahan dan cari kata kunci.'}${firstStep}`;
-    }
-    case 'question_help': {
-      const parts = [
-        studentName ? `${studentName}, mari kita lihat soalan ini.` : 'Mari kita lihat soalan ini.',
-        questionText ? `Soalan: ${questionText}.` : '',
-        explanation || simpleExplanation || 'Jawapan ini sesuai dengan soalan ini.',
-        hint || '',
-        learningTip || '',
-        attemptCount > 1 ? `Ini percubaan ke-${attemptCount}.` : '',
-        hintsUsed > 0 ? `Petunjuk telah digunakan ${hintsUsed} kali.` : '',
-        steps[0] ? `Langkah awal: ${steps[0]}.` : ''
-      ].filter(Boolean);
-      return parts.join(' ');
-    }
-    case 'wrong_answer_coaching': {
-      const parts = [
-        studentName ? `${studentName}, jawapan itu belum tepat.` : 'Jawapan itu belum tepat.',
-        explanation || simpleExplanation || 'Cuba semak semula kata kunci pada soalan.',
-        hint || 'Gunakan petunjuk jika perlu.',
-        attemptCount > 1 ? `Ini percubaan ke-${attemptCount}.` : '',
-        correctAnswer ? 'Cuba cari jawapan sendiri dahulu sebelum melihat jawapan tepat.' : ''
-      ].filter(Boolean);
-      return parts.join(' ');
-    }
-    case 'correct_answer_reinforcement': {
-      const parts = [
-        studentName ? `Bagus, ${studentName}!` : 'Bagus!',
-        praise || 'Teruskan usaha kamu.',
-        explanation || simpleExplanation || (correctAnswer ? `Jawapan yang betul ialah ${correctAnswer}.` : 'Kamu sudah menjawab dengan tepat.'),
-        strongTopic ? `Kekuatan kamu: ${formatSubjectName(strongTopic.subjectId)} — ${formatTopicName(strongTopic.topicId)}.` : ''
-      ].filter(Boolean);
-      return parts.join(' ');
-    }
-    default: {
-      const weakText = weakTopic
-        ? `Fokus pada ${formatSubjectName(weakTopic.subjectId)} — ${formatTopicName(weakTopic.topicId)}.`
-        : '';
-      const strongText = strongTopic
-        ? `Kekuatan kamu pula ialah ${formatSubjectName(strongTopic.subjectId)} — ${formatTopicName(strongTopic.topicId)}.`
-        : '';
-      const parts = [
-        studentName ? `Hai ${studentName}!` : 'Hai!',
-        subjectLabel ? `Kita sedang belajar ${subjectLabel}${topicLabel ? `, topik ${topicLabel}` : ''}.` : 'Saya sedia membantu belajar hari ini.',
-        explanation || simpleExplanation || learningTip || 'Saya boleh terangkan, beri petunjuk, atau cadangkan ulang kaji.',
-        weakText,
-        strongText,
-        recommendationReason ? `Cadangan hari ini: ${recommendationReason}` : ''
-      ].filter(Boolean);
-      return parts.join(' ');
-    }
-  }
+  const revealAnswer =
+    Boolean(isCorrect) ||
+    explanationMode === 'correct_answer_reinforcement' ||
+    explanationMode === 'show_answer' ||
+    (intent === 'wrong_answer_coaching' && Number(attemptCount) >= 3);
+
+  const summary = sanitizeChildFacingText(
+    isHintIntent
+      ? [
+          resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
+          topicLabel && topicLabel !== 'topik semasa' ? `Topik: ${topicLabel}.` : '',
+          subjectLabel ? `Subjek: ${subjectLabel}.` : ''
+        ].filter(Boolean).join(' ')
+      : intent === 'weak_topic'
+        ? [
+            weakTopicLabel ? `Topik lemah kamu ialah ${weakTopicLabel}.` : 'Topik lemah kamu memerlukan latihan lagi.',
+            resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
+            subjectLabel ? `Subjek: ${subjectLabel}.` : ''
+          ].filter(Boolean).join(' ')
+        : intent === 'revision_plan'
+          ? [
+              'Cadangan ulang kaji hari ini memfokuskan latihan yang perlu dikuatkan.',
+              recommendationReason ? `Sebab: ${recommendationReason}.` : '',
+              strongTopicLabel ? `Topik yang sudah kuat: ${strongTopicLabel}.` : ''
+            ].filter(Boolean).join(' ')
+          : intent === 'uasa_summary'
+            ? [
+                'Ringkasan UASA menunjukkan kemajuan dan topik yang perlu diperkemas.',
+                recommendationReason ? `Butiran: ${recommendationReason}.` : '',
+                weakTopicLabel ? `Fokus seterusnya: ${weakTopicLabel}.` : ''
+              ].filter(Boolean).join(' ')
+            : [
+                resolvedQuestion ? `Soalan: ${resolvedQuestion}.` : '',
+                resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
+                topicLabel && topicLabel !== 'topik semasa' ? `Topik: ${topicLabel}.` : '',
+                subjectLabel ? `Subjek: ${subjectLabel}.` : ''
+              ].filter(Boolean).join(' ')
+  ) || (
+    isHintIntent
+      ? `Mari kita lihat petunjuk untuk ${topicLabel || 'topik semasa'}.`
+      : `Mari kita lihat topik ${topicLabel || 'topik semasa'}.`
+  );
+
+  const whyCorrect = sanitizeChildFacingText(
+    isHintIntent
+      ? 'Fokus pada petunjuk ini.'
+      : explanationText ||
+        simpleExplanationText ||
+        (revealAnswer && expectedAnswer ? `Jawapan yang betul ialah ${expectedAnswer}.` : 'Mari kita semak sebab jawapan ini sesuai.')
+  );
+
+  const hint = sanitizeChildFacingText(
+    safeHintLead
+  );
+
+  const coachMessage = sanitizeChildFacingText(
+    isCorrect
+      ? praiseText
+      : intent === 'wrong_answer_coaching'
+        ? 'Jawapan kamu belum tepat. Cuba semak semula bersama.'
+        : intent === 'hint'
+          ? 'Cuba guna petunjuk ini untuk mencari jawapan.'
+          : intent === 'weak_topic'
+            ? 'Mari fokus pada topik lemah ini sedikit demi sedikit.'
+            : intent === 'revision_plan'
+              ? 'Ikut cadangan ulang kaji ini untuk kemajuan yang lebih baik.'
+              : intent === 'uasa_summary'
+                ? 'Semak ringkasan ini untuk lihat perkembangan kamu.'
+                : 'Saya akan bantu langkah demi langkah.'
+  );
+
+  const shortText = sanitizeChildFacingText(
+    isHintIntent
+      ? `${hint}`
+      : intent === 'wrong_answer_coaching'
+        ? `${coachMessage}${commonMistake ? ` ${commonMistake}` : ''}`
+        : intent === 'correct_answer_reinforcement'
+          ? `${coachMessage}${revealAnswer && expectedAnswer ? ` Jawapan betul ialah ${expectedAnswer}.` : ''}`
+          : summary
+  );
+
+  const text = sanitizeChildFacingText([
+    summary,
+    isHintIntent ? hint : '',
+    !isHintIntent && intent === 'wrong_answer_coaching' ? commonMistake || whyCorrect : (!isHintIntent ? whyCorrect : ''),
+    steps[0] ? `Langkah pertama: ${steps[0]}.` : '',
+    !isHintIntent && example ? `Contoh mudah: ${example}.` : '',
+    !isHintIntent && memoryTip ? `Tip ingatan: ${memoryTip}.` : '',
+    !isHintIntent && revealAnswer && expectedAnswer ? `Jawapan betul: ${expectedAnswer}.` : '',
+    coachMessage
+  ].filter(Boolean).join(' ')) || DEFAULT_FALLBACK;
+
+  const sections = {
+    summary,
+    whyCorrect,
+    hint,
+    steps,
+    commonMistake,
+    example,
+    memoryTip,
+    correctAnswer: revealAnswer ? expectedAnswer : '',
+    coachMessage,
+    learningObjective,
+    questionText: resolvedQuestion,
+    instruction: resolvedInstruction,
+    options: resolvedOptions,
+    subject: subjectLabel,
+    topic: topicLabel
+  };
+
+  const contextUsed = {
+    hasQuestion: Boolean(resolvedQuestion),
+    hasInstruction: Boolean(resolvedInstruction),
+    optionCount: resolvedOptions.length,
+    questionText: resolvedQuestion,
+    instruction: resolvedInstruction,
+    options: resolvedOptions,
+    subject: subjectLabel,
+    topic: topicLabel,
+    expectedAnswer,
+    learnerAnswer: learner,
+    isCorrect: Boolean(isCorrect),
+    attemptCount: Number(attemptCount) || 0,
+    hintsUsed: Number(hintsUsed) || 0,
+    explanationMode: normalizeText(explanationMode, ''),
+    currentLearningObjective: learningObjective,
+    subjectId: subject?.id || '',
+    topicId: topic?.id || '',
+    intent,
+    hasCoachData: Boolean(coachResponse?.ready)
+  };
+
+  return {
+    text,
+    shortText,
+    sections,
+    contextUsed
+  };
 }
 
 export async function getTutorResponse(options = {}) {
@@ -311,8 +520,15 @@ export async function getTutorResponse(options = {}) {
     topic = null,
     topicId = '',
     question = null,
+    questionText = '',
+    instruction = '',
+    options: questionOptions = [],
+    expectedAnswer = '',
+    learnerAnswer = '',
     studentAnswer = '',
     correctAnswer = '',
+    explanationMode = '',
+    currentLearningObjective = '',
     isCorrect = null,
     attemptCount = 0,
     hintsUsed = 0,
@@ -335,12 +551,15 @@ export async function getTutorResponse(options = {}) {
   const studentProfile = student || profile || adaptiveProfile || {};
   const subjectContext = getSubjectContext(subject || {}, subjectId);
   const topicContext = getTopicContext(topic || {}, topicId);
-  const studentName = getStudentDisplayName(studentProfile, '');
-  const resolvedIntent = inferIntent({ intent, prompt, isCorrect, question });
-  const questionText = getQuestionText(question || {});
-  const answerText = normalizeText(studentAnswer, '');
-  const expectedAnswer = getCorrectAnswer(question || {}, correctAnswer);
-  const hasQuestionContext = Boolean(questionText || topicContext.id || subjectContext.id);
+  const resolvedQuestion = question || {};
+  const studentName = getStudentDisplayName(studentProfile, 'Murid');
+  const resolvedIntent = inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
+  const resolvedQuestionText = getQuestionText(resolvedQuestion, questionText);
+  const resolvedInstruction = getInstruction(resolvedQuestion, instruction);
+  const resolvedOptions = getOptions(resolvedQuestion, questionOptions);
+  const answerText = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
+  const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
+  const hasQuestionContext = Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id);
 
   let coachResponse = null;
   let source = 'fallback';
@@ -350,9 +569,9 @@ export async function getTutorResponse(options = {}) {
       coachResponse = await buildCoachResponse({
         subjectId: subjectContext.id,
         topicId: topicContext.id,
-        question: question || {},
+        question: resolvedQuestion,
         result: {
-          correct: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expectedAnswer && answerText === expectedAnswer),
+          correct: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expected && answerText === expected),
           status: typeof isCorrect === 'boolean'
             ? (isCorrect ? 'correct' : 'wrong')
             : undefined,
@@ -374,7 +593,14 @@ export async function getTutorResponse(options = {}) {
           streak: Number(studentProfile.streak || adaptiveProfile?.streak || 0),
           learningObservation,
           predictionProfile,
-          gamificationProfile
+          gamificationProfile,
+          questionText: resolvedQuestionText,
+          instruction: resolvedInstruction,
+          options: resolvedOptions,
+          expectedAnswer: expected,
+          learnerAnswer: answerText,
+          explanationMode,
+          currentLearningObjective
         }
       });
       if (coachResponse?.ready) {
@@ -390,37 +616,60 @@ export async function getTutorResponse(options = {}) {
   }
   const fallbackUsed = source !== 'coach-v3';
 
-  const text = buildContextualText(resolvedIntent, {
-    studentName,
+  const weakList = Array.isArray(weakTopics) && weakTopics.length ? weakTopics : rankWeakTopics(studentProfile || {}, {
+    subjectId: subjectContext.id || undefined,
+    limit: 5,
+    includeLowConfidence: true
+  });
+  const strongList = Array.isArray(strongTopics) && strongTopics.length ? strongTopics : rankStrongTopics(studentProfile || {}, {
+    subjectId: subjectContext.id || undefined,
+    limit: 5
+  });
+
+  const resolvedTopicLabel = resolveTopicLabel({
     subject: subjectContext,
     topic: topicContext,
-    question: question || {},
-    answer: expectedAnswer || answerText,
+    question: resolvedQuestion,
+    metadata: {
+      displayName: topicContext.title,
+      title: topicContext.title,
+      topicId: topicContext.id
+    }
+  });
+  const fallbackTopicLabel = resolvedTopicLabel || 'topik semasa';
+  const contextBundle = buildContextualSections({
+    intent: resolvedIntent,
+    questionText: resolvedQuestionText,
+    instruction: resolvedInstruction,
+    options: resolvedOptions,
+    subject: subjectContext,
+    topic: topicContext,
+    topicLabel: fallbackTopicLabel,
+    question: resolvedQuestion,
+    answer: expected,
+    learnerAnswer: answerText,
     isCorrect,
     attemptCount: Number(attemptCount) || 0,
     hintsUsed: Number(hintsUsed) || 0,
     coachResponse,
-    weakTopics: Array.isArray(weakTopics) && weakTopics.length ? weakTopics : rankWeakTopics(studentProfile || {}, {
-      subjectId: subjectContext.id || undefined,
-      limit: 5,
-      includeLowConfidence: true
-    }),
-    strongTopics: Array.isArray(strongTopics) && strongTopics.length ? strongTopics : rankStrongTopics(studentProfile || {}, {
-      subjectId: subjectContext.id || undefined,
-      limit: 5
-    }),
     studyPlan,
     readiness,
     adaptiveRecommendation,
-    profile: studentProfile
+    profile: studentProfile,
+    explanationMode,
+    currentLearningObjective,
+    weakTopics,
+    strongTopics
   });
 
   const suggestions = buildSuggestionList(resolvedIntent, {
     subject: subjectContext,
     topic: topicContext,
-    question: question || {}
+    question: resolvedQuestion,
+    questionText: resolvedQuestionText
   });
 
+  const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
   const confidence = fallbackUsed
     ? 45
     : hasQuestionContext
@@ -429,23 +678,43 @@ export async function getTutorResponse(options = {}) {
         ? 82
         : 88;
 
-  const normalizedText = normalizeText(text, DEFAULT_FALLBACK);
+  const fallbackText = sanitizeChildFacingText(
+    hasQuestionContext
+      ? `Mari kita lihat soalan ini bersama-sama.`
+      : `Saya akan bantu berdasarkan ${fallbackTopicLabel}.`
+  );
+
   return {
-    text: normalizedText || DEFAULT_FALLBACK,
+    text: contextBundle.text || fallbackText || DEFAULT_FALLBACK,
+    shortText: contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
     intent: resolvedIntent,
     confidence: clampPercent(confidence),
     suggestions,
+    suggestedActions: suggestions,
     source,
     fallbackUsed: Boolean(fallbackUsed),
     error: null,
     studentName,
     subject: subjectContext.title,
-    topic: topicContext.title,
-    questionId: normalizeText(question?.id || '', ''),
-    questionText,
-    correctAnswer: expectedAnswer,
-    studentAnswer: answerText,
-    isCorrect: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expectedAnswer && answerText === expectedAnswer)
+    topic: fallbackTopicLabel,
+    questionId: normalizeText(resolvedQuestion?.id || '', ''),
+    questionText: resolvedQuestionText,
+    instruction: resolvedInstruction,
+    options: resolvedOptions,
+    expectedAnswer: expected,
+    learnerAnswer: answerText,
+    correctAnswer: expected,
+    isCorrect: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expected && answerText === expected),
+    contextUsed: contextBundle.contextUsed,
+    sections: contextBundle.sections,
+    recommendationKey: recommendation?.recommendedTopicId || null,
+    weakTopics: weakList,
+    strongTopics: strongList,
+    uasaSummary,
+    adaptiveRecommendation,
+    explanationMode,
+    currentLearningObjective,
+    learnerAnswerText: answerText
   };
 }
 

@@ -1,4 +1,4 @@
-import { detectLearningCategory, getLearningExamples, getLearningMemoryTip, sanitizeAiText } from './learningCopy.js';
+import { detectLearningCategory, getLearningExamples, getLearningMemoryTip, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
 
@@ -65,7 +65,7 @@ function getRule(question, topic) {
   return { category, ...(TEACHING_RULES[category] || TEACHING_RULES.generic) };
 }
 
-export function teachAnswer({ question = {}, topic = {}, explanationData = {} } = {}) {
+export function teachAnswer({ question = {}, topic = {}, explanationData = {}, questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
   const rule = getRule(question, topic);
   const explanation = sanitizeAiText(explanationData.explanation || question.explanation || rule.explanation);
   const examples = (Array.isArray(explanationData.examples) && explanationData.examples.length ? explanationData.examples : getLearningExamples(question, topic))
@@ -74,6 +74,11 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {} } 
   const commonMistakes = (Array.isArray(explanationData.commonMistakes) && explanationData.commonMistakes.length ? explanationData.commonMistakes : rule.commonMistakes)
     .map(item => sanitizeAiText(item));
   const practicePrompt = sanitizeAiText(explanationData.practicePrompt || rule.practicePrompt);
+  const summary = sanitizeChildFacingText([
+    questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
+    instruction ? `Arahan: ${instruction}.` : '',
+    topic?.title ? `Topik: ${topic.title}.` : ''
+  ].filter(Boolean).join(' ')) || 'Mari kita belajar langkah demi langkah.';
   const studentProfile = getStudentProfileSummary('default');
   const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
   const topicStatus = topicProgress?.status || 'new';
@@ -95,6 +100,19 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {} } 
     commonMistakes,
     memoryTip,
     practicePrompt: profileAwarePracticePrompt,
+    shortText: sanitizeChildFacingText(`${summary} ${explanation}`),
+    sections: {
+      summary,
+      whyCorrect: explanation,
+      hint: sanitizeAiText(question.hint || rule.practicePrompt),
+      steps: examples.slice(0, 3),
+      commonMistake: commonMistakes[0] || '',
+      example: examples[0] || '',
+      memoryTip,
+      coachMessage: sanitizeChildFacingText(profileAwarePracticePrompt),
+      practicePrompt: profileAwarePracticePrompt,
+      learningObjective: sanitizeChildFacingText(currentLearningObjective || question.learningObjective || topic.learningObjective || topic.objective || '')
+    },
     learningProfile: {
       studentId: studentProfile.studentId || 'default',
       topicStatus,

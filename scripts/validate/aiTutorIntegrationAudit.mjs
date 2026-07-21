@@ -43,7 +43,8 @@ async function main() {
   const formatterText = read(files.formatter);
 
   report.files.publicApi = has(indexText, /export\s+\{\s*getTutorResponse\s*\}/);
-  report.files.modalImportsEngine = has(modalText, "from '../../ai/index.js'");
+  report.files.modalImportsEngine = has(modalText, "from '../../utils/tutorResponseService.js'") &&
+    has(modalText, "from '../../utils/childText.js'");
   report.files.modalUsesHelper = has(modalText, 'getStudentDisplayName');
   report.files.modalUsesTutorAIModal = has(appText, '<TutorAIModal');
   report.files.modalUsesLoadingState = has(modalText, 'Tutor AI sedang menaip');
@@ -57,7 +58,7 @@ async function main() {
     .every(intent => has(modalText, intent) || has(engineText, intent));
 
   assert(report.files.publicApi, 'src/ai/index.js must export getTutorResponse.', issues);
-  assert(report.files.modalImportsEngine, 'TutorAIModal must import getTutorResponse from src/ai/index.js.', issues);
+  assert(report.files.modalImportsEngine, 'TutorAIModal must import the public tutor response utilities.', issues);
   assert(report.files.modalUsesHelper, 'TutorAIModal must use getStudentDisplayName.', issues);
   assert(report.files.modalUsesTutorAIModal, 'App must render TutorAIModal.', issues);
   assert(report.files.modalUsesLoadingState, 'TutorAIModal should expose a loading state message.', issues);

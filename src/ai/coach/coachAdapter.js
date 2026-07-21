@@ -2,6 +2,7 @@ import { buildCoachResponse } from './v3/coachController.js';
 import { explainAnswer } from '../explainEngine.js';
 import { teachAnswer } from '../teacherEngine.js';
 import { sanitizeAiText } from '../learningCopy.js';
+import { formatSubjectName, getHumanReadableTopic } from '../../utils/displayFormatter.js';
 
 const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
@@ -50,6 +51,12 @@ function normalizeList(value) {
   return result;
 }
 
+function normalizeArray(value) {
+  if (Array.isArray(value)) return normalizeList(value);
+  const text = normalizeText(value, '');
+  return text ? [text] : [];
+}
+
 function pickFirstText(...values) {
   for (const value of values) {
     const text = normalizeText(value, '');
@@ -84,6 +91,7 @@ function getCoachSubjectLabel(subjectId, coachData = {}, question = {}, topic = 
   return normalizeText(
     coachData.subjectLabel ||
     subjectId && SUBJECT_LABELS[subjectId] ||
+    formatSubjectName(subjectId) ||
     question.subjectTitle ||
     topic.title ||
     topic.name ||
@@ -174,11 +182,19 @@ function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic 
   );
   const subject = getCoachSubjectLabel(subjectId, payload, question, topic);
   const topicName = normalizeText(
+    getHumanReadableTopic({
+      subject: { id: subjectId, title: subject },
+      topic,
+      question,
+      metadata: {
+        topicId,
+        displayName: payload.topic || question.topicTitle || topic.title || topic.name || ''
+      }
+    }) ||
     payload.topic ||
     question.topicTitle ||
     topic.title ||
     topic.name ||
-    topic.id ||
     ''
   );
 
@@ -212,13 +228,77 @@ function buildFallbackPayload(mode, { question = {}, topic = {}, result = {}, us
   return buildFallbackData(mode, { question, topic, result, userAnswer });
 }
 
-function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null } = {}) {
+function buildContextUsed({
+  subjectId = '',
+  topicId = '',
+  question = {},
+  topic = {},
+  result = {},
+  userAnswer = '',
+  questionText = '',
+  instruction = '',
+  options = [],
+  expectedAnswer = '',
+  explanationMode = '',
+  currentLearningObjective = '',
+  attemptCount = 0,
+  hintsUsed = 0
+} = {}) {
+  return {
+    subjectId: normalizeText(subjectId, ''),
+    topicId: normalizeText(topicId, ''),
+    questionText: normalizeText(questionText || question?.q || question?.question || question?.stem || '', ''),
+    instruction: normalizeText(instruction || question?.instruction || '', ''),
+    options: normalizeArray(options.length ? options : question?.options || question?.choices || []),
+    expectedAnswer: normalizeText(expectedAnswer || question?.answer || question?.correctAnswer || '', ''),
+    learnerAnswer: normalizeText(userAnswer || result?.userAnswer || '', ''),
+    isCorrect: Boolean(result?.correct || result?.status === 'correct'),
+    attemptCount: Number(attemptCount) || 0,
+    hintsUsed: Number(hintsUsed) || 0,
+    explanationMode: normalizeText(explanationMode, ''),
+    currentLearningObjective: normalizeText(currentLearningObjective || question?.learningObjective || topic?.learningObjective || topic?.objective || '', ''),
+    subjectIdResolved: normalizeText(subjectId, ''),
+    topicLabel: normalizeText(
+      getHumanReadableTopic({
+        subject: { id: subjectId, title: subjectId },
+        topic,
+        question,
+        metadata: { topicId, displayName: topic?.title || topic?.name || '' }
+      }),
+      'topik semasa'
+    )
+  };
+}
+
+function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
   const subjectLabel = getCoachSubjectLabel(subjectId, coachData || {}, question, topic || {});
   const rawFallback = fallbackData || buildFallbackPayload(mode, { question, topic: topic || {}, result, userAnswer });
   const hasCoachData = Boolean(coachData && !error);
   const payload = hasCoachData ? coachData : rawFallback;
   const tipsObject = payload.tips && typeof payload.tips === 'object' ? payload.tips : {};
   const normalizedCore = extractCoachText(payload, rawFallback, question, topic || {}, subjectId);
+  const contextUsed = buildContextUsed({
+    subjectId,
+    topicId,
+    question,
+    topic: topic || {},
+    result,
+    userAnswer: learnerAnswer || userAnswer,
+    questionText,
+    instruction,
+    options,
+    expectedAnswer,
+    explanationMode,
+    currentLearningObjective,
+    attemptCount,
+    hintsUsed
+  });
+  const revealAnswer = Boolean(
+    result?.correct ||
+    result?.status === 'correct' ||
+    result?.status === 'almost' ||
+    explanationMode === 'correct_answer_reinforcement'
+  );
   const resolvedFallbackUsed = !hasCoachData ||
     !normalizedCore.explanation ||
     !normalizedCore.hint ||
@@ -247,6 +327,24 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     topicId: topicId || question.topicId || topic?.id || null,
     subjectLabel,
     subjectTone: coachData?.subjectTone || '',
+    shortText: sanitizeAiText(rawFallback.shortText || normalizedCore.explanation || normalizedCore.simpleExplanation || normalizedCore.hint || ''),
+    contextUsed,
+    showCorrectAnswer: Boolean(revealAnswer),
+    sections: rawFallback.sections || {
+      summary: sanitizeAiText(questionText || question?.q || question?.question || topic?.title || 'Mari kita lihat soalan ini.'),
+      whyCorrect: normalizedCore.explanation || normalizedCore.simpleExplanation || '',
+      hint: normalizedCore.hint || '',
+      steps: rawFallback.steps || normalizedCore.steps || [],
+      commonMistake: mergeList(payload.commonMistakes, rawFallback.commonMistakes)[0] || '',
+      example: mergeList(payload.examples, rawFallback.examples)[0] || '',
+      memoryTip: mergeList(payload.memoryTips, rawFallback.memoryTips)[0] || '',
+      correctAnswer: revealAnswer ? (normalizedCore.correctAnswer || question.answer || '') : '',
+      coachMessage: normalizedCore.praise || '',
+      learningObjective: sanitizeAiText(currentLearningObjective || question?.learningObjective || topic?.learningObjective || topic?.objective || '')
+    },
+    suggestedActions: mode === 'teach'
+      ? ['Latih', 'Tutup']
+      : ['Ajar Saya', 'Cuba Lagi'],
     examples: mergeList(payload.examples, rawFallback.examples),
     extraExamples: mergeList(payload.extraExamples, rawFallback.extraExamples),
     tips: mergeList(tipsObject.tips || payload.tips, rawFallback.tips),
@@ -288,7 +386,11 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     predictionQuestions: mergeList(payload.predictionQuestions, rawFallback.predictionQuestions),
     comparisonQuestions: mergeList(payload.comparisonQuestions, rawFallback.comparisonQuestions),
     realLifeApplications: mergeList(payload.realLifeApplications, rawFallback.realLifeApplications),
-    answerLine: pickFirstText(payload.answerLine, rawFallback.answerLine, question?.answer ? `Jawapan: ${question.answer}` : ''),
+    answerLine: pickFirstText(
+      revealAnswer ? payload.answerLine : '',
+      revealAnswer ? rawFallback.answerLine : '',
+      revealAnswer && question?.answer ? `Jawapan: ${question.answer}` : ''
+    ),
     practicePrompt: pickFirstText(payload.practicePrompt, rawFallback.practicePrompt, rawFallback.followUpQuestions?.[0], 'Cuba sekali lagi selepas membaca penerangan ini.'),
     encouragement: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
     encouragementMessage: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
@@ -298,7 +400,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
   return normalized;
 }
 
-export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null } = {}) {
+export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
   const startedAt = Date.now();
   try {
     const coachData = await buildCoachResponse({
@@ -312,7 +414,16 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
         topicId,
         mastery: topic?.mastery || topic?.masteryScore || 0,
         confidence: topic?.confidence || 0,
-        correct: result?.status === 'correct'
+        correct: result?.status === 'correct',
+        questionText,
+        instruction,
+        options,
+        expectedAnswer,
+        learnerAnswer,
+        explanationMode,
+        currentLearningObjective,
+        attemptCount,
+        hintsUsed
       }
     });
     const normalized = normalizeCoachPayload(mode, {
@@ -322,7 +433,16 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       question,
       result,
       userAnswer,
-      coachData
+      coachData,
+      questionText,
+      instruction,
+      options,
+      expectedAnswer,
+      learnerAnswer,
+      explanationMode,
+      currentLearningObjective,
+      attemptCount,
+      hintsUsed
     });
     if (isDev && normalized.fallbackUsed) {
       console.warn('[coach-adapter] contract fallback', {

@@ -1307,11 +1307,24 @@ export default function App() {
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback) return;
+    const questionText = question?.q || question?.question || question?.stem || question?.text || '';
+    const instruction = question?.instruction || question?.direction || question?.prompt || '';
+    const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
+    const expectedAnswer = question?.answer || question?.correctAnswer || '';
+    const learnerAnswer = answer;
+    const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
+    const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
+    const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackData = explainAnswer({
       question,
       topic: activeTopic,
       result: feedback,
-      userAnswer: answer
+      userAnswer: answer,
+      questionText,
+      instruction,
+      currentLearningObjective,
+      attemptCount,
+      explanationMode
     });
     setExplainData(fallbackData);
     setExplainOpen(true);
@@ -1321,7 +1334,16 @@ export default function App() {
       question,
       result: feedback,
       userAnswer: answer,
-      topic: activeTopic
+      topic: activeTopic,
+      questionText,
+      instruction,
+      options,
+      expectedAnswer,
+      learnerAnswer,
+      explanationMode,
+      currentLearningObjective,
+      attemptCount,
+      hintsUsed: feedback?.status === 'hint' ? 1 : 0
     }).then(nextData => {
       if (nextData) setExplainData(nextData);
     });
@@ -1330,16 +1352,34 @@ export default function App() {
   function openTeacher() {
     const question = currentQuestion();
     if (!question) return;
+    const questionText = question?.q || question?.question || question?.stem || question?.text || '';
+    const instruction = question?.instruction || question?.direction || question?.prompt || '';
+    const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
+    const expectedAnswer = question?.answer || question?.correctAnswer || '';
+    const learnerAnswer = answer;
+    const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
+    const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
+    const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackExplainData = explainAnswer({
       question,
       topic: activeTopic,
       result: feedback || {},
-      userAnswer: answer
+      userAnswer: answer,
+      questionText,
+      instruction,
+      currentLearningObjective,
+      attemptCount,
+      explanationMode
     });
     const fallbackTeacherData = teachAnswer({
       question,
       topic: activeTopic,
-      explanationData: fallbackExplainData
+      explanationData: fallbackExplainData,
+      questionText,
+      instruction,
+      currentLearningObjective,
+      attemptCount,
+      explanationMode
     });
     setExplainData(fallbackExplainData);
     setTeacherData(fallbackTeacherData);
@@ -1350,7 +1390,16 @@ export default function App() {
       question,
       result: feedback || {},
       userAnswer: answer,
-      topic: activeTopic
+      topic: activeTopic,
+      questionText,
+      instruction,
+      options,
+      expectedAnswer,
+      learnerAnswer,
+      explanationMode,
+      currentLearningObjective,
+      attemptCount,
+      hintsUsed: feedback?.status === 'hint' ? 1 : 0
     }).then(nextData => {
       if (!nextData) return;
       setExplainData(nextData);
@@ -1582,6 +1631,13 @@ export default function App() {
       question={currentQuestion()}
       answer={answer}
       feedback={feedback}
+      questionText={currentQuestion()?.q || currentQuestion()?.question || currentQuestion()?.stem || currentQuestion()?.text || ''}
+      instruction={currentQuestion()?.instruction || currentQuestion()?.direction || currentQuestion()?.prompt || ''}
+      options={Array.isArray(currentQuestion()?.options) ? currentQuestion().options : Array.isArray(currentQuestion()?.choices) ? currentQuestion().choices : []}
+      expectedAnswer={currentQuestion()?.answer || currentQuestion()?.correctAnswer || ''}
+      learnerAnswer={answer}
+      explanationMode={feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')}
+      currentLearningObjective={activeTopic?.learningObjective || activeTopic?.objective || currentQuestion()?.learningObjective || currentQuestion()?.objective || ''}
       attemptCount={currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0}
       hintsUsed={feedback?.status === 'hint' ? 1 : 0}
       learningObservation={learningObservation}
@@ -1646,7 +1702,7 @@ function BetaChrome({ children, recoveryMessages = [] }) {
     <BrandSplash />
     {children}
     {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
-    <BetaFeedbackButton />
+    <BetaFeedbackButton suppressed={chatOpen || explainOpen || teacherOpen} />
     <AppVersiFooter />
   </>;
 }
@@ -1729,7 +1785,8 @@ function FirstRunWizard({ profile, onComplete }) {
   </main>;
 }
 
-function BetaFeedbackButton() {
+function BetaFeedbackButton({ suppressed = false }) {
+  if (suppressed) return null;
   const categories = ['Pepijat', 'Cadangan', 'Kandungan', 'AI', 'Pengalaman'];
   const [open, setOpen] = useState(false);
   const [category, setKategori] = useState('Pepijat');

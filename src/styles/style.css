@@ -2288,6 +2288,66 @@ textarea[dir="rtl"] {
   }
 }
 
+.ai-chat {
+  display: flex;
+  flex-direction: column;
+  max-height: min(88dvh, 820px);
+}
+
+.ai-explain-modal {
+  max-height: min(88dvh, 820px);
+}
+
+.ai-chat-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.quick-prompts-analytics {
+  margin: 0 16px 12px;
+  border: 1px solid rgba(8,122,59,.14);
+  border-radius: 18px;
+  padding: 8px 10px 10px;
+  background: #fbfdfb;
+}
+
+.quick-prompts-analytics > summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--jannati-primary);
+  list-style: none;
+}
+
+.quick-prompts-analytics > summary::-webkit-details-marker {
+  display: none;
+}
+
+.quick-prompts-analytics .quick-prompts {
+  padding: 10px 0 0;
+}
+
+@media (max-width: 650px) {
+  .ai-chat {
+    max-height: min(88dvh, 820px);
+  }
+
+  .ai-chat-body {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .quick-prompts,
+  .quick-prompts-analytics {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .quick-prompts button {
+    width: 100%;
+  }
+}
+
 .study-planner-panel,
 .gamification-panel {
   overflow: hidden;

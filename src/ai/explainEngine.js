@@ -1,4 +1,4 @@
-import { detectLearningCategory, getLearningExamples, sanitizeAiText } from './learningCopy.js';
+import { detectLearningCategory, getLearningExamples, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
 
@@ -65,7 +65,7 @@ function buildBaseExamples(question, topic) {
   return examples.length ? examples : ['Baca ayat sekali lagi.', 'Cari kata kunci penting.', 'Bandingkan dengan jawapan.'];
 }
 
-export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '' } = {}) {
+export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '', questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
   const category = detectLearningCategory(question, topic);
   const rule = CATEGORY_RULES[category] || CATEGORY_RULES.generic;
   const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');
@@ -73,6 +73,11 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const hint = sanitizeAiText(question.hint || rule.hint);
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
   const commonMistakes = (rule.commonMistakes || []).map(item => sanitizeAiText(item));
+  const summary = sanitizeChildFacingText([
+    questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
+    instruction ? `Arahan: ${instruction}.` : '',
+    topic?.title ? `Topik: ${topic.title}.` : ''
+  ].filter(Boolean).join(' ')) || 'Mari kita semak soalan ini bersama-sama.';
   const studentProfile = getStudentProfileSummary('default');
   const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
   const topicStatus = topicProgress?.status || 'new';
@@ -93,6 +98,13 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         ? 'Tak mengapa. Kita ulang perlahan-lahan.'
         : 'Tak mengapa. Kita cuba sekali lagi.';
 
+  const revealAnswer = Boolean(
+    wasCorrect ||
+    wasAlmost ||
+    explanationMode === 'correct_answer_reinforcement' ||
+    Number(attemptCount) >= 3
+  );
+
   return {
     category,
     explanation,
@@ -102,8 +114,22 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     commonMistakes,
     memoryTip: sanitizeAiText(question.memoryTip || ''),
     encouragement: encouragementBase,
-    answerLine: `Jawapan: ${correctAnswer}`,
-    correctAnswer,
+    answerLine: revealAnswer ? `Jawapan: ${correctAnswer}` : '',
+    correctAnswer: revealAnswer ? correctAnswer : '',
+    shortText: sanitizeChildFacingText(`${summary} ${wasCorrect ? explanation : hint}`),
+    showCorrectAnswer: revealAnswer,
+    sections: {
+      summary,
+      whyCorrect: explanation,
+      hint,
+      steps: examples.slice(0, 3),
+      commonMistake: commonMistakes[0] || '',
+      example: examples[0] || '',
+      memoryTip: sanitizeAiText(question.memoryTip || ''),
+      correctAnswer: revealAnswer ? correctAnswer : '',
+      coachMessage: sanitizeChildFacingText(encouragementBase),
+      learningObjective: sanitizeChildFacingText(currentLearningObjective || question.learningObjective || topic.learningObjective || topic.objective || '')
+    },
     learningProfile: {
       studentId: studentProfile.studentId || 'default',
       topicStatus,

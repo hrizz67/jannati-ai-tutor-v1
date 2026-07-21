@@ -37,7 +37,13 @@ function hasEnoughData(profile = {}) {
   const totals = profile?.totals || {};
   const totalQuestions = Number(totals.questionsAnswered || totals.totalQuestions || 0);
   const subjectCount = Object.keys(profile?.topics || {}).length + Object.keys(profile?.subjects || {}).length;
-  return totalQuestions > 0 || subjectCount > 0;
+  const hasIdentity = Boolean(
+    profile?.studentId ||
+    profile?.name ||
+    profile?.fullName ||
+    profile?.displayName
+  );
+  return hasIdentity || totalQuestions > 0 || subjectCount > 0;
 }
 
 function isDevelopmentMode(options = {}) {
