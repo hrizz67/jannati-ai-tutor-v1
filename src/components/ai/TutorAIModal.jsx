@@ -6,7 +6,22 @@ import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
 
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
 const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
+const INITIAL_GREETING = 'Hai! Saya boleh beri petunjuk, terangkan soalan, atau bantu semak jawapan kamu.';
+const RESPONSE_TIMEOUT_MS = 4500;
+
+function withTimeout(promise, timeoutMs = RESPONSE_TIMEOUT_MS) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      const error = new Error('Tutor response timed out');
+      error.code = 'TUTOR_RESPONSE_TIMEOUT';
+      reject(error);
+    }, timeoutMs);
+  });
+  return Promise.race([Promise.resolve(promise), timeout]).finally(() => window.clearTimeout(timeoutId));
+}
 
 function normalizeText(value, fallback = '') {
   if (value === null || value === undefined) return fallback;
@@ -166,6 +181,7 @@ export default function TutorAIModal({
   const bodyRef = useRef(null);
   const openerRef = useRef(null);
   const requestIdRef = useRef(0);
+  const onTutupRef = useRef(onTutup);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -204,6 +220,8 @@ export default function TutorAIModal({
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
 
+  onTutupRef.current = onTutup;
+
   const sessionKey = useMemo(() => [
     studentProfile?.studentId || studentProfile?.name || '',
     activeSubject?.id || '',
@@ -220,7 +238,7 @@ export default function TutorAIModal({
     function onKeyDown(event) {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onTutup?.();
+        onTutupRef.current?.();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -244,97 +262,21 @@ export default function TutorAIModal({
       document.body.style.overflow = previousOverflow;
       openerRef.current?.focus?.();
     };
-  }, [open, onTutup]);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
-    let cancelled = false;
     const started = ++requestIdRef.current;
-
-    setMessages([]);
-    setLoading(true);
-    setStatus('loading');
+    if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:open');
+    setMessages([{ role: 'ai', text: INITIAL_GREETING, suggestions: [] }]);
+    setLoading(false);
+    setStatus('idle');
     setError('');
-
-    const bootstrap = async () => {
-      try {
-        const response = await getTutorResponse({
-          student: studentProfile,
-          subject: activeSubject,
-          topic: activeTopic,
-          question: currentQuestion,
-          questionText: normalizedQuestionText,
-          instruction: normalizedInstruction,
-          options: normalizedOptions,
-          expectedAnswer: normalizedExpectedAnswer,
-          learnerAnswer: normalizedLearnerAnswer,
-          studentAnswer: normalizedLearnerAnswer,
-          correctAnswer: normalizedExpectedAnswer,
-          explanationMode: normalizedExplanationMode,
-          currentLearningObjective: normalizedLearningObjective,
-          isCorrect,
-          attemptCount,
-          hintsUsed,
-          weakTopics,
-          strongTopics,
-          prompt: 'halo',
-          intent: 'general',
-          locale: 'ms-MY',
-          history: [],
-          adaptiveProfile,
-          studyPlan,
-          readiness,
-          learningObservation,
-          predictionProfile,
-          gamificationProfile
-        });
-        if (cancelled || requestIdRef.current !== started) return;
-        const greeting = normalizeText(response?.shortText || response?.text, `Hai ${studentName}, saya sedia membantu.`);
-        setMessages([{ role: 'ai', text: greeting, suggestions: normalizeList(response?.suggestedActions || response?.suggestions) }]);
-        setStatus(response?.fallbackUsed ? 'fallback' : 'success');
-        setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
-      } catch (err) {
-        if (cancelled || requestIdRef.current !== started) return;
-        setMessages([{ role: 'ai', text: FALLBACK_MESSAGE, suggestions: [] }]);
-        setStatus('error');
-        setError(FALLBACK_MESSAGE);
-      } finally {
-        if (!cancelled && requestIdRef.current === started) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void bootstrap();
-
     return () => {
-      cancelled = true;
+      if (requestIdRef.current === started) requestIdRef.current += 1;
+      if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:open');
     };
-  }, [
-    open,
-    sessionKey,
-    studentProfile,
-    activeSubject,
-    activeTopic,
-    currentQuestion,
-    normalizedLearnerAnswer,
-    normalizedExpectedAnswer,
-    isCorrect,
-    weakTopics,
-    strongTopics,
-    adaptiveProfile,
-    studyPlan,
-    readiness,
-    learningObservation,
-    predictionProfile,
-    gamificationProfile,
-    studentName,
-    normalizedQuestionText,
-    normalizedInstruction,
-    normalizedOptions,
-    normalizedExplanationMode,
-    normalizedLearningObjective
-  ]);
+  }, [open, sessionKey]);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -370,7 +312,8 @@ export default function TutorAIModal({
     setStatus('loading');
     setError('');
     try {
-      const response = await getTutorResponse({
+      if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:response');
+      const response = await withTimeout(getTutorResponse({
         student: studentProfile,
         subject: activeSubject,
         topic: activeTopic,
@@ -399,7 +342,7 @@ export default function TutorAIModal({
         learningObservation,
         predictionProfile,
         gamificationProfile
-      });
+      }));
       if (requestIdRef.current !== started) return;
       setMessages(prev => [...prev, {
         role: 'ai',
@@ -411,13 +354,15 @@ export default function TutorAIModal({
       setInput('');
     } catch (err) {
       if (requestIdRef.current !== started) return;
-      setMessages(prev => [...prev, { role: 'ai', text: FALLBACK_MESSAGE, suggestions: [] }]);
+      const message = err?.code === 'TUTOR_RESPONSE_TIMEOUT' ? TIMEOUT_MESSAGE : FALLBACK_MESSAGE;
+      setMessages(prev => [...prev, { role: 'ai', text: message, suggestions: [] }]);
       setStatus('error');
-      setError(FALLBACK_MESSAGE);
+      setError(message);
     } finally {
       if (requestIdRef.current === started) {
         setLoading(false);
       }
+      if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:response');
     }
   }
 

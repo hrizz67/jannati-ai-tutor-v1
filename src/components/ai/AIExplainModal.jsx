@@ -68,6 +68,9 @@ function renderTextSection(title, value) {
 export default function AIExplainModal({ open, data, question, character = 'jati', onTutup, onTryAgain, onTeach }) {
   const closeButtonRef = useRef(null);
   const restoreFocusRef = useRef(null);
+  const onTutupRef = useRef(onTutup);
+
+  onTutupRef.current = onTutup;
 
   useEffect(() => {
     if (!open) return undefined;
@@ -76,7 +79,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
     document.body.style.overflow = 'hidden';
     const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
     function onKeyDown(event) {
-      if (event.key === 'Escape') onTutup?.();
+      if (event.key === 'Escape') onTutupRef.current?.();
     }
     window.addEventListener('keydown', onKeyDown);
     return () => {
@@ -85,7 +88,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
       document.body.style.overflow = previousOverflow;
       restoreFocusRef.current?.focus?.();
     };
-  }, [open, onTutup]);
+  }, [open]);
 
   if (!open || !data) return null;
 
