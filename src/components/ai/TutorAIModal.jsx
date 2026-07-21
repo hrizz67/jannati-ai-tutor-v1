@@ -125,10 +125,10 @@ function getFocusableElements(container) {
   });
 }
 
-function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false }) {
+function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '' }) {
   const safeText = normalizeText(text, '');
   return (
-    <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}`}>
+    <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
       <p className="chat-bubble-text">{safeText}</p>
       {loading && (
         <div className="chat-typing" aria-hidden="true">
@@ -347,7 +347,12 @@ export default function TutorAIModal({
       setMessages(prev => [...prev, {
         role: 'ai',
         text: normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE),
-        suggestions: normalizeList(response?.suggestedActions || response?.suggestions)
+        tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
+        suggestions: normalizeList(
+          response?.quickReplies?.length
+            ? response.quickReplies
+            : (response?.suggestedActions || response?.suggestions)
+        )
       }]);
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
       setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
@@ -427,6 +432,7 @@ export default function TutorAIModal({
               role={message.role || 'ai'}
               text={message.text}
               suggestions={message.suggestions || []}
+              tone={message.tone || ''}
             />
           ))}
           {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading />}

@@ -14,6 +14,11 @@ import {
   getLearningMemoryTip,
   sanitizeChildFacingText
 } from './learningCopy.js';
+import {
+  buildGuidedLearning,
+  limitTutorText,
+  sanitizeTutorText
+} from './guidedLearning/index.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -256,7 +261,8 @@ function buildContextualSections({
   explanationMode,
   currentLearningObjective,
   weakTopics = [],
-  strongTopics = []
+  strongTopics = [],
+  guided = null
 }) {
   const categoryRule = getCategoryRule(question, topic);
   const subjectLabel = subject?.title || formatSubjectName(subject?.id);
@@ -280,6 +286,7 @@ function buildContextualSections({
     ''
   );
   const hintText = normalizeText(
+    guided?.hint ||
     coachResponse?.hint?.hint ||
     coachResponse?.hint ||
     question?.hint ||
@@ -287,6 +294,7 @@ function buildContextualSections({
     'Cari kata kunci penting dalam soalan.'
   );
   const praiseText = normalizeText(
+    guided?.praise ||
     coachResponse?.praise?.praise ||
     coachResponse?.praise ||
     'Bagus! Teruskan usaha kamu.'
@@ -375,7 +383,8 @@ function buildContextualSections({
     Boolean(isCorrect) ||
     explanationMode === 'correct_answer_reinforcement' ||
     explanationMode === 'show_answer' ||
-    (intent === 'wrong_answer_coaching' && Number(attemptCount) >= 3);
+    (intent === 'wrong_answer_coaching' && Number(attemptCount) >= 3) ||
+    Boolean(guided?.revealAnswer && intent !== 'hint');
 
   const summary = sanitizeChildFacingText(
     isHintIntent
@@ -415,7 +424,9 @@ function buildContextualSections({
   );
 
   const whyCorrect = sanitizeChildFacingText(
-    isHintIntent
+    !revealAnswer && guided?.stage !== 'correct_first_try' && guided?.stage !== 'correct_after_support'
+      ? (guided?.guidingQuestion || guided?.misconception?.childSafeLabel || hintText)
+      : isHintIntent
       ? 'Fokus pada petunjuk ini.'
       : explanationText ||
         simpleExplanationText ||
@@ -426,11 +437,11 @@ function buildContextualSections({
     safeHintLead
   );
 
-  const coachMessage = sanitizeChildFacingText(
+  const coachMessage = sanitizeTutorText(
     isCorrect
       ? praiseText
       : intent === 'wrong_answer_coaching'
-        ? 'Jawapan kamu belum tepat. Cuba semak semula bersama.'
+        ? `Jawapan kamu belum tepat. ${guided?.misconception?.childSafeLabel || 'Cuba semak semula bersama.'}`
         : intent === 'hint'
           ? 'Cuba guna petunjuk ini untuk mencari jawapan.'
           : intent === 'weak_topic'
@@ -442,9 +453,9 @@ function buildContextualSections({
                 : 'Saya akan bantu langkah demi langkah.'
   );
 
-  const shortText = sanitizeChildFacingText(
+  const shortText = sanitizeTutorText(
     isHintIntent
-      ? `${hint}`
+        ? `${limitTutorText(hint, 'hint')}`
       : intent === 'wrong_answer_coaching'
         ? `${coachMessage}${commonMistake ? ` ${commonMistake}` : ''}`
         : intent === 'correct_answer_reinforcement'
@@ -452,7 +463,7 @@ function buildContextualSections({
           : summary
   );
 
-  const text = sanitizeChildFacingText([
+  const text = sanitizeTutorText([
     summary,
     isHintIntent ? hint : '',
     !isHintIntent && intent === 'wrong_answer_coaching' ? commonMistake || whyCorrect : (!isHintIntent ? whyCorrect : ''),
@@ -460,7 +471,8 @@ function buildContextualSections({
     !isHintIntent && example ? `Contoh mudah: ${example}.` : '',
     !isHintIntent && memoryTip ? `Tip ingatan: ${memoryTip}.` : '',
     !isHintIntent && revealAnswer && expectedAnswer ? `Jawapan betul: ${expectedAnswer}.` : '',
-    coachMessage
+    coachMessage,
+    !isHintIntent && guided?.nextAction ? `Seterusnya: ${guided.nextAction}.` : ''
   ].filter(Boolean).join(' ')) || DEFAULT_FALLBACK;
 
   const sections = {
@@ -500,14 +512,18 @@ function buildContextualSections({
     subjectId: subject?.id || '',
     topicId: topic?.id || '',
     intent,
-    hasCoachData: Boolean(coachResponse?.ready)
+    hasCoachData: Boolean(coachResponse?.ready),
+    tutorMode: guided?.mode || '',
+    supportStage: guided?.stage || '',
+    misconceptionType: guided?.misconception?.type || ''
   };
 
   return {
     text,
     shortText,
     sections,
-    contextUsed
+    contextUsed,
+    guided
   };
 }
 
@@ -559,6 +575,9 @@ export async function getTutorResponse(options = {}) {
   const resolvedOptions = getOptions(resolvedQuestion, questionOptions);
   const answerText = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
   const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
+  const resolvedCorrect = typeof isCorrect === 'boolean'
+    ? isCorrect
+    : Boolean(answerText && expected && normalizeText(answerText).toLowerCase() === normalizeText(expected).toLowerCase());
   const hasQuestionContext = Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id);
 
   let coachResponse = null;
@@ -571,7 +590,7 @@ export async function getTutorResponse(options = {}) {
         topicId: topicContext.id,
         question: resolvedQuestion,
         result: {
-          correct: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expected && answerText === expected),
+          correct: resolvedCorrect,
           status: typeof isCorrect === 'boolean'
             ? (isCorrect ? 'correct' : 'wrong')
             : undefined,
@@ -626,6 +645,22 @@ export async function getTutorResponse(options = {}) {
     limit: 5
   });
 
+  const guided = buildGuidedLearning({
+    subjectId: subjectContext.id,
+    topicId: topicContext.id,
+    intent: resolvedIntent,
+    instruction: resolvedInstruction,
+    options: resolvedOptions,
+    expectedAnswer: expected,
+    learnerAnswer: answerText,
+    isCorrect: resolvedCorrect,
+    attemptCount: Number(attemptCount) || 0,
+    hintsUsed: Number(hintsUsed) || 0,
+    question: resolvedQuestion,
+    completionState: resolvedIntent === 'uasa_summary' || resolvedIntent === 'revision_plan',
+    explicitAnswerRequest: /tunjuk(?:kan)?\s+(?:jawapan|jawapan betul)|show answer|jawapan sebenar/i.test(prompt)
+  });
+
   const resolvedTopicLabel = resolveTopicLabel({
     subject: subjectContext,
     topic: topicContext,
@@ -659,7 +694,8 @@ export async function getTutorResponse(options = {}) {
     explanationMode,
     currentLearningObjective,
     weakTopics,
-    strongTopics
+    strongTopics,
+    guided
   });
 
   const suggestions = buildSuggestionList(resolvedIntent, {
@@ -704,7 +740,7 @@ export async function getTutorResponse(options = {}) {
     expectedAnswer: expected,
     learnerAnswer: answerText,
     correctAnswer: expected,
-    isCorrect: typeof isCorrect === 'boolean' ? isCorrect : Boolean(answerText && expected && answerText === expected),
+    isCorrect: resolvedCorrect,
     contextUsed: contextBundle.contextUsed,
     sections: contextBundle.sections,
     recommendationKey: recommendation?.recommendedTopicId || null,
@@ -714,7 +750,15 @@ export async function getTutorResponse(options = {}) {
     adaptiveRecommendation,
     explanationMode,
     currentLearningObjective,
-    learnerAnswerText: answerText
+    learnerAnswerText: answerText,
+    tutorMode: guided.mode,
+    supportStage: guided.stage,
+    misconception: guided.misconception,
+    guidingQuestion: guided.guidingQuestion,
+    quickReplies: guided.quickReplies,
+    nextAction: guided.nextAction,
+    praise: guided.praise,
+    learningExperience: guided
   };
 }
 

@@ -2860,3 +2860,30 @@ textarea[dir="rtl"] {
     filter: none !important;
   }
 }
+
+/* Guided-learning feedback stays subtle and never blocks the exercise. */
+.guided-feedback-pulse { animation: guidedQuestionPulse 520ms ease-out 1; }
+.guided-feedback-hint { animation: guidedHintEntrance 360ms ease-out 1; }
+.guided-feedback-correct { animation: guidedCorrectPop 420ms ease-out 1; }
+
+@keyframes guidedQuestionPulse {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.025); }
+}
+
+@keyframes guidedHintEntrance {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes guidedCorrectPop {
+  0% { transform: scale(.98); }
+  65% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guided-feedback-pulse,
+  .guided-feedback-hint,
+  .guided-feedback-correct { animation: none !important; }
+}
