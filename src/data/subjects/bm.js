@@ -1,4 +1,6 @@
-export const bmSubject = {
+import { normalizeBMSubject } from '../../utils/bmSentenceQuality.js';
+
+const rawBMSSubject = {
   "id": "bm",
   "title": "Bahasa Melayu Tahun 2",
   "short": "BM",
@@ -11346,5 +11348,7 @@ export const bmSubject = {
     }
   ]
 };
+
+export const bmSubject = normalizeBMSubject(rawBMSSubject);
 
 export default bmSubject;

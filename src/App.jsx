@@ -1621,25 +1621,32 @@ export default function App() {
 
   const tutorWeakTopics = rankWeakTopics(adaptiveProfile, { limit: 5, includeLowConfidence: true });
   const tutorStrongTopics = rankStrongTopics(adaptiveProfile, { limit: 5 });
-  const chatSubject = activeSubject || selectedSubject;
+  const tutorQuestion = currentQuestion();
+  const tutorSubjectId = tutorQuestion?.subjectId || activeTopic?.subjectId || '';
+  const chatSubject = activeSubject?.id === 'adaptive'
+    ? allSubjects.find(item => item.id === tutorSubjectId) || selectedSubject || activeSubject
+    : activeSubject || selectedSubject;
+  const chatTopic = activeTopic?.id?.startsWith('adaptive_')
+    ? chatSubject?.topics?.find(item => item.id === (tutorQuestion?.topicId || tutorQuestion?.metadata?.topicId)) || activeTopic
+    : activeTopic;
   const chatWidget = chatOpen && chatSubject ? (
     <TutorAIModal
       open={chatOpen}
       profile={profile}
       adaptiveProfile={adaptiveProfile}
       selectedSubject={chatSubject}
-      selectedTopic={activeTopic}
-      question={currentQuestion()}
+      selectedTopic={chatTopic}
+      question={tutorQuestion}
       answer={answer}
       feedback={feedback}
-      questionText={currentQuestion()?.q || currentQuestion()?.question || currentQuestion()?.stem || currentQuestion()?.text || ''}
-      instruction={currentQuestion()?.instruction || currentQuestion()?.direction || currentQuestion()?.prompt || ''}
-      options={Array.isArray(currentQuestion()?.options) ? currentQuestion().options : Array.isArray(currentQuestion()?.choices) ? currentQuestion().choices : []}
-      expectedAnswer={currentQuestion()?.answer || currentQuestion()?.correctAnswer || ''}
+      questionText={tutorQuestion?.q || tutorQuestion?.question || tutorQuestion?.stem || tutorQuestion?.text || ''}
+      instruction={tutorQuestion?.instruction || tutorQuestion?.direction || tutorQuestion?.prompt || ''}
+      options={Array.isArray(tutorQuestion?.options) ? tutorQuestion.options : Array.isArray(tutorQuestion?.choices) ? tutorQuestion.choices : []}
+      expectedAnswer={tutorQuestion?.answer || tutorQuestion?.correctAnswer || ''}
       learnerAnswer={answer}
       explanationMode={feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')}
-      currentLearningObjective={activeTopic?.learningObjective || activeTopic?.objective || currentQuestion()?.learningObjective || currentQuestion()?.objective || ''}
-      attemptCount={currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0}
+      currentLearningObjective={chatTopic?.learningObjective || chatTopic?.objective || tutorQuestion?.learningObjective || tutorQuestion?.objective || ''}
+      attemptCount={tutorQuestion ? ((session.answers || []).filter(item => item.questionId === tutorQuestion?.id).length + 1) : 0}
       hintsUsed={feedback?.status === 'hint' ? 1 : 0}
       learningObservation={learningObservation}
       predictionProfile={predictionProfile}

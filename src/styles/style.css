@@ -2305,6 +2305,45 @@ textarea[dir="rtl"] {
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
 }
 
+.tutor-ai-actions,
+.quick-prompts-analytics {
+  flex: 0 0 auto;
+  margin: 0 16px 10px;
+  border: 1px solid rgba(8,122,59,.14);
+  border-radius: 16px;
+  padding: 8px 10px;
+  background: #fbfdfb;
+}
+
+.tutor-ai-actions > summary,
+.quick-prompts-analytics > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 800;
+  color: var(--jannati-primary);
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tutor-ai-actions > summary::-webkit-details-marker,
+.quick-prompts-analytics > summary::-webkit-details-marker { display: none; }
+
+.tutor-ai-actions > summary::after,
+.quick-prompts-analytics > summary::after {
+  content: '⌄';
+  transition: transform 180ms ease;
+}
+
+.tutor-ai-actions[open] > summary::after,
+.quick-prompts-analytics[open] > summary::after { transform: rotate(180deg); }
+
+.tutor-ai-actions .quick-prompts,
+.quick-prompts-analytics .quick-prompts { margin: 10px 0 0; }
+
+.ai-chat-body:focus { outline: 2px solid rgba(15,138,67,.45); outline-offset: -2px; }
+
 .quick-prompts-analytics {
   margin: 0 16px 12px;
   border: 1px solid rgba(8,122,59,.14);
@@ -2338,7 +2377,8 @@ textarea[dir="rtl"] {
   }
 
   .quick-prompts,
-  .quick-prompts-analytics {
+  .quick-prompts-analytics,
+  .tutor-ai-actions {
     margin-left: 12px;
     margin-right: 12px;
   }

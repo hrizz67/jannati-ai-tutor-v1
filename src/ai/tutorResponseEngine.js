@@ -78,7 +78,7 @@ function normalizeList(value) {
 }
 
 function getQuestionText(question = {}, explicit = '') {
-  return normalizeText(
+  const text = normalizeText(
     explicit ||
     question?.q ||
     question?.question ||
@@ -87,6 +87,11 @@ function getQuestionText(question = {}, explicit = '') {
     question?.prompt ||
     ''
   );
+  return text
+    .replace(/\s*\((?:set|set bina ayat|set uasa|set adaptive)[^)]*\)/gi, '')
+    .replace(/\s*\[(?:set|adaptive)[^\]]*\]/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function getInstruction(question = {}, explicit = '') {
@@ -386,12 +391,21 @@ function buildContextualSections({
     (intent === 'wrong_answer_coaching' && Number(attemptCount) >= 3) ||
     Boolean(guided?.revealAnswer && intent !== 'hint');
 
+  const instructionCore = resolvedInstruction.replace(/[.!?]+$/g, '').trim();
+  const friendlyInstruction = instructionCore
+    ? instructionCore.charAt(0).toLocaleLowerCase('ms-MY') + instructionCore.slice(1)
+    : '';
+  const friendlyQuestionSummary = friendlyInstruction
+    ? `Soalan ini meminta kamu ${friendlyInstruction}.`
+    : topicLabel && topicLabel !== 'topik semasa'
+      ? `Mari kita faham soalan tentang ${topicLabel}.`
+      : 'Mari kita faham soalan ini bersama-sama.';
+
   const summary = sanitizeChildFacingText(
     isHintIntent
       ? [
-          resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
-          topicLabel && topicLabel !== 'topik semasa' ? `Topik: ${topicLabel}.` : '',
-          subjectLabel ? `Subjek: ${subjectLabel}.` : ''
+          friendlyInstruction ? `Cuba ikut arahan: ${friendlyInstruction}.` : '',
+          topicLabel && topicLabel !== 'topik semasa' ? `Fokus pada ${topicLabel}.` : ''
         ].filter(Boolean).join(' ')
       : intent === 'weak_topic'
         ? [
@@ -412,10 +426,8 @@ function buildContextualSections({
                 weakTopicLabel ? `Fokus seterusnya: ${weakTopicLabel}.` : ''
               ].filter(Boolean).join(' ')
             : [
-                resolvedQuestion ? `Soalan: ${resolvedQuestion}.` : '',
-                resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
-                topicLabel && topicLabel !== 'topik semasa' ? `Topik: ${topicLabel}.` : '',
-                subjectLabel ? `Subjek: ${subjectLabel}.` : ''
+                friendlyQuestionSummary,
+                resolvedQuestion ? `Lihat ayat ini: ${resolvedQuestion}.` : ''
               ].filter(Boolean).join(' ')
   ) || (
     isHintIntent

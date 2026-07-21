@@ -179,6 +179,7 @@ export default function TutorAIModal({
   const closeButtonRef = useRef(null);
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
+  const questionActionsRef = useRef(null);
   const openerRef = useRef(null);
   const requestIdRef = useRef(0);
   const onTutupRef = useRef(onTutup);
@@ -285,6 +286,10 @@ export default function TutorAIModal({
   }, [messages, loading]);
 
   useEffect(() => {
+    if (messages.length > 1 && !loading) bodyRef.current?.focus?.({ preventScroll: true });
+  }, [messages.length, loading]);
+
+  useEffect(() => {
     if (!open || !(typeof import.meta !== 'undefined' && import.meta.env?.DEV)) return;
     const missing = [];
     if (!normalizedQuestionText) missing.push('questionText');
@@ -372,6 +377,7 @@ export default function TutorAIModal({
   }
 
   function handlePromptClick(prompt, intent) {
+    if (questionActionsRef.current) questionActionsRef.current.open = false;
     void sendMessage(prompt, intent);
   }
 
@@ -425,7 +431,7 @@ export default function TutorAIModal({
           {activeTopic?.id ? ` • ${topicLabel}` : ''}
         </p>
 
-        <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef}>
+        <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
           {messages.map((message, index) => (
             <MessageBubble
               key={`${message.role || 'ai'}-${index}`}
@@ -439,18 +445,21 @@ export default function TutorAIModal({
           {error && !loading && <MessageBubble role="ai" text={error} />}
         </div>
 
-        <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
-          {exercisePrompts.map(prompt => (
-            <button
-              key={prompt.label}
-              type="button"
-              onClick={() => handlePromptClick(prompt.label, prompt.intent)}
-              disabled={loading}
-            >
-              {prompt.label}
-            </button>
-          ))}
-        </div>
+        <details ref={questionActionsRef} className="tutor-ai-actions">
+          <summary>Bantuan untuk soalan ini</summary>
+          <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
+            {exercisePrompts.map(prompt => (
+              <button
+                key={prompt.label}
+                type="button"
+                onClick={() => handlePromptClick(prompt.label, prompt.intent)}
+                disabled={loading}
+              >
+                {prompt.label}
+              </button>
+            ))}
+          </div>
+        </details>
 
         <details className="quick-prompts-analytics">
           <summary>Lihat kemajuan saya</summary>
