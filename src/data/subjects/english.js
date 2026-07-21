@@ -1,4 +1,6 @@
-export const englishSubject = {
+import { normalizeEnglishSubject } from '../../utils/englishSentenceQuality.js';
+
+const rawEnglishSubject = {
   "id": "english",
   "title": "English Year 2",
   "short": "English",
@@ -7077,5 +7079,7 @@ export const englishSubject = {
     }
   ]
 };
+
+export const englishSubject = normalizeEnglishSubject(rawEnglishSubject);
 
 export default englishSubject;

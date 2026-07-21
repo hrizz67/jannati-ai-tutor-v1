@@ -129,7 +129,7 @@ function getSubjectContext(subject = {}, subjectId = '') {
   const resolvedId = normalizeText(subject?.id || subjectId, '');
   return {
     id: resolvedId,
-    title: normalizeText(subject?.title || subject?.name || formatSubjectName(resolvedId), resolvedId),
+    title: normalizeText(resolvedId === 'english' ? formatSubjectName(resolvedId) : (subject?.title || subject?.name || formatSubjectName(resolvedId)), resolvedId),
     short: normalizeText(subject?.short || subject?.code || resolvedId.toUpperCase(), resolvedId.toUpperCase()),
     topics: Array.isArray(subject?.topics) ? subject.topics : []
   };
@@ -270,7 +270,7 @@ function buildContextualSections({
   guided = null
 }) {
   const categoryRule = getCategoryRule(question, topic);
-  const subjectLabel = subject?.title || formatSubjectName(subject?.id);
+  const subjectLabel = subject?.id === 'english' ? 'Bahasa Inggeris' : (subject?.title || formatSubjectName(subject?.id));
   const resolvedQuestion = questionText || getQuestionText(question);
   const resolvedInstruction = instruction || getInstruction(question);
   const resolvedOptions = options.length ? options : getOptions(question);
@@ -446,7 +446,9 @@ function buildContextualSections({
   );
 
   const hint = sanitizeChildFacingText(
-    safeHintLead
+    subject?.id === 'english' && intent === 'wrong_answer_coaching' && !revealAnswer
+      ? 'Lihat subjek dalam ayat. Untuk he atau she, kata kerja biasanya menerima -s.'
+      : safeHintLead
   );
 
   const coachMessage = sanitizeTutorText(
