@@ -15,7 +15,8 @@ import {
   formatStatus,
   formatStudyMinutes,
   formatSubjectName,
-  formatTopicName
+  formatTopicName,
+  formatFriendlyDate
 } from '../utils/displayFormatter';
 import MetricCard from '../components/MetricCard.jsx';
 import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx';
@@ -348,7 +349,7 @@ export default function ParentDashboard({
         <div className="timeline">
           {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
             <div className="timeline-item" key={index}>
-              <span>{safeText(item.date)}</span>
+              <span>{formatFriendlyDate(item.date)}</span>
               <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
               <em>{safePercent(item.score)}% • {safeNumber(item.total, 0)} soalan</em>
             </div>
@@ -367,7 +368,7 @@ export default function ParentDashboard({
           ) : (
             sourceProfile.history.slice(0, 10).map((item, index) => (
               <div className="timeline-item" key={index}>
-                <span>{safeText(item.date)}</span>
+                <span>{formatFriendlyDate(item.date)}</span>
                 <b>{formatSubjectName(item.subject)} - {safeText(item.topic)}</b>
                 <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
               </div>

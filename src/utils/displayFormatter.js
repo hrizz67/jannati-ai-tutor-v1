@@ -289,3 +289,17 @@ export function clampPercent(value) {
   if (!Number.isFinite(numeric)) return 0;
   return Math.max(0, Math.min(100, Math.round(numeric)));
 }
+
+export function formatFriendlyDate(value, now = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Tarikh tidak diketahui';
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const target = new Date(date); target.setHours(0, 0, 0, 0);
+  const days = Math.round((target - today) / 86400000);
+  if (days === 0) return 'Hari ini';
+  if (days === 1) return 'Esok';
+  if (days === -1) return 'Semalam';
+  if (days > 1 && days <= 30) return `${days} hari lagi`;
+  if (days < -1 && days >= -30) return `Lewat ${Math.abs(days)} hari`;
+  return new Intl.DateTimeFormat('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+}

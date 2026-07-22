@@ -2511,8 +2511,9 @@ function normalizeMendengar(text = '') {
   return normalizeBacaanWord(text).replace(/\s+/g, '');
 }
 
-function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+function LegacyMendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'listening' && resume?.state?.setId) || 'bm');
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('listening', resume?.state?.setId || 'bm', 12));
   const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
   const [choice, setChoice] = useState(() => resume?.state?.choice || '');
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
@@ -2521,7 +2522,8 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [answers, setAnswers] = useState(() => Array.isArray(resume?.state?.answers) ? resume.state.answers : []);
   const modeResetRef = useRef({ setId, mode });
   const audioRef = useRef(null);
-  const item = listeningSets.find(set => set.id === setId) || listeningSets[0];
+  const itemBase = listeningSets.find(set => set.id === setId) || listeningSets[0];
+  const item = itemBase?.sessionItems?.[sessionIndex % itemBase.sessionItems.length] || itemBase;
   const modes = [
     { id: 'choose', label: 'Pilih' },
     { id: 'arrange', label: 'Susun' },
@@ -2540,6 +2542,11 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }, [setId, mode]);
 
   useEffect(() => {
+    setSessionIndex(nextCommunicationSessionIndex('listening', setId, itemBase?.sessionItems?.length || 1));
+    setChoice(''); setSusund([]); setTyped(''); setFeedback(null); setAnswers([]);
+  }, [setId]);
+
+  useEffect(() => {
     if (!onResumeChange) return;
     onResumeChange({
       version: 1,
@@ -2552,6 +2559,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
         displayTitle: 'Mendengar',
         subjectTitle: item.title,
         setId,
+        sessionIndex,
         questionMode: mode
       },
       startedAt: resume?.startedAt || new Date().toISOString(),
@@ -2567,7 +2575,12 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
         answers
       }
     });
-  }, [setId, mode, choice, arranged, typed, feedback, answers, item.id, item.title, onResumeChange]);
+  }, [setId, sessionIndex, mode, choice, arranged, typed, feedback, answers, item.id, item.title, onResumeChange]);
+
+  function nextMendengar() {
+    setSessionIndex(nextCommunicationSessionIndex('listening', setId, itemBase?.sessionItems?.length || 1));
+    setChoice(''); setSusund([]); setTyped(''); setFeedback(null); setAnswers([]);
+  }
 
   function playAudio() {
     if (audioRef.current?.src) {
@@ -2736,6 +2749,7 @@ function createEmptyBacaanResult(message = '') {
 
 function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'speaking' && resume?.state?.setId) || 'bm');
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('speaking', resume?.state?.setId || 'bm', 40));
   const [mode, setMode] = useState(() => resume?.state?.mode || 'intro');
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
@@ -2750,7 +2764,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const abortedRef = useRef(false);
   const safariEmptyFailureRef = useRef(0);
   const [safariMicDisabled, setSafariMicDisabled] = useState(false);
-  const set = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
+  const setBase = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
+  const set = setBase?.sessionItems?.[sessionIndex % setBase.sessionItems.length] ? { ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length], id: setBase.id } : setBase;
   const isIOSSafari = useMemo(() => {
     if (typeof navigator === 'undefined') return false;
     const ua = navigator.userAgent || '';
@@ -2875,6 +2890,10 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }, [setId, mode]);
 
   useEffect(() => {
+    setSessionIndex(nextCommunicationSessionIndex('speaking', setId, setBase?.sessionItems?.length || 1));
+  }, [setId]);
+
+  useEffect(() => {
     resumeChangeRef.current = onResumeChange;
   }, [onResumeChange]);
 
@@ -2898,6 +2917,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         displayTitle: 'Bertutur',
         subjectTitle: set.title,
         setId,
+        sessionIndex,
         questionMode: mode
       },
       startedAt: resume?.startedAt || new Date().toISOString(),
@@ -2910,7 +2930,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         result
       }
     });
-  }, [setId, mode, transcript, result, set.title, safeModeKey]);
+  }, [setId, sessionIndex, mode, transcript, result, set.title, safeModeKey]);
 
   useEffect(() => () => {
     stopRecognitionSilently();
@@ -3114,6 +3134,7 @@ function scoreMenulis(task, answer, dictionary = []) {
 
 function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'writing' && resume?.state?.setId) || 'bm');
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('writing', resume?.state?.setId || 'bm', 50));
   const [mode, setMode] = useState(() => resume?.state?.mode || 'arrange');
   const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
@@ -3121,7 +3142,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const modeResetRef = useRef({ setId, mode });
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
-  const set = writingSets.find(item => item.id === setId) || writingSets[0] || null;
+  const setBase = writingSets.find(item => item.id === setId) || writingSets[0] || null;
+  const set = setBase?.sessionItems?.[sessionIndex % setBase.sessionItems.length] ? { ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length], id: setBase.id } : setBase;
   const safeTasks = set?.tasks && typeof set.tasks === 'object' ? set.tasks : {};
   const safeModes = Object.entries(safeTasks).map(([id, value]) => ({ id, label: value?.label || id }));
   const safeTask = safeTasks[mode] || safeTasks.arrange || Object.values(safeTasks).find(Boolean) || null;
@@ -3147,6 +3169,10 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }, [setId, mode]);
 
   useEffect(() => {
+    setSessionIndex(nextCommunicationSessionIndex('writing', setId, setBase?.sessionItems?.length || 1));
+  }, [setId]);
+
+  useEffect(() => {
     if (!safeMode || safeMode === mode) return;
     setMode(safeMode);
   }, [safeMode, mode]);
@@ -3160,6 +3186,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
     const nextSignature = [
       'writing',
       setId,
+      sessionIndex,
       mode,
       safeTask?.label || '',
       answer || '',
@@ -3195,7 +3222,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
         result
       }
     });
-  }, [setId, mode, answer, arranged, result, safeTask?.label]);
+  }, [setId, sessionIndex, mode, answer, arranged, result, safeTask?.label]);
 
   function currentAnswer() {
     return mode === 'arrange' ? arranged.join(' ') : answer;
@@ -3230,6 +3257,57 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
 
   return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeTaskPrompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Simpan Keputusan Menulis</button></div></section>{safeResult ? <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span><span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{safeResult.grammarPetunjuks.join(' ')}</p></div>}<div className="explain-box"><b>Penerangan AI</b><p>{safeResult.explanation}</p></div></section> : <section className="card"><p className="eyebrow">Keputusan Menulis</p><h2>Belum ada keputusan.</h2><p>Semak tulisan untuk melihat analisis.</p></section>}</main>;
+}
+
+/* Final listening surface: explicit next-item flow with a bounded, non-repeating session. */
+function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const [setId, setSetId] = useState(() => resume?.state?.setId || 'bm');
+  const base = listeningSets.find(item => item.id === setId) || listeningSets[0];
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('listening', setId, base.sessionItems.length));
+  const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
+  const [choice, setChoice] = useState('');
+  const [typed, setTyped] = useState('');
+  const [arranged, setArranged] = useState([]);
+  const [feedback, setFeedback] = useState(null);
+  const [completed, setCompleted] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const item = { ...(base.sessionItems?.[sessionIndex % base.sessionItems.length] || base), id: base.id };
+  const modes = [{ id: 'choose', label: 'Pilih' }, { id: 'arrange', label: 'Susun' }, { id: 'spell', label: 'Eja' }, { id: 'answer', label: 'Jawapan' }];
+  const availableWords = (item.arrange || []).filter(word => !arranged.includes(word));
+
+  useEffect(() => {
+    setChoice(''); setTyped(''); setArranged([]); setFeedback(null);
+  }, [sessionIndex, mode, setId]);
+  useEffect(() => {
+    onResumeChange?.({ version: 1, mode: 'listening', screen: 'listening', sessionId: resume?.sessionId || `listening_${setId}`, subjectId: 'listening', topicId: `${setId}_${sessionIndex}`, metadata: { displayTitle: 'Mendengar', subjectTitle: item.title, setId }, startedAt: resume?.startedAt || new Date().toISOString(), updatedAt: new Date().toISOString(), completed: false, state: { setId, sessionIndex, mode, choice, typed, arranged, feedback } });
+  }, [setId, sessionIndex, mode, choice, typed, arranged, feedback]);
+
+  function stopAudio() { try { window.speechSynthesis?.cancel?.(); } catch {} }
+  function playAudio() { stopAudio(); speak(item.prompt, { lang: item.speechLang }); }
+  function submit() {
+    let expected = ''; let response = '';
+    if (mode === 'choose') { expected = item.choose.answer; response = choice; }
+    if (mode === 'arrange') { expected = item.arrange.join(' '); response = arranged.join(' '); }
+    if (mode === 'spell') { expected = item.spell; response = typed; }
+    if (mode === 'answer') { expected = item.answer.accepted.join(', '); response = typed; }
+    const correct = mode === 'answer' ? item.answer.accepted.some(value => normalizeMendengar(value) === normalizeMendengar(response)) : normalizeMendengar(expected) === normalizeMendengar(response);
+    setFeedback({ correct, expected, response });
+  }
+  function nextItem() {
+    stopAudio();
+    const wasCorrect = Boolean(feedback?.correct);
+    setCompleted(value => value + (feedback ? 1 : 0));
+    setCorrectCount(value => value + (wasCorrect ? 1 : 0));
+    setSessionIndex(nextCommunicationSessionIndex('listening', setId, base.sessionItems.length));
+  }
+  function finish() {
+    stopAudio();
+    const total = completed + (feedback ? 1 : 0);
+    const correct = correctCount + (feedback?.correct ? 1 : 0);
+    onFinish?.({ language: base.language, title: base.title, mode: 'mixed', score: total ? Math.round((correct / total) * 100) : 0, correct, total });
+    onClearResume?.();
+  }
+  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Audio menggunakan suara pelayar; tiada item kosong 0:00.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(language => <button key={language.id} className={language.id === setId ? '' : 'secondary'} onClick={() => { stopAudio(); setSetId(language.id); setSessionIndex(nextCommunicationSessionIndex('listening', language.id, language.sessionItems.length)); setCompleted(0); setCorrectCount(0); }}>{language.language}</button>)}</div><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></>}{mode === 'arrange' && <><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setArranged(values => values.filter(value => value !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setArranged(values => [...values, word])}>{word}</button>)}</div></>}{mode === 'spell' && <><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></>}{mode === 'answer' && <><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></>}<div className="actions"><button onClick={submit}>Semak Jawapan</button>{feedback && <button className="secondary" onClick={nextItem}>Seterusnya</button>}<button className="secondary" onClick={finish}>Tamatkan Sesi</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section>{completed > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{completed} item selesai • {correctCount} betul</p></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {

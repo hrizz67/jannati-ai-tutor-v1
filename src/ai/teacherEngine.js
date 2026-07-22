@@ -79,7 +79,7 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {}, q
     questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
     instruction ? `Arahan: ${instruction}.` : '',
     subjectLabel ? `Subjek: ${subjectLabel}.` : '',
-    topic?.title ? `Topik: ${topic.title}.` : ''
+    ''
   ].filter(Boolean).join(' ')) || 'Mari kita belajar langkah demi langkah.';
   const studentProfile = getStudentProfileSummary('default');
   const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);

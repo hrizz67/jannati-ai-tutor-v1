@@ -76,7 +76,7 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const summary = sanitizeChildFacingText([
     questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
     instruction ? `Arahan: ${instruction}.` : '',
-    topic?.title ? `Topik: ${topic.title}.` : ''
+    ''
   ].filter(Boolean).join(' ')) || 'Mari kita semak soalan ini bersama-sama.';
   const studentProfile = getStudentProfileSummary('default');
   const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);

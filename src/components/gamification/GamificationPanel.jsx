@@ -39,6 +39,9 @@ export default function GamificationPanel({
   const currentStreak = Math.max(0, safeNumber(summary.streak?.current, 0));
   const bestStreak = Math.max(0, safeNumber(summary.streak?.best, 0));
   const totalAchievements = Array.isArray(summary.achievements) ? summary.achievements.length : 0;
+  const sessionXp = Math.max(0, safeNumber(summary.sessionXp ?? summary.recentXp, 0));
+  const subjectXp = Math.max(0, safeNumber(summary.subjectXp, 0));
+  const subjectLevel = Math.max(1, safeNumber(summary.subjectLevel, 1));
   const latestAchievement = getLatestAchievement(summary.achievements);
   const onboardingMessage = xp === 0 && level === 1 && currentStreak === 0 && totalAchievements === 0
     ? 'Mulakan latihan hari ini untuk kumpul XP, naik tahap, dan buka pencapaian pertama.'
@@ -56,8 +59,11 @@ export default function GamificationPanel({
       )}
 
       <div className="mastery-summary-grid gamification-summary-grid">
-        <div><b>{xp}</b><span>XP Semasa</span></div>
-        <div><b>{level}</b><span>Tahap Semasa</span></div>
+        <div><b>{sessionXp}</b><span>XP Sesi</span></div>
+        <div><b>{xp}</b><span>Jumlah XP</span></div>
+        <div><b>{subjectXp}</b><span>XP Subjek</span></div>
+        <div><b>{level}</b><span>Tahap Global</span></div>
+        <div><b>{subjectLevel}</b><span>Tahap Subjek</span></div>
         <div><b>{progressPercent}%</b><span>Kemajuan ke Tahap Seterusnya</span></div>
         <div><b>{currentStreak}</b><span>Streak Semasa</span></div>
         <div><b>{bestStreak}</b><span>Streak Terbaik</span></div>

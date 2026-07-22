@@ -244,6 +244,19 @@ function getCategoryRule(question = {}, topic = {}) {
   };
 }
 
+function buildQuestionSpecificFallback({ questionText = '', instruction = '', expectedAnswer = '', acceptedAnswers = [], options = [], learnerAnswer = '', category = 'generic' } = {}) {
+  const stem = questionText || 'soalan ini';
+  const accepted = acceptedAnswers.length ? acceptedAnswers.join(' atau ') : expectedAnswer;
+  const optionText = options.length ? ` Pilihan yang diberi ialah ${options.join(', ')}.` : '';
+  if (/wah|lukisan|tanda seru|ayat seruan/i.test(`${stem} ${instruction}`)) {
+    return 'Perkataan “Wah” dan tanda seru menunjukkan rasa kagum. Contoh ayat seruan: “Wah, cantiknya lukisan kamu!”';
+  }
+  if (accepted) return `Untuk ${stem}, cari petunjuk dalam arahan${instruction ? ` “${instruction}”` : ''}. Jawapan yang diterima ialah ${accepted}.${optionText}`;
+  if (learnerAnswer) return `Semak jawapan “${learnerAnswer}” dengan ayat penuh dalam ${stem}.${optionText}`;
+  if (category !== 'generic') return `Baca ${stem} perlahan-lahan dan cari perkataan yang menunjukkan topik ini.${optionText}`;
+  return `Baca ${stem} perlahan-lahan. Jika maklumat belum cukup, semak arahan dan pilihan jawapan dahulu.${optionText}`;
+}
+
 function buildContextualSections({
   intent,
   questionText,
@@ -296,8 +309,7 @@ function buildContextualSections({
     coachResponse?.hint?.hint ||
     coachResponse?.hint ||
     question?.hint ||
-    categoryRule.memoryTip ||
-    'Cari kata kunci penting dalam soalan.'
+    buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const praiseText = normalizeText(
     guided?.praise ||
@@ -308,8 +320,7 @@ function buildContextualSections({
   const learningTipText = normalizeText(
     coachResponse?.learningTip ||
     coachResponse?.tips?.spotlight ||
-    categoryRule.memoryTip ||
-    'Fokus pada kata kunci penting.'
+    buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const coachKnowledge = coachResponse?.knowledge || {};
   const steps = normalizeList(
@@ -322,20 +333,17 @@ function buildContextualSections({
   const commonMistake = normalizeText(
     coachKnowledge?.commonMistakes?.[0] ||
     coachResponse?.commonMistakes?.[0] ||
-    categoryRule.commonMistakes?.[0] ||
-    ''
+    categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const example = normalizeText(
     coachKnowledge?.examples?.[0] ||
     coachResponse?.examples?.[0] ||
-    categoryRule.example ||
-    (resolvedQuestion ? resolvedQuestion : '')
+    categoryRule.example && categoryRule.category !== 'generic' ? categoryRule.example : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const memoryTip = normalizeText(
     coachKnowledge?.memoryTips?.[0] ||
     coachResponse?.memoryTips?.[0] ||
-    categoryRule.memoryTip ||
-    getLearningMemoryTip(question, topic)
+    categoryRule.category !== 'generic' ? categoryRule.memoryTip : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const learningObjective = normalizeText(currentLearningObjective || topic?.objective || topic?.learningObjective || topic?.currentLearningObjective || '', '');
   const weakTopic = Array.isArray(weakTopics) && weakTopics.length
@@ -443,7 +451,7 @@ function buildContextualSections({
       ? 'Fokus pada petunjuk ini.'
       : explanationText ||
         simpleExplanationText ||
-        (revealAnswer && expectedAnswer ? `Jawapan yang betul ialah ${expectedAnswer}.` : 'Mari kita semak sebab jawapan ini sesuai.')
+        (revealAnswer && expectedAnswer ? `Berdasarkan soalan “${resolvedQuestion}”, jawapan yang diterima ialah ${acceptedAnswers.length ? acceptedAnswers.join(' atau ') : expectedAnswer}.` : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category }))
   );
 
   const hint = sanitizeChildFacingText(

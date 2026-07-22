@@ -139,6 +139,7 @@ export default function AIExplainModal({ open, data, question, character = 'jati
             type="button"
             onClick={onTutup}
             aria-label="Tutup"
+            data-close-glyph="times"
           >
             ×
           </button>

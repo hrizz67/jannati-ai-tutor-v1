@@ -2927,3 +2927,17 @@ textarea[dir="rtl"] {
   .guided-feedback-hint,
   .guided-feedback-correct { animation: none !important; }
 }
+/* Release polish: resilient modal close glyph and mobile safe-area layout. */
+.modal-close-button{font-size:0;min-width:44px;min-height:44px;display:inline-grid;place-items:center}
+.modal-close-button::after{content:'\00D7';font-size:1.5rem;line-height:1}
+.ai-explain-modal,.ai-teacher-modal{max-height:min(88dvh,760px);overflow:hidden}
+.ai-explain-body,.ai-teacher-body{overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
+.ai-explain-head,.ai-teacher-head{position:sticky;top:0;z-index:2}
+.ai-explain-footer,.ai-teacher-footer{padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
+@media (max-width:480px){.ai-explain-modal,.ai-teacher-modal{width:min(100vw - 1rem,100%);max-height:calc(100dvh - env(safe-area-inset-top) - .5rem);border-radius:16px}.ai-explain-footer,.ai-teacher-footer{flex-wrap:wrap}.feedback-fab{bottom:calc(.75rem + env(safe-area-inset-bottom));right:.75rem}.sticky-subject-bar{padding-top:env(safe-area-inset-top)}}
+@media (prefers-reduced-motion:reduce){.modal-close-button,.feedback-fab{animation:none!important;transition:none!important}}
+.home-continue-card{display:none}
+.stat-icon,.achievement-chip{background:linear-gradient(135deg,rgba(15,138,67,.12),rgba(212,168,67,.18));border:1px solid rgba(15,138,67,.18);box-shadow:0 4px 12px rgba(16,64,43,.08)}
+.icon-button,.stat-icon{transition:transform .18s ease,box-shadow .18s ease}
+.icon-button:hover,.icon-button:focus-visible,.stat-icon:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(16,64,43,.14)}
+@media (prefers-reduced-motion:reduce){.icon-button,.stat-icon{transition:none;transform:none!important}}
