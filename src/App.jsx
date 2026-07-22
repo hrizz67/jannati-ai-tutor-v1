@@ -2197,56 +2197,39 @@ function safeArabicCoachText(value, fallback = '') {
 function compareBacaan(targetText = '', transcript = '') {
   const targetWords = splitBacaanWords(targetText);
   const spokenWords = splitBacaanWords(transcript);
-  const used = new Set();
-  let correct = 0;
-  let tertinggal = 0;
-
-  const words = targetWords.map((word, index) => {
-    const exactIndex = spokenWords.findIndex((spoken, spokenIndex) => !used.has(spokenIndex) && spoken.normalized === word.normalized);
-    if (exactIndex >= 0) {
-      used.add(exactIndex);
-      correct += 1;
-      return { text: word.raw, status: 'correct' };
+  const rows = Array.from({ length: targetWords.length + 1 }, () => Array(spokenWords.length + 1).fill(0));
+  for (let i = targetWords.length - 1; i >= 0; i -= 1) {
+    for (let j = spokenWords.length - 1; j >= 0; j -= 1) {
+      rows[i][j] = targetWords[i].normalized === spokenWords[j].normalized ? rows[i + 1][j + 1] + 1 : Math.max(rows[i + 1][j], rows[i][j + 1]);
     }
-
-    const nearIndex = spokenWords.findIndex((spoken, spokenIndex) => {
-      return !used.has(spokenIndex) && Math.abs(spokenIndex - index) <= 2 && spoken.normalized === word.normalized;
-    });
-    if (nearIndex >= 0) {
-      used.add(nearIndex);
-      correct += 1;
-      return { text: word.raw, status: 'correct' };
-    }
-
-    tertinggal += 1;
-    return { text: word.raw, status: 'missed' };
-  });
-
-  const incorrectWords = spokenWords.filter((_, index) => !used.has(index));
-  const score = targetWords.length ? Math.max(0, Math.round((correct / targetWords.length) * 100 - incorrectWords.length * 2)) : 0;
-
-  return {
-    words,
-    correct,
-    tertinggal,
-    incorrect: incorrectWords.length,
-    incorrectWords: incorrectWords.map(word => word.raw),
-    score
-  };
+  }
+  const matchedTargetIndexes = new Set();
+  const matchedSpokenIndexes = new Set();
+  let i = 0;
+  let j = 0;
+  while (i < targetWords.length && j < spokenWords.length) {
+    if (targetWords[i].normalized === spokenWords[j].normalized) { matchedTargetIndexes.add(i); matchedSpokenIndexes.add(j); i += 1; j += 1; }
+    else if (rows[i + 1][j] >= rows[i][j + 1]) i += 1;
+    else j += 1;
+  }
+  const correct = matchedTargetIndexes.size;
+  const words = targetWords.map((word, index) => ({ text: word.raw, status: matchedTargetIndexes.has(index) ? 'correct' : 'missed' }));
+  const missed = targetWords.filter((_, index) => !matchedTargetIndexes.has(index)).map(word => word.raw);
+  const extraWords = spokenWords.filter((_, index) => !matchedSpokenIndexes.has(index)).map(word => word.raw);
+  const score = targetWords.length ? Math.max(0, Math.round((correct / targetWords.length) * 100 - extraWords.length * 2 - missed.length)) : 0;
+  return { words, correct, tertinggal: missed.length, missed, incorrect: extraWords.length, incorrectWords: extraWords, extraWords, totalTargetWords: targetWords.length, matchedWordCount: correct, missedWordCount: missed.length, extraWordCount: extraWords.length, passed: score >= 80, score };
 }
 
-const communicationSessionCounters = new Map();
-function nextCommunicationSessionIndex(type, language, size) {
-  const key = `${type}:${language}`;
-  const current = communicationSessionCounters.get(key) || 0;
-  communicationSessionCounters.set(key, (current + 1) % Math.max(1, size));
-  return current;
+function nextCommunicationSessionIndex(currentIndex, size) {
+  const safeSize = Math.max(1, Number(size) || 1);
+  const safeIndex = Number.isInteger(currentIndex) ? currentIndex : 0;
+  return (safeIndex + 1) % safeSize;
 }
 
 function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const initialPassageId = readingPassages.find(item => item.id === resume?.state?.passageId)?.id || readingPassages[0]?.id || 'bm';
   const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && initialPassageId) || initialPassageId);
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('reading', initialPassageId, 30));
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
@@ -2256,6 +2239,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     }
     return null;
   });
+  const [scoreHistory, setScoreHistory] = useState(() => Array.isArray(resume?.state?.scoreHistory) ? resume.state.scoreHistory : []);
+  const recordedSessionRef = useRef(null);
   const speechSessionRef = useRef(null);
   const passageChangeRef = useRef(passageId);
   const resumeChangeRef = useRef(onResumeChange);
@@ -2288,14 +2273,19 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       status: typeof spokenTranscript === 'string' && spokenTranscript.trim() ? 'completed' : 'empty',
       transcript: spokenTranscript,
       score: Number.isFinite(Number(comparison.score)) ? Number(comparison.score) : 0,
-      correct: Boolean(comparison.correct),
-      confidence: Boolean(comparison.correct) ? 100 : 0,
+      correct: Number(comparison.score) >= 80,
+      confidence: Math.max(0, Math.min(100, Number(comparison.score) || 0)),
       words,
       matched: matchedWords,
       matchedWords,
       missed: missedWords,
       missingWords: missedWords,
-      extraWords: Array.isArray(comparison.incorrectWords) ? comparison.incorrectWords : [],
+      extraWords: Array.isArray(comparison.extraWords) ? comparison.extraWords : [],
+      totalTargetWords: comparison.totalTargetWords,
+      matchedWordCount: comparison.matchedWordCount,
+      missedWordCount: comparison.missedWordCount,
+      extraWordCount: comparison.extraWordCount,
+      passed: comparison.passed,
       message: typeof spokenTranscript === 'string' && spokenTranscript.trim()
         ? ''
         : 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.',
@@ -2315,6 +2305,15 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     setMendengar(false);
   };
 
+  const recordBacaanResult = nextResult => {
+    const normalized = normalizeBacaanResult(nextResult);
+    if (recordedSessionRef.current !== sessionIndex) {
+      recordedSessionRef.current = sessionIndex;
+      setScoreHistory(history => [...history, Number(normalized.score) || 0]);
+    }
+    setResult(normalized);
+  };
+
   useEffect(() => {
     setRecognitionSupported(Boolean(window.SpeechRecognition || window.webkitSpeechRecognition));
   }, []);
@@ -2323,7 +2322,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
     clearBacaanSession();
-    setSessionIndex(nextCommunicationSessionIndex('reading', passageId, passageBase.sessionItems?.length || 1));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, passageBase.sessionItems?.length || 1));
     resetBacaanState();
   }, [passageId]);
 
@@ -2367,10 +2366,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
         passageId,
         sessionIndex,
         transcript: safeTranscript,
-        result: safeResult
+        result: safeResult,
+        scoreHistory
       }
     });
-  }, [passageId, sessionIndex, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, passage.id, passage.title]);
+  }, [passageId, sessionIndex, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, scoreHistory, passage.id, passage.title]);
 
   useEffect(() => () => {
     clearBacaanSession();
@@ -2396,11 +2396,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
         setTranscript(typeof nextTranscript === 'string' ? nextTranscript : '');
       },
       onResult(nextResult) {
-        setResult(normalizeBacaanResult(nextResult));
+          recordBacaanResult(nextResult);
         setMendengar(false);
       },
       onEmpty(nextResult) {
-        setResult(normalizeBacaanResult(nextResult));
+        recordBacaanResult(nextResult);
         setTranscript('');
         setMendengar(false);
       },
@@ -2424,7 +2424,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     stopVoice();
     clearBacaanSession();
     const nextResult = compareBacaan(passage.text, transcript);
-    setResult(normalizeBacaanResult({
+    recordBacaanResult({
       ...nextResult,
       status: 'completed',
       transcript,
@@ -2434,8 +2434,15 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       missed: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missed').map(item => item?.text).filter(Boolean) : [],
       missingWords: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missed').map(item => item?.text).filter(Boolean) : [],
       extraWords: Array.isArray(nextResult.incorrectWords) ? nextResult.incorrectWords : []
-    }));
+    });
     setMendengar(false);
+  }
+
+  function nextBacaan() {
+    clearBacaanSession();
+    recordedSessionRef.current = null;
+    resetBacaanState();
+    setSessionIndex(current => nextCommunicationSessionIndex(current, passageBase.sessionItems?.length || 1));
   }
 
   function saveResult() {
@@ -2449,18 +2456,37 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       transcript,
       score: nextResult.score,
       correct: nextResult.correct,
+      passed: nextResult.passed,
+      totalTargetWords: nextResult.totalTargetWords,
+      matchedWordCount: nextResult.matchedWordCount,
+      missedWordCount: nextResult.missedWordCount,
+      extraWordCount: nextResult.extraWordCount,
       tertinggal: Array.isArray(nextResult.missed) ? nextResult.missed : [],
       incorrect: Number(nextResult.incorrect) || 0
     });
     onClearResume?.();
   }
 
-return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><button onClick={saveResult}>Simpan Keputusan Bacaan</button></section>}</main>;
+return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} petikan selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
 }
 const listeningSets = semanticListeningSets;
 
 function normalizeMendengar(text = '') {
   return normalizeBacaanWord(text).replace(/\s+/g, '');
+}
+
+function normalizeListeningAcceptedAnswers(values = []) {
+  const variants = new Set();
+  (Array.isArray(values) ? values : [values]).forEach(value => {
+    const normalized = normalizeMendengar(value);
+    if (!normalized) return;
+    variants.add(normalized);
+    if (normalized.startsWith('di') && normalized.length > 2) variants.add(normalized.slice(2));
+    if (normalized.startsWith('inthe') && normalized.length > 5) variants.add(normalized.slice(5));
+    if (normalized.startsWith('in') && normalized.length > 2) variants.add(normalized.slice(2));
+    if (normalized.startsWith('the') && normalized.length > 3) variants.add(normalized.slice(3));
+  });
+  return variants;
 }
 
 // Deprecated listening implementation removed; MendengarLab is the sole active surface.
@@ -2508,6 +2534,11 @@ function normalizeBacaanResult(value) {
     missed,
     missingWords,
     extraWords,
+    totalTargetWords: Number(safeValue.totalTargetWords) || 0,
+    matchedWordCount: Number(safeValue.matchedWordCount) || matchedWords.length,
+    missedWordCount: Number(safeValue.missedWordCount) || missed.length,
+    extraWordCount: Number(safeValue.extraWordCount) || extraWords.length,
+    passed: typeof safeValue.passed === 'boolean' ? safeValue.passed : Number(safeValue.score) >= 80,
     message: typeof safeValue.message === 'string' ? safeValue.message : '',
     errorCode: typeof safeValue.errorCode === 'string' ? safeValue.errorCode : ''
   };
@@ -2533,7 +2564,7 @@ function createEmptyBacaanResult(message = '') {
 
 function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'speaking' && resume?.state?.setId) || 'bm');
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('speaking', resume?.state?.setId || 'bm', 40));
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'intro');
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
@@ -2680,7 +2711,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }, [setId, mode]);
 
   useEffect(() => {
-    setSessionIndex(nextCommunicationSessionIndex('speaking', setId, setBase?.sessionItems?.length || 1));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
   }, [setId]);
 
   useEffect(() => {
@@ -2841,7 +2872,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setTranscript('');
     setResult(null);
     resetSpeechSession();
-    setSessionIndex(nextCommunicationSessionIndex('speaking', setId, setBase?.sessionItems?.length || 1));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
   }
 
   function saveBertutur() {
@@ -2888,7 +2919,7 @@ function scoreMenulis(task, answer, dictionary = []) {
 
 function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'writing' && resume?.state?.setId) || 'bm');
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('writing', resume?.state?.setId || 'bm', 50));
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'arrange');
   const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
@@ -2925,7 +2956,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }, [setId, mode]);
 
   useEffect(() => {
-    setSessionIndex(nextCommunicationSessionIndex('writing', setId, setBase?.sessionItems?.length || 1));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
   }, [setId]);
 
   useEffect(() => {
@@ -3000,7 +3031,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
     setAnswer('');
     setSusund([]);
     setResult(null);
-    setSessionIndex(nextCommunicationSessionIndex('writing', setId, setBase?.sessionItems?.length || 1));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
   }
 
   function saveMenulis() {
@@ -3033,7 +3064,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => resume?.state?.setId || 'bm');
   const base = listeningSets.find(item => item.id === setId) || listeningSets[0];
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('listening', setId, base.sessionItems.length));
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
   const [choice, setChoice] = useState('');
   const [typed, setTyped] = useState('');
@@ -3060,7 +3091,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     if (mode === 'arrange') { expected = item.arrange.join(' '); response = arranged.join(' '); }
     if (mode === 'spell') { expected = item.spell; response = typed; }
     if (mode === 'answer') { expected = item.answer.accepted.join(', '); response = typed; }
-    const correct = mode === 'answer' ? item.answer.accepted.some(value => normalizeMendengar(value) === normalizeMendengar(response)) : normalizeMendengar(expected) === normalizeMendengar(response);
+    const correct = mode === 'answer' ? normalizeListeningAcceptedAnswers(item.answer.accepted).has(normalizeMendengar(response)) : normalizeMendengar(expected) === normalizeMendengar(response);
     setFeedback({ correct, expected, response });
   }
   function nextItem() {
@@ -3068,7 +3099,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     const wasCorrect = Boolean(feedback?.correct);
     setCompleted(value => value + (feedback ? 1 : 0));
     setCorrectCount(value => value + (wasCorrect ? 1 : 0));
-    setSessionIndex(nextCommunicationSessionIndex('listening', setId, base.sessionItems.length));
+    setSessionIndex(current => nextCommunicationSessionIndex(current, base.sessionItems.length));
   }
   function finish() {
     stopAudio();
@@ -3077,7 +3108,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     onFinish?.({ language: base.language, title: base.title, mode: 'mixed', score: total ? Math.round((correct / total) * 100) : 0, correct, total });
     onClearResume?.();
   }
-  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Audio menggunakan suara pelayar; tiada item kosong 0:00.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(language => <button key={language.id} className={language.id === setId ? '' : 'secondary'} onClick={() => { stopAudio(); setSetId(language.id); setSessionIndex(nextCommunicationSessionIndex('listening', language.id, language.sessionItems.length)); setCompleted(0); setCorrectCount(0); }}>{language.language}</button>)}</div><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></>}{mode === 'arrange' && <><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setArranged(values => values.filter(value => value !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setArranged(values => [...values, word])}>{word}</button>)}</div></>}{mode === 'spell' && <><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></>}{mode === 'answer' && <><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></>}<div className="actions"><button onClick={submit}>Semak Jawapan</button>{feedback && <button className="secondary" onClick={nextItem}>Seterusnya</button>}<button className="secondary" onClick={finish}>Tamatkan Sesi</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section>{completed > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{completed} item selesai • {correctCount} betul</p></section>}</main>;
+  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Audio menggunakan suara pelayar; tiada item kosong 0:00.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(language => <button key={language.id} className={language.id === setId ? '' : 'secondary'} onClick={() => { stopAudio(); setSetId(language.id); setSessionIndex(0); setCompleted(0); setCorrectCount(0); }}>{language.language}</button>)}</div><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></>}{mode === 'arrange' && <><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setArranged(values => values.filter(value => value !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setArranged(values => [...values, word])}>{word}</button>)}</div></>}{mode === 'spell' && <><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></>}{mode === 'answer' && <><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></>}<div className="actions"><button onClick={submit}>Semak Jawapan</button>{feedback && <button className="secondary" onClick={nextItem}>Seterusnya</button>}<button className="secondary" onClick={finish}>Tamatkan Sesi</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section>{completed > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{completed} item selesai • {correctCount} betul</p></section>}</main>;
 }
 
 function Stat({ icon, label, value }) {

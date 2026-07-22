@@ -14,7 +14,7 @@ This pass audited the live runtime after commit `819cf02`. Canonical progress, a
 | 4 | Sticky subject switcher | Existing sticky subject spacing and safe-area padding retained | PASS |
 | 5 | Responsive footer | Existing responsive footer rules retained | PASS |
 | 6 | iPhone safe area / keyboard | Modal and FAB now use `env(safe-area-inset-*)`; modal bodies scroll independently | PASS |
-| 7 | Bacaan rotation | 30-item semantic passages per language with distinct titles/text/vocabulary and persisted session index | PASS |
+| 7 | Bacaan rotation | 30-item semantic passages per language, visible Seterusnya/Tamatkan Sesi flow, score summary, and persisted session index | PASS |
 | 8 | Bertutur rotation | 40-item language pools plus visible Seterusnya, recognition disposal, reset, score history, and persisted session index | PASS |
 | 9 | Mendengar rotation | 30-item BM/English and 31-item Arabic semantic pools, explicit Seterusnya control, speech cancellation, session summary, and persisted index | PASS |
 | 10 | Menulis rotation | 50-item language pools plus visible Seterusnya, answer/arranged/result reset, score history, and persisted session index | PASS |
@@ -70,6 +70,15 @@ Mendengar now has a dedicated Seterusnya control after feedback, cancels prior s
 - Body scrolling and iPhone safe-area bottom padding are enforced in CSS.
 - `Topik:` leakage is removed from engine-generated summaries.
 - Knowledge content remains preferred; generic fallback text is filtered where possible.
+
+## Bacaan scoring and session validation
+
+- Reading comparison now uses ordered token alignment (LCS-style dynamic programming).
+- Scrambled words cannot receive the same score as an ordered reading.
+- Partial matches expose target, matched, missed, and extra word counts.
+- Passing is explicit at score >= 80; confidence follows the score.
+- Bacaan, Bertutur, Mendengar, and Menulis advance from the persisted current index using (currentIndex + 1) modulo poolSize; no module-level session counter remains.
+- Accepted listening answers normalize case, punctuation, BM kedai/di kedai, English article/preposition variants, and Arabic diacritic differences without accepting arbitrary answers.
 
 ## Dashboard subject isolation
 
