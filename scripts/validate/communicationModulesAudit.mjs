@@ -1,15 +1,22 @@
 import fs from 'node:fs';
+import { semanticReadingPassages, semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets } from '../../src/data/communicationContent.js';
 
 const app = fs.readFileSync('src/App.jsx', 'utf8');
+const communicationContent = fs.readFileSync('src/data/communicationContent.js', 'utf8');
 const count = (pattern) => (app.match(pattern) || []).length;
 const arabic = /[\u0600-\u06ff]/;
 const checks = {
-  readingPoolDeclared: /readingPassages\.forEach\(item => \{[\s\S]*length: 30/.test(app),
-  speakingPoolDeclared: /speakingPrompts\.forEach\(item => \{[\s\S]*length: 40/.test(app),
-  writingPoolDeclared: /writingSets\.forEach\(item => \{[\s\S]*length: 50/.test(app),
-  listeningPoolDeclared: /listeningSets\.forEach\(item => \{[\s\S]*length: 12/.test(app),
-  arabicSourceText: arabic.test(app),
-  uniqueSessionIds: /id: `\$\{item\.id\}-\$\{index \+ 1\}`/.test(app),
+  readingPoolDeclared: semanticReadingPassages.every(item => item.sessionItems?.length >= 30),
+  speakingPoolDeclared: semanticSpeakingPrompts.every(item => item.sessionItems?.length >= 40),
+  writingPoolDeclared: semanticWritingSets.every(item => item.sessionItems?.length >= 50),
+  listeningPoolDeclared: semanticListeningSets.every(item => item.sessionItems?.length >= 30),
+  readingNextFlow: /nextCommunicationSessionIndex\('reading'/.test(app) && /setSessionIndex\(nextCommunicationSessionIndex\('reading'/.test(app),
+  speakingNextFlow: /function nextBertutur/.test(app) && /setSessionIndex\(nextCommunicationSessionIndex\('speaking'/.test(app) && /onClick=\{nextBertutur\}/.test(app),
+  writingNextFlow: /function nextMenulis/.test(app) && /setSessionIndex\(nextCommunicationSessionIndex\('writing'/.test(app) && /onClick=\{nextMenulis\}/.test(app),
+  listeningNextFlow: /function nextItem/.test(app) && /onClick=\{nextItem\}/.test(app),
+  persistenceAndReset: /onResumeChange/.test(app) && /setTranscript\(''\)/.test(app) && /setResult\(null\)/.test(app),
+  arabicSourceText: arabic.test(app) || arabic.test(communicationContent),
+  uniqueSessionIds: semanticListeningSets.every(item => new Set(item.sessionItems.map(sessionItem => sessionItem.id)).size === item.sessionItems.length),
   noReplacementCharacter: !/[\uFFFD]/.test(app),
   noKnownMojibakeArabic: !/Ø§|Ù…|Ø°|Ø¹/.test(app)
 };
@@ -21,7 +28,7 @@ const report = {
     readingPerLanguage: 30,
     speakingPerLanguage: 40,
     writingPerLanguage: 50,
-    listeningPerLanguage: 12
+    listeningPerLanguage: 30
   },
   sourceReferences: {
     reading: count(/readingPassages/g),

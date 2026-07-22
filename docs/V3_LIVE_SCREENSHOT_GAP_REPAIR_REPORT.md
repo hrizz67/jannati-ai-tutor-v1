@@ -14,10 +14,10 @@ This pass audited the live runtime after commit `819cf02`. Canonical progress, a
 | 4 | Sticky subject switcher | Existing sticky subject spacing and safe-area padding retained | PASS |
 | 5 | Responsive footer | Existing responsive footer rules retained | PASS |
 | 6 | iPhone safe area / keyboard | Modal and FAB now use `env(safe-area-inset-*)`; modal bodies scroll independently | PASS |
-| 7 | Bacaan rotation | 30-item language pools, session index persistence, and non-repeating counter are live | PASS |
-| 8 | Bertutur rotation | 40-item language pools now select a session item and persist session index | PASS |
-| 9 | Mendengar rotation | 12-item language pools, explicit Seterusnya control, speech cancellation, session summary, and persisted index | PASS |
-| 10 | Menulis rotation | 50-item language pools now select a session item and persist session index | PASS |
+| 7 | Bacaan rotation | 30-item semantic passages per language with distinct titles/text/vocabulary and persisted session index | PASS |
+| 8 | Bertutur rotation | 40-item language pools plus visible Seterusnya, recognition disposal, reset, score history, and persisted session index | PASS |
+| 9 | Mendengar rotation | 30-item BM/English and 31-item Arabic semantic pools, explicit Seterusnya control, speech cancellation, session summary, and persisted index | PASS |
+| 10 | Menulis rotation | 50-item language pools plus visible Seterusnya, answer/arranged/result reset, score history, and persisted session index | PASS |
 | 11 | Listening 0:00 | Empty HTML audio control is no longer relied upon; speech fallback is the active path | PASS |
 | 12 | AITeacherModal mobile | Existing single modal/body scroll plus new mobile max-height and safe-area rules | PASS |
 | 13 | AIExplainModal mobile | Existing single modal/body scroll plus new mobile max-height and safe-area rules | PASS |
@@ -30,7 +30,7 @@ This pass audited the live runtime after commit `819cf02`. Canonical progress, a
 | 20 | Analytics subject isolation | Analytics receives selected-subject snapshots and subject-labelled cards | PASS |
 | 21 | Study Planner subject isolation | Planner is sourced through Parent Insights/planner public APIs; no direct engine calls | PASS |
 | 22 | Recommendation subject isolation | Recommendation data is derived from selected adaptive focus | PASS |
-| 23 | Duplicate Sambung Belajar CTA | Legacy standalone continuation card is suppressed; one quick-action CTA remains | PASS |
+| 23 | Duplicate Sambung Belajar CTA | Legacy standalone continuation JSX removed; one quick-action CTA remains | PASS |
 | 24 | Duplicate weekly plans | Only the planner panel owns the weekly plan list | PASS |
 | 25 | Conflicting XP/levels | Gamification panel now labels session, total, subject XP, global and subject level separately | PASS |
 | 26 | Gamification spacing | Grid labels are explicit and wrap-safe | PASS |
@@ -56,10 +56,10 @@ This pass audited the live runtime after commit `819cf02`. Canonical progress, a
 
 | Surface | BM | English | Arabic | Rotation |
 |---|---:|---:|---:|---|
-| Bacaan | 30 | 30 | 30 | session counter + persisted index |
-| Bertutur | 40 | 40 | 40 | session counter + persisted index |
-| Mendengar | 12 | 12 | 12 | session counter + Seterusnya control + persisted index; speech fallback |
-| Menulis | 50 | 50 | 50 | session counter + persisted index |
+| Bacaan | 30 | 30 | 30 | semantic passage pool + session counter + persisted index |
+| Bertutur | 40 | 40 | 40 | semantic prompt pool + Seterusnya + score summary + persisted index |
+| Mendengar | 30 | 30 | 31 | semantic session pools + Seterusnya control + persisted index; speech fallback |
+| Menulis | 50 | 50 | 50 | semantic exercise pool + Seterusnya + score summary + persisted index |
 
 Mendengar now has a dedicated Seterusnya control after feedback, cancels prior speech, resets answer state, and exposes a session summary. Audio remains speech-fallback based when no local clip is present, so no empty 0:00 control is rendered by the active surface.
 
@@ -74,6 +74,15 @@ Mendengar now has a dedicated Seterusnya control after feedback, cancels prior s
 ## Dashboard subject isolation
 
 Home, Student, Analytics, Revision/Parent Insights and Study Planner are fed from selected-subject or canonical/adaptive snapshots. The previously delivered canonical progress and UASA reset work from `819cf02` remains the source of truth.
+
+## Home quick-action JSX verification
+
+The active `HomeDashboard` quick-actions JSX contains separate controls:
+
+- Mendengar: `onStartMendengar` with `IconGlyph name="headphones"` and visible text “Mendengar”.
+- Bertutur: `onStartBertutur` with `IconGlyph name="mic"` and visible text “Bertutur”.
+
+Both buttons have balanced opening/closing tags and are independently keyboard accessible.
 
 ## Gamification consistency
 
@@ -91,19 +100,22 @@ Build-time CSS inspection confirms 320–390 px-safe modal width, independent ve
 - `node scripts/validate/mobileOverlayAudit.mjs` — PASS.
 - `node scripts/validate/liveMobileReleaseBlockerAudit.mjs` — PASS; manual device checks remain explicitly listed by the validator.
 - `npm.cmd run build` — PASS (Vite build completed; existing large-chunk warning remains).
+- `node scripts/validate/communicationSemanticDiversityAudit.mjs` — PASS (30 BM, 30 English, 31 Arabic listening items; 40 speaking and 50 writing items per language; zero normalized duplicate item groups).
 
 ## Pre-commit feature-to-file matrix
 
 | Feature | Runtime evidence | Status |
 |---|---|---|
 | Mendengar Seterusnya rendered | Active `MendengarLab` renders `Seterusnya` after feedback | PRESENT |
+| Bertutur Seterusnya rendered | Active `BertuturCoach` renders `Seterusnya` after a result and disposes recognition before advancing | PRESENT |
+| Menulis Seterusnya rendered | Active `MenulisCoach` renders `Seterusnya` after checking and clears answer/arranged/result | PRESENT |
 | Non-repeating listening index | `nextCommunicationSessionIndex` + `sessionIndex` | PRESENT |
 | Stop previous audio | `stopAudio()` calls `speechSynthesis.cancel()` before next/play | PRESENT |
 | Answer/feedback reset | `nextItem()` resets controlled state through session-index effect | PRESENT |
 | Position persistence | `onResumeChange` stores `sessionIndex` | PRESENT |
 | Session summary | Completed/betul summary card and `Tamatkan Sesi` | PRESENT |
 | No empty 0:00 control | Active surface uses speech fallback and no `<audio>` control | PRESENT |
-| One Sambung Belajar CTA | `.home-continue-card` is suppressed; quick action remains | PRESENT |
+| One Sambung Belajar CTA | Obsolete standalone continuation JSX removed; quick action remains | PRESENT |
 | Contextual Tutor fallback | `buildQuestionSpecificFallback()` | PRESENT |
 | Accepted answers | `getAcceptedAnswers(question)` in tutor context | PRESENT |
 | Learner/misconception context | fallback receives learner answer and category; guided misconception remains | PRESENT |
@@ -115,9 +127,20 @@ Build-time CSS inspection confirms 320–390 px-safe modal width, independent ve
 | Reduced motion | `prefers-reduced-motion` rules cover icon/modal motion | PRESENT |
 | FAB/sticky collision | existing `.beta-feedback-fab` safe-area offsets and sticky spacing | PRESENT |
 
+## Communication diversity audit
+
+| Module | BM | English | Arabic | Normalized duplicate groups |
+|---|---:|---:|---:|---:|
+| Bacaan | 30 | 30 | 30 | 0 (near-duplicate pairs 0; repeated title/template groups 0) |
+| Mendengar | 30 | 30 | 31 | 0 |
+| Bertutur | 40 | 40 | 40 | 0 |
+| Menulis | 50 | 50 | 50 | 0 |
+
+The active App runtime imports semantic banks from `src/data/communicationContent.js`; the active variables point to those semantic banks. The former legacy listening implementation, clone generators, `audioRef`, and `nextMendengar` path were removed from `App.jsx`.
+
 ## Dead/unwired code findings
 
-- `nextMendengar` remains in the legacy, renamed `LegacyMendengarLab`; it is not on the active render path. The active component uses `nextItem()`.
+- Legacy Mendengar implementation, old HTML audio controls, `audioRef`, and `nextMendengar` are absent; the active component uses `nextItem()`.
 - `ai-teacher-body`, `ai-teacher-head`, and `ai-teacher-footer` are defensive CSS aliases; the current Teacher modal intentionally reuses the `ai-explain-*` classes, so these aliases are harmless but unused.
 - `formatFriendlyDate()` is now wired to ParentDashboard; no unused formatter remains for this pass.
 - No validator-only claim was used as proof of the active Mendengar UI; the active JSX is listed above.

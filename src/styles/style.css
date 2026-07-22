@@ -2936,7 +2936,6 @@ textarea[dir="rtl"] {
 .ai-explain-footer,.ai-teacher-footer{padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
 @media (max-width:480px){.ai-explain-modal,.ai-teacher-modal{width:min(100vw - 1rem,100%);max-height:calc(100dvh - env(safe-area-inset-top) - .5rem);border-radius:16px}.ai-explain-footer,.ai-teacher-footer{flex-wrap:wrap}.feedback-fab{bottom:calc(.75rem + env(safe-area-inset-bottom));right:.75rem}.sticky-subject-bar{padding-top:env(safe-area-inset-top)}}
 @media (prefers-reduced-motion:reduce){.modal-close-button,.feedback-fab{animation:none!important;transition:none!important}}
-.home-continue-card{display:none}
 .stat-icon,.achievement-chip{background:linear-gradient(135deg,rgba(15,138,67,.12),rgba(212,168,67,.18));border:1px solid rgba(15,138,67,.18);box-shadow:0 4px 12px rgba(16,64,43,.08)}
 .icon-button,.stat-icon{transition:transform .18s ease,box-shadow .18s ease}
 .icon-button:hover,.icon-button:focus-visible,.stat-icon:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(16,64,43,.14)}
