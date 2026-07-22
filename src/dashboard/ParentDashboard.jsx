@@ -22,6 +22,7 @@ import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx'
 import { createStudyPlannerPayload } from '../studyPlanner/index.js';
 import { subjectList as registrySubjectList } from '../data/subjects/index.js';
 import { getStudentDisplayName } from '../utils/displayFormatter';
+import { createCanonicalProgress, toParentProgressProfile } from '../utils/canonicalProgress.js';
 
 const RECOMMENDATION_TEXT = {
   review: 'Perlu ulang kaji',
@@ -87,6 +88,7 @@ function resolveInitialSubjectId(profile = null, subjects = []) {
 export default function ParentDashboard({
   profile,
   adaptiveProfile, // retained for compatibility; data now flows through Parent Insights only
+  canonicalProgress = null,
   aiMemory = null,
   learningObservation = null,
   predictionProfile = null,
@@ -100,7 +102,14 @@ export default function ParentDashboard({
 }) {
   const allowMock = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
-  const sourceProfile = useMemo(() => buildMockGuardProfile(profile, allowMock), [profile, allowMock]);
+  const progress = useMemo(() => canonicalProgress || createCanonicalProgress({
+    ...(profile || {}),
+    ...(adaptiveProfile || {}),
+    history: profile?.history || adaptiveProfile?.events || [],
+    subjects: adaptiveProfile?.subjects || profile?.subjects,
+    topics: adaptiveProfile?.topics || profile?.topics
+  }), [canonicalProgress, profile, adaptiveProfile]);
+  const sourceProfile = useMemo(() => buildMockGuardProfile(toParentProgressProfile(progress, profile), allowMock), [progress, profile, allowMock]);
   const insightsProfile = useMemo(() => resolveParentProfile(sourceProfile, { allowMock }), [sourceProfile, allowMock]);
   const summary = useMemo(() => buildParentSummary(insightsProfile), [insightsProfile]);
   const recommendationSummary = useMemo(() => buildRecommendationSummary(insightsProfile), [insightsProfile]);
@@ -337,7 +346,7 @@ export default function ParentDashboard({
         <p className="eyebrow">Sejarah UASA</p>
         <h2>Sejarah UASA</h2>
         <div className="timeline">
-          {(profile?.uasaHistory || []).length ? profile.uasaHistory.slice(0, 8).map((item, index) => (
+          {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
             <div className="timeline-item" key={index}>
               <span>{safeText(item.date)}</span>
               <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
@@ -353,10 +362,10 @@ export default function ParentDashboard({
         <p className="eyebrow">Aktiviti Terkini</p>
         <h2>Aktiviti Terkini</h2>
         <div className="timeline">
-          {(profile?.history || []).length === 0 ? (
+          {(sourceProfile?.history || []).length === 0 ? (
             <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." />
           ) : (
-            profile.history.slice(0, 10).map((item, index) => (
+            sourceProfile.history.slice(0, 10).map((item, index) => (
               <div className="timeline-item" key={index}>
                 <span>{safeText(item.date)}</span>
                 <b>{formatSubjectName(item.subject)} - {safeText(item.topic)}</b>

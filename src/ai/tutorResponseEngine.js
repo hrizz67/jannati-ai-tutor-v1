@@ -19,6 +19,7 @@ import {
   limitTutorText,
   sanitizeTutorText
 } from './guidedLearning/index.js';
+import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -116,7 +117,6 @@ function getExpectedAnswer(question = {}, explicit = '') {
     question?.answer ||
     question?.correctAnswer ||
     question?.expectedAnswer ||
-    question?.acceptedAnswers?.[0] ||
     ''
   );
 }
@@ -274,7 +274,8 @@ function buildContextualSections({
   const resolvedQuestion = questionText || getQuestionText(question);
   const resolvedInstruction = instruction || getInstruction(question);
   const resolvedOptions = options.length ? options : getOptions(question);
-  const expectedAnswer = getExpectedAnswer(question, answer);
+  const expectedAnswer = getExpectedAnswer(question);
+  const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
   const explanationText = normalizeText(
     coachResponse?.explanation?.explanation ||
@@ -498,6 +499,7 @@ function buildContextualSections({
     example,
     memoryTip,
     correctAnswer: revealAnswer ? expectedAnswer : '',
+    acceptedAnswers,
     coachMessage,
     learningObjective,
     questionText: resolvedQuestion,
@@ -517,6 +519,7 @@ function buildContextualSections({
     subject: subjectLabel,
     topic: topicLabel,
     expectedAnswer,
+    acceptedAnswers,
     learnerAnswer: learner,
     isCorrect: Boolean(isCorrect),
     attemptCount: Number(attemptCount) || 0,
@@ -588,10 +591,11 @@ export async function getTutorResponse(options = {}) {
   const resolvedInstruction = getInstruction(resolvedQuestion, instruction);
   const resolvedOptions = getOptions(resolvedQuestion, questionOptions);
   const answerText = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
+  const acceptedAnswers = getAcceptedAnswers(resolvedQuestion);
   const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
   const resolvedCorrect = typeof isCorrect === 'boolean'
     ? isCorrect
-    : Boolean(answerText && expected && normalizeText(answerText).toLowerCase() === normalizeText(expected).toLowerCase());
+    : isAcceptedQuestionAnswer(answerText, resolvedQuestion);
   const hasQuestionContext = Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id);
 
   let coachResponse = null;
@@ -630,7 +634,8 @@ export async function getTutorResponse(options = {}) {
           questionText: resolvedQuestionText,
           instruction: resolvedInstruction,
           options: resolvedOptions,
-          expectedAnswer: expected,
+           expectedAnswer: expected,
+           acceptedAnswers,
           learnerAnswer: answerText,
           explanationMode,
           currentLearningObjective
@@ -666,6 +671,7 @@ export async function getTutorResponse(options = {}) {
     instruction: resolvedInstruction,
     options: resolvedOptions,
     expectedAnswer: expected,
+    acceptedAnswers,
     learnerAnswer: answerText,
     isCorrect: resolvedCorrect,
     attemptCount: Number(attemptCount) || 0,
@@ -753,6 +759,7 @@ export async function getTutorResponse(options = {}) {
     options: resolvedOptions,
     expectedAnswer: expected,
     learnerAnswer: answerText,
+    acceptedAnswers,
     correctAnswer: expected,
     isCorrect: resolvedCorrect,
     contextUsed: contextBundle.contextUsed,

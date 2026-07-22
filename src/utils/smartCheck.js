@@ -1,21 +1,26 @@
+import { getAcceptedAnswers, isAcceptedQuestionAnswer, normalizeAcceptedAnswer } from './acceptedAnswers.js';
+
 export function normalizeAnswer(value) {
-  return String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[.,!?;:]+$/g, '')
-    .replace(/\s+/g, ' ');
+  return normalizeAcceptedAnswer(value);
+}
+
+export function isAcceptedAnswer(answer, acceptedAnswers = []) {
+  const normalizedAnswer = normalizeAnswer(answer);
+  if (!normalizedAnswer) return false;
+  return (Array.isArray(acceptedAnswers) ? acceptedAnswers : [])
+    .map(normalizeAnswer)
+    .filter(Boolean)
+    .some(candidate => candidate === normalizedAnswer);
 }
 
 export function smartCheck(userAnswer, question) {
   const user = normalizeAnswer(userAnswer);
-  const correct = normalizeAnswer(question?.answer);
-  const accepted = Array.isArray(question?.accepted) ? question.accepted.map(normalizeAnswer) : [];
 
   if (!user) {
     return { status: 'wrong', title: 'Belum jawab', message: 'Tulis jawapan dahulu ya.' };
   }
 
-  if (user === correct || accepted.some(answer => answer === user)) {
+  if (isAcceptedQuestionAnswer(user, question)) {
     return { status: 'correct', title: 'Betul!', message: 'Jawapan kamu diterima.' };
   }
 

@@ -41,6 +41,9 @@ import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
+import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
+import { createCanonicalProgress } from './utils/canonicalProgress.js';
+import { getAcceptedAnswers } from './utils/acceptedAnswers.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
@@ -557,6 +560,13 @@ export default function App() {
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
+  const canonicalProgress = useMemo(() => createCanonicalProgress({
+    ...(profile || {}),
+    ...(adaptiveProfile || {}),
+    history: profile?.history || adaptiveProfile?.events || [],
+    subjects: adaptiveProfile?.subjects || profile?.subjects,
+    topics: adaptiveProfile?.topics || profile?.topics
+  }), [profile, adaptiveProfile]);
   const adaptiveSessionRef = useRef(null);
   const questionStartedAtRef = useRef(Date.now());
   const quizSubmitKeyRef = useRef('');
@@ -1302,7 +1312,7 @@ export default function App() {
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
     setExplainData(explainAnswer({ question, topic: activeTopic, result, userAnswer: answer }));
-    setFeedback({ ...result, xp, coins, correctAnswer: question.answer, explanation: sanitizeAiText(question.explanation || question.hint) });
+    setFeedback({ ...result, xp, coins, correctAnswer: question.answer, acceptedAnswers: getAcceptedAnswers(question), explanation: sanitizeAiText(question.explanation || question.hint) });
   }
 
   function openExplain() {
@@ -1312,6 +1322,7 @@ export default function App() {
     const instruction = question?.instruction || question?.direction || question?.prompt || '';
     const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
     const expectedAnswer = question?.answer || question?.correctAnswer || '';
+    const acceptedAnswers = getAcceptedAnswers(question);
     const learnerAnswer = answer;
     const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
     const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
@@ -1340,6 +1351,7 @@ export default function App() {
       instruction,
       options,
       expectedAnswer,
+      acceptedAnswers,
       learnerAnswer,
       explanationMode,
       currentLearningObjective,
@@ -1357,6 +1369,7 @@ export default function App() {
     const instruction = question?.instruction || question?.direction || question?.prompt || '';
     const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
     const expectedAnswer = question?.answer || question?.correctAnswer || '';
+    const acceptedAnswers = getAcceptedAnswers(question);
     const learnerAnswer = answer;
     const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
     const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
@@ -1396,6 +1409,7 @@ export default function App() {
       instruction,
       options,
       expectedAnswer,
+      acceptedAnswers,
       learnerAnswer,
       explanationMode,
       currentLearningObjective,
@@ -1642,7 +1656,8 @@ export default function App() {
       questionText={tutorQuestion?.q || tutorQuestion?.question || tutorQuestion?.stem || tutorQuestion?.text || ''}
       instruction={tutorQuestion?.instruction || tutorQuestion?.direction || tutorQuestion?.prompt || ''}
       options={Array.isArray(tutorQuestion?.options) ? tutorQuestion.options : Array.isArray(tutorQuestion?.choices) ? tutorQuestion.choices : []}
-      expectedAnswer={tutorQuestion?.answer || tutorQuestion?.correctAnswer || ''}
+       expectedAnswer={tutorQuestion?.answer || tutorQuestion?.correctAnswer || ''}
+       acceptedAnswers={getAcceptedAnswers(tutorQuestion)}
       learnerAnswer={answer}
       explanationMode={feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')}
       currentLearningObjective={chatTopic?.learningObjective || chatTopic?.objective || tutorQuestion?.learningObjective || tutorQuestion?.objective || ''}
@@ -1695,7 +1710,7 @@ export default function App() {
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
   if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
   if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
@@ -1924,8 +1939,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   const speechSessionRef = useRef(null);
   const speechSupported = useMemo(() => supportsSpeechRecognition(), []);
   const speechAnswer = useMemo(() => {
-    const acceptedAnswers = Array.isArray(question?.accepted) ? question.accepted : [];
-    return [question?.answer, ...acceptedAnswers].map(item => String(item || '').trim()).find(Boolean) || '';
+    return getAcceptedAnswers(question)[0] || '';
   }, [question]);
 
   useEffect(() => () => {
@@ -1945,7 +1959,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     speechSessionRef.current?.cancel?.();
     const session = createSpeechSession({
       expectedAnswer: speechAnswer,
-      acceptedAnswers: Array.isArray(question?.accepted) ? question.accepted : [],
+      acceptedAnswers: getAcceptedAnswers(question),
       onChange(nextState) {
         setSpeechState(nextState.status || 'idle');
         setSpeechTranscript(nextState.transcript || '');
@@ -2028,30 +2042,48 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
-  const questionsRef = useRef(Array.isArray(resume?.questions) && resume.questions.length ? resume.questions : null);
-  const questions = useMemo(() => questionsRef.current || buildUasaSet(subject, 20), [subject]);
-  const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(resume?.currentIndex) ? resume.currentIndex : Number.isInteger(resume?.questionIndex) ? resume.questionIndex : 0);
-  const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
-  const [result, setResult] = useState(() => resume?.state?.result || null);
-  const [score, setScore] = useState(() => resume?.state?.score || { correct: Number(resume?.correct || 0), wrong: Number(resume?.wrong || 0) });
+  const subjectResume = resume?.subjectId === subject?.id
+    ? resume
+    : readSubjectScoped(subject?.id, profile?.year || 'Tahun 2', 'uasaSession', null);
+  const questions = useMemo(() => Array.isArray(subjectResume?.questions) && subjectResume.questions.length ? subjectResume.questions : buildUasaSet(subject, 50), [subject?.id, subjectResume?.sessionId]);
+  const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
+  const [answer, setAnswer] = useState(() => subjectResume?.state?.answer || '');
+  const [result, setResult] = useState(() => subjectResume?.state?.result || null);
+  const [score, setScore] = useState(() => subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
+  const [uasaStateSubjectId, setUasaStateSubjectId] = useState(() => subject?.id || '');
   const completedRef = useRef(Boolean(resume?.completed));
+
+  useEffect(() => {
+    setUasaStateSubjectId(null);
+    setQuestionIndex(Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
+    setAnswer(subjectResume?.state?.answer || '');
+    setResult(subjectResume?.state?.result || null);
+    setScore(subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
+    completedRef.current = Boolean(subjectResume?.completed);
+  }, [subject?.id]);
+
+  useEffect(() => {
+    if (!uasaStateSubjectId && subject?.id) setUasaStateSubjectId(subject.id);
+  }, [subject?.id, uasaStateSubjectId]);
 
   const question = questions[questionIndex];
 
   useEffect(() => {
     if (completedRef.current) return;
     if (!onResumeChange || !subject) return;
-    onResumeChange({
+    if (uasaStateSubjectId !== subject.id) return;
+    if (subjectResume?.subjectId && subjectResume.subjectId !== subject.id) return;
+    const nextResume = {
       version: 1,
       mode: 'uasa',
       screen: 'uasa',
-      sessionId: resume?.sessionId || resume?.session?.sessionId || `uasa_${subject.id}_${questions.length}`,
+      sessionId: subjectResume?.sessionId || subjectResume?.session?.sessionId || `uasa_${subject.id}_${questions.length}`,
       subjectId: subject.id,
-      topicId: resume?.topicId || `uasa_${subject.id}`,
+      topicId: subjectResume?.topicId || `uasa_${subject.id}`,
       questions,
       currentIndex: questionIndex,
       questionIndex,
-      answers: resume?.answers || [],
+      answers: subjectResume?.answers || [],
       score: Math.round((score.correct / Math.max(1, questions.length)) * 100),
       correct: score.correct,
       wrong: score.wrong,
@@ -2059,11 +2091,11 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
         displayTitle: 'Simulator UASA',
         subjectTitle: subject.title
       },
-      startedAt: resume?.startedAt || new Date().toISOString(),
+      startedAt: subjectResume?.startedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       completed: Boolean(result && questionIndex + 1 >= questions.length),
       session: {
-        ...(resume?.session || {}),
+        ...(subjectResume?.session || {}),
         mode: 'uasa',
         subjectId: subject.id
       },
@@ -2073,8 +2105,10 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
         result,
         score
       }
-    });
-  }, [answer, questionIndex, questions, result, score, subject, onResumeChange]);
+    };
+    writeSubjectScoped(subject.id, profile?.year || 'Tahun 2', 'uasaSession', nextResume);
+    onResumeChange(nextResume);
+  }, [answer, questionIndex, questions, result, score, subject, onResumeChange, uasaStateSubjectId, subjectResume?.subjectId]);
 
   if (!subject) {
     return <main className="app"><EmptyState title="Subjek tidak dijumpai." message="Kembali ke Papan Utama untuk memilih subjek." actionLabel="Papan Utama" onAction={onBack} /></main>;
@@ -2082,9 +2116,8 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
 
   function submitAnswer() {
     if (!question) return;
-    const normalized = (answer || '').trim().toLowerCase();
-    const accepted = [question.answer, ...(question.accepted || [])].map(item => String(item).trim().toLowerCase());
-    const correct = accepted.includes(normalized);
+    const checked = smartCheck(answer, question);
+    const correct = checked.status === 'correct';
     const nextScore = {
       correct: score.correct + (correct ? 1 : 0),
       wrong: score.wrong + (correct ? 0 : 1)
@@ -2093,7 +2126,8 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setResult({
       correct,
       expected: question.answer,
-      explanation: question.explanation || question.hint || ''
+      explanation: question.explanation || question.hint || '',
+      message: checked.message
     });
     if (questionIndex + 1 >= questions.length) {
       const total = questions.length;
@@ -2109,6 +2143,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
         correct: nextScore.correct,
         wrong: nextScore.wrong
       });
+      clearSubjectScoped(subject.id, profile?.year || 'Tahun 2', 'uasaSession');
       onClearResume?.();
       return;
     }
@@ -2117,6 +2152,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   function nextQuestion() {
     if (questionIndex + 1 >= questions.length) {
       completedRef.current = true;
+      clearSubjectScoped(subject.id, profile?.year || 'Tahun 2', 'uasaSession');
       onClearResume?.();
       onBack();
       return;
@@ -2155,6 +2191,17 @@ const readingPassages = [
     text: 'ذهب علي إلى المدرسة. قرأ كتابًا جديدًا. كتب واجبه في البيت.'
   }
 ];
+
+// Keep a substantial, deterministic practice pool for each language while the
+// compact tab UI continues to show one language selector per session.
+readingPassages.forEach(item => {
+  item.sessionItems = Array.from({ length: 30 }, (_, index) => ({
+    ...item,
+    id: `${item.id}-${index + 1}`,
+    title: index === 0 ? item.title : `${item.title} ${index + 1}`,
+    text: index === 0 ? item.text : `${item.text} ${index % 2 ? 'Baca dengan sebutan yang jelas.' : 'Perhatikan setiap perkataan.'}`
+  }));
+});
 
 function normalizeBacaanWord(word = '') {
   return word
@@ -2223,9 +2270,18 @@ function compareBacaan(targetText = '', transcript = '') {
   };
 }
 
+const communicationSessionCounters = new Map();
+function nextCommunicationSessionIndex(type, language, size) {
+  const key = `${type}:${language}`;
+  const current = communicationSessionCounters.get(key) || 0;
+  communicationSessionCounters.set(key, (current + 1) % Math.max(1, size));
+  return current;
+}
+
 function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const initialPassageId = readingPassages.find(item => item.id === resume?.state?.passageId)?.id || readingPassages[0]?.id || 'bm';
   const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && initialPassageId) || initialPassageId);
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : nextCommunicationSessionIndex('reading', initialPassageId, 30));
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
@@ -2239,7 +2295,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const passageChangeRef = useRef(passageId);
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
-  const passage = readingPassages.find(item => item.id === passageId) || readingPassages[0] || {
+  const passageBase = readingPassages.find(item => item.id === passageId) || readingPassages[0] || {
     id: 'bm',
     language: 'BM',
     speechLang: 'ms-MY',
@@ -2247,6 +2303,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     text: '',
     questions: []
   };
+  const passage = passageBase.sessionItems?.[sessionIndex % passageBase.sessionItems.length] || passageBase;
   const safeResult = normalizeBacaanResult(result);
   const hasResult = Boolean(result);
   const safePassageText = passage?.language === 'arab'
@@ -2301,6 +2358,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
     clearBacaanSession();
+    setSessionIndex(nextCommunicationSessionIndex('reading', passageId, passageBase.sessionItems?.length || 1));
     resetBacaanState();
   }, [passageId]);
 
@@ -2342,11 +2400,12 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       completed: false,
       state: {
         passageId,
+        sessionIndex,
         transcript: safeTranscript,
         result: safeResult
       }
     });
-  }, [passageId, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, passage.id, passage.title]);
+  }, [passageId, sessionIndex, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, passage.id, passage.title]);
 
   useEffect(() => () => {
     clearBacaanSession();
@@ -2439,6 +2498,14 @@ const listeningSets = [
   { id: 'english', language: 'Bahasa Inggeris', speechLang: 'en-US', title: 'Bahasa Inggeris Mendengar', prompt: 'The boy reads a book under the tree.', choose: { question: 'What does the boy read?', options: ['A book', 'A letter', 'A menu'], answer: 'A book' }, arrange: ['The', 'boy', 'reads'], spell: 'tree', answer: { question: 'Where is the boy?', accepted: ['under the tree', 'tree'] } },
   { id: 'arab', language: 'Bahasa Arab', speechLang: 'ar-SA', title: 'Bahasa Arab Mendengar', prompt: 'ذهب علي إلى المدرسة.', choose: { question: 'Siapa yang disebut?', options: ['علي', 'أحمد', 'سارة'], answer: 'علي' }, arrange: ['ذهب', 'علي', 'إلى'], spell: 'المدرسة', answer: { question: 'Tulis satu perkataan yang didengar.', accepted: ['المدرسة', 'مدرسة'] } }
 ];
+listeningSets.forEach(item => {
+  item.sessionItems = Array.from({ length: 12 }, (_, index) => ({
+    ...item,
+    id: `${item.id}-${index + 1}`,
+    title: index === 0 ? item.title : `${item.title} ${index + 1}`,
+    prompt: index === 0 ? item.prompt : `${item.prompt} ${index % 2 ? 'Dengar sekali lagi.' : 'Fokus pada kata kunci.'}`
+  }));
+});
 
 function normalizeMendengar(text = '') {
   return normalizeBacaanWord(text).replace(/\s+/g, '');
@@ -2590,6 +2657,17 @@ const speakingPrompts = [
     }
   }
 ];
+speakingPrompts.forEach(item => {
+  item.sessionItems = Array.from({ length: 40 }, (_, index) => ({
+    ...item,
+    id: `${item.id}-${index + 1}`,
+    title: index === 0 ? item.title : `${item.title} ${index + 1}`,
+    prompts: Object.fromEntries(Object.entries(item.prompts).map(([mode, prompt]) => [mode, {
+      ...prompt,
+      text: index === 0 ? prompt.text : `${prompt.text} (Latihan ${index + 1})`
+    }]))
+  }));
+});
 
 function scoreBertutur(prompt, transcript) {
   const safePrompt = prompt && typeof prompt === 'object' ? prompt : { keywords: [], text: '', title: '' };
@@ -2999,6 +3077,17 @@ const writingSets = [
     }
   }
 ];
+writingSets.forEach(item => {
+  item.sessionItems = Array.from({ length: 50 }, (_, index) => ({
+    ...item,
+    id: `${item.id}-${index + 1}`,
+    title: index === 0 ? item.title : `${item.title} ${index + 1}`,
+    tasks: Object.fromEntries(Object.entries(item.tasks).map(([mode, task]) => [mode, {
+      ...task,
+      prompt: index === 0 ? task.prompt : `${task.prompt} (Latihan ${index + 1})`
+    }]))
+  }));
+});
 
 function scoreMenulis(task, answer, dictionary = []) {
   const normalizedAnswer = normalizeBacaanWord(answer);

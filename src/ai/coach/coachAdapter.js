@@ -3,6 +3,7 @@ import { explainAnswer } from '../explainEngine.js';
 import { teachAnswer } from '../teacherEngine.js';
 import { sanitizeAiText } from '../learningCopy.js';
 import { formatSubjectName, getHumanReadableTopic } from '../../utils/displayFormatter.js';
+import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
 
 const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
@@ -239,6 +240,7 @@ function buildContextUsed({
   instruction = '',
   options = [],
   expectedAnswer = '',
+  acceptedAnswers = [],
   explanationMode = '',
   currentLearningObjective = '',
   attemptCount = 0,
@@ -251,6 +253,7 @@ function buildContextUsed({
     instruction: normalizeText(instruction || question?.instruction || '', ''),
     options: normalizeArray(options.length ? options : question?.options || question?.choices || []),
     expectedAnswer: normalizeText(expectedAnswer || question?.answer || question?.correctAnswer || '', ''),
+    acceptedAnswers: getAcceptedAnswers({ ...question, acceptedAnswers }),
     learnerAnswer: normalizeText(userAnswer || result?.userAnswer || '', ''),
     isCorrect: Boolean(result?.correct || result?.status === 'correct'),
     attemptCount: Number(attemptCount) || 0,
@@ -270,7 +273,7 @@ function buildContextUsed({
   };
 }
 
-function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
+function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
   const subjectLabel = getCoachSubjectLabel(subjectId, coachData || {}, question, topic || {});
   const rawFallback = fallbackData || buildFallbackPayload(mode, { question, topic: topic || {}, result, userAnswer });
   const hasCoachData = Boolean(coachData && !error);
@@ -288,6 +291,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     instruction,
     options,
     expectedAnswer,
+    acceptedAnswers,
     explanationMode,
     currentLearningObjective,
     attemptCount,
@@ -314,6 +318,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     learningTip: normalizedCore.learningTip || 'Fokus pada kata kunci penting.',
     praise: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
     correctAnswer: normalizedCore.correctAnswer || '',
+    acceptedAnswers: getAcceptedAnswers({ ...question, acceptedAnswers }),
     subject: normalizedCore.subject || subjectLabel,
     topic: normalizedCore.topic || '',
     fallbackUsed: resolvedFallbackUsed,
@@ -400,7 +405,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
   return normalized;
 }
 
-export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
+export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
   const startedAt = Date.now();
   try {
     const coachData = await buildCoachResponse({
@@ -419,6 +424,7 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
         instruction,
         options,
         expectedAnswer,
+        acceptedAnswers: getAcceptedAnswers({ ...question, acceptedAnswers }),
         learnerAnswer,
         explanationMode,
         currentLearningObjective,
@@ -426,7 +432,7 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
         hintsUsed
       }
     });
-    const normalized = normalizeCoachPayload(mode, {
+  const normalized = normalizeCoachPayload(mode, {
       subjectId,
       topicId,
       topic,
@@ -438,6 +444,7 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       instruction,
       options,
       expectedAnswer,
+       acceptedAnswers,
       learnerAnswer,
       explanationMode,
       currentLearningObjective,

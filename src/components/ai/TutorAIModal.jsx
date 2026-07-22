@@ -4,6 +4,7 @@ import JannaAvatar from '../JannaAvatar';
 import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
+import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
 
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
@@ -102,6 +103,7 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
     instruction,
     options,
     expectedAnswer,
+    acceptedAnswers: getAcceptedAnswers({ ...question, acceptedAnswers: overrides.acceptedAnswers }),
     learnerAnswer,
     isCorrect,
     explanationMode,
@@ -161,6 +163,7 @@ export default function TutorAIModal({
   instruction,
   options,
   expectedAnswer,
+  acceptedAnswers = [],
   learnerAnswer,
   explanationMode,
   currentLearningObjective,
@@ -204,7 +207,8 @@ export default function TutorAIModal({
       questionText,
       instruction,
       options,
-      expectedAnswer,
+       expectedAnswer,
+       acceptedAnswers,
       learnerAnswer,
       explanationMode,
       currentLearningObjective
@@ -214,6 +218,7 @@ export default function TutorAIModal({
   const normalizedInstruction = normalizeText(instruction || questionContext.instruction, '');
   const normalizedOptions = normalizeList(Array.isArray(options) && options.length ? options : questionContext.options);
   const normalizedExpectedAnswer = normalizeText(expectedAnswer || questionContext.expectedAnswer || currentQuestion?.answer || currentQuestion?.correctAnswer || '', '');
+  const normalizedAcceptedAnswers = getAcceptedAnswers({ ...currentQuestion, acceptedAnswers });
   const normalizedLearnerAnswer = normalizeText(learnerAnswer || answer || '', '');
   const normalizedExplanationMode = normalizeText(explanationMode || questionContext.explanationMode, '');
   const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
@@ -329,7 +334,8 @@ export default function TutorAIModal({
         expectedAnswer: normalizedExpectedAnswer,
         learnerAnswer: normalizedLearnerAnswer,
         studentAnswer: normalizedLearnerAnswer,
-        correctAnswer: normalizedExpectedAnswer,
+         correctAnswer: normalizedExpectedAnswer,
+         acceptedAnswers: normalizedAcceptedAnswers,
         explanationMode: normalizedExplanationMode,
         currentLearningObjective: normalizedLearningObjective,
         isCorrect,
