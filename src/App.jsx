@@ -2467,7 +2467,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     onClearResume?.();
   }
 
-return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.correct ? 1 : 0} betul</span><span>{safeMissed.length} tertinggal</span><span>{safeExtraWords.length} kurang tepat</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} petikan selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
+return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} petikan selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
 }
 const listeningSets = semanticListeningSets;
 
@@ -2522,10 +2522,12 @@ function normalizeBacaanResult(value) {
   const missed = Array.isArray(safeValue.missed) ? safeValue.missed : [];
   const missingWords = Array.isArray(safeValue.missingWords) ? safeValue.missingWords : missed;
   const extraWords = Array.isArray(safeValue.extraWords) ? safeValue.extraWords : [];
+  const score = Number.isFinite(Number(safeValue.score)) ? Number(safeValue.score) : 0;
+  const metric = (candidate, fallback) => Number.isFinite(Number(candidate)) ? Math.max(0, Number(candidate)) : fallback;
   return {
     status: typeof safeValue.status === 'string' ? safeValue.status : 'idle',
     transcript: typeof safeValue.transcript === 'string' ? safeValue.transcript : '',
-    score: Number.isFinite(Number(safeValue.score)) ? Number(safeValue.score) : 0,
+    score,
     correct: Boolean(safeValue.correct),
     confidence: Number.isFinite(Number(safeValue.confidence)) ? Number(safeValue.confidence) : 0,
     words,
@@ -2534,11 +2536,11 @@ function normalizeBacaanResult(value) {
     missed,
     missingWords,
     extraWords,
-    totalTargetWords: Number(safeValue.totalTargetWords) || 0,
-    matchedWordCount: Number(safeValue.matchedWordCount) || matchedWords.length,
-    missedWordCount: Number(safeValue.missedWordCount) || missed.length,
-    extraWordCount: Number(safeValue.extraWordCount) || extraWords.length,
-    passed: typeof safeValue.passed === 'boolean' ? safeValue.passed : Number(safeValue.score) >= 80,
+    totalTargetWords: metric(safeValue.totalTargetWords, 0),
+    matchedWordCount: metric(safeValue.matchedWordCount, matchedWords.length),
+    missedWordCount: metric(safeValue.missedWordCount, missed.length),
+    extraWordCount: metric(safeValue.extraWordCount, extraWords.length),
+    passed: score >= 80,
     message: typeof safeValue.message === 'string' ? safeValue.message : '',
     errorCode: typeof safeValue.errorCode === 'string' ? safeValue.errorCode : ''
   };
