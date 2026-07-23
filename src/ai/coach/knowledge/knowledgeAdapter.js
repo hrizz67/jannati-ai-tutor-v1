@@ -189,7 +189,11 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     `${subjectId}:${topicId}:teacherExplanation`
   );
 
-  const simpleExplanation = sanitizeAiText(pack.simpleExplanation || teacherExplanation || question?.explanation || question?.hint || 'Jawapan ini sesuai dengan soalan.');
+  const questionStem = sanitizeAiText(question?.question || question?.q || question?.text || 'soalan ini');
+  const simpleExplanation = sanitizeAiText(
+    pack.simpleExplanation || teacherExplanation || question?.explanation || question?.hint ||
+    `Mari teliti ${questionStem} dan pilih jawapan yang sepadan dengan arahan.`
+  );
   const examples = rotateList(collectPrioritizedText(pack, subjectId), `${subjectId}:${topicId}:examples`);
   const extraExamples = rotateList(dedupeText(toDisplayText(pack.extraExamples)), `${subjectId}:${topicId}:extraExamples`);
   const tips = rotateList(dedupeText(toDisplayText(pack.tips)), `${subjectId}:${topicId}:tips`);

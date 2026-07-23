@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useRef } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
-import IconGlyph from '../components/IconGlyph.jsx';
+import IconGlyph, { SubjectIcon } from '../components/IconGlyph.jsx';
 import JannaAvatar from '../components/JannaAvatar';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 import VoiceButton from '../components/VoiceButton.jsx';
@@ -265,7 +265,7 @@ export default function HomeDashboard(props) {
                   }
                 }}
               >
-                <span className="subject-quick-pill-icon" aria-hidden="true">{subject?.icon || '📘'}</span>
+                <span className="subject-quick-pill-icon" aria-hidden="true"><SubjectIcon subjectId={subject?.id} size={18} /></span>
                 <span className="subject-quick-pill-text">{subjectTitle}</span>
               </button>
             );

@@ -63,7 +63,7 @@ function renderTextSection(title, value) {
   );
 }
 
-export default function AITeacherModal({ open, data, character = 'jati', onTutup, onLatih }) {
+export default function AITeacherModal({ open, data, context = null, character = 'jati', onTutup, onLatih }) {
   const closeButtonRef = useRef(null);
   const restoreFocusRef = useRef(null);
   const onTutupRef = useRef(onTutup);
@@ -89,10 +89,11 @@ export default function AITeacherModal({ open, data, character = 'jati', onTutup
   }, [open]);
 
   if (!open || !data) return null;
+  if (context && ((data.generatedMode && data.generatedMode !== 'teach') || (data.sourceQuestionId && data.sourceQuestionId !== context.questionId) || (data.sourceSubjectId && data.sourceSubjectId !== context.subjectId) || (data.sourceTopicId && data.sourceTopicId !== context.topicId))) return null;
 
   const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
-  const summary = pickMeaningfulText(sections.summary, data.shortText, data.explanation, data.simpleExplanation, 'Mari kita belajar langkah demi langkah.');
-  const whyCorrect = pickMeaningfulText(sections.whyCorrect, data.explanation, data.simpleExplanation);
+  const summary = pickMeaningfulText(sections.summary, data.shortText, data.explanation, data.simpleExplanation, context?.questionText ? `Kita belajar melalui soalan: ${context.questionText}` : '');
+  const whyCorrect = pickMeaningfulText(sections.whyCorrect, data.explanation, data.simpleExplanation, context?.expectedAnswer ? `Mari hubungkan jawapan ${context.expectedAnswer} dengan soalan.` : '');
   const hint = pickMeaningfulText(sections.hint, data.hint, 'Cari kata kunci penting dalam soalan.');
   const steps = safeList(sections.steps || data.steps);
   const examples = safeList(data.examples);

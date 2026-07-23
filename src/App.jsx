@@ -11,6 +11,7 @@ import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import GamificationSummary from './components/GamificationSummary.jsx';
 import TutorAIModal from './components/ai/TutorAIModal.jsx';
+import IconGlyph from './components/IconGlyph.jsx';
 import { explainAnswer } from './ai/explainEngine';
 import { updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
@@ -43,6 +44,7 @@ import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personal
 import { clampPercent, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
+import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { getAcceptedAnswers } from './utils/acceptedAnswers.js';
 import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
@@ -558,6 +560,7 @@ export default function App() {
   const [teacherOpen, setTeacherOpen] = useState(false);
   const [teacherData, setTeacherData] = useState(null);
   const [coachKnowledgeData, setCoachKnowledgeData] = useState(null);
+  const coachRequestRef = useRef({ requestId: 0, open: false, mode: '', snapshot: null });
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
@@ -1316,17 +1319,71 @@ export default function App() {
     setFeedback({ ...result, xp, coins, correctAnswer: question.answer, acceptedAnswers: getAcceptedAnswers(question), explanation: sanitizeAiText(question.explanation || question.hint) });
   }
 
+  function createCoachSnapshot(mode, question = currentQuestion()) {
+    const requestId = coachRequestRef.current.requestId + 1;
+    const snapshot = resolveCoachContextSnapshot({
+      requestId,
+      question,
+      activeSubject,
+      activeTopic,
+      allSubjects,
+      learnerAnswer: answer,
+      feedback,
+      explanationMode: feedback?.status || ''
+    });
+    coachRequestRef.current = { requestId, open: true, mode, snapshot };
+    return snapshot;
+  }
+
+  function closeCoachSurface(setOpen, setData) {
+    coachRequestRef.current = { ...coachRequestRef.current, open: false };
+    setOpen(false);
+    setData?.(null);
+  }
+
+  function decorateCoachData(data, snapshot, mode) {
+    return {
+      ...(data || {}),
+      sourceQuestionId: snapshot.questionId,
+      sourceSubjectId: snapshot.subjectId,
+      sourceTopicId: snapshot.topicId,
+      sourceLanguage: snapshot.sourceLanguage,
+      generatedMode: mode
+    };
+  }
+
+  function isCurrentCoachResponse(snapshot, data, mode) {
+    const current = coachRequestRef.current;
+    const currentSnapshot = current.snapshot;
+    return Boolean(
+      current.open &&
+      current.mode === mode &&
+      current.requestId === snapshot?.requestId &&
+      currentSnapshot?.requestId === snapshot?.requestId &&
+      currentSnapshot?.questionId === snapshot?.questionId &&
+      currentSnapshot?.subjectId === snapshot?.subjectId &&
+      currentSnapshot?.topicId === snapshot?.topicId &&
+      matchesCoachContext(snapshot, data, {
+        requestId: current.requestId,
+        mode,
+        currentSnapshot,
+        currentOpen: current.open
+      })
+    );
+  }
+
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback) return;
-    const questionText = question?.q || question?.question || question?.stem || question?.text || '';
-    const instruction = question?.instruction || question?.direction || question?.prompt || '';
-    const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
-    const expectedAnswer = question?.answer || question?.correctAnswer || '';
-    const acceptedAnswers = getAcceptedAnswers(question);
-    const learnerAnswer = answer;
-    const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
-    const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
+    const snapshot = createCoachSnapshot('explain', question);
+    const questionText = snapshot.questionText;
+    const instruction = snapshot.instruction;
+    const options = snapshot.options;
+    const expectedAnswer = snapshot.expectedAnswer;
+    const acceptedAnswers = snapshot.acceptedAnswers;
+    const learnerAnswer = snapshot.learnerAnswer;
+    const explanationMode = snapshot.explanationMode;
+    const currentLearningObjective = snapshot.learningObjective;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackData = explainAnswer({
       question,
@@ -1339,11 +1396,11 @@ export default function App() {
       attemptCount,
       explanationMode
     });
-    setExplainData(fallbackData);
+    setExplainData(decorateCoachData(fallbackData, snapshot, 'explain'));
     setExplainOpen(true);
     void getCoachExplainData({
-      subjectId: activeSubject?.id,
-      topicId: activeTopic?.id,
+      subjectId: snapshot.subjectId,
+      topicId: snapshot.topicId,
       question,
       result: feedback,
       userAnswer: answer,
@@ -1358,22 +1415,24 @@ export default function App() {
       currentLearningObjective,
       attemptCount,
       hintsUsed: feedback?.status === 'hint' ? 1 : 0
+      ,sourceLanguage: snapshot.sourceLanguage
     }).then(nextData => {
-      if (nextData) setExplainData(nextData);
+      if (nextData && isCurrentCoachResponse(snapshot, nextData, 'explain')) setExplainData(nextData);
     });
   }
 
   function openTeacher() {
     const question = currentQuestion();
     if (!question) return;
-    const questionText = question?.q || question?.question || question?.stem || question?.text || '';
-    const instruction = question?.instruction || question?.direction || question?.prompt || '';
-    const options = Array.isArray(question?.options) ? question.options : Array.isArray(question?.choices) ? question.choices : [];
-    const expectedAnswer = question?.answer || question?.correctAnswer || '';
-    const acceptedAnswers = getAcceptedAnswers(question);
-    const learnerAnswer = answer;
-    const explanationMode = feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '');
-    const currentLearningObjective = activeTopic?.learningObjective || activeTopic?.objective || question?.learningObjective || question?.objective || '';
+    const snapshot = createCoachSnapshot('teach', question);
+    const questionText = snapshot.questionText;
+    const instruction = snapshot.instruction;
+    const options = snapshot.options;
+    const expectedAnswer = snapshot.expectedAnswer;
+    const acceptedAnswers = snapshot.acceptedAnswers;
+    const learnerAnswer = snapshot.learnerAnswer;
+    const explanationMode = snapshot.explanationMode;
+    const currentLearningObjective = snapshot.learningObjective;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackExplainData = explainAnswer({
       question,
@@ -1396,12 +1455,12 @@ export default function App() {
       attemptCount,
       explanationMode
     });
-    setExplainData(fallbackExplainData);
-    setTeacherData(fallbackTeacherData);
+    setTeacherData(decorateCoachData(fallbackTeacherData, snapshot, 'teach'));
+    setExplainOpen(false);
     setTeacherOpen(true);
     void getCoachTeacherData({
-      subjectId: activeSubject?.id,
-      topicId: activeTopic?.id,
+      subjectId: snapshot.subjectId,
+      topicId: snapshot.topicId,
       question,
       result: feedback || {},
       userAnswer: answer,
@@ -1416,14 +1475,15 @@ export default function App() {
       currentLearningObjective,
       attemptCount,
       hintsUsed: feedback?.status === 'hint' ? 1 : 0
+      ,sourceLanguage: snapshot.sourceLanguage
     }).then(nextData => {
       if (!nextData) return;
-      setExplainData(nextData);
-      setTeacherData(nextData);
+      if (isCurrentCoachResponse(snapshot, nextData, 'teach')) setTeacherData(nextData);
     });
   }
 
   function tryAgainQuestion() {
+    coachRequestRef.current = { ...coachRequestRef.current, open: false };
     questionStartedAtRef.current = Date.now();
     setAnswer('');
     setFeedback(null);
@@ -1434,6 +1494,7 @@ export default function App() {
   }
 
   function nextQuestion() {
+    coachRequestRef.current = { ...coachRequestRef.current, open: false };
     if (questionIndex + 1 >= activeTopic.questions.length) {
       finishTopic();
       return;
@@ -1660,6 +1721,8 @@ export default function App() {
   const chatTopic = activeTopic?.id?.startsWith('adaptive_')
     ? chatSubject?.topics?.find(item => item.id === (tutorQuestion?.topicId || tutorQuestion?.metadata?.topicId)) || activeTopic
     : activeTopic;
+  const coachSnapshot = coachRequestRef.current.snapshot;
+  const coachSubject = allSubjects.find(item => item.id === coachSnapshot?.subjectId) || activeSubject;
   const chatWidget = chatOpen && chatSubject ? (
     <TutorAIModal
       open={chatOpen}
@@ -1716,7 +1779,7 @@ export default function App() {
     const safeHint = sanitizeAiText(coachKnowledgeData?.hint || coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} question={question} character={getPersonalityForSubject(activeSubject)} onTutup={() => setExplainOpen(false)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} character={getPersonalityForSubject(activeSubject)} onTutup={() => setTeacherOpen(false)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {

@@ -2901,6 +2901,44 @@ textarea[dir="rtl"] {
   }
 }
 
+/* Compact v3.1 motion polish: input, opacity and transform only. */
+.quick-actions button {
+  animation: quickActionEnter 420ms var(--ease-out) both;
+}
+.quick-actions button:nth-child(2) { animation-delay: 35ms; }
+.quick-actions button:nth-child(3) { animation-delay: 70ms; }
+.quick-actions button:nth-child(4) { animation-delay: 105ms; }
+.quick-actions button:nth-child(5) { animation-delay: 140ms; }
+.quick-actions button:nth-child(6) { animation-delay: 175ms; }
+.quick-actions button:nth-child(7) { animation-delay: 210ms; }
+.quick-actions button:nth-child(8) { animation-delay: 245ms; }
+.quick-actions button:active,
+.quick-actions button:focus-visible,
+.nav:active,
+.icon-button:active {
+  transform: translateY(1px) scale(.97);
+}
+.ai-explain-overlay {
+  animation: modalEnter 180ms var(--ease-out) both;
+}
+.mascot-card-gentle,
+.mascot-card-pulse,
+.mascot-card-bounce {
+  animation: mascotFloat 3.2s var(--ease-out) infinite;
+}
+@keyframes quickActionEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes modalEnter {
+  from { opacity: 0; transform: translateY(8px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
 /* Guided-learning feedback stays subtle and never blocks the exercise. */
 .guided-feedback-pulse { animation: guidedQuestionPulse 520ms ease-out 1; }
 .guided-feedback-hint { animation: guidedHintEntrance 360ms ease-out 1; }
@@ -2940,3 +2978,19 @@ textarea[dir="rtl"] {
 .icon-button,.stat-icon{transition:transform .18s ease,box-shadow .18s ease}
 .icon-button:hover,.icon-button:focus-visible,.stat-icon:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(16,64,43,.14)}
 @media (prefers-reduced-motion:reduce){.icon-button,.stat-icon{transition:none;transform:none!important}}
+
+/* Keep every v3.1 entrance/feedback animation disabled for reduced-motion users. */
+@media (prefers-reduced-motion: reduce) {
+  .quick-actions button,
+  .ai-explain-overlay,
+  .mascot-card-gentle,
+  .mascot-card-pulse,
+  .mascot-card-bounce,
+  .guided-feedback-pulse,
+  .guided-feedback-hint,
+  .guided-feedback-correct {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

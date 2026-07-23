@@ -19,6 +19,7 @@ import {
   formatFriendlyDate
 } from '../utils/displayFormatter';
 import MetricCard from '../components/MetricCard.jsx';
+import IconGlyph from '../components/IconGlyph.jsx';
 import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx';
 import { createStudyPlannerPayload } from '../studyPlanner/index.js';
 import { subjectList as registrySubjectList } from '../data/subjects/index.js';
@@ -194,7 +195,11 @@ export default function ParentDashboard({
   const reportHasData = Boolean(summary.questionsAnswered || summary.correct || summary.wrong || subjectInsights.some(subject => subject.hasData));
 
   const overallAccuracy = summary.accuracy || 0;
-  const statusBadge = overallAccuracy >= 90 ? '🌟 Cemerlang' : overallAccuracy >= 75 ? '👍 Baik' : '📘 Perlu Ditingkatkan';
+  const statusBadge = overallAccuracy >= 90
+    ? { icon: 'medal', label: 'Cemerlang' }
+    : overallAccuracy >= 75
+      ? { icon: 'check', label: 'Baik' }
+      : { icon: 'book', label: 'Perlu Ditingkatkan' };
 
   return (
     <main className="app">
@@ -217,7 +222,7 @@ export default function ParentDashboard({
           <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
         </div>
         <div className="status-badge-row">
-          <span className="badge">{statusBadge}</span>
+          <span className="badge"><IconGlyph name={statusBadge.icon} size={16} aria-hidden="true" /> {statusBadge.label}</span>
           <span className="badge">{reportHasData ? 'Data tersedia untuk analisis.' : 'Belum cukup data untuk analisis terperinci.'}</span>
         </div>
       </section>

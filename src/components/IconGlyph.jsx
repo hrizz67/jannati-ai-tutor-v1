@@ -133,8 +133,58 @@ const ICON_PATHS = {
       <path d="M8 9h8" />
       <path d="M8 12h8" />
     </>
-  )
+  ),
+  calculator: (
+    <>
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path d="M8 7h8M8 11h2m4 0h2M8 15h2m4 0h2M8 18h2m4 0h2" />
+    </>
+  ),
+  flask: (
+    <>
+      <path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3" />
+      <path d="M8 15h8" />
+    </>
+  ),
+  language: (
+    <>
+      <path d="M4 5h9M8.5 5c0 5-2 8-5 10M5 10c1.5 1.5 3 2.5 5 3" />
+      <path d="m14 20 3.5-9L21 20M15.2 17h4.6" />
+    </>
+  ),
+  arabic: (
+    <>
+      <path d="M5 7c2-2 4 0 3 2s-3 2-3 4 2 3 4 1" />
+      <path d="M14 7c2-2 4 0 3 2s-3 2-3 4 2 3 4 1" />
+      <path d="M8 19h8" />
+    </>
+  ),
+  mosque: (
+    <>
+      <path d="M4 20h16M6 20v-7h12v7M4 13h16M8 10l4-4 4 4M12 6V3M10 20v-4h4v4" />
+    </>
+  ),
+  heart: (
+    <path d="M20 8.5c0 5-8 10-8 10s-8-5-8-10A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8 2.5Z" />
+  ),
+  move: (
+    <>
+      <circle cx="12" cy="5" r="2" /><path d="M12 7v6m0 0-4 4m4-4 4 4M8 10l-3 2m11-2 3 2" />
+    </>
+  ),
+  arrowDown: <path d="M12 4v15m0 0-5-5m5 5 5-5" />,
+  lock: <><rect x="6" y="10" width="12" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
+  medal: <><circle cx="12" cy="15" r="5" /><path d="m9 3 3 4 3-4M9 3l-2 5m8-5 2 5" /></>
 };
+
+const SUBJECT_ICON_NAMES = {
+  bm: 'book', english: 'language', math: 'calculator', sains: 'flask', arab: 'arabic',
+  islam: 'mosque', pj: 'move', pk: 'heart', seni: 'spark'
+};
+
+export function SubjectIcon({ subjectId, ...props }) {
+  return <IconGlyph name={SUBJECT_ICON_NAMES[subjectId] || 'book'} {...props} />;
+}
 
 export default function IconGlyph({
   name = 'spark',

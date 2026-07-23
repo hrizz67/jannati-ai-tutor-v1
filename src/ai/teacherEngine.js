@@ -67,7 +67,9 @@ function getRule(question, topic) {
 
 export function teachAnswer({ question = {}, topic = {}, explanationData = {}, questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
   const rule = getRule(question, topic);
-  const explanation = sanitizeAiText(explanationData.explanation || question.explanation || rule.explanation);
+  const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
+  const contextualGeneric = `Mari kita teliti "${stem}" dan pilih jawapan yang paling sepadan dengan arahan.`;
+  const explanation = sanitizeAiText(explanationData.explanation || question.explanation || (rule.category === 'generic' ? contextualGeneric : rule.explanation));
   const examples = (Array.isArray(explanationData.examples) && explanationData.examples.length ? explanationData.examples : getLearningExamples(question, topic))
     .map(item => sanitizeAiText(item));
   const memoryTip = sanitizeAiText(explanationData.memoryTip || question.memoryTip || getLearningMemoryTip(question, topic));

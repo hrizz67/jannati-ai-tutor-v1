@@ -89,10 +89,11 @@ function buildFallbackData(mode, { question = {}, topic = {}, result = {}, userA
 }
 
 function getCoachSubjectLabel(subjectId, coachData = {}, question = {}, topic = {}) {
+  const knownLabel = SUBJECT_LABELS[subjectId];
   return normalizeText(
     coachData.subjectLabel ||
-    subjectId && SUBJECT_LABELS[subjectId] ||
-    formatSubjectName(subjectId) ||
+    knownLabel ||
+    (subjectId && subjectId !== 'unknown' ? formatSubjectName(subjectId) : '') ||
     question.subjectTitle ||
     topic.title ||
     topic.name ||
@@ -101,7 +102,7 @@ function getCoachSubjectLabel(subjectId, coachData = {}, question = {}, topic = 
   );
 }
 
-function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic = {}, subjectId = '') {
+function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic = {}, subjectId = '', topicId = '') {
   const explanationObject = payload.explanation && typeof payload.explanation === 'object' ? payload.explanation : {};
   const hintObject = payload.hint && typeof payload.hint === 'object' ? payload.hint : {};
   const praiseObject = payload.praise && typeof payload.praise === 'object' ? payload.praise : {};
@@ -114,7 +115,9 @@ function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic 
     fallbackData.explanation,
     fallbackData.simpleExplanation,
     question.explanation,
-    'Jawapan ini sesuai dengan soalan.'
+    question?.q || question?.question || question?.stem
+      ? `Teliti soalan ini: ${question.q || question.question || question.stem}. Padankan jawapan dengan arahan.`
+      : 'Semak arahan dan padankan jawapan dengan maklumat yang diberi.'
   );
   const simpleExplanation = pickFirstText(
     explanationObject.simpleExplanation,
@@ -182,8 +185,9 @@ function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic 
     ''
   );
   const subject = getCoachSubjectLabel(subjectId, payload, question, topic);
+  const explicitTopicName = payload.topic || question.topicTitle || topic.title || topic.name || '';
   const topicName = normalizeText(
-    getHumanReadableTopic({
+    explicitTopicName || getHumanReadableTopic({
       subject: { id: subjectId, title: subject },
       topic,
       question,
@@ -273,13 +277,13 @@ function buildContextUsed({
   };
 }
 
-function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
+function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '' } = {}) {
   const subjectLabel = getCoachSubjectLabel(subjectId, coachData || {}, question, topic || {});
   const rawFallback = fallbackData || buildFallbackPayload(mode, { question, topic: topic || {}, result, userAnswer });
   const hasCoachData = Boolean(coachData && !error);
   const payload = hasCoachData ? coachData : rawFallback;
   const tipsObject = payload.tips && typeof payload.tips === 'object' ? payload.tips : {};
-  const normalizedCore = extractCoachText(payload, rawFallback, question, topic || {}, subjectId);
+  const normalizedCore = extractCoachText(payload, rawFallback, question, topic || {}, subjectId, topicId);
   const contextUsed = buildContextUsed({
     subjectId,
     topicId,
@@ -312,7 +316,9 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     normalizedCore.steps.length === 0;
 
   const normalized = {
-    explanation: normalizedCore.explanation || 'Jawapan ini sesuai dengan soalan.',
+    explanation: normalizedCore.explanation || (question?.q || question?.question || question?.stem
+      ? `Teliti soalan ini: ${question.q || question.question || question.stem}. Padankan jawapan dengan arahan.`
+      : 'Semak arahan dan padankan jawapan dengan maklumat yang diberi.'),
     steps: normalizedCore.steps,
     hint: normalizedCore.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.',
     learningTip: normalizedCore.learningTip || 'Fokus pada kata kunci penting.',
@@ -323,6 +329,11 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     topic: normalizedCore.topic || '',
     fallbackUsed: resolvedFallbackUsed,
     source: resolvedFallbackUsed ? 'fallback' : 'coach-v3',
+    sourceQuestionId: normalizeText(question?.id || question?.questionId, ''),
+    sourceSubjectId: normalizeText(subjectId, ''),
+    sourceTopicId: normalizeText(topicId || question?.topicId || topic?.id, ''),
+    sourceLanguage: normalizeText(sourceLanguage || question?.language || topic?.language || (subjectId === 'english' ? 'en' : subjectId === 'arab' ? 'ar' : 'ms'), 'ms'),
+    generatedMode: mode === 'teach' ? 'teach' : 'explain',
     error: normalizeError(error) || (resolvedFallbackUsed ? {
       code: 'COACH_FALLBACK',
       message: 'Coach payload was incomplete, so a safe fallback was used.'
@@ -405,7 +416,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
   return normalized;
 }
 
-export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0 } = {}) {
+export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '' } = {}) {
   const startedAt = Date.now();
   try {
     const coachData = await buildCoachResponse({
@@ -414,6 +425,7 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       question,
       result,
       userAnswer,
+      mode,
       context: {
         subjectId,
         topicId,
@@ -449,7 +461,8 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       explanationMode,
       currentLearningObjective,
       attemptCount,
-      hintsUsed
+      hintsUsed,
+      sourceLanguage
     });
     if (isDev && normalized.fallbackUsed) {
       console.warn('[coach-adapter] contract fallback', {
@@ -479,7 +492,8 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       userAnswer,
       coachData: null,
       fallbackData: buildFallbackPayload(mode, { question, topic, result, userAnswer }),
-      error
+      error,
+      sourceLanguage
     });
     if (isDev) {
       console.warn('[coach-adapter] contract fallback after error', {

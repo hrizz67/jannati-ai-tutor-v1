@@ -3,6 +3,7 @@ import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dash
 import { buildAdaptiveLearningSnapshot, explainWeakness } from '../ai/index.js';
 import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter';
 import GamificationSummary from '../components/GamificationSummary.jsx';
+import { SubjectIcon } from '../components/IconGlyph.jsx';
 
 export default function StudentDashboard({
   profile = {},
@@ -72,7 +73,7 @@ export default function StudentDashboard({
         <div className="subject-report-grid">
           {(adaptiveRecommendation?.subjectRows || []).map(subject => (
             <div className="report-box" key={`student-${subject.id}`}>
-              <h3>{subject.icon} {subject.title || formatSubjectName(subject.id)}</h3>
+              <h3><SubjectIcon subjectId={subject.id} motion="hover" /> {subject.title || formatSubjectName(subject.id)}</h3>
               <b>{clampPercent(subject.accuracy)}%</b>
               <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
               <span>{subject.total} soalan dicuba</span>

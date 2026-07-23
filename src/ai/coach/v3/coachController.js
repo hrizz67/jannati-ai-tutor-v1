@@ -5,7 +5,7 @@ import { buildPraise } from './praiseEngine.js';
 import { buildLearningTips } from './learningTips.js';
 import { getSubjectStrategy } from './subjectStrategies.js';
 
-export async function buildCoachResponse({ subjectId, topicId, question = {}, result = {}, userAnswer = '', context = {} } = {}) {
+export async function buildCoachResponse({ subjectId, topicId, question = {}, result = {}, userAnswer = '', context = {}, mode = 'explain' } = {}) {
   const knowledge = await fetchCoachKnowledgeData({
     subjectId,
     topicId,
@@ -14,10 +14,11 @@ export async function buildCoachResponse({ subjectId, topicId, question = {}, re
     userAnswer
   });
 
-  const explanation = buildExplanation({ subjectId, topicId, knowledgePack: knowledge, context });
-  const hint = buildHint({ subjectId, topicId, knowledgePack: knowledge, context });
-  const praise = buildPraise({ subjectId, topicId, knowledgePack: knowledge, context });
-  const tips = buildLearningTips({ subjectId, topicId, knowledgePack: knowledge, context });
+  const teachingContext = { ...context, mode };
+  const explanation = buildExplanation({ subjectId, topicId, knowledgePack: knowledge, context: teachingContext });
+  const hint = buildHint({ subjectId, topicId, knowledgePack: knowledge, context: teachingContext });
+  const praise = buildPraise({ subjectId, topicId, knowledgePack: knowledge, context: teachingContext });
+  const tips = buildLearningTips({ subjectId, topicId, knowledgePack: knowledge, context: teachingContext });
   const strategy = getSubjectStrategy(subjectId);
   const steps = [
     explanation.learningStep,
@@ -38,7 +39,8 @@ export async function buildCoachResponse({ subjectId, topicId, question = {}, re
     steps,
     learningTip: tips.spotlight || strategy.tipLead,
     correctAnswer: question?.answer || '',
-    ready: Boolean(knowledge)
+    ready: Boolean(knowledge),
+    mode
   };
 }
 

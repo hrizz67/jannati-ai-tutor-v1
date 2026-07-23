@@ -69,7 +69,9 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const category = detectLearningCategory(question, topic);
   const rule = CATEGORY_RULES[category] || CATEGORY_RULES.generic;
   const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');
-  const explanation = sanitizeAiText(question.explanation || rule.explanation);
+  const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
+  const contextualGeneric = `Dalam soalan ini, teliti "${stem}" dan padankan jawapan dengan arahan yang diberi.`;
+  const explanation = sanitizeAiText(question.explanation || (category === 'generic' ? contextualGeneric : rule.explanation));
   const hint = sanitizeAiText(question.hint || rule.hint);
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
   const commonMistakes = (rule.commonMistakes || []).map(item => sanitizeAiText(item));
