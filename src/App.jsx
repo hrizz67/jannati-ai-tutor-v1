@@ -1551,9 +1551,21 @@ export default function App() {
   }
 
   function finishBacaan(result) {
-    const score = result?.score || 0;
+    const score = Number.isFinite(Number(result?.score)) ? Number(result.score) : 0;
+    const scoreHistory = Array.isArray(result?.scoreHistory)
+      ? result.scoreHistory.map(value => Number(value)).filter(Number.isFinite)
+      : [];
+    const completedPassages = Number.isFinite(Number(result?.completedPassages))
+      ? Number(result.completedPassages)
+      : scoreHistory.length;
+    const aggregateScores = scoreHistory.length ? scoreHistory : (completedPassages > 0 ? [score] : []);
+    const averageScore = aggregateScores.length
+      ? Math.round(aggregateScores.reduce((sum, value) => sum + value, 0) / aggregateScores.length)
+      : 0;
+    const bestScore = aggregateScores.length ? Math.max(...aggregateScores) : 0;
+    const passedCount = aggregateScores.filter(value => value >= 80).length;
     const today = todayKey();
-    const memoryResult = { ...result, date: new Date().toISOString() };
+    const memoryResult = { ...result, score, scoreHistory: aggregateScores, completedPassages, averageScore, bestScore, passedCount, finalItemScore: score, date: new Date().toISOString() };
     const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bacaan', topic: result?.title || 'Jurulatih Bacaan', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
     saveReadingMemory(memoryResult, updatedProfile, allSubjects);
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
@@ -1565,6 +1577,10 @@ export default function App() {
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
       eventType: 'reading-session',
       sessionCompleted: true,
+      completedPassages,
+      averageScore,
+      bestScore,
+      passedCount,
       today: new Date()
     });
     clearResumeData(setResume);
@@ -2307,11 +2323,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
 
   const recordBacaanResult = nextResult => {
     const normalized = normalizeBacaanResult(nextResult);
-    if (recordedSessionRef.current !== sessionIndex) {
-      recordedSessionRef.current = sessionIndex;
+    setResult(normalized);
+    if (normalized.status !== 'completed' || !normalized.transcript.trim()) return;
+    const itemIdentity = `${passageId}:${sessionIndex}`;
+    if (recordedSessionRef.current !== itemIdentity) {
+      recordedSessionRef.current = itemIdentity;
       setScoreHistory(history => [...history, Number(normalized.score) || 0]);
     }
-    setResult(normalized);
   };
 
   useEffect(() => {
@@ -2400,7 +2418,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
         setMendengar(false);
       },
       onEmpty(nextResult) {
-        recordBacaanResult(nextResult);
+        setResult(normalizeBacaanResult(nextResult));
         setTranscript('');
         setMendengar(false);
       },
@@ -2423,6 +2441,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   function checkManual() {
     stopVoice();
     clearBacaanSession();
+    if (!String(transcript || '').trim()) {
+      setResult(createEmptyBacaanResult('Taip atau baca petikan sebelum menyemak.'));
+      setMendengar(false);
+      return;
+    }
     const nextResult = compareBacaan(passage.text, transcript);
     recordBacaanResult({
       ...nextResult,
@@ -2439,16 +2462,29 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   }
 
   function nextBacaan() {
+    if (safeResult.status !== 'completed') {
+      retryBacaan();
+      return;
+    }
     clearBacaanSession();
     recordedSessionRef.current = null;
     resetBacaanState();
     setSessionIndex(current => nextCommunicationSessionIndex(current, passageBase.sessionItems?.length || 1));
   }
 
+  function retryBacaan() {
+    clearBacaanSession();
+    resetBacaanState();
+  }
+
   function saveResult() {
     const nextResult = result && typeof result === 'object'
       ? normalizeBacaanResult(result)
       : compareBacaan(passage.text, transcript);
+    if (nextResult.status !== 'completed' || !String(nextResult.transcript || transcript || '').trim()) return;
+    const completedScores = Array.isArray(scoreHistory) && scoreHistory.length ? scoreHistory : [nextResult.score];
+    const averageScore = Math.round(completedScores.reduce((sum, value) => sum + Number(value || 0), 0) / completedScores.length);
+    const passedCount = completedScores.filter(value => Number(value) >= 80).length;
     onFinish({
       language: passage.language,
       title: passage.title,
@@ -2462,7 +2498,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       missedWordCount: nextResult.missedWordCount,
       extraWordCount: nextResult.extraWordCount,
       tertinggal: Array.isArray(nextResult.missed) ? nextResult.missed : [],
-      incorrect: Number(nextResult.incorrect) || 0
+      incorrect: Number(nextResult.incorrect) || 0,
+      scoreHistory: completedScores,
+      completedPassages: completedScores.length,
+      averageScore,
+      bestScore: Math.max(...completedScores),
+      passedCount,
+      finalItemScore: nextResult.score
     });
     onClearResume?.();
   }
@@ -2528,7 +2570,7 @@ function normalizeBacaanResult(value) {
     status: typeof safeValue.status === 'string' ? safeValue.status : 'idle',
     transcript: typeof safeValue.transcript === 'string' ? safeValue.transcript : '',
     score,
-    correct: Boolean(safeValue.correct),
+    correct: score >= 80,
     confidence: Number.isFinite(Number(safeValue.confidence)) ? Number(safeValue.confidence) : 0,
     words,
     matched,
