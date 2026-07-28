@@ -1,5 +1,6 @@
 import React from 'react';
 import StudyBlockItem from './StudyBlockItem.jsx';
+import { formatDurationLabel } from '../../utils/displayFormatter.js';
 
 function safeText(value, fallback = '') {
   const text = String(value ?? '').trim();
@@ -34,7 +35,7 @@ export default function DailyPlanCard({ plan = null, className = '' }) {
       <p className="memory-last" role="status">
         {onboarding
           ? 'Pelan permulaan ini membantu murid membina rutin belajar yang seimbang.'
-          : `Cadangan harian disesuaikan dengan ${availableMinutes || 0} minit masa belajar.`}
+          : `Cadangan harian disesuaikan dengan ${formatDurationLabel(availableMinutes || 0)} masa belajar.`}
       </p>
       {blocks.length ? (
         <div className="timeline">

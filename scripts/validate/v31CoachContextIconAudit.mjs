@@ -2,8 +2,9 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { explainAnswer } from '../../src/ai/explainEngine.js';
 import { teachAnswer } from '../../src/ai/teacherEngine.js';
-import { normalizeCoachPayloadForAudit } from '../../src/ai/coach/coachAdapter.js';
+import { normalizeCoachPayloadForAudit, getCoachExplainData, getCoachTeacherData } from '../../src/ai/coach/coachAdapter.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from '../../src/ai/coach/contextSnapshot.js';
+import { smartCheck } from '../../src/utils/smartCheck.js';
 
 const app = fs.readFileSync('src/App.jsx', 'utf8');
 const icons = fs.readFileSync('src/components/IconGlyph.jsx', 'utf8');
@@ -32,6 +33,19 @@ const math = resolveCoachContextSnapshot({
 assert.equal(math.subjectId, 'math');
 assert.equal(math.topicId, 'darab');
 assert.deepEqual(math.acceptedAnswers, ['12']);
+const mathQuestion = { id: 'math-329', subjectId: 'math', topicId: 'nombor_hingga_1000', q: 'Berapakah nombor sebelum 329?', answer: '328' };
+const [mathExplain, mathTeach] = await Promise.all([
+  getCoachExplainData({ subjectId: math.subjectId, topicId: 'darab', question: mathQuestion, questionText: mathQuestion.q, expectedAnswer: '328', activeSubject: subjects[0], activeTopic: subjects[0].topics[0] }),
+  getCoachTeacherData({ subjectId: math.subjectId, topicId: 'darab', question: mathQuestion, questionText: mathQuestion.q, expectedAnswer: '328', activeSubject: subjects[0], activeTopic: subjects[0].topics[0] })
+]);
+for (const payload of [mathExplain, mathTeach]) {
+  const text = JSON.stringify(payload).toLowerCase();
+  for (const forbidden of ['padang', 'sekolah', 'hospital', 'nama orang', 'nama tempat']) assert.equal(text.includes(forbidden), false, `Math coach leaked BM content: ${forbidden}`);
+}
+const uasaQuestion = { q: 'Kenal pasti jenis ayat bagi ayat ini: Siapakah nama kamu?', answer: 'ayat tanya', acceptedAnswers: ['Ayat Tanya'] };
+for (const answer of ['ayat tanya', 'Ayat Tanya', ' AYAT TANYA ']) {
+  assert.equal(smartCheck(answer, uasaQuestion).status, 'correct');
+}
 
 const adaptive = resolveCoachContextSnapshot({
   requestId: 2,
@@ -64,6 +78,9 @@ assert.match(icons, /<svg[\s\S]*viewBox="0 0 24 24"/);
 assert.match(dashboard, /<SubjectIcon subjectId=/);
 assert.match(app, /subjectId: snapshot\.subjectId/);
 assert.match(app, /topicId: snapshot\.topicId/);
+assert.match(app, /topic: snapshotTopic/);
+assert.match(app, /if \(!safeTranscript\)/);
+assert.match(app, /if \(!currentAnswer\(\)\.trim\(\)\)/);
 assert.match(app, /isCurrentCoachResponse\(snapshot, nextData, 'explain'\)/);
 assert.match(app, /isCurrentCoachResponse\(snapshot, nextData, 'teach'\)/);
 assert.match(app, /const coachSubject = allSubjects\.find\(item => item\.id === coachSnapshot\?\.subjectId\)/);

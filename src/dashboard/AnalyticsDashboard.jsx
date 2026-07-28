@@ -1,9 +1,36 @@
-﻿import React from 'react';
+import React from 'react';
 import { EmptyState, SettingsPanel, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
 import IconGlyph from '../components/IconGlyph.jsx';
-import { formatStudyTime } from '../ai/index.js';
+import GamificationSummary from '../components/GamificationSummary.jsx';
 import MetricCard from '../components/MetricCard.jsx';
-import { clampPercent, formatAttentionLevel, formatActivityStatus, formatPriority, formatStatus, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatResumeTitle, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
+import { createCanonicalGamification } from '../utils/canonicalGamification.js';
+import { summarizeCommunicationHistory } from '../utils/communicationResult.js';
+import { getCurriculumCoverageState } from '../curriculum/coverageEngine';
+
+function CommunicationSummarySection({ eyebrow, title, summary, onStart, buttonLabel }) {
+  return (
+    <section className="card">
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      {summary.hasEvidence ? (
+        <div className="metric-grid">
+          <MetricCard value={`${clampPercent(summary.averagePercent)}%`} label="Purata" />
+          <MetricCard value={summary.completedItems} label="Sesi" />
+          <MetricCard value={`${clampPercent(summary.latestPercent)}%`} label="Terkini" />
+          <MetricCard value={summary.latestLanguage || '-'} label="Bahasa Terakhir" />
+        </div>
+      ) : (
+        <div className="reading-result">
+          <p>Belum ada sesi direkodkan.</p>
+          <p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p>
+        </div>
+      )}
+      <button onClick={onStart}>{buttonLabel}</button>
+    </section>
+  );
+}
 
 export default function AnalyticsDashboard({
   profile = {},
@@ -52,23 +79,44 @@ export default function AnalyticsDashboard({
   onResume,
   onRestartResume,
   dashboardCharacter,
-  welcomeTopic
+  welcomeTopic,
+  canonicalAnalytics: canonicalAnalyticsProp = null,
+  canonicalGamification: canonicalGamificationProp = null,
+  gamificationProfile = null
 }) {
-  const readingPurata = readingHistory.length ? Math.round(readingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / readingHistory.length) : 0;
-  const listeningPurata = listeningHistory.length ? Math.round(listeningHistory.reduce((sum, item) => sum + (item.score || 0), 0) / listeningHistory.length) : 0;
-  const speakingPurata = speakingHistory.length ? Math.round(speakingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / speakingHistory.length) : 0;
-  const writingPurata = writingHistory.length ? Math.round(writingHistory.reduce((sum, item) => sum + (item.score || 0), 0) / writingHistory.length) : 0;
+  const canonicalAnalytics = canonicalAnalyticsProp || getCanonicalAnalytics({ profile, adaptiveProfile, selectedSubject });
+  const canonicalGamification = canonicalGamificationProp || createCanonicalGamification({
+    profile,
+    adaptiveProfile,
+    gamificationProfile,
+    subjectId: selectedSubjectId || selectedSubject?.id
+  });
+  const readingSummary = summarizeCommunicationHistory(readingHistory);
+  const listeningSummary = summarizeCommunicationHistory(listeningHistory);
+  const speakingSummary = summarizeCommunicationHistory(speakingHistory);
+  const writingSummary = summarizeCommunicationHistory(writingHistory);
   const studyRecommendation = aiMemory.reason || smartLesson?.reason || 'Cadangan akan muncul apabila data mencukupi.';
   const learningTitle = learningJourney.todayLesson?.title || formatTopicName(smartTopic?.topicId || smartTopic?.id || smartTopic?.title) || 'Enjin Pembelajaran Adaptif';
-  const readinessMessage = curriculumCoverage.summary.missing > 0
-    ? 'Perlu lebih latihan sebelum ke tahap seterusnya.'
-    : 'Sedia meneruskan pembelajaran.';
+  const coverageState = getCurriculumCoverageState(curriculumCoverage.summary);
+  const analyticsRecommendationCta = formatRecommendationCta({
+    subjectId: smartSubject?.id || selectedSubjectId,
+    isCrossSubject: Boolean(smartSubject?.id && selectedSubjectId && smartSubject.id !== selectedSubjectId),
+    reason: smartLesson?.reason,
+    recommendationKey: smartLesson?.recommendationKey,
+    defaultLabel: 'Mula Latihan'
+  });
 
   return (
     <>
       <section className="stats">
         {statsCards.map(item => <Stat key={item.label} icon={item.icon} label={item.label} value={item.value} />)}
       </section>
+
+      <GamificationSummary
+        profile={gamificationProfile}
+        canonical={canonicalGamification}
+        className="analytics-gamification-summary"
+      />
 
       <section className="card student-core-card">
         <p className="eyebrow">Inteligens Murid</p>
@@ -84,24 +132,47 @@ export default function AnalyticsDashboard({
       <section className="card mastery-summary-card">
         <p className="eyebrow">Ringkasan Penguasaan</p>
         <h2>Penguasaan Topik</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(masterySummary.masteryScore)}%`} label="Skor Penguasaan" />
-          <MetricCard value={masterySummary.dikuasai} label="Dikuasai" />
-          <MetricCard value={masterySummary.learning} label="Sedang Belajar" />
-          <MetricCard value={masterySummary.needsPractice} label="Perlu Latihan" />
-        </div>
+        <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
+        {canonicalAnalytics.hasEvidence ? (
+          <div className="metric-grid">
+            <MetricCard value={`${canonicalAnalytics.masteryPercent}%`} label="Skor Penguasaan" />
+            <MetricCard value={canonicalAnalytics.masteredTopics.length} label="Dikuasai" />
+            <MetricCard value={canonicalAnalytics.learningTopics.length} label="Sedang Belajar" />
+            <MetricCard value={canonicalAnalytics.weakTopics.length} label="Perlu Latihan" />
+          </div>
+        ) : (
+          <EmptyState
+            title={canonicalAnalytics.noData?.title || 'Belum ada data pembelajaran'}
+            message={canonicalAnalytics.noData?.message || 'Lengkapkan beberapa latihan untuk melihat penguasaan.'}
+            actionLabel={canonicalAnalytics.noData?.actionLabel || 'Mulakan latihan'}
+            onAction={() => onStartAdaptivePractice(adaptivePracticeCount)}
+          />
+        )}
       </section>
 
       <section className="card curriculum-coverage-card">
         <p className="eyebrow">Liputan Kurikulum</p>
         <h2>Analisis DSKP + UASA</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(curriculumCoverage.summary.coveragePercent)}%`} label="SK/SP Diliputi" />
-          <MetricCard value={`${clampPercent(curriculumCoverage.summary.masteryPercent)}%`} label="Penguasaan SK/SP" />
-          <MetricCard value={curriculumCoverage.summary.missing} label="SK/SP Belum Cukup" />
-          <MetricCard value={curriculumCoverage.summary.estimatedMinutes} label="Anggaran Minit" />
-        </div>
-        {missingSkSpRecommendation && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}
+        {coverageState.state === 'available' || coverageState.state === 'partial' ? (
+          <>
+            <div className="metric-grid">
+              {coverageState.metrics.map(metric => (
+                <MetricCard
+                  key={metric.label}
+                  value={metric.value}
+                  label={metric.label}
+                  subtitle={metric.subtitle || ''}
+                />
+              ))}
+            </div>
+            {coverageState.message ? <p className="memory-last">{coverageState.message}</p> : null}
+            {missingSkSpRecommendation && coverageState.state === 'available' ? <p className="memory-last">{missingSkSpRecommendation.reason}</p> : null}
+          </>
+        ) : (
+          <div className="curriculum-coverage-state" data-state={coverageState.state} role="status" aria-live="polite">
+            <p>{coverageState.message}</p>
+          </div>
+        )}
       </section>
 
       <section className="card smart-lesson-card">
@@ -112,7 +183,7 @@ export default function AnalyticsDashboard({
           <MetricCard value={learningJourney.todayLesson?.subject || formatSubjectName(smartSubject?.id)} label="Hari Ini" subtitle={formatStatus(learningJourney.todayLesson?.masteryStatus || 'ready')} />
           <MetricCard value={learningJourney.nextLesson?.title || 'Selepas dikuasai'} label="Seterusnya" subtitle={formatStatus(learningJourney.nextLesson?.masteryStatus || 'locked')} />
           <MetricCard value={learningJourney.recommendedReview?.title || 'Tiada ulang kaji'} label="Ulang Kaji" subtitle={formatStatus(learningJourney.recommendedReview?.masteryStatus || 'clear')} />
-          <MetricCard value={formatPriority(smartLesson?.priority || 'normal')} label="Keutamaan AI" subtitle={studyRecommendation} />
+          <MetricCard value={`Keyakinan AI ${formatPriority(smartLesson?.priority || 'normal')}`} label="Keutamaan AI" subtitle={studyRecommendation} />
         </div>
         <div className="recommend-meta">
           <span>{learningJourney.blockedTopics?.length || 0} topik terkunci</span>
@@ -125,71 +196,42 @@ export default function AnalyticsDashboard({
       <section className="card ai-recommend-card">
         <p className="eyebrow">Cadangan Guru AI</p>
         <h2>Cadangan Guru AI</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${adaptivePracticePreview?.summary?.estimatedMinutes || 0} min`} label="Cadangan Latihan" subtitle={studyRecommendation} />
-          <MetricCard value={aiMemory.weakTopics.length || 0} label="Topik Lemah" subtitle={aiMemory.weakTopics[0] ? formatTopicName(aiMemory.weakTopics[0].topicId) : 'Tiada'} />
-          <MetricCard value={aiMemory.strongTopics.length || 0} label="Topik Kuat" subtitle={aiMemory.strongTopics[0] ? formatTopicName(aiMemory.strongTopics[0].topicId) : 'Tiada'} />
-          <MetricCard value={`${clampPercent(aiMemory.mastery)}%`} label="Penguasaan" subtitle={`Masa belajar ${formatStudyTime(aiMemory.studyTime)}`} />
-        </div>
-        {aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> • {aiMemory.lastLesson.score}%</p>}
-        <div className="recommend-meta">
-          <span>{aiMemory.weakTopics.length || 0} topik lemah</span>
-          <span>{aiMemory.strongTopics.length} topik kuat</span>
-          <span>Penguasaan {clampPercent(aiMemory.mastery)}%</span>
-          <span>Masa belajar {formatStudyTime(aiMemory.studyTime)}</span>
-          <span>Hari berturut {aiMemory.studyStreak}</span>
-          <span>{smartTopic ? formatTopicName(smartTopic.topicId || smartTopic.id || smartTopic.title) : 'Semua topik selesai'}</span>
-        </div>
-        <button onClick={() => smartTopic && onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!smartTopic && !learningJourney.todayLesson}>Latih Semula</button>
+        <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
+        {canonicalAnalytics.hasEvidence ? (
+          <>
+            <div className="metric-grid">
+              <MetricCard value={formatDurationLabel(adaptivePracticePreview?.summary?.estimatedMinutes || 0)} label="Cadangan Latihan" subtitle={studyRecommendation} />
+              <MetricCard value={canonicalAnalytics.weakTopics.length} label="Topik Lemah" subtitle={canonicalAnalytics.weakTopics[0] ? formatTopicName(canonicalAnalytics.weakTopics[0].topicId) : 'Tiada data'} />
+              <MetricCard value={canonicalAnalytics.strongTopics.length} label="Topik Kuat" subtitle={canonicalAnalytics.strongTopics[0] ? formatTopicName(canonicalAnalytics.strongTopics[0].topicId) : 'Tiada data'} />
+              <MetricCard value={`${canonicalAnalytics.masteryPercent}%`} label="Penguasaan" subtitle={`Masa belajar ${formatDuration(canonicalAnalytics.studyMinutes, { unit: 'minutes' })}`} />
+            </div>
+            {aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> - {aiMemory.lastLesson.score}%</p>}
+            <div className="recommend-meta">
+              <span>{canonicalAnalytics.weakTopics.length} topik lemah</span>
+              <span>{canonicalAnalytics.strongTopics.length} topik kuat</span>
+              <span>Penguasaan {canonicalAnalytics.masteryPercent}%</span>
+              <span>Masa belajar {formatDuration(canonicalAnalytics.studyMinutes, { unit: 'minutes' })}</span>
+              <span>{formatStreakLabel(canonicalAnalytics.currentStreak)}</span>
+            </div>
+          </>
+        ) : (
+          <EmptyState
+            title={canonicalAnalytics.noData?.title || 'Belum ada data pembelajaran'}
+            message={canonicalAnalytics.noData?.message || 'Lengkapkan beberapa latihan untuk melihat cadangan AI.'}
+            actionLabel={canonicalAnalytics.noData?.actionLabel || 'Mulakan latihan'}
+            onAction={() => onStartAdaptivePractice(adaptivePracticeCount)}
+          />
+        )}
+        <button onClick={() => smartTopic && onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!smartTopic && !learningJourney.todayLesson}>{analyticsRecommendationCta}</button>
       </section>
 
-      <section className="card reading-progress-card">
-        <p className="eyebrow">Kemajuan Bacaan</p>
-        <h2>Jurulatih Bacaan</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(readingPurata)}%`} label="Purata" />
-          <MetricCard value={readingHistory.length} label="Sesi" />
-          <MetricCard value={`${clampPercent(readingHistory[0]?.score || 0)}%`} label="Terkini" />
-          <MetricCard value={readingHistory[0]?.language || '-'} label="Bahasa Terakhir" />
-        </div>
-        <button onClick={onStartBacaan}>Mula Latihan Bacaan</button>
-      </section>
+      <CommunicationSummarySection eyebrow="Kemajuan Bacaan" title="Jurulatih Bacaan" summary={readingSummary} onStart={onStartBacaan} buttonLabel="Mula Latihan Bacaan" />
 
-      <section className="card listening-progress-card">
-        <p className="eyebrow">Kemajuan Mendengar</p>
-        <h2>Makmal Mendengar</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(listeningPurata)}%`} label="Purata" />
-          <MetricCard value={listeningHistory.length} label="Sesi" />
-          <MetricCard value={`${clampPercent(listeningHistory[0]?.score || 0)}%`} label="Terkini" />
-          <MetricCard value={listeningHistory[0]?.language || '-'} label="Bahasa Terakhir" />
-        </div>
-        <button onClick={onStartMendengar}>Mula Latihan Mendengar</button>
-      </section>
+      <CommunicationSummarySection eyebrow="Kemajuan Mendengar" title="Makmal Mendengar" summary={listeningSummary} onStart={onStartMendengar} buttonLabel="Mula Latihan Mendengar" />
 
-      <section className="card speaking-progress-card">
-        <p className="eyebrow">Kemajuan Bertutur</p>
-        <h2>Jurulatih Bertutur</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(speakingPurata)}%`} label="Purata" />
-          <MetricCard value={speakingHistory.length} label="Sesi" />
-          <MetricCard value={`${clampPercent(speakingHistory[0]?.score || 0)}%`} label="Terkini" />
-          <MetricCard value={speakingHistory[0]?.language || '-'} label="Bahasa Terakhir" />
-        </div>
-        <button onClick={onStartBertutur}>Mula Latihan Bertutur</button>
-      </section>
+      <CommunicationSummarySection eyebrow="Kemajuan Bertutur" title="Jurulatih Bertutur" summary={speakingSummary} onStart={onStartBertutur} buttonLabel="Mula Latihan Bertutur" />
 
-      <section className="card writing-progress-card">
-        <p className="eyebrow">Kemajuan Menulis</p>
-        <h2>Jurulatih Menulis</h2>
-        <div className="metric-grid">
-          <MetricCard value={`${clampPercent(writingPurata)}%`} label="Purata" />
-          <MetricCard value={writingHistory.length} label="Sesi" />
-          <MetricCard value={`${clampPercent(writingHistory[0]?.score || 0)}%`} label="Terkini" />
-          <MetricCard value={writingHistory[0]?.language || '-'} label="Bahasa Terakhir" />
-        </div>
-        <button onClick={onStartMenulis}>Mula Latihan Menulis</button>
-      </section>
+      <CommunicationSummarySection eyebrow="Kemajuan Menulis" title="Jurulatih Menulis" summary={writingSummary} onStart={onStartMenulis} buttonLabel="Mula Latihan Menulis" />
 
       <section className="card daily-card">
         <p className="eyebrow">Cabaran Harian</p>
@@ -241,10 +283,9 @@ export default function AnalyticsDashboard({
       <section className="card">
         <p className="eyebrow">Sambung Automatik</p>
         <h2><IconGlyph name="play" motion="hover" /> <span>Sambung Latihan</span></h2>
-        <p>Subjek: <b>{resume?.subjectId ? formatSubjectName(resume.subjectId) : '-'}</b><br />Soalan: <b>{(resume?.questionIndex || 0) + 1}</b></p>
+        <p>{formatResumeTitle(resume)}<br />Subjek: <b>{formatSubjectName(resume?.subjectId || '-')}</b><br />Topik: <b>{formatTopicName(resume?.metadata?.topicTitle || resume?.topicId || '-', { subjectId: resume?.subjectId })}</b><br />Soalan: <b>{(resume?.questionIndex || 0) + 1}</b></p>
         <div className="actions"><button onClick={onResume}><IconGlyph name="play" motion="hover" /> <span>Sambung</span></button><button className="secondary" onClick={onRestartResume}><IconGlyph name="repeat" motion="hover" /> <span>Mula Semula</span></button></div>
       </section>
     </>
   );
 }
-

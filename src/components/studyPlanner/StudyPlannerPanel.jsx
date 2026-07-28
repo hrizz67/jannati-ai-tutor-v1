@@ -1,6 +1,7 @@
 import React from 'react';
 import DailyPlanCard from './DailyPlanCard.jsx';
 import WeeklyPlanList from './WeeklyPlanList.jsx';
+import { formatDurationLabel, formatPlannerBoolean } from '../../utils/displayFormatter.js';
 
 function safeText(value, fallback = '') {
   const text = String(value ?? '').trim();
@@ -12,14 +13,8 @@ function safeNumber(value, fallback = 0) {
   return Number.isFinite(number) ? number : fallback;
 }
 
-function formatStudyDuration(minutes = 0) {
-  const value = Math.max(0, safeNumber(minutes, 0));
-  if (value >= 60) return '1 jam';
-  return `${value} minit`;
-}
-
 function buildSectionMessage(planner = {}) {
-  if (planner?.onboarding) return 'Ini ialah starter plan untuk membantu murid memulakan rutin belajar.';
+  if (planner?.onboarding) return 'Ini ialah pelan permulaan untuk membantu murid memulakan rutin belajar.';
   if (planner?.dailyPlan?.blocks?.length) return 'Pelan ini disusun menggunakan data penguasaan dan jadual ulang kaji semasa.';
   return 'Tiada pelan tersedia pada masa ini.';
 }
@@ -57,10 +52,10 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
       )}
 
       <div className="mastery-summary-grid study-planner-summary">
-        <div><b>{formatStudyDuration(availableMinutes)}</b><span>Masa Belajar</span></div>
+        <div><b>{formatDurationLabel(availableMinutes)}</b><span>Masa Belajar</span></div>
         <div><b>{dailyBlocks.length}</b><span>Blok Hari Ini</span></div>
-        <div><b>{weeklyDays.length}</b><span>Hari Mingguan</span></div>
-        <div><b>{onboarding ? 'Ya' : 'Tidak'}</b><span>Starter Plan</span></div>
+        <div><b>{weeklyDays.length}</b><span>Hari Dirancang</span></div>
+        <div><b>{onboarding ? 'Aktif' : 'Tidak'}</b><span>Pelan Permulaan</span></div>
       </div>
 
       <DailyPlanCard plan={dailyPlan} />
@@ -70,6 +65,7 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
         <span>Ringkasan ibu bapa: <b>{safeText(parentSummary.name || 'Murid', 'Murid')}</b></span>
         <span>Soalan dijawab: <b>{safeNumber(parentSummary.questionsAnswered, 0)}</b></span>
         <span>Ketepatan: <b>{safeNumber(parentSummary.accuracy, 0)}%</b></span>
+        <span><b>{formatPlannerBoolean('Pelan permulaan', onboarding)}</b></span>
       </div>
     </section>
   );

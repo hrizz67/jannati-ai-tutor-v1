@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDurationLabel, formatPriority, formatRecommendationKey, formatSubjectName, formatTopicName } from '../../utils/displayFormatter.js';
 
 function safeText(value, fallback = '-') {
   const text = String(value ?? '').trim();
@@ -11,32 +12,20 @@ function safeNumber(value, fallback = 0) {
 }
 
 const ACTIVITY_LABELS = {
-  review: 'Ulang kaji',
+  review: 'Ulang Kaji',
   practice: 'Latihan',
   challenge: 'Cabaran',
   revision: 'Pengukuhan'
 };
 
-const PRIORITY_LABELS = {
-  high: 'Keutamaan tinggi',
-  medium: 'Keutamaan sederhana',
-  low: 'Keutamaan rendah'
-};
-
-function formatDuration(minutes = 0) {
-  const value = Math.max(5, Math.min(60, safeNumber(minutes, 0)));
-  if (value >= 60) return '1 jam';
-  return `${value} minit`;
-}
-
 export default function StudyBlockItem({ block = {}, compact = false }) {
-  const subject = safeText(block.subject, 'Subjek');
-  const topic = safeText(block.topic, 'Topik');
+  const subject = formatSubjectName(block.subjectId || block.subject || 'Subjek');
+  const topic = formatTopicName(block.topicId || block.topic || 'Topik');
   const reason = safeText(block.reason, 'Perlu latihan seimbang.');
-  const durationLabel = formatDuration(block.durationMinutes);
-  const priorityLabel = PRIORITY_LABELS[block.priority] || 'Keutamaan sederhana';
+  const durationLabel = formatDurationLabel(Math.max(5, Math.min(60, safeNumber(block.durationMinutes, 0))));
+  const priorityLabel = `Keutamaan ${formatPriority(block.priority)}`;
   const activityLabel = ACTIVITY_LABELS[block.activityType] || 'Latihan';
-  const recommendationKey = safeText(block.recommendationKey, 'review');
+  const recommendationLabel = formatRecommendationKey(safeText(block.recommendationKey, 'review'));
 
   return (
     <article className={`study-block-item ${compact ? 'compact' : ''}`.trim()}>
@@ -49,7 +38,7 @@ export default function StudyBlockItem({ block = {}, compact = false }) {
         <span>{durationLabel}</span>
         <span>{priorityLabel}</span>
         <span>{activityLabel}</span>
-        <span>{recommendationKey}</span>
+        <span>{recommendationLabel}</span>
       </div>
     </article>
   );

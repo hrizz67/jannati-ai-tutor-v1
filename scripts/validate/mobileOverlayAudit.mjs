@@ -2,7 +2,7 @@ import fs from 'node:fs';
 const app = fs.readFileSync('src/App.jsx', 'utf8');
 const css = fs.readFileSync('src/styles/style.css', 'utf8');
 const checks = {
-  feedbackSuppressedByModal: /BetaFeedbackButton suppressed=\{modalOpen\}/.test(app),
+  feedbackSuppressedByModal: /const feedbackSuppressed = modalOpen \|\| \['quiz', 'uasa', 'reading', 'listening', 'speaking', 'writing', 'finish', 'parent'\]\.includes\(currentScreen\);/.test(app) && /BetaFeedbackButton suppressed=\{feedbackSuppressed\}/.test(app),
   safeAreaInsets: /safe-area-inset-bottom|safe-area-inset-top/.test(css),
   modalZIndex: /modal|overlay/i.test(css) && /z-index/.test(css),
   mobileModalHeight: /dvh|svh|max-height/.test(css),

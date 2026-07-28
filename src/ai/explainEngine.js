@@ -66,6 +66,7 @@ function buildBaseExamples(question, topic) {
 }
 
 export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '', questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
+  topic = topic || {};
   const category = detectLearningCategory(question, topic);
   const rule = CATEGORY_RULES[category] || CATEGORY_RULES.generic;
   const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');

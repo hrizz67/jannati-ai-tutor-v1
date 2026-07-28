@@ -1,8 +1,10 @@
 export function normalizeAcceptedAnswer(value) {
   return String(value ?? '')
+    .normalize('NFKC')
     .trim()
     .toLowerCase()
-    .replace(/[.,!?;:]+$/g, '')
+    .replace(/[\u2018\u2019\u201C\u201D]/g, "'")
+    .replace(/[.,!?;:()[\]{}]+/g, ' ')
     .replace(/\s+/g, ' ');
 }
 

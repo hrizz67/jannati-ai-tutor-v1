@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import BrandLogo from '../BrandLogo';
 import JannaAvatar from '../JannaAvatar';
 import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
+import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
@@ -112,21 +112,6 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
   };
 }
 
-function getFocusableElements(container) {
-  if (!container) return [];
-  return [...container.querySelectorAll([
-    'button:not([disabled])',
-    'input:not([disabled])',
-    'textarea:not([disabled])',
-    'select:not([disabled])',
-    'a[href]',
-    '[tabindex]:not([tabindex="-1"])'
-  ].join(','))].filter(element => {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden';
-  });
-}
-
 function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '' }) {
   const safeText = normalizeText(text, '');
   return (
@@ -183,9 +168,7 @@ export default function TutorAIModal({
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
   const questionActionsRef = useRef(null);
-  const openerRef = useRef(null);
   const requestIdRef = useRef(0);
-  const onTutupRef = useRef(onTutup);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -207,8 +190,8 @@ export default function TutorAIModal({
       questionText,
       instruction,
       options,
-       expectedAnswer,
-       acceptedAnswers,
+      expectedAnswer,
+      acceptedAnswers,
       learnerAnswer,
       explanationMode,
       currentLearningObjective
@@ -226,8 +209,6 @@ export default function TutorAIModal({
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
 
-  onTutupRef.current = onTutup;
-
   const sessionKey = useMemo(() => [
     studentProfile?.studentId || studentProfile?.name || '',
     activeSubject?.id || '',
@@ -235,40 +216,12 @@ export default function TutorAIModal({
     currentQuestion?.id || ''
   ].join('::'), [studentProfile?.studentId, studentProfile?.name, activeSubject?.id, activeTopic?.id, currentQuestion?.id]);
 
-  useEffect(() => {
-    if (!open) return undefined;
-    openerRef.current = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
-    function onKeyDown(event) {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        onTutupRef.current?.();
-        return;
-      }
-      if (event.key !== 'Tab') return;
-      const focusables = getFocusableElements(modalRef.current);
-      if (!focusables.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const activeElement = document.activeElement;
-      if (event.shiftKey && activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      openerRef.current?.focus?.();
-    };
-  }, [open]);
+  useModalRuntime({
+    open,
+    modalRef,
+    initialFocusRef: closeButtonRef,
+    onClose: onTutup
+  });
 
   useEffect(() => {
     if (!open) return undefined;
@@ -334,8 +287,8 @@ export default function TutorAIModal({
         expectedAnswer: normalizedExpectedAnswer,
         learnerAnswer: normalizedLearnerAnswer,
         studentAnswer: normalizedLearnerAnswer,
-         correctAnswer: normalizedExpectedAnswer,
-         acceptedAnswers: normalizedAcceptedAnswers,
+        correctAnswer: normalizedExpectedAnswer,
+        acceptedAnswers: normalizedAcceptedAnswers,
         explanationMode: normalizedExplanationMode,
         currentLearningObjective: normalizedLearningObjective,
         isCorrect,
@@ -409,15 +362,17 @@ export default function TutorAIModal({
         ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : FALLBACK_MESSAGE)
         : 'Tutor AI sedia membantu.';
 
-  return (
-    <div
-      className="ai-chat-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="tutor-ai-title"
-      aria-describedby="tutor-ai-body"
-    >
-      <section ref={modalRef} className="ai-chat">
+  const modalNode = (
+    <div className="ai-chat-overlay" data-modal-open="true">
+      <section
+        ref={modalRef}
+        className="ai-chat ai-modal-shell"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tutor-ai-title"
+        aria-describedby="tutor-ai-description"
+        tabIndex={-1}
+      >
         <header className="ai-chat-head">
           <div className="ai-chat-brand">
             <JannaAvatar size={72} className="ai-chat-avatar" />
@@ -429,15 +384,72 @@ export default function TutorAIModal({
           </div>
           <strong className="ai-chat-title" id="tutor-ai-title">Tutor AI</strong>
           <button ref={closeButtonRef} type="button" className="secondary" onClick={onTutup} aria-label="Tutup">Tutup</button>
+          <p className="ai-modal-context-line" id="tutor-ai-description">
+            {subjectLabel || 'Semua subjek'}
+            {topicLabel ? ` · ${topicLabel}` : ''}
+          </p>
         </header>
 
-        <p className={`chat-status chat-status-${status}`} aria-live="polite">
+        <div className={`chat-status chat-status-${status}`} aria-live="polite">
           {statusLabel}
-          {activeSubject?.id ? ` • ${subjectLabel}` : ''}
-          {activeTopic?.id ? ` • ${topicLabel}` : ''}
-        </p>
+        </div>
 
         <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
+          <section className="ai-chat-context-card" aria-label="Konteks soalan semasa">
+            <div className="ai-chat-context-grid">
+              {normalizedInstruction && (
+                <div>
+                  <span className="ai-chat-context-label">Arahan</span>
+                  <p>{normalizedInstruction}</p>
+                </div>
+              )}
+              {normalizedQuestionText && (
+                <div>
+                  <span className="ai-chat-context-label">Soalan</span>
+                  <p>{normalizedQuestionText}</p>
+                </div>
+              )}
+              {normalizedExpectedAnswer && (
+                <div>
+                  <span className="ai-chat-context-label">Jawapan dijangka</span>
+                  <p>{normalizedExpectedAnswer}</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <details ref={questionActionsRef} className="tutor-ai-actions">
+            <summary>Bantuan untuk soalan ini</summary>
+            <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
+              {exercisePrompts.map(prompt => (
+                <button
+                  key={prompt.label}
+                  type="button"
+                  onClick={() => handlePromptClick(prompt.label, prompt.intent)}
+                  disabled={loading}
+                >
+                  {prompt.label}
+                </button>
+              ))}
+            </div>
+          </details>
+
+          <details className="quick-prompts-analytics">
+            <summary>Lihat kemajuan saya</summary>
+            <div className="quick-prompts" aria-label="Prompt kemajuan Tutor AI">
+              {analyticsPrompts.map(prompt => (
+                <button
+                  key={prompt.label}
+                  type="button"
+                  onClick={() => handlePromptClick(prompt.label, prompt.intent)}
+                  disabled={loading}
+                >
+                  {prompt.label}
+                </button>
+              ))}
+            </div>
+          </details>
+
           {messages.map((message, index) => (
             <MessageBubble
               key={`${message.role || 'ai'}-${index}`}
@@ -451,39 +463,7 @@ export default function TutorAIModal({
           {error && !loading && <MessageBubble role="ai" text={error} />}
         </div>
 
-        <details ref={questionActionsRef} className="tutor-ai-actions">
-          <summary>Bantuan untuk soalan ini</summary>
-          <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
-            {exercisePrompts.map(prompt => (
-              <button
-                key={prompt.label}
-                type="button"
-                onClick={() => handlePromptClick(prompt.label, prompt.intent)}
-                disabled={loading}
-              >
-                {prompt.label}
-              </button>
-            ))}
-          </div>
-        </details>
-
-        <details className="quick-prompts-analytics">
-          <summary>Lihat kemajuan saya</summary>
-          <div className="quick-prompts" aria-label="Prompt kemajuan Tutor AI">
-            {analyticsPrompts.map(prompt => (
-              <button
-                key={prompt.label}
-                type="button"
-                onClick={() => handlePromptClick(prompt.label, prompt.intent)}
-                disabled={loading}
-              >
-                {prompt.label}
-              </button>
-            ))}
-          </div>
-        </details>
-
-        <div className="ai-chat-input">
+        <div className="ai-chat-input ai-modal-footer" data-modal-footer="true">
           <input
             ref={inputRef}
             value={input}
@@ -496,7 +476,6 @@ export default function TutorAIModal({
             }}
             placeholder="Tanya Guru AI..."
             aria-label="Tanya Guru AI"
-            autoFocus
           />
           <button
             type="button"
@@ -509,4 +488,6 @@ export default function TutorAIModal({
       </section>
     </div>
   );
+
+  return renderModalPortal(modalNode);
 }

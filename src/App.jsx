@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
@@ -41,11 +42,18 @@ import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, s
 import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
-import { clampPercent, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
+import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { getAcceptedAnswers } from './utils/acceptedAnswers.js';
+import {
+  appendUniqueCommunicationResult,
+  buildCommunicationSessionSummary,
+  normalizeCommunicationAttempt,
+  normalizeCommunicationResult,
+  sanitizeCommunicationScoreHistory
+} from './utils/communicationResult.js';
 import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
@@ -986,6 +994,7 @@ export default function App() {
           ]
         };
         const practiceTopic = practiceSubject.topics[0];
+        syncSelectedSubjectState(practiceSubject);
         startTopic(practiceTopic, practiceSubject, {
           questions: resume.questions,
           questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
@@ -999,6 +1008,7 @@ export default function App() {
       const subject = await loadSubjectData(resume.subjectId);
       const topic = subject?.topics.find(t => t.id === resume.topicId);
       if (!subject || !topic) return;
+      syncSelectedSubjectState(subject);
       startTopic(topic, subject, {
         questions: resume.questions,
         questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
@@ -1025,7 +1035,10 @@ export default function App() {
     if (isQuestionResumeMode(mode)) {
       const subject = await loadSubjectData(resume.subjectId);
       const topic = subject?.topics.find(t => t.id === resume.topicId);
-      if (subject && topic) startTopic(topic, subject, { mode, restoreFromResume: true });
+      if (subject && topic) {
+        syncSelectedSubjectState(subject);
+        startTopic(topic, subject, { mode, restoreFromResume: true });
+      }
       return;
     }
     if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(mode)) {
@@ -1041,6 +1054,7 @@ export default function App() {
     const subject = allSubjects.find(item => item.id === subjectId) || await loadSubjectData(subjectId);
     const topic = subject?.topics.find(item => item.id === topicId);
     if (!subject || !topic) return;
+    syncSelectedSubjectState(subject);
 
     const targetQuestion = topic.questions.find(question => question.id === questionId);
     const remainingSoalan = topic.questions.filter(question => question.id !== questionId);
@@ -1245,6 +1259,14 @@ export default function App() {
     setScreen('dashboard');
   }
 
+  function syncSelectedSubjectState(subject) {
+    if (!subject?.id) return;
+    flushSync(() => {
+      setSelectedSubjectId(subject.id);
+      setSelectedSubject(subject);
+    });
+  }
+
   function checkAnswer() {
     const question = currentQuestion();
     const result = smartCheck(answer, question);
@@ -1384,10 +1406,12 @@ export default function App() {
     const learnerAnswer = snapshot.learnerAnswer;
     const explanationMode = snapshot.explanationMode;
     const currentLearningObjective = snapshot.learningObjective;
+    const snapshotSubject = allSubjects.find(item => item.id === snapshot.subjectId) || activeSubject;
+    const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackData = explainAnswer({
       question,
-      topic: activeTopic,
+      topic: snapshotTopic,
       result: feedback,
       userAnswer: answer,
       questionText,
@@ -1404,7 +1428,7 @@ export default function App() {
       question,
       result: feedback,
       userAnswer: answer,
-      topic: activeTopic,
+      topic: snapshotTopic,
       questionText,
       instruction,
       options,
@@ -1433,10 +1457,12 @@ export default function App() {
     const learnerAnswer = snapshot.learnerAnswer;
     const explanationMode = snapshot.explanationMode;
     const currentLearningObjective = snapshot.learningObjective;
+    const snapshotSubject = allSubjects.find(item => item.id === snapshot.subjectId) || activeSubject;
+    const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackExplainData = explainAnswer({
       question,
-      topic: activeTopic,
+      topic: snapshotTopic,
       result: feedback || {},
       userAnswer: answer,
       questionText,
@@ -1447,7 +1473,7 @@ export default function App() {
     });
     const fallbackTeacherData = teachAnswer({
       question,
-      topic: activeTopic,
+      topic: snapshotTopic,
       explanationData: fallbackExplainData,
       questionText,
       instruction,
@@ -1767,46 +1793,49 @@ export default function App() {
     forecast: masteryForecast
   };
 
-  if (showOnboarding) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} /></BetaChrome>;
+  if (showOnboarding) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} /></BetaChrome>;
 
-  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><Login onStart={startProfile} /></BetaChrome>;
+  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} /></BetaChrome>;
 
-  if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><LoadingSkeleton /></BetaChrome>;
-  if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
+  if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><LoadingSkeleton /></BetaChrome>;
+  if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
 
   if (screen === 'quiz') {
     const question = currentQuestion();
     const safeHint = sanitizeAiText(coachKnowledgeData?.hint || coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
-  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
+  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
-  return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
+  return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
   }
 
-function BetaChrome({ children, recoveryMessages = [], modalOpen = false }) {
+function BetaChrome({ children, recoveryMessages = [], modalOpen = false, currentScreen = '' }) {
+  const feedbackSuppressed = modalOpen || ['quiz', 'uasa', 'reading', 'listening', 'speaking', 'writing', 'finish', 'parent'].includes(currentScreen);
   return <>
     <BrandSplash />
-    {children}
-    {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
-    <BetaFeedbackButton suppressed={modalOpen} />
-    <AppVersiFooter />
+    <div className="app-chrome-shell" data-modal-open={modalOpen ? 'true' : 'false'} aria-hidden={modalOpen ? 'true' : undefined} inert={modalOpen ? '' : undefined}>
+      <div className="app-page-shell" data-screen={currentScreen}>{children}</div>
+      {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
+      <BetaFeedbackButton suppressed={feedbackSuppressed} />
+      <AppVersiFooter />
+    </div>
   </>;
 }
 
@@ -1824,7 +1853,7 @@ function AppVersiFooter() {
   const displayDate = Number.isNaN(buildDate.getTime()) ? APP_BUILD_DATE : buildDate.toLocaleString();
   const showBuildTimestamp = import.meta.env.DEV || new URLSearchParams(window.location.search).has('debug');
   return <footer className="app-version-footer" aria-label="Maklumat versi aplikasi">
-    <BrandLogo horizontal size="sm" className="footer-brand-logo" />    <span className="closed-beta-badge">CLOSED BETA</span>    <span><b>Versi</b> {APP_VERSION}</span>    {showBuildTimestamp && <span><b>Build</b> {displayDate}</span>}    <span><b>Maklum Balas</b> Butang beta tersedia</span>    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
+    <BrandLogo horizontal size="sm" className="footer-brand-logo" />    <span className="closed-beta-badge">CLOSED BETA</span>    <span><b>Versi</b> {APP_VERSION}</span>    {showBuildTimestamp && <span><b>Build</b> {displayDate}</span>}    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
   </footer>;
 }
 
@@ -1933,7 +1962,7 @@ function BetaFeedbackButton({ suppressed = false }) {
   }
 
   return <>
-    <button type="button" className="beta-feedback-fab" onClick={() => { setSaved(false); setOpen(true); }}>Maklum Balas Beta</button>
+    <button type="button" className="beta-feedback-fab" aria-label="Maklum Balas Beta" title="Maklum Balas Beta" onClick={() => { setSaved(false); setOpen(true); }}><IconGlyph name="message" decorative /><span>Maklum Balas Beta</span></button>
     {open && <div className="beta-feedback-overlay" role="dialog" aria-modal="true" aria-labelledby="beta-feedback-title">
       <section className="beta-feedback-panel">
         <div className="beta-feedback-head"><div className="modal-brand-title"><BrandLogo iconOnly size="sm" /><div><p className="eyebrow">Beta Tertutup</p><h2 id="beta-feedback-title">Maklum Balas</h2></div></div><button ref={closeRef} type="button" className="ghost" onClick={() => setOpen(false)}>Tutup</button></div>
@@ -2118,7 +2147,7 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
     }
   ];
 
-  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce"><RewardBadgeIcon /></div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa. Cuba lagi.')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa. Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
+  return <main className="app reward-page"><section className="card finish reward-card"><MascotCard character="janna" mood={personality?.emotion?.label || (passed ? 'celebrating' : 'encouraging')} size="lg" animation="bounce" message={personality?.achievementMessage || finishMessage} /><div className="big bounce"><RewardBadgeIcon /></div><p className="eyebrow">{getTopicDisplayName(topic, 'Topik Selesai')}</p><h1>{passed ? (personality?.achievementMessage || 'Hebat!') : (personality?.farewell || 'Tak mengapa. Cuba lagi.')}</h1><p>{passed ? 'Kamu telah menamatkan latihan ini.' : (personality?.farewell || 'Tak mengapa. Mari kita cuba sekali lagi dengan tenang.')}</p>{journeySummary && <p className="memory-last">{journeySummary}</p>}<VoiceButton text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''} label="Baca Ringkasan" title="Baca ringkasan akhir" className="voice-inline" /><div className="result-score"><b>{scorePercent}%</b><span>{stars}</span></div>{gamificationProfile && <GamificationSummary profile={gamificationProfile} source={{ profile, gamificationProfile }} className="finish-gamification-summary" />}<div className="finish-rewards"><div><b>{stars}</b><span>Bintang</span></div><div><b>{Number(session.xp) || 0}</b><span>XP diterima</span></div><div><b>{Number(profile?.streak) || 0}</b><span>Streak</span></div></div><div className="finish-summary-grid">{summaryCards.map(card => <div className="finish-summary-card" key={card.label}><span>{card.label}</span><b>{card.value}</b></div>)}</div><div className="actions"><button onClick={passed && nextTopic ? onNextTopic : onRetry}>{passed && nextTopic ? 'Teruskan Belajar' : 'Cuba Lagi'}</button><button className="secondary" onClick={onDashboard}>Papan Utama</button><button className="secondary" onClick={onOpenAi}>Tanya Guru AI</button></div></section></main>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
@@ -2196,6 +2225,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
 
   function submitAnswer() {
     if (!question) return;
+    if (result) return;
     const checked = smartCheck(answer, question);
     const correct = checked.status === 'correct';
     const nextScore = {
@@ -2205,7 +2235,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setScore(nextScore);
     setResult({
       correct,
-      expected: question.answer,
+      expected: getAcceptedAnswers(question).join(' / ') || question.answer,
       explanation: question.explanation || question.hint || '',
       message: checked.message
     });
@@ -2230,6 +2260,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   }
 
   function nextQuestion() {
+    if (!result) return;
     if (questionIndex + 1 >= questions.length) {
       completedRef.current = true;
       clearSubjectScoped(subject.id, profile?.year || 'Tahun 2', 'uasaSession');
@@ -2242,7 +2273,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setResult(null);
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`}><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = semanticReadingPassages;
@@ -2318,8 +2349,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     }
     return null;
   });
-  const [scoreHistory, setScoreHistory] = useState(() => Array.isArray(resume?.state?.scoreHistory) ? resume.state.scoreHistory : []);
-  const recordedSessionRef = useRef(null);
+  const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
+  const recordedSessionRef = useRef(new Set());
   const speechSessionRef = useRef(null);
   const passageChangeRef = useRef(passageId);
   const resumeChangeRef = useRef(onResumeChange);
@@ -2334,7 +2365,9 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   };
   const passage = passageBase.sessionItems?.[sessionIndex % passageBase.sessionItems.length] || passageBase;
   const safeResult = normalizeBacaanResult(result);
+  const communicationResult = normalizeCommunicationResult(result);
   const hasResult = Boolean(result);
+  const sessionSummary = buildCommunicationSessionSummary(scoreHistory);
   const safePassageText = passage?.language === 'arab'
     ? safeArabicCoachText(passage?.text, 'Tiada petikan bacaan tersedia buat masa ini.')
     : typeof passage?.text === 'string' ? passage.text : '';
@@ -2386,13 +2419,14 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
 
   const recordBacaanResult = nextResult => {
     const normalized = normalizeBacaanResult(nextResult);
-    setResult(normalized);
-    if (normalized.status !== 'completed' || !normalized.transcript.trim()) return;
     const itemIdentity = `${passageId}:${sessionIndex}`;
-    if (recordedSessionRef.current !== itemIdentity) {
-      recordedSessionRef.current = itemIdentity;
-      setScoreHistory(history => [...history, Number(normalized.score) || 0]);
-    }
+    setResult(normalized);
+    recordCommunicationScore({
+      ref: recordedSessionRef,
+      itemKey: itemIdentity,
+      result: normalized,
+      setScoreHistory
+    });
   };
 
   useEffect(() => {
@@ -2525,12 +2559,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   }
 
   function nextBacaan() {
-    if (safeResult.status !== 'completed') {
+    if (!communicationResult.canAdvance) {
       retryBacaan();
       return;
     }
     clearBacaanSession();
-    recordedSessionRef.current = null;
     resetBacaanState();
     setSessionIndex(current => nextCommunicationSessionIndex(current, passageBase.sessionItems?.length || 1));
   }
@@ -2544,8 +2577,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     const nextResult = result && typeof result === 'object'
       ? normalizeBacaanResult(result)
       : compareBacaan(passage.text, transcript);
-    if (nextResult.status !== 'completed' || !String(nextResult.transcript || transcript || '').trim()) return;
-    const completedScores = Array.isArray(scoreHistory) && scoreHistory.length ? scoreHistory : [nextResult.score];
+    const contract = normalizeCommunicationResult(nextResult);
+    const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
+    if (!contract.isAssessed || !completedScores.length) {
+      onClearResume?.();
+      onBack?.();
+      return;
+    }
     const averageScore = Math.round(completedScores.reduce((sum, value) => sum + Number(value || 0), 0) / completedScores.length);
     const passedCount = completedScores.filter(value => Number(value) >= 80).length;
     onFinish({
@@ -2562,17 +2600,19 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       extraWordCount: nextResult.extraWordCount,
       tertinggal: Array.isArray(nextResult.missed) ? nextResult.missed : [],
       incorrect: Number(nextResult.incorrect) || 0,
+      isAssessed: true,
       scoreHistory: completedScores,
       completedPassages: completedScores.length,
       averageScore,
       bestScore: Math.max(...completedScores),
       passedCount,
+      latestPercent: completedScores[completedScores.length - 1],
       finalItemScore: nextResult.score
     });
     onClearResume?.();
   }
 
-return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} petikan selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
+  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bacaan Luar Talian</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="book" /></div><div><p className="eyebrow">Jurulatih Bacaan AI</p><h1>{passage.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip jawapan secara manual.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.</p>}<label>Transkrip / bacaan manual</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Transkrip suara atau bacaan manual..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{safeResult.message || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={retryBacaan}>Cuba Lagi</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} petikan selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
 }
 const listeningSets = semanticListeningSets;
 
@@ -2592,6 +2632,16 @@ function normalizeListeningAcceptedAnswers(values = []) {
     if (normalized.startsWith('the') && normalized.length > 3) variants.add(normalized.slice(3));
   });
   return variants;
+}
+
+function recordCommunicationScore({ ref, itemKey, result, setScoreHistory }) {
+  const normalized = normalizeCommunicationAttempt(result, { itemKey });
+  if (!normalized.shouldAppendHistory) return false;
+  if (!(ref.current instanceof Set)) ref.current = new Set();
+  if (normalized.attemptKey && ref.current.has(normalized.attemptKey)) return false;
+  if (normalized.attemptKey) ref.current.add(normalized.attemptKey);
+  setScoreHistory(history => appendUniqueCommunicationResult(history, normalized));
+  return true;
 }
 
 // Deprecated listening implementation removed; MendengarLab is the sole active surface.
@@ -2677,8 +2727,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
   const [result, setResult] = useState(() => resume?.state?.result || null);
-  const [scoreHistory, setScoreHistory] = useState(() => Array.isArray(resume?.state?.scoreHistory) ? resume.state.scoreHistory : []);
-  const recordedSessionRef = useRef(null);
+  const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
+  const recordedSessionRef = useRef(new Set());
   const modeResetRef = useRef({ setId, mode });
   const resumeChangeRef = useRef(onResumeChange);
   const recognitionRef = useRef(null);
@@ -2689,7 +2739,11 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const safariEmptyFailureRef = useRef(0);
   const [safariMicDisabled, setSafariMicDisabled] = useState(false);
   const setBase = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
-  const set = setBase?.sessionItems?.[sessionIndex % setBase.sessionItems.length] ? { ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length], id: setBase.id } : setBase;
+  const rawSet = setBase?.sessionItems?.[sessionIndex % setBase.sessionItems.length]
+    ? { ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length], id: setBase.id }
+    : setBase;
+  const rawSetTitle = rawSet?.title || '';
+  const set = rawSet ? { ...rawSet, title: formatScopeLabel(rawSetTitle) } : rawSet;
   const isIOSSafari = useMemo(() => {
     if (typeof navigator === 'undefined') return false;
     const ua = navigator.userAgent || '';
@@ -2707,9 +2761,23 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     : typeof safePrompt?.text === 'string' ? safePrompt.text : '';
   const safeKeywords = Array.isArray(safePrompt.keywords) ? safePrompt.keywords : [];
   const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
-  const safeResult = result && typeof result === 'object' ? result : { status: 'idle', score: 0, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], transcript: '', confidence: 0, correct: false, errorCode: '', message: '' };
-  const safeMatched = Array.isArray(safeResult.matched) ? safeResult.matched : Array.isArray(safeResult.matchedKeywords) ? safeResult.matchedKeywords : [];
-  const safeMissing = Array.isArray(safeResult.missed) ? safeResult.missed : Array.isArray(safeResult.tertinggal) ? safeResult.tertinggal : Array.isArray(safeResult.missingWords) ? safeResult.missingWords : [];
+  const safeResult = result && typeof result === 'object'
+    ? result
+    : { status: 'idle', score: 0, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], transcript: '', confidence: 0, correct: false, errorCode: '', message: '' };
+  const communicationResult = normalizeCommunicationResult(result);
+  const sessionSummary = buildCommunicationSessionSummary(scoreHistory);
+  const safeMatched = Array.isArray(safeResult.matched)
+    ? safeResult.matched
+    : Array.isArray(safeResult.matchedKeywords)
+      ? safeResult.matchedKeywords
+      : [];
+  const safeMissing = Array.isArray(safeResult.missed)
+    ? safeResult.missed
+    : Array.isArray(safeResult.tertinggal)
+      ? safeResult.tertinggal
+      : Array.isArray(safeResult.missingWords)
+        ? safeResult.missingWords
+        : [];
   const safeWords = Array.isArray(safeResult.words) ? safeResult.words : [];
   const speechMessage = typeof safeResult.message === 'string' ? safeResult.message : '';
   const modes = useMemo(() => safeModeKeys.map(id => ({ id, label: promptBank?.[id]?.label || id })), [promptBank, safeModeKey]);
@@ -2748,19 +2816,13 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       recognition.onerror = null;
       recognition.onend = null;
       recognition.onnomatch = null;
-    } catch {
-      // Ignore handler cleanup errors.
-    }
+    } catch {}
     try {
       recognition.stop?.();
-    } catch {
-      // Ignore stop errors.
-    }
+    } catch {}
     try {
       recognition.abort?.();
-    } catch {
-      // Ignore abort errors.
-    }
+    } catch {}
     recognitionRef.current = null;
   };
 
@@ -2789,19 +2851,20 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     clearSpeechTimeout();
     if (shouldCountFailure && isIOSSafari) {
       safariEmptyFailureRef.current += 1;
-      if (safariEmptyFailureRef.current >= 2) {
-        setSafariMicDisabled(true);
-      }
+      if (safariEmptyFailureRef.current >= 2) setSafariMicDisabled(true);
     } else if (isIOSSafari && (typeof nextResult?.transcript === 'string' ? nextResult.transcript.trim() : Boolean(nextResult?.correct))) {
       safariEmptyFailureRef.current = 0;
     }
     setTranscript(nextTranscript);
     setMendengar(false);
-    if (recordedSessionRef.current !== sessionIndex) {
-      recordedSessionRef.current = sessionIndex;
-      setScoreHistory(history => [...history, Number(nextResult?.score) || 0]);
-    }
-    setResult(nextResult);
+    const normalized = { ...nextResult, status: nextResult?.status || 'completed' };
+    recordCommunicationScore({
+      ref: recordedSessionRef,
+      itemKey: `${setId}:${mode}:${sessionIndex}`,
+      result: normalized,
+      setScoreHistory
+    });
+    setResult(normalized);
     disposeRecognition();
   };
 
@@ -2843,7 +2906,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       topicId: resume?.topicId || `${setId}_${mode}`,
       metadata: {
         displayTitle: 'Bertutur',
-        subjectTitle: set.title,
+        subjectTitle: rawSetTitle,
         setId,
         sessionIndex,
         questionMode: mode
@@ -2881,9 +2944,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       setMendengar(true);
     };
     recognition.onerror = event => {
-      if (finalizedRef.current || abortedRef.current) {
-        return;
-      }
+      if (finalizedRef.current || abortedRef.current) return;
       const error = event?.error || 'unknown_error';
       if (error === 'aborted') {
         abortedRef.current = true;
@@ -2894,7 +2955,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         return;
       }
       if (error === 'audio-capture') {
-        finalizeBertuturSession(createEmptySpeechResult('audio-capture', 'Mikrofon tidak dapat digunakan.'));
+        finalizeBertuturSession({ ...createEmptySpeechResult('audio-capture', 'Mikrofon tidak dapat digunakan.'), status: 'technical-error' });
         return;
       }
       if (error === 'not-allowed' || error === 'service-not-allowed') {
@@ -2902,7 +2963,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         return;
       }
       finalizeBertuturSession({
-        status: 'error',
+        status: 'technical-error',
         score: 0,
         matched: [],
         matchedKeywords: [],
@@ -2914,27 +2975,19 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         confidence: 0,
         correct: false,
         errorCode: error,
-        message: 'Cuba sekali lagi.'
+        message: 'Rakaman tidak dapat digunakan.'
       });
     };
     recognition.onresult = event => {
-      if (finalizedRef.current || abortedRef.current) {
-        return;
-      }
+      if (finalizedRef.current || abortedRef.current) return;
       const nextTranscript = extractSpeechTranscript(event);
-      if (!nextTranscript) {
-        return;
-      }
+      if (!nextTranscript) return;
       receivedResultRef.current = true;
-      finalizeBertuturSession(finishSpeechSession(scoreBertutur(safePrompt, nextTranscript)), nextTranscript);
+      finalizeBertuturSession(finishSpeechSession({ ...scoreBertutur(safePrompt, nextTranscript), status: 'completed', transcript: nextTranscript }), nextTranscript);
     };
     recognition.onend = () => {
       clearSpeechTimeout();
-      if (finalizedRef.current) {
-        recognitionRef.current = null;
-        return;
-      }
-      if (abortedRef.current) {
+      if (finalizedRef.current || abortedRef.current) {
         recognitionRef.current = null;
         return;
       }
@@ -2948,9 +3001,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         if (!receivedResultRef.current && !finalizedRef.current) {
           try {
             recognition?.stop?.();
-          } catch {
-            // Ignore timeout stop errors.
-          }
+          } catch {}
           finalizeBertuturSession(createEmptySpeechResult('no-result', 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.'), '', true);
           recognitionRef.current = null;
         }
@@ -2960,22 +3011,29 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       clearSpeechTimeout();
       recognitionRef.current = null;
       setMendengar(false);
+      setResult({ ...createEmptySpeechResult('speech-unavailable', 'Rakaman tidak dapat digunakan.'), status: 'technical-error' });
     }
   }
 
   function checkBertutur() {
     stopRecognitionSilently();
-    const nextResult = scoreBertutur(safePrompt, safeTranscript);
-    if (recordedSessionRef.current !== sessionIndex) {
-      recordedSessionRef.current = sessionIndex;
-      setScoreHistory(history => [...history, Number(nextResult?.score) || 0]);
+    if (!safeTranscript) {
+      setResult(createEmptySpeechResult('empty', 'Taip atau sebut jawapan sebelum menyemak.'));
+      return;
     }
-    setResult(nextResult);
+    const normalized = { ...scoreBertutur(safePrompt, safeTranscript), status: 'completed', transcript: safeTranscript };
+    recordCommunicationScore({
+      ref: recordedSessionRef,
+      itemKey: `${setId}:${mode}:${sessionIndex}`,
+      result: normalized,
+      setScoreHistory
+    });
+    setResult(normalized);
   }
 
   function nextBertutur() {
+    if (!communicationResult.canAdvance || !safeTranscript) return;
     stopRecognitionSilently();
-    recordedSessionRef.current = null;
     setTranscript('');
     setResult(null);
     resetSpeechSession();
@@ -2984,19 +3042,32 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
 
   function saveBertutur() {
     const nextResult = safeResult && typeof safeResult === 'object' ? safeResult : scoreBertutur(safePrompt, safeTranscript);
+    const contract = normalizeCommunicationResult(nextResult);
+    const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
+    if (!contract.isAssessed || !completedScores.length) {
+      onClearResume?.();
+      onBack?.();
+      return;
+    }
     onFinish({
       language: set.language,
-      title: set.title,
+      title: rawSetTitle,
       mode,
       transcript: safeTranscript,
       score: nextResult.score,
+      isAssessed: true,
+      scoreHistory: completedScores,
+      completedItems: completedScores.length,
+      averageScore: Math.round(completedScores.reduce((sum, value) => sum + value, 0) / completedScores.length),
+      bestScore: Math.max(...completedScores),
+      latestPercent: completedScores[completedScores.length - 1],
       matchedKeywords: Array.isArray(nextResult.matchedKeywords) ? nextResult.matchedKeywords.length : Array.isArray(nextResult.matched) ? nextResult.matched.length : 0,
       totalKeywords: safeKeywords.length
     });
     onClearResume?.();
   }
 
-  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">🗣️</div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safePromptText}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Pengecaman suara automatik tidak stabil pada Safari. Gunakan transkrip manual.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<div className="actions"><button onClick={nextBertutur}>Seterusnya</button><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} item selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
+  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Bertutur Luar Talian</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="mic" /></div><div><p className="eyebrow">Jurulatih Bertutur</p><h1>{set.title}</h1><p>Tiada API berbayar. Guna pengecaman suara pelayar jika tersedia, atau taip transkrip secara manual.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safePromptText}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur}>Semak Transkrip</button></div>{!recognitionSupported && <p className="autosave-note">Pelayar ini tidak menyokong pengecaman suara. Taip apa yang kamu sebut di bawah.</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Pengecaman suara automatik tidak stabil pada Safari. Gunakan transkrip manual.</p>}{speechMessage && <p className="autosave-note">{speechMessage}</p>}<label>Transkrip / pertuturan manual</label><textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={event => setTranscript(event.target.value)} placeholder="Transkrip suara atau jawapan manual..." /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<div className="actions"><button onClick={nextBertutur}>Seterusnya</button><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{speechMessage || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} item selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
 }
 // Semantic communication banks are the only active source for listening, speaking, and writing.
 const writingSets = semanticWritingSets;
@@ -3031,8 +3102,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
   const [result, setResult] = useState(() => resume?.state?.result || null);
-  const [scoreHistory, setScoreHistory] = useState(() => Array.isArray(resume?.state?.scoreHistory) ? resume.state.scoreHistory : []);
-  const recordedSessionRef = useRef(null);
+  const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
+  const recordedSessionRef = useRef(new Set());
   const modeResetRef = useRef({ setId, mode });
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
@@ -3051,8 +3122,11 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
     spellingIssues: Array.isArray(result.spellingIssues) ? result.spellingIssues : [],
     grammarPetunjuks: Array.isArray(result.grammarPetunjuks) ? result.grammarPetunjuks : [],
     explanation: typeof result.explanation === 'string' ? result.explanation : '',
+    message: typeof result.message === 'string' ? result.message : '',
     ...result
   } : null;
+  const communicationResult = normalizeCommunicationResult(result);
+  const sessionSummary = buildCommunicationSessionSummary(scoreHistory);
 
   useEffect(() => {
     if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
@@ -3124,17 +3198,36 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   function checkMenulis() {
-    if (!safeTask) return;
-    const nextResult = scoreMenulis(safeTask, currentAnswer(), set?.dictionary || []);
-    if (recordedSessionRef.current !== sessionIndex) {
-      recordedSessionRef.current = sessionIndex;
-      setScoreHistory(history => [...history, Number(nextResult?.score) || 0]);
+    try {
+      if (!safeTask) return;
+      if (!currentAnswer().trim()) {
+        setResult({ status: 'empty', score: 0, matched: [], spellingIssues: [], grammarPetunjuks: [], explanation: '', message: 'Jawapan belum diterima.' });
+        return;
+      }
+      const nextResult = { ...scoreMenulis(safeTask, currentAnswer(), set?.dictionary || []), status: 'completed', answer: currentAnswer() };
+      recordCommunicationScore({
+        ref: recordedSessionRef,
+        itemKey: `${setId}:${mode}:${sessionIndex}`,
+        result: nextResult,
+        setScoreHistory
+      });
+      setResult(nextResult);
+    } catch {
+      setResult({
+        status: 'technical-error',
+        score: 0,
+        matched: [],
+        spellingIssues: [],
+        grammarPetunjuks: [],
+        explanation: '',
+        message: 'Semakan tulisan tidak dapat dijalankan sekarang.',
+        errorCode: 'validation-error'
+      });
     }
-    setResult(nextResult);
   }
 
   function nextMenulis() {
-    recordedSessionRef.current = null;
+    if (!communicationResult.canAdvance || !currentAnswer().trim()) return;
     setAnswer('');
     setSusund([]);
     setResult(null);
@@ -3144,12 +3237,25 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   function saveMenulis() {
     if (!safeTask || !set) return;
     const nextResult = safeResult || scoreMenulis(safeTask, currentAnswer(), set.dictionary || []);
+    const contract = normalizeCommunicationResult(nextResult);
+    const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
+    if (!contract.isAssessed || !completedScores.length) {
+      onClearResume?.();
+      onBack?.();
+      return;
+    }
     onFinish({
       language: set.language,
       title: set.title,
       mode,
       answer: currentAnswer(),
       score: nextResult.score,
+      isAssessed: true,
+      scoreHistory: completedScores,
+      completedItems: completedScores.length,
+      averageScore: Math.round(completedScores.reduce((sum, value) => sum + value, 0) / completedScores.length),
+      bestScore: Math.max(...completedScores),
+      latestPercent: completedScores[completedScores.length - 1],
       matchedKeywords: Array.isArray(nextResult.matched) ? nextResult.matched.length : 0,
       totalKeywords: safeTask?.keywords?.length || 0,
       spellingIssues: Array.isArray(nextResult.spellingIssues) ? nextResult.spellingIssues.length : 0,
@@ -3164,7 +3270,148 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
 
-  return <main className="app writing-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Jurulatih Menulis Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Jurulatih Menulis</p><h1>{set.title}</h1><p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{writingSets.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="writing-mode-grid">{safeModes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeTaskPrompt}</div>{mode === 'arrange' ? <><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>{word}</button>)}</div></> : <textarea lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : 'auto'} value={answer} onChange={event => setAnswer(event.target.value)} placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'} /> }<div className="actions"><button onClick={checkMenulis}>Semak Tulisan</button><button className="secondary" onClick={saveMenulis}>Tamatkan Sesi</button></div></section>{safeResult ? <section className="card reading-result"><p className="eyebrow">Keputusan Menulis</p><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span><span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span><span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{(safeTask?.keywords || []).map(keyword => <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>}{Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && <div className="explain-box"><b>Petua tatabahasa</b><p>{safeResult.grammarPetunjuks.join(' ')}</p></div>}<div className="actions"><button onClick={nextMenulis}>Seterusnya</button></div><div className="explain-box"><b>Penerangan AI</b><p>{safeResult.explanation}</p></div></section> : <section className="card"><p className="eyebrow">Keputusan Menulis</p><h2>Belum ada keputusan.</h2><p>Semak tulisan untuk melihat analisis.</p></section>}{scoreHistory.length > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{scoreHistory.length} item selesai • Purata {Math.round(scoreHistory.reduce((sum, score) => sum + score, 0) / scoreHistory.length)}% • Terbaik {Math.max(...scoreHistory)}%</p></section>}</main>;
+  return (
+    <main className="app writing-coach-page">
+      <div className="topbar">
+        <button className="ghost" onClick={onBack}>← Papan Utama</button>
+        <span className="pill">Jurulatih Menulis Luar Talian</span>
+      </div>
+
+      <section className="card reading-hero">
+        <div className="communication-hero-icon" aria-hidden="true">
+          <IconGlyph name="pen" />
+        </div>
+        <div>
+          <p className="eyebrow">Jurulatih Menulis</p>
+          <h1>{set.title}</h1>
+          <p>Tiada API berbayar. Semakan kata kunci, ejaan, petua tatabahasa dan penerangan gaya AI dibuat secara luar talian.</p>
+        </div>
+      </section>
+
+      <section className="card">
+        <p className="eyebrow">Bahasa</p>
+        <div className="reading-tabs">
+          {writingSets.map(item => (
+            <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>
+              {item.language}
+            </button>
+          ))}
+        </div>
+
+        <p className="eyebrow">Jenis Soalan</p>
+        <div className="writing-mode-grid">
+          {safeModes.map(item => (
+            <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>
+          {safeTaskPrompt}
+        </div>
+
+        {mode === 'arrange' ? (
+          <>
+            <div className="listening-arrange">
+              {arranged.map(word => (
+                <button key={word} onClick={() => setSusund(prev => prev.filter(item => item !== word))}>
+                  {word}
+                </button>
+              ))}
+            </div>
+            <div className="listening-options">
+              {availableWords.map(word => (
+                <button className="secondary" key={word} onClick={() => setSusund(prev => [...prev, word])}>
+                  {word}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <textarea
+            lang={set.id === 'arab' ? 'ar' : undefined}
+            dir={set.id === 'arab' ? 'rtl' : 'auto'}
+            value={answer}
+            onChange={event => setAnswer(event.target.value)}
+            placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'}
+          />
+        )}
+
+        <div className="actions">
+          <button onClick={checkMenulis}>Semak Tulisan</button>
+          <button className="secondary" onClick={saveMenulis}>Tamatkan Sesi</button>
+        </div>
+      </section>
+
+      {safeResult ? (
+        <section className="card reading-result">
+          <p className="eyebrow">Keputusan Menulis</p>
+          {communicationResult.isAssessed ? (
+            <>
+              <h2>{clampPercent(safeResult.score)}%</h2>
+              <div className="recommend-meta">
+                <span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span>
+                <span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span>
+                <span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span>
+              </div>
+              <div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>
+                {(safeTask?.keywords || []).map(keyword => (
+                  <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+              {Array.isArray(safeResult.spellingIssues) && safeResult.spellingIssues.length > 0 && (
+                <p>Semak ejaan: <b>{safeResult.spellingIssues.map(word => word.raw).join(', ')}</b></p>
+              )}
+              {Array.isArray(safeResult.grammarPetunjuks) && safeResult.grammarPetunjuks.length > 0 && (
+                <div className="explain-box">
+                  <b>Petua tatabahasa</b>
+                  <p>{safeResult.grammarPetunjuks.join(' ')}</p>
+                </div>
+              )}
+              <div className="actions">
+                <button onClick={nextMenulis}>Seterusnya</button>
+                <button className="secondary" onClick={saveMenulis}>Tamatkan Sesi</button>
+              </div>
+              <div className="explain-box">
+                <b>Penerangan AI</b>
+                <p>{safeResult.explanation}</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2>Belum dinilai</h2>
+              <p>{safeResult.message || 'Jawapan belum diterima.'}</p>
+              <div className="actions">
+                <button className="secondary" onClick={saveMenulis}>Tamatkan Sesi</button>
+              </div>
+            </>
+          )}
+        </section>
+      ) : (
+        <section className="card">
+          <p className="eyebrow">Keputusan Menulis</p>
+          <h2>Belum ada keputusan.</h2>
+          <p>Semak tulisan untuk melihat analisis.</p>
+        </section>
+      )}
+
+      {sessionSummary.hasEvidence ? (
+        <section className="card reading-result">
+          <p className="eyebrow">Ringkasan Sesi</p>
+          <p>{sessionSummary.completedItems} item selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p>
+        </section>
+      ) : (
+        <section className="card reading-result">
+          <p className="eyebrow">Ringkasan Sesi</p>
+          <p>Belum ada sesi direkodkan.</p>
+          <p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p>
+        </section>
+      )}
+    </main>
+  );
 }
 
 /* Final listening surface: explicit next-item flow with a bounded, non-repeating session. */
@@ -3173,57 +3420,317 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const base = listeningSets.find(item => item.id === setId) || listeningSets[0];
   const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
-  const [choice, setChoice] = useState('');
-  const [typed, setTyped] = useState('');
-  const [arranged, setArranged] = useState([]);
-  const [feedback, setFeedback] = useState(null);
-  const [completed, setCompleted] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
+  const [choice, setChoice] = useState(() => resume?.state?.choice || '');
+  const [typed, setTyped] = useState(() => resume?.state?.typed || '');
+  const [arranged, setArranged] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
+  const [feedback, setFeedback] = useState(() => resume?.state?.feedback || null);
+  const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
+  const recordedSessionRef = useRef(new Set());
+  const resumeChangeRef = useRef(onResumeChange);
+  const resumeSignatureRef = useRef('');
+  const communicationResult = normalizeCommunicationResult(feedback);
   const item = { ...(base.sessionItems?.[sessionIndex % base.sessionItems.length] || base), id: base.id };
   const modes = [{ id: 'choose', label: 'Pilih' }, { id: 'arrange', label: 'Susun' }, { id: 'spell', label: 'Eja' }, { id: 'answer', label: 'Jawapan' }];
   const availableWords = (item.arrange || []).filter(word => !arranged.includes(word));
+  const sessionSummary = buildCommunicationSessionSummary(scoreHistory);
 
   useEffect(() => {
-    setChoice(''); setTyped(''); setArranged([]); setFeedback(null);
+    setChoice('');
+    setTyped('');
+    setArranged([]);
+    setFeedback(null);
   }, [sessionIndex, mode, setId]);
-  useEffect(() => {
-    onResumeChange?.({ version: 1, mode: 'listening', screen: 'listening', sessionId: resume?.sessionId || `listening_${setId}`, subjectId: 'listening', topicId: `${setId}_${sessionIndex}`, metadata: { displayTitle: 'Mendengar', subjectTitle: item.title, setId }, startedAt: resume?.startedAt || new Date().toISOString(), updatedAt: new Date().toISOString(), completed: false, state: { setId, sessionIndex, mode, choice, typed, arranged, feedback } });
-  }, [setId, sessionIndex, mode, choice, typed, arranged, feedback]);
 
-  function stopAudio() { try { window.speechSynthesis?.cancel?.(); } catch {} }
-  function playAudio() { stopAudio(); speak(item.prompt, { lang: item.speechLang }); }
-  function submit() {
-    let expected = ''; let response = '';
-    if (mode === 'choose') { expected = item.choose.answer; response = choice; }
-    if (mode === 'arrange') { expected = item.arrange.join(' '); response = arranged.join(' '); }
-    if (mode === 'spell') { expected = item.spell; response = typed; }
-    if (mode === 'answer') { expected = item.answer.accepted.join(', '); response = typed; }
-    const correct = mode === 'answer' ? normalizeListeningAcceptedAnswers(item.answer.accepted).has(normalizeMendengar(response)) : normalizeMendengar(expected) === normalizeMendengar(response);
-    setFeedback({ correct, expected, response });
+  useEffect(() => {
+    resumeChangeRef.current = onResumeChange;
+  }, [onResumeChange]);
+
+  useEffect(() => {
+    if (!resumeChangeRef.current) return;
+    const nextSignature = [
+      'listening',
+      setId,
+      sessionIndex,
+      mode,
+      choice,
+      typed,
+      arranged.join(' '),
+      feedback?.status || '',
+      feedback?.score ?? '',
+      scoreHistory.join(',')
+    ].join('|');
+    if (resumeSignatureRef.current === nextSignature) return;
+    resumeSignatureRef.current = nextSignature;
+    resumeChangeRef.current({
+      version: 1,
+      mode: 'listening',
+      screen: 'listening',
+      sessionId: resume?.sessionId || `listening_${setId}`,
+      subjectId: 'listening',
+      topicId: `${setId}_${sessionIndex}`,
+      metadata: {
+        displayTitle: 'Mendengar',
+        subjectTitle: item.title,
+        setId
+      },
+      startedAt: resume?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      state: {
+        setId,
+        sessionIndex,
+        mode,
+        choice,
+        typed,
+        arranged,
+        feedback,
+        scoreHistory
+      }
+    });
+  }, [resume, setId, sessionIndex, mode, choice, typed, arranged, feedback, scoreHistory, item.title]);
+
+  function stopAudio() {
+    try {
+      window.speechSynthesis?.cancel?.();
+    } catch {}
   }
+
+  function playAudio() {
+    try {
+      stopAudio();
+      speak(item.prompt, { lang: item.speechLang });
+    } catch {
+      setFeedback({
+        status: 'technical-error',
+        score: 0,
+        correct: false,
+        expected: '',
+        response: '',
+        message: 'Audio tidak dapat dimainkan sekarang.',
+        errorCode: 'audio-unavailable'
+      });
+    }
+  }
+
+  function submit() {
+    try {
+      let expected = '';
+      let response = '';
+
+      if (mode === 'choose') {
+        expected = item.choose.answer;
+        response = choice;
+      }
+      if (mode === 'arrange') {
+        expected = item.arrange.join(' ');
+        response = arranged.join(' ');
+      }
+      if (mode === 'spell') {
+        expected = item.spell;
+        response = typed;
+      }
+      if (mode === 'answer') {
+        expected = item.answer.accepted.join(', ');
+        response = typed;
+      }
+
+      if (!normalizeMendengar(response)) {
+        setFeedback({ status: 'empty', correct: false, expected, response: '', message: 'Belum ada percubaan yang sah.' });
+        return;
+      }
+
+      const correct = mode === 'answer'
+        ? normalizeListeningAcceptedAnswers(item.answer.accepted).has(normalizeMendengar(response))
+        : normalizeMendengar(expected) === normalizeMendengar(response);
+      const nextFeedback = { status: 'completed', score: correct ? 100 : 0, correct, expected, response };
+      recordCommunicationScore({
+        ref: recordedSessionRef,
+        itemKey: `${setId}:${mode}:${sessionIndex}`,
+        result: nextFeedback,
+        setScoreHistory
+      });
+      setFeedback(nextFeedback);
+    } catch {
+      setFeedback({
+        status: 'technical-error',
+        score: 0,
+        correct: false,
+        expected: '',
+        response: '',
+        message: 'Semakan audio tidak dapat dijalankan sekarang.',
+        errorCode: 'validation-error'
+      });
+    }
+  }
+
   function nextItem() {
+    if (!communicationResult.canAdvance) return;
     stopAudio();
-    const wasCorrect = Boolean(feedback?.correct);
-    setCompleted(value => value + (feedback ? 1 : 0));
-    setCorrectCount(value => value + (wasCorrect ? 1 : 0));
     setSessionIndex(current => nextCommunicationSessionIndex(current, base.sessionItems.length));
   }
+
   function finish() {
     stopAudio();
-    const total = completed + (feedback ? 1 : 0);
-    const correct = correctCount + (feedback?.correct ? 1 : 0);
-    onFinish?.({ language: base.language, title: base.title, mode: 'mixed', score: total ? Math.round((correct / total) * 100) : 0, correct, total });
+    const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
+    if (!completedScores.length) {
+      onClearResume?.();
+      onBack?.();
+      return;
+    }
+    const correct = completedScores.filter(score => score >= 80).length;
+    const total = completedScores.length;
+    onFinish?.({
+      language: base.language,
+      title: base.title,
+      mode: 'mixed',
+      score: Math.round(completedScores.reduce((sum, value) => sum + value, 0) / total),
+      correct,
+      total,
+      isAssessed: true,
+      scoreHistory: completedScores,
+      completedItems: total,
+      averageScore: Math.round(completedScores.reduce((sum, value) => sum + value, 0) / total),
+      bestScore: Math.max(...completedScores),
+      latestPercent: completedScores[completedScores.length - 1]
+    });
     onClearResume?.();
   }
-  return <main className="app listening-lab-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Makmal Mendengar Luar Talian</span></div><section className="card reading-hero"><div className="bot medium">📚</div><div><p className="eyebrow">Makmal Mendengar</p><h1>{item.title}</h1><p>Audio menggunakan suara pelayar; tiada item kosong 0:00.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{listeningSets.map(language => <button key={language.id} className={language.id === setId ? '' : 'secondary'} onClick={() => { stopAudio(); setSetId(language.id); setSessionIndex(0); setCompleted(0); setCorrectCount(0); }}>{language.language}</button>)}</div><button className="full" onClick={playAudio}>Mainkan Audio</button></section><section className="card"><p className="eyebrow">Jenis Soalan</p><div className="reading-tabs">{modes.map(nextMode => <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>{nextMode.label}</button>)}</div>{mode === 'choose' && <><h2>{item.choose.question}</h2><div className="listening-options">{item.choose.options.map(option => <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>{option}</button>)}</div></>}{mode === 'arrange' && <><h2>Susun perkataan yang kamu dengar</h2><div className="listening-arrange">{arranged.map(word => <button key={word} onClick={() => setArranged(values => values.filter(value => value !== word))}>{word}</button>)}</div><div className="listening-options">{availableWords.map(word => <button className="secondary" key={word} onClick={() => setArranged(values => [...values, word])}>{word}</button>)}</div></>}{mode === 'spell' && <><h2>Eja perkataan yang kamu dengar</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" /></>}{mode === 'answer' && <><h2>{item.answer.question}</h2><input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" /></>}<div className="actions"><button onClick={submit}>Semak Jawapan</button>{feedback && <button className="secondary" onClick={nextItem}>Seterusnya</button>}<button className="secondary" onClick={finish}>Tamatkan Sesi</button></div>{feedback && <div className={`feedback ${feedback.correct ? 'correct' : 'wrong'}`}><h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan: <b>{feedback.expected}</b></p></div>}</section>{completed > 0 && <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{completed} item selesai • {correctCount} betul</p></section>}</main>;
+
+  return (
+    <main className="app listening-lab-page">
+      <div className="topbar">
+        <button className="ghost" onClick={onBack}>← Papan Utama</button>
+        <span className="pill">Makmal Mendengar Luar Talian</span>
+      </div>
+
+      <section className="card reading-hero">
+        <div className="communication-hero-icon" aria-hidden="true">
+          <IconGlyph name="headphones" />
+        </div>
+        <div>
+          <p className="eyebrow">Makmal Mendengar</p>
+          <h1>{item.title}</h1>
+          <p>Dengar arahan menggunakan suara peranti.</p>
+        </div>
+      </section>
+
+      <section className="card">
+        <p className="eyebrow">Bahasa</p>
+        <div className="reading-tabs">
+          {listeningSets.map(language => (
+            <button
+              key={language.id}
+              className={language.id === setId ? '' : 'secondary'}
+              onClick={() => {
+                stopAudio();
+                setSetId(language.id);
+                setSessionIndex(0);
+                setScoreHistory([]);
+              }}
+            >
+              {language.language}
+            </button>
+          ))}
+        </div>
+        <button className="full" onClick={playAudio}>Mainkan Audio</button>
+      </section>
+
+      <section className="card">
+        <p className="eyebrow">Jenis Soalan</p>
+        <div className="reading-tabs">
+          {modes.map(nextMode => (
+            <button key={nextMode.id} className={nextMode.id === mode ? '' : 'secondary'} onClick={() => setMode(nextMode.id)}>
+              {nextMode.label}
+            </button>
+          ))}
+        </div>
+
+        {mode === 'choose' && (
+          <>
+            <h2>{item.choose.question}</h2>
+            <div className="listening-options">
+              {item.choose.options.map(option => (
+                <button key={option} className={choice === option ? '' : 'secondary'} onClick={() => setChoice(option)}>
+                  {option}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {mode === 'arrange' && (
+          <>
+            <h2>Susun perkataan yang kamu dengar</h2>
+            <div className="listening-arrange">
+              {arranged.map(word => (
+                <button key={word} onClick={() => setArranged(values => values.filter(value => value !== word))}>
+                  {word}
+                </button>
+              ))}
+            </div>
+            <div className="listening-options">
+              {availableWords.map(word => (
+                <button className="secondary" key={word} onClick={() => setArranged(values => [...values, word])}>
+                  {word}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {mode === 'spell' && (
+          <>
+            <h2>Eja perkataan yang kamu dengar</h2>
+            <input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip perkataan" />
+          </>
+        )}
+
+        {mode === 'answer' && (
+          <>
+            <h2>{item.answer.question}</h2>
+            <input value={typed} onChange={event => setTyped(event.target.value)} placeholder="Taip jawapan kamu" />
+          </>
+        )}
+
+        <div className="actions">
+          <button onClick={submit}>Semak Jawapan</button>
+          {feedback && communicationResult.canAdvance && <button className="secondary" onClick={nextItem}>Seterusnya</button>}
+          <button className="secondary" onClick={finish}>Tamatkan Sesi</button>
+        </div>
+
+        {feedback && (
+          <div className={`feedback ${communicationResult.isAssessed && feedback.correct ? 'correct' : 'wrong'}`}>
+            {communicationResult.isAssessed ? (
+              <>
+                <h2>{feedback.correct ? 'Betul' : 'Cuba lagi'}</h2>
+                <p>Jawapan: <b>{feedback.expected}</b></p>
+              </>
+            ) : (
+              <>
+                <h2>Belum dinilai</h2>
+                <p>{feedback.message || 'Percubaan belum dapat dinilai lagi.'}</p>
+              </>
+            )}
+          </div>
+        )}
+      </section>
+
+      {sessionSummary.hasEvidence ? (
+        <section className="card reading-result">
+          <p className="eyebrow">Ringkasan Sesi</p>
+          <p>{sessionSummary.completedItems} item selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p>
+        </section>
+      ) : (
+        <section className="card reading-result">
+          <p className="eyebrow">Ringkasan Sesi</p>
+          <p>Belum ada sesi direkodkan.</p>
+          <p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p>
+        </section>
+      )}
+    </main>
+  );
 }
 
 function Stat({ icon, label, value }) {
   return <div className="stat"><span className="stat-icon">{icon}</span><b>{value}</b><span>{label}</span></div>;
 }
-
-
-
-
-
-

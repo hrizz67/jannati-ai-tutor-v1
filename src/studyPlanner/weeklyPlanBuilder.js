@@ -22,9 +22,9 @@ function uniqueKey(item = {}) {
 
 function buildStarterRotation() {
   return [
-    { subjectId: 'math', topicId: 'asas', topic: 'Mathematics basics', reason: 'Onboarding: bina asas nombor.', recommendationKey: 'review', activityType: 'review', priority: 'high' },
-    { subjectId: 'bm', topicId: 'reading', topic: 'Bahasa Melayu reading', reason: 'Onboarding: baca dan faham ayat ringkas.', recommendationKey: 'review', activityType: 'practice', priority: 'high' },
-    { subjectId: 'english', topicId: 'simple_sentences', topic: 'Simple Sentences', reason: 'Onboarding: latihan ayat mudah.', recommendationKey: 'review', activityType: 'practice', priority: 'medium' },
+    { subjectId: 'math', topicId: 'nombor_asas', topic: 'Asas Nombor', reason: 'Onboarding: bina asas nombor.', recommendationKey: 'review', activityType: 'review', priority: 'high' },
+    { subjectId: 'bm', topicId: 'bacaan_asas', topic: 'Bacaan Asas', reason: 'Onboarding: baca dan faham ayat ringkas.', recommendationKey: 'review', activityType: 'practice', priority: 'high' },
+    { subjectId: 'english', topicId: 'simple_sentences', topic: 'Ayat Mudah', reason: 'Onboarding: latihan ayat mudah.', recommendationKey: 'review', activityType: 'practice', priority: 'medium' },
     { subjectId: 'sains', topicId: 'haiwan', topic: 'Haiwan', reason: 'Onboarding: kenali konsep asas sains.', recommendationKey: 'review', activityType: 'practice', priority: 'medium' }
   ];
 }

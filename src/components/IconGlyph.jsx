@@ -172,8 +172,91 @@ const ICON_PATHS = {
       <circle cx="12" cy="5" r="2" /><path d="M12 7v6m0 0-4 4m4-4 4 4M8 10l-3 2m11-2 3 2" />
     </>
   ),
+  dashboard: (
+    <>
+      <rect x="4" y="4" width="6" height="6" rx="1.5" />
+      <rect x="14" y="4" width="6" height="10" rx="1.5" />
+      <rect x="4" y="14" width="6" height="6" rx="1.5" />
+      <rect x="14" y="18" width="6" height="2" rx="1" />
+    </>
+  ),
+  revision: (
+    <>
+      <path d="M5 8a8 8 0 0 1 13.2-1.8L20 8" />
+      <path d="M20 4v4h-4" />
+      <path d="M19 16a8 8 0 0 1-13.2 1.8L4 16" />
+      <path d="M4 20v-4h4" />
+    </>
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
+    </>
+  ),
+  back: <path d="m15 5-7 7 7 7M8 12h11" />,
+  next: <path d="m9 5 7 7-7 7M16 12H5" />,
+  close: <path d="m6 6 12 12M18 6 6 18" />,
+  pause: (
+    <>
+      <path d="M9 7v10" />
+      <path d="M15 7v10" />
+    </>
+  ),
+  volume: (
+    <>
+      <path d="M4 10v4h4l5 4V6L8 10H4Z" />
+      <path d="M16 9a4 4 0 0 1 0 6" />
+      <path d="M18.5 6.5a8 8 0 0 1 0 11" />
+    </>
+  ),
+  bookOpen: (
+    <>
+      <path d="M4 5.5h5a3 3 0 0 1 3 3V20a3 3 0 0 0-3-3H4V5.5Z" />
+      <path d="M20 5.5h-5a3 3 0 0 0-3 3V20a3 3 0 0 1 3-3h5V5.5Z" />
+    </>
+  ),
+  lightbulb: (
+    <>
+      <path d="M9 17h6M10 20h4" />
+      <path d="M8.2 14.5A6 6 0 1 1 15.8 14.5 4.5 4.5 0 0 0 14 17h-4a4.5 4.5 0 0 0-1.8-2.5Z" />
+    </>
+  ),
+  teacher: (
+    <>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M4 20v-2a5 5 0 0 1 10 0v2" />
+      <path d="M15 6h5v8h-4" />
+      <path d="m16 10 1.5-1.5L20 11" />
+    </>
+  ),
+  explain: (
+    <>
+      <path d="M5 5h14v11H9l-4 4V5Z" />
+      <path d="M9 9h6M9 12h4" />
+    </>
+  ),
+  print: (
+    <>
+      <path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" />
+      <path d="M7 14h10v7H7z" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11m0 0-4-4m4 4 4-4" />
+      <path d="M5 19h14" />
+    </>
+  ),
+  progress: (
+    <>
+      <path d="M5 19V9M12 19V5M19 19v-7" />
+      <path d="M3 19h18" />
+    </>
+  ),
   arrowDown: <path d="M12 4v15m0 0-5-5m5 5 5-5" />,
   lock: <><rect x="6" y="10" width="12" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
+  unlock: <><rect x="6" y="10" width="12" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 7-2.5" /></>,
   medal: <><circle cx="12" cy="15" r="5" /><path d="m9 3 3 4 3-4M9 3l-2 5m8-5 2 5" /></>
 };
 

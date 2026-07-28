@@ -1,4 +1,4 @@
-import skspMapping from './sksp-mapping.json';
+import skspMapping from './sksp-mapping.json' with { type: 'json' };
 
 function cleanCode(value = '') {
   return String(value).toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');

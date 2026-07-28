@@ -12,25 +12,27 @@ import { printParentReport } from '../utils/printReport';
 import {
   clampPercent,
   formatActivityStatus,
+  formatModeLabel,
+  formatRecommendationKey,
+  formatReviewQueueMeta,
+  formatScopeLabel,
   formatStatus,
   formatStudyMinutes,
+  formatStreakLabel,
   formatSubjectName,
   formatTopicName,
   formatFriendlyDate
 } from '../utils/displayFormatter';
 import MetricCard from '../components/MetricCard.jsx';
 import IconGlyph from '../components/IconGlyph.jsx';
+import GamificationSummary from '../components/GamificationSummary.jsx';
 import StudyPlannerPanel from '../components/studyPlanner/StudyPlannerPanel.jsx';
 import { createStudyPlannerPayload } from '../studyPlanner/index.js';
 import { subjectList as registrySubjectList } from '../data/subjects/index.js';
 import { getStudentDisplayName } from '../utils/displayFormatter';
 import { createCanonicalProgress, toParentProgressProfile } from '../utils/canonicalProgress.js';
-
-const RECOMMENDATION_TEXT = {
-  review: 'Perlu ulang kaji',
-  normal_practice: 'Teruskan latihan',
-  increase_difficulty: 'Bersedia untuk tahap seterusnya'
-};
+import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
+import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 
 function safeNumber(value, fallback = 0) {
   const number = Number(value);
@@ -44,25 +46,6 @@ function safePercent(value) {
 function safeText(value, fallback = '-') {
   const text = String(value ?? '').trim();
   return text && text !== 'undefined' && text !== 'null' ? text : fallback;
-}
-
-function formatRelativeTiming(item = {}) {
-  if (!item) return 'Tarikh belum tersedia';
-  if (item.isOverdue) {
-    const overdueDays = Math.max(1, safeNumber(item.overdueDays, 1));
-    return `Lewat ${overdueDays} hari`;
-  }
-  const dueInDays = Math.max(0, safeNumber(item.dueInDays, 0));
-  if (dueInDays === 0) return 'Hari ini';
-  if (dueInDays === 1) return 'Esok';
-  return `${dueInDays} hari lagi`;
-}
-
-function getSubjectMastery(subjectInsight = {}) {
-  const topics = Array.isArray(subjectInsight.topics) ? subjectInsight.topics : [];
-  if (!topics.length) return 0;
-  const total = topics.reduce((sum, topic) => sum + safeNumber(topic.mastery, 0), 0);
-  return safePercent(Math.round(total / topics.length));
 }
 
 function buildMockGuardProfile(profile, allowMock) {
@@ -87,9 +70,32 @@ function resolveInitialSubjectId(profile = null, subjects = []) {
   return subjects[0]?.id || 'bm';
 }
 
+function buildRecommendationKey(analytics) {
+  if (!analytics?.hasEvidence) return null;
+  if (analytics.masteryPercent < 60) return 'review';
+  if (analytics.masteryPercent >= 85) return 'increase_difficulty';
+  return 'normal_practice';
+}
+
+function buildSubjectTimelineCopy(subjectAnalytics) {
+  if (!subjectAnalytics?.hasEvidence) {
+    return {
+      headline: 'Belum ada penguasaan',
+      meta: 'Tiada data tersedia',
+      body: 'Murid belum mempunyai rekod untuk subjek ini.'
+    };
+  }
+
+  return {
+    headline: `${safePercent(subjectAnalytics.masteryPercent)}% penguasaan`,
+    meta: `${subjectAnalytics.totalQuestions} soalan - ${safePercent(subjectAnalytics.accuracy)}% ketepatan`,
+    body: `Topik tersedia: ${subjectAnalytics.availableTopics.length}`
+  };
+}
+
 export default function ParentDashboard({
   profile,
-  adaptiveProfile, // retained for compatibility; data now flows through Parent Insights only
+  adaptiveProfile,
   canonicalProgress = null,
   aiMemory = null,
   learningObservation = null,
@@ -111,6 +117,14 @@ export default function ParentDashboard({
     subjects: adaptiveProfile?.subjects || profile?.subjects,
     topics: adaptiveProfile?.topics || profile?.topics
   }), [canonicalProgress, profile, adaptiveProfile]);
+
+  const canonicalAnalytics = useMemo(() => getCanonicalAnalytics({ canonicalProgress: progress }), [progress]);
+  const canonicalGamification = useMemo(() => createCanonicalGamification({
+    profile,
+    adaptiveProfile,
+    gamificationProfile,
+    canonicalProgress: progress
+  }), [profile, adaptiveProfile, gamificationProfile, progress]);
   const sourceProfile = useMemo(() => buildMockGuardProfile(toParentProgressProfile(progress, profile), allowMock), [progress, profile, allowMock]);
   const insightsProfile = useMemo(() => resolveParentProfile(sourceProfile, { allowMock }), [sourceProfile, allowMock]);
   const summary = useMemo(() => buildParentSummary(insightsProfile), [insightsProfile]);
@@ -118,10 +132,11 @@ export default function ParentDashboard({
   const revisionSummary = useMemo(() => buildRevisionSummary(insightsProfile), [insightsProfile]);
   const subjectCatalog = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : registrySubjectList), [allSubjects]);
   const studentName = getStudentDisplayName(insightsProfile || sourceProfile, 'Murid');
+
   const studyPlannerPayload = useMemo(() => {
     try {
       return createStudyPlannerPayload(insightsProfile, {
-        availableStudyMinutes: summary.studyTime || 20,
+        availableStudyMinutes: canonicalAnalytics.studyMinutes || summary.studyTime || 20,
         date: new Date()
       });
     } catch (error) {
@@ -142,28 +157,32 @@ export default function ParentDashboard({
         }
       };
     }
-  }, [insightsProfile, summary.studyTime, summary]);
-  const initialSelectedSubjectId = useMemo(() => resolveInitialSubjectId(insightsProfile || sourceProfile, subjectCatalog), [insightsProfile, sourceProfile, subjectCatalog]);
+  }, [insightsProfile, canonicalAnalytics.studyMinutes, summary]);
+
+  const initialSelectedSubjectId = useMemo(
+    () => resolveInitialSubjectId(insightsProfile || sourceProfile, subjectCatalog),
+    [insightsProfile, sourceProfile, subjectCatalog]
+  );
   const [selectedSubjectId, setSelectedSubjectId] = useState(initialSelectedSubjectId);
 
   const subjectInsights = useMemo(() => subjectCatalog.map(subject => {
     const insight = readSubjectInsight(insightsProfile, subject.id, { allowMock });
-    const topics = Array.isArray(insight.topics) ? insight.topics : [];
-    const mastery = getSubjectMastery(insight);
-    const attempts = safeNumber(insight.performance?.attempts, 0);
-    const accuracy = attempts > 0
-      ? safePercent(Math.round((safeNumber(insight.performance?.correct, 0) / attempts) * 100))
-      : 0;
+    const subjectAnalytics = getCanonicalAnalytics({
+      canonicalProgress: progress,
+      subjectId: subject.id,
+      selectedSubject: subject
+    });
     return {
       ...subject,
       insight,
-      topics,
-      mastery,
-      accuracy,
-      attempts,
-      hasData: topics.length > 0 || attempts > 0
+      analytics: subjectAnalytics,
+      topics: subjectAnalytics.availableTopics,
+      mastery: subjectAnalytics.masteryPercent,
+      accuracy: subjectAnalytics.accuracy,
+      attempts: subjectAnalytics.totalQuestions,
+      hasData: subjectAnalytics.hasEvidence
     };
-  }), [insightsProfile, allowMock, subjectCatalog]);
+  }), [insightsProfile, allowMock, subjectCatalog, progress]);
 
   const selectedSubject = subjectInsights.find(subject => subject.id === selectedSubjectId)
     || subjectInsights[0]
@@ -180,10 +199,15 @@ export default function ParentDashboard({
     }
   }, [subjectInsights, selectedSubjectId]);
 
-  const weakTopics = recommendationSummary.weakestSubjects || [];
-  const strongSubjects = recommendationSummary.strongestSubjects || [];
-  const focusTopics = recommendationSummary.focusTopics || [];
-  const aiRecommendations = recommendationSummary.aiRecommendations || [];
+  const strongestSubject = [...subjectInsights].filter(subject => subject.hasData).sort((left, right) => right.mastery - left.mastery)[0] || null;
+  const weakestSubject = [...subjectInsights].filter(subject => subject.hasData).sort((left, right) => left.mastery - right.mastery)[0] || null;
+  const focusTopics = canonicalAnalytics.weakTopics.slice(0, 4);
+  const selectedRecommendationKey = buildRecommendationKey(selectedSubject?.analytics);
+  const overallRecommendationKey = buildRecommendationKey(canonicalAnalytics);
+  const aiRecommendationText = overallRecommendationKey
+    ? formatRecommendationKey(overallRecommendationKey)
+    : 'Belum ada cadangan';
+
   const overdueReviews = Array.isArray(revisionSummary.overdueReviews) ? [...revisionSummary.overdueReviews] : [];
   const upcomingReviews = Array.isArray(revisionSummary.upcomingReviewSchedule) ? [...revisionSummary.upcomingReviewSchedule] : [];
   const revisionItems = [...overdueReviews, ...upcomingReviews].sort((left, right) => {
@@ -192,14 +216,15 @@ export default function ParentDashboard({
     if ((left.dueInDays || 0) !== (right.dueInDays || 0)) return (left.dueInDays || 0) - (right.dueInDays || 0);
     return String(left.subjectId || '').localeCompare(String(right.subjectId || ''));
   });
-  const reportHasData = Boolean(summary.questionsAnswered || summary.correct || summary.wrong || subjectInsights.some(subject => subject.hasData));
 
-  const overallAccuracy = summary.accuracy || 0;
-  const statusBadge = overallAccuracy >= 90
+  const reportHasData = canonicalAnalytics.hasEvidence || subjectInsights.some(subject => subject.hasData);
+  const statusBadge = canonicalAnalytics.status === 'Dikuasai'
     ? { icon: 'medal', label: 'Cemerlang' }
-    : overallAccuracy >= 75
+    : canonicalAnalytics.status === 'Berkembang Baik' || canonicalAnalytics.status === 'Hampir Menguasai'
       ? { icon: 'check', label: 'Baik' }
       : { icon: 'book', label: 'Perlu Ditingkatkan' };
+
+  const selectedTimeline = buildSubjectTimelineCopy(selectedSubject?.analytics);
 
   return (
     <main className="app">
@@ -211,20 +236,39 @@ export default function ParentDashboard({
       <section className="card">
         <p className="eyebrow">Ringkasan Prestasi Anak</p>
         <h2>Ringkasan Prestasi Anak</h2>
-        <div className="metric-grid">
-          <MetricCard value={safeText(summary.name || studentName, 'Murid')} label="Nama Murid" />
-          <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
-          <MetricCard value={safeNumber(summary.questionsAnswered, 0)} label="Soalan Dijawab" />
-          <MetricCard value={`${safePercent(summary.accuracy)}%`} label="Ketepatan" />
-          <MetricCard value={formatStudyMinutes(summary.studyTime || 0)} label="Masa Belajar" />
-          <MetricCard value={safeNumber(summary.streak?.current, 0)} label="Streak Semasa" />
-          <MetricCard value={safeNumber(summary.streak?.longest, 0)} label="Streak Terpanjang" />
-          <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
-        </div>
-        <div className="status-badge-row">
-          <span className="badge"><IconGlyph name={statusBadge.icon} size={16} aria-hidden="true" /> {statusBadge.label}</span>
-          <span className="badge">{reportHasData ? 'Data tersedia untuk analisis.' : 'Belum cukup data untuk analisis terperinci.'}</span>
-        </div>
+        {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
+          <>
+            <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
+            <div className="metric-grid">
+              <MetricCard value={safeText(summary.name || studentName, 'Murid')} label="Nama Murid" />
+              <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
+              <MetricCard value={canonicalAnalytics.totalQuestions} label="Soalan Dijawab" />
+              <MetricCard value={canonicalAnalytics.correctQuestions} label="Jawapan Betul" />
+              <MetricCard value={`${safePercent(canonicalAnalytics.accuracy)}%`} label="Ketepatan" />
+              <MetricCard value={`${safePercent(canonicalAnalytics.masteryPercent)}%`} label="Penguasaan" />
+              <MetricCard value={formatStudyMinutes(canonicalAnalytics.studyMinutes || 0)} label="Masa Belajar" />
+              <MetricCard value={formatStreakLabel(canonicalAnalytics.currentStreak)} label="Streak Semasa" />
+              <MetricCard value={formatStreakLabel(canonicalAnalytics.bestStreak)} label="Streak Terpanjang" />
+              <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
+            </div>
+            <div className="status-badge-row">
+              <span className="badge"><IconGlyph name={statusBadge.icon} size={16} aria-hidden="true" /> {statusBadge.label}</span>
+              <span className="badge">Data tersedia untuk analisis.</span>
+            </div>
+            <GamificationSummary
+              profile={gamificationProfile}
+              canonical={canonicalGamification}
+              className="parent-gamification-summary"
+            />
+          </>
+        ) : (
+          <EmptyState
+            title="Belum ada penguasaan subjek"
+            message={allowMock
+              ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
+              : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+          />
+        )}
       </section>
 
       <section className="card">
@@ -236,7 +280,7 @@ export default function ParentDashboard({
               {subjectInsights.map(subject => (
                 <MetricCard
                   key={subject.id}
-                  value={subject.hasData ? `${safePercent(subject.mastery)}%` : '—'}
+                  value={subject.hasData ? `${safePercent(subject.mastery)}%` : 'Belum tersedia'}
                   label={subject.label}
                   subtitle={subject.hasData ? `${subject.attempts} soalan` : 'Belum ada penguasaan'}
                 />
@@ -263,11 +307,11 @@ export default function ParentDashboard({
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={subject.hasData ? safePercent(subject.mastery) : 0}
-                    aria-label={`${subject.label} mastery`}
+                    aria-label={`${subject.label} penguasaan`}
                   >
                     <div style={{ width: `${subject.hasData ? safePercent(subject.mastery) : 0}%` }} />
                   </div>
-                  <span>{subject.hasData ? `${subject.attempts} soalan` : '0 soalan'} • {subject.hasData ? `Penguasaan ${safePercent(subject.mastery)}%` : 'Belum ada data'}</span>
+                  <span>{subject.hasData ? `${subject.attempts} soalan - Penguasaan ${safePercent(subject.mastery)}%` : '0 soalan - Belum ada data'}</span>
                 </button>
               ))}
             </div>
@@ -275,19 +319,19 @@ export default function ParentDashboard({
               <div className="timeline">
                 <div className="timeline-item">
                   <span>{selectedSubject.label}</span>
-                  <b>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Belum ada penguasaan'}</b>
-                  <em>{selectedSubject.hasData ? `${selectedSubject.attempts} soalan • ${safePercent(selectedSubject.accuracy)}% ketepatan` : 'Tiada data tersedia'}</em>
-                  <p>{selectedSubject.hasData ? `Topik tersedia: ${selectedSubject.topics.length}` : 'Murid belum mempunyai rekod untuk subjek ini.'}</p>
+                  <b>{selectedTimeline.headline}</b>
+                  <em>{selectedTimeline.meta}</em>
+                  <p>{selectedTimeline.body}</p>
                 </div>
                 <div className="timeline-item">
                   <span>Topik Lemah</span>
-                  <b>{selectedSubject.topics.length ? selectedSubject.topics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : 'Belum ada topik lemah'}</b>
-                  <em>{selectedSubject.topics.length} topik</em>
-                  <p>{selectedSubject.topics[0] ? `Fokus pada ${formatTopicName(selectedSubject.topics[0].topicId)}.` : 'Topik lemah akan muncul selepas murid membuat lebih banyak latihan.'}</p>
+                  <b>{selectedSubject.analytics.weakTopics.length ? selectedSubject.analytics.weakTopics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : 'Belum ada topik lemah'}</b>
+                  <em>{selectedSubject.analytics.weakTopics.length} topik</em>
+                  <p>{selectedSubject.analytics.weakTopics[0] ? `Fokus pada ${formatTopicName(selectedSubject.analytics.weakTopics[0].topicId)}.` : 'Topik lemah akan muncul selepas murid membuat lebih banyak latihan.'}</p>
                 </div>
                 <div className="timeline-item">
                   <span>Cadangan Ibu Bapa</span>
-                  <b>{selectedSubject.hasData ? (selectedSubject.mastery >= 85 ? 'Naik aras latihan' : selectedSubject.mastery >= 60 ? 'Teruskan latihan' : 'Ulang kaji') : 'Belum ada cadangan'}</b>
+                  <b>{selectedRecommendationKey ? formatRecommendationKey(selectedRecommendationKey) : 'Belum ada cadangan'}</b>
                   <em>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Tiada data'}</em>
                   <p>{selectedSubject.hasData ? 'Gunakan maklumat ini untuk sokongan di rumah.' : 'Murid perlu mula menjawab soalan untuk cadangan muncul.'}</p>
                 </div>
@@ -307,21 +351,28 @@ export default function ParentDashboard({
       <section className="card">
         <p className="eyebrow">Fokus dan Cadangan</p>
         <h2>Fokus dan Cadangan</h2>
-        <div className="metric-grid">
-          <MetricCard value={safeText(weakTopics[0]?.subjectId ? formatSubjectName(weakTopics[0].subjectId) : '', '—')} label="Subjek Paling Lemah" subtitle={weakTopics[0] ? `${safePercent(weakTopics[0].mastery)}%` : 'Tiada data'} />
-          <MetricCard value={safeText(strongSubjects[0]?.subjectId ? formatSubjectName(strongSubjects[0].subjectId) : '', '—')} label="Subjek Terkuat" subtitle={strongSubjects[0] ? `${safePercent(strongSubjects[0].mastery)}%` : 'Tiada data'} />
-          <MetricCard value={safeText(focusTopics[0]?.topicId ? formatTopicName(focusTopics[0].topicId) : '', '—')} label="Topik Fokus" subtitle={focusTopics[0] ? `${safePercent(focusTopics[0].mastery)}%` : 'Tiada data'} />
-          <MetricCard value={RECOMMENDATION_TEXT[aiRecommendations[0]?.recommendationKey] || '—'} label="Cadangan AI" subtitle={aiRecommendations[0]?.recommendation || 'Tiada cadangan'} />
-        </div>
-        {focusTopics.length ? (
-          <div className="parent-topic-list">
-            {focusTopics.slice(0, 4).map(topic => (
-              <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}>
-                <b>{formatTopicName(topic.topicId)}</b>
-                <span>{formatSubjectName(topic.subjectId)} • {RECOMMENDATION_TEXT[topic.recommendationKey] || topic.recommendation}</span>
+        {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
+          <>
+            <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
+            <div className="metric-grid">
+              <MetricCard value={safeText(weakestSubject?.label, 'Belum tersedia')} label="Subjek Paling Lemah" subtitle={weakestSubject ? `${safePercent(weakestSubject.mastery)}%` : 'Tiada data'} />
+              <MetricCard value={safeText(strongestSubject?.label, 'Belum tersedia')} label="Subjek Terkuat" subtitle={strongestSubject ? `${safePercent(strongestSubject.mastery)}%` : 'Tiada data'} />
+              <MetricCard value={safeText(focusTopics[0]?.topicId ? formatTopicName(focusTopics[0].topicId) : '', 'Belum tersedia')} label="Topik Fokus" subtitle={focusTopics[0] ? `${safePercent(focusTopics[0].mastery)}%` : 'Tiada data'} />
+              <MetricCard value={aiRecommendationText || 'Belum tersedia'} label="Cadangan AI" subtitle={canonicalAnalytics.status} />
+            </div>
+            {focusTopics.length ? (
+              <div className="parent-topic-list">
+                {focusTopics.map(topic => (
+                  <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}>
+                    <b>{formatTopicName(topic.topicId)}</b>
+                    <span>{formatSubjectName(topic.subjectId)} · {formatRecommendationKey('review')}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." />
+            )}
+          </>
         ) : (
           <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." />
         )}
@@ -335,9 +386,8 @@ export default function ParentDashboard({
             {revisionItems.slice(0, 8).map(item => (
               <div className={`parent-topic-item ${item.isOverdue ? 'strong' : ''}`} key={`${item.subjectId}-${item.topicId}-${item.nextReviewAt}`}>
                 <b>{formatTopicName(item.topicId)}</b>
-                <span>{formatSubjectName(item.subjectId)} • {formatRelativeTiming(item)}</span>
-                <span>Keutamaan {safePercent(item.priority)}%</span>
-                <em>{item.isOverdue ? `Lewat ${Math.max(1, safeNumber(item.overdueDays, 1))} hari` : item.nextReviewAt ? new Date(item.nextReviewAt).toLocaleDateString('ms-MY') : 'Tarikh belum tersedia'}</em>
+                <span>{formatSubjectName(item.subjectId)}</span>
+                <em>{formatReviewQueueMeta(item)}</em>
               </div>
             ))}
           </div>
@@ -356,7 +406,7 @@ export default function ParentDashboard({
             <div className="timeline-item" key={index}>
               <span>{formatFriendlyDate(item.date)}</span>
               <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
-              <em>{safePercent(item.score)}% • {safeNumber(item.total, 0)} soalan</em>
+              <em>{safePercent(item.score)}% · {safeNumber(item.total, 0)} soalan · {formatModeLabel('uasa')}</em>
             </div>
           )) : (
             <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />
@@ -374,8 +424,8 @@ export default function ParentDashboard({
             sourceProfile.history.slice(0, 10).map((item, index) => (
               <div className="timeline-item" key={index}>
                 <span>{formatFriendlyDate(item.date)}</span>
-                <b>{formatSubjectName(item.subject)} - {safeText(item.topic)}</b>
-                <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
+                <b>{formatSubjectName(item.subject || item.subjectId)} - {formatTopicName(item.topicId || item.topic)}</b>
+                <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% · ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
               </div>
             ))
           )}

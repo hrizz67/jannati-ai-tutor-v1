@@ -31,8 +31,8 @@ function buildOnboardingBlocks(availableMinutes = 20) {
     {
       subjectId: 'math',
       subject: getSubjectLabel('math'),
-      topicId: 'asas',
-      topic: 'Mathematics basics',
+      topicId: 'nombor_asas',
+      topic: 'Asas Nombor',
       reason: 'Onboarding: mulakan dengan nombor asas.',
       durationMinutes: durations[0] || 10,
       priority: 'high',
@@ -43,8 +43,8 @@ function buildOnboardingBlocks(availableMinutes = 20) {
     {
       subjectId: 'bm',
       subject: getSubjectLabel('bm'),
-      topicId: 'reading',
-      topic: 'Bahasa Melayu reading',
+      topicId: 'bacaan_asas',
+      topic: 'Bacaan Asas',
       reason: 'Onboarding: bina asas bacaan dan ayat ringkas.',
       durationMinutes: durations[1] || 10,
       priority: 'high',

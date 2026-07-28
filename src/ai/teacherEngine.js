@@ -66,6 +66,7 @@ function getRule(question, topic) {
 }
 
 export function teachAnswer({ question = {}, topic = {}, explanationData = {}, questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
+  topic = topic || {};
   const rule = getRule(question, topic);
   const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
   const contextualGeneric = `Mari kita teliti "${stem}" dan pilih jawapan yang paling sepadan dengan arahan.`;

@@ -1,26 +1,50 @@
 const SUBJECT_LABELS = {
   bm: 'Bahasa Melayu',
+  'bahasa melayu': 'Bahasa Melayu',
+  'bm bertutur 2': 'Bertutur Bahasa Melayu Tahun 2',
+  bm_bertutur_2: 'Bertutur Bahasa Melayu Tahun 2',
   math: 'Matematik',
+  matematik: 'Matematik',
   english: 'Bahasa Inggeris',
+  'bahasa inggeris': 'Bahasa Inggeris',
+  'english year 2': 'Bahasa Inggeris Tahun 2',
   sains: 'Sains',
   science: 'Sains',
   islam: 'Pendidikan Islam',
+  'pendidikan islam': 'Pendidikan Islam',
   arab: 'Bahasa Arab',
+  'bahasa arab': 'Bahasa Arab',
   pj: 'Pendidikan Jasmani dan Kesihatan',
-  pjk: 'Pendidikan Jasmani dan Kesihatan'
+  pjk: 'Pendidikan Jasmani dan Kesihatan',
+  'pendidikan jasmani dan kesihatan': 'Pendidikan Jasmani dan Kesihatan'
 };
 
 const TOPIC_LABELS = {
+  asas: 'Asas',
+  nombor_asas: 'Asas Nombor',
+  bacaan_asas: 'Bacaan Asas',
   kata_nama_am: 'Kata Nama Am',
   kata_nama_khas: 'Kata Nama Khas',
   kata_ganti_nama: 'Kata Ganti Nama',
   kata_kerja: 'Kata Kerja',
   kata_adjektif: 'Kata Adjektif',
   kata_sendi: 'Kata Sendi Nama',
+  kata_sendi_nama: 'Kata Sendi Nama',
   kata_hubung: 'Kata Hubung',
   penjodoh_bilangan: 'Penjodoh Bilangan',
   simpulan_bahasa: 'Simpulan Bahasa',
-  ayat: 'Ayat'
+  ayat: 'Ayat',
+  uasa_kbat: 'Kemahiran Berfikir Aras Tinggi',
+  simple_sentences: 'Ayat Mudah',
+  reading_comprehension: 'Kefahaman Bacaan',
+  reading: 'Bacaan',
+  bm_intro: 'Pengenalan Bahasa Melayu',
+  'bm intro': 'Pengenalan Bahasa Melayu',
+  nouns: 'Kata Nama',
+  verbs: 'Kata Kerja',
+  adjectives: 'Kata Adjektif',
+  prepositions: 'Kata Sendi Nama',
+  nombor_hingga_1000: 'Nombor Hingga 1000'
 };
 
 const STATUS_LABELS = {
@@ -99,7 +123,32 @@ const PRIORITY_LABELS = {
   high: 'Tinggi',
   medium: 'Sederhana',
   low: 'Rendah',
-  urgent: 'Mendesak'
+  urgent: 'Mendesak',
+  normal: 'Sederhana'
+};
+
+const RECOMMENDATION_LABELS = {
+  review: 'Ulang Kaji',
+  normal_practice: 'Teruskan Latihan',
+  increase_difficulty: 'Tahap Seterusnya'
+};
+
+const MODE_LABELS = {
+  uasa: 'Simulator UASA',
+  review: 'Ulang Kaji',
+  adaptive: 'Latihan Adaptif',
+  'adaptive-practice': 'Latihan Adaptif',
+  'adaptive-lesson': 'Laluan Belajar',
+  quiz: 'Latihan',
+  reading: 'Bacaan',
+  listening: 'Mendengar',
+  speaking: 'Bertutur',
+  writing: 'Menulis'
+};
+
+const YEAR_LABELS = {
+  'year 2': 'Tahun 2',
+  'tahun 2': 'Tahun 2'
 };
 
 function toTitleCase(value) {
@@ -115,6 +164,14 @@ function toTitleCase(value) {
 
 function normalizeKey(value) {
   return String(value || '').trim().toLowerCase();
+}
+
+function normalizeDisplayKey(value) {
+  return String(value || '')
+    .trim()
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
 }
 
 function normalizeName(value) {
@@ -140,9 +197,19 @@ function toReadableSlugLabel(value) {
 }
 
 export function formatSubjectName(subjectId) {
-  const key = normalizeKey(subjectId);
+  const raw = normalizeName(subjectId);
+  if (raw === '-') return '-';
+  const key = normalizeKey(raw);
+  const displayKey = normalizeDisplayKey(raw);
   if (SUBJECT_LABELS[key]) return SUBJECT_LABELS[key];
-  return toTitleCase(key || subjectId);
+  if (SUBJECT_LABELS[displayKey]) return SUBJECT_LABELS[displayKey];
+  if (/^english(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Bahasa Inggeris Tahun 2' : 'Bahasa Inggeris';
+  if (/^math(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Matematik Tahun 2' : 'Matematik';
+  if (/^sains(?:\s+tahun\s+2)?$/i.test(displayKey) || /^science(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Sains Tahun 2' : 'Sains';
+  if (/^arab(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Bahasa Arab Tahun 2' : 'Bahasa Arab';
+  if (/^islam(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Pendidikan Islam Tahun 2' : 'Pendidikan Islam';
+  if (/^pjk?(?:\s+year\s+2)?$/i.test(displayKey)) return displayKey.includes('year 2') ? 'Pendidikan Jasmani dan Kesihatan Tahun 2' : 'Pendidikan Jasmani dan Kesihatan';
+  return toTitleCase(displayKey || key || raw);
 }
 
 export function getStudentDisplayName(profile = null, fallback = 'Murid') {
@@ -150,10 +217,19 @@ export function getStudentDisplayName(profile = null, fallback = 'Murid') {
   return name || normalizeName(fallback) || 'Murid';
 }
 
-export function formatTopicName(topicId) {
-  const key = normalizeKey(topicId);
+export function formatTopicName(topicId, options = {}) {
+  const raw = normalizeName(topicId);
+  if (raw === '-') return '-';
+  const key = normalizeKey(raw);
+  const displayKey = normalizeDisplayKey(raw);
+  const subjectKey = normalizeDisplayKey(options.subjectId || options.subject || '');
+  if ((key === 'bm_intro' || displayKey === 'bm intro') && /bertutur/.test(subjectKey)) return 'Pengenalan Bertutur';
+  if ((key === 'intro' || displayKey === 'intro') && /bertutur/.test(subjectKey)) return 'Pengenalan Bertutur';
   if (TOPIC_LABELS[key]) return TOPIC_LABELS[key];
-  return toTitleCase(key || topicId);
+  if (TOPIC_LABELS[displayKey]) return TOPIC_LABELS[displayKey];
+  if (key === 'nouns') return 'Kata Nama';
+  if (key === 'math') return 'Matematik';
+  return toTitleCase(displayKey || key || raw);
 }
 
 export function getHumanReadableTopic({ subject = null, topic = null, question = null, metadata = null } = {}) {
@@ -237,12 +313,105 @@ export function formatAttentionLevel(level) {
 }
 
 export function formatPriority(priority) {
-  if (typeof priority === 'number' && Number.isFinite(priority)) {
-    return `Keutamaan ${priority}`;
+  const numeric = Number(priority);
+  if (Number.isFinite(numeric)) {
+    if (numeric >= 70) return 'Tinggi';
+    if (numeric >= 40) return 'Sederhana';
+    return 'Rendah';
   }
   const key = normalizeKey(priority);
   if (PRIORITY_LABELS[key]) return PRIORITY_LABELS[key];
   return toTitleCase(key || priority);
+}
+
+export function formatRecommendationKey(value) {
+  const key = normalizeKey(value);
+  if (RECOMMENDATION_LABELS[key]) return RECOMMENDATION_LABELS[key];
+  return toTitleCase(key || value);
+}
+
+export function formatModeName(value) {
+  if (normalizeName(value) === '-') return '-';
+  const key = normalizeKey(value);
+  const displayKey = normalizeDisplayKey(value);
+  if (MODE_LABELS[key]) return MODE_LABELS[key];
+  if (displayKey.includes('adaptive')) return 'Latihan Adaptif';
+  if (displayKey.includes('review')) return 'Ulang Kaji';
+  if (displayKey.includes('uasa')) return 'Simulator UASA';
+  return toTitleCase(displayKey || key || value);
+}
+
+export function formatModeLabel(value) {
+  return formatModeName(value);
+}
+
+export function formatDurationLabel(value) {
+  const minutes = Math.max(0, Math.min(60, Number(value) || 0));
+  if (minutes >= 60) return '1 jam';
+  return `${minutes} minit`;
+}
+
+export function formatDuration(value, options = {}) {
+  const unit = options.unit === 'seconds' ? 'seconds' : 'minutes';
+  const raw = Number(value);
+  const totalSeconds = unit === 'seconds' ? raw : raw * 60;
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) {
+    return options.emptyLabel || 'Belum ada masa belajar direkodkan';
+  }
+  if (totalSeconds < 60) return 'Kurang daripada 1 minit';
+  const totalMinutes = Math.round(totalSeconds / 60);
+  if (totalMinutes < 60) return `${totalMinutes} minit`;
+  const hours = Math.floor(totalMinutes / 60);
+  const remainingMinutes = totalMinutes % 60;
+  if (!remainingMinutes) return `${hours} jam`;
+  return `${hours} jam ${remainingMinutes} minit`;
+}
+
+export function formatPlannerBoolean(label, value) {
+  return `${label}: ${value ? 'Ya' : 'Tidak'}`;
+}
+
+export function formatFallbackState(value) {
+  return `Mod pengganti: ${value ? 'Aktif' : 'Tidak Aktif'}`;
+}
+
+export function formatStreakLabel(value) {
+  const count = Math.max(0, Number(value) || 0);
+  return `Streak: ${count} hari`;
+}
+
+export function formatSubjectYearLabel(subjectId, yearLabel = 'Tahun 2') {
+  const normalizedYear = YEAR_LABELS[normalizeDisplayKey(yearLabel)] || yearLabel;
+  const subjectLabel = formatSubjectName(subjectId);
+  if (!normalizedYear) return subjectLabel;
+  if (subjectLabel.toLowerCase().includes(String(normalizedYear).toLowerCase())) return subjectLabel;
+  return `${subjectLabel} ${normalizedYear}`.trim();
+}
+
+export function isCrossSubjectTarget(currentSubjectId, targetSubjectId) {
+  const current = normalizeKey(currentSubjectId);
+  const target = normalizeKey(targetSubjectId);
+  return Boolean(current && target && current !== target);
+}
+
+export function formatPlannerSummaryLabel(label, value) {
+  if (/masa/i.test(label)) return formatDurationLabel(value);
+  return `${value}`;
+}
+
+export function formatSubjectList(subjects = []) {
+  const unique = [...new Set((Array.isArray(subjects) ? subjects : []).map(item => formatSubjectName(item)).filter(Boolean))];
+  return unique.join(', ');
+}
+
+export function formatReviewQueueMeta(item = {}) {
+  const priorityText = `Keutamaan ${formatPriority(item.priority)}`;
+  if (item.isOverdue) {
+    const overdueDays = Math.max(1, Number(item.overdueDays) || 1);
+    return `Lewat ${overdueDays} hari · ${priorityText}`;
+  }
+  const relative = formatFriendlyDate(item.nextReviewAt || item.date || item.nextReview || '');
+  return `${relative} · ${priorityText}`;
 }
 
 export function formatDataConfidence(value) {
@@ -266,18 +435,8 @@ export function formatActivityStatus(percent) {
   return 'Perlu Latihan';
 }
 
-export function formatStudyMinutes(value) {
-  const minutes = Number(value);
-  if (!Number.isFinite(minutes) || minutes <= 0) return '0s';
-  if (minutes < 1) return `${Math.max(1, Math.round(minutes * 60))}s`;
-  if (minutes < 60) {
-    const whole = Math.floor(minutes);
-    const remainingSeconds = Math.round((minutes - whole) * 60);
-    return remainingSeconds ? `${whole}m ${remainingSeconds}s` : `${whole}m`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = Math.round(minutes % 60);
-  return remainingMinutes ? `${hours}j ${remainingMinutes}m` : `${hours}j`;
+export function formatStudyMinutes(value, options = {}) {
+  return formatDuration(value, { unit: 'minutes', ...options });
 }
 
 export function formatDisplayLabel(value) {
@@ -302,4 +461,50 @@ export function formatFriendlyDate(value, now = new Date()) {
   if (days > 1 && days <= 30) return `${days} hari lagi`;
   if (days < -1 && days >= -30) return `Lewat ${Math.abs(days)} hari`;
   return new Intl.DateTimeFormat('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+}
+
+export function formatResumeTitle(resume = {}) {
+  return formatModeName(resume?.metadata?.displayTitle || resume?.mode || 'quiz');
+}
+
+export function formatRecommendationCta(input = {}) {
+  if (input.resume && input.resume.completed === false) return 'Sambung Latihan';
+  if (input.isIncompleteSession) return 'Sambung Latihan';
+
+  const subjectLabel = formatSubjectName(input.subjectId || input.targetSubjectId || '');
+  if (input.isCrossSubject && subjectLabel) {
+    return `Mula ${subjectLabel}`;
+  }
+
+  const normalizedReason = normalizeDisplayKey(input.reasonKey || input.reason || '');
+  const normalizedRecommendation = normalizeDisplayKey(input.recommendationKey || '');
+  const isNewTopic = Boolean(
+    input.isNewTopic
+    || normalizedReason === 'new topic'
+    || normalizedReason === 'new-topic'
+    || /cuba topik baharu|topik baharu/.test(normalizedReason)
+  );
+  const isReview = Boolean(
+    input.isReview
+    || normalizedRecommendation === 'review'
+    || normalizedReason === 'weak topic'
+    || normalizedReason === 'weak-topic'
+    || /ulang|review|topik lemah|perlu latihan/.test(normalizedReason)
+  );
+
+  if (isNewTopic) return 'Mula Latihan';
+  if (isReview) return 'Latih Semula';
+  return input.defaultLabel || 'Mula Latihan';
+}
+
+export function formatScopeLabel(value) {
+  const text = normalizeName(value);
+  if (!text) return 'Keseluruhan';
+  const match = text.match(/^Subjek dipilih:\s*(.+)$/i);
+  if (match) return `Subjek dipilih: ${formatSubjectName(match[1])}`;
+  if (/^keseluruhan$/i.test(text)) return 'Keseluruhan';
+  return text
+    .replace(/English Year 2/gi, 'Bahasa Inggeris Tahun 2')
+    .replace(/BM Bertutur 2/gi, 'Bertutur Bahasa Melayu Tahun 2')
+    .replace(/Bm Intro/gi, 'Pengenalan Bertutur');
 }

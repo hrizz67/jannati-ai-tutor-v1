@@ -31,8 +31,8 @@ function buildOnboardingSignals(options = {}) {
     candidates: [
       {
         subjectId: 'math',
-        topicId: 'asas',
-        topicLabel: 'Mathematics basics',
+        topicId: 'nombor_asas',
+        topicLabel: 'Asas Nombor',
         reason: 'Onboarding: asas nombor untuk memulakan sesi.',
         priority: 'high',
         recommendationKey: 'review',
@@ -44,8 +44,8 @@ function buildOnboardingSignals(options = {}) {
       },
       {
         subjectId: 'bm',
-        topicId: 'reading',
-        topicLabel: 'Bahasa Melayu reading',
+        topicId: 'bacaan_asas',
+        topicLabel: 'Bacaan Asas',
         reason: 'Onboarding: bacaan ringkas dan ayat mudah.',
         priority: 'high',
         recommendationKey: 'review',

@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import BrandLogo from '../BrandLogo';
 import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
+import { dedupeContent, dedupeSections } from '../../utils/dedupeText.js';
+import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const GENERIC_TEXTS = [
   'jawapan ini sesuai dengan soalan',
@@ -23,7 +25,7 @@ function normalizeText(value, fallback = '') {
 }
 
 function safeList(value) {
-  if (Array.isArray(value)) return value.filter(Boolean).map(item => normalizeText(item, '')).filter(Boolean);
+  if (Array.isArray(value)) return dedupeContent(value.filter(Boolean).map(item => normalizeText(item, '')).filter(Boolean));
   if (value === null || value === undefined || value === '') return [];
   return [normalizeText(value, '')].filter(Boolean);
 }
@@ -66,29 +68,15 @@ function renderTextSection(title, value) {
 }
 
 export default function AIExplainModal({ open, data, context = null, question, character = 'jati', onTutup, onTryAgain, onTeach }) {
+  const modalRef = useRef(null);
   const closeButtonRef = useRef(null);
-  const restoreFocusRef = useRef(null);
-  const onTutupRef = useRef(onTutup);
 
-  onTutupRef.current = onTutup;
-
-  useEffect(() => {
-    if (!open) return undefined;
-    restoreFocusRef.current = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const timer = window.setTimeout(() => closeButtonRef.current?.focus?.(), 0);
-    function onKeyDown(event) {
-      if (event.key === 'Escape') onTutupRef.current?.();
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      restoreFocusRef.current?.focus?.();
-    };
-  }, [open]);
+  useModalRuntime({
+    open,
+    modalRef,
+    initialFocusRef: closeButtonRef,
+    onClose: onTutup
+  });
 
   if (!open || !data) return null;
   if (context && ((data.generatedMode && data.generatedMode !== 'explain') || (data.sourceQuestionId && data.sourceQuestionId !== context.questionId) || (data.sourceSubjectId && data.sourceSubjectId !== context.subjectId) || (data.sourceTopicId && data.sourceTopicId !== context.topicId))) return null;
@@ -103,6 +91,7 @@ export default function AIExplainModal({ open, data, context = null, question, c
   const commonMistakes = safeList(sections.commonMistake ? [sections.commonMistake] : data.commonMistakes);
   const memoryTips = safeList(sections.memoryTip ? [sections.memoryTip] : (Array.isArray(data.memoryTips) && data.memoryTips.length ? data.memoryTips : (data.memoryTip ? [data.memoryTip] : [])));
   const followUpQuestions = safeList(data.followUpQuestions);
+  const [uniqueSteps, uniqueExamples, uniqueExtraExamples, uniqueMistakes, uniqueMemoryTips, uniqueFollowUps] = dedupeSections([steps, examples, extraExamples, commonMistakes, memoryTips, followUpQuestions]);
   const coachMessage = pickMeaningfulText(sections.coachMessage, data.encouragement, 'Kamu sedang belajar dengan baik.');
   const answerText = pickMeaningfulText(sections.correctAnswer, data.correctAnswer, question?.answer);
   const showCorrectAnswer = data.showCorrectAnswer !== false && Boolean(answerText);
@@ -111,27 +100,34 @@ export default function AIExplainModal({ open, data, context = null, question, c
     summary,
     whyCorrect,
     hint,
-    ...steps,
-    ...examples,
-    ...extraExamples,
-    ...commonMistakes,
-    ...memoryTips,
-    ...followUpQuestions,
+    ...uniqueSteps,
+    ...uniqueExamples,
+    ...uniqueExtraExamples,
+    ...uniqueMistakes,
+    ...uniqueMemoryTips,
+    ...uniqueFollowUps,
     coachMessage,
     showCorrectAnswer ? `Jawapan betul ${answerText}` : ''
   ].filter(Boolean).join('. ');
 
-  const advancedHasContent = steps.length || examples.length || extraExamples.length || commonMistakes.length || memoryTips.length || followUpQuestions.length;
-
-  return (
-    <div className="ai-explain-overlay" role="dialog" aria-modal="true" aria-label="Penerangan AI">
-      <section className="ai-explain-modal">
+  const modalNode = (
+    <div className="ai-explain-overlay" data-modal-open="true">
+      <section
+        ref={modalRef}
+        className="ai-explain-modal ai-modal-shell"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-explain-title"
+        aria-describedby="ai-explain-description"
+        tabIndex={-1}
+      >
         <div className="ai-explain-head">
           <div className="modal-brand-title">
             <BrandLogo iconOnly size="sm" />
             <div>
               <p className="eyebrow">Penerangan AI Luar Talian</p>
-              <h2>Terangkan</h2>
+              <h2 id="ai-explain-title">Terangkan</h2>
+              <span className="modal-context-badge">{context?.subjectTitle || 'Semua subjek'}{context?.topicTitle ? ` · ${context.topicTitle}` : ''}</span>
             </div>
           </div>
           <button
@@ -144,10 +140,17 @@ export default function AIExplainModal({ open, data, context = null, question, c
           >
             ×
           </button>
+          <p className="ai-modal-context-line" id="ai-explain-description">
+            {pickMeaningfulText(summary, whyCorrect, hint, 'Penerangan AI membantu kamu faham langkah demi langkah.')}
+          </p>
         </div>
 
-        <div className="ai-explain-body">
+        <div className="ai-explain-body" tabIndex="-1">
           <VoiceButton text={voiceText} label="Baca Penerangan" title="Baca penerangan AI" className="voice-inline" />
+          <section className="explain-section explain-context-card" aria-label="Konteks penerangan">
+            <h3>Fokus penerangan</h3>
+            <p>{context?.questionText || 'Penerangan ini membantu kamu memahami soalan semasa.'}</p>
+          </section>
           {renderTextSection('Penerangan mudah', summary)}
           {renderTextSection('Kenapa jawapan itu betul', whyCorrect)}
 
@@ -165,20 +168,21 @@ export default function AIExplainModal({ open, data, context = null, question, c
             </section>
           )}
 
+          {renderListSection('Contoh langkah demi langkah', uniqueSteps)}
+          {renderListSection('Contoh', uniqueExamples)}
+
           <details className="explain-details">
             <summary>Lihat penerangan lanjut</summary>
-          {renderListSection('Contoh langkah demi langkah', steps)}
-            {renderListSection('Contoh', examples)}
-            {renderListSection('Contoh lain', extraExamples)}
-            {renderListSection('Kesilapan biasa', commonMistakes)}
-            {renderListSection('Tip ingatan', memoryTips)}
-            {renderListSection('Soalan susulan', followUpQuestions)}
+            {renderListSection('Contoh lain', uniqueExtraExamples)}
+            {renderListSection('Kesilapan biasa', uniqueMistakes)}
+            {renderListSection('Tip ingatan', uniqueMemoryTips)}
+            {renderListSection('Soalan susulan', uniqueFollowUps)}
           </details>
 
           <p className="explain-encouragement">{pickMeaningfulText(coachMessage, whyCorrect, summary)}</p>
         </div>
 
-        <div className="ai-explain-footer actions">
+        <div className="ai-explain-footer actions ai-modal-footer" data-modal-footer="true">
           <button className="secondary" type="button" onClick={onTeach}>Ajar Saya</button>
           <button type="button" onClick={onTryAgain}>Cuba Lagi</button>
           <button className="secondary" type="button" onClick={onTutup}>Tutup</button>
@@ -186,4 +190,6 @@ export default function AIExplainModal({ open, data, context = null, question, c
       </section>
     </div>
   );
+
+  return renderModalPortal(modalNode);
 }

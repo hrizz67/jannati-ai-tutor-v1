@@ -1,6 +1,6 @@
 import React from 'react';
 import { EmptyState } from './dashboardHelpers.jsx';
-import { formatDifficulty, formatPriority, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { formatDifficulty, formatDurationLabel, formatReviewQueueMeta, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 
 export default function RevisionDashboard({
   todayRevision = { totalQuestions: 0, summary: 'Tiada data', estimatedMinutes: 0, subjects: [], priorityTopics: [] },
@@ -21,7 +21,7 @@ export default function RevisionDashboard({
             <p>{todayRevision.summary}</p>
             <div className="mastery-summary-grid">
               <div><b>{todayRevision.totalQuestions}</b><span>Soalan Hari Ini</span></div>
-              <div><b>{todayRevision.estimatedMinutes}</b><span>Anggaran Masa</span></div>
+              <div><b>{formatDurationLabel(todayRevision.estimatedMinutes)}</b><span>Anggaran Masa</span></div>
               <div><b>{todayRevision.subjects.length}</b><span>Subjek</span></div>
               <div><b>{todayRevision.priorityTopics.length}</b><span>Topik Keutamaan</span></div>
               <div><b>{formatDifficulty(revisionDifficulty.recommendedDifficulty)}</b><span>Tahap Cadangan</span></div>
@@ -33,8 +33,8 @@ export default function RevisionDashboard({
                 <b>{revisionDifficulty.reason}</b>
                 <em>Skor {Math.max(0, Math.min(100, Math.round(revisionDifficulty.score || 0)))}%</em>
                 <p>
-                  {formatDifficulty('mudah')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.mudah || 0)))}% •{' '}
-                  {formatDifficulty('sederhana')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.sederhana || 0)))}% •{' '}
+                  {formatDifficulty('mudah')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.mudah || 0)))}% ·{' '}
+                  {formatDifficulty('sederhana')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.sederhana || 0)))}% ·{' '}
                   {formatDifficulty('sukar')} {Math.max(0, Math.min(100, Math.round(revisionDifficulty.distribution.sukar || 0)))}%
                 </p>
               </div>
@@ -47,7 +47,7 @@ export default function RevisionDashboard({
                   <div className="mini-progress">
                     <div style={{ width: `${Math.max(0, Math.min(100, Math.round((subject.questions / Math.max(1, todayRevision.totalQuestions)) * 100)))}%` }} />
                   </div>
-                  <span>{subject.topics.length} topik • {subject.estimatedMinutes} min</span>
+                  <span>{subject.topics.length} topik · {formatDurationLabel(subject.estimatedMinutes)}</span>
                 </div>
               ))}
             </div>
@@ -74,11 +74,10 @@ export default function RevisionDashboard({
                 <p className="eyebrow">Perlu Hari Ini</p>
                 <div className="timeline">
                   {reviewQueue.dueTopics.length ? reviewQueue.dueTopics.slice(0, 5).map(topic => (
-                    <div className="timeline-item" key={`due-${topic.subjectId}-${topic.topicId}`}>
-                      <span>{formatSubjectName(topic.subjectId)}</span>
+                    <div className="timeline-item revision-queue-item" key={`due-${topic.subjectId}-${topic.topicId}`}>
                       <b>{formatTopicName(topic.topicId)}</b>
-                      <em>Keutamaan {formatPriority(topic.priority)} • {topic.nextReview}</em>
-                      <p>Penguasaan {Math.max(0, Math.min(100, Math.round(topic.mastery || 0)))}% • Keyakinan Data {Math.max(0, Math.min(100, Math.round(topic.confidence || 0)))}%</p>
+                      <span>{formatSubjectName(topic.subjectId)}</span>
+                      <em>{formatReviewQueueMeta(topic)}</em>
                     </div>
                   )) : <EmptyState title="Tiada ulang kaji diperlukan hari ini." message="Semua topik telah dijadualkan dengan baik." />}
                 </div>
@@ -87,10 +86,10 @@ export default function RevisionDashboard({
                 <p className="eyebrow">Akan Datang</p>
                 <div className="timeline">
                   {reviewQueue.upcomingTopics.length ? reviewQueue.upcomingTopics.slice(0, 5).map(topic => (
-                    <div className="timeline-item" key={`upcoming-${topic.subjectId}-${topic.topicId}`}>
-                      <span>{formatSubjectName(topic.subjectId)}</span>
+                    <div className="timeline-item revision-queue-item" key={`upcoming-${topic.subjectId}-${topic.topicId}`}>
                       <b>{formatTopicName(topic.topicId)}</b>
-                      <em>Keutamaan {formatPriority(topic.priority)} • {topic.nextReview}</em>
+                      <span>{formatSubjectName(topic.subjectId)}</span>
+                      <em>{formatReviewQueueMeta(topic)}</em>
                     </div>
                   )) : <EmptyState title="Tiada topik akan datang." message="Topik baharu akan muncul selepas lebih banyak latihan." />}
                 </div>
@@ -100,10 +99,10 @@ export default function RevisionDashboard({
               <p className="eyebrow">Tertunggak</p>
               <div className="timeline">
                 {reviewQueue.overdueTopics.length ? reviewQueue.overdueTopics.slice(0, 5).map(topic => (
-                  <div className="timeline-item" key={`overdue-${topic.subjectId}-${topic.topicId}`}>
-                    <span>{formatSubjectName(topic.subjectId)}</span>
+                  <div className="timeline-item revision-queue-item" key={`overdue-${topic.subjectId}-${topic.topicId}`}>
                     <b>{formatTopicName(topic.topicId)}</b>
-                    <em>Keutamaan {formatPriority(topic.priority)} • {topic.nextReview}</em>
+                    <span>{formatSubjectName(topic.subjectId)}</span>
+                    <em>{formatReviewQueueMeta(topic)}</em>
                   </div>
                 )) : <EmptyState title="Tiada topik tertunggak." message="Teruskan rutin yang stabil." />}
               </div>
@@ -122,7 +121,7 @@ export default function RevisionDashboard({
           <div><b>{mixedRevisionSession.totalQuestions}</b><span>Jumlah Soalan</span></div>
           <div><b>{mixedRevisionSession.subjects.length}</b><span>Subjek</span></div>
           <div><b>{difficultyPlan.distribution.mudah}% / {difficultyPlan.distribution.sederhana}% / {difficultyPlan.distribution.sukar}%</b><span>Tahap</span></div>
-          <div><b>{mixedRevisionSession.estimatedMinutes}</b><span>Masa</span></div>
+          <div><b>{formatDurationLabel(mixedRevisionSession.estimatedMinutes)}</b><span>Masa</span></div>
         </div>
         <div className="subject-report-grid">
           {mixedRevisionSession.subjects.map(subject => (

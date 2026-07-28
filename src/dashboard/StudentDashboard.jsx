@@ -1,13 +1,16 @@
 import React from 'react';
 import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dashboardHelpers.jsx';
 import { buildAdaptiveLearningSnapshot, explainWeakness } from '../ai/index.js';
-import { clampPercent, formatDataConfidence, formatStatus, formatStudyMinutes, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter';
+import { clampPercent, formatDataConfidence, formatDurationLabel, formatScopeLabel, formatStatus, formatStudyMinutes, formatStreakLabel, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 import { SubjectIcon } from '../components/IconGlyph.jsx';
+import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
+import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 
 export default function StudentDashboard({
   profile = {},
   adaptiveProfile = {},
+  canonicalAnalytics = null,
   adaptiveHasEvidence = false,
   overallAccuracy = 0,
   adaptivePracticeCount = 10,
@@ -20,19 +23,28 @@ export default function StudentDashboard({
   streakBest,
   streakMessage,
   gamificationProfile = null,
+  canonicalGamification = null,
   onStartAdaptivePractice
 }) {
+  const analytics = canonicalAnalytics || getCanonicalAnalytics({ profile, adaptiveProfile });
+  const gamification = canonicalGamification || createCanonicalGamification({ profile, adaptiveProfile, gamificationProfile });
   const name = getStudentDisplayName(adaptiveProfile?.name ? adaptiveProfile : profile, 'Murid');
-  const topWeak = adaptiveWeakTopics.slice(0, 5);
-  const topStrong = adaptiveStrongTopics.slice(0, 5);
+  const subjectRows = Array.isArray(adaptiveRecommendation?.subjectRows) ? adaptiveRecommendation.subjectRows : [];
+  const topWeak = analytics.hasEvidence ? analytics.weakTopics.slice(0, 5) : adaptiveWeakTopics.slice(0, 5);
+  const topStrong = analytics.hasEvidence ? analytics.strongTopics.slice(0, 5) : adaptiveStrongTopics.slice(0, 5);
+  const summaryAccuracy = clampPercent(analytics.accuracy ?? overallAccuracy);
+  const summaryStreak = analytics.currentStreak ?? adaptiveProfile.streak ?? 0;
+  const summaryBestStreak = analytics.bestStreak || streakBest || getAdaptiveBestStreak(adaptiveProfile);
+
   const adaptiveSnapshot = React.useMemo(() => {
     const focus = adaptiveRecommendationFocus || topWeak[0] || null;
     if (!focus?.subjectId || !focus?.topicId) return null;
     return buildAdaptiveLearningSnapshot(adaptiveProfile || profile, focus.subjectId, focus.topicId);
   }, [adaptiveProfile, profile, adaptiveRecommendationFocus, topWeak]);
+
   const recommendationLead = studyPlan?.notes || adaptiveSnapshot?.reason || 'Ikuti latihan yang seimbang hari ini.';
   const recommendationFocusText = adaptiveRecommendationFocus
-    ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} — ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+    ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} - ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
     : '';
 
   return (
@@ -40,21 +52,22 @@ export default function StudentDashboard({
       <section className="card adaptive-overview-card">
         <p className="eyebrow">Ringkasan Murid</p>
         <h2>Ringkasan Murid</h2>
-        {adaptiveHasEvidence ? (
+        {(analytics.hasEvidence ?? adaptiveHasEvidence) ? (
           <>
-          <div className="mastery-summary-grid">
-            <div><b>{name}</b><span>Nama Murid</span></div>
-            <div><b>{adaptiveProfile.level || 1}</b><span>Tahap Semasa</span></div>
-            <div><b>{adaptiveProfile.xp || 0}</b><span>XP Semasa</span></div>
-            <div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div>
-          </div>
-          {gamificationProfile && <GamificationSummary profile={gamificationProfile} className="student-gamification-summary" />}
-          <div className="progress-wrap"><div className="progress" style={{ width: `${clampPercent(overallAccuracy)}%` }} /></div>
+            <p className="memory-last">{formatScopeLabel(analytics.scopeLabel)}</p>
             <div className="mastery-summary-grid">
-              <div><b>{adaptiveProfile.totalQuestions || 0}</b><span>Soalan</span></div>
-              <div><b>{adaptiveProfile.correctQuestions || 0}</b><span>Betul</span></div>
-              <div><b>{clampPercent(overallAccuracy)}%</b><span>Ketepatan</span></div>
-              <div><b>{formatStudyMinutes(adaptiveProfile.studyMinutes || 0)}</b><span>Masa Belajar</span></div>
+              <div><b>{name}</b><span>Nama Murid</span></div>
+              <div><b>{analytics.weakTopics.length}</b><span>Topik Perlu Diperbaiki</span></div>
+              <div><b>{analytics.strongTopics.length}</b><span>Topik Dikuasai</span></div>
+              <div><b>{formatStatus(analytics.status)}</b><span>Status Semasa</span></div>
+            </div>
+            <GamificationSummary profile={gamificationProfile} canonical={gamification} className="student-gamification-summary" />
+            <div className="progress-wrap"><div className="progress" style={{ width: `${summaryAccuracy}%` }} /></div>
+            <div className="mastery-summary-grid">
+              <div><b>{analytics.totalQuestions ?? adaptiveProfile.totalQuestions ?? 0}</b><span>Soalan</span></div>
+              <div><b>{analytics.correctQuestions ?? adaptiveProfile.correctQuestions ?? 0}</b><span>Betul</span></div>
+              <div><b>{summaryAccuracy}%</b><span>Ketepatan</span></div>
+              <div><b>{formatStudyMinutes(analytics.studyMinutes ?? adaptiveProfile.studyMinutes ?? 0)}</b><span>Masa Belajar</span></div>
             </div>
           </>
         ) : (
@@ -71,7 +84,7 @@ export default function StudentDashboard({
         <p className="eyebrow">Prestasi Subjek</p>
         <h2>Prestasi Subjek</h2>
         <div className="subject-report-grid">
-          {(adaptiveRecommendation?.subjectRows || []).map(subject => (
+          {subjectRows.map(subject => (
             <div className="report-box" key={`student-${subject.id}`}>
               <h3><SubjectIcon subjectId={subject.id} motion="hover" /> {subject.title || formatSubjectName(subject.id)}</h3>
               <b>{clampPercent(subject.accuracy)}%</b>
@@ -93,7 +106,7 @@ export default function StudentDashboard({
                 <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}>
                   <span>{formatSubjectName(topic.subjectId)}</span>
                   <b>{formatTopicName(topic.topicId)}</b>
-                  <em>{formatStatus(topic.status)} • Penguasaan {clampPercent(topic.mastery)}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
+                  <em>{formatStatus(topic.status)} - Penguasaan {clampPercent(topic.mastery)}% - Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
                   <p>{explanation.message}</p>
                 </div>
               );
@@ -113,7 +126,7 @@ export default function StudentDashboard({
               <div className="timeline-item" key={`${topic.subjectId}-${topic.topicId}`}>
                 <span>{formatSubjectName(topic.subjectId)}</span>
                 <b>{formatTopicName(topic.topicId)}</b>
-                <em>Penguasaan {clampPercent(topic.mastery)}% • Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
+                <em>Penguasaan {clampPercent(topic.mastery)}% - Keyakinan Data {formatDataConfidence(topic.confidence)}</em>
               </div>
             ))}
           </div>
@@ -129,14 +142,14 @@ export default function StudentDashboard({
           {studyPlan
             ? `${recommendationLead}${recommendationFocusText ? ` ${recommendationFocusText}` : ''}`
             : adaptiveRecommendationFocus
-              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} — ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
+              ? `Fokus utama: ${formatSubjectName(adaptiveRecommendationFocus.subjectId)} - ${formatTopicName(adaptiveRecommendationFocus.topicId)}`
               : 'Fokus utama belum tersedia.'}
         </p>
         <div className="mastery-summary-grid">
           <div><b>{studyPlan?.focusCount || adaptiveRecommendation?.plan?.totalQuestions || adaptivePracticePreview?.summary?.totalQuestions || adaptivePracticeCount}</b><span>Soalan</span></div>
-          <div><b>{studyPlan?.estimatedMinutes || adaptiveRecommendation?.plan?.estimatedMinutes || adaptivePracticePreview?.summary?.estimatedMinutes || 0}</b><span>Masa</span></div>
-          <div><b>{adaptiveRecommendation?.summary?.weakTopics || 0}</b><span>Topik Perlu Diperbaiki</span></div>
-          <div><b>{adaptiveRecommendation?.summary?.strongTopics || 0}</b><span>Topik Dikuasai</span></div>
+          <div><b>{formatDurationLabel(studyPlan?.estimatedMinutes || adaptiveRecommendation?.plan?.estimatedMinutes || adaptivePracticePreview?.summary?.estimatedMinutes || 0)}</b><span>Masa</span></div>
+          <div><b>{analytics.hasEvidence ? analytics.weakTopics.length : adaptiveRecommendation?.summary?.weakTopics || 0}</b><span>Topik Perlu Diperbaiki</span></div>
+          <div><b>{analytics.hasEvidence ? analytics.strongTopics.length : adaptiveRecommendation?.summary?.strongTopics || 0}</b><span>Topik Dikuasai</span></div>
         </div>
         <button type="button" className="full" onClick={() => onStartAdaptivePractice(adaptivePracticeCount)}>
           Mula Latihan AI
@@ -147,10 +160,10 @@ export default function StudentDashboard({
         <p className="eyebrow">Streak Pembelajaran</p>
         <h2>Streak Pembelajaran</h2>
         <div className="mastery-summary-grid">
-          <div><b>{adaptiveProfile.streak || 0}</b><span>Streak Semasa</span></div>
-          <div><b>{streakBest || getAdaptiveBestStreak(adaptiveProfile)}</b><span>Streak Terbaik</span></div>
+          <div><b>{formatStreakLabel(summaryStreak)}</b><span>Streak Semasa</span></div>
+          <div><b>{formatStreakLabel(summaryBestStreak)}</b><span>Streak Terbaik</span></div>
           <div><b>{adaptiveProfile.lastStudyDate || '-'}</b><span>Tarikh Belajar Terakhir</span></div>
-          <div><b>{streakMessage || getAdaptiveMotivation(adaptiveProfile.streak || 0)}</b><span>Motivasi</span></div>
+          <div><b>{streakMessage || getAdaptiveMotivation(summaryStreak)}</b><span>Motivasi</span></div>
         </div>
       </section>
     </>

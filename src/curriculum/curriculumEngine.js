@@ -1,4 +1,4 @@
-import { estimatedTimeFor, inferSKSP } from './skspEngine';
+import { estimatedTimeFor, inferSKSP } from './skspEngine.js';
 
 export function normalizeQuestionMetadata({ subject = {}, topic = {}, topicIndex = 0, question = {}, questionIndex = 0 } = {}) {
   const sksp = inferSKSP({ subject, topic, topicIndex, question, questionIndex });

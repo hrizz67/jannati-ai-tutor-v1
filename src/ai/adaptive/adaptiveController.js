@@ -12,12 +12,40 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(number) ? number : fallback;
 }
 
-function isDebugEnabled(options = {}) {
+export function readAdaptiveDebugFlag() {
+  const viteEnv =
+    typeof import.meta !== 'undefined' && import.meta?.env
+      ? import.meta.env
+      : null;
+
+  const viteDebug = Boolean(
+    viteEnv?.DEV ||
+    viteEnv?.VITE_ADAPTIVE_DEBUG === 'true' ||
+    viteEnv?.VITE_ADAPTIVE_DEBUG === '1'
+  );
+
+  const nodeEnv =
+    typeof process !== 'undefined' && process?.env
+      ? process.env
+      : null;
+
+  const nodeDebug = Boolean(
+    nodeEnv &&
+    (
+      nodeEnv.ADAPTIVE_DEBUG === 'true' ||
+      nodeEnv.ADAPTIVE_DEBUG === '1' ||
+      nodeEnv.NODE_ENV === 'development'
+    )
+  );
+
+  return viteDebug || nodeDebug;
+}
+
+export function isDebugEnabled(options = {}) {
   return Boolean(
     options.debug ||
     options.adaptiveDebug ||
-    process.env.ADAPTIVE_DEBUG === '1' ||
-    process.env.NODE_ENV === 'development'
+    readAdaptiveDebugFlag()
   );
 }
 

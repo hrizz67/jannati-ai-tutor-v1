@@ -66,7 +66,10 @@ export function createCanonicalProgress(input = {}) {
       totalXp: Math.max(0, number(source.xp ?? source.totalXp, 0)),
       globalLevel: Math.max(1, Math.round(number(source.level ?? source.globalLevel, 1))),
       streakCurrent: Math.max(0, number(source.streak ?? source.totals?.currentStreak, 0)),
-      streakBest: Math.max(0, number(source.bestStreak ?? source.totals?.longestStreak, 0)),
+      streakBest: Math.max(
+        Math.max(0, number(source.bestStreak ?? source.totals?.longestStreak, 0)),
+        Math.max(0, number(source.streak ?? source.totals?.currentStreak, 0))
+      ),
       totalAttempts: Math.max(0, totalAttempts),
       totalCorrect: Math.max(0, totalCorrect),
       totalWrong: Math.max(0, totalWrong),

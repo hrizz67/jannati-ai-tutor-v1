@@ -1,16 +1,11 @@
 import React from 'react';
-import { buildRewardSummary } from '../../gamification/index.js';
 import AchievementBadge from './AchievementBadge.jsx';
 import LevelProgress from './LevelProgress.jsx';
+import { createCanonicalGamification } from '../../utils/canonicalGamification.js';
 
 function safeText(value, fallback = '-') {
   const text = String(value ?? '').trim();
   return text && text !== 'undefined' && text !== 'null' ? text : fallback;
-}
-
-function safeNumber(value, fallback = 0) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
 }
 
 function getLatestAchievement(achievements = []) {
@@ -23,77 +18,105 @@ function getLatestAchievement(achievements = []) {
   })[0] || null;
 }
 
+function buildFallbackCanonical(profile = {}, rewardSummary = null) {
+  if (rewardSummary && typeof rewardSummary === 'object') {
+    return createCanonicalGamification({
+      gamificationProfile: {
+        xp: rewardSummary.xp,
+        level: rewardSummary.level,
+        nextLevelXP: rewardSummary.nextLevelXP,
+        progressPercent: rewardSummary.progressPercent,
+        currentStreak: rewardSummary.streak?.current,
+        bestStreak: rewardSummary.streak?.best,
+        achievements: rewardSummary.achievements,
+        coins: rewardSummary.rewards?.coins,
+        latestSessionXp: rewardSummary.sessionXp
+      }
+    });
+  }
+
+  return createCanonicalGamification({ gamificationProfile: profile || {} });
+}
+
 export default function GamificationPanel({
+  canonical = null,
   rewardSummary = null,
   profile = null,
   className = ''
 }) {
-  const summary = rewardSummary && typeof rewardSummary === 'object'
-    ? rewardSummary
-    : buildRewardSummary(profile || {});
-
-  const xp = Math.max(0, safeNumber(summary.xp, 0));
-  const level = Math.max(1, safeNumber(summary.level, 1));
-  const progressPercent = Math.max(0, Math.min(100, safeNumber(summary.progressPercent, 0)));
-  const nextLevelXP = Math.max(0, safeNumber(summary.nextLevelXP, 0));
-  const currentStreak = Math.max(0, safeNumber(summary.streak?.current, 0));
-  const bestStreak = Math.max(0, safeNumber(summary.streak?.best, 0));
-  const totalAchievements = Array.isArray(summary.achievements) ? summary.achievements.length : 0;
-  const sessionXp = Math.max(0, safeNumber(summary.sessionXp ?? summary.recentXp, 0));
-  const subjectXp = Math.max(0, safeNumber(summary.subjectXp, 0));
-  const subjectLevel = Math.max(1, safeNumber(summary.subjectLevel, 1));
+  const detailPanelId = React.useId();
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
+  const summary = canonical && typeof canonical === 'object'
+    ? canonical
+    : buildFallbackCanonical(profile || {}, rewardSummary);
   const latestAchievement = getLatestAchievement(summary.achievements);
-  const onboardingMessage = xp === 0 && level === 1 && currentStreak === 0 && totalAchievements === 0
-    ? 'Mulakan latihan hari ini untuk kumpul XP, naik tahap, dan buka pencapaian pertama.'
-    : '';
+  const hasSecondaryDetails = summary.subjectXp > 0 || summary.subjectLevel > 0 || summary.bestStreak > summary.currentStreak || summary.latestSessionXp > 0 || summary.starCount > 0;
+
+  if (!summary.hasEvidence) {
+    return (
+      <section className={`card gamification-panel ${className}`.trim()} aria-labelledby="gamification-panel-title">
+        <p className="eyebrow">Gamifikasi Pembelajaran</p>
+        <h2 id="gamification-panel-title">Ganjaran Pembelajaran</h2>
+        <div className="gamification-empty-state" role="status">
+          <p><strong>Belum ada data ganjaran.</strong></p>
+          <p>Lengkapkan latihan untuk mula mengumpul XP dan pencapaian.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={`card gamification-panel ${className}`.trim()} aria-labelledby="gamification-panel-title">
       <p className="eyebrow">Gamifikasi Pembelajaran</p>
       <h2 id="gamification-panel-title">Ganjaran Pembelajaran</h2>
 
-      {onboardingMessage && (
-        <p className="memory-last gamification-onboarding" role="status">
-          {onboardingMessage}
-        </p>
-      )}
-
       <div className="mastery-summary-grid gamification-summary-grid">
-        <div><b>{sessionXp}</b><span>XP Sesi</span></div>
-        <div><b>{xp}</b><span>Jumlah XP</span></div>
-        <div><b>{subjectXp}</b><span>XP Subjek</span></div>
-        <div><b>{level}</b><span>Tahap Global</span></div>
-        <div><b>{subjectLevel}</b><span>Tahap Subjek</span></div>
-        <div><b>{progressPercent}%</b><span>Kemajuan ke Tahap Seterusnya</span></div>
-        <div><b>{currentStreak}</b><span>Streak Semasa</span></div>
-        <div><b>{bestStreak}</b><span>Streak Terbaik</span></div>
-        <div><b>{totalAchievements}</b><span>Jumlah Pencapaian</span></div>
+        <div><b>{summary.globalXp}</b><span>Jumlah XP</span></div>
+        <div><b>{summary.globalLevel}</b><span>Tahap Semasa</span></div>
+        <div><b>{summary.currentStreak}</b><span>Streak Semasa</span></div>
+        <div><b>{summary.achievementCount}</b><span>Pencapaian</span></div>
       </div>
 
       <LevelProgress
-        currentXP={xp}
-        progressPercent={progressPercent}
-        nextLevelXP={nextLevelXP}
-        level={level}
+        level={summary.globalLevel}
+        levelTitle={summary.levelTitle}
+        nextLevelTitle={summary.nextLevelTitle}
+        currentValue={summary.globalXpIntoLevel}
+        maxValue={summary.globalXpForNextLevel}
+        progressPercent={summary.globalProgressPercent}
       />
+
+      {hasSecondaryDetails && (
+        <div className="gamification-details">
+          <button
+            type="button"
+            className="gamification-details-toggle"
+            aria-expanded={detailsOpen}
+            aria-controls={detailPanelId}
+            onClick={() => setDetailsOpen(open => !open)}
+          >
+            <span className="gamification-details-toggle__title">Butiran Lanjut</span>
+            <span className="gamification-details-toggle__summary">Lihat data subjek dan ganjaran tambahan</span>
+          </button>
+          <div
+            id={detailPanelId}
+            className="recommend-meta gamification-meta"
+            hidden={!detailsOpen}
+          >
+            {summary.subjectXp > 0 ? <span>XP subjek semasa: <strong>{summary.subjectXp}</strong></span> : null}
+            {summary.subjectLevel > 0 ? <span>Tahap subjek semasa: <strong>{summary.subjectLevel}</strong></span> : null}
+            {summary.bestStreak > summary.currentStreak ? <span>Streak terbaik: <strong>{summary.bestStreak}</strong></span> : null}
+            {summary.latestSessionXp > 0 ? <span>XP sesi terbaru: <strong>{summary.latestSessionXp}</strong></span> : null}
+            {summary.starCount > 0 ? <span>Bintang terkumpul: <strong>{summary.starCount}</strong></span> : null}
+          </div>
+        </div>
+      )}
 
       <div className="gamification-achievement-block">
         <p className="eyebrow">Pencapaian Terkini</p>
         <AchievementBadge achievement={latestAchievement} />
-        {!latestAchievement && (
-          <p className="memory-last" role="status">Belum ada pencapaian</p>
-        )}
+        {!latestAchievement ? <p className="gamification-achievement-note">{safeText('', 'Teruskan latihan untuk membuka pencapaian pertama.')}</p> : null}
       </div>
-
-      <details className="gamification-details">
-        <summary><span>Butiran Lanjut</span><small>Lihat ringkasan XP dan streak penuh</small></summary>
-        <div className="recommend-meta gamification-meta">
-          <span>XP semasa: <b>{xp}</b></span>
-          <span>Tahap semasa: <b>{level}</b></span>
-          <span>Streak: <b>{currentStreak}</b></span>
-          <span>Pencapaian: <b>{totalAchievements}</b></span>
-        </div>
-      </details>
     </section>
   );
 }
