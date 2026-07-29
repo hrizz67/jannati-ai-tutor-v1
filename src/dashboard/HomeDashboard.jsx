@@ -290,7 +290,7 @@ export default function HomeDashboard(props) {
           </button>
           <nav className="subject-quick-switch" aria-label="Pilih subjek" ref={subjectRailRef}>
           {visibleSubjects.map(subject => {
-            const subjectTitle = subject?.title || formatSubjectName(subject?.id);
+            const subjectTitle = formatSubjectName(subject?.title || subject?.id);
             const isActive = selectedSubjectId === subject?.id;
             return (
               <button

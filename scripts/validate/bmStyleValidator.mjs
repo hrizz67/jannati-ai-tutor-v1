@@ -187,10 +187,26 @@ function templateSignature(value = '') {
 
 function extractStrings(source) {
   const matches = [];
-  const re = /(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
-  let match;
-  while ((match = re.exec(source))) {
-    matches.push(match[2]);
+  for (let index = 0; index < source.length; index += 1) {
+    const quote = source[index];
+    if (quote !== "'" && quote !== '"' && quote !== '`') continue;
+    let value = '';
+    let closed = false;
+    for (let cursor = index + 1; cursor < source.length; cursor += 1) {
+      const character = source[cursor];
+      if (character === '\\') {
+        value += character;
+        if (cursor + 1 < source.length) value += source[++cursor];
+        continue;
+      }
+      if (character === quote) {
+        index = cursor;
+        closed = true;
+        break;
+      }
+      value += character;
+    }
+    if (closed) matches.push(value);
   }
   return matches;
 }

@@ -30,6 +30,7 @@ export function buildExplanation({ subjectId, topicId, knowledgePack = null, con
         : subjectId === 'english' && questionText
           ? ` Gunakan perkataan atau ayat Inggeris dalam soalan ini: ${questionText}`
           : '';
+  const explanation = simpleExplanation || explanations[0] || responseFocus;
   const contextualExplanation = `${explanation}${subjectFocus}`.trim();
   return {
     subjectId: subjectId || null,

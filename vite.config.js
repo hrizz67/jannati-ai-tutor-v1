@@ -7,6 +7,9 @@ const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.met
 export default defineConfig({
   plugins: [react()],
   base: '/jannati-ai-tutor-v1/',
+  optimizeDeps: {
+    include: ['react-dom/client']
+  },
   build: {
     rollupOptions: {
       checks: {
