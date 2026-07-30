@@ -340,3 +340,109 @@ The complete individual matrix is now **68 PASS, 0 FAIL, 0 TIMEOUT**. Targeted C
 Remaining non-blocking checks are physical Safari chrome/safe area, keyboard resizing, microphone/audio permissions, accessibility technology, Print Preview, and responsive device emulation. No physical iPhone testing is claimed.
 
 P1 Coach and P2 subject-label repairs remain passing, no confirmed P0/P1 remains, all validators pass, the fresh runtime opens, and the prebundle blocker is resolved. Recommendation: **READY FOR COMMIT AND DEPLOY**. No commit, push, or deploy was performed.
+
+## Communication and hardware capability audit
+
+### Scope and feature inventory
+
+Audited the active Bacaan, Mendengar, Menulis, and Bertutur surfaces; browser SpeechRecognition/`webkitSpeechRecognition`; speech synthesis replay; manual transcript entry; recognition cleanup; language routing; and the Coach/Explain/Teacher voice-adjacent paths. No page-load microphone permission request, new audio asset, storage-key, scoring, analytics, or session-schema change was introduced.
+
+### Confirmed Bertutur issue and focused repair
+
+The live Bertutur component in `src/App.jsx` used a bespoke recognition error mapper. `audio-capture`, network/unknown errors, start failures, and the generic technical path were collapsed into `Rakaman tidak dapat digunakan.`, while permission and no-speech states used less actionable text. This obscured the real browser capability failure and made the microphone symptom appear as a transcript defect.
+
+The focused repair adds `getBertuturSpeechErrorMessage()` at the display boundary in `src/App.jsx` and routes only Bertutur recognition error messages through it. Raw prompt/set values, recognition identity, transcript extraction, scoring, progress/session recording, resume metadata, storage, and analytics payloads remain unchanged.
+
+Before: `Rakaman tidak dapat digunakan.` / `Mikrofon tidak dapat digunakan.` / generic permission text.
+
+After: permission → `Mikrofon tidak dibenarkan. Benarkan akses mikrofon dalam tetapan pelayar.`; no speech/result → `Tiada suara dikesan. Cuba bercakap semula.`; audio capture → `Mikrofon tidak dapat dikesan. Semak mikrofon dan tetapan sistem.`; network/unknown → `Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet dan cuba semula.`.
+
+### Validators
+
+Added executable validators:
+
+- `scripts/validate/v31BertuturSpeechRecognitionAudit.mjs` — PASS, including a mock constructor fixture covering constructor fallback, handler registration, start, final transcript extraction, and cleanup.
+- `scripts/validate/v31CommunicationHardwareAudit.mjs` — PASS, covering capability fallback, recognition cleanup, TTS cancellation, manual transcript, language mappings (`ms-MY`, `en-US`, `ar-SA`), and absence of page-load `getUserMedia`/`new Audio` use.
+
+Targeted validators all PASS: Stage 7B, Stage 7G, Stage 6, browser environment, Coach explanation, English label, Coach context/icon, Stage 3 Coach/UASA, Stage 7D modal, Stage 7F labels/resume, Stage 7A mobile, BM style, and both new validators. The individual validator sweep attempted all 70 validators. 56 PASS and 14 pre-existing FAILs remain in compact/gamification/knowledge/parent/polish/smart-check/planner/tutor-modal/UI/release-candidate audits; none is a communication, microphone, audio, Coach-crash, or subject-label regression. No validator was weakened or edited to suppress those failures.
+
+### Build and runtime/device result
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-BmOXrNXJ.js`, 726.66 kB (gzip 213.46 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed; `dist/index.html` content diff is clean after restoring the tracked HTML. No `vite-preview.out.log` content diff was present.
+
+Recorded SHA-256 asset hashes: JS `85D56940F6A7A6EBDEB113CF856AC1FEEC5741A008EA0F0C9AAC30FF86A6AC92`; CSS `403251E582DFAC2943B440F0716C6136A430B8F890A7EE2C01EAE1791258EA0E`.
+
+The executable speech fixture proves the repaired Bertutur path can execute and preserve a final transcript. Real spoken-microphone transcription, permission prompts, no-speech timing, device restart, and physical Chrome/Safari/Edge/Android/iPhone hardware were not testable in this environment; no physical-device PASS is claimed. Mendengar TTS cancellation and Bacaan/Menulis manual paths remain statically/fixture covered. The existing local React/Vite development warning about an empty `inert` boolean attribute is unrelated and was not repaired.
+
+P1 Coach crash remains PASS. P2 English Year 2 label and Stage 7G Bertutur canonical heading remain PASS. No new confirmed P0/P1 was found. Remaining work is the 14 pre-existing validator failures and device-only microphone/audio/accessibility checks.
+
+Recommendation: **READY WITH DEVICE CONDITIONS** — focused communication repair and executable coverage pass, but release readiness still requires real Chrome microphone acceptance and resolution/waiver of the existing full-chain validator failures. No commit, push, or deploy was performed.
+
+## Bertutur speech recognition accuracy follow-up
+
+The earlier empty-transcript issue is resolved; the current observed residual is inaccurate BM recognition, including the unrelated `movie.com` transcript. The selected BM speaking set already maps to `ms-MY`; the failure was result handling and candidate acceptance, not a stale BM locale or a scoring defect.
+
+`src/App.jsx` now refreshes the selected set language immediately before every `recognition.start()`, uses `interimResults: true`, `maxAlternatives: 3`, and selects short versus longer-session `continuous` mode from the prompt type. Changed results are read from `event.resultIndex`; interim text is displayed separately, final fragments are deduplicated and accumulated, and an empty `onend` cannot erase a valid transcript. Candidate confidence and gentle prompt vocabulary relevance are used only to rank alternatives.
+
+Low-confidence or unrelated candidates are held for confirmation with `Transkrip mungkin kurang tepat. Cuba sebut semula atau betulkan teks secara manual.`, `Guna transkrip ini`, and `Cuba semula`; manual textarea editing remains available and `Semak Transkrip` uses the latest edited value. No auto-correction, expected-answer substitution, scoring, storage, analytics, or session-schema change was made. Development-only diagnostics include language, result index, alternatives, confidence, error, and end events; spoken content is not persisted.
+
+Added `scripts/validate/v31BertuturRecognitionAccuracyAudit.mjs` (PASS). Existing Bertutur, communication hardware, Stage 7B, and Stage 6 validators also PASS. The prior 70-validator sweep was 56 PASS / 14 pre-existing unrelated FAILs; with this new validator, the current total is 71 validators (57 PASS / 14 pre-existing unrelated FAILs). No new P0/P1 was introduced.
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-DeEKrANM.js`, 730.29 kB (gzip 214.73 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB warning remains. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+Three-run real Chrome microphone results for the requested BM phrases, English phrase, and Arabic phrase are **NOT TESTABLE** in this environment. Therefore accuracy, confidence, and alternative-choice acceptance cannot be claimed as physical-device PASS. Remaining browser limitation is real microphone/locale service verification.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Do not commit, push, or deploy until real Chrome microphone QA confirms the three BM phrases across three runs and validates the `movie.com` low-confidence path.
+
+## Multilingual assisted-transcription audit
+
+Native browser recognition remains a draft suggestion because locale services can return inaccurate text such as `movie.com`; it is never treated as a learner answer until explicit confirmation. The shared Bertutur flow now keeps `recognizedDraft`, `confirmedTranscript`, manual text, confidence, source, and selected locale separate for BM, English, and Arabic.
+
+| Language | Locale | Speech draft | Confirmation | Manual mode | Device QA |
+|---|---|---|---|---|---|
+| Bahasa Melayu | `ms-MY` | PASS | Required | PASS | NOT TESTABLE |
+| Bahasa Inggeris | `en-US` | PASS | Required | PASS | NOT TESTABLE |
+| Bahasa Arab | `ar-SA` | PASS | Required | PASS | NOT TESTABLE |
+
+Speech `onresult` now writes only to the draft/review panel. `Semak Transkrip` is disabled while listening, while a draft is unconfirmed, or when the transcript is empty. Scoring receives only manually entered text or an explicitly confirmed draft. `onend` cannot confirm or score. Switching languages stops recognition, clears stale unconfirmed draft/interim state, and prevents transcript leakage. Manual editing marks the source as `manual` and recognition events do not overwrite it.
+
+Review copy is localized for all three languages, with Arabic Unicode preserved and `lang="ar" dir="rtl"` on the review and manual fields. BM uses `Teks yang dikesan`, English uses `Recognised text`, and Arabic uses `النص الذي تم التعرّف عليه`; each provides use/edit/retry/clear actions and a localized warning. The existing `resultIndex`, final/interim separation, alternative ranking, confidence handling, error mapping, and cleanup remain intact.
+
+Added `scripts/validate/v31BertuturMultilingualAssistedTranscriptAudit.mjs` (PASS). Targeted validators all PASS, including the existing Bertutur accuracy/speech/hardware validators, Stage 7B, Stage 7G, Stage 6, browser environment, and Coach context/icon audits. Full individual sweep: **72 total, 58 PASS, 14 pre-existing unrelated FAILs**. Baseline failures: compact UI, gamification panel, knowledge, parent dashboard/insights, production polish, smart check, study planner, tutor modal, UI, and release-candidate audits. No new communication P0/P1 was introduced.
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-zcQCsWZP.js`, 732.62 kB (gzip 215.70 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. No missing Arabic/Unicode assets were reported. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+Real Chrome microphone runs for the requested BM, English, and Arabic phrases were not available in this environment. Accuracy, alternative candidates, confidence values, inaccurate-result confirmation, and physical language switching are therefore **NOT TESTABLE**; no device PASS is claimed. Manual-only flows and RTL/Unicode behavior are covered by source assertions and the focused validator.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Do not commit, push, or deploy until real Chrome QA verifies three BM runs, three English runs, Arabic spoken or fluent-speaker testing, inaccurate-result safety, and idle/listening/draft language switching.
+
+## Vite dependency-entry audit
+
+### Root cause
+
+Vite’s default dependency-entry discovery included the audit/demo page `artifacts/stage7d/modal-audit.html`. That page imports `artifacts/stage7d/modal-audit.js`, which contains JSX in a `.js` file and therefore caused the dependency scan to fail before the application could be served.
+
+### Minimal fix
+
+`vite.config.js` now explicitly sets:
+
+```js
+optimizeDeps: {
+  entries: ['index.html'],
+  include: ['react-dom/client']
+}
+```
+
+The existing `react-dom/client` optimization was preserved. Audit files were not renamed, converted, deleted, or added as dependency entries. No package or lockfile changes were made.
+
+### Fresh startup and runtime
+
+After clearing only `node_modules/.vite`, a fresh forced dev server reported Vite ready in 389 ms with no dependency-scan failure, no `artifacts/stage7d/modal-audit.html` scan, no JSX parse error, and no ReactDOM export error. `http://127.0.0.1:5173/jannati-ai-tutor-v1/` returned HTTP 200 and contained the application root. Full interactive browser/console and microphone accuracy testing was not performed; no microphone accuracy claim is made.
+
+### Validation and build
+
+`v31ViteDependencyEntryAudit`, browser environment, multilingual assisted transcription, recognition accuracy, speech recognition, communication hardware, Coach explanation, English label, and BM style validators were run; the focused Vite validator and all requested targeted validators passed. The full individual sweep is **73 total: 61 PASS, 12 pre-existing unrelated FAILs**: compact UI, gamification panel, parent dashboard/insights, production polish, smart check, study planner, tutor modal, UI, and release-candidate audits. No new P0/P1 was introduced.
+
+`npm.cmd run build` passed (Vite 8.1.0, 323 modules). Main JS: `index-zcQCsWZP.js`, 732.62 kB (gzip 215.70 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed and tracked `dist/index.html` content was restored.
+
+Recommendation: **READY FOR DEVICE QA**. No commit, push, or deploy performed.

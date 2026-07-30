@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/jannati-ai-tutor-v1/',
   optimizeDeps: {
+    entries: ['index.html'],
     include: ['react-dom/client']
   },
   build: {

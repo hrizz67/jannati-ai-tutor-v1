@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const app = fs.readFileSync('src/App.jsx', 'utf8');
+const content = fs.readFileSync('src/data/communicationContent.js', 'utf8');
+
+assert.match(content, /id === 'bm' \? 'ms-MY'/);
+assert.match(content, /id === 'english' \? 'en-US'/);
+assert.match(content, /: 'ar-SA'/);
+assert.match(app, /const latestSpeechLang[\s\S]{0,240}latestSet\?\.speechLang/);
+assert.match(app, /recognition\.lang = latestSpeechLang/);
+assert.match(app, /recognition\.interimResults = true/);
+assert.match(app, /recognition\.continuous = longSpeechMode/);
+assert.match(app, /recognition\.maxAlternatives = 3/);
+assert.match(app, /event\.resultIndex/);
+assert.match(app, /result\.isFinal/);
+assert.match(app, /collectBertuturSpeechResults/);
+assert.match(app, /interimCandidates/);
+assert.match(app, /finalCandidates/);
+assert.match(app, /speechSeenResultKeysRef/);
+assert.match(app, /normalizeBertuturTranscript/);
+assert.match(app, /Pengecaman mungkin kurang tepat|Transkrip mungkin kurang tepat/);
+assert.match(app, /Guna transkrip ini/);
+assert.match(app, /Cuba semula/);
+assert.match(app, /textarea[\s\S]{0,180}value=\{transcript\}/);
+assert.match(app, /recognitionConfidence|confidence/);
+assert.match(app, /alternativeIndex/);
+assert.match(app, /confidence: alternative\?\.confidence/);
+assert.match(app, /Mikrofon tidak dibenarkan/);
+assert.match(app, /Mikrofon tidak dapat dikesan/);
+assert.match(app, /recognitionRef\.current = null/);
+assert.match(app, /speechFinalTranscriptRef\.current/);
+assert.match(app, /setTranscript\(normalizedTranscript\)/);
+console.log('v31BertuturRecognitionAccuracyAudit: PASS');
