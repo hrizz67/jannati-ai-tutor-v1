@@ -1709,6 +1709,14 @@ textarea[dir="rtl"] {
     scroll-padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
   }
 
+  .ai-explain-modal { --ai-modal-footer-height: 172px; }
+  .ai-teacher-modal { --ai-modal-footer-height: 116px; }
+  .ai-explain-modal .ai-explain-body,
+  .ai-teacher-modal .ai-teacher-body {
+    padding-bottom: calc(var(--ai-modal-footer-height) + 16px + env(safe-area-inset-bottom, 0px));
+    scroll-padding-bottom: calc(var(--ai-modal-footer-height) + 20px + env(safe-area-inset-bottom, 0px));
+  }
+
   .ai-explain-head,
   .ai-teacher-head,
   .ai-chat-head {

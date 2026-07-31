@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const css = fs.readFileSync('src/styles/style.css', 'utf8');
+assert.match(css, /--ai-modal-footer-height/);
+assert.match(css, /scroll-padding-bottom/);
+assert.match(css, /100dvh/);
+assert.match(css, /safe-area-inset-bottom/);
+assert.match(css, /\.ai-explain-body[^{]*\{[^}]*overflow-y:\s*auto/s);
+assert.match(css, /\.ai-teacher-body[^{]*\{[^}]*overflow-y:\s*auto/s);
+console.log('PASS v31AiModalLongContentAudit: long-content bodies reserve footer and safe-area space.');

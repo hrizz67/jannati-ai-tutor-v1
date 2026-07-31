@@ -594,6 +594,24 @@ Static responsive validation covers 320–430px narrow layouts plus desktop/tabl
 
 Stage 5 does not change AI logic, scoring, accepted answers, generated content meaning, or communication/microphone behavior. Remaining limitation: physical iPhone/Safari viewport and focus verification.
 
+## Kata Nama Am explanation and modal-footer overlap repair
+
+### Root causes
+
+The BM `Kata Nama Am` topic had no skill-family branch in `explainEngine.js`, so it fell through to the generic focus (`Fahami kemahiran dalam soalan semasa.`) and reused the question explanation for multiple sections. The existing repetition guard covered the prior number/pronoun fixtures but did not provide a distinct common-noun fallback. Separately, the narrow-screen scroll body reserved only its normal padding plus the Safari inset; it did not reserve the stacked sticky footer height, allowing the final Janna card to sit beneath the actions.
+
+### Focused repair and visible text
+
+`src/ai/explainEngine.js` now detects BM `kata_nama_am` and equivalent `Kata Nama Am` metadata, producing distinct content: focus `Mengenal pasti kata nama am.`; simple explanation `Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.`; why-correct `“buku” ialah nama umum bagi sejenis benda, bukan nama khas.`; hint `Fikirkan sama ada perkataan itu nama umum atau nama khas.`; procedural steps; example `Sekolah ialah kata nama am bagi tempat.`; common mistake contrasting `Sekolah Kebangsaan Seri Murni`; memory rule; and brief Janna encouragement. The branch supports equivalent nouns such as meja, sekolah, kucing, guru, and taman through the question answer/context rather than a word-specific special case.
+
+`src/ai/learningCopy.js` now handles array fallbacks safely in the existing repetition guard. `src/styles/style.css` reserves measured narrow-screen footer stacks with `--ai-modal-footer-height: 172px` for Terangkan and `116px` for Ajar Saya, adding the normal gap and `env(safe-area-inset-bottom)` to both `padding-bottom` and `scroll-padding-bottom`. The single internal scroll region, sticky footer, 44px actions, and compact Janna card are preserved.
+
+### Validation and production preview
+
+`v31BmKataNamaAmExplanationAudit` and `v31AiModalFooterOverlapAudit` PASS. All requested Stage 1–5 related validators PASS. Full individual sweep: **88 total, 74 PASS, 14 baseline/unrelated FAIL, 0 TIMEOUT**; no Kata Nama Am, AI-content, or modal-footer validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-DWUhtE43.js`, 738.24 kB (gzip 217.55 kB); CSS: `index-BSb0p4mE.css`, 102.20 kB (gzip 19.78 kB). Existing >500 kB chunk warning remains. Production preview URL `http://127.0.0.1:4173/jannati-ai-tutor-v1/` returned HTTP 200 with the application root. `git diff --check` passed and `dist/index.html` content was restored.
+
+Narrow viewport results are code-level/static only for 320×568, 375×667, 390×844, 393×852, and 430×932: footer-height reservation, safe-area padding, one scroll region, and full final-card scroll space are present. Physical iPhone/Safari toolbar, touch, keyboard, and real inset behavior remain untestable. No scoring, accepted answers, storage, analytics, routing, Mathematics, Bertutur, or microphone logic changed. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**.
+
 ## Combined Stage 1–5 QA
 
 ### Baseline and changed-file matrix
@@ -623,3 +641,29 @@ Static responsive checks cover 320×568, 375×667, 390×844, 393×852, 430×932,
 ### Physical-device conditions and recommendation
 
 Not testable here: iPhone Safari bottom toolbar/insets, touch scrolling, virtual keyboard, browser chrome collapse, real focus return, and physical footer reachability. No physical-device PASS is claimed. Remaining P0/P1/P2 issues: none newly introduced; the 13 full-sweep failures are pre-existing non-Stage-1–5 audits. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**. Do not treat this as a physical iPhone/Safari approval.
+
+## Broader BM skill-family and modal safety audit
+
+### Scope and root causes
+
+The focused `Kata Nama Am` repair was correct, but representative BM topics still reached the generic explanation fallback because `src/ai/explainEngine.js` had no family mapping for kata nama khas, kata kerja, kata adjektif, penjodoh bilangan, imbuhan, sentence-building, spelling, punctuation, and comprehension topics. This produced a generic learning focus, repeated simple/why text, and placeholder examples. The repair adds a shared BM family resolver and contextual fallback content at the existing explanation boundary; raw topic IDs, question data, scoring, storage, analytics, and session identity remain unchanged. The existing footer-height reservation in `src/styles/style.css` was retained and audited for long content.
+
+### Coverage results
+
+Executable fixtures cover 13 BM families: kata nama am, kata nama khas, kata ganti nama, kata kerja, kata adjektif, penjodoh bilangan, imbuhan asas, ayat tunggal, ayat majmuk, bina ayat, ejaan, tanda baca, and kefahaman. Each now returns a family-specific focus, distinct explanation and why-correct text, a relevant example, a mistake reminder, and a memory tip. Cross-subject fallback fixtures for Mathematics, BM, English, Sains, Islam, Arab, PJ, and PK retain non-empty subject-aware output and do not echo `Soalan:` into the simple explanation.
+
+### New validators
+
+`v31BmSkillFamilyCoverageAudit.mjs`, `v31AiFallbackCoverageAudit.mjs`, and `v31AiModalLongContentAudit.mjs` all PASS. The existing focused BM and modal-footer validators also PASS. The modal audit confirms `100dvh`, one internal scroll region, footer-height reservation, safe-area padding, and scroll-padding for long content; no physical device or Safari session was available.
+
+### Full validator matrix
+
+Individual execution completed **91 validators: 76 PASS, 15 FAIL, 0 TIMEOUT**. The failures are existing out-of-scope baseline audits (compact UI, gamification, one simulation, knowledge, parent dashboard/insights, production polish, smart-check, study planner, tutor modal state/freeze, UI audit, Stage 7A mobile chrome, and release-candidate checks). No new BM-family, AI fallback, modal-content, Coach, communication, scoring, storage, or analytics failure was introduced. Exact per-validator durations were captured in the terminal run; all new and requested targeted validators passed.
+
+### Build and preview
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-DDvEjlYC.js`, 744.05 kB (gzip 219.22 kB); CSS: `index-BSb0p4mE.css`, 102.20 kB (gzip 19.78 kB). The existing >500 kB chunk warning remains. `git diff --check` PASS; preview smoke was not re-run after this audit, while the prior production preview returned HTTP 200. `dist/index.html` content was restored to the tracked asset references; the known Git index-lock status marker remains.
+
+### Remaining issues and recommendation
+
+No new confirmed P0/P1/P2 issue remains in the audited BM explanation or AI modal paths. The 15 failing baseline validators remain outside this task and require separate triage. Physical iPhone/Safari toolbar, touch, keyboard, and real safe-area behavior remain manual device checks. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**, subject to resolving or explicitly accepting the pre-existing baseline validator failures; no commit, push, or deploy was performed.

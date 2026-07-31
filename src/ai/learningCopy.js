@@ -143,12 +143,12 @@ export function guardDistinctSections(sections = {}, questionText = '', fallback
   for (const key of ['summary', 'focus', 'simpleExplanation', 'whyCorrect', 'hint', 'steps', 'example', 'commonMistake', 'memoryTip', 'coachMessage']) {
     if (!(key in result)) continue;
     const values = Array.isArray(result[key]) ? result[key] : [result[key]];
-    result[key] = values.map(value => {
+    result[key] = values.map((value, valueIndex) => {
       const text = String(value || '').trim();
       const tokens = normalizeTokens(text);
       const overlap = questionTokens.size ? tokens.filter(token => questionTokens.has(token)).length / questionTokens.size : 0;
       const duplicate = seen.has(text.toLowerCase()) || (tokens.length >= 5 && overlap >= 0.85);
-      if (duplicate && fallback[key]) return fallback[key];
+      if (duplicate && fallback[key]) return Array.isArray(fallback[key]) ? (fallback[key][valueIndex] || fallback[key][0]) : fallback[key];
       seen.add(text.toLowerCase());
       return value;
     });
