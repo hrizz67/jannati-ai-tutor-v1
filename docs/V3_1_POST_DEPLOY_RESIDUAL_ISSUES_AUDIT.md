@@ -479,3 +479,21 @@ After clearing only `node_modules/.vite`, a fresh forced dev server reported Vit
 `npm.cmd run build` passed (Vite 8.1.0, 323 modules). Main JS: `index-zcQCsWZP.js`, 732.62 kB (gzip 215.70 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed and tracked `dist/index.html` content was restored.
 
 Recommendation: **READY FOR DEVICE QA**. No commit, push, or deploy performed.
+
+## Bertutur production initialization-order crash
+
+### Symptom and mapping
+
+Production Bertutur opened to a white screen. Chrome reported `Uncaught ReferenceError: Cannot access 'de' before initialization` from `index-DT7JcDEg.js`. Mapping the minified binding back to source identified `de` as the minified `communicationContextKey` value. The key template read `rawSet?.id` before `rawSet` had been initialized.
+
+### Root cause and repair
+
+In `src/App.jsx`, the communication context key and current-key ref assignment were declared before the `setBase`/`rawSet`/formatted `set` declarations they depended on. This temporal dead zone ran during Bertutur component initialization in the production bundle. The minimal repair moved only those two context-key lines below `rawSet` and `set` initialization. Context/session guards, stale callback rejection, transcript isolation, multilingual confirmation flow, listening-state repair, and warning deduplication remain unchanged.
+
+### Production validation
+
+`npm.cmd run build` passed with Vite 8.1.0 and 323 modules. Main JS: `index-lYdC93em.js`, 733.10 kB (gzip 215.88 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. The production preview started cleanly at `http://127.0.0.1:4173/jannati-ai-tutor-v1/` and returned HTTP 200 with the application root. No dependency scan, JSX parse, or ReactDOM export error appeared. Full interactive browser/microphone QA was not performed; no microphone accuracy claim is made.
+
+Targeted validators all passed: `v31BertuturInitializationOrderAudit`, `v31CommunicationStateIsolationAudit`, `v31BertuturListeningStateAudit`, `v31BertuturMultilingualAssistedTranscriptAudit`, `v31BertuturRecognitionAccuracyAudit`, `v31BertuturSpeechRecognitionAudit`, `v31CommunicationHardwareAudit`, `v31ViteDependencyEntryAudit`, and `v31Stage6FinalRegressionAudit`. Full individual sweep: **76 total, 64 PASS, 12 pre-existing unrelated FAILs** (`compactUiAudit`, `gamificationPanelAudit`, `parentDashboardRegression`, `parentInsightsIntegrationAudit`, `productionPolish`, `smartCheckRegression`, `studyPlannerPanelAudit`, `studyPlannerSimulation`, `tutorModalFreezeAudit`, `tutorModalStateAudit`, `uiAudit`, and `v3ReleaseCandidateAudit`). No communication-related failure or new P0/P1 was found.
+
+Remaining conditions are device-only microphone, Arabic speech, and physical browser checks. The preview HTTP smoke is green, but an interactive Bertutur browser session was not available in this environment, so no visual or microphone runtime PASS is claimed. Recommendation: **READY WITH DEVICE CONDITIONS**; confirm the live/interactive Bertutur UI before emergency commit and deploy.

@@ -2748,8 +2748,6 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const speechFinalTranscriptRef = useRef('');
   const speechFinalCandidateRef = useRef(null);
   const recognitionContextKeyRef = useRef('');
-  const communicationContextKey = `speaking:${setId}:${mode}:${rawSet?.id || sessionIndex}`;
-  recognitionContextKeyRef.current = communicationContextKey;
   const safariEmptyFailureRef = useRef(0);
   const [safariMicDisabled, setSafariMicDisabled] = useState(false);
   const setBase = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
@@ -2758,6 +2756,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     : setBase;
   const rawSetTitle = rawSet?.title || '';
   const set = rawSet ? { ...rawSet, title: formatScopeLabel(rawSetTitle) } : rawSet;
+  const communicationContextKey = `speaking:${setId}:${mode}:${rawSet?.id || sessionIndex}`;
+  recognitionContextKeyRef.current = communicationContextKey;
   const isIOSSafari = useMemo(() => {
     if (typeof navigator === 'undefined') return false;
     const ua = navigator.userAgent || '';
