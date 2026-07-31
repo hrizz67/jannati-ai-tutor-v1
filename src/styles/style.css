@@ -1683,6 +1683,79 @@ textarea[dir="rtl"] {
   .writing-coach-page * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
+/* Stage 5: narrow-screen AI modal ergonomics. */
+@media (max-width: 480px) {
+  .ai-explain-overlay,
+  .ai-chat-overlay {
+    align-items: center;
+    min-height: 100dvh;
+    padding: max(8px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  }
+
+  .ai-modal-shell,
+  .ai-explain-modal,
+  .ai-teacher-modal,
+  .ai-chat {
+    width: min(100%, calc(100vw - 16px));
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+    border-radius: 16px;
+  }
+
+  .ai-explain-body,
+  .ai-teacher-body,
+  .ai-chat-body {
+    gap: 10px;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    scroll-padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ai-explain-head,
+  .ai-teacher-head,
+  .ai-chat-head {
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 10px;
+  }
+
+  .ai-explain-footer,
+  .ai-teacher-footer,
+  .ai-chat-input {
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+  }
+
+  .ai-explain-footer button,
+  .ai-teacher-footer button,
+  .ai-chat-input button {
+    min-height: 44px;
+  }
+
+  .ai-explain-body .explain-details {
+    margin-top: 2px;
+  }
+
+  .ai-explain-body .explain-details > summary {
+    min-height: 44px;
+  }
+
+  .ai-explain-body .mascot-card {
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .ai-explain-body .mascot-card-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ai-explain-body .mascot-card-copy {
+    gap: 2px;
+  }
+
+  .ai-explain-body .mascot-card-copy span {
+    line-height: 1.3;
+  }
+}
+
 /* Stage 3 modal contract: fixed chrome, independently scrolling body, safe footer. */
 .ai-explain-overlay {
   z-index: var(--z-modal-backdrop);

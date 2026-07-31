@@ -173,6 +173,8 @@ function collectPrioritizedText(pack, subjectId) {
 
 function buildPackData(pack, subjectId, topicId, question = {}, result = {}, userAnswer = '') {
   if (!pack) return null;
+  const questionIdentity = question?.id || question?.questionId || question?.q || question?.question || 'current';
+  const contextKey = `${subjectId}:${topicId}:${questionIdentity}`;
   const studentProfile = getStudentProfileSummary('default');
   const topicProgress = getTopicProgress(studentProfile.studentId || 'default', subjectId, topicId, studentProfile);
   const subjectProgress = getSubjectProgress(studentProfile.studentId || 'default', subjectId, studentProfile);
@@ -194,13 +196,13 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     pack.simpleExplanation || teacherExplanation || question?.explanation || question?.hint ||
     `Mari teliti ${questionStem} dan pilih jawapan yang sepadan dengan arahan.`
   );
-  const examples = rotateList(collectPrioritizedText(pack, subjectId), `${subjectId}:${topicId}:examples`);
-  const extraExamples = rotateList(dedupeText(toDisplayText(pack.extraExamples)), `${subjectId}:${topicId}:extraExamples`);
-  const tips = rotateList(dedupeText(toDisplayText(pack.tips)), `${subjectId}:${topicId}:tips`);
-  const memoryTips = rotateList(dedupeText(toDisplayText(pack.memoryTips)), `${subjectId}:${topicId}:memoryTips`);
-  const commonMistakes = rotateList(dedupeText(toDisplayText(pack.commonMistakes)), `${subjectId}:${topicId}:commonMistakes`);
-  const followUpQuestions = rotateList(dedupeText(toDisplayText(pack.followUpQuestions)), `${subjectId}:${topicId}:followUpQuestions`);
-  const problemSolvingSteps = rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${subjectId}:${topicId}:problemSolvingSteps`);
+  const examples = rotateList(collectPrioritizedText(pack, subjectId), `${contextKey}:examples`);
+  const extraExamples = rotateList(dedupeText(toDisplayText(pack.extraExamples)), `${contextKey}:extraExamples`);
+  const tips = rotateList(dedupeText(toDisplayText(pack.tips)), `${contextKey}:tips`);
+  const memoryTips = rotateList(dedupeText(toDisplayText(pack.memoryTips)), `${contextKey}:memoryTips`);
+  const commonMistakes = rotateList(dedupeText(toDisplayText(pack.commonMistakes)), `${contextKey}:commonMistakes`);
+  const followUpQuestions = rotateList(dedupeText(toDisplayText(pack.followUpQuestions)), `${contextKey}:followUpQuestions`);
+  const problemSolvingSteps = rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${contextKey}:problemSolvingSteps`);
   const pronunciationGuide = rotateList(dedupeText(toDisplayText(pack.pronunciationGuide)), `${subjectId}:${topicId}:pronunciationGuide`);
   const readingSteps = rotateList(dedupeText(toDisplayText(pack.readingSteps)), `${subjectId}:${topicId}:readingSteps`);
   const letterBreakdown = rotateList(dedupeText(toDisplayText(pack.letterBreakdown)), `${subjectId}:${topicId}:letterBreakdown`);
