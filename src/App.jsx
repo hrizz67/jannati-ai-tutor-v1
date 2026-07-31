@@ -2747,6 +2747,9 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const speechSeenResultKeysRef = useRef(new Set());
   const speechFinalTranscriptRef = useRef('');
   const speechFinalCandidateRef = useRef(null);
+  const recognitionContextKeyRef = useRef('');
+  const communicationContextKey = `speaking:${setId}:${mode}:${rawSet?.id || sessionIndex}`;
+  recognitionContextKeyRef.current = communicationContextKey;
   const safariEmptyFailureRef = useRef(0);
   const [safariMicDisabled, setSafariMicDisabled] = useState(false);
   const setBase = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
@@ -2997,7 +3000,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setRecognizedDraft(nextCandidate.text);
     setRecognitionConfidence(nextCandidate.confidence);
     setSpeechCandidate(nextCandidate);
-    setResult({ status: 'needs-confirmation', transcript: '', score: 0, correct: false, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], confidence: nextCandidate.confidence, errorCode: 'low-confidence', message: reviewCopy.warning });
+    setResult({ status: 'needs-confirmation', transcript: '', score: 0, correct: false, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], confidence: nextCandidate.confidence, errorCode: 'low-confidence', message: '' });
   };
 
   function startBertutur() {
@@ -3011,6 +3014,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setResult(null);
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
+    const recognitionContextKey = communicationContextKey;
     const longSpeechMode = /huraikan|ceritakan|terangkan|jelaskan|describe|explain|talk|tell/i.test(`${mode} ${safePrompt?.label || ''} ${safePrompt?.text || ''}`);
     recognition.lang = latestSpeechLang;
     recognition.interimResults = true;
@@ -3021,6 +3025,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       setMendengar(true);
     };
     recognition.onerror = event => {
+      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
       if (finalizedRef.current || abortedRef.current) return;
       const error = event?.error || 'unknown_error';
       if (import.meta?.env?.DEV) console.debug('[Bertutur speech error]', error);
@@ -3057,6 +3062,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       });
     };
     recognition.onresult = event => {
+      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
       if (finalizedRef.current || abortedRef.current) return;
       const extracted = collectBertuturSpeechResults(event, speechSeenResultKeysRef.current);
       if (import.meta?.env?.DEV) console.debug('[Bertutur speech result]', { resultIndex: event?.resultIndex, alternatives: [...extracted.finalCandidates, ...extracted.interimCandidates], isFinal: extracted.finalCandidates.length > 0 });
@@ -3067,8 +3073,10 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       speechFinalCandidateRef.current = candidate;
       speechFinalTranscriptRef.current = normalizeBertuturTranscript([speechFinalTranscriptRef.current, candidate.text].filter(Boolean).join(' '));
       if (!longSpeechMode) offerSpeechCandidate({ ...candidate, text: speechFinalTranscriptRef.current });
+      if (!longSpeechMode) setMendengar(false);
     };
     recognition.onend = () => {
+      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
       clearSpeechTimeout();
       if (import.meta?.env?.DEV) console.debug('[Bertutur speech end]', { transcript: speechFinalTranscriptRef.current });
       if (finalizedRef.current || abortedRef.current) {
@@ -3217,6 +3225,7 @@ function getBertuturReviewCopy(languageId = 'bm') {
     retry: 'Try again',
     clear: 'Clear',
     warning: 'Speech recognition may be inaccurate. Edit the text or try again.',
+    uncertain: 'Speech recognition may have misheard a word. Check and correct the text before confirming.',
     confirmed: 'Transcript confirmed',
     manual: 'Type your answer below.'
   };
@@ -3228,6 +3237,7 @@ function getBertuturReviewCopy(languageId = 'bm') {
     retry: 'حاول مرة أخرى',
     clear: 'مسح',
     warning: 'قد لا يكون التعرف على الصوت دقيقاً. عدّل النص أو حاول مرة أخرى.',
+    uncertain: 'قد يكون التعرف على الصوت قد أخطأ في كلمة. تحقق من النص وصححه قبل التأكيد.',
     confirmed: 'تم تأكيد النص',
     manual: 'اكتب إجابتك أدناه.'
   };
@@ -3239,6 +3249,7 @@ function getBertuturReviewCopy(languageId = 'bm') {
     retry: 'Cuba semula',
     clear: 'Padam',
     warning: 'Pengecaman mungkin kurang tepat. Betulkan teks atau cuba semula.',
+    uncertain: 'Pengecaman suara mungkin tersalah perkataan. Semak dan betulkan teks sebelum mengesahkan.',
     confirmed: 'Transkrip disahkan',
     manual: 'Taip jawapan kamu di bawah.'
   };

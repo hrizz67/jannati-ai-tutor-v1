@@ -416,6 +416,39 @@ Real Chrome microphone runs for the requested BM, English, and Arabic phrases we
 
 Recommendation: **READY WITH DEVICE CONDITIONS**. Do not commit, push, or deploy until real Chrome QA verifies three BM runs, three English runs, Arabic spoken or fluent-speaker testing, inaccurate-result safety, and idle/listening/draft language switching.
 
+## Communication state-isolation repair
+
+### Evidence and root cause
+
+The supplied screenshot showed a Bertutur BM prompt, `jelaskan cara menjaga kebersihan`, alongside a different recognized draft, `tuliskan cara menjaga kebersihan`; the draft is correctly treated as uncertain speech output, not as a prompt replacement. Reports that Bacaan and Bertutur appeared to retain the same sentence were traced to communication state being represented by several local component states without a shared context/session guard. Component unmounting and `abort()` alone did not protect against late recognition callbacks, and the old warning was rendered both as result text and inside the review panel.
+
+### Repair
+
+`src/App.jsx` now derives `communicationContextKey` from `speaking`, selected language, question type, and current speaking item. Each recognition session captures that key; `onresult`, `onerror`, and `onend` ignore callbacks whose key no longer matches. Language/type changes stop recognition and clear only stale unconfirmed draft/interim/confidence/review state. Speech remains separate from `confirmedTranscript` and `manualTranscript`; only explicit confirmation or manual entry can reach scoring. The review warning appears once, short answers leave listening state immediately after the final result, retry/clear remain available, and `Semak Transkrip` stays disabled while a draft is unconfirmed.
+
+Question-source audit:
+
+| Module | Dataset/source | Question ID | Prompt field |
+|---|---|---|---|
+| Bacaan | `semanticReadingPassages` | passage/session item | `passage.text` / reading passage fields |
+| Bertutur | `semanticSpeakingPrompts` | set/session item + mode | `promptBank[mode].text` |
+| Mendengar | `semanticListeningSets` | listening session item | listening prompt/question fields |
+| Menulis | `semanticWritingSets` | writing session item | `safeTask` writing fields |
+
+No dataset was duplicated or schema changed. The visible Bertutur prompt and recognized draft remain independent values; `tuliskan` is never silently changed to `jelaskan` and the complete prompt is never manufactured as a transcript.
+
+### Validators and build
+
+Added `scripts/validate/v31CommunicationStateIsolationAudit.mjs` and `scripts/validate/v31BertuturListeningStateAudit.mjs`; both PASS. Requested multilingual, accuracy, speech, hardware, Stage 7B, Stage 6, Coach-context, and existing regression validators PASS. Full individual sweep: **75 total, 62 PASS, 13 pre-existing unrelated FAILs** (compact UI, gamification, parent dashboards, polish, smart-check, planner, tutor-modal, UI, and release-candidate checks). No communication-related new P0/P1 was found.
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-BDAzm7dT.js`, 733.12 kB (gzip 215.88 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+### Browser/device QA
+
+Static/executable isolation checks pass, but real Chrome microphone, screenshot capture, Arabic spoken accuracy, and physical device switching were not available in this environment. No microphone accuracy or physical-device PASS is claimed. The remaining limitation is device-level speech/service verification.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Code-level prompt isolation, late-event protection, listening-state behavior, and draft-confirmation safety pass; real Chrome BM/English/Arabic device QA remains required before commit/deploy.
+
 ## Vite dependency-entry audit
 
 ### Root cause
