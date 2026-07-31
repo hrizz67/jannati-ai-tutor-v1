@@ -76,6 +76,7 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const isNumberOrder = subjectId === 'math' && /nombor\s+(?:selepas|sebelum)/i.test(stem);
   const isBmPronoun = subjectId === 'bm' && /kata ganti nama|menyiapkan kerja kelas|meja belajar/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
   const isBmCommonNoun = subjectId === 'bm' && /kata nama am|kata_nama_am/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
+  const isBmLightTulang = subjectId === 'bm' && /ringan\s+tulang/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
   const bmFamily = subjectId === 'bm' ? getBmFamily(topic, stem) : '';
   const bmFamilyContent = BM_FAMILY_CONTENT[bmFamily];
   const bmMemoryTip = bmFamilyContent?.memory || '';
@@ -90,6 +91,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
         : isBmCommonNoun
           ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
+        : isBmLightTulang
+          ? '“Ringan tulang” bermaksud rajin bekerja atau suka membantu orang lain.'
         : bmFamilyContent?.simple || question.explanation || (category === 'generic' ? contextualGeneric : rule.explanation)
   );
   const hint = sanitizeAiText(
@@ -99,6 +102,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         ? 'Fikirkan perkataan yang kamu guna untuk menyebut diri sendiri.'
         : isBmCommonNoun
           ? 'Fikirkan sama ada perkataan itu nama umum atau nama khas.'
+        : isBmLightTulang
+          ? 'Cari maksud yang menunjukkan sikap rajin bekerja atau suka membantu.'
         : bmFamilyContent?.hint || question.hint || rule.hint
   );
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
@@ -115,6 +120,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
       : isBmCommonNoun
         ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
+      : isBmLightTulang
+        ? '“Ringan tulang” bermaksud rajin bekerja atau suka membantu orang lain.'
       : bmFamilyContent?.simple || explanation;
   const whyCorrect = isNumberOrder
     ? `${numberValue} + 1 = ${numberAnswer}, jadi ${numberAnswer} datang selepas ${numberValue}.`
@@ -122,6 +129,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? 'Orang dalam ayat itu bercakap tentang dirinya sendiri.'
       : isBmCommonNoun
         ? `“${commonNounAnswer}” ialah nama umum bagi sejenis benda, bukan nama khas.`
+      : isBmLightTulang
+        ? 'Maksud ini tepat kerana orang yang ringan tulang rajin bekerja dan suka membantu orang lain.'
       : bmFamilyContent?.why || explanation;
   const steps = isNumberOrder
     ? [`Lihat nombor ${numberValue}.`, 'Tambah 1.', `Jawapannya ialah ${numberAnswer}.`]
@@ -129,14 +138,18 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? ['Lihat siapa yang bercakap.', 'Pilih kata ganti nama untuk diri sendiri.', 'Gunakan “Saya”.']
       : isBmCommonNoun
         ? ['Kenal pasti perkataan yang diberi.', 'Tentukan kategorinya.', `“${commonNounAnswer}” ialah benda, jadi ia kata nama am.`]
+      : isBmLightTulang
+        ? ['Kenal pasti simpulan bahasa.', 'Cari maksud kiasannya.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
       : bmFamilyContent?.steps || examples.slice(0, 3);
-  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? 'Saya membaca buku.' : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : (bmFamilyContent?.example || examples[0] || '');
+  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? 'Saya membaca buku.' : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : isBmLightTulang ? 'Contohnya, kakak selalu membantu ibu mengemas rumah.' : (bmFamilyContent?.example || examples[0] || '');
   const commonMistakes = (isNumberOrder
     ? ['Menambah atau menolak dengan arah yang salah.', 'Tidak menyemak urutan nombor.']
     : isBmPronoun
       ? ['Jangan pilih “dia” kerana “dia” digunakan untuk orang lain.', 'Tidak melihat siapa yang sedang bercakap.']
       : isBmCommonNoun
         ? ['Jangan keliru dengan kata nama khas seperti “Sekolah Kebangsaan Seri Murni”.', 'Nama khas merujuk kepada nama tertentu.']
+      : isBmLightTulang
+        ? ['Jangan faham maksudnya secara literal.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
       : bmFamilyContent?.mistake ? [bmFamilyContent.mistake] : rule.commonMistakes || []).map(item => sanitizeAiText(item));
   const summary = sanitizeChildFacingText([
     questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',

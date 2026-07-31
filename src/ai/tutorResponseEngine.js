@@ -257,6 +257,13 @@ function buildQuestionSpecificFallback({ questionText = '', instruction = '', ex
   return `Baca ${stem} perlahan-lahan. Jika maklumat belum cukup, semak arahan dan pilihan jawapan dahulu.${optionText}`;
 }
 
+function extractBinaAyatTokens(text = '') {
+  const source = normalizeText(text, '');
+  const word = source.match(/kata\s+[“"']([^”"']+)[”"']/i)?.[1] || '';
+  const name = source.match(/nama\s+[“"']([^”"']+)[”"']/i)?.[1] || '';
+  return { word: normalizeText(word, ''), name: normalizeText(name, '') };
+}
+
 function buildContextualSections({
   intent,
   questionText,
@@ -287,6 +294,22 @@ function buildContextualSections({
   const resolvedQuestion = questionText || getQuestionText(question);
   const resolvedInstruction = instruction || getInstruction(question);
   const resolvedOptions = options.length ? options : getOptions(question);
+  const isBinaAyat = subject?.id === 'bm' && /bina\s+ayat|bina_ayat/i.test(`${topic?.id || ''} ${topic?.title || ''} ${resolvedQuestion}`);
+  const binaTokens = isBinaAyat ? extractBinaAyatTokens(`${resolvedInstruction} ${resolvedQuestion}`) : { word: '', name: '' };
+  const binaFocus = isBinaAyat && (binaTokens.name || binaTokens.word)
+    ? `Bina satu ayat lengkap menggunakan ${binaTokens.name ? `nama “${binaTokens.name}”` : 'nama yang diberi'} dan ${binaTokens.word ? `kata kerja “${binaTokens.word}”` : 'kata yang diberi'}.`
+    : '';
+  const binaHint = binaFocus
+    ? `Cuba mulakan dengan: ${binaTokens.name || 'Nama'} ${binaTokens.word || 'kata kerja'}...`
+    : '';
+  const binaSteps = binaFocus
+    ? [
+        `Mulakan ayat dengan nama “${binaTokens.name || 'nama yang diberi'}”.`,
+        `Gunakan kata “${binaTokens.word || 'yang diberi'}”.`,
+        'Tambahkan maklumat supaya ayat lengkap.',
+        'Akhiri ayat dengan tanda noktah.'
+      ]
+    : [];
   const expectedAnswer = getExpectedAnswer(question);
   const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
@@ -305,6 +328,7 @@ function buildContextualSections({
     ''
   );
   const hintText = normalizeText(
+    binaHint ||
     guided?.hint ||
     coachResponse?.hint?.hint ||
     coachResponse?.hint ||
@@ -318,12 +342,14 @@ function buildContextualSections({
     'Bagus! Teruskan usaha kamu.'
   );
   const learningTipText = normalizeText(
+    binaFocus ||
     coachResponse?.learningTip ||
     coachResponse?.tips?.spotlight ||
     buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const coachKnowledge = coachResponse?.knowledge || {};
   const steps = normalizeList(
+    binaSteps.length ? binaSteps :
     coachResponse?.steps ||
     coachKnowledge?.steps ||
     coachKnowledge?.learningSteps ||
@@ -331,6 +357,8 @@ function buildContextualSections({
     INTENT_STEPS.general
   );
   const commonMistake = normalizeText(
+    isBinaAyat && !isCorrect
+      ? `${binaTokens.name ? `Nama “${binaTokens.name}” sudah ada. ` : ''}${binaTokens.word ? `Kata “${binaTokens.word}” sudah ada. ` : ''}Tambah objek, tempat atau tujuan, kemudian semak huruf besar dan tanda noktah.` :
     coachKnowledge?.commonMistakes?.[0] ||
     coachResponse?.commonMistakes?.[0] ||
     categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
@@ -404,7 +432,9 @@ function buildContextualSections({
   const friendlyInstruction = instructionCore
     ? instructionCore.charAt(0).toLocaleLowerCase('ms-MY') + instructionCore.slice(1)
     : '';
-  const friendlyQuestionSummary = friendlyInstruction
+  const friendlyQuestionSummary = binaFocus
+    ? binaFocus
+    : friendlyInstruction
     ? `Soalan ini meminta kamu ${friendlyInstruction}.`
     : topicLabel && topicLabel !== 'topik semasa'
       ? `Mari kita faham soalan tentang ${topicLabel}.`

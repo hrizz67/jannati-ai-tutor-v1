@@ -39,6 +39,10 @@ function normalizeList(value) {
     .filter(Boolean);
 }
 
+function normalizeForDuplicate(value) {
+  return normalizeText(value, '').toLocaleLowerCase('ms-MY').replace(/[.!?\s]+$/g, '').trim();
+}
+
 function hasMeaningfulText(value) {
   const text = normalizeText(value, '');
   return Boolean(text && text !== 'undefined' && text !== 'null');
@@ -206,6 +210,7 @@ export default function TutorAIModal({
   const normalizedExplanationMode = normalizeText(explanationMode || questionContext.explanationMode, '');
   const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
   const isCorrect = questionContext.isCorrect;
+  const revealExpectedAnswer = isCorrect || normalizedExplanationMode === 'correct_answer_reinforcement' || normalizedExplanationMode === 'show_answer' || Number(attemptCount) >= 3;
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
 
@@ -308,23 +313,29 @@ export default function TutorAIModal({
         gamificationProfile
       }));
       if (requestIdRef.current !== started) return;
-      setMessages(prev => [...prev, {
+      setMessages(prev => {
+        const nextText = normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
+        if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
+        return [...prev, {
         role: 'ai',
-        text: normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE),
+        text: nextText,
         tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
         suggestions: normalizeList(
           response?.quickReplies?.length
             ? response.quickReplies
             : (response?.suggestedActions || response?.suggestions)
         )
-      }]);
+        }];
+      });
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
       setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
       setInput('');
     } catch (err) {
       if (requestIdRef.current !== started) return;
       const message = err?.code === 'TUTOR_RESPONSE_TIMEOUT' ? TIMEOUT_MESSAGE : FALLBACK_MESSAGE;
-      setMessages(prev => [...prev, { role: 'ai', text: message, suggestions: [] }]);
+      setMessages(prev => normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(message)
+        ? prev
+        : [...prev, { role: 'ai', text: message, suggestions: [] }]);
       setStatus('error');
       setError(message);
     } finally {
@@ -409,7 +420,7 @@ export default function TutorAIModal({
                   <p>{normalizedQuestionText}</p>
                 </div>
               )}
-              {normalizedExpectedAnswer && (
+              {normalizedExpectedAnswer && revealExpectedAnswer && (
                 <div>
                   <span className="ai-chat-context-label">Jawapan dijangka</span>
                   <p>{normalizedExpectedAnswer}</p>
@@ -460,7 +471,6 @@ export default function TutorAIModal({
             />
           ))}
           {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading />}
-          {error && !loading && <MessageBubble role="ai" text={error} />}
         </div>
 
         <div className="ai-chat-input ai-modal-footer" data-modal-footer="true">

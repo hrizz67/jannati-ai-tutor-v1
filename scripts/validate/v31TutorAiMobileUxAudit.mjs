@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const jsx = fs.readFileSync('src/components/ai/TutorAIModal.jsx', 'utf8');
+const css = fs.readFileSync('src/styles/style.css', 'utf8');
+assert.match(css, /--tutor-composer-height/);
+assert.match(css, /\.ai-chat-body[^{]*\{[^}]*padding-bottom:\s*calc\(var\(--tutor-composer-height\)/s);
+assert.match(css, /scroll-padding-bottom:\s*calc\(var\(--tutor-composer-height\)/);
+assert.match(css, /safe-area-inset-bottom/);
+assert.match(css, /chat-bubble\.user[^}]*chat-bubble-text|chat-bubble\.user \.chat-bubble-text/s);
+assert.match(css, /min-height:\s*44px/);
+assert.equal((jsx.match(/overflow-y\s*:/g) || []).length, 0, 'scroll ownership remains CSS-only and singular');
+assert.match(jsx, /bodyRef/);
+console.log('PASS v31TutorAiMobileUxAudit');

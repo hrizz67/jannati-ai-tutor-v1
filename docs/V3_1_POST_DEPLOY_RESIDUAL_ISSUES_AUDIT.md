@@ -667,3 +667,35 @@ Individual execution completed **91 validators: 76 PASS, 15 FAIL, 0 TIMEOUT**. T
 ### Remaining issues and recommendation
 
 No new confirmed P0/P1/P2 issue remains in the audited BM explanation or AI modal paths. The 15 failing baseline validators remain outside this task and require separate triage. Physical iPhone/Safari toolbar, touch, keyboard, and real safe-area behavior remain manual device checks. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**, subject to resolving or explicitly accepting the pre-existing baseline validator failures; no commit, push, or deploy was performed.
+
+## Tutor AI mobile UX and character identity repair
+
+### Root causes and focused repairs
+
+`TutorAIModal.jsx` rendered the expected answer in the active context card, rendered fallback errors twice (message plus error bubble), and had no normalized duplicate guard. The chat body also lacked measured composer-height reservation, while the user bubble inherited low-contrast dark text. The modal now gates expected-answer display behind the existing correct/final-reveal conditions, suppresses duplicate assistant fallback messages, reserves `--tutor-composer-height` plus safe-area space, and uses white text on the green student bubble. The compact mobile header reduces the Janna avatar to 48px while preserving branding, subject/topic context, and the reachable close control.
+
+The Tutor response engine now detects Bina Ayat requirements from the current question and generates token-specific focus, hint, four-step structure, and weak-attempt feedback. No complete model answer is exposed. The wrong-answer quiz card no longer uses session-complete farewell copy and labels the explanation speaker from the actual Jati/Janna character. `explainEngine.js` now gives `ringan tulang` the Year 2 explanation: “Ringan tulang” means rajin bekerja atau suka membantu orang lain, with a contextual example; accepted-answer matching remains unchanged.
+
+### Before and after
+
+- Repeated opening/fallback: duplicate `Saya akan bantu berdasarkan soalan yang sedang kamu jawab.` bubbles are guarded; the error bubble is no longer rendered twice.
+- Active progress: `Jawapan dijangka` is absent until an allowed reveal state; progress remains neutral.
+- Bina Ayat: generic “baca soalan / cari kata kunci / semak jawapan” is replaced with extracted requirements such as `Farid` + `menabung`, a start hint, subject/verb/completeness steps, and missing-element coaching.
+- Wrong result: `Jumpa lagi nanti. Janna sentiasa bersama kamu.` is replaced with `Jangan putus asa. Semak petunjuk dan cuba sekali lagi.`; speaker labels follow the actual character.
+- Simpulan bahasa: `ringan tulang bermaksud rajin membantu` is expanded to `ringan tulang bermaksud rajin bekerja atau suka membantu orang lain.`
+
+### Targeted validation
+
+All five new validators PASS: `v31TutorAiMobileUxAudit`, `v31TutorAiAnswerLeakAudit`, `v31TutorAiBinaAyatHelpAudit`, `v31CharacterIdentityConsistencyAudit`, and `v31SimpulanBahasaExplanationAudit`. Related existing validators also PASS: subject isolation, explanation usefulness, section roles, surface-content policy, modal mobile/safe-area/long-content, BM family coverage, and Stage 6 regression.
+
+The full individual sweep completed **96 validators: 82 PASS, 14 pre-existing/out-of-scope FAIL, 0 TIMEOUT**. Failures: compact UI, gamification panel, parent dashboard/insights, production polish, smart-check, study planner, tutor modal freeze/state, UI audit, Stage 7A mobile chrome, visual-wow safety, and release-candidate audits. No focused Tutor AI, answer-leak, identity, Bina Ayat, or simpulan validator failed.
+
+### Build, preview, and viewport notes
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-D_DBJdUT.js`, 745.94 kB (gzip 219.89 kB); CSS: `index-sppZSbid.css`, 102.71 kB (gzip 19.86 kB). Existing >500 kB chunk warning remains. Preview served `http://127.0.0.1:4173/jannati-ai-tutor-v1/` with HTTP 200 and the root mount present. `git diff --check`, `git diff --exit-code -- dist/index.html`, and `git diff --exit-code -- vite-preview.out.log` passed; the known dist status marker is from the repository index-lock issue.
+
+Static mobile rules cover 320×568, 375×667, 390×844, 393×852, and 430×932: compact header, 44px controls, high-contrast user text, one body scroll region, composer-height/safe-area reservation, and final-message clearance. Interactive browser console/screenshot testing and physical iPhone Safari testing were unavailable; no device PASS is claimed.
+
+### Recommendation
+
+Focused repairs are ready for commit and device-QA review. Existing 14 baseline validator failures remain separate release-triage items. No commit, push, or deploy was performed.

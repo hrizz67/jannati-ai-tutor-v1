@@ -1683,6 +1683,44 @@ textarea[dir="rtl"] {
   .writing-coach-page * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
+/* Tutor AI focused mobile safety and readability repair. */
+.ai-chat {
+  --tutor-composer-height: 82px;
+}
+
+.chat-bubble.user .chat-bubble-text,
+.chat-bubble.user .chat-suggestions {
+  color: #fff;
+}
+
+.ai-chat-body {
+  padding-bottom: calc(var(--tutor-composer-height) + 16px + env(safe-area-inset-bottom, 0px));
+  scroll-padding-bottom: calc(var(--tutor-composer-height) + 20px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 480px) {
+  .ai-chat {
+    --tutor-composer-height: 118px;
+  }
+
+  .ai-chat-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ai-chat-brand {
+    gap: 10px;
+  }
+
+  .ai-chat-brand-copy strong {
+    font-size: 16px;
+  }
+
+  .ai-chat-brand-copy span {
+    font-size: 0.86rem;
+  }
+}
+
 /* Stage 5: narrow-screen AI modal ergonomics. */
 @media (max-width: 480px) {
   .ai-explain-overlay,
