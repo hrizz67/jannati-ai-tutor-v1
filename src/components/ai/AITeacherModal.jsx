@@ -80,7 +80,8 @@ export default function AITeacherModal({ open, data, context = null, character =
   if (context && ((data.generatedMode && data.generatedMode !== 'teach') || (data.sourceQuestionId && data.sourceQuestionId !== context.questionId) || (data.sourceSubjectId && data.sourceSubjectId !== context.subjectId) || (data.sourceTopicId && data.sourceTopicId !== context.topicId))) return null;
 
   const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
-  const summary = pickMeaningfulText(sections.summary, data.shortText, data.explanation, data.simpleExplanation, context?.questionText ? `Kita belajar melalui soalan: ${context.questionText}` : '');
+  const focus = pickMeaningfulText(sections.focus, sections.summary, 'Fokus pada kemahiran dalam soalan ini.');
+  const summary = pickMeaningfulText(sections.simpleExplanation, data.simpleExplanation, sections.summary, data.explanation, 'Penerangan mudah untuk soalan ini.');
   const whyCorrect = pickMeaningfulText(sections.whyCorrect, data.explanation, data.simpleExplanation, context?.expectedAnswer ? `Mari hubungkan jawapan ${context.expectedAnswer} dengan soalan.` : '');
   const hint = pickMeaningfulText(sections.hint, data.hint, 'Cari kata kunci penting dalam soalan.');
   const steps = safeList(sections.steps || data.steps);
@@ -92,6 +93,7 @@ export default function AITeacherModal({ open, data, context = null, character =
   const practicePrompt = pickMeaningfulText(sections.practicePrompt, data.practicePrompt, data.followUpQuestions?.[0], 'Cuba sekali lagi selepas membaca penerangan ini.');
   const coachMessage = pickMeaningfulText(sections.coachMessage, data.encouragement, practicePrompt);
   const voiceText = [
+    focus,
     summary,
     whyCorrect,
     hint,
@@ -142,19 +144,16 @@ export default function AITeacherModal({ open, data, context = null, character =
           <VoiceButton text={voiceText} label="Baca Ajaran" title="Baca penerangan Ajar Saya" className="voice-inline" />
           <section className="explain-section explain-context-card" aria-label="Fokus pembelajaran">
             <h3>Fokus pembelajaran</h3>
-            <p>{context?.questionText || 'Ajar Saya membantu kamu belajar semula langkah penting untuk soalan ini.'}</p>
+            <p>{focus}</p>
           </section>
           {renderTextSection('Penerangan mudah', summary)}
-          {renderTextSection('Kenapa jawapan itu betul', whyCorrect)}
-
-          <MascotCard character={character} mood="teaching" size="md" animation="gentle" message={pickMeaningfulText(whyCorrect, summary, coachMessage, 'Jom belajar langkah demi langkah.')} />
+          <MascotCard character={character} mood="teaching" size="md" animation="gentle" message={coachMessage} />
 
           {renderTextSection('Petunjuk', hint)}
           {renderListSection('Langkah demi langkah', uniqueSteps)}
-          {renderListSection('Contoh', uniqueExamples)}
-
           <details className="explain-details">
-            <summary>Lihat panduan tambahan</summary>
+            <summary>Lihat bahan tambahan</summary>
+            {renderListSection('Contoh', uniqueExamples)}
             {renderListSection('Contoh lain', uniqueExtraExamples)}
             {renderListSection('Kesilapan biasa', uniqueMistakes)}
             {renderTextSection('Tip ingatan', memoryTip)}

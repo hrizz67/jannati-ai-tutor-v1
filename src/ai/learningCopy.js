@@ -35,6 +35,29 @@ function unique(values = []) {
   return [...new Set((Array.isArray(values) ? values : []).map(item => String(item).trim()).filter(Boolean))];
 }
 
+function getSubjectId(question = {}, topic = {}) {
+  return normalize(question?.subjectId || topic?.subjectId || question?.subject || topic?.subject || '');
+}
+
+function getQuestionStem(question = {}) {
+  return normalize(question?.q || question?.question || question?.stem || question?.text || '');
+}
+
+function getNumberOrderExamples(question = {}) {
+  const stem = getQuestionStem(question);
+  const after = stem.match(/nombor selepas\s+(\d+)/i);
+  const before = stem.match(/nombor sebelum\s+(\d+)/i);
+  if (after) {
+    const value = Number(after[1]);
+    return [`${value} + 1 = ${value + 1}`, `Nombor selepas ${value} ialah ${value + 1}.`];
+  }
+  if (before) {
+    const value = Number(before[1]);
+    return [`${value} - 1 = ${value - 1}`, `Nombor sebelum ${value} ialah ${value - 1}.`];
+  }
+  return ['Baca nombor dengan teliti.', 'Kenal pasti nilai tempat.', 'Semak urutan nombor.'];
+}
+
 export function sanitizeAiText(value = '') {
   const raw = String(value || '')
     .replace(/\s*Konteks:\s*.*$/gim, '')
@@ -92,11 +115,44 @@ export function detectLearningCategory(question = {}, topic = {}) {
 }
 
 export function getLearningExamples(question = {}, topic = {}) {
+  const subjectId = getSubjectId(question, topic);
+  const stem = getQuestionStem(question);
+  if (subjectId === 'math') return getNumberOrderExamples(question);
+  if (subjectId === 'bm' && /kata ganti nama|menyiapkan kerja kelas|meja belajar/.test(`${stem} ${normalize(topic?.id)} ${normalize(topic?.title)}`)) {
+    return ['Saya membaca buku.', 'Saya menulis di meja belajar.', 'Kata ganti nama diri pertama ialah saya.'];
+  }
   const category = detectLearningCategory(question, topic);
   return unique(TOPIC_EXAMPLES[category] || TOPIC_EXAMPLES.generic);
 }
 
 export function getLearningMemoryTip(question = {}, topic = {}) {
+  const subjectId = getSubjectId(question, topic);
+  if (subjectId === 'math') return 'Tip Ingatan: nombor selepas tambah 1, nombor sebelum tolak 1.';
+  if (subjectId === 'bm' && /kata ganti nama|menyiapkan kerja kelas|meja belajar/.test(`${getQuestionStem(question)} ${normalize(topic?.id)} ${normalize(topic?.title)}`)) {
+    return 'Tip Ingatan: Saya ialah kata ganti nama diri pertama untuk orang yang bercakap.';
+  }
   const category = detectLearningCategory(question, topic);
   return MEMORY_TIPS[category] || MEMORY_TIPS.generic;
+}
+
+export function guardDistinctSections(sections = {}, questionText = '', fallback = {}) {
+  const normalizeTokens = value => String(value || '').toLowerCase().replace(/[^a-z0-9\u00c0-\u024f]+/gi, ' ').trim().split(/\s+/).filter(Boolean);
+  const questionTokens = new Set(normalizeTokens(questionText));
+  const seen = new Set();
+  const result = { ...sections };
+  for (const key of ['summary', 'focus', 'simpleExplanation', 'whyCorrect', 'hint', 'steps', 'example', 'commonMistake', 'memoryTip', 'coachMessage']) {
+    if (!(key in result)) continue;
+    const values = Array.isArray(result[key]) ? result[key] : [result[key]];
+    result[key] = values.map(value => {
+      const text = String(value || '').trim();
+      const tokens = normalizeTokens(text);
+      const overlap = questionTokens.size ? tokens.filter(token => questionTokens.has(token)).length / questionTokens.size : 0;
+      const duplicate = seen.has(text.toLowerCase()) || (tokens.length >= 5 && overlap >= 0.85);
+      if (duplicate && fallback[key]) return fallback[key];
+      seen.add(text.toLowerCase());
+      return value;
+    });
+    if (!Array.isArray(sections[key])) result[key] = result[key][0] || '';
+  }
+  return result;
 }

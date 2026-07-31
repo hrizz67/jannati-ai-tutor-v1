@@ -82,7 +82,8 @@ export default function AIExplainModal({ open, data, context = null, question, c
   if (context && ((data.generatedMode && data.generatedMode !== 'explain') || (data.sourceQuestionId && data.sourceQuestionId !== context.questionId) || (data.sourceSubjectId && data.sourceSubjectId !== context.subjectId) || (data.sourceTopicId && data.sourceTopicId !== context.topicId))) return null;
 
   const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
-  const summary = pickMeaningfulText(sections.summary, data.shortText, data.explanation, data.simpleExplanation, context?.questionText ? `Soalan ini bertanya tentang: ${context.questionText}` : '');
+  const focus = pickMeaningfulText(sections.focus, sections.summary, 'Fokus pada kemahiran dalam soalan ini.');
+  const summary = pickMeaningfulText(sections.simpleExplanation, data.simpleExplanation, sections.summary, data.explanation, 'Penerangan mudah untuk soalan ini.');
   const whyCorrect = pickMeaningfulText(sections.whyCorrect, data.explanation, data.simpleExplanation, context?.expectedAnswer ? `Jawapan perlu dipadankan dengan maksud soalan: ${context.expectedAnswer}.` : '');
   const hint = pickMeaningfulText(sections.hint, data.hint, 'Cari kata kunci penting dalam soalan.');
   const steps = safeList(sections.steps || data.steps);
@@ -97,6 +98,7 @@ export default function AIExplainModal({ open, data, context = null, question, c
   const showCorrectAnswer = data.showCorrectAnswer !== false && Boolean(answerText);
 
   const voiceText = [
+    focus,
     summary,
     whyCorrect,
     hint,
@@ -149,14 +151,12 @@ export default function AIExplainModal({ open, data, context = null, question, c
           <VoiceButton text={voiceText} label="Baca Penerangan" title="Baca penerangan AI" className="voice-inline" />
           <section className="explain-section explain-context-card" aria-label="Konteks penerangan">
             <h3>Fokus penerangan</h3>
-            <p>{context?.questionText || 'Penerangan ini membantu kamu memahami soalan semasa.'}</p>
+            <p>{focus}</p>
           </section>
           {renderTextSection('Penerangan mudah', summary)}
           {renderTextSection('Kenapa jawapan itu betul', whyCorrect)}
 
-          <MascotCard character={character} mood="thinking" size="md" animation="gentle" message={pickMeaningfulText(whyCorrect, hint, summary, coachMessage, 'Jom kita fahami bersama.')} />
-
-          {renderTextSection('Petunjuk', hint)}
+          <MascotCard character={character} mood="thinking" size="md" animation="gentle" message={coachMessage} />
 
           {showCorrectAnswer && (
             <section className="explain-section">
@@ -169,17 +169,15 @@ export default function AIExplainModal({ open, data, context = null, question, c
           )}
 
           {renderListSection('Contoh langkah demi langkah', uniqueSteps)}
-          {renderListSection('Contoh', uniqueExamples)}
-
           <details className="explain-details">
-            <summary>Lihat penerangan lanjut</summary>
+            <summary>Lihat bahan tambahan</summary>
+            {renderListSection('Contoh', uniqueExamples)}
             {renderListSection('Contoh lain', uniqueExtraExamples)}
             {renderListSection('Kesilapan biasa', uniqueMistakes)}
             {renderListSection('Tip ingatan', uniqueMemoryTips)}
             {renderListSection('Soalan susulan', uniqueFollowUps)}
           </details>
 
-          <p className="explain-encouragement">{pickMeaningfulText(coachMessage, whyCorrect, summary)}</p>
         </div>
 
         <div className="ai-explain-footer actions ai-modal-footer" data-modal-footer="true">

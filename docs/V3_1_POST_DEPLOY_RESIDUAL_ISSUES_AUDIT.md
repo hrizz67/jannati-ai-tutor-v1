@@ -497,3 +497,129 @@ In `src/App.jsx`, the communication context key and current-key ref assignment w
 Targeted validators all passed: `v31BertuturInitializationOrderAudit`, `v31CommunicationStateIsolationAudit`, `v31BertuturListeningStateAudit`, `v31BertuturMultilingualAssistedTranscriptAudit`, `v31BertuturRecognitionAccuracyAudit`, `v31BertuturSpeechRecognitionAudit`, `v31CommunicationHardwareAudit`, `v31ViteDependencyEntryAudit`, and `v31Stage6FinalRegressionAudit`. Full individual sweep: **76 total, 64 PASS, 12 pre-existing unrelated FAILs** (`compactUiAudit`, `gamificationPanelAudit`, `parentDashboardRegression`, `parentInsightsIntegrationAudit`, `productionPolish`, `smartCheckRegression`, `studyPlannerPanelAudit`, `studyPlannerSimulation`, `tutorModalFreezeAudit`, `tutorModalStateAudit`, `uiAudit`, and `v3ReleaseCandidateAudit`). No communication-related failure or new P0/P1 was found.
 
 Remaining conditions are device-only microphone, Arabic speech, and physical browser checks. The preview HTTP smoke is green, but an interactive Bertutur browser session was not available in this environment, so no visual or microphone runtime PASS is claimed. Recommendation: **READY WITH DEVICE CONDITIONS**; confirm the live/interactive Bertutur UI before emergency commit and deploy.
+
+## Stage 1 — AI subject isolation and relevance repair
+
+### Evidence and root cause
+
+The reported Mathematics Year 2 explanation for “Berapakah nombor selepas 113?” displayed the shared `learningCopy.js` place-name memory array (`padang`, `sekolah`, `hospital`, `kedai`, `pasar`). The same shared category fallback exposed generic phrases in BM. The root cause was subject-blind fallback selection: `getLearningExamples` and `getLearningMemoryTip` selected category arrays without enforcing the current subject/topic/question, while rotation keys in the knowledge adapter did not include question identity.
+
+### Files changed and repair
+
+`src/ai/learningCopy.js` now derives number-order examples and BM kata ganti nama examples from the current subject and question. `src/ai/explainEngine.js` applies subject/topic-specific number-order and BM pronoun explanation, hint, mistake, and memory content at the generation boundary. `src/App.jsx` supplies the active subject identity to fallback generation. `src/ai/coach/coachAdapter.js` preserves subject identity in fallback payload construction. `src/ai/coach/knowledge/knowledgeAdapter.js` includes question identity in response rotation keys. Two executable validators were added: `scripts/validate/v31AiSubjectIsolationAudit.mjs` and `scripts/validate/v31AiExplanationContentRelevanceAudit.mjs`.
+
+### Before and after
+
+Mathematics now produces arithmetic-only number-order content: “Tambah 1 pada nombor itu.” and `113 + 1 = 114`; no place-name examples are emitted. BM pronoun content now explains that “Saya” is the first-person pronoun for the speaker, with a same-skill example; no arithmetic or generic placeholder phrase is emitted as content. Raw question, answer, storage, scoring, routing, and analytics schemas were not changed.
+
+### Validation and preview
+
+Focused subject-isolation and relevance validators: PASS. Coach crash, Stage 3 Coach/UASA, Stage 6 regression, Stage 7D modal, browser environment, and BM style validators: PASS. The production build passed with 323 modules; main JS `index-EtlxiXHc.js` 735.48 kB (gzip 216.69 kB), CSS `index-BMG2BtEF.css` 100.52 kB (gzip 19.49 kB), with the existing >500 kB chunk warning. `git diff --check` passed and tracked `dist/index.html` was restored to its baseline asset references. Production preview served the application root over HTTP 200; interactive browser/microphone testing was not available, so no physical-device claim is made.
+
+The full individual validator sweep after this repair was **78 total: 64 PASS, 14 FAIL, 0 TIMEOUT**. The failures are existing unrelated audits; no AI subject-isolation validator failed.
+
+### Scope and remaining work
+
+This stage does not address generic explanation wording, duplicate modal sections, modal length, or Safari spacing. Existing unrelated validator failures remain outside AI explanation content. Recommendation: **READY FOR STAGE 2** only after interactive production-equivalent Mathematics/BM modal checks confirm the same isolation; otherwise **NOT READY**.
+
+## Stage 2 — AI explanation usefulness repair
+
+### Screenshot evidence and root cause
+
+The Stage 2 screenshots showed Mathematics sections repeating `Soalan: Berapakah nombor selepas 113?` and BM sections repeating the complete sentence instead of teaching why `Saya` is correct. The repetition path was `explainEngine.js`: `summary` was built directly from `questionText`, `simpleExplanation` mirrored `explanation`, and `steps`/`example` reused the same generic example list. These fields were then passed unchanged to the modal section payload.
+
+### Section-role repair
+
+`src/ai/explainEngine.js` now emits distinct focus, concept explanation, logical reason, hint, ordered steps, alternate example, common mistake, memory rule, and learner-facing coach message fields. `src/ai/learningCopy.js` provides a lightweight normalized token-overlap guard that replaces exact or near-duplicate sections with same-subject fallbacks. Stage 1 subject isolation remains in force. No modal UI, CSS, answer acceptance, scoring, storage, analytics, routing, Bertutur, or microphone logic changed.
+
+### Mathematics and BM results
+
+Mathematics now uses: focus `Mengenal nombor yang datang selepas sesuatu nombor.`; simple explanation `Nombor selepas diperoleh dengan menambah 1.`; why-correct `113 + 1 = 114, jadi 114 datang selepas 113.`; ordered steps; alternate example `Nombor selepas 25 ialah 26.`; and `Selepas = tambah 1. Sebelum = tolak 1.`. BM now explains that `Saya` is used when the speaker refers to themself, gives first-person steps, uses `Saya membaca buku.` as a different example, and identifies `dia`/other-person confusion as the relevant mistake. Full question text is no longer used as the repeated summary content for these fixtures.
+
+### Validation and production-equivalent preview
+
+`v31AiExplanationUsefulnessAudit`, `v31AiSectionRoleAudit`, `v31AiSubjectIsolationAudit`, `v31AiExplanationContentRelevanceAudit`, Coach crash, Stage 3 Coach/UASA, Stage 6, Stage 7D, and browser validators all PASS. Full individual sweep: **80 total, 66 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no explanation-quality validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-DK_mWlF9.js`, 736.93 kB (gzip 217.17 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+This stage does not address BM natural-language polish beyond explanation usefulness, duplicate modal section count, modal length, Safari safe-area spacing, or card sizing. Recommendation: **READY FOR STAGE 3** subject to interactive Mathematics/BM modal confirmation.
+
+## Stage 3 — BM natural-language and Year 2 readability repair
+
+### Evidence and wording root cause
+
+The BM pronoun fixture still used mechanical, adult-sounding wording such as “Saya digunakan sebagai kata ganti nama diri pertama apabila seseorang bercakap tentang dirinya sendiri” and “Ayat ini menunjukkan orang yang bercakap melakukan perbuatan itu sendiri.” The same explanation path also risked repeating template-like grammar language across Teacher, Coach, and Janna surfaces.
+
+### BM copy standard and repair
+
+`src/ai/explainEngine.js` now uses short Malaysian Bahasa Melayu suitable for Year 2: `Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.`; `Orang dalam ayat itu bercakap tentang dirinya sendiri.`; `Fikirkan perkataan yang kamu guna untuk menyebut diri sendiri.`; `Jangan pilih “dia” kerana “dia” digunakan untuk orang lain.`; and `“Saya” untuk diri sendiri. “Dia” untuk orang lain.` The Janna message is warm and brief (`Bagus. Kamu sudah memilih kata ganti nama yang betul.`), while Teacher remains instructional and Coach remains action-oriented. Stage 1 isolation and Stage 2 section-role/repetition guards remain active.
+
+### Validation and production preview
+
+`v31BmNaturalLanguageAudit` and `v31BmToneConsistencyAudit` PASS. Stage 2 usefulness, section-role, subject-isolation, relevance, Coach crash, Stage 3 Coach/UASA, and Stage 6 validators also PASS. The full individual sweep after adding the Stage 3 validators was **82 total: 68 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no BM wording failure occurred. `npm.cmd run build` passed with 323 modules. Main JS: `index-CDlJRt5T.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+This stage does not address duplicate modal section count, modal length, accordion behavior, Safari safe-area spacing, or card sizing. Recommendation: **READY FOR STAGE 4** subject to interactive BM modal confirmation.
+
+## Stage 4 — AI modal redundancy and surface-content repair
+
+### Redundancy root cause and inventory
+
+The modal components rendered the same payload fields in several places: the focus card repeated the question text, `Penerangan mudah` fell back through the same explanation, the mascot/Janna card repeated `whyCorrect`, and the closing encouragement repeated the same block again. `Ajar Saya` also rendered `whyCorrect` even though its procedural steps already carried the reasoning. `Terangkan` rendered retry-only `Petunjuk` and a duplicate encouragement. This was a render/composition issue, not a scoring or data issue.
+
+### Surface-content policy and repair
+
+`src/components/ai/AIExplainModal.jsx` now uses the explicit focus field, keeps the concise explanation/reason/example/mistake/memory sections, omits retry-only hint content, and uses the short Janna message once in the mascot card. `src/components/ai/AITeacherModal.jsx` uses focus, explanation, steps, example, mistake, memory, and practice content; it omits the duplicate why-correct block and uses the short coach/Janna message once. Modal hierarchy and section count were not redesigned, and no CSS/layout/safe-area changes were made. Tutor AI remains conversation-oriented.
+
+### Mathematics and BM results
+
+Mathematics now presents each visible block once: focus, concept, logical reason (Terangkan), procedural steps (Ajar Saya), alternate example, realistic mistake, memory rule, and brief encouragement. BM retains the Stage 3 natural copy and no longer repeats the complete sentence or the same `Saya` rule in Janna, Teacher, and Coach blocks.
+
+### Validation and production preview
+
+`v31AiModalRedundancyAudit` and `v31AiSurfaceContentPolicyAudit` PASS. Stage 1–3 related validators, Stage 7D modal, and Stage 6 regression validators PASS. The full individual sweep after adding the Stage 4 validators was **84 total: 71 PASS, 13 unrelated FAIL, 0 TIMEOUT**; no modal-content failure occurred. `npm.cmd run build` passed with 323 modules. Main JS: `index-qCPUmZ2c.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+Stage 4 does not address modal height, accordion UI, Safari safe-area spacing, card sizing, or general visual polish. Recommendation: **READY FOR STAGE 5** subject to interactive confirmation of correct-answer and wrong-answer modal flows.
+
+## Stage 5 — iPhone AI modal UX repair
+
+### Modal-shell root cause and repair
+
+The modal shell already had partial safe-area rules, but secondary examples remained expanded outside the existing disclosure, creating excess narrow-screen scrolling. Mobile spacing was also inconsistent across the header, body, Janna card, and action footer. `src/components/ai/AIExplainModal.jsx` and `src/components/ai/AITeacherModal.jsx` now place secondary example/support content inside accessible native disclosure controls (`Lihat bahan tambahan`), while primary reasoning remains visible. `src/styles/style.css` adds a narrow-screen `100dvh` shell strategy, one internal scroll region, safe-area-aware header/body/footer padding, 44px action targets, compact spacing, and a 48px Janna avatar with tighter card padding. Body-scroll locking remains provided by `modalRuntime.js`.
+
+### Accordion, footer, and accessibility policy
+
+Primary content stays expanded: Terangkan focus/explanation/why-correct and Ajar Saya focus/explanation/steps. Secondary examples, additional examples, mistakes, memory tips, and follow-ups are collapsed by default behind keyboard-accessible native disclosure controls. Footer actions remain inside the modal shell with safe-area padding and minimum touch height; no second fixed footer was introduced. Dialog semantics, focus handling, reduced-motion behavior, RTL text wrapping, and body locking remain unchanged.
+
+### Viewport QA and validation
+
+Static responsive validation covers 320–430px narrow layouts plus desktop/tablet rules; no physical iPhone or emulator browser session was available, so no device PASS is claimed. `v31AiModalMobileUxAudit` and `v31AiModalSafeAreaAudit` PASS, alongside Stage 1–4 modal/content validators and Stage 6/7D regression checks. Full individual sweep: **86 total, 72 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no modal/mobile UX validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-CvI__isx.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-DwcjoYnw.css`, 101.84 kB (gzip 19.72 kB). Existing >500 kB chunk warning remains. Production preview served the built root at HTTP 200. `dist/index.html` content was restored after preview, and no commit, push, or deploy was performed.
+
+Stage 5 does not change AI logic, scoring, accepted answers, generated content meaning, or communication/microphone behavior. Remaining limitation: physical iPhone/Safari viewport and focus verification.
+
+## Combined Stage 1–5 QA
+
+### Baseline and changed-file matrix
+
+Baseline remains the uncommitted Stage 1–5 work on `v3.1-compact-ui`; package and lockfiles are unchanged. Runtime changes are limited to the previously repaired AI context/explanation paths, `AIExplainModal.jsx`, `AITeacherModal.jsx`, and modal CSS. Validator additions cover Stage 1–5 audits. The audit report and existing generated validation reports remain uncommitted; `artifacts/` remains separate. No unrelated runtime feature was changed for this QA pass.
+
+### Targeted validator matrix
+
+All 17 requested targeted validators passed: subject isolation, explanation relevance/usefulness, section roles, BM natural language/tone, modal redundancy/surface policy, mobile UX/safe area, Coach crash, Coach/UASA, Stage 6, Stage 7D, browser environment, Vite dependency entry, and BM style.
+
+### Full validator summary
+
+Individual sweep: **86 total, 73 PASS, 13 FAIL, 0 TIMEOUT**. The failures are baseline audits outside Stage 1–5 content/modal scope: compact UI token expectations, gamification panels, parent dashboard/insights, production polish, smart-check, study planner, tutor modal freeze/state, UI audit, Stage 7A mobile chrome, and release-candidate architecture. No AI-content, modal-rendering, or Stage 5 mobile UX validator failed.
+
+### Content and surface QA
+
+The executable Mathematics fixture retains `113 + 1 = 114`, a different `25 → 26` example, no place-name/BM leakage, distinct section roles, actionable wrong-answer guidance, and concise correct-answer content. The BM fixture retains the natural Year 2 wording from Stage 3, no arithmetic/place leakage, no placeholder phrases, and distinct Janna/Teacher/Coach roles. Terangkan keeps focus, explanation, why-correct, example, mistake, and memory content while omitting retry-only hint and duplicate encouragement. Ajar Saya keeps focus, explanation, steps, example, mistake, memory, and practice while omitting duplicate why-correct. Tutor AI remains conversation-oriented.
+
+### Mobile, accessibility, and regression QA
+
+Static responsive checks cover 320×568, 375×667, 390×844, 393×852, 430×932, 768×1024, and 1366×768 rules: `100dvh`, one internal scroll region, safe-area-aware footer padding, collapsed secondary disclosures, primary content visible, compact Janna card, and 44px actions. Dialog semantics, focus runtime, body locking, reduced-motion rules, and RTL-safe wrapping remain intact. Browser emulation/interactive viewport inspection was not available, so these are code-level results rather than physical-device results. Coach v3, Explain, Teacher, Tutor AI, labels, Bertutur, communication isolation, Vite scanning, scoring, accepted answers, storage, analytics, and routing were not changed by this QA pass.
+
+### Build and preview
+
+`npm.cmd run build` passed with 323 modules. Main JS: `index-NznaYRg2.js`, 737.13 kB (gzip 217.21 kB). CSS: `index-DwcjoYnw.css`, 101.84 kB (gzip 19.72 kB). Existing >500 kB chunk warning remains; no missing asset, Unicode, Arabic, TDZ, ReactDOM, or error-boundary issue appeared in preview smoke. Production preview URL: `http://127.0.0.1:4173/jannati-ai-tutor-v1/`; application root returned HTTP 200. `git diff --check` passed and `dist/index.html` content was restored; its status marker persists only because of the known Git index-lock permission issue.
+
+### Physical-device conditions and recommendation
+
+Not testable here: iPhone Safari bottom toolbar/insets, touch scrolling, virtual keyboard, browser chrome collapse, real focus return, and physical footer reachability. No physical-device PASS is claimed. Remaining P0/P1/P2 issues: none newly introduced; the 13 full-sweep failures are pre-existing non-Stage-1–5 audits. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**. Do not treat this as a physical iPhone/Safari approval.

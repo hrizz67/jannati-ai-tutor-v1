@@ -1337,7 +1337,7 @@ export default function App() {
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
-    setExplainData(explainAnswer({ question, topic: activeTopic, result, userAnswer: answer }));
+    setExplainData(explainAnswer({ question: { ...question, subjectId: activeSubject?.id }, topic: { ...activeTopic, subjectId: activeSubject?.id }, result, userAnswer: answer }));
     setFeedback({ ...result, xp, coins, correctAnswer: question.answer, acceptedAnswers: getAcceptedAnswers(question), explanation: sanitizeAiText(question.explanation || question.hint) });
   }
 
@@ -1410,8 +1410,8 @@ export default function App() {
     const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackData = explainAnswer({
-      question,
-      topic: snapshotTopic,
+      question: { ...question, subjectId: snapshot.subjectId },
+      topic: { ...snapshotTopic, subjectId: snapshot.subjectId },
       result: feedback,
       userAnswer: answer,
       questionText,
@@ -1461,8 +1461,8 @@ export default function App() {
     const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
     const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
     const fallbackExplainData = explainAnswer({
-      question,
-      topic: snapshotTopic,
+      question: { ...question, subjectId: snapshot.subjectId },
+      topic: { ...snapshotTopic, subjectId: snapshot.subjectId },
       result: feedback || {},
       userAnswer: answer,
       questionText,

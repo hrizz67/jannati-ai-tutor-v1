@@ -279,7 +279,12 @@ function buildContextUsed({
 
 function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '' } = {}) {
   const subjectLabel = getCoachSubjectLabel(subjectId, coachData || {}, question, topic || {});
-  const rawFallback = fallbackData || buildFallbackPayload(mode, { question, topic: topic || {}, result, userAnswer });
+  const rawFallback = fallbackData || buildFallbackPayload(mode, {
+    question: { ...question, subjectId: question.subjectId || subjectId },
+    topic: { ...(topic || {}), subjectId: topic?.subjectId || subjectId },
+    result,
+    userAnswer
+  });
   const hasCoachData = Boolean(coachData && !error);
   const payload = hasCoachData ? coachData : rawFallback;
   const tipsObject = payload.tips && typeof payload.tips === 'object' ? payload.tips : {};

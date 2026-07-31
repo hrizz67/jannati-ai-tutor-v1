@@ -1,4 +1,4 @@
-import { detectLearningCategory, getLearningExamples, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
+import { detectLearningCategory, getLearningExamples, guardDistinctSections, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
 
@@ -72,10 +72,53 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');
   const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
   const contextualGeneric = `Dalam soalan ini, teliti "${stem}" dan padankan jawapan dengan arahan yang diberi.`;
-  const explanation = sanitizeAiText(question.explanation || (category === 'generic' ? contextualGeneric : rule.explanation));
-  const hint = sanitizeAiText(question.hint || rule.hint);
+  const subjectId = String(question.subjectId || topic.subjectId || '').toLowerCase();
+  const isNumberOrder = subjectId === 'math' && /nombor\s+(?:selepas|sebelum)/i.test(stem);
+  const isBmPronoun = subjectId === 'bm' && /kata ganti nama|menyiapkan kerja kelas|meja belajar/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
+  const numberMatch = stem.match(/nombor\s+(selepas|sebelum)\s+(\d+)/i);
+  const numberValue = numberMatch ? Number(numberMatch[2]) : null;
+  const numberAnswer = numberMatch ? numberValue + (numberMatch[1].toLowerCase() === 'selepas' ? 1 : -1) : null;
+  const explanation = sanitizeAiText(
+    isNumberOrder
+      ? `${numberValue} ${numberMatch[1].toLowerCase() === 'selepas' ? '+' : '-'} 1 = ${numberAnswer}. Nombor ${numberMatch[1].toLowerCase()} ${numberValue} ialah ${numberAnswer}.`
+      : isBmPronoun
+        ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
+        : question.explanation || (category === 'generic' ? contextualGeneric : rule.explanation)
+  );
+  const hint = sanitizeAiText(
+    isNumberOrder
+      ? (numberMatch[1].toLowerCase() === 'selepas' ? 'Tambah 1 pada nombor itu.' : 'Tolak 1 daripada nombor itu.')
+      : isBmPronoun
+        ? 'Fikirkan perkataan yang kamu guna untuk menyebut diri sendiri.'
+        : question.hint || rule.hint
+  );
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
-  const commonMistakes = (rule.commonMistakes || []).map(item => sanitizeAiText(item));
+  const focus = isNumberOrder
+    ? 'Mengenal nombor yang datang selepas sesuatu nombor.'
+    : isBmPronoun
+      ? 'Memilih kata ganti nama diri yang sesuai.'
+      : sanitizeChildFacingText(currentLearningObjective || topic.learningObjective || topic.objective || 'Fahami kemahiran dalam soalan semasa.');
+  const simpleExplanation = isNumberOrder
+    ? 'Nombor selepas diperoleh dengan menambah 1.'
+      : isBmPronoun
+      ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
+      : explanation;
+  const whyCorrect = isNumberOrder
+    ? `${numberValue} + 1 = ${numberAnswer}, jadi ${numberAnswer} datang selepas ${numberValue}.`
+      : isBmPronoun
+      ? 'Orang dalam ayat itu bercakap tentang dirinya sendiri.'
+      : explanation;
+  const steps = isNumberOrder
+    ? [`Lihat nombor ${numberValue}.`, 'Tambah 1.', `Jawapannya ialah ${numberAnswer}.`]
+      : isBmPronoun
+      ? ['Lihat siapa yang bercakap.', 'Pilih kata ganti nama untuk diri sendiri.', 'Gunakan “Saya”.']
+      : examples.slice(0, 3);
+  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? 'Saya membaca buku.' : (examples[0] || '');
+  const commonMistakes = (isNumberOrder
+    ? ['Menambah atau menolak dengan arah yang salah.', 'Tidak menyemak urutan nombor.']
+    : isBmPronoun
+      ? ['Jangan pilih “dia” kerana “dia” digunakan untuk orang lain.', 'Tidak melihat siapa yang sedang bercakap.']
+      : rule.commonMistakes || []).map(item => sanitizeAiText(item));
   const summary = sanitizeChildFacingText([
     questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
     instruction ? `Arahan: ${instruction}.` : '',
@@ -108,29 +151,37 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     Number(attemptCount) >= 3
   );
 
-  return {
+  const response = {
     category,
     explanation,
-    simpleExplanation: explanation,
+    simpleExplanation,
+    focus,
+    whyCorrect,
     hint,
     examples,
     commonMistakes,
-    memoryTip: sanitizeAiText(question.memoryTip || ''),
-    encouragement: encouragementBase,
+    memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? '“Saya” untuk diri sendiri. “Dia” untuk orang lain.' : '')),
+    encouragement: isBmPronoun
+      ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba fikirkan perkataan untuk diri sendiri.')
+      : encouragementBase,
     answerLine: revealAnswer ? `Jawapan: ${correctAnswer}` : '',
     correctAnswer: revealAnswer ? correctAnswer : '',
-    shortText: sanitizeChildFacingText(`${summary} ${wasCorrect ? explanation : hint}`),
+    shortText: sanitizeChildFacingText(`${focus} ${wasCorrect ? whyCorrect : hint}`),
     showCorrectAnswer: revealAnswer,
     sections: {
-      summary,
-      whyCorrect: explanation,
+      summary: focus,
+      focus,
+      simpleExplanation,
+      whyCorrect,
       hint,
-      steps: examples.slice(0, 3),
+      steps,
       commonMistake: commonMistakes[0] || '',
-      example: examples[0] || '',
-      memoryTip: sanitizeAiText(question.memoryTip || ''),
+      example,
+      memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? '“Saya” untuk diri sendiri. “Dia” untuk orang lain.' : '')),
       correctAnswer: revealAnswer ? correctAnswer : '',
-      coachMessage: sanitizeChildFacingText(encouragementBase),
+      coachMessage: sanitizeChildFacingText(isBmPronoun
+        ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba fikirkan perkataan untuk diri sendiri.')
+        : encouragementBase),
       learningObjective: sanitizeChildFacingText(currentLearningObjective || question.learningObjective || topic.learningObjective || topic.objective || '')
     },
     learningProfile: {
@@ -142,4 +193,17 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       mistakeContext
     }
   };
+  response.sections = guardDistinctSections(response.sections, stem, {
+    summary: focus,
+    focus,
+    simpleExplanation,
+    whyCorrect,
+    hint,
+    steps,
+    example,
+    commonMistake: commonMistakes[0] || '',
+    memoryTip: response.memoryTip,
+    coachMessage: response.encouragement
+  });
+  return response;
 }
