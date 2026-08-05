@@ -1,0 +1,1 @@
+var e=`/jannati-ai-tutor-v1/assets/ganjaran-badge-MTSLAnQs.webp`,t=`/jannati-ai-tutor-v1/assets/target-badge-CqZc4_tT.webp`,n=`/jannati-ai-tutor-v1/assets/tutor-ai-badge-D9EXa8CR.webp`,r=`/jannati-ai-tutor-v1/assets/nota-badge-D8N79752.webp`,i=`/jannati-ai-tutor-v1/assets/buku-teks-badge-DHvg_tZE.webp`;export{e as a,t as i,r as n,n as r,i as t};
