@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jannati-ai-tutor-branding-v15';
+const CACHE_NAME = 'jannati-ai-tutor-branding-v16';
 const BASE = '/jannati-ai-tutor-v1/';
 const APP_SHELL = [
   BASE,
