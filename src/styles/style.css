@@ -5581,6 +5581,58 @@ input:focus {
   min-height: 0;
 }
 
+.parent-secondary-disclosure {
+  margin-top: 16px;
+  border: 1px solid rgba(16, 138, 67, .14);
+  border-radius: 18px;
+  background: rgba(248, 253, 249, .72);
+  overflow: hidden;
+}
+
+.parent-secondary-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  padding: 14px 18px;
+  color: var(--ink, #18352a);
+  font-weight: 800;
+  list-style: none;
+}
+
+.parent-secondary-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.parent-secondary-disclosure > summary::after {
+  content: '⌄';
+  color: var(--green, #108a43);
+  font-size: 1.1rem;
+}
+
+.parent-secondary-disclosure[open] > summary::after {
+  content: '⌃';
+}
+
+.parent-secondary-disclosure > summary small {
+  margin-left: auto;
+  color: var(--muted, #678070);
+  font-weight: 600;
+}
+
+.parent-secondary-disclosure > :not(summary) {
+  padding: 0 18px 18px;
+}
+
+.parent-secondary-metrics {
+  margin: 0;
+}
+
+.parent-gamification-summary {
+  margin-top: 12px;
+}
+
 @media (max-width: 650px) {
   .parent-page > .card {
     margin-bottom: 10px;
@@ -5595,6 +5647,17 @@ input:focus {
   .parent-page .metric-grid,
   .parent-page .subject-report-grid {
     gap: 8px;
+  }
+
+  .parent-secondary-disclosure > summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  .parent-secondary-disclosure > summary small {
+    flex-basis: 100%;
+    margin-left: 0;
   }
 
   .subject-rail-hint {

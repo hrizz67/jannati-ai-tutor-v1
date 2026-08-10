@@ -240,27 +240,32 @@ export default function ParentDashboard({
         {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
           <>
             <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
-            <div className="metric-grid">
+            <div className="metric-grid parent-primary-metrics">
               <MetricCard value={safeText(summary.name || studentName, 'Murid')} label="Nama Murid" />
               <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
-              <MetricCard value={canonicalAnalytics.totalQuestions} label="Soalan Dijawab" />
-              <MetricCard value={canonicalAnalytics.correctQuestions} label="Jawapan Betul" />
               <MetricCard value={`${safePercent(canonicalAnalytics.accuracy)}%`} label="Ketepatan" />
               <MetricCard value={`${safePercent(canonicalAnalytics.masteryPercent)}%`} label="Penguasaan" />
               <MetricCard value={formatStudyMinutes(canonicalAnalytics.studyMinutes || 0)} label="Masa Belajar" />
               <MetricCard value={formatStreakLabel(canonicalAnalytics.currentStreak)} label="Streak Semasa" />
-              <MetricCard value={formatStreakLabel(canonicalAnalytics.bestStreak)} label="Streak Terpanjang" />
-              <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
             </div>
             <div className="status-badge-row">
               <span className="badge"><IconGlyph name={statusBadge.icon} size={16} aria-hidden="true" /> {statusBadge.label}</span>
               <span className="badge">Data tersedia untuk analisis.</span>
             </div>
-            <GamificationSummary
-              profile={gamificationProfile}
-              canonical={canonicalGamification}
-              className="parent-gamification-summary"
-            />
+            <details className="parent-secondary-disclosure">
+              <summary><span>Butiran kemajuan tambahan</span><small>Aktiviti, streak terbaik dan ganjaran</small></summary>
+              <div className="metric-grid parent-secondary-metrics">
+                <MetricCard value={canonicalAnalytics.totalQuestions} label="Soalan Dijawab" />
+                <MetricCard value={canonicalAnalytics.correctQuestions} label="Jawapan Betul" />
+                <MetricCard value={formatStreakLabel(canonicalAnalytics.bestStreak)} label="Streak Terpanjang" />
+                <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
+              </div>
+              <GamificationSummary
+                profile={gamificationProfile}
+                canonical={canonicalGamification}
+                className="parent-gamification-summary"
+              />
+            </details>
           </>
         ) : (
           <EmptyState

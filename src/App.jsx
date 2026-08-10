@@ -199,7 +199,11 @@ function captureChildSnapshot(childId, { force = false } = {}) {
   if (!childId) return;
   try {
     repairChildSnapshotStorage();
-    const nextSnapshot = readChildScopedData();
+    const nextSnapshot = {
+      ...readChildScopedData(),
+      __childSnapshotChildId: childId,
+      __childSnapshotCapturedAt: Date.now()
+    };
     const existingSnapshot = readChildSnapshot(childId);
     if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return;
     localStorage.setItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`, JSON.stringify(nextSnapshot));
@@ -224,6 +228,18 @@ function readOriginalChildSnapshot(childId) {
   } catch {
     return null;
   }
+}
+
+function resolveChildSnapshot(childId) {
+  if (!childId) return null;
+  const regularSnapshot = readChildSnapshot(childId);
+  const originalSnapshot = readOriginalChildSnapshot(childId);
+  // The regular snapshot belongs to the selected child and is the source of
+  // truth. The original snapshot is only a recovery fallback for legacy or
+  // partially-written snapshots; never choose it merely because it has a
+  // larger evidence score.
+  if (regularSnapshot && snapshotEvidenceScore(regularSnapshot) > 0) return regularSnapshot;
+  return originalSnapshot || regularSnapshot || null;
 }
 
 function captureOriginalChildSnapshot(childId) {
@@ -1060,6 +1076,7 @@ export default function App() {
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
   const [activeChildId, setActiveChildId] = useState(() => readActiveChildId());
+  const childSnapshotCacheRef = useRef(new Map());
   const [accessProfile, setAccessProfile] = useState(null);
   const [learningMode, setLearningMode] = useState('nota');
   const [showOnboarding, setShowOnboarding] = useState(() => {
@@ -1168,6 +1185,18 @@ export default function App() {
     return cloudWriteQueueRef.current;
   }
 
+  function cacheCurrentChildSnapshot(childId) {
+    if (!childId) return;
+    const snapshot = readChildScopedData();
+    if (snapshotEvidenceScore(snapshot) > 0) childSnapshotCacheRef.current.set(childId, snapshot);
+  }
+
+  function resolveCachedChildSnapshot(childId) {
+    const cached = childSnapshotCacheRef.current.get(childId);
+    if (cached && snapshotEvidenceScore(cached) > 0) return cached;
+    return resolveChildSnapshot(childId);
+  }
+
   function ensureChildProfiles(currentProfile = profile) {
     let profiles = readChildProfiles();
     let activeId = readActiveChildId();
@@ -1200,11 +1229,8 @@ export default function App() {
     if (!target || target.id === currentChildId) return;
     markLocalLearningMutation();
     captureChildSnapshot(currentChildId);
-    const regularSnapshot = readChildSnapshot(target.id);
-    const originalSnapshot = readOriginalChildSnapshot(target.id);
-    const snapshot = [regularSnapshot, originalSnapshot]
-      .filter(Boolean)
-      .sort((left, right) => snapshotEvidenceScore(right) - snapshotEvidenceScore(left))[0] || null;
+    cacheCurrentChildSnapshot(currentChildId);
+    const snapshot = resolveCachedChildSnapshot(target.id);
     if (snapshot) {
       restoreChildSnapshot(snapshot);
     } else {
@@ -1236,6 +1262,9 @@ export default function App() {
       const existingProfiles = readChildProfiles();
       markLocalLearningMutation();
       const currentLearningSnapshot = readChildScopedData();
+      if (currentChildId && snapshotEvidenceScore(currentLearningSnapshot) > 0) {
+        childSnapshotCacheRef.current.set(currentChildId, currentLearningSnapshot);
+      }
 
       // Backups are best-effort. They must never prevent the new profile
       // from being created, especially when an old device has a full or
@@ -1290,7 +1319,7 @@ export default function App() {
 
     if (target.id === currentChildId) {
       const nextChild = remainingProfiles[0];
-      const snapshot = readChildSnapshot(nextChild.id);
+      const snapshot = resolveChildSnapshot(nextChild.id);
       if (snapshot) {
         restoreChildSnapshot(snapshot);
       } else {
