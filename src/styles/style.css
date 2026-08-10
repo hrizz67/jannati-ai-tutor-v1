@@ -9,6 +9,19 @@
   margin: 14px 0;
 }
 
+/* Quiz readability and safe empty-answer feedback. */
+.question {
+  max-width: 46ch;
+  font-size: clamp(23px, 2.6vw, 30px);
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+.feedback.empty .explain-box,
+.feedback.empty .actions {
+  display: none;
+}
+
 /* Beta preparation */
 textarea {
   width: 100%;

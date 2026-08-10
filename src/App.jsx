@@ -2587,7 +2587,7 @@ export default function App() {
 
   function openExplain() {
     const question = currentQuestion();
-    if (!question || !feedback) return;
+    if (!question || !feedback || feedback.status === 'empty') return;
     const snapshot = createCoachSnapshot('explain', question);
     const questionText = snapshot.questionText;
     const instruction = snapshot.instruction;
@@ -3358,11 +3358,16 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       ? (isEnglishSubject ? 'Almost correct' : 'Hampir betul')
       : feedback?.status === 'hint'
         ? quizUi.hint
+      : feedback?.status === 'empty'
+        ? (isEnglishSubject ? 'Answer first' : 'Tulis jawapan dahulu')
       : quizUi.title;
+  const isEmptyFeedback = feedback?.status === 'empty';
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = buildChildSafeHint(question, subject, [coachKnowledgeData?.hint, safeCoachingDecision?.hint, question?.hint]);
-  const safeQuestionExplanation = sanitizeAiText(question?.explanation || question?.hint || '');
+  const safeQuestionExplanation = feedback?.status === 'empty'
+    ? ''
+    : sanitizeAiText(question?.explanation || question?.hint || '');
   const [speechState, setSpeechState] = useState('idle');
   const [speechTranscript, setSpeechTranscript] = useState('');
   const [speechResult, setSpeechResult] = useState(null);
