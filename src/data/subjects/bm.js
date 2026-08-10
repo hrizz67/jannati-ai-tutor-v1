@@ -220,7 +220,7 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "i halaman rumah, seekor kucing mengejar bola kecil. Apakah kata nama am bagi haiwan?"
+          "question": "Di halaman rumah, seekor kucing mengejar bola kecil. Apakah kata nama am bagi haiwan?"
         },
         {
           "id": "BM-KATA_NAMA_AM-016",
@@ -258,7 +258,7 @@ const rawBMSSubject = {
             "doktor"
           ],
           "hint": "Cari nama pekerjaan orang.",
-          "explanation": "doktor ialah kata nama am bagi orang.",
+          "explanation": "doktor ialah kata nama am bagi pekerjaan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -518,7 +518,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-037",
-          "q": "Situasi: Keluarga Amin berehat di bawah pokok ketika berkelah di taman rekreasi. Cari kata nama am bagi tempat dalam situasi ini.",
+          "q": "Situasi: Keluarga Amin berehat di bawah pokok ketika berkelah di taman rekreasi. Nyatakan kata nama am bagi tempat dalam situasi ini.",
           "answer": "taman",
           "accepted": [
             "taman"
@@ -533,22 +533,22 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-038",
-          "q": "Situasi: Doktor dan jururawat membantu pesakit di hospital. Pilih kata nama am bagi salah satu pekerjaan.",
+          "q": "Situasi: Doktor memeriksa pesakit di hospital. Pilih pekerjaan yang memeriksa pesakit.",
           "answer": "doktor",
           "accepted": [
             "doktor"
           ],
           "hint": "Cari nama pekerjaan orang.",
-          "explanation": "doktor ialah kata nama am bagi orang.",
+          "explanation": "doktor ialah kata nama am bagi pekerjaan yang memeriksa pesakit.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi: Doktor dan jururawat membantu pesakit di hospital. Nyatakan kata nama am bagi salah satu pekerjaan."
+          "question": "Situasi: Doktor memeriksa pesakit di hospital. Pilih pekerjaan yang memeriksa pesakit."
 
         },
         {
           "id": "BM-KATA_NAMA_AM-039",
-          "q": "Cerita: Burung membina sarang di atas pokok yang tinggi. Apakah kata nama am bagi haiwan dalam cerita ini?",
+          "q": "Cerita: Burung membina sarang di atas pokok yang tinggi. Nyatakan kata nama am bagi haiwan dalam cerita ini.",
           "answer": "burung",
           "accepted": [
             "burung"
@@ -609,8 +609,9 @@ const rawBMSSubject = {
           "accepted": [
             "kantin"
           ],
-          "hint": "Cari nama tempat dalam ayat.",
-          "explanation": "kantin ialah kata nama am bagi tempat.",
+          "hint": "Cari tempat yang namanya umum, bukan nama khas seperti Melaka.",
+          "explanation": "Kantin ialah kata nama am bagi tempat. Melaka juga nama tempat, tetapi Melaka ialah kata nama khas kerana nama khusus bagi sebuah negeri.",
+          "wrongExplanation": "Melaka ialah nama tempat, tetapi kata nama khas kerana merupakan nama khusus bagi sebuah negeri. Soalan meminta kata nama am, jadi jawapannya ialah kantin.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -674,17 +675,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-048",
-          "q": "Di hospital, jururawat membantu doktor merawat pesakit. Nyatakan kata nama am bagi pekerjaan yang memberi rawatan kepada pesakit.",
+          "q": "Di hospital, doktor membuat diagnosis pesakit dengan bantuan jururawat. Nyatakan kata nama am bagi pekerjaan yang membuat diagnosis pesakit.",
           "answer": "doktor",
           "accepted": [
             "doktor"
           ],
           "hint": "Cari nama pekerjaan orang.",
-          "explanation": "doktor ialah kata nama am bagi orang.",
+          "explanation": "doktor ialah kata nama am bagi pekerjaan yang membuat diagnosis pesakit.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di hospital, jururawat membantu doktor merawat pesakit. Nyatakan kata nama am bagi pekerjaan yang memberi rawatan kepada pesakit."
+          "question": "Di hospital, doktor membuat diagnosis pesakit dengan bantuan jururawat. Nyatakan kata nama am bagi pekerjaan yang membuat diagnosis pesakit."
         },
         {
           "id": "BM-KATA_NAMA_AM-049",
@@ -1297,7 +1298,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_KHAS-042",
-          "q": "Isi tempat kosong: ________ mengajar Bahasa Melayu kepada murid Tahun 2. (Nama guru)",
+          "q": "Cikgu Hana mengajar Bahasa Melayu kepada murid Tahun 2. Apakah kata nama khas bagi nama guru?",
           "answer": "Hana",
           "accepted": [
             "Hana"
@@ -1307,7 +1308,7 @@ const rawBMSSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Isi tempat kosong: ________ mengajar Bahasa Melayu kepada murid Tahun 2. (Nama guru)"
+          "question": "Cikgu Hana mengajar Bahasa Melayu kepada murid Tahun 2. Apakah kata nama khas bagi nama guru?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-043",
@@ -1430,49 +1431,49 @@ const rawBMSSubject = {
       "questions": [
         {
           "id": "BM-KATA_GANTI_NAMA-001",
-          "q": "Lengkapkan ayat ini: ____ sedang menyiapkan kerja sekolah di meja belajar.",
-          "answer": "Saya sedang menyiapkan kerja sekolah di meja belajar.",
+          "q": "Aina berkata: \"____ sedang menyiapkan kerja sekolah di meja belajar.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Saya",
           "accepted": [
-            "Saya sedang menyiapkan kerja sekolah di meja belajar."
+            "Saya"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Saya sedang menyiapkan kerja sekolah di meja belajar.",
+          "hint": "Aina bercakap tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Saya” kerana Aina bercakap tentang dirinya sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang menyiapkan kerja sekolah di meja belajar."
+          "question": "Aina berkata: \"____ sedang menyiapkan kerja sekolah di meja belajar.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-002",
-          "q": "Dialog: Aina: \"Saya mahu menyiapkan kerja sekolah sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Saya mahu menyiapkan kerja sekolah sebelum waktu rehat.",
+          "q": "Aina berkata: \"____ mahu menyiapkan kerja sekolah sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Saya",
           "accepted": [
-            "Saya mahu menyiapkan kerja sekolah sebelum waktu rehat."
+            "Saya"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Saya mahu menyiapkan kerja sekolah sebelum waktu rehat.",
+          "hint": "Aina bercakap tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Saya” kerana Aina bercakap tentang dirinya sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Aina: \"Saya mahu menyiapkan kerja sekolah sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Aina berkata: \"____ mahu menyiapkan kerja sekolah sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-003",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus menyiapkan kerja sekolah.",
-          "answer": "Selepas pulang dari sekolah, saya terus menyiapkan kerja sekolah.",
+          "q": "Amir berkata: \"____ akan membantu ibu selepas makan tengah hari.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Saya",
           "accepted": [
-            "Selepas pulang dari sekolah, saya terus menyiapkan kerja sekolah."
+            "Saya"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, saya terus menyiapkan kerja sekolah.",
+          "hint": "Penutur bercakap tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Saya” kerana penutur bercakap tentang dirinya sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus menyiapkan kerja sekolah."
+          "question": "Amir berkata: \"____ akan membantu ibu selepas makan tengah hari.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-004",
-          "q": "Pilih kata ganti nama yang sesuai untuk diri sendiri.",
+          "q": "Saya berkata: \"Selepas pulang dari sekolah, ____ terus menyiapkan kerja sekolah.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Saya",
           "accepted": [
             "Saya"
@@ -1482,67 +1483,67 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk diri sendiri."
+          "question": "Saya berkata: \"Selepas pulang dari sekolah, ____ terus menyiapkan kerja sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-005",
-          "q": "Betulkan ayat ini: \"Dia sedang menyiapkan kerja sekolah.\" (merujuk kepada Aina)",
-          "answer": "Saya sedang menyiapkan kerja sekolah di meja belajar dengan teliti.",
+          "q": "Aina berkata: \"____ sedang menyiapkan kerja sekolah di meja belajar dengan teliti.\" Pilih kata ganti nama yang sesuai.",
+          "answer": "Saya",
           "accepted": [
-            "Saya sedang menyiapkan kerja sekolah di meja belajar dengan teliti."
+            "Saya"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Saya sedang menyiapkan kerja sekolah di meja belajar dengan teliti.",
+          "hint": "Aina bercakap tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Saya” kerana Aina bercakap tentang dirinya sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang menyiapkan kerja sekolah.\" (merujuk kepada Aina)"
+          "question": "Aina berkata: \"____ sedang menyiapkan kerja sekolah di meja belajar dengan teliti.\" Pilih kata ganti nama yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-006",
-          "q": "Lengkapkan ayat ini: ____ sedang mewarna gambar bunga di kelas seni.",
-          "answer": "Kamu sedang mewarna gambar bunga di kelas seni.",
+          "q": "Badrul berkata kepada rakannya: \"____ sedang mewarna gambar bunga di kelas seni.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kamu",
           "accepted": [
-            "Kamu sedang mewarna gambar bunga di kelas seni."
+            "Kamu"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Kamu sedang mewarna gambar bunga di kelas seni.",
+          "hint": "Badrul bercakap kepada seorang rakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kamu” kerana Badrul bercakap kepada seorang rakan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang mewarna gambar bunga di kelas seni."
+          "question": "Badrul berkata kepada rakannya: \"____ sedang mewarna gambar bunga di kelas seni.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-007",
-          "q": "Dialog: Badrul: \"Kamu mahu mewarna gambar bunga sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Kamu mahu mewarna gambar bunga sebelum waktu rehat.",
+          "q": "Badrul berkata kepada rakannya: \"____ mahu mewarna gambar bunga sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kamu",
           "accepted": [
-            "Kamu mahu mewarna gambar bunga sebelum waktu rehat."
+            "Kamu"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Kamu mahu mewarna gambar bunga sebelum waktu rehat.",
+          "hint": "Badrul bercakap kepada seorang rakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kamu” kerana Badrul bercakap kepada rakannya.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Badrul: \"Kamu mahu mewarna gambar bunga sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Badrul berkata kepada rakannya: \"____ mahu mewarna gambar bunga sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-008",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus mewarna gambar bunga.",
-          "answer": "Selepas pulang dari sekolah, kamu terus mewarna gambar bunga.",
+          "q": "Cikgu berkata kepada Faris: \"____ boleh susun buku-buku ini di rak.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kamu",
           "accepted": [
-            "Selepas pulang dari sekolah, kamu terus mewarna gambar bunga."
+            "Kamu"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, kamu terus mewarna gambar bunga.",
+          "hint": "Guru bercakap terus kepada seorang murid.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kamu” kerana guru bercakap terus kepada seorang murid.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus mewarna gambar bunga."
+          "question": "Cikgu berkata kepada Faris: \"____ boleh susun buku-buku ini di rak.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-009",
-          "q": "Pilih kata ganti nama yang sesuai untuk rakan yang kita ajak bercakap.",
+          "q": "Guru berkata kepada kamu: \"Selepas pulang dari sekolah, ____ terus mewarna gambar bunga.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Kamu",
           "accepted": [
             "Kamu"
@@ -1552,67 +1553,67 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk rakan yang kita ajak bercakap."
+          "question": "Guru berkata kepada kamu: \"Selepas pulang dari sekolah, ____ terus mewarna gambar bunga.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-010",
-          "q": "Betulkan ayat ini: \"Dia sedang mewarna gambar bunga.\" (merujuk kepada Badrul)",
-          "answer": "Kamu sedang mewarna gambar bunga di kelas seni dengan cermat.",
+          "q": "Badrul berkata kepada rakannya: \"____ sedang mewarna gambar bunga di kelas seni dengan cermat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kamu",
           "accepted": [
-            "Kamu sedang mewarna gambar bunga di kelas seni dengan cermat."
+            "Kamu"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Kamu sedang mewarna gambar bunga di kelas seni dengan cermat.",
+          "hint": "Badrul bercakap kepada seorang rakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kamu” kerana Badrul bercakap kepada seorang rakan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang mewarna gambar bunga.\" (merujuk kepada Badrul)"
+          "question": "Badrul berkata kepada rakannya: \"____ sedang mewarna gambar bunga di kelas seni dengan cermat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-011",
-          "q": "Lengkapkan ayat ini: ____ sedang berehat kerana demam di rumah.",
-          "answer": "Dia sedang berehat kerana demam di rumah.",
+          "q": "Hakim berkata tentang seorang murid: \"____ sedang berehat kerana demam di rumah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Dia",
           "accepted": [
-            "Dia sedang berehat kerana demam di rumah."
+            "Dia"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Dia sedang berehat kerana demam di rumah.",
+          "hint": "Gunakan kata ganti nama untuk seorang yang sedang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Dia” kerana Hakim bercakap tentang seorang murid yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang berehat kerana demam di rumah."
+          "question": "Hakim berkata tentang seorang murid: \"____ sedang berehat kerana demam di rumah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-012",
-          "q": "Dialog: Hakim: \"Dia mahu berehat kerana demam sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Dia mahu berehat kerana demam sebelum waktu rehat.",
+          "q": "Hakim berkata: \"____ mahu berehat kerana demam sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Dia",
           "accepted": [
-            "Dia mahu berehat kerana demam sebelum waktu rehat."
+            "Dia"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Dia mahu berehat kerana demam sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama untuk orang yang sedang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Dia” kerana Hakim bercakap tentang seorang yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Hakim: \"Dia mahu berehat kerana demam sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Hakim berkata: \"____ mahu berehat kerana demam sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-013",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus berehat kerana demam.",
-          "answer": "Selepas pulang dari sekolah, dia terus berehat kerana demam.",
+          "q": "Mira bercakap tentang adiknya: \"____ sedang tidur di bilik.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Dia",
           "accepted": [
-            "Selepas pulang dari sekolah, dia terus berehat kerana demam."
+            "Dia"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, dia terus berehat kerana demam.",
+          "hint": "Gunakan kata ganti nama untuk seorang yang sedang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Dia” kerana Hakim bercakap tentang seorang murid yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus berehat kerana demam."
+          "question": "Mira bercakap tentang adiknya: \"____ sedang tidur di bilik.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-014",
-          "q": "Pilih kata ganti nama yang sesuai untuk seseorang yang dibicarakan.",
+          "q": "Hakim berkata tentang seorang murid: \"Selepas pulang dari sekolah, ____ terus berehat kerana demam.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Dia",
           "accepted": [
             "Dia"
@@ -1622,7 +1623,7 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk seseorang yang dibicarakan."
+          "question": "Hakim berkata tentang seorang murid: \"Selepas pulang dari sekolah, ____ terus berehat kerana demam.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-015",
@@ -1640,49 +1641,49 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-016",
-          "q": "Lengkapkan ayat ini: ____ sedang membaca buku cerita di perpustakaan sekolah.",
-          "answer": "Kami sedang membaca buku cerita di perpustakaan sekolah.",
+          "q": "Amir dan Faris berkata: \"____ sedang membaca buku cerita di perpustakaan sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Kami sedang membaca buku cerita di perpustakaan sekolah."
+            "Kami"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Kami sedang membaca buku cerita di perpustakaan sekolah.",
+          "hint": "Amir dan Faris bercakap tentang diri mereka sahaja.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kami” kerana Amir dan Faris bercakap tentang diri mereka tanpa memasukkan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang membaca buku cerita di perpustakaan sekolah."
+          "question": "Amir dan Faris berkata: \"____ sedang membaca buku cerita di perpustakaan sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-017",
-          "q": "Dialog: Amir dan Faris: \"Kami mahu membaca buku cerita sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Kami mahu membaca buku cerita sebelum waktu rehat.",
+          "q": "Amir dan Faris berkata: \"____ mahu membaca buku cerita sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Kami mahu membaca buku cerita sebelum waktu rehat."
+            "Kami"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Kami mahu membaca buku cerita sebelum waktu rehat.",
+          "hint": "Amir dan Faris bercakap tentang diri mereka sahaja.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kami” kerana Amir dan Faris bercakap tentang diri mereka tanpa memasukkan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Amir dan Faris: \"Kami mahu membaca buku cerita sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Amir dan Faris berkata: \"____ mahu membaca buku cerita sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-018",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus membaca buku cerita.",
-          "answer": "Selepas pulang dari sekolah, kami terus membaca buku cerita.",
+          "q": "Amir dan Faris merancang bersama: \"____ akan berlatih bola selepas kelas.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Selepas pulang dari sekolah, kami terus membaca buku cerita."
+            "Kami"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, kami terus membaca buku cerita.",
+          "hint": "Amir dan Faris bercakap tentang diri mereka sahaja.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kami” kerana Amir dan Faris bercakap tentang diri mereka tanpa memasukkan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus membaca buku cerita."
+          "question": "Amir dan Faris merancang bersama: \"____ akan berlatih bola selepas kelas.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-019",
-          "q": "Pilih kata ganti nama yang sesuai untuk kumpulan saya dan rakan rapat.",
+          "q": "Amir dan Faris berkata: \"Selepas pulang dari sekolah, ____ terus membaca buku cerita.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Kami",
           "accepted": [
             "Kami"
@@ -1692,17 +1693,17 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk kumpulan saya dan rakan rapat."
+          "question": "Amir dan Faris berkata: \"Selepas pulang dari sekolah, ____ terus membaca buku cerita.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-020",
           "q": "Betulkan ayat ini: \"Dia sedang membaca buku cerita.\" (merujuk kepada Amir dan Faris)",
-          "answer": "Kami sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
+          "answer": "Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
           "accepted": [
-            "Kami sedang membaca buku cerita di perpustakaan sekolah dengan rajin."
+            "Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin."
           ],
           "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Kami sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
+          "explanation": "Ayat yang betul ialah: Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -1710,49 +1711,49 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-021",
-          "q": "Lengkapkan ayat ini: ____ sedang membersihkan kelas di kelas.",
-          "answer": "Kita sedang membersihkan kelas di kelas.",
+          "q": "Guru mengajak semua murid: \"____ sedang membersihkan kelas bersama-sama.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kita",
           "accepted": [
-            "Kita sedang membersihkan kelas di kelas."
+            "Kita"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Kita sedang membersihkan kelas di kelas.",
+          "hint": "Maksudnya termasuk penutur dan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kita” kerana guru mengajak penutur dan pendengar bersama-sama.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang membersihkan kelas di kelas."
+          "question": "Guru mengajak semua murid: \"____ sedang membersihkan kelas bersama-sama.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-022",
-          "q": "Dialog: Kelas 2 Bestari: \"Kita mahu membersihkan kelas sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Kita mahu membersihkan kelas sebelum waktu rehat.",
+          "q": "Kelas 2 Bestari berkata: \"____ mahu membersihkan kelas sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kita",
           "accepted": [
-            "Kita mahu membersihkan kelas sebelum waktu rehat."
+            "Kita"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Kita mahu membersihkan kelas sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama untuk diri sendiri bersama orang yang mendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kita” kerana maksudnya termasuk penutur dan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Kelas 2 Bestari: \"Kita mahu membersihkan kelas sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Kelas 2 Bestari berkata: \"____ mahu membersihkan kelas sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-023",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus membersihkan kelas.",
-          "answer": "Selepas pulang dari sekolah, kita terus membersihkan kelas.",
+          "q": "Cikgu berkata kepada Ali dan kamu: \"____ akan menyertai lawatan ke muzium esok.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kita",
           "accepted": [
-            "Selepas pulang dari sekolah, kita terus membersihkan kelas."
+            "Kita"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, kita terus membersihkan kelas.",
+          "hint": "Maksudnya termasuk penutur dan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kita” kerana guru mengajak penutur dan pendengar bersama-sama.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus membersihkan kelas."
+          "question": "Cikgu berkata kepada Ali dan kamu: \"____ akan menyertai lawatan ke muzium esok.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-024",
-          "q": "Pilih kata ganti nama yang sesuai untuk kita semua termasuk orang yang mendengar.",
+          "q": "Guru mengajak semua murid: \"Selepas pulang dari sekolah, ____ terus membersihkan kelas.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Kita",
           "accepted": [
             "Kita"
@@ -1762,67 +1763,67 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk kita semua termasuk orang yang mendengar."
+          "question": "Guru mengajak semua murid: \"Selepas pulang dari sekolah, ____ terus membersihkan kelas.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-025",
-          "q": "Betulkan ayat ini: \"Dia sedang membersihkan kelas.\" (merujuk kepada Kelas 2 Bestari)",
-          "answer": "Kita sedang membersihkan kelas di kelas dengan bekerjasama.",
+          "q": "Guru berkata kepada Kelas 2 Bestari: \"____ sedang membersihkan kelas dengan bekerjasama.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kita",
           "accepted": [
-            "Kita sedang membersihkan kelas di kelas dengan bekerjasama."
+            "Kita"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Kita sedang membersihkan kelas di kelas dengan bekerjasama.",
+          "hint": "Maksudnya termasuk penutur dan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kita” kerana merujuk kepada penutur dan pendengar bersama-sama.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang membersihkan kelas.\" (merujuk kepada Kelas 2 Bestari)"
+          "question": "Guru berkata kepada Kelas 2 Bestari: \"____ sedang membersihkan kelas dengan bekerjasama.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-026",
-          "q": "Lengkapkan ayat ini: ____ sedang berlatih bola sepak di padang sekolah.",
-          "answer": "Mereka sedang berlatih bola sepak di padang sekolah.",
+          "q": "Aina berkata tentang rakan-rakannya: \"____ sedang berlatih bola sepak di padang sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Mereka",
           "accepted": [
-            "Mereka sedang berlatih bola sepak di padang sekolah."
+            "Mereka"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Mereka sedang berlatih bola sepak di padang sekolah.",
+          "hint": "Gunakan kata ganti nama untuk beberapa orang yang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Mereka” kerana Aina bercakap tentang beberapa orang yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang berlatih bola sepak di padang sekolah."
+          "question": "Aina berkata tentang rakan-rakannya: \"____ sedang berlatih bola sepak di padang sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-027",
-          "q": "Dialog: Aina dan Mira: \"Mereka mahu berlatih bola sepak sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Mereka mahu berlatih bola sepak sebelum waktu rehat.",
+          "q": "Aina dan Mira berkata tentang rakan-rakan mereka: \"____ mahu berlatih bola sepak sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Mereka",
           "accepted": [
-            "Mereka mahu berlatih bola sepak sebelum waktu rehat."
+            "Mereka"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Mereka mahu berlatih bola sepak sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama untuk lebih daripada seorang yang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Mereka” kerana Aina dan Mira bercakap tentang beberapa orang yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Aina dan Mira: \"Mereka mahu berlatih bola sepak sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Aina dan Mira berkata tentang rakan-rakan mereka: \"____ mahu berlatih bola sepak sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-028",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus berlatih bola sepak.",
-          "answer": "Selepas pulang dari sekolah, mereka terus berlatih bola sepak.",
+          "q": "Nadia melihat beberapa orang murid: \"____ sedang bermain di padang.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Mereka",
           "accepted": [
-            "Selepas pulang dari sekolah, mereka terus berlatih bola sepak."
+            "Mereka"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, mereka terus berlatih bola sepak.",
+          "hint": "Gunakan kata ganti nama untuk beberapa orang yang dibicarakan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Mereka” kerana Aina bercakap tentang beberapa orang yang lain.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus berlatih bola sepak."
+          "question": "Nadia melihat beberapa orang murid: \"____ sedang bermain di padang.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-029",
-          "q": "Pilih kata ganti nama yang sesuai untuk lebih daripada seorang.",
+          "q": "Aina berkata tentang rakan-rakannya: \"Selepas pulang dari sekolah, ____ terus berlatih bola sepak.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Mereka",
           "accepted": [
             "Mereka"
@@ -1832,7 +1833,7 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk lebih daripada seorang."
+          "question": "Aina berkata tentang rakan-rakannya: \"Selepas pulang dari sekolah, ____ terus berlatih bola sepak.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-030",
@@ -1850,49 +1851,49 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-031",
-          "q": "Lengkapkan ayat ini: ____ sedang menyampaikan ucapan di dewan sekolah.",
-          "answer": "Beliau sedang menyampaikan ucapan di dewan sekolah.",
+          "q": "Guru berkata tentang Guru Besar: \"____ sedang menyampaikan ucapan di dewan sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Beliau",
           "accepted": [
-            "Beliau sedang menyampaikan ucapan di dewan sekolah."
+            "Beliau"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Beliau sedang menyampaikan ucapan di dewan sekolah.",
+          "hint": "Gunakan kata ganti nama hormat untuk Guru Besar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Beliau” kerana digunakan untuk orang yang dihormati.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang menyampaikan ucapan di dewan sekolah."
+          "question": "Guru berkata tentang Guru Besar: \"____ sedang menyampaikan ucapan di dewan sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-032",
-          "q": "Dialog: Guru Besar: \"Beliau mahu menyampaikan ucapan sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Beliau mahu menyampaikan ucapan sebelum waktu rehat.",
+          "q": "Guru Besar berkata tentang seorang guru: \"____ mahu menyampaikan ucapan sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Beliau",
           "accepted": [
-            "Beliau mahu menyampaikan ucapan sebelum waktu rehat."
+            "Beliau"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Beliau mahu menyampaikan ucapan sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama hormat untuk seorang yang dihormati.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Beliau” kerana digunakan untuk seorang yang dihormati.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Guru Besar: \"Beliau mahu menyampaikan ucapan sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Guru Besar berkata tentang seorang guru: \"____ mahu menyampaikan ucapan sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-033",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus menyampaikan ucapan.",
-          "answer": "Selepas pulang dari sekolah, beliau terus menyampaikan ucapan.",
+          "q": "Murid-murid bercakap tentang Guru Besar: \"____ akan menyampaikan ucapan.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Beliau",
           "accepted": [
-            "Selepas pulang dari sekolah, beliau terus menyampaikan ucapan."
+            "Beliau"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, beliau terus menyampaikan ucapan.",
+          "hint": "Gunakan kata ganti nama hormat untuk Guru Besar.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Beliau\" kerana soalan merujuk kepada Guru Besar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus menyampaikan ucapan."
+          "question": "Murid-murid bercakap tentang Guru Besar: \"____ akan menyampaikan ucapan.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-034",
-          "q": "Pilih kata ganti nama yang sesuai untuk orang yang dihormati.",
+          "q": "Guru berkata tentang Guru Besar: \"Selepas pulang dari sekolah, ____ terus menyampaikan ucapan.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Beliau",
           "accepted": [
             "Beliau"
@@ -1902,17 +1903,17 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk orang yang dihormati."
+          "question": "Guru berkata tentang Guru Besar: \"Selepas pulang dari sekolah, ____ terus menyampaikan ucapan.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-035",
           "q": "Betulkan ayat ini: \"Dia sedang menyampaikan ucapan.\" (merujuk kepada Guru Besar)",
-          "answer": "Beliau sedang menyampaikan ucapan di dewan sekolah dengan dengan sopan.",
+          "answer": "Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan.",
           "accepted": [
-            "Beliau sedang menyampaikan ucapan di dewan sekolah dengan dengan sopan."
+            "Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan."
           ],
           "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Beliau sedang menyampaikan ucapan di dewan sekolah dengan dengan sopan.",
+          "explanation": "Ayat yang betul ialah: Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -1920,49 +1921,49 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-036",
-          "q": "Lengkapkan ayat ini: ____ sedang membantu ibu memasak sup sayur di dapur.",
-          "answer": "Aku sedang membantu ibu memasak sup sayur di dapur.",
+          "q": "Sara berkata kepada kawan rapatnya: \"____ sedang membantu ibu memasak sup sayur di dapur.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Aku",
           "accepted": [
-            "Aku sedang membantu ibu memasak sup sayur di dapur."
+            "Aku"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Aku sedang membantu ibu memasak sup sayur di dapur.",
+          "hint": "Gunakan kata ganti nama diri pertama yang mesra.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Aku” kerana Sara bercakap kepada kawan rapat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang membantu ibu memasak sup sayur di dapur."
+          "question": "Sara berkata kepada kawan rapatnya: \"____ sedang membantu ibu memasak sup sayur di dapur.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-037",
-          "q": "Dialog: Sara: \"Aku mahu membantu ibu memasak sup sayur sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Aku mahu membantu ibu memasak sup sayur sebelum waktu rehat.",
+          "q": "Sara berkata kepada kawan rapatnya: \"____ mahu membantu ibu memasak sup sayur sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Aku",
           "accepted": [
-            "Aku mahu membantu ibu memasak sup sayur sebelum waktu rehat."
+            "Aku"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Aku mahu membantu ibu memasak sup sayur sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama diri pertama yang mesra.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Aku” kerana Sara bercakap tentang dirinya kepada kawan rapat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Sara: \"Aku mahu membantu ibu memasak sup sayur sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Sara berkata kepada kawan rapatnya: \"____ mahu membantu ibu memasak sup sayur sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-038",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus membantu ibu memasak sup sayur.",
-          "answer": "Selepas pulang dari sekolah, aku terus membantu ibu memasak sup sayur.",
+          "q": "Sara bercakap dengan kawan rapatnya: \"____ sudah siapkan kerja sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Aku",
           "accepted": [
-            "Selepas pulang dari sekolah, aku terus membantu ibu memasak sup sayur."
+            "Aku"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, aku terus membantu ibu memasak sup sayur.",
+          "hint": "Sara bercakap kepada kawan rapatnya tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Aku\" kerana Sara bercakap tentang dirinya kepada kawan rapat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus membantu ibu memasak sup sayur."
+          "question": "Sara bercakap dengan kawan rapatnya: \"____ sudah siapkan kerja sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-039",
-          "q": "Pilih kata ganti nama yang sesuai untuk kata ganti nama diri pertama yang mesra.",
+          "q": "Sara berkata kepada kawan rapatnya: \"Selepas pulang dari sekolah, ____ terus membantu ibu memasak sup sayur.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Aku",
           "accepted": [
             "Aku"
@@ -1972,67 +1973,67 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk kata ganti nama diri pertama yang mesra."
+          "question": "Sara berkata kepada kawan rapatnya: \"Selepas pulang dari sekolah, ____ terus membantu ibu memasak sup sayur.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-040",
-          "q": "Betulkan ayat ini: \"Dia sedang membantu ibu memasak sup sayur.\" (merujuk kepada Sara)",
-          "answer": "Aku sedang membantu ibu memasak sup sayur di dapur dengan ceria.",
+          "q": "Sara berkata: \"____ sedang membantu ibu memasak sup sayur di dapur dengan ceria.\" Pilih kata ganti nama yang sesuai.",
+          "answer": "Aku",
           "accepted": [
-            "Aku sedang membantu ibu memasak sup sayur di dapur dengan ceria."
+            "Aku"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Aku sedang membantu ibu memasak sup sayur di dapur dengan ceria.",
+          "hint": "Sara bercakap tentang dirinya sendiri.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Aku\" kerana Sara bercakap tentang dirinya sendiri.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang membantu ibu memasak sup sayur.\" (merujuk kepada Sara)"
+          "question": "Sara berkata: \"____ sedang membantu ibu memasak sup sayur di dapur dengan ceria.\" Pilih kata ganti nama yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-041",
-          "q": "Lengkapkan ayat ini: ____ sedang menulis surat di pejabat sekolah.",
-          "answer": "Anda sedang menulis surat di pejabat sekolah.",
+          "q": "Guru berkata kepada seorang murid: \"____ sedang menulis surat di pejabat sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Anda",
           "accepted": [
-            "Anda sedang menulis surat di pejabat sekolah."
+            "Anda"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Anda sedang menulis surat di pejabat sekolah.",
+          "hint": "Gunakan kata ganti nama diri untuk orang yang dilawan bercakap dengan sopan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Anda” kerana guru bercakap dengan seorang murid secara sopan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang menulis surat di pejabat sekolah."
+          "question": "Guru berkata kepada seorang murid: \"____ sedang menulis surat di pejabat sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-042",
-          "q": "Dialog: Guru Lina: \"Anda mahu menulis surat sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Anda mahu menulis surat sebelum waktu rehat.",
+          "q": "Guru Lina berkata kepada seorang murid: \"____ mahu menulis surat sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Anda",
           "accepted": [
-            "Anda mahu menulis surat sebelum waktu rehat."
+            "Anda"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Anda mahu menulis surat sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama diri untuk orang yang dilawan bercakap dengan sopan.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Anda” kerana Guru Lina bercakap dengan seorang murid secara sopan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Guru Lina: \"Anda mahu menulis surat sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Guru Lina berkata kepada seorang murid: \"____ mahu menulis surat sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-043",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus menulis surat.",
-          "answer": "Selepas pulang dari sekolah, anda terus menulis surat.",
+          "q": "Guru berkata kepada seorang murid dengan sopan: \"____ boleh duduk di tempat ini.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Anda",
           "accepted": [
-            "Selepas pulang dari sekolah, anda terus menulis surat."
+            "Anda"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, anda terus menulis surat.",
+          "hint": "Guru bercakap terus kepada seorang murid dengan sopan.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Anda\" kerana guru bercakap terus kepada seorang murid secara sopan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus menulis surat."
+          "question": "Guru berkata kepada seorang murid dengan sopan: \"____ boleh duduk di tempat ini.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-044",
-          "q": "Pilih kata ganti nama yang sesuai untuk orang yang dihormati ketika bercakap.",
+          "q": "Guru berkata kepada seorang murid: \"Selepas pulang dari sekolah, ____ terus menulis surat.\" Pilih kata ganti nama diri yang sesuai.",
           "answer": "Anda",
           "accepted": [
             "Anda"
@@ -2042,63 +2043,63 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih kata ganti nama yang sesuai untuk orang yang dihormati ketika bercakap."
+          "question": "Guru berkata kepada seorang murid: \"Selepas pulang dari sekolah, ____ terus menulis surat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-045",
-          "q": "Betulkan ayat ini: \"Dia sedang menulis surat.\" (merujuk kepada Guru Lina)",
-          "answer": "Anda sedang menulis surat di pejabat sekolah dengan teliti.",
+          "q": "Murid berkata kepada Guru Lina: \"____ sedang menulis surat di pejabat sekolah dengan teliti.\" Pilih kata ganti nama yang sesuai.",
+          "answer": "Anda",
           "accepted": [
-            "Anda sedang menulis surat di pejabat sekolah dengan teliti."
+            "Anda"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Anda sedang menulis surat di pejabat sekolah dengan teliti.",
+          "hint": "Murid bercakap terus kepada Guru Lina dengan sopan.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Anda\" kerana murid bercakap terus kepada Guru Lina.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang menulis surat.\" (merujuk kepada Guru Lina)"
+          "question": "Murid berkata kepada Guru Lina: \"____ sedang menulis surat di pejabat sekolah dengan teliti.\" Pilih kata ganti nama yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-046",
-          "q": "Lengkapkan ayat ini: ____ sedang makan bersama di kantin sekolah.",
-          "answer": "Kami sedang makan bersama di kantin sekolah.",
+          "q": "Saya dan rakan-rakan berkata: \"____ sedang makan bersama di kantin sekolah.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Kami sedang makan bersama di kantin sekolah."
+            "Kami"
           ],
-          "hint": "Pilih kata ganti nama yang sesuai dengan situasi.",
-          "explanation": "Ayat lengkap ialah Kami sedang makan bersama di kantin sekolah.",
+          "hint": "Penutur bercakap tentang dirinya bersama rakan-rakan, tanpa memasukkan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kami” kerana penutur bercakap tentang dirinya bersama rakan-rakan, bukan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan ayat ini: ____ sedang makan bersama di kantin sekolah."
+          "question": "Saya dan rakan-rakan berkata: \"____ sedang makan bersama di kantin sekolah.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-047",
-          "q": "Dialog: Saya dan rakan-rakan: \"Kami mahu makan bersama sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?",
-          "answer": "Kami mahu makan bersama sebelum waktu rehat.",
+          "q": "Saya dan rakan-rakan berkata: \"____ mahu makan bersama sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Kami mahu makan bersama sebelum waktu rehat."
+            "Kami"
           ],
-          "hint": "Lengkapkan dialog dengan ayat yang betul.",
-          "explanation": "Ayat dialog yang lengkap ialah Kami mahu makan bersama sebelum waktu rehat.",
+          "hint": "Gunakan kata ganti nama untuk penutur bersama rakan, tanpa memasukkan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah “Kami” kerana penutur bercakap tentang dirinya bersama rakan-rakan, bukan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog: Saya dan rakan-rakan: \"Kami mahu makan bersama sebelum waktu rehat.\" Apakah ayat lengkap yang sesuai?"
+          "question": "Saya dan rakan-rakan berkata: \"____ mahu makan bersama sebelum waktu rehat.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-048",
-          "q": "Situasi harian: Selepas pulang dari sekolah, ____ terus makan bersama.",
-          "answer": "Selepas pulang dari sekolah, kami terus makan bersama.",
+          "q": "Saya dan rakan-rakan berkata: \"Selepas pulang dari sekolah, ____ terus makan bersama.\" Pilih kata ganti nama diri yang sesuai.",
+          "answer": "Kami",
           "accepted": [
-            "Selepas pulang dari sekolah, kami terus makan bersama."
+            "Kami"
           ],
-          "hint": "Pilih ayat yang sesuai dengan situasi harian.",
-          "explanation": "Ayat yang sesuai ialah Selepas pulang dari sekolah, kami terus makan bersama.",
+          "hint": "Penutur bercakap tentang dirinya bersama rakan-rakan tanpa memasukkan pendengar.",
+          "explanation": "Kata ganti nama diri yang betul ialah \"Kami\" kerana penutur bercakap tentang dirinya bersama rakan-rakan, bukan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Situasi harian: Selepas pulang dari sekolah, ____ terus makan bersama."
+          "question": "Saya dan rakan-rakan berkata: \"Selepas pulang dari sekolah, ____ terus makan bersama.\" Pilih kata ganti nama diri yang sesuai."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-049",
@@ -4259,8 +4260,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-001",
           "q": "Lengkapkan ayat ini: Aina membaca buku ____ adik melukis di ruang tamu.",
-          "answer": "Aina membaca buku dan adik melukis di ruang tamu dengan tenang.",
-          "accepted": ["Aina membaca buku dan adik melukis di ruang tamu dengan tenang."],
+          "answer": "dan",
+          "accepted": ["dan"],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua perbuatan.",
           "difficulty": "mudah",
@@ -4271,8 +4272,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-002",
           "q": "Lengkapkan ayat ini: Amir hendak bermain bola ____ hujan mula turun di padang.",
-          "answer": "Amir hendak bermain bola tetapi hujan mula turun di padang sekolah.",
-          "accepted": ["Amir hendak bermain bola tetapi hujan mula turun di padang sekolah."],
+          "answer": "tetapi",
+          "accepted": ["tetapi"],
           "hint": "Gunakan kata hubung untuk menunjukkan pertentangan.",
           "explanation": "tetapi sesuai untuk dua keadaan yang berlawanan.",
           "difficulty": "mudah",
@@ -4283,8 +4284,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-003",
           "q": "Lengkapkan ayat ini: Sara membawa payung ____ hari hujan pada pagi itu.",
-          "answer": "Sara membawa payung kerana hari hujan pada pagi yang sangat renyai.",
-          "accepted": ["Sara membawa payung kerana hari hujan pada pagi yang sangat renyai."],
+          "answer": "kerana",
+          "accepted": ["kerana"],
           "hint": "Gunakan kata hubung untuk sebab.",
           "explanation": "kerana menyatakan sebab Sara membawa payung.",
           "difficulty": "mudah",
@@ -4295,8 +4296,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-004",
           "q": "Lengkapkan ayat ini: Kamu hendak minum air ____ susu di kantin sekolah.",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas bermain.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas bermain."],
+          "answer": "atau",
+          "accepted": ["atau"],
           "hint": "Gunakan kata hubung untuk pilihan.",
           "explanation": "atau digunakan apabila ada pilihan.",
           "difficulty": "mudah",
@@ -4307,8 +4308,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-005",
           "q": "Lengkapkan ayat ini: Ibu memasak ____ menyanyi perlahan-lahan di dapur.",
-          "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah.",
-          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah."],
+          "answer": "sambil",
+          "accepted": ["sambil"],
           "hint": "Gunakan kata hubung untuk perbuatan serentak.",
           "explanation": "sambil menunjukkan dua perbuatan berlaku bersama.",
           "difficulty": "mudah",
@@ -4319,8 +4320,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-006",
           "q": "Lengkapkan ayat ini: Loceng berbunyi ____ murid masuk ke kelas dengan tertib.",
-          "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan tertib dan senyap.",
-          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan tertib dan senyap."],
+          "answer": "lalu",
+          "accepted": ["lalu"],
           "hint": "Gunakan kata hubung untuk peristiwa berturutan.",
           "explanation": "lalu menunjukkan tindakan selepas loceng berbunyi.",
           "difficulty": "mudah",
@@ -4331,8 +4332,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-007",
           "q": "Lengkapkan ayat ini: Danish rajin belajar ____ selalu membuat latihan di rumah.",
-          "answer": "Danish rajin belajar dan selalu membuat latihan di rumah setiap petang.",
-          "accepted": ["Danish rajin belajar dan selalu membuat latihan di rumah setiap petang."],
+          "answer": "dan",
+          "accepted": ["dan"],
           "hint": "Gunakan kata hubung untuk menambah maklumat.",
           "explanation": "dan menghubungkan dua maklumat.",
           "difficulty": "mudah",
@@ -4343,8 +4344,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-008",
           "q": "Lengkapkan ayat ini: Baju itu cantik ____ harganya mahal di pasar raya.",
-          "answer": "Baju itu cantik tetapi harganya mahal di pasar raya besar.",
-          "accepted": ["Baju itu cantik tetapi harganya mahal di pasar raya besar."],
+          "answer": "tetapi",
+          "accepted": ["tetapi"],
           "hint": "Gunakan kata hubung untuk pertentangan.",
           "explanation": "tetapi sesuai apabila dua keadaan tidak sama.",
           "difficulty": "mudah",
@@ -4451,8 +4452,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-017",
           "q": "Dialog di rumah: \"Aina membaca buku ____ adik melukis,\" kata ibu.",
-          "answer": "Aina membaca buku dan adiknya melukis di ruang tamu sambil duduk di tikar.",
-          "accepted": ["Aina membaca buku dan adiknya melukis di ruang tamu sambil duduk di tikar."],
+          "answer": "dan",
+          "accepted": ["dan"],
           "hint": "Lengkapkan dialog dengan kata hubung yang sesuai.",
           "explanation": "dan menghubungkan dua perbuatan dalam dialog.",
           "difficulty": "mudah",
@@ -4463,8 +4464,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-018",
           "q": "Dialog di padang: \"Amir mahu bermain bola ____ hujan turun,\" kata rakannya.",
-          "answer": "Amir mahu bermain bola tetapi hujan turun di padang sekolah pada petang itu.",
-          "accepted": ["Amir mahu bermain bola tetapi hujan turun di padang sekolah pada petang itu."],
+          "answer": "tetapi",
+          "accepted": ["tetapi"],
           "hint": "Lengkapkan dialog dengan pertentangan yang jelas.",
           "explanation": "tetapi sesuai untuk dua keadaan berlawanan.",
           "difficulty": "mudah",
@@ -4475,8 +4476,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-019",
           "q": "Dialog pagi: \"Sara membawa payung ____ hari hujan,\" kata kakaknya.",
-          "answer": "Sara membawa payung kerana hari hujan pada pagi itu di kampung.",
-          "accepted": ["Sara membawa payung kerana hari hujan pada pagi itu di kampung."],
+          "answer": "kerana",
+          "accepted": ["kerana"],
           "hint": "Lengkapkan dialog dengan sebab yang betul.",
           "explanation": "kerana sesuai untuk menerangkan sebab.",
           "difficulty": "mudah",
@@ -4487,8 +4488,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-020",
           "q": "Dialog di kantin: \"Kamu hendak minum air ____ susu?\" tanya pengawas.",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas bersenam.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas bersenam."],
+          "answer": "atau",
+          "accepted": ["atau"],
           "hint": "Lengkapkan dialog dengan pilihan yang sesuai.",
           "explanation": "atau digunakan untuk membuat pilihan.",
           "difficulty": "mudah",
@@ -4499,8 +4500,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-021",
           "q": "Dialog di dapur: \"Ibu memasak ____ menyanyi perlahan-lahan,\" kata adik.",
-          "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah pada petang itu.",
-          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah pada petang itu."],
+          "answer": "sambil",
+          "accepted": ["sambil"],
           "hint": "Lengkapkan dialog dengan perbuatan serentak.",
           "explanation": "sambil sesuai untuk dua perbuatan pada masa yang sama.",
           "difficulty": "mudah",
@@ -4511,8 +4512,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-022",
           "q": "Dialog di sekolah: \"Loceng berbunyi ____ murid masuk ke kelas,\" kata guru.",
-          "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan tertib sebelum guru tiba.",
-          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan tertib sebelum guru tiba."],
+          "answer": "lalu",
+          "accepted": ["lalu"],
           "hint": "Lengkapkan dialog dengan urutan yang betul.",
           "explanation": "lalu menunjukkan tindakan seterusnya.",
           "difficulty": "mudah",
@@ -4523,8 +4524,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-023",
           "q": "Dialog waktu petang: \"Danish rajin belajar ____ selalu membuat latihan,\" kata ibunya.",
-          "answer": "Danish rajin belajar dan selalu membuat latihan di meja belajar.",
-          "accepted": ["Danish rajin belajar dan selalu membuat latihan di meja belajar."],
+          "answer": "dan",
+          "accepted": ["dan"],
           "hint": "Lengkapkan dialog dengan maklumat tambahan.",
           "explanation": "dan sesuai untuk menambah fakta.",
           "difficulty": "mudah",
@@ -4535,8 +4536,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-024",
           "q": "Dialog di pasar raya: \"Baju itu cantik ____ harganya mahal,\" kata kakak.",
-          "answer": "Baju itu cantik tetapi harganya mahal di pasar raya pada hari Sabtu.",
-          "accepted": ["Baju itu cantik tetapi harganya mahal di pasar raya pada hari Sabtu."],
+          "answer": "tetapi",
+          "accepted": ["tetapi"],
           "hint": "Lengkapkan dialog dengan pertentangan yang sesuai.",
           "explanation": "tetapi sesuai apabila dua keadaan tidak sama.",
           "difficulty": "mudah",
@@ -4642,7 +4643,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-033",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan tambahan maklumat.",
+          "q": "Di ruang tamu, Aina membaca buku dan adik melukis. Pilih ayat yang paling sesuai untuk menunjukkan tambahan maklumat.",
           "answer": "Aina membaca buku dan adik melukis di ruang tamu.",
           "accepted": ["Aina membaca buku dan adik melukis di ruang tamu."],
           "hint": "Gunakan kata hubung yang menghubungkan dua perbuatan.",
@@ -4650,11 +4651,11 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan tambahan maklumat."
+          "question": "Di ruang tamu, Aina membaca buku dan adik melukis. Pilih ayat yang paling sesuai untuk menunjukkan tambahan maklumat."
         },
         {
           "id": "BM-KATA_HUBUNG-034",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan pertentangan.",
+          "q": "Amir mahu bermain bola tetapi hujan turun di padang sekolah. Pilih ayat yang paling sesuai untuk menunjukkan pertentangan.",
           "answer": "Amir mahu bermain bola tetapi hujan turun di padang sekolah.",
           "accepted": ["Amir mahu bermain bola tetapi hujan turun di padang sekolah."],
           "hint": "Gunakan kata hubung yang menunjukkan pertentangan.",
@@ -4662,11 +4663,11 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan pertentangan."
+          "question": "Amir mahu bermain bola tetapi hujan turun di padang sekolah. Pilih ayat yang paling sesuai untuk menunjukkan pertentangan."
         },
         {
           "id": "BM-KATA_HUBUNG-035",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan sebab.",
+          "q": "Sara membawa payung kerana hari hujan pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab.",
           "answer": "Sara membawa payung kerana hari hujan pada pagi itu.",
           "accepted": ["Sara membawa payung kerana hari hujan pada pagi itu."],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
@@ -4674,11 +4675,11 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan sebab."
+          "question": "Sara membawa payung kerana hari hujan pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab."
         },
         {
           "id": "BM-KATA_HUBUNG-036",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan pilihan.",
+          "q": "Di kantin sekolah, seorang murid memilih minuman. Pilih ayat yang paling sesuai untuk menunjukkan pilihan.",
           "answer": "Kamu hendak minum air atau susu di kantin sekolah?",
           "accepted": ["Kamu hendak minum air atau susu di kantin sekolah?"],
           "hint": "Gunakan kata hubung yang menunjukkan pilihan.",
@@ -4686,11 +4687,11 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan pilihan."
+          "question": "Di kantin sekolah, seorang murid memilih minuman. Pilih ayat yang paling sesuai untuk menunjukkan pilihan."
         },
         {
           "id": "BM-KATA_HUBUNG-037",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan dua perbuatan serentak.",
+          "q": "Di dapur, ibu memasak sambil menyanyi perlahan-lahan. Pilih ayat yang paling sesuai untuk menunjukkan dua perbuatan serentak.",
           "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah dengan ceria.",
           "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah dengan ceria."],
           "hint": "Gunakan kata hubung untuk dua perbuatan serentak.",
@@ -4698,11 +4699,11 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan dua perbuatan serentak."
+          "question": "Di dapur, ibu memasak sambil menyanyi perlahan-lahan. Pilih ayat yang paling sesuai untuk menunjukkan dua perbuatan serentak."
         },
         {
           "id": "BM-KATA_HUBUNG-038",
-          "q": "Pilih ayat yang paling sesuai untuk menunjukkan urutan peristiwa.",
+          "q": "Di sekolah, loceng berbunyi lalu murid masuk ke kelas. Pilih ayat yang paling sesuai untuk menunjukkan urutan peristiwa.",
           "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan tertib dan senyap sebelum guru tiba.",
           "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan tertib dan senyap sebelum guru tiba."],
           "hint": "Gunakan kata hubung untuk urutan peristiwa.",
@@ -4710,7 +4711,7 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling sesuai untuk menunjukkan urutan peristiwa."
+          "question": "Di sekolah, loceng berbunyi lalu murid masuk ke kelas. Pilih ayat yang paling sesuai untuk menunjukkan urutan peristiwa."
         },
         {
           "id": "BM-KATA_HUBUNG-039",
@@ -4786,7 +4787,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-045",
-          "q": "Pilih ayat yang paling natural tentang aktiviti di rumah.",
+          "q": "Di rumah, Danish rajin belajar dan membuat latihan pada waktu malam. Pilih ayat yang paling natural tentang aktiviti di rumah.",
           "answer": "Danish rajin belajar dan selalu membuat latihan di rumah setiap malam.",
           "accepted": ["Danish rajin belajar dan selalu membuat latihan di rumah setiap malam."],
           "hint": "Pilih ayat yang paling semula jadi.",
@@ -4794,67 +4795,67 @@ const rawBMSSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang aktiviti di rumah."
+          "question": "Di rumah, Danish rajin belajar dan membuat latihan pada waktu malam. Pilih ayat yang paling natural tentang aktiviti di rumah."
         },
         {
           "id": "BM-KATA_HUBUNG-046",
-          "q": "Pilih ayat yang paling natural tentang cuaca hujan.",
-          "answer": "Baju itu cantik tetapi harganya mahal di pasar raya pada waktu petang.",
-          "accepted": ["Baju itu cantik tetapi harganya mahal di pasar raya pada waktu petang."],
+          "q": "Pada pagi yang hujan, ibu membawa payung. Pilih ayat yang paling natural tentang cuaca hujan.",
+          "answer": "Ibu membawa payung kerana hujan turun dengan lebat.",
+          "accepted": ["Ibu membawa payung kerana hujan turun dengan lebat."],
           "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "kerana sesuai untuk sebab yang jelas dan natural.",
+          "explanation": "kerana sesuai untuk menunjukkan sebab hujan turun dengan lebat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang cuaca hujan."
+          "question": "Pada pagi yang hujan, ibu membawa payung. Pilih ayat yang paling natural tentang cuaca hujan."
         },
         {
           "id": "BM-KATA_HUBUNG-047",
-          "q": "Pilih ayat yang paling natural tentang pilihan di kantin.",
-          "answer": "Aina membaca buku dan adik melukis di ruang tamu sambil tersenyum.",
-          "accepted": ["Aina membaca buku dan adik melukis di ruang tamu sambil tersenyum."],
+          "q": "Di kantin sekolah, murid memilih antara air dan susu. Pilih ayat yang paling natural tentang pilihan di kantin.",
+          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas rehat.",
+          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas rehat."],
           "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "atau sesuai apabila ada dua pilihan.",
+          "explanation": "atau sesuai apabila murid perlu memilih antara dua minuman.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang pilihan di kantin."
+          "question": "Di kantin sekolah, murid memilih antara air dan susu. Pilih ayat yang paling natural tentang pilihan di kantin."
         },
         {
           "id": "BM-KATA_HUBUNG-048",
-          "q": "Pilih ayat yang paling natural tentang kelas bersih.",
-          "answer": "Sara membawa payung kerana hari hujan yang berlarutan hingga tengah hari.",
-          "accepted": ["Sara membawa payung kerana hari hujan yang berlarutan hingga tengah hari."],
+          "q": "Selepas waktu rehat, murid-murid menyusun meja dan menyapu lantai. Pilih ayat yang paling natural tentang kelas bersih.",
+          "answer": "Murid-murid menyusun meja dan menyapu lantai di dalam kelas.",
+          "accepted": ["Murid-murid menyusun meja dan menyapu lantai di dalam kelas."],
           "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "lalu sesuai untuk tindakan berurutan.",
+          "explanation": "dan sesuai untuk menghubungkan dua aktiviti menjaga kebersihan kelas.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang kelas bersih."
+          "question": "Selepas waktu rehat, murid-murid menyusun meja dan menyapu lantai. Pilih ayat yang paling natural tentang kelas bersih."
         },
         {
           "id": "BM-KATA_HUBUNG-049",
-          "q": "Pilih ayat yang paling natural tentang belajar di rumah.",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas rehat pagi.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas rehat pagi."],
+          "q": "Di rumah, Danish belajar dan membuat latihan selepas makan malam. Pilih ayat yang paling natural tentang belajar di rumah.",
+          "answer": "Danish rajin belajar dan selalu membuat latihan di rumah setiap malam.",
+          "accepted": ["Danish rajin belajar dan selalu membuat latihan di rumah setiap malam."],
           "hint": "Pilih ayat yang paling semula jadi.",
           "explanation": "dan sesuai untuk menambah maklumat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang belajar di rumah."
+          "question": "Di rumah, Danish belajar dan membuat latihan selepas makan malam. Pilih ayat yang paling natural tentang belajar di rumah."
         },
         {
           "id": "BM-KATA_HUBUNG-050",
-          "q": "Pilih ayat yang paling natural tentang pakaian di pasar raya.",
-          "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan cepat sebelum guru datang.",
-          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan cepat sebelum guru datang."],
+          "q": "Di pasar raya, Aina memilih pakaian untuk dipakai ke majlis sekolah. Pilih ayat yang paling natural tentang pakaian.",
+          "answer": "Baju itu cantik tetapi harganya mahal.",
+          "accepted": ["Baju itu cantik tetapi harganya mahal."],
           "hint": "Pilih ayat yang paling semula jadi.",
           "explanation": "tetapi sesuai untuk pertentangan yang mudah difahami.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang paling natural tentang pakaian di pasar raya."
+          "question": "Di pasar raya, Aina memilih pakaian untuk dipakai ke majlis sekolah. Pilih ayat yang paling natural tentang pakaian."
         }
       ]
     },
@@ -4880,12 +4881,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-002",
           "q": "Lengkapkan frasa ini: se_____ buku cerita bergambar yang dibawa ke perpustakaan sekolah.",
-          "answer": "sebuah buku cerita bergambar",
+          "answer": "buah",
           "accepted": [
-            "sebuah buku cerita bergambar"
+            "buah"
           ],
-          "hint": "Cari frasa yang paling sesuai dengan benda itu.",
-          "explanation": "Faris menggunakan sebuah buku cerita bergambar.",
+          "hint": "Gunakan penjodoh bilangan yang sesuai untuk sebuah buku.",
+          "explanation": "Jawapan yang betul ialah \"buah\" kerana buku menggunakan penjodoh bilangan sebuah.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -4908,9 +4909,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-004",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ baju sekolah putih.",
-          "answer": "sehelai baju sekolah putih",
+          "answer": "helai",
           "accepted": [
-            "sehelai baju sekolah putih"
+            "helai"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sehelai baju sekolah putih.",
@@ -4950,9 +4951,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-007",
           "q": "Lengkapkan frasa ini: se_____ surat daripada datuk yang dibawa ke ruang tamu.",
-          "answer": "sepucuk surat daripada datuk",
+          "answer": "pucuk",
           "accepted": [
-            "sepucuk surat daripada datuk"
+            "pucuk"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Hakim menggunakan sepucuk surat daripada datuk.",
@@ -4978,9 +4979,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-009",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ payung biru.",
-          "answer": "sebatang payung biru",
+          "answer": "batang",
           "accepted": [
-            "sebatang payung biru"
+            "batang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebatang payung biru.",
@@ -5020,9 +5021,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-012",
           "q": "Lengkapkan frasa ini: se_____ kereta mainan yang dibawa ke bilik tidur.",
-          "answer": "sebuah kereta mainan",
+          "answer": "buah",
           "accepted": [
-            "sebuah kereta mainan"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Lina menggunakan sebuah kereta mainan.",
@@ -5048,9 +5049,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-014",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ daun hijau.",
-          "answer": "sehelai daun hijau",
+          "answer": "helai",
           "accepted": [
-            "sehelai daun hijau"
+            "helai"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sehelai daun hijau.",
@@ -5090,9 +5091,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-017",
           "q": "Lengkapkan frasa ini: se_____ batu kecil yang dibawa ke tepi sungai.",
-          "answer": "seketul batu kecil",
+          "answer": "ketul",
           "accepted": [
-            "seketul batu kecil"
+            "ketul"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Faris menggunakan seketul batu kecil.",
@@ -5118,9 +5119,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-019",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ rantai basikal.",
-          "answer": "seutas rantai basikal",
+          "answer": "utas",
           "accepted": [
-            "seutas rantai basikal"
+            "utas"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah seutas rantai basikal.",
@@ -5160,9 +5161,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-022",
           "q": "Lengkapkan frasa ini: se_____ kotak pensel yang dibawa ke meja guru.",
-          "answer": "sebuah kotak pensel",
+          "answer": "buah",
           "accepted": [
-            "sebuah kotak pensel"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Mira menggunakan sebuah kotak pensel.",
@@ -5188,9 +5189,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-024",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ paku kecil.",
-          "answer": "sebatang paku kecil",
+          "answer": "batang",
           "accepted": [
-            "sebatang paku kecil"
+            "batang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebatang paku kecil.",
@@ -5230,9 +5231,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-027",
           "q": "Lengkapkan frasa ini: se_____ cawan plastik yang dibawa ke kantin.",
-          "answer": "sebuah cawan plastik",
+          "answer": "buah",
           "accepted": [
-            "sebuah cawan plastik"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Rizqi menggunakan sebuah cawan plastik.",
@@ -5258,9 +5259,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-029",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ biji getah.",
-          "answer": "sebutir biji getah",
+          "answer": "butir",
           "accepted": [
-            "sebutir biji getah"
+            "butir"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebutir biji getah.",
@@ -5285,24 +5286,24 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-031",
-          "q": "Pilih penjodoh bilangan yang sesuai untuk kain nipis ini: helai langsir putih.",
-          "answer": "sehelai helai langsir putih",
+          "q": "Pilih penjodoh bilangan yang sesuai untuk kain nipis ini: langsir putih.",
+          "answer": "sehelai langsir putih",
           "accepted": [
-            "sehelai helai langsir putih"
+            "sehelai langsir putih"
           ],
           "hint": "Fikirkan pasangan penjodoh bilangan dan benda.",
-          "explanation": "Frasa yang betul ialah sehelai helai langsir putih.",
+          "explanation": "Frasa yang betul ialah sehelai langsir putih.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih penjodoh bilangan yang sesuai untuk kain nipis ini: helai langsir putih."
+          "question": "Pilih penjodoh bilangan yang sesuai untuk kain nipis ini: langsir putih."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-032",
           "q": "Lengkapkan frasa ini: se_____ kotak pensel kayu yang dibawa ke rak buku.",
-          "answer": "sebuah kotak pensel kayu",
+          "answer": "buah",
           "accepted": [
-            "sebuah kotak pensel kayu"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Mariam menggunakan sebuah kotak pensel kayu.",
@@ -5328,9 +5329,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-034",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ gugus anggur.",
-          "answer": "segugus gugus anggur",
+          "answer": "gugus",
           "accepted": [
-            "segugus gugus anggur"
+            "gugus"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah segugus gugus anggur.",
@@ -5370,9 +5371,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-037",
           "q": "Lengkapkan frasa ini: se_____ kasut hitam yang dibawa ke rak kasut.",
-          "answer": "sepasang kasut hitam",
+          "answer": "pasang",
           "accepted": [
-            "sepasang kasut hitam"
+            "pasang"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Danish menggunakan sepasang kasut hitam.",
@@ -5398,9 +5399,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-039",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ papan tanda kecil.",
-          "answer": "sebuah papan tanda kecil",
+          "answer": "buah",
           "accepted": [
-            "sebuah papan tanda kecil"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah papan tanda kecil.",
@@ -5440,9 +5441,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-042",
           "q": "Lengkapkan frasa ini: se_____ sudu logam yang dibawa ke dapur.",
-          "answer": "sebatang sudu logam",
+          "answer": "batang",
           "accepted": [
-            "sebatang sudu logam"
+            "batang"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Nadia menggunakan sebatang sudu logam.",
@@ -5468,9 +5469,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-044",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ topi sekolah.",
-          "answer": "sebuah topi sekolah",
+          "answer": "buah",
           "accepted": [
-            "sebuah topi sekolah"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah topi sekolah.",
@@ -5510,9 +5511,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-047",
           "q": "Lengkapkan frasa ini: se_____ dompet kecil yang dibawa ke beg ayah.",
-          "answer": "sebuah dompet kecil",
+          "answer": "buah",
           "accepted": [
-            "sebuah dompet kecil"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Yusuf menggunakan sebuah dompet kecil.",
@@ -5538,9 +5539,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-049",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ sikat rambut.",
-          "answer": "sebatang sikat rambut",
+          "answer": "batang",
           "accepted": [
-            "sebatang sikat rambut"
+            "batang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebatang sikat rambut.",
@@ -5580,9 +5581,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-052",
           "q": "Lengkapkan frasa ini: se_____ kasut sukan merah yang dibawa ke rak kasut.",
-          "answer": "sepasang kasut sukan merah",
+          "answer": "pasang",
           "accepted": [
-            "sepasang kasut sukan merah"
+            "pasang"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Hani menggunakan sepasang kasut sukan merah.",
@@ -5608,9 +5609,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-054",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ pokok bunga ros.",
-          "answer": "sebatang pokok bunga ros",
+          "answer": "batang",
           "accepted": [
-            "sebatang pokok bunga ros"
+            "batang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebatang pokok bunga ros.",
@@ -5650,9 +5651,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-057",
           "q": "Lengkapkan frasa ini: se_____ ikat rambut yang dibawa ke meja solek.",
-          "answer": "seutas ikat rambut",
+          "answer": "utas",
           "accepted": [
-            "seutas ikat rambut"
+            "utas"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Sara menggunakan seutas ikat rambut.",
@@ -5678,9 +5679,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-059",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ seterika kecil.",
-          "answer": "sebuah seterika kecil",
+          "answer": "buah",
           "accepted": [
-            "sebuah seterika kecil"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah seterika kecil.",
@@ -5720,9 +5721,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-062",
           "q": "Lengkapkan frasa ini: se_____ bedak muka yang dibawa ke meja hias.",
-          "answer": "sebotol bedak muka",
+          "answer": "botol",
           "accepted": [
-            "sebotol bedak muka"
+            "botol"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Aisyah menggunakan sebotol bedak muka.",
@@ -5748,9 +5749,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-064",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ cawan seramik.",
-          "answer": "sebuah cawan seramik",
+          "answer": "buah",
           "accepted": [
-            "sebuah cawan seramik"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah cawan seramik.",
@@ -5790,9 +5791,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-067",
           "q": "Lengkapkan frasa ini: se_____ bekas pensel yang dibawa ke meja belajar.",
-          "answer": "sebuah bekas pensel",
+          "answer": "buah",
           "accepted": [
-            "sebuah bekas pensel"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Amir menggunakan sebuah bekas pensel.",
@@ -5818,9 +5819,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-069",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ kotak hadiah.",
-          "answer": "sebuah kotak hadiah",
+          "answer": "buah",
           "accepted": [
-            "sebuah kotak hadiah"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah kotak hadiah.",
@@ -5860,9 +5861,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-072",
           "q": "Lengkapkan frasa ini: se_____ tali pinggang sekolah yang dibawa ke almari.",
-          "answer": "seutas tali pinggang sekolah",
+          "answer": "utas",
           "accepted": [
-            "seutas tali pinggang sekolah"
+            "utas"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Iman menggunakan seutas tali pinggang sekolah.",
@@ -5888,9 +5889,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-074",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ pasu bunga.",
-          "answer": "sebuah pasu bunga",
+          "answer": "buah",
           "accepted": [
-            "sebuah pasu bunga"
+            "buah"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebuah pasu bunga.",
@@ -5930,9 +5931,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-077",
           "q": "Lengkapkan frasa ini: se_____ beg hadiah kecil yang dibawa ke meja hadiah.",
-          "answer": "sebuah beg hadiah kecil",
+          "answer": "buah",
           "accepted": [
-            "sebuah beg hadiah kecil"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Zaki menggunakan sebuah beg hadiah kecil.",
@@ -5958,9 +5959,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-079",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ cincin perak.",
-          "answer": "sebutir cincin perak",
+          "answer": "butir",
           "accepted": [
-            "sebutir cincin perak"
+            "butir"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebutir cincin perak.",
@@ -6000,9 +6001,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-082",
           "q": "Lengkapkan frasa ini: se_____ botol sos yang dibawa ke peti ais.",
-          "answer": "sebotol botol sos",
+          "answer": "botol",
           "accepted": [
-            "sebotol botol sos"
+            "botol"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Aina menggunakan sebotol botol sos.",
@@ -6028,9 +6029,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-084",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ sandal sekolah.",
-          "answer": "sepasang sandal sekolah",
+          "answer": "pasang",
           "accepted": [
-            "sepasang sandal sekolah"
+            "pasang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sepasang sandal sekolah.",
@@ -6070,9 +6071,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-087",
           "q": "Lengkapkan frasa ini: se_____ bakul rotan yang dibawa ke bilik stor.",
-          "answer": "sebuah bakul rotan",
+          "answer": "buah",
           "accepted": [
-            "sebuah bakul rotan"
+            "buah"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
           "explanation": "Johan menggunakan sebuah bakul rotan.",
@@ -6098,9 +6099,9 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-089",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ lilin panjang.",
-          "answer": "sebatang lilin panjang",
+          "answer": "batang",
           "accepted": [
-            "sebatang lilin panjang"
+            "batang"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
           "explanation": "Frasa yang betul ialah sebatang lilin panjang.",
@@ -7680,8 +7681,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-001",
           "q": "Kenal pasti jenis ayat bagi ayat ini: Siapakah nama kamu?",
-          "answer": "Ayat tanya kerana ayat itu bertanya nama.",
-          "accepted": ["Ayat tanya kerana ayat itu bertanya nama."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan untuk bertanya nama seseorang.",
           "difficulty": "mudah",
@@ -7692,8 +7693,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-002",
           "q": "Perhatikan ayat ini dan tentukan jenisnya: Wah, cantiknya lukisan kamu!",
-          "answer": "Ayat seruan kerana ayat itu meluahkan rasa kagum.",
-          "accepted": ["Ayat seruan kerana ayat itu meluahkan rasa kagum."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini menunjukkan perasaan.",
           "explanation": "Ayat seruan digunakan untuk meluahkan perasaan kagum.",
           "difficulty": "mudah",
@@ -7704,8 +7705,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-003",
           "q": "Baca ayat di bawah dan kenal pasti jenisnya: Sila duduk dengan tertib.",
-          "answer": "Ayat perintah kerana ayat itu memberi arahan sopan.",
-          "accepted": ["Ayat perintah kerana ayat itu memberi arahan sopan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini meminta seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk memberi arahan atau permintaan dengan sopan.",
           "difficulty": "mudah",
@@ -7716,8 +7717,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-004",
           "q": "Tentukan jenis ayat bagi ayat ini: Bilakah kamu pergi ke sekolah?",
-          "answer": "Ayat tanya kerana ayat itu bertanya masa.",
-          "accepted": ["Ayat tanya kerana ayat itu bertanya masa."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang masa.",
           "explanation": "Ayat tanya digunakan untuk bertanya masa kejadian.",
           "difficulty": "mudah",
@@ -7728,8 +7729,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-005",
           "q": "Baca ayat ini dengan teliti: Aduh, sakitnya kaki saya!",
-          "answer": "Ayat seruan kerana ayat itu meluahkan rasa sakit.",
-          "accepted": ["Ayat seruan kerana ayat itu meluahkan rasa sakit."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini meluahkan perasaan.",
           "explanation": "Ayat seruan digunakan untuk meluahkan rasa sakit.",
           "difficulty": "mudah",
@@ -7740,8 +7741,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-006",
           "q": "Perhatikan ayat ini: Tolong tutup pintu itu.",
-          "answer": "Ayat perintah kerana ayat itu membuat permintaan.",
-          "accepted": ["Ayat perintah kerana ayat itu membuat permintaan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini meminta bantuan.",
           "explanation": "Ayat perintah digunakan untuk membuat permintaan yang sopan.",
           "difficulty": "mudah",
@@ -7752,8 +7753,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-007",
           "q": "Kenal pasti jenis ayat bagi ayat di bawah: Di manakah beg saya yang biru?",
-          "answer": "Ayat tanya kerana ayat itu bertanya tempat.",
-          "accepted": ["Ayat tanya kerana ayat itu bertanya tempat."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang tempat.",
           "explanation": "Ayat tanya digunakan untuk bertanya tempat sesuatu berada.",
           "difficulty": "mudah",
@@ -7764,8 +7765,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-008",
           "q": "Baca ayat ini dan tentukan jenisnya: Mengapakah kamu menangis sekarang?",
-          "answer": "Ayat tanya kerana ayat itu bertanya sebab.",
-          "accepted": ["Ayat tanya kerana ayat itu bertanya sebab."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang sebab.",
           "explanation": "Ayat tanya digunakan untuk bertanya sebab sesuatu berlaku.",
           "difficulty": "mudah",
@@ -7776,8 +7777,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-009",
           "q": "Perhatikan ayat ini: Marilah kita makan bersama di kantin.",
-          "answer": "Ayat perintah kerana ayat itu mengajak dengan sopan.",
-          "accepted": ["Ayat perintah kerana ayat itu mengajak dengan sopan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini mengajak seseorang melakukan sesuatu.",
           "explanation": "Ayat perintah digunakan untuk ajakan yang sopan.",
           "difficulty": "mudah",
@@ -7788,8 +7789,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-010",
           "q": "Tentukan jenis ayat ini: Hah, suara itu sangat kuat!",
-          "answer": "Ayat seruan kerana ayat itu menunjukkan terkejut.",
-          "accepted": ["Ayat seruan kerana ayat itu menunjukkan terkejut."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini menunjukkan perasaan terkejut.",
           "explanation": "Ayat seruan digunakan untuk menunjukkan rasa terkejut.",
           "difficulty": "mudah",
@@ -7920,8 +7921,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-021",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Guru: \"Siapakah nama kamu?\"",
-          "answer": "Ayat tanya kerana guru bertanya nama murid.",
-          "accepted": ["Ayat tanya kerana guru bertanya nama murid."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya sesuatu.",
           "explanation": "Ayat tanya digunakan dalam dialog untuk meminta maklumat.",
           "difficulty": "mudah",
@@ -7932,8 +7933,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-022",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Kakak: \"Wah, cantiknya lukisan kamu!\"",
-          "answer": "Ayat seruan kerana kakak meluahkan rasa kagum.",
-          "accepted": ["Ayat seruan kerana kakak meluahkan rasa kagum."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini menunjukkan perasaan.",
           "explanation": "Ayat seruan sesuai dalam dialog apabila kita kagum.",
           "difficulty": "mudah",
@@ -7944,8 +7945,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-023",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Ibu: \"Tolong tutup pintu itu.\"",
-          "answer": "Ayat perintah kerana ibu membuat permintaan sopan.",
-          "accepted": ["Ayat perintah kerana ibu membuat permintaan sopan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini meminta bantuan.",
           "explanation": "Ayat perintah digunakan dalam dialog untuk meminta sesuatu.",
           "difficulty": "mudah",
@@ -7956,8 +7957,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-024",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Ayah: \"Bilakah kamu pulang ke rumah?\"",
-          "answer": "Ayat tanya kerana ayah bertanya masa pulang.",
-          "accepted": ["Ayat tanya kerana ayah bertanya masa pulang."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang masa.",
           "explanation": "Ayat tanya digunakan untuk bertanya masa dalam dialog.",
           "difficulty": "mudah",
@@ -7968,8 +7969,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-025",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Emak: \"Aduh, sakitnya tangan saya!\"",
-          "answer": "Ayat seruan kerana emak meluahkan rasa sakit.",
-          "accepted": ["Ayat seruan kerana emak meluahkan rasa sakit."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini meluahkan perasaan.",
           "explanation": "Ayat seruan digunakan untuk menunjukkan rasa sakit.",
           "difficulty": "mudah",
@@ -7980,8 +7981,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-026",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Cikgu: \"Sila beratur di luar kelas.\"",
-          "answer": "Ayat perintah kerana cikgu memberi arahan sopan.",
-          "accepted": ["Ayat perintah kerana cikgu memberi arahan sopan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini memberi arahan.",
           "explanation": "Ayat perintah digunakan untuk arahan yang sopan.",
           "difficulty": "mudah",
@@ -7992,8 +7993,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-027",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Aina: \"Di manakah beg saya yang biru?\"",
-          "answer": "Ayat tanya kerana Aina bertanya tempat.",
-          "accepted": ["Ayat tanya kerana Aina bertanya tempat."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang tempat.",
           "explanation": "Ayat tanya digunakan untuk bertanya kedudukan sesuatu.",
           "difficulty": "mudah",
@@ -8004,8 +8005,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-028",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Amir: \"Mengapakah kamu diam sekarang?\"",
-          "answer": "Ayat tanya kerana Amir bertanya sebab.",
-          "accepted": ["Ayat tanya kerana Amir bertanya sebab."],
+          "answer": "Ayat tanya",
+          "accepted": ["Ayat tanya"],
           "hint": "Ayat ini bertanya tentang sebab.",
           "explanation": "Ayat tanya digunakan untuk bertanya sebab seseorang berdiam diri.",
           "difficulty": "mudah",
@@ -8016,8 +8017,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-029",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Abang: \"Marilah kita bermain bola di padang.\"",
-          "answer": "Ayat perintah kerana abang mengajak dengan sopan.",
-          "accepted": ["Ayat perintah kerana abang mengajak dengan sopan."],
+          "answer": "Ayat perintah",
+          "accepted": ["Ayat perintah"],
           "hint": "Ayat ini mengajak seseorang.",
           "explanation": "Ayat perintah boleh digunakan untuk ajakan.",
           "difficulty": "mudah",
@@ -8028,8 +8029,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-030",
           "q": "Dialog di bawah sesuai dengan ayat jenis apa? Sara: \"Hah, bunyi itu sangat kuat!\"",
-          "answer": "Ayat seruan kerana Sara terkejut mendengar bunyi itu.",
-          "accepted": ["Ayat seruan kerana Sara terkejut mendengar bunyi itu."],
+          "answer": "Ayat seruan",
+          "accepted": ["Ayat seruan"],
           "hint": "Ayat ini menunjukkan perasaan terkejut.",
           "explanation": "Ayat seruan sesuai untuk menunjukkan rasa terkejut dalam dialog.",
           "difficulty": "mudah",

@@ -35,6 +35,33 @@ function defaultResultFactory(transcript, expectedAnswer, acceptedAnswers) {
   return matchSpeechAnswer(transcript, expectedAnswer, acceptedAnswers);
 }
 
+// Android Chrome may resend an earlier final fragment with a new result
+// index, or return an interim fragment that already contains the final text.
+// Merge by token overlap so those revisions replace/extend text instead of
+// duplicating it in the learner's transcript.
+export function mergeSpeechTranscript(existing = '', incoming = '') {
+  const left = typeof existing === 'string' ? existing.trim() : '';
+  const right = typeof incoming === 'string' ? incoming.trim() : '';
+  if (!left) return right;
+  if (!right) return left;
+  const leftTokens = left.split(/\s+/).filter(Boolean);
+  const rightTokens = right.split(/\s+/).filter(Boolean);
+  const lowerLeft = leftTokens.map(token => token.toLocaleLowerCase());
+  const lowerRight = rightTokens.map(token => token.toLocaleLowerCase());
+  if (lowerLeft.join(' ') === lowerRight.join(' ')) return left;
+  if (lowerLeft.join(' ').includes(lowerRight.join(' '))) return left;
+  if (lowerRight.join(' ').includes(lowerLeft.join(' '))) return right;
+  const maxOverlap = Math.min(leftTokens.length, rightTokens.length, 24);
+  for (let size = maxOverlap; size > 0; size -= 1) {
+    const leftTail = lowerLeft.slice(-size).join(' ');
+    const rightHead = lowerRight.slice(0, size).join(' ');
+    if (leftTail === rightHead) {
+      return [...leftTokens, ...rightTokens.slice(size)].join(' ');
+    }
+  }
+  return `${left} ${right}`.replace(/\s+/g, ' ').trim();
+}
+
 export function extractSpeechTranscript(event) {
   const results = event?.results ? Array.from(event.results) : [];
   return results
@@ -138,6 +165,10 @@ export function createSpeechSession({
   let transcriptBuffer = '';
   let finalFragments = [];
   let interimTranscript = '';
+  // Android speech recognition can resend the same result index (sometimes
+  // with a slightly revised transcript). Keep one current fragment per index
+  // so a repeated event replaces the old text instead of appending it again.
+  let resultFragmentsByIndex = new Map();
   let seenResultKeys = new Set();
   let finalized = false;
   let emptyResultEmitted = false;
@@ -178,13 +209,11 @@ export function createSpeechSession({
     if (!multiUtterance) {
       return typeof transcriptBuffer === 'string' ? transcriptBuffer.trim() : '';
     }
-    const finalTranscript = finalFragments.join(' ').trim();
+    const finalTranscript = finalFragments.reduce((merged, fragment) => mergeSpeechTranscript(merged, fragment), '').trim();
     const safeInterim = typeof interimTranscript === 'string' ? interimTranscript.trim() : '';
     if (!finalTranscript) return safeInterim;
     if (!safeInterim) return finalTranscript;
-    if (finalTranscript === safeInterim) return finalTranscript;
-    if (finalTranscript.endsWith(safeInterim)) return finalTranscript;
-    return [finalTranscript, safeInterim].filter(Boolean).join(' ').trim();
+    return mergeSpeechTranscript(finalTranscript, safeInterim);
   }
 
   function buildResult(transcript) {
@@ -284,6 +313,7 @@ export function createSpeechSession({
     transcriptBuffer = '';
     finalFragments = [];
     interimTranscript = '';
+    resultFragmentsByIndex = new Map();
     seenResultKeys = new Set();
     disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
     cleanup();
@@ -318,6 +348,7 @@ export function createSpeechSession({
     transcriptBuffer = '';
     finalFragments = [];
     interimTranscript = '';
+    resultFragmentsByIndex = new Map();
     seenResultKeys = new Set();
     finalized = false;
     emptyResultEmitted = false;
@@ -334,13 +365,35 @@ export function createSpeechSession({
     };
     nextRecognition.onresult = event => {
       if (multiUtterance) {
-        const { nextFinalFragments, interimTranscript: nextInterimTranscript, hasTranscript } = collectSpeechTranscriptFragments(event, seenResultKeys, Number.isInteger(event?.resultIndex) ? event.resultIndex : 0);
+        const results = event?.results ? Array.from(event.results) : [];
+        const safeStartIndex = Number.isInteger(event?.resultIndex) && event.resultIndex > 0 ? event.resultIndex : 0;
+        const eventFragmentKeys = new Set();
+        let hasTranscript = false;
+        results.slice(safeStartIndex).forEach((result, offset) => {
+          if (!result) return;
+          const absoluteIndex = safeStartIndex + offset;
+          const transcript = Array.from(result)
+            .map(alternative => typeof alternative?.transcript === 'string' ? alternative.transcript.trim() : '')
+            .filter(Boolean)
+            .join(' ')
+            .trim();
+          if (!transcript) return;
+          const fragmentKey = `${result.isFinal ? '1' : '0'}|${transcript}`;
+          if (eventFragmentKeys.has(fragmentKey)) return;
+          eventFragmentKeys.add(fragmentKey);
+          hasTranscript = true;
+          resultFragmentsByIndex.set(absoluteIndex, {
+            transcript,
+            isFinal: Boolean(result.isFinal)
+          });
+        });
         if (!hasTranscript) return;
         receivedResult = true;
-        if (nextFinalFragments.length) {
-          finalFragments = [...finalFragments, ...nextFinalFragments];
-        }
-        interimTranscript = nextInterimTranscript;
+        const orderedFragments = [...resultFragmentsByIndex.entries()]
+          .sort(([leftIndex], [rightIndex]) => leftIndex - rightIndex)
+          .map(([, fragment]) => fragment);
+        finalFragments = orderedFragments.filter(fragment => fragment.isFinal).map(fragment => fragment.transcript);
+        interimTranscript = orderedFragments.filter(fragment => !fragment.isFinal).map(fragment => fragment.transcript).join(' ').trim();
         transcriptBuffer = getBufferedTranscript();
         emitTranscript(transcriptBuffer);
         if (silenceTimeoutId) {
@@ -364,7 +417,7 @@ export function createSpeechSession({
       const transcript = extractSpeechTranscript(event);
       if (transcript) {
         receivedResult = true;
-        transcriptBuffer = [transcriptBuffer, transcript].filter(Boolean).join(' ').trim();
+        transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
         emit({ status: 'processing', transcript: transcriptBuffer });
         emitTranscript(transcriptBuffer);
         finalize(transcriptBuffer, 'completed');

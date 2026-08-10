@@ -36,17 +36,18 @@ import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessi
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { createReadingSpeechSession } from './ai/speech/speechSession.js';
+import { mergeSpeechTranscript } from './ai/speech/speechEngine.js';
 import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
 import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
 import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
-import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName } from './utils/displayFormatter';
+import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName, isPlaceholderStudentName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
-import { getAcceptedAnswers } from './utils/acceptedAnswers.js';
+import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
   buildCommunicationSessionSummary,
@@ -56,21 +57,526 @@ import {
 } from './utils/communicationResult.js';
 import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
+const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
+import { supabase, supabaseConfigured } from './services/supabaseClient.js';
+import { loadCloudLearningData, saveCloudLearningData } from './services/learningSync.js';
+import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getAccessLabel, getDailyQuestionCount, isPremiumAccess, normalizeAccessStatus } from './services/accessControl.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
+const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
 const RESUME_KEY = 'jannati_v151_resume';
+// Increment whenever a question's wording, accepted answers, or explanation
+// is corrected. Resume sessions are rehydrated from the current question bank
+// so an old saved question can never keep stale answer text on screen.
+const QUESTION_BANK_VERSION = 2;
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
+const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
+const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
+const CHILD_PROFILES_KEY = 'jannati_child_profiles';
+const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
+const CHILD_SNAPSHOT_PREFIX = 'jannati_child_snapshot:';
+const CHILD_ORIGINAL_SNAPSHOT_PREFIX = 'jannati_child_original_snapshot:';
+const CLOUD_CHILD_STATE_KEY = 'jannati_cloud_child_state';
+const ACCOUNT_MIGRATION_KEY = 'jannati_account_storage_migrated_v1';
+const PUBLIC_APP_URL = 'https://hrizz67.github.io/jannati-ai-tutor-v1/';
 const BETA_STATUS = 'Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
 const storageRecoveryEvents = [];
+
+function isAccountDataKey(key = '') {
+  return String(key).startsWith('jannati')
+    && key !== ACCOUNT_SCOPE_KEY
+    && key !== ACCOUNT_MIGRATION_KEY
+    && !key.startsWith(ACCOUNT_SNAPSHOT_PREFIX);
+}
+
+function createChildId() {
+  try {
+    return `child-${crypto.randomUUID()}`;
+  } catch {
+    return `child-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+}
+
+function readChildProfiles() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CHILD_PROFILES_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed.filter(item => item?.id && item?.name) : [];
+  } catch {
+    return [];
+  }
+}
+
+function readActiveChildId() {
+  try {
+    return String(localStorage.getItem(ACTIVE_CHILD_KEY) || '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function writeChildProfiles(profiles) {
+  localStorage.setItem(CHILD_PROFILES_KEY, JSON.stringify(profiles));
+}
+
+function isChildScopedDataKey(key = '') {
+  return isAccountDataKey(key)
+    && key !== CHILD_PROFILES_KEY
+    && key !== ACTIVE_CHILD_KEY
+    && key !== CLOUD_CHILD_STATE_KEY
+    && !key.startsWith(CHILD_SNAPSHOT_PREFIX)
+    && !key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX);
+}
+
+function readChildScopedData() {
+  const snapshot = {};
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (isChildScopedDataKey(key)) snapshot[key] = localStorage.getItem(key);
+    }
+  } catch {
+    // Keep the current child usable when storage is unavailable.
+  }
+  return snapshot;
+}
+
+function clearChildScopedData() {
+  try {
+    const keys = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (isChildScopedDataKey(key)) keys.push(key);
+    }
+    keys.forEach(key => localStorage.removeItem(key));
+  } catch {
+    // Keep the current child usable when storage cleanup is unavailable.
+  }
+}
+
+function repairChildSnapshotStorage() {
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key?.startsWith(CHILD_SNAPSHOT_PREFIX)) continue;
+      const raw = localStorage.getItem(key);
+      const snapshot = raw ? JSON.parse(raw) : null;
+      if (!snapshot || typeof snapshot !== 'object') continue;
+      const cleaned = {};
+      Object.entries(snapshot).forEach(([nestedKey, value]) => {
+        if (!nestedKey.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)) cleaned[nestedKey] = value;
+      });
+      if (Object.keys(cleaned).length !== Object.keys(snapshot).length) {
+        const childId = key.slice(CHILD_SNAPSHOT_PREFIX.length);
+        const embeddedOriginal = Object.entries(snapshot).find(([nestedKey]) => nestedKey.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX))?.[1];
+        const originalKey = `${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`;
+        const existingOriginal = readOriginalChildSnapshot(childId);
+        let originalSnapshot = existingOriginal;
+        try {
+          const parsedEmbedded = typeof embeddedOriginal === 'string' ? JSON.parse(embeddedOriginal) : embeddedOriginal;
+          if (parsedEmbedded && snapshotEvidenceScore(parsedEmbedded) > snapshotEvidenceScore(existingOriginal || {})) originalSnapshot = parsedEmbedded;
+        } catch {
+          // Keep the existing original backup if the embedded value is invalid.
+        }
+        if (originalSnapshot) localStorage.setItem(originalKey, JSON.stringify(originalSnapshot));
+        localStorage.setItem(key, JSON.stringify(cleaned));
+      }
+    }
+  } catch {
+    // Optional migration must never block profile switching.
+  }
+}
+
+function captureChildSnapshot(childId, { force = false } = {}) {
+  if (!childId) return;
+  try {
+    repairChildSnapshotStorage();
+    const nextSnapshot = readChildScopedData();
+    const existingSnapshot = readChildSnapshot(childId);
+    if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return;
+    localStorage.setItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`, JSON.stringify(nextSnapshot));
+  } catch {
+    // Child switching must remain usable when storage is unavailable.
+  }
+}
+
+function readChildSnapshot(childId) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`) || 'null');
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function readOriginalChildSnapshot(childId) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`) || 'null');
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function captureOriginalChildSnapshot(childId) {
+  if (!childId) return;
+  try {
+    const nextSnapshot = readChildScopedData();
+    const existingSnapshot = readOriginalChildSnapshot(childId);
+    if (existingSnapshot && snapshotEvidenceScore(existingSnapshot) > 0) return;
+    localStorage.setItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`, JSON.stringify(nextSnapshot));
+  } catch {
+    // Preserve the current child even when the optional backup cannot be written.
+  }
+}
+
+function restoreChildSnapshot(snapshot = {}) {
+  clearChildScopedData();
+  try {
+    Object.entries(snapshot).forEach(([key, value]) => {
+      if (isChildScopedDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+    });
+  } catch {
+    // Keep the child usable even if part of the snapshot cannot be restored.
+  }
+}
+
+function readAccountSnapshot(accountId) {
+  try {
+    const raw = localStorage.getItem(`${ACCOUNT_SNAPSHOT_PREFIX}${accountId}`);
+    const snapshot = raw ? JSON.parse(raw) : null;
+    return snapshot && typeof snapshot === 'object' ? snapshot : null;
+  } catch {
+    return null;
+  }
+}
+
+function snapshotEvidenceScore(snapshot = {}) {
+  function scoreValue(value, depth = 0) {
+    if (!value || depth > 5) return 0;
+    if (Array.isArray(value)) {
+      return value.length * 3 + value.slice(0, 100).reduce((sum, item) => sum + scoreValue(item, depth + 1), 0);
+    }
+    if (typeof value !== 'object') return 0;
+    const directScore = (Number(value.xp) || 0) * 10
+      + (Number(value.streak) || 0) * 10
+      + (Number(value.studyStreak) || 0) * 10
+      + (Number(value.totalQuestions) || 0)
+      + (Number(value.correctQuestions) || 0) * 2
+      + Object.keys(value.progress || {}).length * 5
+      + (Array.isArray(value.history) ? value.history.length * 5 : 0)
+      + (Array.isArray(value.events) ? value.events.length * 3 : 0);
+    return directScore + Object.entries(value).reduce((sum, [key, nested]) => {
+      if (['xp', 'streak', 'studyStreak', 'totalQuestions', 'correctQuestions', 'progress', 'history', 'events'].includes(key)) return sum;
+      return sum + scoreValue(nested, depth + 1);
+    }, 0);
+  }
+
+  return Object.values(snapshot).reduce((score, raw) => {
+    try {
+      return score + scoreValue(JSON.parse(raw));
+    } catch {
+      return score;
+    }
+  }, 0);
+}
+
+function findBestStoredAccountBackup(currentAccountId = '') {
+  const backups = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key?.startsWith(ACCOUNT_SNAPSHOT_PREFIX)) continue;
+      const accountId = key.slice(ACCOUNT_SNAPSHOT_PREFIX.length);
+      if (accountId === currentAccountId) continue;
+      const snapshot = readAccountSnapshot(accountId);
+      if (snapshot) backups.push({ accountId, snapshot, score: snapshotEvidenceScore(snapshot) });
+    }
+  } catch {
+    return null;
+  }
+  return backups.sort((left, right) => right.score - left.score)[0] || null;
+}
+
+function captureAccountSnapshot(accountId) {
+  if (!accountId) return;
+  try {
+    const snapshot = readLocalAccountData();
+    localStorage.setItem(`${ACCOUNT_SNAPSHOT_PREFIX}${accountId}`, JSON.stringify(snapshot));
+  } catch {
+    // Account switching must remain usable when storage is unavailable.
+  }
+}
+
+function readLocalAccountData() {
+  const snapshot = {};
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!isAccountDataKey(key)) continue;
+      snapshot[key] = localStorage.getItem(key);
+    }
+  } catch {
+    // Keep the current session usable when storage is unavailable.
+  }
+  return snapshot;
+}
+
+function buildCloudLearningPayload() {
+  const snapshot = readLocalAccountData();
+  try {
+    snapshot[CLOUD_CHILD_STATE_KEY] = JSON.stringify({
+      version: 1,
+      profiles: readChildProfiles(),
+      activeChildId: readActiveChildId()
+    });
+  } catch {
+    // Keep the legacy payload usable if child metadata cannot be serialized.
+  }
+  return snapshot;
+}
+
+function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
+  repairChildSnapshotStorage();
+  const localSnapshots = {};
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key?.startsWith(CHILD_SNAPSHOT_PREFIX) && !key?.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)) continue;
+      const raw = localStorage.getItem(key);
+      if (raw) localSnapshots[key] = raw;
+    }
+  } catch {
+    // Cloud restore can still proceed without the local safety copy.
+  }
+  restoreAccountSnapshot(cloudData);
+  Object.entries(localSnapshots).forEach(([key, raw]) => {
+    try {
+      const localSnapshot = JSON.parse(raw);
+      const cloudSnapshot = JSON.parse(localStorage.getItem(key) || 'null');
+      if (snapshotEvidenceScore(localSnapshot) > snapshotEvidenceScore(cloudSnapshot || {})) {
+        localStorage.setItem(key, raw);
+      }
+    } catch {
+      // Ignore a malformed optional snapshot and continue restoring cloud data.
+    }
+  });
+  try {
+    const metadata = JSON.parse(cloudData[CLOUD_CHILD_STATE_KEY] || '{}');
+    const profiles = Array.isArray(metadata.profiles) ? metadata.profiles.filter(item => item?.id && item?.name) : [];
+    if (!profiles.length) return '';
+    writeChildProfiles(profiles);
+    const preferred = profiles.find(item => item.id === preferredChildId);
+    const cloudActive = profiles.find(item => item.id === metadata.activeChildId);
+    const active = preferred || cloudActive || profiles[0];
+    localStorage.setItem(ACTIVE_CHILD_KEY, active.id);
+    const childSnapshot = readChildSnapshot(active.id);
+    if (childSnapshot) restoreChildSnapshot(childSnapshot);
+    return active.id;
+  } catch {
+    return '';
+  }
+}
+
+function clearAccountData() {
+  try {
+    const keys = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (isAccountDataKey(key)) keys.push(key);
+    }
+    keys.forEach(key => localStorage.removeItem(key));
+  } catch {
+    // Keep the current session usable when storage cleanup is unavailable.
+  }
+}
+
+function restoreAccountSnapshot(snapshot = {}) {
+  clearAccountData();
+  try {
+    Object.entries(snapshot).forEach(([key, value]) => {
+      if (isAccountDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+    });
+  } catch {
+    // Keep the account usable even if part of the snapshot cannot be restored.
+  }
+}
+
+function repairImportedLearningProfile() {
+  try {
+    const readJson = key => {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : {};
+    };
+    const profile = readJson(PROFILE_KEY);
+    const adaptive = readJson('jannati.adaptive.studentProfile');
+    const memory = readJson('jannati_v151_ai_memory');
+    const xp = Math.max(Number(profile.xp) || 0, Number(adaptive.xp) || 0, Number(memory.xp) || 0);
+    const streak = Math.max(Number(profile.streak) || 0, Number(adaptive.streak) || 0, Number(memory.studyStreak) || 0);
+    if (xp <= 0 && streak <= 0) return null;
+
+    const nextProfile = {
+      ...profile,
+      xp,
+      streak,
+      name: profile.name || adaptive.name || 'Fayyadh'
+    };
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
+
+    // The export may contain a stale v152 core profile with xp: 0. Keep the
+    // canonical student core aligned so the next state load cannot overwrite
+    // the repaired legacy/adaptive progress.
+    const studentCore = readJson('jannati_v152_student_core');
+    localStorage.setItem('jannati_v152_student_core', JSON.stringify({
+      ...studentCore,
+      profile: nextProfile,
+      core: {
+        ...(studentCore.core || {}),
+        xp,
+        streak,
+        level: Math.max(Number(studentCore.core?.level) || 1, Math.floor(xp / 100) + 1)
+      },
+      updatedAt: new Date().toISOString()
+    }));
+
+    const gamification = readJson('jannati.gamification.profile');
+    localStorage.setItem('jannati.gamification.profile', JSON.stringify({
+      version: 1,
+      ...gamification,
+      xp: Math.max(Number(gamification.xp) || 0, xp),
+      level: Math.max(Number(gamification.level) || 1, Math.floor(xp / 100) + 1),
+      currentStreak: Math.max(Number(gamification.currentStreak) || 0, streak),
+      bestStreak: Math.max(Number(gamification.bestStreak) || 0, streak),
+      updatedAt: new Date().toISOString()
+    }));
+    return nextProfile;
+  } catch {
+    // Keep import usable even if one legacy export field is malformed.
+  }
+  return null;
+}
+
+function activateAccountStorage(accountId) {
+  const nextId = String(accountId || '').trim();
+  if (!nextId) return;
+  try {
+    const currentId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+    if (currentId === nextId) return;
+    if (currentId) captureAccountSnapshot(currentId);
+
+    const existingSnapshot = readAccountSnapshot(nextId);
+    if (existingSnapshot) {
+      restoreAccountSnapshot(existingSnapshot);
+    } else if (localStorage.getItem(ACCOUNT_MIGRATION_KEY) === 'done') {
+      clearAccountData();
+    } else {
+      // One-time migration: associate the existing anonymous/device data with
+      // the first authenticated account without copying it to later accounts.
+      captureAccountSnapshot(nextId);
+      localStorage.setItem(ACCOUNT_MIGRATION_KEY, 'done');
+    }
+    localStorage.setItem(ACCOUNT_SCOPE_KEY, nextId);
+  } catch {
+    // Account data remains available in the current browser session.
+  }
+}
+
+function getEmailRedirectUrl() {
+  if (typeof window === 'undefined') return PUBLIC_APP_URL;
+  const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  return isLocalHost
+    ? PUBLIC_APP_URL
+    : new URL(import.meta.env.BASE_URL, window.location.origin).toString();
+}
+
+function formatAccountError(error) {
+  const message = String(error?.message || '').trim();
+  const normalized = message.toLowerCase();
+  if (normalized.includes('email rate limit exceeded') || normalized.includes('rate limit exceeded')) {
+    return 'Terlalu banyak e-mel pengesahan dihantar. Tunggu sehingga had e-mel reset sebelum cuba lagi.';
+  }
+  if (normalized.includes('user already registered') || normalized.includes('already been registered')) {
+    return 'E-mel ini sudah berdaftar. Tukar kepada Log masuk atau gunakan e-mel lain.';
+  }
+  if (normalized.includes('invalid login credentials')) {
+    return 'E-mel atau kata laluan tidak betul. Semak semula dan cuba lagi.';
+  }
+  return message || 'Akaun tidak dapat diproses. Cuba lagi.';
+}
+
+function loadSelectedStudentName() {
+  try {
+    const cleanName = String(localStorage.getItem(SELECTED_STUDENT_NAME_KEY) || '').trim();
+    return cleanName && !isPlaceholderStudentName(cleanName) ? cleanName : '';
+  } catch {
+    return '';
+  }
+}
+
+function saveSelectedStudentName(name) {
+  const cleanName = String(name || '').trim();
+  if (!cleanName || isPlaceholderStudentName(cleanName)) return;
+  try {
+    localStorage.setItem(SELECTED_STUDENT_NAME_KEY, cleanName);
+  } catch {
+    // The profile remains usable even when browser storage is unavailable.
+  }
+}
+
+function applySelectedStudentName(nextProfile) {
+  const selectedName = loadSelectedStudentName();
+  if (!selectedName) return nextProfile;
+  return { ...nextProfile, name: selectedName };
+}
+
+function getSpecificWrongAnswerFeedback(question = {}, userAnswer = '') {
+  const questionText = String(question.q || question.question || question.stem || '').toLowerCase();
+  const normalizedAnswer = String(userAnswer || '').trim().toLowerCase();
+
+  // This survives question-session transforms that retain only core question fields.
+  if (
+    normalizedAnswer === 'melaka'
+    && /kantin.*ali.*melaka.*ahmad/.test(questionText)
+    && /kata nama am.*tempat/.test(questionText)
+  ) {
+    return 'Melaka ialah nama tempat, tetapi kata nama khas kerana merupakan nama khusus bagi sebuah negeri. Soalan meminta kata nama am; jawapan yang betul ialah kantin.';
+  }
+
+  return '';
+}
+
+function isSpecificAcceptedAnswer(question = {}, userAnswer = '') {
+  const questionText = String(question.q || question.question || question.stem || '').toLowerCase();
+  const normalizedAnswer = String(userAnswer || '').trim().toLowerCase();
+
+  // Correction prompts may display a complete model sentence, while the
+  // learner is expected to supply only the corrected pronoun.
+  if (/betulkan ayat/.test(questionText)) {
+    const pronouns = new Set(['saya', 'aku', 'kami', 'kita', 'awak', 'kamu', 'anda', 'kau', 'dia', 'beliau', 'mereka']);
+    const accepted = getAcceptedAnswers(question).map(normalizeAcceptedAnswer);
+    if (pronouns.has(normalizedAnswer) && accepted.some(value => value.split(' ')[0] === normalizedAnswer)) {
+      return true;
+    }
+  }
+
+  if (
+    ['baju', 'baju kurung baharu'].includes(normalizedAnswer)
+    && /baju kurung baharu/.test(questionText)
+    && /kata nama am.*pakaian/.test(questionText)
+  ) return true;
+
+  return normalizedAnswer === 'jururawat'
+    && /jururawat membantu doktor.*merawat pesakit/.test(questionText)
+    && /kata nama am.*pekerjaan.*rawatan/.test(questionText);
+}
 
 const defaultProfile = {
   name: '',
@@ -105,12 +611,12 @@ function createDemoProfile() {
 function loadProfile() {
   try {
     const saved = localStorage.getItem(PROFILE_KEY);
-    if (saved) return { ...defaultProfile, ...JSON.parse(saved) };
+    if (saved) return applySelectedStudentName({ ...defaultProfile, ...JSON.parse(saved) });
 
     for (const key of LEGACY_PROFILE_KEYS) {
       const legacy = localStorage.getItem(key);
       if (legacy) {
-        const parsed = { ...defaultProfile, ...JSON.parse(legacy) };
+        const parsed = applySelectedStudentName({ ...defaultProfile, ...JSON.parse(legacy) });
         localStorage.setItem(PROFILE_KEY, JSON.stringify(parsed));
         return parsed;
       }
@@ -121,7 +627,7 @@ function loadProfile() {
     LEGACY_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
   }
 
-  const demoProfile = createDemoProfile();
+  const demoProfile = applySelectedStudentName(createDemoProfile());
   try {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(demoProfile));
   } catch {
@@ -233,6 +739,7 @@ function normalizeResumeData(value) {
   };
   const normalized = {
     version: Number(value.version || state.version || 1),
+    questionBankVersion: Number(value.questionBankVersion || state.questionBankVersion || 1),
     mode,
     screen: value.screen || state.screen || mode,
     sessionId: value.sessionId || session?.adaptiveSessionId || state.sessionId || state.adaptiveSessionId || null,
@@ -544,7 +1051,17 @@ export default function App() {
   const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState());
   const [resume, setResume] = useState(loadResume);
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
+  useEffect(() => {
+    if (!recoveryMessages.length) return undefined;
+    const timer = window.setTimeout(() => setRecoveryMessages([]), 5000);
+    return () => window.clearTimeout(timer);
+  }, [recoveryMessages]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
+  const [accountUser, setAccountUser] = useState(null);
+  const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
+  const [activeChildId, setActiveChildId] = useState(() => readActiveChildId());
+  const [accessProfile, setAccessProfile] = useState(null);
+  const [learningMode, setLearningMode] = useState('nota');
   const [showOnboarding, setShowOnboarding] = useState(() => {
     try {
       return localStorage.getItem(ONBOARDING_KEY) !== 'done';
@@ -552,6 +1069,14 @@ export default function App() {
       return true;
     }
   });
+  const [showAccountLogin, setShowAccountLogin] = useState(false);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState('idle');
+  const accountSyncSequenceRef = useRef(0);
+  const cloudMutationAtRef = useRef(0);
+  const cloudWritePendingRef = useRef(false);
+  const cloudWriteQueueRef = useRef(Promise.resolve());
+  const [accessNotice, setAccessNotice] = useState(null);
+  const [accessReturnScreen, setAccessReturnScreen] = useState('dashboard');
   const [selectedSubjectId, setSelectedSubjectId] = useState('bm');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
@@ -572,6 +1097,322 @@ export default function App() {
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
+  const effectiveAccess = accessProfile || { access_status: profile?.accessStatus || 'free', access_expires_at: profile?.accessExpiresAt || null };
+  const isPremiumUser = accessProfile ? isPremiumAccess(accessProfile) : Boolean(profile?.isPremium);
+  const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
+
+  function getSubjectDailyQuestionCount(subjectId) {
+    return getDailyQuestionCount(profile, adaptiveProfile, todayKey(), subjectId);
+  }
+
+  function openAccessNotice(kind, feature = '') {
+    setAccessNotice({ kind, feature, used: dailyQuestionCount });
+    setAccessReturnScreen(screen === 'access' ? 'dashboard' : screen);
+    setScreen('access');
+  }
+
+  function requirePremium(feature) {
+    if (isPremiumUser) return true;
+    openAccessNotice('premium', feature);
+    return false;
+  }
+
+  function reloadActiveChildState(child) {
+    const storedProfile = loadStudentCore(loadProfile());
+    const accountAccess = accessProfile || profile || {};
+    const accessStatus = normalizeAccessStatus(accountAccess.access_status || accountAccess.accessStatus || 'free');
+    const nextProfile = child
+      ? {
+        ...storedProfile,
+        name: child.name,
+        year: child.year || storedProfile.year || 'Tahun 2',
+        avatar: child.avatar || storedProfile.avatar,
+        accountId: profile?.accountId || storedProfile.accountId,
+        email: profile?.email || storedProfile.email,
+        accessStatus,
+        accessLabel: getAccessLabel(accountAccess),
+        accessExpiresAt: accountAccess.access_expires_at || accountAccess.accessExpiresAt || null,
+        isPremium: isPremiumAccess(accountAccess)
+      }
+      : { ...storedProfile, accessStatus, accessLabel: getAccessLabel(accountAccess), isPremium: isPremiumAccess(accountAccess) };
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
+    saveSelectedStudentName(nextProfile.name);
+    setProfile(nextProfile);
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setGamificationProfile(loadGamificationState());
+    setResume(loadResume());
+    setFeedback(null);
+    setAnswer('');
+  }
+
+  function markLocalLearningMutation() {
+    cloudMutationAtRef.current = Date.now();
+  }
+
+  function queueCloudLearningSave() {
+    if (!supabase || !accountUser?.id) return Promise.resolve(false);
+    markLocalLearningMutation();
+    cloudWriteQueueRef.current = cloudWriteQueueRef.current
+      .catch(() => false)
+      .then(async () => {
+        const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+        if (activeAccountId !== accountUser.id) return false;
+        cloudWritePendingRef.current = true;
+        setCloudSyncStatus('syncing');
+        const ok = await saveCloudLearningData(supabase, buildCloudLearningPayload());
+        cloudWritePendingRef.current = false;
+        if (ok) captureAccountSnapshot(accountUser.id);
+        setCloudSyncStatus(ok ? 'saved' : 'error');
+        return ok;
+      });
+    return cloudWriteQueueRef.current;
+  }
+
+  function ensureChildProfiles(currentProfile = profile) {
+    let profiles = readChildProfiles();
+    let activeId = readActiveChildId();
+    if (!profiles.length) {
+      activeId = createChildId();
+      profiles = [{
+        id: activeId,
+        name: currentProfile?.name || 'Anak',
+        year: currentProfile?.year || 'Tahun 2',
+        avatar: currentProfile?.avatar || 'janna',
+        createdAt: new Date().toISOString()
+      }];
+      writeChildProfiles(profiles);
+      localStorage.setItem(ACTIVE_CHILD_KEY, activeId);
+      captureChildSnapshot(activeId);
+      captureOriginalChildSnapshot(activeId);
+    } else if (!profiles.some(item => item.id === activeId)) {
+      activeId = profiles[0].id;
+      localStorage.setItem(ACTIVE_CHILD_KEY, activeId);
+    }
+    setChildProfiles(profiles);
+    setActiveChildId(activeId);
+    return { profiles, activeId, activeProfile: profiles.find(item => item.id === activeId) || profiles[0] };
+  }
+
+  function handleSelectChild(childId) {
+    const availableProfiles = readChildProfiles();
+    const target = availableProfiles.find(item => item.id === childId);
+    const currentChildId = activeChildId || readActiveChildId();
+    if (!target || target.id === currentChildId) return;
+    markLocalLearningMutation();
+    captureChildSnapshot(currentChildId);
+    const regularSnapshot = readChildSnapshot(target.id);
+    const originalSnapshot = readOriginalChildSnapshot(target.id);
+    const snapshot = [regularSnapshot, originalSnapshot]
+      .filter(Boolean)
+      .sort((left, right) => snapshotEvidenceScore(right) - snapshotEvidenceScore(left))[0] || null;
+    if (snapshot) {
+      restoreChildSnapshot(snapshot);
+    } else {
+      clearChildScopedData();
+      const freshProfile = { ...defaultProfile, name: target.name, year: target.year || 'Tahun 2', avatar: target.avatar || 'janna' };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(freshProfile));
+      resetAdaptiveStudentProfile();
+      setGamificationProfile(resetGamificationProfile());
+      resetSmartQuestionState();
+      setResume(null);
+      captureChildSnapshot(target.id);
+    }
+    repairImportedLearningProfile();
+    localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
+    setActiveChildId(target.id);
+    reloadActiveChildState(target);
+    captureChildSnapshot(target.id);
+    captureAccountSnapshot(accountUser?.id);
+    void queueCloudLearningSave();
+    setScreen('dashboard');
+  }
+
+  function handleCreateChild({ name, year, avatar = 'janna' } = {}) {
+    const cleanName = String(name || '').trim();
+    if (!cleanName) return false;
+    try {
+      const nextChild = { id: createChildId(), name: cleanName, year: year || 'Tahun 2', avatar, createdAt: new Date().toISOString() };
+      const currentChildId = activeChildId || readActiveChildId();
+      const existingProfiles = readChildProfiles();
+      markLocalLearningMutation();
+      const currentLearningSnapshot = readChildScopedData();
+
+      // Backups are best-effort. They must never prevent the new profile
+      // from being created, especially when an old device has a full or
+      // partially-corrupt localStorage.
+      try {
+        captureOriginalChildSnapshot(currentChildId);
+        captureChildSnapshot(currentChildId);
+        if (currentChildId && snapshotEvidenceScore(readChildSnapshot(currentChildId) || {}) < snapshotEvidenceScore(currentLearningSnapshot)) {
+          localStorage.setItem(`${CHILD_SNAPSHOT_PREFIX}${currentChildId}`, JSON.stringify(currentLearningSnapshot));
+        }
+        if (currentChildId && snapshotEvidenceScore(readOriginalChildSnapshot(currentChildId) || {}) < snapshotEvidenceScore(currentLearningSnapshot)) {
+          localStorage.setItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${currentChildId}`, JSON.stringify(currentLearningSnapshot));
+        }
+      } catch (backupError) {
+        console.warn('Child learning backup skipped:', backupError);
+      }
+
+      const nextProfiles = [...existingProfiles.filter(item => item.id !== nextChild.id), nextChild];
+      writeChildProfiles(nextProfiles);
+      clearChildScopedData();
+      localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...defaultProfile, name: nextChild.name, year: nextChild.year, avatar: nextChild.avatar, accountId: profile?.accountId, email: profile?.email, accessStatus: profile?.accessStatus, accessLabel: profile?.accessLabel, accessExpiresAt: profile?.accessExpiresAt, isPremium: profile?.isPremium }));
+      resetAdaptiveStudentProfile();
+      setGamificationProfile(resetGamificationProfile());
+      resetSmartQuestionState();
+      localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
+      setChildProfiles(nextProfiles);
+      setActiveChildId(nextChild.id);
+      reloadActiveChildState(nextChild);
+      try { captureChildSnapshot(nextChild.id); } catch (snapshotError) { console.warn('New child snapshot skipped:', snapshotError); }
+      try { captureAccountSnapshot(accountUser?.id); } catch (accountSnapshotError) { console.warn('Account snapshot skipped:', accountSnapshotError); }
+      void queueCloudLearningSave();
+      setScreen('dashboard');
+      return true;
+    } catch (error) {
+      console.error('Unable to create child profile:', error);
+      setRecoveryMessages(prev => [...prev, `Profil anak baharu tidak dapat disimpan. ${error?.message || 'Sila cuba semula.'}`]);
+      return false;
+    }
+  }
+
+  function handleDeleteChild(childId) {
+    const availableProfiles = readChildProfiles();
+    const target = availableProfiles.find(item => item.id === childId);
+    if (!target || availableProfiles.length <= 1) return false;
+    if (!window.confirm(`Padam profil ${target.name}? Data profil ini juga akan dibuang daripada peranti ini.`)) return false;
+
+    const remainingProfiles = availableProfiles.filter(item => item.id !== target.id);
+    const currentChildId = activeChildId || readActiveChildId();
+    markLocalLearningMutation();
+    writeChildProfiles(remainingProfiles);
+    localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${target.id}`);
+
+    if (target.id === currentChildId) {
+      const nextChild = remainingProfiles[0];
+      const snapshot = readChildSnapshot(nextChild.id);
+      if (snapshot) {
+        restoreChildSnapshot(snapshot);
+      } else {
+        clearChildScopedData();
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({
+          ...defaultProfile,
+          name: nextChild.name,
+          year: nextChild.year || 'Tahun 2',
+          avatar: nextChild.avatar || 'janna',
+          accountId: profile?.accountId,
+          email: profile?.email,
+          accessStatus: profile?.accessStatus,
+          accessLabel: profile?.accessLabel,
+          accessExpiresAt: profile?.accessExpiresAt,
+          isPremium: profile?.isPremium
+        }));
+        resetAdaptiveStudentProfile();
+        setGamificationProfile(resetGamificationProfile());
+        resetSmartQuestionState();
+        setResume(null);
+      }
+      localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
+      setActiveChildId(nextChild.id);
+      reloadActiveChildState(nextChild);
+      captureChildSnapshot(nextChild.id);
+    }
+
+    setChildProfiles(remainingProfiles);
+    captureAccountSnapshot(accountUser?.id);
+    void queueCloudLearningSave();
+    setRecoveryMessages(prev => [...prev, `Profil ${target.name} telah dipadam.`]);
+    return true;
+  }
+
+  useEffect(() => {
+    if (!supabase) return undefined;
+    let alive = true;
+
+    const syncAccount = async (user) => {
+      const syncSequence = accountSyncSequenceRef.current + 1;
+      accountSyncSequenceRef.current = syncSequence;
+      if (!alive) return;
+      setAccountUser(user || null);
+      if (!user) {
+        setAccessProfile(null);
+        return;
+      }
+
+      activateAccountStorage(user.id);
+      const [{ data, error }, cloudLearningData] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, display_name, access_status, access_expires_at, is_admin')
+          .eq('id', user.id)
+          .maybeSingle(),
+        loadCloudLearningData(supabase)
+      ]);
+
+      if (!alive || syncSequence !== accountSyncSequenceRef.current) return;
+      if (cloudLearningData && Object.keys(cloudLearningData).length) {
+        restoreCloudLearningSnapshot(cloudLearningData);
+        repairImportedLearningProfile();
+        setCloudSyncStatus('loaded');
+      } else {
+        setCloudSyncStatus('empty');
+      }
+      const childState = ensureChildProfiles(loadProfile());
+      setProfile(loadStudentCore(loadProfile()));
+      setAdaptiveProfile(loadAdaptiveStudentProfile());
+      setGamificationProfile(loadGamificationState());
+      setResume(loadResume());
+      setShowOnboarding(false);
+      setScreen('dashboard');
+      const nextAccess = error || !data
+        ? { id: user.id, access_status: 'free', access_source: error ? 'fallback' : 'default' }
+        : data;
+      setAccessProfile(nextAccess);
+      setProfile(prev => {
+        const candidateName = [
+          loadSelectedStudentName(),
+          prev.name,
+          user.user_metadata?.display_name,
+          data?.display_name,
+          user.email?.split('@')[0]
+        ]
+          .map(value => String(value || '').trim())
+          .find(value => value && !isPlaceholderStudentName(value));
+
+        const activeChild = childState.activeProfile;
+        return {
+          ...prev,
+          name: activeChild?.name || candidateName || 'Murid',
+          year: activeChild?.year || prev.year || 'Tahun 2',
+          avatar: activeChild?.avatar || prev.avatar,
+          email: user.email || prev.email || '',
+          accountId: user.id,
+          isDemo: false,
+          accessStatus: normalizeAccessStatus(nextAccess.access_status),
+          accessLabel: getAccessLabel(nextAccess),
+          isPremium: isPremiumAccess(nextAccess)
+        };
+      });
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      syncAccount(session?.user || null);
+    });
+    supabase.auth.getSession()
+      .then(({ data }) => syncAccount(data.session?.user || null))
+      .catch(() => {
+        if (alive) setRecoveryMessages(prev => [...prev, 'Sesi akaun tidak dapat dipulihkan. Sila log masuk semula.']);
+      });
+
+    return () => {
+      alive = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!supabase && profile?.name && !childProfiles.length) ensureChildProfiles(profile);
+  }, []);
   const canonicalProgress = useMemo(() => createCanonicalProgress({
     ...(profile || {}),
     ...(adaptiveProfile || {}),
@@ -681,12 +1522,88 @@ export default function App() {
 
   useEffect(() => {
     try {
+      // Account switching restores the selected account asynchronously. Do not
+      // let the previous account's render overwrite the restored snapshot.
+      const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+      const profileAccountId = String(profile?.accountId || '').trim();
+      if (activeAccountId && accountUser?.id && activeAccountId !== accountUser.id) return;
+      if (activeAccountId && accountUser?.id && profileAccountId && profileAccountId !== accountUser.id) return;
+      if (activeAccountId && !accountUser?.id && profileAccountId && profileAccountId !== activeAccountId) return;
       localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
       saveStudentCore(profile, allSubjects, loadAIMemory());
+      const scopedChildId = readActiveChildId() || activeChildId;
+      if (scopedChildId) captureChildSnapshot(scopedChildId);
+      if (accountUser?.id && activeAccountId === accountUser.id) {
+        captureAccountSnapshot(accountUser.id);
+      }
     } catch {
       setRecoveryMessages(prev => [...prev, 'Perubahan profil tidak dapat disimpan kerana simpanan peranti tidak tersedia.']);
     }
-  }, [profile, allSubjects]);
+  }, [profile, allSubjects, accountUser?.id, activeChildId]);
+
+  useEffect(() => {
+    if (!supabase || !accountUser?.id) return undefined;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+      if (cancelled || activeAccountId !== accountUser.id) return;
+      void queueCloudLearningSave();
+    }, 700);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [profile, adaptiveProfile, gamificationProfile, resume, accountUser?.id]);
+
+  useEffect(() => {
+    if (!supabase || !accountUser?.id) return undefined;
+    let cancelled = false;
+    let inFlight = false;
+    let localSignature = '';
+    try {
+      localSignature = JSON.stringify(readLocalAccountData());
+    } catch {
+      localSignature = '';
+    }
+
+    const pullLatestCloudData = async () => {
+      if (cancelled || inFlight || document.visibilityState === 'hidden') return;
+      // A recent child/profile change must reach Supabase before a polling
+      // request is allowed to restore an older cloud snapshot over it.
+      if (cloudWritePendingRef.current || Date.now() - cloudMutationAtRef.current < 5000) return;
+      inFlight = true;
+      const cloudData = await loadCloudLearningData(supabase);
+      if (!cancelled && cloudData && Object.keys(cloudData).length) {
+        const cloudSignature = JSON.stringify(cloudData);
+        if (cloudSignature !== localSignature) {
+          restoreCloudLearningSnapshot(cloudData, readActiveChildId());
+          repairImportedLearningProfile();
+          setProfile(loadStudentCore(loadProfile()));
+          setAdaptiveProfile(loadAdaptiveStudentProfile());
+          setGamificationProfile(loadGamificationState());
+          setResume(loadResume());
+          localSignature = cloudSignature;
+          setCloudSyncStatus('loaded');
+        }
+      }
+      inFlight = false;
+    };
+
+    const timer = window.setTimeout(pullLatestCloudData, 1500);
+    const interval = window.setInterval(pullLatestCloudData, 15000);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') pullLatestCloudData();
+    };
+    window.addEventListener('focus', pullLatestCloudData);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      window.clearInterval(interval);
+      window.removeEventListener('focus', pullLatestCloudData);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [accountUser?.id]);
 
   function refreshAdaptiveProfile() {
     setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -740,8 +1657,47 @@ export default function App() {
     };
   }, [profile, allSubjects, adaptivePracticeCount, selectedSubjectId]);
 
+  async function persistStudentName(name) {
+    const cleanName = String(name || '').trim();
+    if (!cleanName || isPlaceholderStudentName(cleanName)) return;
+    saveSelectedStudentName(cleanName);
+    if (!supabase || !accountUser?.id) return;
+
+    try {
+      await supabase.auth.updateUser({ data: { display_name: cleanName } });
+      await supabase.from('profiles').update({ display_name: cleanName }).eq('id', accountUser.id);
+    } catch (error) {
+      console.warn('Unable to sync student name:', error);
+    }
+  }
+
   async function startProfile(name, avatar) {
-    setProfile({ ...defaultProfile, name: name || 'Anak', avatar, year: 'Tahun 2' });
+    const nextName = String(name || '').trim() || 'Anak';
+    setShowOnboarding(false);
+    setShowAccountLogin(false);
+    const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+    // Account login must never reset the restored account or its active child.
+    // The auth listener will load the cloud snapshot; this callback only closes
+    // the login surface when that session is already being activated.
+    if (accountUser?.id || activeAccountId) {
+      const childState = ensureChildProfiles(loadProfile());
+      const activeChild = childState.activeProfile;
+      if (activeChild && (isPlaceholderStudentName(activeChild.name) || activeChild.name === 'Murid')) {
+        const updatedProfiles = childState.profiles.map(child => child.id === activeChild.id ? { ...child, name: nextName, avatar: avatar || child.avatar } : child);
+        writeChildProfiles(updatedProfiles);
+        setChildProfiles(updatedProfiles);
+        reloadActiveChildState({ ...activeChild, name: nextName, avatar: avatar || activeChild.avatar });
+      }
+      setScreen('dashboard');
+      return;
+    }
+    const freeProfile = { ...defaultProfile, name: nextName, avatar, year: 'Tahun 2' };
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(freeProfile));
+    setProfile(freeProfile);
+    const freeChild = ensureChildProfiles(freeProfile);
+    writeChildProfiles(freeChild.profiles.map(child => child.id === freeChild.activeId ? { ...child, name: nextName, avatar } : child));
+    captureChildSnapshot(freeChild.activeId);
+    void persistStudentName(nextName);
     setGamificationProfile(resetGamificationProfile());
     resetSmartQuestionState();
     refreshAdaptiveProfile();
@@ -752,6 +1708,15 @@ export default function App() {
     const nextName = name?.trim() || profile.name || 'Demo Murid';
     const nextYear = year || profile.year || 'Tahun 2';
     setProfile(prev => ({ ...prev, name: nextName, year: nextYear, isDemo: false }));
+    const childState = ensureChildProfiles({ ...profile, name: nextName, year: nextYear, isDemo: false });
+    const updatedProfiles = childState.profiles.map(child => child.id === childState.activeId
+      ? { ...child, name: nextName, year: nextYear }
+      : child);
+    writeChildProfiles(updatedProfiles);
+    setChildProfiles(updatedProfiles);
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...profile, name: nextName, year: nextYear, isDemo: false }));
+    captureChildSnapshot(childState.activeId);
+    void persistStudentName(nextName);
     try {
       localStorage.setItem(ONBOARDING_KEY, 'done');
     } catch {
@@ -769,6 +1734,7 @@ export default function App() {
         clearResume();
         localStorage.removeItem(FEEDBACK_KEY);
         localStorage.removeItem(ONBOARDING_KEY);
+        localStorage.removeItem(SELECTED_STUDENT_NAME_KEY);
         AI_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
       } catch {
         setRecoveryMessages(prev => [...prev, 'Sebahagian data tidak dapat dipadam kerana simpanan peranti tidak tersedia.']);
@@ -785,6 +1751,7 @@ export default function App() {
       resetSmartQuestionState();
       refreshAdaptiveProfile();
       setResume(null);
+      if (activeChildId) captureChildSnapshot(activeChildId, { force: true });
       setShowOnboarding(true);
       setScreen('dashboard');
     }
@@ -827,6 +1794,7 @@ export default function App() {
       listening: aiMemory.listeningHistory || [],
       speaking: aiMemory.speakingHistory || [],
       writing: aiMemory.writingHistory || []
+      ,learningData: readLocalAccountData()
     };
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -839,11 +1807,112 @@ export default function App() {
     URL.revokeObjectURL(url);
   }
 
+  async function importLearningData(event) {
+    const file = event?.target?.files?.[0];
+    if (event?.target) event.target.value = '';
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      const importedData = parsed?.learningData || parsed?.data;
+      if (!importedData || typeof importedData !== 'object') {
+        setRecoveryMessages(prev => [...prev, 'Fail ini bukan eksport data pembelajaran Jannati yang sah.']);
+        return;
+      }
+      const entries = Object.entries(importedData).filter(([key, value]) => isAccountDataKey(key) && typeof value === 'string');
+      if (!entries.length) {
+        setRecoveryMessages(prev => [...prev, 'Eksport ini tidak mengandungi data pembelajaran.']);
+        return;
+      }
+      if (!window.confirm('Import akan menggantikan data akaun semasa. Teruskan?')) return;
+      restoreAccountSnapshot(Object.fromEntries(entries));
+      const repairedProfile = repairImportedLearningProfile();
+      setProfile(loadStudentCore(repairedProfile || loadProfile()));
+      setAdaptiveProfile(loadAdaptiveStudentProfile());
+      setGamificationProfile(loadGamificationState());
+      setResume(loadResume());
+      if (activeChildId) {
+        captureChildSnapshot(activeChildId);
+        // An explicit import is the user's chosen source of truth for the
+        // active child, so refresh the original-child recovery point too.
+        localStorage.setItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`, JSON.stringify(readChildScopedData()));
+      }
+      if (accountUser?.id) {
+        captureAccountSnapshot(accountUser.id);
+        await saveCloudLearningData(supabase, buildCloudLearningPayload());
+      }
+      setRecoveryMessages(prev => [...prev, 'Data pembelajaran berjaya diimport ke akaun semasa.']);
+    } catch {
+      setRecoveryMessages(prev => [...prev, 'Import gagal. Pastikan fail JSON tidak rosak.']);
+    }
+  }
+
+  async function recoverStoredLearningData() {
+    const backup = findBestStoredAccountBackup(accountUser?.id || '');
+    if (!backup || backup.score <= 0) {
+      setRecoveryMessages(prev => [...prev, 'Tiada backup pembelajaran lama yang mempunyai kemajuan untuk dipulihkan.']);
+      return;
+    }
+    if (!window.confirm(`Backup lama dengan kemajuan ${backup.score} dijumpai. Gantikan data akaun semasa dengan backup ini?`)) return;
+    restoreAccountSnapshot(backup.snapshot);
+    setProfile(loadStudentCore(loadProfile()));
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setGamificationProfile(loadGamificationState());
+    setResume(loadResume());
+    if (accountUser?.id) {
+      captureAccountSnapshot(accountUser.id);
+      await saveCloudLearningData(supabase, buildCloudLearningPayload());
+    }
+    setRecoveryMessages(prev => [...prev, 'Backup pembelajaran lama berjaya dipulihkan ke akaun ini.']);
+  }
+
+  async function syncLearningDataNow() {
+    if (!supabase || !accountUser?.id) {
+      setCloudSyncStatus('error');
+      setRecoveryMessages(prev => [...prev, 'Sync tidak tersedia. Sila log masuk semula.']);
+      return;
+    }
+    if (!window.confirm('Sync data peranti ini ke cloud sekarang?')) return;
+    setCloudSyncStatus('syncing');
+    const ok = await saveCloudLearningData(supabase, buildCloudLearningPayload());
+    setCloudSyncStatus(ok ? 'saved' : 'error');
+    setRecoveryMessages(prev => [...prev, ok ? 'Sync cloud berjaya.' : 'Sync cloud gagal. Semak fungsi RPC Supabase dan sambungan internet.']);
+  }
+
+  async function loadLearningDataNow() {
+    if (!supabase || !accountUser?.id) {
+      setCloudSyncStatus('error');
+      setRecoveryMessages(prev => [...prev, 'Muat dari cloud tidak tersedia. Sila log masuk semula.']);
+      return;
+    }
+    if (!window.confirm('Muat data cloud dan gantikan data pada peranti ini?')) return;
+    setCloudSyncStatus('syncing');
+    const cloudData = await loadCloudLearningData(supabase);
+    if (!cloudData || !Object.keys(cloudData).length) {
+      setCloudSyncStatus('empty');
+      setRecoveryMessages(prev => [...prev, 'Tiada data cloud untuk akaun ini.']);
+      return;
+    }
+    restoreCloudLearningSnapshot(cloudData, activeChildId);
+    repairImportedLearningProfile();
+    setProfile(loadStudentCore(loadProfile()));
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setGamificationProfile(loadGamificationState());
+    setResume(loadResume());
+    captureAccountSnapshot(accountUser.id);
+    setCloudSyncStatus('loaded');
+    setRecoveryMessages(prev => [...prev, 'Data cloud berjaya dimuat ke peranti ini.']);
+  }
+
   function isQuestionResumeMode(mode) {
     return ['quiz', 'adaptive-practice', 'adaptive-lesson'].includes(mode);
   }
 
   function startTopic(topic, subject = selectedSubject, options = {}) {
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(subject?.id);
+    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
+      openAccessNotice('daily-limit', 'Latihan harian');
+      return;
+    }
     const resumeMode = options.mode || 'quiz';
     if (!options.restoreFromResume && resume && !resume.completed && resume.mode === resumeMode && isQuestionResumeMode(resumeMode)) {
       const sameSubject = resume.subjectId === subject.id;
@@ -936,6 +2005,7 @@ export default function App() {
 
     const resumeData = {
       version: 1,
+      questionBankVersion: QUESTION_BANK_VERSION,
       mode: resumeMode,
       screen: resumeMode,
       sessionId: adaptiveSessionId,
@@ -973,6 +2043,14 @@ export default function App() {
   async function startResume() {
     if (!resume) return;
     if (resume.completed) return;
+    const premiumResumeFeature = {
+      uasa: 'uasa',
+      reading: 'bacaan',
+      listening: 'mendengar',
+      speaking: 'bertutur',
+      writing: 'menulis'
+    }[resume.mode];
+    if (premiumResumeFeature && !requirePremium(premiumResumeFeature)) return;
     if (isQuestionResumeMode(resume.mode || 'quiz')) {
       if ((resume.mode || 'quiz') === 'adaptive-practice') {
         const practiceSubject = {
@@ -1008,9 +2086,18 @@ export default function App() {
       const subject = await loadSubjectData(resume.subjectId);
       const topic = subject?.topics.find(t => t.id === resume.topicId);
       if (!subject || !topic) return;
+      // Resume data may contain a question surface generated by an older
+      // release. Rehydrate each question from the current bank by ID so a
+      // stale generic stem can never replace the original contextual wording.
+      const bankById = new Map((topic.questions || []).map(question => [String(question.id || question.questionId || ''), question]));
+      const restoredQuestions = (resume.questions || []).map(savedQuestion => {
+        const source = bankById.get(String(savedQuestion.id || savedQuestion.questionId || ''));
+        return source ? { ...source } : savedQuestion;
+      });
+      const questions = restoredQuestions.length ? restoredQuestions : topic.questions;
       syncSelectedSubjectState(subject);
       startTopic(topic, subject, {
-        questions: resume.questions,
+        questions,
         questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
         session: resume.session,
         preserveQuestions: true,
@@ -1081,13 +2168,23 @@ export default function App() {
   }
 
   async function startAdaptivePractice(questionCount = adaptivePracticeCount, options = {}) {
-    if (!options.forceFresh && resume && !resume.completed && resume.mode === 'adaptive-practice' && Array.isArray(resume.questions) && resume.questions.length) {
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(selectedSubjectId);
+    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
+      openAccessNotice('daily-limit', 'Latihan harian');
+      return;
+    }
+    const allowedQuestionCount = isPremiumUser
+      ? questionCount
+      : Math.min(questionCount, Math.max(1, FREE_DAILY_QUESTION_LIMIT - subjectDailyQuestionCount));
+    const resumeSubjectId = resume?.subjectId || resume?.metadata?.subjectId || resume?.session?.subjectId;
+    const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === selectedSubjectId);
+    if (!options.forceFresh && resumeMatchesSelectedSubject && resume && !resume.completed && resume.mode === 'adaptive-practice' && Array.isArray(resume.questions) && resume.questions.length) {
       await startResume();
       return;
     }
     if (!allSubjects.length) return;
     const session = buildAdaptivePracticeSession(profile, allSubjects, {
-      questionCount,
+      questionCount: allowedQuestionCount,
       mode: 'balanced',
       subjectId: selectedSubjectId,
       seed: createSmartQuestionSeed([
@@ -1098,7 +2195,7 @@ export default function App() {
         adaptiveProfile.correctQuestions || 0,
         adaptiveProfile.streak || 0,
         selectedSubjectId || '',
-        questionCount,
+        allowedQuestionCount,
         allSubjects.length,
         aiMemory?.history?.length || 0
       ])
@@ -1259,6 +2356,42 @@ export default function App() {
     setScreen('dashboard');
   }
 
+  async function logoutAccount() {
+    if (!accountUser?.id) {
+      if (!confirm('Tukar akaun akan memulakan profil Free yang baharu pada peranti ini. Teruskan?')) return;
+      clearAccountData();
+      try {
+        localStorage.removeItem(ACCOUNT_SCOPE_KEY);
+      } catch {
+        // Ignore storage cleanup failures.
+      }
+      setAccessProfile(null);
+      setShowAccountLogin(false);
+      setScreen('login');
+      return;
+    }
+    if (supabase) {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setRecoveryMessages(prev => [...prev, 'Log keluar tidak berjaya. Cuba lagi.']);
+        return;
+      }
+    }
+    if (accountUser?.id) {
+      captureAccountSnapshot(accountUser.id);
+      clearAccountData();
+      try {
+        localStorage.removeItem(ACCOUNT_SCOPE_KEY);
+      } catch {
+        // Ignore storage cleanup failures.
+      }
+    }
+    setAccountUser(null);
+    setAccessProfile(null);
+    setShowAccountLogin(false);
+    setScreen('login');
+  }
+
   function syncSelectedSubjectState(subject) {
     if (!subject?.id) return;
     flushSync(() => {
@@ -1269,7 +2402,30 @@ export default function App() {
 
   function checkAnswer() {
     const question = currentQuestion();
-    const result = smartCheck(answer, question);
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(activeSubject?.id || selectedSubjectId);
+    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
+      openAccessNotice('daily-limit', 'Latihan harian');
+      return;
+    }
+    if (!String(answer || '').trim()) {
+      quizSubmitKeyRef.current = '';
+      setFeedback({
+        status: 'empty',
+        title: 'Tulis jawapan dahulu',
+        message: 'Tulis jawapan dahulu ya.'
+      });
+      return;
+    }
+    let result = smartCheck(answer, question);
+    const questionText = String(question?.q || question?.question || question?.stem || '').toLowerCase();
+    const normalizedTypedAnswer = normalizeAcceptedAnswer(answer);
+    const acceptedForQuestion = getAcceptedAnswers(question).map(normalizeAcceptedAnswer);
+    const shortCorrectionAnswer = /betulkan ayat/.test(questionText)
+      && ['saya', 'aku', 'kami', 'kita', 'awak', 'kamu', 'anda', 'kau', 'dia', 'beliau', 'mereka'].includes(normalizedTypedAnswer)
+      && acceptedForQuestion.some(value => value.split(' ')[0] === normalizedTypedAnswer);
+    if (result.status !== 'correct' && (isSpecificAcceptedAnswer(question, answer) || shortCorrectionAnswer)) {
+      result = { status: 'correct', title: 'Betul!', message: 'Jawapan kamu diterima.' };
+    }
     let xp = 0;
     let coins = 0;
     const nextSession = { ...session, answers: [...(session.answers || [])] };
@@ -1338,7 +2494,13 @@ export default function App() {
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
     setExplainData(explainAnswer({ question: { ...question, subjectId: activeSubject?.id }, topic: { ...activeTopic, subjectId: activeSubject?.id }, result, userAnswer: answer }));
-    setFeedback({ ...result, xp, coins, correctAnswer: question.answer, acceptedAnswers: getAcceptedAnswers(question), explanation: sanitizeAiText(question.explanation || question.hint) });
+    const feedbackExplanation = sanitizeAiText(question.explanation || question.hint);
+    const specificWrongAnswerFeedback = getSpecificWrongAnswerFeedback(question, answer);
+    const wrongAnswerExplanation = specificWrongAnswerFeedback || sanitizeAiText(question.wrongExplanation || '');
+    const feedbackMessage = result.status === 'correct' || !wrongAnswerExplanation
+      ? result.message
+      : `Jawapan kamu belum tepat. ${wrongAnswerExplanation}`;
+    setFeedback({ ...result, xp, coins, correctAnswer: getQuestionAnswerDisplay(question), acceptedAnswers: getAcceptedAnswers(question), message: feedbackMessage, explanation: feedbackExplanation });
   }
 
   function createCoachSnapshot(mode, question = currentQuestion()) {
@@ -1793,24 +2955,36 @@ export default function App() {
     forecast: masteryForecast
   };
 
-  if (showOnboarding) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} /></BetaChrome>;
+  function openTutorAi() {
+    if (requirePremium('tutorAi')) setChatOpen(true);
+  }
+
+  function openPremiumScreen(targetScreen, feature) {
+    if (requirePremium(feature)) setScreen(targetScreen);
+  }
+
+  if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
+
+  if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} /></BetaChrome>;
 
   if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} /></BetaChrome>;
+
+  if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} /></BetaChrome>;
 
   if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><LoadingSkeleton /></BetaChrome>;
   if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
 
   if (screen === 'quiz') {
     const question = currentQuestion();
-    const safeHint = sanitizeAiText(coachKnowledgeData?.hint || coachingDecision?.hint || teachingStrategy?.hint || question?.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.');
+    const safeHint = buildChildSafeHint(question, activeSubject, [coachKnowledgeData?.hint, coachingDecision?.hint, teachingStrategy?.hint, question?.hint]);
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={() => setChatOpen(true)} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={() => setChatOpen(true)} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={openTutorAi} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
   if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
@@ -1819,8 +2993,10 @@ export default function App() {
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
 
+  if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic) => startTopic(topic, selectedSubject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => setScreen('reading')} onStartMendengar={() => setScreen('listening')} onStartBertutur={() => setScreen('speaking')} onStartMenulis={() => setScreen('writing')} onOpenParent={() => setScreen('parent')} onOpenUasa={() => setScreen('uasa')} onOpenAi={() => setChatOpen(true)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={accessProfile || effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -1839,10 +3015,77 @@ function BetaChrome({ children, recoveryMessages = [], modalOpen = false, curren
   </>;
 }
 
+function getCanonicalQuestionAnswers(question = {}) {
+  const accepted = getAcceptedAnswers(question);
+  const questionText = normalizeAcceptedAnswer(question?.q || question?.question || question?.stem || '');
+
+  // Punctuation fill-ins display and evaluate only the missing symbol. The
+  // complete sentence remains in the question data for explanations, but it
+  // must not leak into the learner's expected answer (e.g. `!`, not the full
+  // sentence ending in `!`).
+  const punctuationPrompt = /\b(?:tanda baca|tanda soal|tanda seru|tanda noktah|tanda koma)\b/.test(questionText)
+    && /_{2,}/.test(String(question?.q || question?.question || question?.stem || ''));
+  if (punctuationPrompt) {
+    const punctuation = accepted
+      .map(value => String(value).trim().match(/([?!.,;:])$/)?.[1])
+      .find(Boolean);
+    if (punctuation) return [punctuation];
+  }
+
+  // UASA BM classification items ask for the sentence category only. The
+  // source answer may include a teaching explanation, so do not use that
+  // explanation as the answer that is evaluated or shown to the learner.
+  const categories = accepted
+    .map(value => normalizeAcceptedAnswer(value).match(/\bayat\s+(?:tanya|penyata|perintah|seruan)\b/)?.[0])
+    .filter(Boolean);
+  const asksForSentenceType = /\b(?:jenis ayat|tentukan jenis(?:nya)?|kenal pasti jenis)\b/.test(questionText)
+    || (/^\s*(?:baca|perhatikan) ayat ini\b/.test(questionText) && categories.length > 0);
+  if (asksForSentenceType && categories.length) return [...new Set(categories)];
+
+  return accepted;
+}
+
+function renderUasaQuestionText(text = '') {
+  const value = String(text || '');
+  const sentencePair = value.match(/^(.+?[.!])\s+(.+\?)$/);
+  if (sentencePair && value.length >= 60) {
+    return <><span>{sentencePair[1]}</span><br /><span className="uasa-question-example">{sentencePair[2]}</span></>;
+  }
+  const match = value.match(/^(\s*[^:]+):\s*(.+)$/);
+  const instruction = match?.[1] || '';
+  const shouldSplit = /\b(?:baca|perhatikan|kenal pasti|tentukan|lengkapkan|pilih|tukarkan|nyatakan|isi|berdasarkan|situasi|dialog|petikan|soalan)\b/i.test(instruction);
+  if (!match || !shouldSplit) return value;
+  const content = match[2].trim();
+  const exampleAndQuestion = content.match(/^(.+?[.!])\s+(.+\?)$/);
+  if (exampleAndQuestion) {
+    return <>{match[1]}:<br /><span className="uasa-question-example">{exampleAndQuestion[1]}</span><br /><span className="uasa-question-example">{exampleAndQuestion[2]}</span></>;
+  }
+  return <>{match[1]}:<br /><span className="uasa-question-example">{content}</span></>;
+}
+
+function buildChildSafeHint(question = {}, subject = {}, candidates = []) {
+  const answers = getCanonicalQuestionAnswers(question)
+    .map(value => value.toLocaleLowerCase('ms-MY'))
+    .filter(Boolean);
+  const leaksAnswer = value => {
+    const text = String(value || '').toLocaleLowerCase('ms-MY');
+    if (!text || text.includes('=')) return true;
+    return answers.some(answer => {
+      const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`, 'u').test(text);
+    });
+  };
+  const safeCandidate = candidates.find(candidate => candidate && !leaksAnswer(candidate));
+  if (safeCandidate) return sanitizeAiText(safeCandidate);
+  if (subject?.id === 'math') return 'Kenal pasti operasi yang digunakan, kemudian kira satu langkah pada satu masa. Semak jawapan dengan operasi songsang.';
+  if (subject?.id === 'bm') return 'Cari kata kunci dalam ayat dan fikirkan maksud yang ditanya. Pilih jawapan yang paling sesuai.';
+  return 'Baca soalan perlahan-lahan, cari kata kunci penting, kemudian semak pilihan kamu sekali lagi.';
+}
+
 function BrandSplash() {
   return <div className="brand-splash" aria-label="Jannati AI Tutor sedang dimuat">
     <BrandLogo horizontal size="lg" className="brand-logo-full" />
-    <h1>Jannati AI Tutor</h1>
+    <p className="brand-splash-title">Jannati AI Tutor</p>
     <p>AI Tutor Rasmi</p>
     <div className="brand-loading-dot" aria-hidden="true" />
   </div>;
@@ -1858,14 +3101,14 @@ function AppVersiFooter() {
 }
 
 function StorageRecoveryNotice({ messages }) {
-  const uniqueMessages = [...new Set(messages)];
+  const message = messages[messages.length - 1];
   return <aside className="storage-recovery" role="status">
-    <b>Simpanan dipulihkan</b>
-    <span>{uniqueMessages.join(' ')}</span>
+    <b>Makluman</b>
+    <span>{message}</span>
   </aside>;
 }
 
-function FirstRunWizard({ profile, onComplete }) {
+function FirstRunWizard({ profile, onComplete, onAccountLogin }) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState(profile.name || 'Demo Murid');
   const [year, setYear] = useState(profile.year || 'Tahun 2');
@@ -1911,7 +3154,7 @@ function FirstRunWizard({ profile, onComplete }) {
         <button type="button" className="secondary" onClick={() => setStep(current => Math.max(1, current - 1))} disabled={step === 1}>Kembali</button>
         {step < 4
           ? <button type="button" onClick={() => setStep(current => Math.min(4, current + 1))} disabled={!canContinue}>Seterusnya</button>
-          : <button type="button" onClick={() => onComplete({ name, year })}>Mula Belajar</button>}
+          : <div className="wizard-final-actions"><button type="button" className="secondary" onClick={onAccountLogin}>Log masuk Premium</button><button type="button" onClick={() => onComplete({ name, year })}>Mula Belajar Free</button></div>}
       </div>
     </section>
   </main>;
@@ -1981,15 +3224,54 @@ function BetaFeedbackButton({ suppressed = false }) {
   </>;
 }
 
-function Login({ onStart }) {
+function Login({ onStart, onBack }) {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('janna');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accountMode, setAccountMode] = useState('signin');
+  const [accountMessage, setAccountMessage] = useState('');
+  const [accountBusy, setAccountBusy] = useState(false);
   const avatars = [
     { id: 'janna', label: 'Janna', icon: <JannaAvatar size={36} /> },
     { id: 'jati', label: 'Jati', icon: <JatiAvatar size={36} /> }
   ];
 
-  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar</button></section></main>;
+  async function handleAccountSubmit(event) {
+    event.preventDefault();
+    if (!supabaseConfigured || !supabase) return;
+    setAccountBusy(true);
+    setAccountMessage('');
+    try {
+      const result = accountMode === 'signin'
+        ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
+      : await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: { display_name: name.trim() || 'Murid' },
+          emailRedirectTo: getEmailRedirectUrl()
+        }
+      });
+      if (result.error) {
+        setAccountMessage(formatAccountError(result.error));
+        return;
+      }
+      if (result.data.session?.user) {
+        const user = result.data.session.user;
+        onStart(user.user_metadata?.display_name || name.trim() || user.email?.split('@')[0] || 'Murid', avatar);
+      } else {
+        setAccountMessage('Akaun berjaya dicipta. Sahkan e-mel jika diminta, kemudian log masuk.');
+        setAccountMode('signin');
+      }
+    } catch (error) {
+      setAccountMessage(formatAccountError(error));
+    } finally {
+      setAccountBusy(false);
+    }
+  }
+
+  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar Free</button>{supabaseConfigured && <><div className="login-divider"><span>atau guna akaun</span></div><form onSubmit={handleAccountSubmit} className="account-login-form"><label htmlFor="account-email">E-mel</label><input id="account-email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="nama@contoh.com" required /><label htmlFor="account-password">Kata laluan</label><input id="account-password" type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Minimum 6 aksara" minLength={6} required />{accountMessage && <p className="autosave-note" role="status">{accountMessage}</p>}<button type="submit" className="secondary full" disabled={accountBusy}>{accountBusy ? 'Memproses...' : accountMode === 'signin' ? 'Log masuk' : 'Cipta akaun'}</button></form><button type="button" className="text-button" onClick={() => { setAccountMode(mode => mode === 'signin' ? 'signup' : 'signin'); setAccountMessage(''); }}>{accountMode === 'signin' ? 'Belum ada akaun? Cipta akaun' : 'Sudah ada akaun? Log masuk'}</button></>}{onBack && <button type="button" className="text-button login-back-button" onClick={onBack}>Kembali</button>}</section></main>;
 }
 
 function LoadingSkeleton() {
@@ -1999,8 +3281,18 @@ function LoadingSkeleton() {
   </main>;
 }
 
+function AccessNotice({ notice, accessStatus, onBack, onLogin }) {
+  const isLimit = notice?.kind === 'daily-limit';
+  const feature = getAccessFeatureLabel(notice?.feature || 'tutorAi');
+  return <main className="app access-notice-page"><section className="card access-notice-card"><p className="eyebrow">Akses pembelajaran</p><h1>{isLimit ? 'Had Free harian dicapai' : `${feature} ialah ciri Premium`}</h1><p>{isLimit ? `Kamu sudah menjawab ${FREE_DAILY_QUESTION_LIMIT} soalan hari ini. Sambung esok atau aktifkan Premium untuk latihan tanpa had.` : `${feature} tersedia untuk akaun Premium. Akaun kamu sekarang berstatus ${accessStatus === 'expired' ? 'Premium tamat' : accessStatus === 'blocked' ? 'disekat' : 'Free'}.`}</p><div className="access-notice-actions"><button type="button" onClick={onLogin}>Log masuk / Minta Premium</button><button type="button" className="secondary" onClick={onBack}>Kembali belajar</button></div></section></main>;
+}
+
 function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, coachDecision, teachingStrategy, personality, coachKnowledgeData, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {
   const question = topic.questions[questionIndex];
+  const isEnglishSubject = subject?.id === 'english';
+  const quizUi = isEnglishSubject
+    ? { answerPlaceholder: 'Type your answer here', readQuestion: 'Read Question', microphone: 'Microphone', hint: 'Hint', bookmark: 'Bookmark question', bookmarked: 'Bookmarked', askTeacher: 'Ask AI Teacher', check: 'Check Answer', saved: 'Automatic saving is active.', correct: 'Correct!', accepted: 'Your answer was accepted.', almost: 'Almost correct. Let us improve it a little.', wrong: 'Check the question again and try once more.', title: 'Try again.', exact: 'Correct answer:', explain: 'Explain', retry: 'Try Again', next: 'Next', readHint: 'Read Hint', hintTitle: 'Hint' }
+    : { answerPlaceholder: 'Tulis jawapan di sini', readQuestion: 'Baca Soalan', microphone: 'Mikrofon', hint: 'Petunjuk', bookmark: 'Tanda Soalan', bookmarked: 'Ditanda', askTeacher: 'Tanya Guru AI', check: 'Semak Jawapan', saved: 'Simpanan automatik aktif.', correct: 'Syabas!', accepted: 'Jawapan kamu diterima.', almost: 'Hampir betul. Jom kemaskan jawapan sedikit lagi.', wrong: 'Cuba semak semula jawapan kamu.', title: 'Tak mengapa.', exact: 'Jawapan tepat:', explain: 'Terangkan', retry: 'Cuba Lagi', next: 'Seterusnya', readHint: 'Baca Petunjuk', hintTitle: 'Petunjuk' };
   const progress = Math.round(((questionIndex + 1) / topic.questions.length) * 100);
   const debugRow = question?.qde || {};
   const qipRow = question?.qip || {};
@@ -2025,22 +3317,22 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     balanced: 'seimbang'
   }[teachingStrategy?.teachingStyle] || 'berpandu';
   const feedbackMessage = feedback?.status === 'correct'
-    ? personality?.achievementMessage || 'Syabas! Kamu berjaya menjawab soalan ini.'
+    ? (isEnglishSubject ? 'Excellent! You answered correctly.' : personality?.achievementMessage || 'Syabas! Kamu berjaya menjawab soalan ini.')
     : feedback?.status === 'almost'
-      ? personality?.motivation || 'Hampir betul. Jom kemaskan jawapan sedikit lagi.'
+      ? (isEnglishSubject ? quizUi.almost : personality?.motivation || quizUi.almost)
       : feedback?.status === 'hint'
         ? `Petunjuk ${coachToneLabel}`
-        : 'Jangan putus asa. Semak petunjuk dan cuba sekali lagi.';
+        : (isEnglishSubject ? quizUi.wrong : feedback?.message || 'Jangan putus asa. Semak petunjuk dan cuba sekali lagi.');
   const feedbackTitle = feedback?.status === 'correct'
-    ? 'Syabas!'
+    ? quizUi.correct
     : feedback?.status === 'almost'
-      ? 'Hampir betul'
+      ? (isEnglishSubject ? 'Almost correct' : 'Hampir betul')
       : feedback?.status === 'hint'
-        ? `Petunjuk ${coachToneLabel}`
-      : 'Tak mengapa.';
+        ? quizUi.hint
+      : quizUi.title;
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
-  const safeHint = sanitizeAiText(coachKnowledgeData?.hint || safeCoachingDecision?.hint || question?.hint || 'Cari kata kunci penting.');
+  const safeHint = buildChildSafeHint(question, subject, [coachKnowledgeData?.hint, safeCoachingDecision?.hint, question?.hint]);
   const safeQuestionExplanation = sanitizeAiText(question?.explanation || question?.hint || '');
   const [speechState, setSpeechState] = useState('idle');
   const [speechTranscript, setSpeechTranscript] = useState('');
@@ -2112,7 +3404,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   }[speechState] || 'Mikrofon';
   const speechMessage = typeof speechResult?.message === 'string' ? speechResult.message : '';
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question">{question.q}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span>{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{(feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p>{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question">{renderUasaQuestionText(question.q)}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span>{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p>{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ profile, session, topic, nextTopic, aiSummary, personality, voiceSummaryText, gamificationProfile, onDashboard, onRetry, onNextTopic, onOpenAi }) {
@@ -2158,6 +3450,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
   const [answer, setAnswer] = useState(() => subjectResume?.state?.answer || '');
   const [result, setResult] = useState(() => subjectResume?.state?.result || null);
+  const [validationMessage, setValidationMessage] = useState('');
   const [score, setScore] = useState(() => subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
   const [uasaStateSubjectId, setUasaStateSubjectId] = useState(() => subject?.id || '');
   const completedRef = useRef(Boolean(resume?.completed));
@@ -2167,6 +3460,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setQuestionIndex(Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
     setAnswer(subjectResume?.state?.answer || '');
     setResult(subjectResume?.state?.result || null);
+    setValidationMessage('');
     setScore(subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
     completedRef.current = Boolean(subjectResume?.completed);
   }, [subject?.id]);
@@ -2226,7 +3520,18 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   function submitAnswer() {
     if (!question) return;
     if (result) return;
-    const checked = smartCheck(answer, question);
+    if (!String(answer || '').trim()) {
+      setValidationMessage('Tulis jawapan dahulu ya.');
+      return;
+    }
+    setValidationMessage('');
+    const canonicalAnswers = getCanonicalQuestionAnswers(question);
+    const normalizedQuestion = {
+      ...question,
+      accepted: canonicalAnswers,
+      acceptedAnswers: canonicalAnswers
+    };
+    const checked = smartCheck(answer, normalizedQuestion);
     const correct = checked.status === 'correct';
     const nextScore = {
       correct: score.correct + (correct ? 1 : 0),
@@ -2235,7 +3540,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setScore(nextScore);
     setResult({
       correct,
-      expected: getAcceptedAnswers(question).join(' / ') || question.answer,
+      expected: canonicalAnswers.join(' / ') || normalizedQuestion.answer,
       explanation: question.explanation || question.hint || '',
       message: checked.message
     });
@@ -2271,9 +3576,10 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setQuestionIndex(index => index + 1);
     setAnswer('');
     setResult(null);
+    setValidationMessage('');
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{question.q}</h2><input value={answer} onChange={event => setAnswer(event.target.value)} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{renderUasaQuestionText(question.q)}</h2><input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = semanticReadingPassages;
@@ -2740,6 +4046,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const languageInitializedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
   const recognitionRef = useRef(null);
+  const readingSpeechSessionRef = useRef(null);
   const speechTimeoutRef = useRef(null);
   const receivedResultRef = useRef(false);
   const finalizedRef = useRef(false);
@@ -2765,7 +4072,10 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       && /Safari/i.test(ua)
       && !/(CriOS|FxiOS|EdgiOS|OPiOS|Android)/i.test(ua);
   }, []);
-  const promptBank = useMemo(() => (set?.prompts && typeof set.prompts === 'object' ? set.prompts : {}), [set?.id]);
+  // Each speaking session item has its own prompt bank, while `set.id` is
+  // intentionally the language id (bm/english/arab). Key this memo by the
+  // actual prompt object so Seterusnya cannot keep showing item 1.
+  const promptBank = useMemo(() => (set?.prompts && typeof set.prompts === 'object' ? set.prompts : {}), [set?.id, rawSet?.prompts]);
   const safeModeKeys = useMemo(() => Object.keys(promptBank).filter(key => promptBank?.[key]), [promptBank]);
   const safeModeKey = safeModeKeys.join('|');
   const prompt = promptBank?.[mode] || promptBank?.intro || Object.values(promptBank)[0] || { label: 'Soalan', text: '', keywords: [] };
@@ -2860,6 +4170,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     abortedRef.current = true;
     finalizedRef.current = true;
     setMendengar(false);
+    readingSpeechSessionRef.current?.cancel?.();
+    readingSpeechSessionRef.current = null;
     disposeRecognition();
   };
 
@@ -2959,6 +4271,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       completed: false,
       state: {
         setId,
+        sessionIndex,
         mode,
         transcript,
         result,
@@ -3012,6 +4325,64 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     resetSpeechSession();
     setTranscript('');
     setResult(null);
+
+    // iPhone Safari is more reliable with the same continuous session used by
+    // Bacaan: keep the reference passage visible, stream the transcript, then
+    // let the learner confirm the captured text before scoring it.
+    if (SpeechRecognition) {
+      const session = createReadingSpeechSession({
+        lang: latestSpeechLang,
+        resultFactory: spokenTranscript => ({
+          ...scoreBertutur(safePrompt, spokenTranscript),
+          status: 'completed',
+          transcript: normalizeBertuturTranscript(spokenTranscript)
+        }),
+        onChange(nextState) {
+          const nextTranscript = normalizeBertuturTranscript(nextState?.transcript || '');
+          setMendengar(nextState?.status === 'listening' || nextState?.status === 'processing');
+          if (nextTranscript) {
+            setTranscript(nextTranscript);
+            setRecognizedDraft(nextTranscript);
+            setInterimTranscript(nextTranscript);
+            setTranscriptSource('speech-draft');
+          }
+        },
+        onTranscript(nextTranscript) {
+          const normalized = normalizeBertuturTranscript(nextTranscript);
+          if (!normalized) return;
+          setTranscript(normalized);
+          setRecognizedDraft(normalized);
+          setInterimTranscript(normalized);
+          setTranscriptSource('speech-draft');
+        },
+        onResult(nextResult) {
+          const normalized = normalizeBertuturTranscript(nextResult?.transcript || '');
+          setMendengar(false);
+          setInterimTranscript('');
+          if (normalized) {
+            offerSpeechCandidate({ text: normalized, confidence: nextResult?.confidence });
+          } else {
+            setResult(nextResult || createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
+          }
+        },
+        onEmpty(nextResult) {
+          setMendengar(false);
+          setInterimTranscript('');
+          setResult(nextResult || createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
+        },
+        onError(error) {
+          if (error !== 'aborted') setSpeechCandidate(null);
+          setMendengar(false);
+        },
+        onStopped() {
+          setMendengar(false);
+        }
+      });
+      readingSpeechSessionRef.current = session;
+      session.start();
+      return;
+    }
+
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
     const recognitionContextKey = communicationContextKey;
@@ -3071,7 +4442,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       receivedResultRef.current = true;
       const candidate = chooseBertuturCandidate(extracted.finalCandidates, { languageId: set.id, prompt: safePrompt });
       speechFinalCandidateRef.current = candidate;
-      speechFinalTranscriptRef.current = normalizeBertuturTranscript([speechFinalTranscriptRef.current, candidate.text].filter(Boolean).join(' '));
+      speechFinalTranscriptRef.current = mergeSpeechTranscript(speechFinalTranscriptRef.current, candidate.text);
       if (!longSpeechMode) offerSpeechCandidate({ ...candidate, text: speechFinalTranscriptRef.current });
       if (!longSpeechMode) setMendengar(false);
     };

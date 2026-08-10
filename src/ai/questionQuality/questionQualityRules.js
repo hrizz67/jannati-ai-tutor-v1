@@ -88,7 +88,12 @@ export function detectMalayLanguageIssues(text = '') {
   if (countWords(value) < 6 && !hasSentenceContext(value)) issues.push('no_context');
   if (AWKWARD_PHRASES.some(pattern => pattern.test(value))) issues.push('awkward_phrase');
   if (GENERIC_PATTERNS.some(pattern => pattern.test(value)) && !hasSentenceContext(value)) issues.push('generic_template');
-  if (/\b(\w+)\b(?:\s+\1){1,}/i.test(value)) issues.push('repeated_word');
+  // Compare adjacent alphabetic tokens instead of using a back-reference
+  // regex. Blank markers such as `____` are intentional quiz syntax and must
+  // not be treated as duplicated words.
+  if (/(?:^|\s)([A-Za-zÀ-ÿ]+)(?:\s+\1)(?=\s|[.,!?;:]|$)/i.test(value)) {
+    issues.push('repeated_word');
+  }
   if (/\s{2,}/.test(value)) issues.push('extra_spaces');
   if (/^[a-z]/.test(value) && countWords(value) > 3) issues.push('capitalisation');
   return [...new Set(issues)];

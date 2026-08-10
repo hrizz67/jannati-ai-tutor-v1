@@ -1,7 +1,7 @@
 import React from 'react';
 import AchievementBadge from './AchievementBadge.jsx';
 import LevelProgress from './LevelProgress.jsx';
-import { createCanonicalGamification } from '../../utils/canonicalGamification.js';
+import { createCanonicalGamification } from '../../gamification/index.js';
 
 function safeText(value, fallback = '-') {
   const text = String(value ?? '').trim();
@@ -45,6 +45,7 @@ export default function GamificationPanel({
   className = ''
 }) {
   const detailPanelId = React.useId();
+  const titleId = React.useId();
   const [detailsOpen, setDetailsOpen] = React.useState(false);
   const summary = canonical && typeof canonical === 'object'
     ? canonical
@@ -54,9 +55,9 @@ export default function GamificationPanel({
 
   if (!summary.hasEvidence) {
     return (
-      <section className={`card gamification-panel ${className}`.trim()} aria-labelledby="gamification-panel-title">
+      <section className={`card gamification-panel ${className}`.trim()} aria-labelledby={titleId}>
         <p className="eyebrow">Gamifikasi Pembelajaran</p>
-        <h2 id="gamification-panel-title">Ganjaran Pembelajaran</h2>
+        <h2 id={titleId}>Ganjaran Pembelajaran</h2>
         <div className="gamification-empty-state" role="status">
           <p><strong>Belum ada data ganjaran.</strong></p>
           <p>Lengkapkan latihan untuk mula mengumpul XP dan pencapaian.</p>
@@ -66,9 +67,9 @@ export default function GamificationPanel({
   }
 
   return (
-    <section className={`card gamification-panel ${className}`.trim()} aria-labelledby="gamification-panel-title">
+    <section className={`card gamification-panel ${className}`.trim()} aria-labelledby={titleId}>
       <p className="eyebrow">Gamifikasi Pembelajaran</p>
-      <h2 id="gamification-panel-title">Ganjaran Pembelajaran</h2>
+      <h2 id={titleId}>Ganjaran Pembelajaran</h2>
 
       <div className="mastery-summary-grid gamification-summary-grid">
         <div><b>{summary.globalXp}</b><span>Jumlah XP</span></div>

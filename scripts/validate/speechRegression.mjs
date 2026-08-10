@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { extractSpeechTranscript, collectSpeechTranscriptFragments, createSpeechSession, cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
 import { createReadingSpeechSession } from '../../src/ai/speech/speechSession.js';
+import { matchSpeechAnswer } from '../../src/ai/speech/speechMatcher.js';
 import { speak, stop as stopVoice } from '../../src/ai/voice/voiceEngine.js';
 
 class FakeRecognition {
@@ -362,6 +363,17 @@ async function main() {
   assert.equal(readingAttempt3b.onResults.at(-1)?.transcript, 'Ayah pergi ke pasar kemudian ke kedai', 'Cumulative Safari result list should not duplicate fragments.');
   readingAttempt3b.dispose();
 
+  const androidRepeatedIndexAttempt = createReadingSessionHarness();
+  androidRepeatedIndexAttempt.recognition.emitResult([makeResult({ transcript: 'Ayah pergi' })], 0);
+  androidRepeatedIndexAttempt.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
+  androidRepeatedIndexAttempt.recognition.emitEnd();
+  assert.equal(
+    androidRepeatedIndexAttempt.onResults.at(-1)?.transcript,
+    'Ayah pergi ke pasar',
+    'Repeated Android result index should replace the previous fragment instead of duplicating it.'
+  );
+  androidRepeatedIndexAttempt.dispose();
+
   const readingAttempt4 = createReadingSessionHarness();
   readingAttempt4.recognition.emitResult([makeResult({ transcript: 'Ayah pergi ke pasar' })], 0);
   readingAttempt4.recognition.emitEnd();
@@ -459,6 +471,13 @@ async function main() {
   assert.equal(validResults[0].transcript, 'mereka', 'Transcript should be preserved.');
   assert.equal(validChanges.at(-1)?.status, 'completed', 'Valid speech should end completed.');
   cancelActiveSpeechRecognition();
+
+  const numericWordAnswer = matchSpeechAnswer('sembilan', '9');
+  assert.equal(numericWordAnswer.correct, true, 'Malay number words should match digit answers.');
+  assert.equal(numericWordAnswer.matchedAnswer, '9', 'Numeric speech match should retain the configured digit answer.');
+  assert.equal(matchSpeechAnswer('dua puluh lima', '25').correct, true, 'Compound Malay number words should match digit answers.');
+  assert.equal(matchSpeechAnswer('sembilan', 'sembilan').correct, true, 'Text answer matching should remain unchanged.');
+  assert.equal(matchSpeechAnswer('sembilan', 'sekolah').correct, false, 'Non-numeric answers must not use numeric equivalence.');
 
   const emptyResults = [];
   const emptyChanges = [];

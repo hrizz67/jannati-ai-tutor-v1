@@ -1,6 +1,9 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
 import BrandLogo from '../components/BrandLogo';
-import IconGlyph, { SubjectIcon } from '../components/IconGlyph.jsx';
+import IconGlyph from '../components/IconGlyph.jsx';
+import SubjectBadge from '../components/SubjectBadge.jsx';
+import GameBadge from '../components/GameBadge.jsx';
+import bellBadge from '../assets/icons/3d/bell-badge.webp';
 import MascotCard from '../components/MascotCard';
 import JannaAvatar from '../components/JannaAvatar';
 import { getStudentDisplayName } from '../utils/displayFormatter';
@@ -144,15 +147,14 @@ export function isTopicUnlocked(profile, subject, index) {
   return best >= 80 || isWeakTopic(profile, subject, topic);
 }
 
-export function EmptyState({ title, message, actionLabel, onAction }) {
-  return <div className="empty-state"><MascotCard character="janna" mood="encouraging" size="sm" message="Belum ada rekod lagi. Jom mula sedikit demi sedikit." /><b>{title}</b><p>{message}</p>{actionLabel && onAction && <button type="button" className="secondary" onClick={onAction}>{actionLabel}</button>}</div>;
+export function EmptyState({ title, message, actionLabel, onAction, showMascot = true }) {
+  return <div className="empty-state">{showMascot ? <MascotCard character="janna" mood="encouraging" size="sm" message="Belum ada rekod lagi. Jom mula sedikit demi sedikit." /> : null}<b>{title}</b><p>{message}</p>{actionLabel && onAction && <button type="button" className="secondary" onClick={onAction}>{actionLabel}</button>}</div>;
 }
 
 export function DashboardHeader({ profile, level, levelProgress }) {
   const studentYear = profile.year || 'Tahun 2';
   const studentName = getStudentDisplayName(profile, 'Murid');
   return <header className="brand-app-header">
-    <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">{studentYear}</p><h1>Jannati AI Tutor</h1></div></div>
     <div className="brand-student-strip">
       <JannaAvatar size={48} className="student-avatar" />
       <div><b title={studentName}>{studentName}</b><small>{studentYear}</small></div>
@@ -160,7 +162,7 @@ export function DashboardHeader({ profile, level, levelProgress }) {
       <span className="achievement-chip">Bintang {getStars(levelProgress)}</span>
       <span className="achievement-chip">Streak {profile.streak || 0}</span>
       <button type="button" className="icon-button" aria-label="Notifikasi">
-        <IconGlyph name="bell" />
+        <GameBadge src={bellBadge} />
       </button>
     </div>
   </header>;
@@ -171,18 +173,23 @@ export function Stat({ icon, label, value }) {
 }
 
 export function SubjectIllustration({ subject }) {
-  return <span className="subject-illustration" aria-hidden="true"><SubjectIcon subjectId={subject?.id} motion="hover" /></span>;
+  return <span className="subject-illustration" aria-hidden="true"><SubjectBadge className="subject-illustration-badge" subjectId={subject?.id} /></span>;
 }
 
-export function SettingsPanel({ onExportBetaReport, onReset }) {
+export function SettingsPanel({ onExportBetaReport, onImportLearningData, onRecoverLearningData, onSyncLearningData, onLoadLearningData, cloudSyncStatus, onReset }) {
   return <section className="card settings-card">
     <p className="eyebrow">Tetapan Beta</p>
     <h2>Kesediaan Beta Tertutup</h2>
-    <p>Eksport laporan ujian atau reset semua data pada peranti ini sebelum sesi ujian baharu.</p>
+    <p>Eksport atau import data pembelajaran apabila bertukar akaun. Import akan menggantikan data akaun semasa.</p>
     <div className="settings-actions">
       <button type="button" className="secondary" onClick={onExportBetaReport}>Eksport Laporan Beta JSON</button>
+      <label className="secondary settings-file-button">Import Data Pembelajaran JSON<input type="file" accept="application/json,.json" onChange={onImportLearningData} /></label>
+      <button type="button" className="secondary" onClick={onRecoverLearningData}>Pulihkan Backup Lama</button>
+      <button type="button" className="secondary" onClick={onSyncLearningData}>Sync Sekarang</button>
+      <button type="button" className="secondary" onClick={onLoadLearningData}>Muat dari Cloud</button>
       <button type="button" className="danger-action" onClick={onReset}>Reset Semua Data</button>
     </div>
+    <p className="autosave-note" role="status">Status sync: {({ idle: 'Belum diuji', syncing: 'Sedang sync...', saved: 'Berjaya disimpan', loaded: 'Data cloud dimuat', empty: 'Cloud masih kosong', error: 'Sync gagal' })[cloudSyncStatus] || cloudSyncStatus}</p>
   </section>;
 }
 
@@ -198,7 +205,7 @@ export function LearningPath({ profile, subject, topicMastery, totalQuestions, c
     setCollapsedSections(prev => ({ ...prev, [sectionTitle]: !prev[sectionTitle] }));
   }
 
-  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Laluan Belajar</p><h2><SubjectIcon subjectId={subject.id} motion="hover" /> {formatSubjectName(subject.id)}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const mastery = topicMastery?.[progressKey(subject.id, topic.id)]; const masteryStatus = mastery?.status || MASTERY_STATUS.NOT_STARTED; const done = masteryStatus === MASTERY_STATUS.MASTERED; const needRevision = masteryStatus === MASTERY_STATUS.NEEDS_PRACTICE || isWeakTopic(profile, subject, topic); const blockedBy = getBlockedPrerequisites(subject, topic.id, topicMastery); const unlocked = isTopicUnlockedByGraph(subject, topic.id, topicMastery); const dependencyArrow = getDependencyArrow(subject, topic.id); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || masteryStatus === MASTERY_STATUS.LEARNING; const status = formatStatus(masteryStatus); const masteryClass = `mastery-${masteryStatus.toLowerCase().replaceAll('_', '-')}`; return <div className="path-row" key={topic.id}>{dependencyArrow && <div className="dependency-arrow"><IconGlyph name="arrowDown" decorative /></div>}<article className={`path-node ${masteryClass} ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''} ${needRevision ? 'path-revision' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Buang kegemaran' : 'Tambah kegemaran'} aria-pressed={isFav}><IconGlyph name="star" active={isFav} decorative /></button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert(`Kuasai syarat terdahulu: ${blockedBy.map(item => formatTopicName(item)).join(', ')}`)}><span className="path-icon"><IconGlyph name={unlocked ? (done ? 'medal' : 'check') : 'lock'} decorative />{!done && unlocked && <span className="path-index">{index + 1}</span>}</span><span className="path-copy"><b>{formatTopicName(topic.title || topic.id)}</b>{needRevision && <em className="revision-badge">Perlu Ulang Kaji</em>}<small>{mastery?.masteryScore || best}% penguasaan • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${mastery?.masteryScore || best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${masteryStatus.toLowerCase().replaceAll('_', '-')}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{needRevision ? 'Latih Semula' : inProgress ? 'Sambung' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line"><IconGlyph name="arrowDown" decorative /></div>}</div> })}</div>}</section> })}<div className="path-trophy"><IconGlyph name="trophy" decorative /> Tamat {formatSubjectName(subject.id)}</div></div></section>;
+  return <section className="card learning-path-card"><div className="path-card-head"><div><p className="eyebrow">Laluan Belajar</p><h2><SubjectBadge className="learning-path-subject-badge" subjectId={subject.id} /> {formatSubjectName(subject.id)}</h2><p>{subject.topics.length} topik • {totalQuestions} soalan</p></div><span className="path-summary">{completed}/{subject.topics.length} siap</span></div><div className="learning-path">{sections.map(section => { const isCollapsed = collapsedSections[section.title]; return <section className="path-section" key={`${subject.id}-${section.title}`}><button type="button" className="path-section-toggle" onClick={() => toggleSection(section.title)} aria-expanded={!isCollapsed}><span>{section.title}</span><small>Topik {section.start + 1}-{section.start + section.topics.length}</small><b>{isCollapsed ? '+' : '-'}</b></button>{!isCollapsed && <div className="path-section-body">{section.topics.map((topic, topicOffset) => { const index = section.start + topicOffset; const best = profile.progress?.[progressKey(subject.id, topic.id)]?.best || 0; const mastery = topicMastery?.[progressKey(subject.id, topic.id)]; const masteryStatus = mastery?.status || MASTERY_STATUS.NOT_STARTED; const done = masteryStatus === MASTERY_STATUS.MASTERED; const needRevision = masteryStatus === MASTERY_STATUS.NEEDS_PRACTICE || isWeakTopic(profile, subject, topic); const blockedBy = getBlockedPrerequisites(subject, topic.id, topicMastery); const unlocked = isTopicUnlockedByGraph(subject, topic.id, topicMastery); const dependencyArrow = getDependencyArrow(subject, topic.id); const isNewUnlock = index === nextUnlockedIndex && unlocked && !done; const favId = `${subject.id}_${topic.id}`; const isFav = (profile.favourites || []).some(f => f.id === favId); const questionsCompleted = getTopicQuestionsCompleted(topic, best); const hasResume = resume?.subjectId === subject.id && resume?.topicId === topic.id; const inProgress = hasResume || masteryStatus === MASTERY_STATUS.LEARNING; const status = formatStatus(masteryStatus); const masteryClass = `mastery-${masteryStatus.toLowerCase().replaceAll('_', '-')}`; return <div className="path-row" key={topic.id}>{dependencyArrow && <div className="dependency-arrow"><IconGlyph name="arrowDown" decorative /></div>}<article className={`path-node ${masteryClass} ${done ? 'path-done' : ''} ${unlocked && !done ? 'path-open' : ''} ${!unlocked ? 'path-locked' : ''} ${isNewUnlock ? 'path-new-unlock' : ''} ${needRevision ? 'path-revision' : ''}`}><button type="button" className={`fav-icon ${isFav ? 'active' : ''}`} onClick={() => onToggleFavourite(subject.id, topic.id, topic.title)} aria-label={isFav ? 'Buang kegemaran' : 'Tambah kegemaran'} aria-pressed={isFav}><IconGlyph name="star" active={isFav} decorative /></button><button type="button" className="path-main" onClick={() => unlocked ? (hasResume ? onResume() : onStartTopic(topic)) : alert(`Kuasai syarat terdahulu: ${blockedBy.map(item => formatTopicName(item)).join(', ')}`)}><span className="path-icon"><IconGlyph name={unlocked ? (done ? 'medal' : 'check') : 'lock'} decorative />{!done && unlocked && <span className="path-index">{index + 1}</span>}</span><span className="path-copy"><b>{formatTopicName(topic.title || topic.id)}</b>{needRevision && <em className="revision-badge">Perlu Ulang Kaji</em>}<small>{mastery?.masteryScore || best}% penguasaan • {getStars(best)} • {questionsCompleted}/{topic.questions.length} soalan</small><span className="mini-progress"><span style={{ width: `${mastery?.masteryScore || best}%` }} /></span></span></button><div className="path-actions"><span className={`path-status ${masteryStatus.toLowerCase().replaceAll('_', '-')}`}>{status}</span>{unlocked && <button type="button" className="path-cta" onClick={() => hasResume ? onResume() : onStartTopic(topic)}>{needRevision ? 'Latih Semula' : inProgress ? 'Sambung' : done ? 'Ulang' : 'Mula'}</button>}</div></article>{index < subject.topics.length - 1 && <div className="path-line"><IconGlyph name="arrowDown" decorative /></div>}</div> })}</div>}</section> })}<div className="path-trophy"><IconGlyph name="trophy" decorative /> Tamat {formatSubjectName(subject.id)}</div></div></section>;
 }
 
 export function DashboardLayout({ sidebar, children, className = '' }) {

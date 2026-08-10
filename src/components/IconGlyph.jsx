@@ -1,6 +1,82 @@
 import React from 'react';
+import arabBadge from '../assets/icons/3d/arab-badge.webp';
+import bacaanBadge from '../assets/icons/3d/bacaan-badge.webp';
+import bellBadge from '../assets/icons/3d/bell-badge.webp';
+import bertuturBadge from '../assets/icons/3d/bertutur-badge.webp';
+import bmBadge from '../assets/icons/3d/bm-badge.webp';
+import bukuTeksBadge from '../assets/icons/3d/buku-teks-badge.webp';
+import chartBadge from '../assets/icons/3d/chart-badge.webp';
+import checkBadge from '../assets/icons/3d/check-badge.webp';
+import clockBadge from '../assets/icons/3d/clock-badge.webp';
+import englishBadge from '../assets/icons/3d/english-badge.webp';
+import fireBadge from '../assets/icons/3d/fire-badge.webp';
+import ganjaranBadge from '../assets/icons/3d/ganjaran-badge.webp';
+import giftBadge from '../assets/icons/3d/gift-badge.webp';
+import homeBadge from '../assets/icons/3d/home-badge.webp';
+import ibuBapaBadge from '../assets/icons/3d/ibu-bapa-badge.webp';
+import islamBadge from '../assets/icons/3d/islam-badge.webp';
+import mathBadge from '../assets/icons/3d/math-badge.webp';
+import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
+import menulisBadge from '../assets/icons/3d/menulis-badge.webp';
+import notaBadge from '../assets/icons/3d/nota-badge.webp';
+import pjBadge from '../assets/icons/3d/pj-badge.webp';
+import pkBadge from '../assets/icons/3d/pk-badge.webp';
+import sainsBadge from '../assets/icons/3d/sains-badge.webp';
+import targetBadge from '../assets/icons/3d/target-badge.webp';
+import trophyBadge from '../assets/icons/3d/trophy-badge.webp';
+import tutorAiBadge from '../assets/icons/3d/tutor-ai-badge.webp';
 
 const ICON_PATHS = {
+  homeModern: (
+    <>
+      <defs><linearGradient id="home-modern-fill" x1="4" y1="4" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#1dbb66" /><stop offset="1" stopColor="#087a3b" /></linearGradient></defs>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="#fff" strokeOpacity=".32" strokeDasharray="1.2 2.2" strokeWidth=".8" />
+      <path d="M3.5 10.8 12 3.7l8.5 7.1v8.5a1.8 1.8 0 0 1-1.8 1.8H5.3a1.8 1.8 0 0 1-1.8-1.8v-8.5Z" fill="url(#home-modern-fill)" stroke="url(#home-modern-fill)" />
+      <path d="m3.5 10.8 8.5-7.1 8.5 7.1M5.5 9.2v10.1a1.8 1.8 0 0 0 1.8 1.8h9.4a1.8 1.8 0 0 0 1.8-1.8V9.2" />
+      <path d="M9 21v-6h6v6" fill="#fff8d8" />
+      <path d="M17.5 6.1V3.5h2v4.2" />
+      <path d="M8 10h2M14 10h2" stroke="#fff" strokeWidth="1.3" />
+    </>
+  ),
+  botModern: (
+    <>
+      <defs><linearGradient id="bot-modern-fill" x1="4" y1="5" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#c8b7ff" /><stop offset=".52" stopColor="#8d68e8" /><stop offset="1" stopColor="#5735a9" /></linearGradient></defs>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="#fff" strokeOpacity=".38" strokeDasharray="1.2 2.2" strokeWidth=".8" />
+      <path d="M7 18.8c.7-2.2 2.4-3.3 5-3.3s4.3 1.1 5 3.3" fill="url(#bot-modern-fill)" stroke="#5735a9" />
+      <rect x="4.2" y="7" width="15.6" height="10.8" rx="4.2" fill="url(#bot-modern-fill)" stroke="#5735a9" strokeWidth="1.2" />
+      <path d="M7 10.2c2.6-1.5 7.4-1.5 10 0v4.2c-2.6 1.4-7.4 1.4-10 0v-4.2Z" fill="#f7f4ff" stroke="#6f4bc4" strokeWidth=".8" />
+      <path d="M9 12.3h.1M15 12.3h.1M10.2 14h3.6" stroke="#5735a9" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M12 7V4.2" stroke="#5735a9" strokeWidth="1.4" />
+      <circle cx="12" cy="3" r="1.45" fill="#f5c84b" stroke="#bd8414" strokeWidth=".8" />
+      <path d="M4.2 11H2.7M21.3 11h-1.5M7 20.3l1-1.2M17 20.3l-1-1.2" stroke="#6f4bc4" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="m4.1 4.5.5 1 .9.5-.9.5-.5 1-.5-1-.9-.5.9-.5.5-1ZM19.9 15.5l.4.8.8.4-.8.4-.4.8-.4-.8-.8-.4.8-.4.4-.8Z" fill="#f5c84b" stroke="none" />
+    </>
+  ),
+  trophyModern: (
+    <>
+      <defs><linearGradient id="trophy-modern-fill" x1="6" y1="4" x2="18" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#fff4a8" /><stop offset=".45" stopColor="#ffc94d" /><stop offset="1" stopColor="#d8860d" /></linearGradient></defs>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="#fff" strokeOpacity=".34" strokeDasharray="1.2 2.2" strokeWidth=".8" />
+      <path d="M7 5h10v4.1a5 5 0 0 1-10 0V5Z" fill="url(#trophy-modern-fill)" stroke="#bf7d09" strokeWidth="1.2" />
+      <path d="M7 7H5a2.5 2.5 0 0 0 2.5 2.5M17 7h2a2.5 2.5 0 0 1-2.5 2.5M12 14v3M9 20h6M10 17h4" stroke="#bf7d09" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M9.2 5.2h5.6v2.4c0 1.7-1.2 3.1-2.8 3.5-1.6-.4-2.8-1.8-2.8-3.5V5.2Z" fill="#fff7c9" opacity=".8" />
+      <path d="m12 5.8.85 1.65 1.82.27-1.32 1.28.31 1.82-1.66-.86-1.66.86.31-1.82-1.32-1.28 1.82-.27L12 5.8Z" fill="#e29a15" stroke="#a96b08" strokeWidth=".6" />
+      <path d="m5 16 .7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.7-1.4.7.3-1.5-1.1-1 1.5-.2L5 16ZM19 3.5l.5 1 .9.5-.9.5-.5 1-.5-1-.9-.5.9-.5.5-1Z" fill="#f6c94c" stroke="none" />
+    </>
+  ),
+  familyModern: (
+    <>
+      <defs><linearGradient id="family-modern-fill" x1="4" y1="5" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#ffd0e0" /><stop offset=".5" stopColor="#f18caf" /><stop offset="1" stopColor="#c23870" /></linearGradient></defs>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="#fff" strokeOpacity=".34" strokeDasharray="1.2 2.2" strokeWidth=".8" />
+      <circle cx="7.5" cy="8.5" r="2.5" fill="url(#family-modern-fill)" stroke="#ad2d61" strokeWidth="1" />
+      <circle cx="16.5" cy="8.5" r="2.5" fill="url(#family-modern-fill)" stroke="#ad2d61" strokeWidth="1" />
+      <circle cx="12" cy="6" r="2.2" fill="#fff0f5" stroke="#ad2d61" strokeWidth="1" />
+      <path d="M3.6 19.8a4.4 4.4 0 0 1 7.8-2.7 4.4 4.4 0 0 1 7.8 2.7" fill="url(#family-modern-fill)" stroke="#ad2d61" strokeWidth="1" />
+      <path d="M8 13.3a4.1 4.1 0 0 1 8 0" fill="#f8b2c9" stroke="#ad2d61" strokeWidth="1" />
+      <path d="M12 8.2v2.1M10.8 10.3h2.4" stroke="#ad2d61" strokeWidth="1.1" strokeLinecap="round" />
+      <path d="m4 3.8.5 1.1 1.1.5-1.1.5L4 7l-.5-1.1-1.1-.5 1.1-.5L4 3.8ZM20 3.8l.4.9.9.4-.9.4-.4.9-.4-.9-.9-.4.9-.4.4-.9Z" fill="#fff" stroke="none" />
+      <path d="M12 16.3c-.8-1.1-2.7-.1-1.8 1l1.8 2.1 1.8-2.1c.9-1.1-1-2.1-1.8-1Z" fill="#fff4f7" stroke="#ad2d61" strokeWidth=".7" />
+    </>
+  ),
   home: (
     <>
       <path d="M4 11.5 12 5l8 6.5" />
@@ -134,6 +210,14 @@ const ICON_PATHS = {
       <path d="M8 12h8" />
     </>
   ),
+  library: (
+    <>
+      <path d="M5 5h11a2 2 0 0 1 2 2v12H7a2 2 0 0 0-2 2V5Z" />
+      <path d="M7 8h8M7 12h8M7 16h5" />
+      <path d="M18 9h2v10" />
+    </>
+  ),
+  chevronRight: <path d="m9 5 7 7-7 7" />,
   calculator: (
     <>
       <rect x="5" y="3" width="14" height="18" rx="2" />
@@ -265,6 +349,38 @@ const SUBJECT_ICON_NAMES = {
   islam: 'mosque', pj: 'move', pk: 'heart', seni: 'spark'
 };
 
+// Keep one visual source of truth for legacy icon calls across every dashboard.
+// The existing name API remains unchanged so behaviour and accessibility stay intact.
+const IMAGE_ICONS = {
+  home: homeBadge, homeModern: homeBadge, book: bmBadge, bookOpen: bukuTeksBadge, library: bukuTeksBadge,
+  calculator: mathBadge, language: englishBadge, flask: sainsBadge, arabic: arabBadge, mosque: islamBadge,
+  move: pjBadge, heart: pkBadge, bot: tutorAiBadge, botModern: tutorAiBadge, trophy: trophyBadge,
+  trophyModern: trophyBadge, medal: ganjaranBadge, family: ibuBapaBadge, familyModern: ibuBapaBadge,
+  spark: ganjaranBadge, play: ganjaranBadge, repeat: targetBadge, headphones: mendengarBadge, mic: bertuturBadge,
+  pen: menulisBadge, chart: chartBadge, progress: chartBadge, target: targetBadge, clock: clockBadge,
+  check: checkBadge, gift: giftBadge, fire: fireBadge, star: ganjaranBadge, bell: bellBadge,
+  message: tutorAiBadge, teacher: tutorAiBadge, explain: tutorAiBadge, lightbulb: ganjaranBadge
+};
+
+function scopeSvgIds(node, scope) {
+  return React.Children.map(node, (child) => {
+    if (!React.isValidElement(child)) return child;
+    const nextProps = {};
+    Object.entries(child.props).forEach(([key, value]) => {
+      if (key === 'children') return;
+      if (key === 'id' && typeof value === 'string') {
+        nextProps[key] = `${value}-${scope}`;
+      } else if (typeof value === 'string' && value.includes('#')) {
+        nextProps[key] = value.replace(/#([\w-]+)/g, `#$1-${scope}`);
+      }
+    });
+    const children = child.props.children == null
+      ? child.props.children
+      : scopeSvgIds(child.props.children, scope);
+    return React.cloneElement(child, nextProps, children);
+  });
+}
+
 export function SubjectIcon({ subjectId, ...props }) {
   return <IconGlyph name={SUBJECT_ICON_NAMES[subjectId] || 'book'} {...props} />;
 }
@@ -278,7 +394,14 @@ export default function IconGlyph({
   decorative = false,
   ...props
 }) {
-  const content = ICON_PATHS[name] || ICON_PATHS.spark;
+  const imageSrc = IMAGE_ICONS[name];
+  if (imageSrc) {
+    const imageProps = { ...props };
+    delete imageProps.size;
+    return <img src={imageSrc} className={`icon-glyph icon-glyph-3d ${className}`.trim()} alt={decorative || !title ? '' : title} aria-hidden={decorative || !title ? 'true' : undefined} title={title || undefined} data-icon-name={name} data-motion={motion !== 'none' ? motion : undefined} data-active={active ? 'true' : undefined} {...imageProps} />;
+  }
+  const iconId = React.useId().replace(/:/g, '');
+  const content = scopeSvgIds(ICON_PATHS[name] || ICON_PATHS.spark, iconId);
   const activeClass = active ? 'icon-active' : '';
   const decorativeProps = decorative || !title
     ? { 'aria-hidden': 'true', focusable: 'false' }
@@ -287,6 +410,7 @@ export default function IconGlyph({
     <svg
       viewBox="0 0 24 24"
       className={`icon-glyph ${activeClass} ${className}`.trim()}
+      data-icon-name={name}
       data-motion={motion !== 'none' ? motion : undefined}
       data-active={active ? 'true' : undefined}
       {...decorativeProps}

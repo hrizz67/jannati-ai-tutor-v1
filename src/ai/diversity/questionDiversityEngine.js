@@ -14,7 +14,7 @@ function shuffleStable(items = [], seed = Date.now()) {
 
 function decorateQuestion(question, context) {
   const withNumbers = applyNumberVariation(question, context);
-  const withStem = applyStemVariation(withNumbers, context.usedStems);
+  const withStem = applyStemVariation(withNumbers, context.usedStems, context);
   const signature = questionSignature(withStem);
   context.usedStems.add(signature.stem || normalizeStem(withStem.q));
   if (signature.numbers) context.usedNumberSequences.add(signature.numbers);
@@ -113,7 +113,7 @@ export function diversifyQuestions(options = {}) {
 
   for (const candidate of ordered) {
     if (selected.length >= count) break;
-    const varied = decorateQuestion(candidate, { ...context, index: selected.length });
+    const varied = decorateQuestion(candidate, Object.assign(context, { index: selected.length }));
     const signature = questionSignature(varied);
     const historyMatch = history.has(signature.id) || history.has(varied.qde.historySignature);
     const reasons = duplicateReasons(varied, seen);
@@ -137,7 +137,7 @@ export function diversifyQuestions(options = {}) {
     for (const candidate of ordered) {
       if (selected.length >= Math.min(count, ordered.length)) break;
       if (selected.some(question => question.id === candidate.id)) continue;
-      selected.push(decorateQuestion(candidate, { ...context, index: selected.length, reason: 'Question bank exhausted fallback' }));
+      selected.push(decorateQuestion(candidate, Object.assign(context, { index: selected.length, reason: 'Question bank exhausted fallback' })));
     }
   }
 

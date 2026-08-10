@@ -27,7 +27,7 @@
 - Invalid mastery values: 0
 - Invalid recommendations: 0
 - Average mastery: 41
-- Average recommendation latency: 0.14 ms
+- Average recommendation latency: 0.01 ms
 
 ## Spaced Revision Check
 

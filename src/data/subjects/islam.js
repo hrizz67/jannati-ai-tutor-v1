@@ -221,6 +221,7 @@ const jawiQuestions = [
     question: q,
     answer,
     acceptedAnswers: [answer],
+    hint,
     pronunciationHint: answer === "kanan" ? "ka-nan" : `${answer}`,
     explanation,
     commonMistake: answer === "kanan"

@@ -58,7 +58,7 @@ export default function WeeklyPlanList({ weeklyPlan = null, className = '' }) {
             const totalMinutes = safeNumber(day?.totalMinutes, 0);
             const totalBlocks = blocks.length;
             const compactState = blocks.length
-              ? `${summarySubjects} · ${formatDurationLabel(totalMinutes)} · ${totalBlocks} blok`
+              ? `${summarySubjects} \u2022 ${formatDurationLabel(totalMinutes)} \u2022 ${totalBlocks} blok`
               : 'Tiada aktiviti dijadualkan';
             const isTodayRow = dayKey === todayKey;
             const expanded = isTodayRow ? expandedToday : expandedExtraKey === dayKey;

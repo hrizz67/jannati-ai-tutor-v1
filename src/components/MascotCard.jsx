@@ -30,7 +30,7 @@ export default function MascotCard({
 
   return (
     <aside className={`mascot-card mascot-card-${size} mascot-card-${animation} mascot-card-${normalizedMood}`} data-mood={normalizedMood} aria-label={`${personality.name}: ${displayMessage}`}>
-      <div className="mascot-card-avatar" aria-hidden="true">
+      <div className={`mascot-card-avatar mascot-card-avatar-${normalizedCharacter}`} aria-hidden="true">
         {normalizedCharacter === 'janna'
           ? <JannaAvatar size={64} className="mascot-card-avatar-image" />
           : <JatiAvatar size={64} className="mascot-card-avatar-image" />}

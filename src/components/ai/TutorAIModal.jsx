@@ -3,7 +3,7 @@ import JannaAvatar from '../JannaAvatar';
 import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
-import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
+import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../../utils/acceptedAnswers.js';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
@@ -37,6 +37,32 @@ function normalizeList(value) {
     .filter(Boolean)
     .map(item => normalizeText(item, ''))
     .filter(Boolean);
+}
+
+function extractDirectAnswer(text = '') {
+  const normalized = normalizeText(text, '').replace(',', '.');
+  if (!normalized || /petunjuk|terangkan|jelaskan|kenapa|bantuan|contoh|topik|cadangan|uasa|^apa\b|^bagaimana\b|^mengapa\b|^tolong\b/i.test(normalized)) return '';
+  if (/^-?\d+(?:\.\d+)?$/.test(normalized)) return normalized;
+  const labelled = normalized.match(/^(?:jawapan(?:\s+saya)?|saya\s+jawab)\s*(?:ialah|adalah|=|:)?\s*(.+)$/i)?.[1];
+  if (labelled) return labelled.replace(/[.!?]+$/g, '').trim();
+  if (/^[\p{L}\p{N}][\p{L}\p{N}\s'’-]{0,79}$/u.test(normalized) && normalized.split(/\s+/).length <= 8) return normalized;
+  return '';
+}
+
+function directAnswersMatch(left = '', right = '', question = {}, acceptedAnswers = []) {
+  if (isAcceptedQuestionAnswer(left, {
+    ...question,
+    answer: right || question?.answer,
+    acceptedAnswers: [...acceptedAnswers, ...(question?.accepted || [])]
+  })) return true;
+
+  const normalizeAnswer = value => String(value || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('ms-MY')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+  return Boolean(normalizeAnswer(left) && normalizeAnswer(left) === normalizeAnswer(right));
 }
 
 function normalizeForDuplicate(value) {
@@ -273,6 +299,13 @@ export default function TutorAIModal({
   async function sendMessage(rawText = input, intent = 'general') {
     const text = normalizeText(rawText, '');
     if (!text || loading) return;
+    const directAnswer = extractDirectAnswer(text);
+    const directExpectedAnswer = normalizeText(normalizedExpectedAnswer || currentQuestion?.answer || '', '');
+    const directAnswerCorrect = Boolean(
+      directAnswer &&
+      directExpectedAnswer &&
+      directAnswersMatch(directAnswer, directExpectedAnswer, currentQuestion, normalizedAcceptedAnswers)
+    );
     const started = ++requestIdRef.current;
     const nextHistory = [...messages, { role: 'user', text }];
     setMessages(nextHistory);
@@ -314,12 +347,18 @@ export default function TutorAIModal({
       }));
       if (requestIdRef.current !== started) return;
       setMessages(prev => {
-        const nextText = normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
+        const nextText = directAnswer && directExpectedAnswer
+          ? (directAnswerCorrect
+            ? `Betul! Jawapan ${directAnswer} tepat. Teruskan ke soalan seterusnya.`
+            : `Belum tepat. Jawapan ${directAnswer} perlu disemak semula. Cuba lihat petunjuk soalan.`)
+          : normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
         if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
         return [...prev, {
         role: 'ai',
         text: nextText,
-        tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
+        tone: directAnswer && directExpectedAnswer
+          ? (directAnswerCorrect ? 'correct' : 'pulse')
+          : response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
         suggestions: normalizeList(
           response?.quickReplies?.length
             ? response.quickReplies

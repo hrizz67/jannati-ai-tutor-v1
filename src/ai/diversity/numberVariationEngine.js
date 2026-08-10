@@ -79,6 +79,31 @@ function computeRenderedIntegrity(text, operation) {
   return { ok: true, numbers, expected };
 }
 
+function applyPlaceValueVariation(question = {}, context = {}) {
+  const topicId = String(question.topicId || context.topic?.id || '').toLowerCase();
+  const sourceText = String(question.q || '');
+  if (topicId !== 'nombor') return question;
+  const match = sourceText.match(/nilai digit (sa|puluh|ratus) dalam nombor (\d{3})/i);
+  if (!match) return question;
+  const places = ['sa', 'puluh', 'ratus'];
+  // Do not derive the place from the legacy question ID. The source bank was
+  // originally authored mostly with "puluh" questions, so ID-based rotation
+  // creates a hidden bias. Rotate by session and by the place-value question
+  // position instead, giving each session a predictable sa/puluh/ratus mix.
+  const cursor = Number.isFinite(context.placeValueCursor) ? context.placeValueCursor : 0;
+  const sessionSeed = Number(context.sessionSeed) || 0;
+  const place = places[(sessionSeed + cursor) % places.length];
+  context.placeValueCursor = cursor + 1;
+  const seed = hashText(`${question.id || sourceText}:${sessionSeed}:${cursor}`);
+  const number = 100 + (seed % 900);
+  const digits = String(number).split('').map(Number);
+  const digit = place === 'ratus' ? digits[0] : place === 'puluh' ? digits[1] : digits[2];
+  const answer = place === 'ratus' ? digit * 100 : place === 'puluh' ? digit * 10 : digit;
+  const nextText = sourceText.replace(/nilai digit (sa|puluh|ratus)/i, `nilai digit ${place}`).replace(/nombor \d{3}/i, `nombor ${number}`);
+  const explanation = `Digit ${place} dalam nombor ${number} ialah ${digit}, jadi nilainya ${answer}.`;
+  return { ...question, q: nextText, question: nextText, answer: String(answer), accepted: [String(answer)], explanation, qde: { ...(question.qde || {}), numberVariation: true, placeValueVariation: true, placeValue: place, numbers: [number], integrity: { ok: true, expectedAnswer: answer } } };
+}
+
 function operationPair(seed, operation, usedNumberSequences = new Set(), range = {}) {
   const limits = { ...YEAR_2_DEFAULTS, ...range };
   for (let attempt = 0; attempt < 80; attempt += 1) {
@@ -113,6 +138,8 @@ export const VIRTUAL_QUESTION_TEMPLATES = [
 
 export function applyNumberVariation(question = {}, context = {}) {
   const subjectId = context.subject?.id || question.subjectId;
+  const placeValueVaried = applyPlaceValueVariation(question, context);
+  if (placeValueVaried !== question) return placeValueVaried;
   const sourceText = question.q || '';
   const existingNumbers = extractNumbers(sourceText);
   if (subjectId !== 'math' || existingNumbers.length < 2) return question;

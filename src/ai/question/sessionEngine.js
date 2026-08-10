@@ -19,9 +19,9 @@ export function createQuestionSessionState(seed = Date.now()) {
 
 export function enhanceQuestion(question = {}, state, index = 0, options = {}) {
   state.index = index;
-  const withStem = applyStemIntelligence(question, state);
-  const withContext = applyContextIntelligence(withStem, state);
-  const withNumbers = applyNumberIntelligence(withContext, state);
+  const withStem = applyStemIntelligence(question, state, options);
+  const withContext = applyContextIntelligence(withStem, state, options);
+  const withNumbers = applyNumberIntelligence(withContext, state, options);
   const withTemplate = applyTemplateIntelligence(withNumbers, state);
   const withDistractors = applyDistractorIntelligence(withTemplate, state);
   return {

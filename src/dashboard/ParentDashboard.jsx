@@ -131,7 +131,7 @@ export default function ParentDashboard({
   const recommendationSummary = useMemo(() => buildRecommendationSummary(insightsProfile), [insightsProfile]);
   const revisionSummary = useMemo(() => buildRevisionSummary(insightsProfile), [insightsProfile]);
   const subjectCatalog = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : registrySubjectList), [allSubjects]);
-  const studentName = getStudentDisplayName(insightsProfile || sourceProfile, 'Murid');
+  const studentName = getStudentDisplayName([sourceProfile, insightsProfile], 'Murid');
 
   const studyPlannerPayload = useMemo(() => {
     try {
@@ -174,6 +174,7 @@ export default function ParentDashboard({
     });
     return {
       ...subject,
+      label: subject.title || formatSubjectName(subject.id),
       insight,
       analytics: subjectAnalytics,
       topics: subjectAnalytics.availableTopics,
@@ -227,9 +228,9 @@ export default function ParentDashboard({
   const selectedTimeline = buildSubjectTimelineCopy(selectedSubject?.analytics);
 
   return (
-    <main className="app">
+    <main className="app parent-page">
       <div className="topbar">
-        <button className="ghost" onClick={onBack}>Papan Utama</button>
+        <button type="button" className="ghost" onClick={onBack}>Papan Utama</button>
         <span className="pill">Laporan Ibu Bapa</span>
       </div>
 
@@ -267,6 +268,7 @@ export default function ParentDashboard({
             message={allowMock
               ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
               : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+            showMascot={false}
           />
         )}
       </section>
@@ -344,6 +346,7 @@ export default function ParentDashboard({
             message={allowMock
               ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
               : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+            showMascot={false}
           />
         )}
       </section>
@@ -370,11 +373,11 @@ export default function ParentDashboard({
                 ))}
               </div>
             ) : (
-              <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." />
+              <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." showMascot={false} />
             )}
           </>
         ) : (
-          <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." />
+          <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." showMascot={false} />
         )}
       </section>
 
@@ -392,7 +395,7 @@ export default function ParentDashboard({
             ))}
           </div>
         ) : (
-          <EmptyState title="Belum ada jadual ulang kaji" message="Jadual akan muncul selepas murid mempunyai data penguasaan." />
+          <EmptyState title="Belum ada jadual ulang kaji" message="Jadual akan muncul selepas murid mempunyai data penguasaan." showMascot={false} />
         )}
       </section>
 
@@ -409,7 +412,7 @@ export default function ParentDashboard({
               <em>{safePercent(item.score)}% · {safeNumber(item.total, 0)} soalan · {formatModeLabel('uasa')}</em>
             </div>
           )) : (
-            <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." />
+            <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." showMascot={false} />
           )}
         </div>
       </section>
@@ -419,7 +422,7 @@ export default function ParentDashboard({
         <h2>Aktiviti Terkini</h2>
         <div className="timeline">
           {(sourceProfile?.history || []).length === 0 ? (
-            <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." />
+            <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." showMascot={false} />
           ) : (
             sourceProfile.history.slice(0, 10).map((item, index) => (
               <div className="timeline-item" key={index}>

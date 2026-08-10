@@ -56,6 +56,10 @@ function expectedFromGroupedMultiplicationPattern(text = '') {
     /\bset\b.*\bsetiap\s+set\b/,
     /\bberapa\s+jumlah\s+objek\b/,
     /\bkumpulan\b.*\bsetiap\s+kumpulan\b/,
+    /\bkumpulan\b.*\bmasing(?:-|\s+)masing\s+ada\b/,
+    /\bkumpulan\b.*\bada\b.*\bsetiap\s+satu\b/,
+    /\bada\s+\d+\s+(?:kotak|kumpulan|beg|bungkus|rak|pinggan|dulang|bekas)\b.*\bada\s+\d+\b/,
+    /\bsatu\s+(?:kotak|kumpulan|beg|bungkus|rak|pinggan|dulang|bekas)\b.*\bada\s+\d+\s+(?:kotak|kumpulan|beg|bungkus|rak|pinggan|dulang|bekas)\b/,
     /\bsetiap\s+kumpulan\s+ada\b/,
     /\bjumlah\s+item\s+ialah\b/,
     /\bkotak\b.*\bsetiap\s+kotak\b/,
@@ -157,6 +161,14 @@ function expectedFromExpressionBeforeBlank(question = {}) {
   return null;
 }
 
+function expectedFromRepeatedAdditionMultiplication(text = '') {
+  const match = String(text || '').match(/(\d+(?:\s*\+\s*\d+){2,})/);
+  if (!match) return null;
+  const values = match[1].match(/\d+/g)?.map(Number) || [];
+  if (values.length < 3 || !values.every((value) => value === values[0])) return null;
+  return values[0] * values.length;
+}
+
 function expectedFromBlankEquation(question = {}) {
   const expressionExpected = expectedFromExpressionBeforeBlank(question);
   if (expressionExpected !== null) return expressionExpected;
@@ -209,7 +221,10 @@ function explanationIntegrity(question = {}) {
   const equalSharingExpected = expectedFromEqualSharingPattern(question.q || question.question || '');
   const groupedExpected = expectedFromGroupedMultiplicationPattern(question.q || question.question || '');
   const operation = question.qip?.numberEngine?.operation || question.qde?.operation || detectOperation(question.q || question.question || '');
-  const expected = expressionExpected ?? equalSharingExpected ?? groupedExpected ?? computeExpected(operation, numbers);
+  const repeatedAdditionExpected = operation === 'multiply'
+    ? expectedFromRepeatedAdditionMultiplication(question.q || question.question || '')
+    : null;
+  const expected = expressionExpected ?? equalSharingExpected ?? groupedExpected ?? repeatedAdditionExpected ?? computeExpected(operation, numbers);
   return expected !== null && String(expected) === answer && normalizedExplanation.includes(String(expected));
 }
 
@@ -223,7 +238,10 @@ function answerIntegrity(question = {}) {
   const equalSharingExpected = expectedFromEqualSharingPattern(question.q || question.question || '');
   const groupedExpected = expectedFromGroupedMultiplicationPattern(question.q || question.question || '');
   const operation = question.qip?.numberEngine?.operation || question.qde?.operation || detectOperation(question.q || question.question || '');
-  const expected = equalSharingExpected ?? groupedExpected ?? computeExpected(operation, numbers);
+  const repeatedAdditionExpected = operation === 'multiply'
+    ? expectedFromRepeatedAdditionMultiplication(question.q || question.question || '')
+    : null;
+  const expected = equalSharingExpected ?? groupedExpected ?? repeatedAdditionExpected ?? computeExpected(operation, numbers);
   if (expected === null) return true;
   return String(expected) === String(question.answer);
 }

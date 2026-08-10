@@ -1,13 +1,13 @@
 # Subject Coverage Audit
 
-Generated: 2026-07-14T12:17:27.735Z
+Generated: 2026-08-05T13:45:26.137Z
 
 ## Summary
 
 | Subject | Questions | Unique Stems | Duplicate Stems | Unique Templates | Template Reuse |
 |---|---|---|---|---|---|
-| bm | 800 | 800 | 0 | 800 | 0 |
-| math | 800 | 794 | 6 | 800 | 0 |
+| bm | 760 | 760 | 0 | 760 | 0 |
+| math | 800 | 799 | 1 | 800 | 0 |
 | english | 500 | 500 | 0 | 500 | 0 |
 | sains | 500 | 500 | 0 | 500 | 0 |
 | arab | 500 | 500 | 0 | 500 | 0 |
@@ -17,10 +17,10 @@ Generated: 2026-07-14T12:17:27.735Z
 
 ## Bahasa Melayu Tahun 2 (bm)
 
-- Total questions: **800**
-- Unique normalized stems: **800**
+- Total questions: **760**
+- Unique normalized stems: **760**
 - Duplicate stems: **0**
-- Unique templates: **800**
+- Unique templates: **760**
 - Template reuse count: **0**
 
 ### Per-topic breakdown
@@ -35,10 +35,9 @@ Generated: 2026-07-14T12:17:27.735Z
 | kata_sendi | 50 | 50 | 0 |
 | kata_hubung | 50 | 50 | 0 |
 | penjodoh_bilangan | 90 | 90 | 0 |
-| ayat | 50 | 50 | 0 |
 | pemahaman_penulisan | 110 | 110 | 0 |
+| ayat | 50 | 50 | 0 |
 | tatabahasa | 50 | 50 | 0 |
-| imbuhan | 40 | 40 | 0 |
 | bina_ayat | 40 | 40 | 0 |
 | simpulan_bahasa | 35 | 35 | 0 |
 | uasa_kbat | 35 | 35 | 0 |
@@ -46,8 +45,8 @@ Generated: 2026-07-14T12:17:27.735Z
 ## Matematik Tahun 2 (math)
 
 - Total questions: **800**
-- Unique normalized stems: **794**
-- Duplicate stems: **6**
+- Unique normalized stems: **799**
+- Duplicate stems: **1**
 - Unique templates: **800**
 - Template reuse count: **0**
 
@@ -58,11 +57,11 @@ Generated: 2026-07-14T12:17:27.735Z
 | nombor | 50 | 50 | 0 |
 | tambah | 126 | 126 | 0 |
 | tolak | 126 | 126 | 0 |
-| darab | 124 | 118 | 6 |
+| darab | 124 | 124 | 0 |
 | bahagi | 124 | 124 | 0 |
 | wang | 50 | 50 | 0 |
 | masa | 50 | 50 | 0 |
-| panjang | 50 | 50 | 0 |
+| panjang | 50 | 49 | 1 |
 | jisim_isi_padu | 50 | 50 | 0 |
 | bentuk | 50 | 50 | 0 |
 
@@ -70,12 +69,7 @@ Generated: 2026-07-14T12:17:27.735Z
 
 | Stem | Count |
 |---|---|
-| 10 x 3 ________ | 2 |
-| 2 x 3 ________ | 2 |
-| 2 x 9 ________ | 2 |
-| 5 x 8 ________ | 2 |
-| 7 x 4 ________ | 2 |
-| 9 x 4 ________ | 2 |
+| berapakah bilangan sentimeter cm yang bersamaan dengan 1 meter | 2 |
 
 ## English Year 2 (english)
 

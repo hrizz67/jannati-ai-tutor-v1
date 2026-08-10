@@ -1,8 +1,12 @@
 export const QUESTION_INTELLIGENCE = true;
-export const QUESTION_STEM_ENGINE = true;
+// Keep the original question wording. Automatic stem variants can remove the
+// sentence context while leaving the original answer and explanation behind.
+export const QUESTION_STEM_ENGINE = false;
 export const QUESTION_TEMPLATE_ENGINE = false;
 export const USE_TEMPLATE_ENGINE = false;
-export const QUESTION_CONTEXT_ENGINE = true;
+// Disabled until context substitutions can update the answer and explanation
+// atomically; correctness is more important than surface variation.
+export const QUESTION_CONTEXT_ENGINE = false;
 export const QUESTION_NUMBER_ENGINE = true;
 export const QUESTION_DISTRACTOR_ENGINE = false;
 

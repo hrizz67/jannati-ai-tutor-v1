@@ -79,6 +79,21 @@ function migrateProfileShape(raw = {}, fallback = buildDefaultProfile()) {
   };
 }
 
+function profileEvidenceScore(profile = {}) {
+  const progressCount = Object.keys(profile.progress || {}).length;
+  const historyCount = Array.isArray(profile.history) ? profile.history.length : 0;
+  const uasaCount = Array.isArray(profile.uasaHistory) ? profile.uasaHistory.length : 0;
+  return (
+    (Number(profile.xp) || 0) * 10
+    + (Number(profile.coins) || 0)
+    + (Number(profile.streak) || 0) * 10
+    + progressCount * 5
+    + historyCount * 5
+    + uasaCount * 5
+    + (profile.name ? 1 : 0)
+  );
+}
+
 function buildSubjectStats(profile = {}, subjects = []) {
   return (subjects || []).map(subject => {
     const topics = subject.topics || [];
@@ -137,7 +152,11 @@ export function loadStudentCore(defaultProfile = buildDefaultProfile()) {
   try {
     const snapshot = readJson(STUDENT_CORE_KEY);
     if (snapshot?.profile) {
-      return migrateProfileShape(snapshot.profile, defaultProfile || freshDefault);
+      const storedProfile = migrateProfileShape(snapshot.profile, freshDefault);
+      const fallbackProfile = migrateProfileShape(defaultProfile || freshDefault, freshDefault);
+      return profileEvidenceScore(fallbackProfile) > profileEvidenceScore(storedProfile)
+        ? fallbackProfile
+        : storedProfile;
     }
 
     for (const key of LEGACY_STUDENT_CORE_KEYS) {

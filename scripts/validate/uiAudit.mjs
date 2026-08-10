@@ -13,6 +13,7 @@ const AUDITED_FILES = [
   'src/dashboard/dashboardHelpers.jsx',
   'src/components/ai/AIExplainModal.jsx',
   'src/components/ai/AITeacherModal.jsx',
+  'src/components/ai/modalRuntime.js',
   'src/components/gamification/GamificationPanel.jsx',
   'src/components/gamification/LevelProgress.jsx',
   'src/components/gamification/AchievementBadge.jsx',
@@ -22,6 +23,7 @@ const AUDITED_FILES = [
   'src/components/studyPlanner/StudyBlockItem.jsx',
   'src/components/GamificationSummary.jsx',
   'src/components/VoiceButton.jsx',
+  'src/components/LearningHub.jsx',
   'src/styles/style.css',
   'src/styles/brand.css'
 ];
@@ -43,7 +45,8 @@ const UI_FILES = [
   'src/components/studyPlanner/WeeklyPlanList.jsx',
   'src/components/studyPlanner/StudyBlockItem.jsx',
   'src/components/GamificationSummary.jsx',
-  'src/components/VoiceButton.jsx'
+  'src/components/VoiceButton.jsx',
+  'src/components/LearningHub.jsx'
 ];
 
 const PUBLIC_AI_IMPORTS = [
@@ -166,7 +169,7 @@ async function main() {
   }
 
   const accessibilityChecks = [
-    { area: 'Keyboard navigation', pass: includesAny(contents.get('src/components/ai/AIExplainModal.jsx') || '', ['Escape', 'focus?.()']) && includesAny(contents.get('src/components/ai/AITeacherModal.jsx') || '', ['Escape', 'focus?.()']) },
+    { area: 'Keyboard navigation', pass: (contents.get('src/components/ai/modalRuntime.js')?.includes("event.key !== 'Tab'") || contents.get('src/components/ai/modalRuntime.js')?.includes("event.key === 'Tab'")) && contents.get('src/components/ai/modalRuntime.js')?.includes('focus?.()') && includesAny(contents.get('src/components/ai/AIExplainModal.jsx') || '', ['useModalRuntime']) && includesAny(contents.get('src/components/ai/AITeacherModal.jsx') || '', ['useModalRuntime']) },
     { area: 'ARIA labels', pass: includesAny(contents.get('src/components/gamification/GamificationPanel.jsx') || '', ['aria-labelledby']) && includesAny(contents.get('src/components/studyPlanner/StudyPlannerPanel.jsx') || '', ['aria-labelledby']) },
     { area: 'Progress bars', pass: includesAny(contents.get('src/components/gamification/LevelProgress.jsx') || '', ['role="progressbar"']) || includesAny(contents.get('src/dashboard/ParentDashboard.jsx') || '', ['role="progressbar"']) }
   ];

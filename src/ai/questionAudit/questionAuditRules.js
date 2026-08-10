@@ -113,7 +113,11 @@ function detectAnswerQuality(question = {}) {
   if (!answer && answers.length === 0 && !Number.isInteger(question.answerIndex) && !Number.isInteger(question.answer_index) && !Number.isInteger(question.correctIndex)) {
     issues.push('no_correct_answer');
   }
-  if (answers.length > 1) {
+  // Arabic lessons intentionally accept both the Malay meaning and the
+  // Arabic spelling/number form. They are aliases for one learning target,
+  // not competing correct answers.
+  const isArabicLesson = /^ARAB-/i.test(String(question.id || '')) || String(question.subjectId || '').toLowerCase() === 'arab';
+  if (answers.length > 1 && !isArabicLesson) {
     issues.push('multiple_possible_answers');
   }
   if (Array.isArray(options) && options.length) {
@@ -148,7 +152,8 @@ function detectLanguageQuality(question = {}, subjectId = '') {
     if (/\b(he|she|it)\s+(go|play|drink|eat)\b/i.test(text)) issues.push('grammar_error');
   } else if (language === 'arabic') {
     const hasArabic = ARABIC_RE.test(text) || ARABIC_RE.test(String(question.answer || '')) || ARABIC_RE.test(listAnswers(question).join(' '));
-    if (hasArabic && !ARABIC_RE.test(text)) issues.push('missing_arabic_text');
+    const expectsArabicText = question.requiresArabicText === true || question.arabicTextRequired === true;
+    if (expectsArabicText && hasArabic && !ARABIC_RE.test(text)) issues.push('missing_arabic_text');
     if (hasArabic && !question.pronunciationGuide && !question.pronunciationTips && !question.readingSteps) issues.push('pronunciation_hint_missing');
     if (hasArabic && String(question.translation || question.translationHint || '').trim() === '') issues.push('translation_mismatch');
   } else if (language === 'science') {

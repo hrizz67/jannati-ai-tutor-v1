@@ -3,8 +3,8 @@
 ## Summary
 
 - Total subjects: 8
-- Total topics: 85
-- Packs validated: 85
+- Total topics: 84
+- Packs validated: 84
 - Registry coverage: 100%
 - Loader coverage: 100%
 
@@ -28,7 +28,7 @@
 
 | Subject | Title | Topics | Validated | Issue counts (C/H/M/L/I) |
 | --- | --- | --- | --- | --- |
-| bm | Bahasa Melayu Tahun 2 | 15 | 15 | 0/0/0/0/0 |
+| bm | Bahasa Melayu Tahun 2 | 14 | 14 | 0/0/0/0/0 |
 | math | Matematik Tahun 2 | 10 | 10 | 0/0/0/0/0 |
 | english | English Year 2 | 10 | 10 | 0/0/0/0/0 |
 | sains | Sains Tahun 2 | 10 | 10 | 0/0/0/0/0 |

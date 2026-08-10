@@ -254,11 +254,11 @@ const rekreasiPairs = [
   ["melukis laluan dengan kon dan berjalan ikut laluan", "aktiviti orientasi mudah"],
   ["senaman keluarga pada hujung minggu", "gaya hidup aktif"],
 ].flatMap(([activity, answer]) => [
-  ask(`Aktiviti ${activity} sesuai dikelaskan sebagai apa?`, answer, ["rekreasi aktif", "aktiviti berirama", "aktiviti berkumpulan", "rekreasi selamat", "aktiviti luar kelas", "rekreasi budaya", "gaya hidup aktif"], "Rekreasi ialah aktiviti masa lapang yang sihat.", `${activity} membantu murid bergerak aktif sambil menikmati aktiviti yang menyeronokkan.`),
+  ask(`Aktiviti seperti ${activity} sesuai dikelaskan sebagai apa?`, answer, ["rekreasi aktif", "aktiviti berirama", "aktiviti berkumpulan", "rekreasi selamat", "aktiviti luar kelas", "rekreasi budaya", "gaya hidup aktif"], "Rekreasi ialah aktiviti masa lapang yang sihat.", `${activity} membantu murid bergerak aktif sambil menikmati aktiviti yang menyeronokkan.`),
   ask(`Apakah tujuan aktiviti rekreasi seperti ${activity}?`, "menyihatkan badan", ["menyihatkan badan", "mencari gaduh", "mengelak semua pergerakan", "membazir masa"], "Rekreasi aktif memberi manfaat kepada tubuh.", "Aktiviti rekreasi yang selamat membantu badan sihat dan emosi lebih gembira."),
   ask(`Apakah sikap baik semasa menyertai ${activity}?`, "ikut giliran", valuesOptions, "Aktiviti berkumpulan perlu teratur.", "Mengikut giliran memberi peluang kepada semua murid untuk mencuba."),
   ask(`Apakah yang perlu dibawa selepas aktiviti luar seperti ${activity}?`, "botol air", ["botol air", "mainan tajam", "telefon guru", "batu besar"], "Aktiviti luar membuat badan berpeluh.", "Botol air membantu murid minum air kosong dan kekal bertenaga."),
-  ask(`Apakah tempat yang sesuai untuk aktiviti ${activity}?`, "kawasan lapang dan selamat", ["kawasan lapang dan selamat", "tepi jalan raya", "lantai licin", "stor gelap"], "Pilih tempat yang kurang risiko.", "Kawasan lapang dan selamat membolehkan murid bergerak tanpa bahaya."),
+  ask(`Apakah tempat yang sesuai untuk aktiviti seperti ${activity}?`, "kawasan lapang dan selamat", ["kawasan lapang dan selamat", "tepi jalan raya", "lantai licin", "stor gelap"], "Pilih tempat yang kurang risiko.", "Kawasan lapang dan selamat membolehkan murid bergerak tanpa bahaya."),
 ]);
 
 const gayaHidupPairs = [

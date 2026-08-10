@@ -1,6 +1,10 @@
 import React from 'react';
 import { EmptyState, SettingsPanel, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
 import IconGlyph from '../components/IconGlyph.jsx';
+import GameBadge from '../components/GameBadge.jsx';
+import ResumePracticeCard from '../components/ResumePracticeCard.jsx';
+import checkBadge from '../assets/icons/3d/check-badge.webp';
+import giftBadge from '../assets/icons/3d/gift-badge.webp';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 import MetricCard from '../components/MetricCard.jsx';
 import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatResumeTitle, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
@@ -27,7 +31,7 @@ function CommunicationSummarySection({ eyebrow, title, summary, onStart, buttonL
           <p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p>
         </div>
       )}
-      <button onClick={onStart}>{buttonLabel}</button>
+      <button type="button" onClick={onStart}>{buttonLabel}</button>
     </section>
   );
 }
@@ -74,6 +78,11 @@ export default function AnalyticsDashboard({
   onOpenAi,
   onReset,
   onExportBetaReport,
+  onImportLearningData,
+  onRecoverLearningData,
+  onSyncLearningData,
+  onLoadLearningData,
+  cloudSyncStatus,
   onToggleFavourite,
   resume = null,
   onResume,
@@ -105,6 +114,7 @@ export default function AnalyticsDashboard({
     recommendationKey: smartLesson?.recommendationKey,
     defaultLabel: 'Mula Latihan'
   });
+  const resumeTitle = resume ? formatResumeTitle(resume) : '';
 
   return (
     <>
@@ -183,14 +193,14 @@ export default function AnalyticsDashboard({
           <MetricCard value={learningJourney.todayLesson?.subject || formatSubjectName(smartSubject?.id)} label="Hari Ini" subtitle={formatStatus(learningJourney.todayLesson?.masteryStatus || 'ready')} />
           <MetricCard value={learningJourney.nextLesson?.title || 'Selepas dikuasai'} label="Seterusnya" subtitle={formatStatus(learningJourney.nextLesson?.masteryStatus || 'locked')} />
           <MetricCard value={learningJourney.recommendedReview?.title || 'Tiada ulang kaji'} label="Ulang Kaji" subtitle={formatStatus(learningJourney.recommendedReview?.masteryStatus || 'clear')} />
-          <MetricCard value={`Keyakinan AI ${formatPriority(smartLesson?.priority || 'normal')}`} label="Keutamaan AI" subtitle={studyRecommendation} />
+          <MetricCard value={formatPriority(smartLesson?.priority || 'normal')} label={`Keyakinan AI ${formatPriority(smartLesson?.priority || 'normal')}`} subtitle={studyRecommendation} />
         </div>
         <div className="recommend-meta">
           <span>{learningJourney.blockedTopics?.length || 0} topik terkunci</span>
           <span>{learningJourney.recommendedReview?.title || 'Ulang kaji stabil'}</span>
           <span>{smartTopic ? formatTopicName(smartTopic.topicId || smartTopic.id || smartTopic.title) : 'Semua topik selesai'}</span>
         </div>
-        <button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!learningJourney.todayLesson && !smartLesson?.nextQuestionId}>Mula Laluan</button>
+        <button type="button" onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!learningJourney.todayLesson && !smartLesson?.nextQuestionId}>Mula Laluan</button>
       </section>
 
       <section className="card ai-recommend-card">
@@ -222,22 +232,25 @@ export default function AnalyticsDashboard({
             onAction={() => onStartAdaptivePractice(adaptivePracticeCount)}
           />
         )}
-        <button onClick={() => smartTopic && onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!smartTopic && !learningJourney.todayLesson}>{analyticsRecommendationCta}</button>
+        <button type="button" onClick={() => smartTopic && onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!smartTopic && !learningJourney.todayLesson}>{analyticsRecommendationCta}</button>
       </section>
 
       <CommunicationSummarySection eyebrow="Kemajuan Bacaan" title="Jurulatih Bacaan" summary={readingSummary} onStart={onStartBacaan} buttonLabel="Mula Latihan Bacaan" />
 
-      <CommunicationSummarySection eyebrow="Kemajuan Mendengar" title="Makmal Mendengar" summary={listeningSummary} onStart={onStartMendengar} buttonLabel="Mula Latihan Mendengar" />
-
-      <CommunicationSummarySection eyebrow="Kemajuan Bertutur" title="Jurulatih Bertutur" summary={speakingSummary} onStart={onStartBertutur} buttonLabel="Mula Latihan Bertutur" />
-
-      <CommunicationSummarySection eyebrow="Kemajuan Menulis" title="Jurulatih Menulis" summary={writingSummary} onStart={onStartMenulis} buttonLabel="Mula Latihan Menulis" />
+      <details className="quick-prompts-analytics analytics-communication-options">
+        <summary><span>Pilihan kemahiran komunikasi lain</span><small>Mendengar, bertutur dan menulis</small></summary>
+        <div className="analytics-communication-options-body">
+          <CommunicationSummarySection eyebrow="Kemajuan Mendengar" title="Makmal Mendengar" summary={listeningSummary} onStart={onStartMendengar} buttonLabel="Mula Latihan Mendengar" />
+          <CommunicationSummarySection eyebrow="Kemajuan Bertutur" title="Jurulatih Bertutur" summary={speakingSummary} onStart={onStartBertutur} buttonLabel="Mula Latihan Bertutur" />
+          <CommunicationSummarySection eyebrow="Kemajuan Menulis" title="Jurulatih Menulis" summary={writingSummary} onStart={onStartMenulis} buttonLabel="Mula Latihan Menulis" />
+        </div>
+      </details>
 
       <section className="card daily-card">
         <p className="eyebrow">Cabaran Harian</p>
         <h2>Cabaran Hari Ini</h2>
-        <div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}><IconGlyph name="check" motion="hover" /> <span>{item.label}</span></span>)}</div>
-        <button disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? <><IconGlyph name="check" motion="celebrate" /> <span>Cabaran Harian Selesai</span></> : <><IconGlyph name="gift" motion="celebrate" /> <span>Tebus Bonus +50 XP +20 Syiling</span></>}</button>
+         <div className="challenge-list">{dailyChallenge.map(item => <span key={item.subjectId}><GameBadge className="daily-action-badge" src={checkBadge} /> <span>{item.label}</span></span>)}</div>
+         <button type="button" disabled={dailyDone} onClick={onCompleteDaily}>{dailyDone ? <><GameBadge className="daily-action-badge" src={checkBadge} /> <span>Cabaran Harian Selesai</span></> : <><GameBadge className="daily-action-badge" src={giftBadge} /> <span>Tebus Bonus +50 XP +20 Syiling</span></>}</button>
       </section>
 
       <section className="card">
@@ -248,7 +261,7 @@ export default function AnalyticsDashboard({
           const progress = loadedSubject ? Math.round((loadedSubject.topics.filter(topic => (profile.progress?.[`${loadedSubject.id}_${topic.id}`]?.best || 0) >= 80).length / Math.max(1, loadedSubject.topics.length)) * 100) : 0;
           const completedTopics = loadedSubject ? loadedSubject.topics.filter(topic => (profile.progress?.[`${loadedSubject.id}_${topic.id}`]?.best || 0) >= 80).length : 0;
           return (
-            <button key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''} ${progress >= 80 ? 'subject-complete' : ''}`} onClick={() => onSelectSubject(subject.id)}>
+            <button type="button" key={subject.id} className={`subject-card ${selectedSubjectId === subject.id ? 'selected-subject' : ''} ${progress >= 80 ? 'subject-complete' : ''}`} onClick={() => onSelectSubject(subject.id)}>
               <SubjectIllustration subject={subject} />
               <b>{subject.title || formatSubjectName(subject.id)}</b>
               <small>{completedTopics}/{loadedSubject?.topics?.length || 0} topik siap</small>
@@ -271,21 +284,16 @@ export default function AnalyticsDashboard({
         </div>
       </section>
 
-      <SettingsPanel onExportBetaReport={onExportBetaReport} onReset={onReset} />
+      <SettingsPanel onExportBetaReport={onExportBetaReport} onImportLearningData={onImportLearningData} onRecoverLearningData={onRecoverLearningData} onSyncLearningData={onSyncLearningData} onLoadLearningData={onLoadLearningData} cloudSyncStatus={cloudSyncStatus} onReset={onReset} />
 
       <section className="card uasa-card">
         <p className="eyebrow">Latihan UASA</p>
         <h2><IconGlyph name="trophy" motion="celebrate" /> <span>Simulator UASA {formatSubjectName(selectedSubject?.id)}</span></h2>
         <p>Latihan campuran mengikut topik.</p>
-        <button onClick={onOpenUasa}>Mula Simulator UASA</button>
+        <button type="button" onClick={onOpenUasa}>Mula Simulator UASA</button>
       </section>
 
-      <section className="card">
-        <p className="eyebrow">Sambung Automatik</p>
-        <h2><IconGlyph name="play" motion="hover" /> <span>Sambung Latihan</span></h2>
-        <p>{formatResumeTitle(resume)}<br />Subjek: <b>{formatSubjectName(resume?.subjectId || '-')}</b><br />Topik: <b>{formatTopicName(resume?.metadata?.topicTitle || resume?.topicId || '-', { subjectId: resume?.subjectId })}</b><br />Soalan: <b>{(resume?.questionIndex || 0) + 1}</b></p>
-        <div className="actions"><button onClick={onResume}><IconGlyph name="play" motion="hover" /> <span>Sambung</span></button><button className="secondary" onClick={onRestartResume}><IconGlyph name="repeat" motion="hover" /> <span>Mula Semula</span></button></div>
-      </section>
+      <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} onResume={onResume} onRestartResume={onRestartResume} />
     </>
   );
 }

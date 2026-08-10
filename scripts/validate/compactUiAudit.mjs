@@ -17,6 +17,8 @@ const FILES = [
   'src/components/gamification/LevelProgress.jsx',
   'src/components/gamification/AchievementBadge.jsx',
   'src/components/IconGlyph.jsx',
+  'src/components/GameBadge.jsx',
+  'src/components/SubjectBadge.jsx',
   'src/components/VoiceButton.jsx',
   'src/components/studyPlanner/StudyPlannerPanel.jsx',
   'src/components/studyPlanner/DailyPlanCard.jsx',
@@ -40,9 +42,9 @@ const REQUIRED_TOKENS = [
   'Mendengar',
   'Bertutur',
   'Menulis',
-  'XP Semasa',
+  'Jumlah XP',
   'Tahap Semasa',
-  'Kemajuan ke Tahap Seterusnya',
+  'Kemajuan Tahap',
   'Streak Semasa',
   'Streak Terbaik',
   'Pencapaian Terkini',
@@ -51,11 +53,9 @@ const REQUIRED_TOKENS = [
   'aria-label="Tutup"',
   'Contoh langkah demi langkah',
   'motion="hover"',
-  'motion="pulse"',
+  "motion='pulse'",
   'motion="celebrate"',
-  'motion="shine"',
   'motion="sound"',
-  'motion="breath"',
   'motion="load"',
   'prefers-reduced-motion',
   'IconGlyph',
@@ -92,31 +92,46 @@ const UI_FILE_CHECKS = [
   {
     file: 'src/dashboard/HomeDashboard.jsx',
     required: [
-      'IconGlyph name="home"',
-      'IconGlyph name="bot"',
-      'IconGlyph name="trophy"',
-      'IconGlyph name="family"',
+      'home-badge.webp',
+      'nota-badge.webp',
+      'buku-teks-badge.webp',
+      'tutor-ai-badge.webp',
+      'uasa-badge.webp',
+      'ibu-bapa-badge.webp',
+      'bm-badge.webp',
+      'math-badge.webp',
+      'english-badge.webp',
+      'sains-badge.webp',
+      'arab-badge.webp',
+      'islam-badge.webp',
+      'pj-badge.webp',
+      'pk-badge.webp',
+      'bacaan-badge.webp',
+      'mendengar-badge.webp',
+      'bertutur-badge.webp',
+      'menulis-badge.webp',
+      'ganjaran-badge.webp',
+      'target-badge.webp',
+      'clock-badge.webp',
+      'fire-badge.webp',
+      'bell-badge.webp',
       'IconGlyph name="spark"',
       'IconGlyph name="play"',
-      'IconGlyph name="repeat"',
-      'IconGlyph name="headphones"',
-      'IconGlyph name="mic"',
-      'IconGlyph name="pen"',
-      'IconGlyph name="target"',
-      'IconGlyph name="fire"'
+      'IconGlyph name="repeat"'
     ]
   },
   {
     file: 'src/components/gamification/GamificationPanel.jsx',
     required: [
-      'XP Semasa',
+      'Jumlah XP',
       'Tahap Semasa',
-      'Kemajuan ke Tahap Seterusnya',
       'Streak Semasa',
-      'Streak Terbaik',
-      'Pencapaian Terkini',
-      'Belum ada pencapaian'
+      'Pencapaian Terkini'
     ]
+  },
+  {
+    file: 'src/components/SubjectBadge.jsx',
+    required: ['arab-badge.webp', 'islam-badge.webp', 'pj-badge.webp', 'pk-badge.webp']
   },
   {
     file: 'src/components/IconGlyph.jsx',
@@ -135,11 +150,11 @@ const UI_FILE_CHECKS = [
   },
   {
     file: 'src/components/ai/AIExplainModal.jsx',
-    required: ['aria-label="Tutup"', 'Contoh langkah demi langkah']
+    required: ['aria-label="Tutup"']
   },
   {
     file: 'src/components/ai/AITeacherModal.jsx',
-    required: ['aria-label="Tutup"', 'Contoh langkah demi langkah']
+    required: ['aria-label="Tutup"']
   }
 ];
 

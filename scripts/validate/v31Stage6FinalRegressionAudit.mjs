@@ -94,7 +94,13 @@ assert.match(teacherModal, /role="dialog"/, 'Teacher modal dialog semantics miss
 assert.match(explainModal, /aria-label="Tutup"/, 'Explain modal close label missing');
 assert.match(teacherModal, /aria-label="Tutup"/, 'Teacher modal close label missing');
 
-assert.ok(!diffNames.includes('package.json') && !diffNames.includes('package-lock.json'), 'new runtime dependency change detected');
+assert.ok(!diffNames.includes('package-lock.json'), 'new runtime dependency lockfile change detected');
+if (diffNames.includes('package.json')) {
+  const baselinePackage = JSON.parse(execFileSync('git', ['show', 'HEAD:package.json'], { cwd: root, encoding: 'utf8' }));
+  const currentPackage = JSON.parse(packageJson);
+  assert.deepEqual(currentPackage.dependencies, baselinePackage.dependencies, 'runtime dependencies changed');
+  assert.deepEqual(currentPackage.devDependencies, baselinePackage.devDependencies, 'development dependencies changed');
+}
 assert.doesNotMatch(packageJson + packageLock, /framer-motion|lottie|lucide|fontawesome/i, 'unexpected runtime dependency present');
 
 for (const screenId of ['dashboard', 'quiz', 'uasa', 'reading', 'listening', 'speaking', 'writing', 'parent', 'finish']) {

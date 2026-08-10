@@ -10,6 +10,7 @@ const weeklyPlanList = read('src/components/studyPlanner/WeeklyPlanList.jsx');
 const studyPlannerPanel = read('src/components/studyPlanner/StudyPlannerPanel.jsx');
 const studyBlockItem = read('src/components/studyPlanner/StudyBlockItem.jsx');
 const home = read('src/dashboard/HomeDashboard.jsx');
+const resumeCard = read('src/components/ResumePracticeCard.jsx');
 const student = read('src/dashboard/StudentDashboard.jsx');
 const parent = read('src/dashboard/ParentDashboard.jsx');
 const analytics = read('src/dashboard/AnalyticsDashboard.jsx');
@@ -73,7 +74,7 @@ assert.ok(home.includes('formatResumeTitle(resume)') || home.includes('formatMod
 assert.ok(home.includes('formatSubjectYearLabel('), 'Home cross-subject cards must use canonical subject-year labels');
 assert.ok(home.includes('isCrossSubjectTarget(selectedSubjectId, smartTargetSubjectId)'), 'Home smart lesson card must derive cross-subject state canonically');
 assert.ok(home.includes('smartCrossSubject && <span className="badge cross-subject-badge">Cadangan lintas subjek</span>'), 'Cross-subject badge must appear only when target differs');
-assert.ok(home.includes('resumeCrossSubject && <><br /><span className="badge cross-subject-badge">Sambung lintas subjek</span></>') || home.includes('resumeCrossSubject && <><br /><span className="badge cross-subject-badge">Cadangan lintas subjek</span></>'), 'Resume card must flag cross-subject sessions');
+assert.ok((home.includes('resumeCrossSubject &&') && home.includes('cross-subject-badge')) || (resumeCard.includes('isCrossSubjectTarget(') && resumeCard.includes('cross-subject-badge')), 'Resume card must flag cross-subject sessions');
 assert.ok(home.includes('Keyakinan AI {formatPriority('), 'Home recommendation card must use polished AI priority copy');
 assert.ok(!home.includes('AI: '), 'Legacy AI priority label leaked into Home dashboard');
 

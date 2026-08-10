@@ -198,6 +198,7 @@ function toReadableSlugLabel(value) {
 
 export function formatSubjectName(subjectId) {
   const raw = normalizeName(subjectId);
+  if (/^adaptive(?:\s+practice)?$/i.test(raw) || /^adaptive\s+adaptive/i.test(raw)) return 'Latihan AI';
   if (raw === '-') return '-';
   const key = normalizeKey(raw);
   const displayKey = normalizeDisplayKey(raw);
@@ -212,13 +213,30 @@ export function formatSubjectName(subjectId) {
   return toTitleCase(displayKey || key || raw);
 }
 
+const PLACEHOLDER_STUDENT_NAMES = new Set(['murid', 'demo murid', 'anak', 'student']);
+
+export function isPlaceholderStudentName(value) {
+  return PLACEHOLDER_STUDENT_NAMES.has(normalizeName(value).toLowerCase());
+}
+
 export function getStudentDisplayName(profile = null, fallback = 'Murid') {
-  const name = profile && typeof profile === 'object' ? normalizeName(profile.name) : '';
-  return name || normalizeName(fallback) || 'Murid';
+  const profiles = Array.isArray(profile) ? profile : [profile];
+  const candidates = profiles.flatMap(item => [
+    item?.name,
+    item?.display_name,
+    item?.studentName,
+    item?.user?.user_metadata?.display_name
+  ]);
+  const meaningful = candidates
+    .map(normalizeName)
+    .find(name => name && !isPlaceholderStudentName(name));
+  return meaningful || normalizeName(fallback) || 'Murid';
 }
 
 export function formatTopicName(topicId, options = {}) {
   const raw = normalizeName(topicId);
+  if (/adaptive/i.test(raw) && (looksInternalIdentifier(raw) || /\d{5,}/.test(raw))) return 'Latihan Adaptif';
+  if (/^adaptive(?:\s+adaptive)?(?:\s+practice)?(?:\s+\d+)?(?:\s+[a-z0-9]+)?$/i.test(raw)) return 'Latihan Adaptif';
   if (raw === '-') return '-';
   const key = normalizeKey(raw);
   const displayKey = normalizeDisplayKey(raw);

@@ -40,7 +40,13 @@ export function contextSignature(question = {}) {
 }
 
 export function applyContextIntelligence(question = {}, session = {}, options = {}) {
-  if (options.featureFlags?.QUESTION_CONTEXT_ENGINE === false) return question;
+  if (options.featureFlags?.QUESTION_CONTEXT_ENGINE !== true) return question;
+
+  // Pronoun exercises often store the complete expected sentence. Replacing a
+  // place/name in the stem without rewriting answer and explanation creates a
+  // question-answer mismatch, so keep this topic's wording atomic.
+  const topicText = `${question.subjectId || ''} ${question.topicId || ''} ${question.topicTitle || ''} ${question.topic || ''}`.toLowerCase();
+  if (question.subjectId === 'bm' && /kata[_ ]ganti[_ ]nama/.test(topicText)) return question;
 
   const original = question.q || question.question || '';
   const blocked = answerTerms(question);

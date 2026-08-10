@@ -66,6 +66,29 @@ function pickFirstText(...values) {
   return '';
 }
 
+function hasForeignCategoryCopy(text = '', subjectId = '') {
+  if (!subjectId || subjectId === 'bm') return false;
+  return /nama tempat|nama orang|nama haiwan|nama benda|kata nama|kata kerja|kata adjektif|penjodoh bilangan|kata hubung|kata sendi|simpulan bahasa/i.test(String(text));
+}
+
+function safeSubjectList(value, subjectId, fallback = []) {
+  const cleaned = normalizeList(value).filter(item => !hasForeignCategoryCopy(item, subjectId));
+  return cleaned.length ? cleaned : fallback;
+}
+
+function subjectTeachingFallbacks(subjectId = '') {
+  const fallbacks = {
+    math: { commonMistakes: ['Memilih operasi yang salah.', 'Tidak menyemak pengiraan atau urutan nombor.'], practicePrompt: 'Cuba selesaikan satu soalan Matematik yang serupa.' },
+    sains: { commonMistakes: ['Memilih ciri yang tidak berkaitan.', 'Tidak memadankan jawapan dengan konsep Sains.'], practicePrompt: 'Cuba jawab satu soalan Sains yang serupa.' },
+    english: { commonMistakes: ['Memilih perkataan yang tidak sesuai dengan ayat.', 'Tidak menyemak maksud ayat penuh.'], practicePrompt: 'Try one more similar English question.' },
+    arab: { commonMistakes: ['Memilih perkataan atau bentuk yang tidak tepat.', 'Tidak menyemak huruf dan maksud.'], practicePrompt: 'Cuba satu lagi soalan Bahasa Arab yang serupa.' },
+    islam: { commonMistakes: ['Memilih amalan atau istilah yang tidak tepat.', 'Tidak menyemak maksud pelajaran.'], practicePrompt: 'Cuba satu lagi soalan Pendidikan Islam yang serupa.' },
+    pj: { commonMistakes: ['Memilih pergerakan yang tidak sesuai.', 'Tidak mengikut arahan keselamatan.'], practicePrompt: 'Cuba satu lagi soalan aktiviti yang serupa.' },
+    pk: { commonMistakes: ['Memilih tindakan yang tidak selamat.', 'Tidak menyemak kesan kepada kesihatan.'], practicePrompt: 'Cuba satu lagi soalan kesihatan yang serupa.' }
+  };
+  return fallbacks[subjectId] || null;
+}
+
 function normalizeError(error) {
   if (!error) return null;
   if (typeof error === 'object' && (error.code || error.message)) {
@@ -124,6 +147,13 @@ function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic 
     payload.simpleExplanation,
     fallbackData.simpleExplanation,
     explanation
+  );
+  const whyCorrect = pickFirstText(
+    explanationObject.whyCorrect,
+    payload.whyCorrect,
+    fallbackData.whyCorrect,
+    fallbackData.sections?.whyCorrect,
+    ''
   );
   const hint = pickFirstText(
     hintObject.hint,
@@ -206,6 +236,7 @@ function extractCoachText(payload = {}, fallbackData = {}, question = {}, topic 
   return {
     explanation,
     simpleExplanation,
+    whyCorrect,
     hint,
     learningTip,
     praise,
@@ -289,6 +320,27 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
   const payload = hasCoachData ? coachData : rawFallback;
   const tipsObject = payload.tips && typeof payload.tips === 'object' ? payload.tips : {};
   const normalizedCore = extractCoachText(payload, rawFallback, question, topic || {}, subjectId, topicId);
+  const subjectFallbacks = subjectTeachingFallbacks(subjectId);
+  const safePayloadMistakes = safeSubjectList(payload.commonMistakes, subjectId, []);
+  const safeFallbackMistakes = safeSubjectList(rawFallback.commonMistakes, subjectId, subjectFallbacks?.commonMistakes || []);
+  const safePayloadFollowUps = safeSubjectList(payload.followUpQuestions, subjectId, []);
+  const safeFallbackFollowUps = safeSubjectList(rawFallback.followUpQuestions, subjectId, []);
+  const safeCommonMistakes = safePayloadMistakes.length ? safePayloadMistakes : safeFallbackMistakes;
+  const safeFollowUpQuestions = safePayloadFollowUps.length ? safePayloadFollowUps : safeFallbackFollowUps;
+  const rawPracticePrompt = pickFirstText(payload.practicePrompt, rawFallback.practicePrompt, safeFollowUpQuestions[0]);
+  const safePracticePrompt = hasForeignCategoryCopy(rawPracticePrompt, subjectId)
+    ? (subjectFallbacks?.practicePrompt || 'Cuba satu soalan yang serupa dengan topik ini.')
+    : rawPracticePrompt;
+  const normalizedQuestionText = normalizeText(questionText || question?.q || question?.question || question?.stem, '').toLowerCase();
+  const normalizedSimpleExplanation = normalizeText(normalizedCore.simpleExplanation, '');
+  const simpleExplanationRepeatsQuestion = Boolean(
+    normalizedQuestionText && normalizedSimpleExplanation &&
+    (normalizedSimpleExplanation.toLowerCase() === normalizedQuestionText ||
+      normalizedSimpleExplanation.toLowerCase().includes(normalizedQuestionText))
+  );
+  const safeSimpleExplanation = mode === 'teach' && simpleExplanationRepeatsQuestion
+    ? normalizeText(rawFallback.explanation || rawFallback.sections?.whyCorrect, '')
+    : normalizedCore.simpleExplanation;
   const contextUsed = buildContextUsed({
     subjectId,
     topicId,
@@ -343,7 +395,8 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
       code: 'COACH_FALLBACK',
       message: 'Coach payload was incomplete, so a safe fallback was used.'
     } : null),
-    simpleExplanation: normalizedCore.simpleExplanation || normalizedCore.explanation || '',
+    simpleExplanation: safeSimpleExplanation || normalizedCore.explanation || '',
+    whyCorrect: normalizedCore.whyCorrect || '',
     subjectId: subjectId || null,
     topicId: topicId || question.topicId || topic?.id || null,
     subjectLabel,
@@ -353,10 +406,10 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     showCorrectAnswer: Boolean(revealAnswer),
     sections: rawFallback.sections || {
       summary: sanitizeAiText(questionText || question?.q || question?.question || topic?.title || 'Mari kita lihat soalan ini.'),
-      whyCorrect: normalizedCore.explanation || normalizedCore.simpleExplanation || '',
+      whyCorrect: normalizedCore.whyCorrect || normalizedCore.explanation || normalizedCore.simpleExplanation || '',
       hint: normalizedCore.hint || '',
       steps: rawFallback.steps || normalizedCore.steps || [],
-      commonMistake: mergeList(payload.commonMistakes, rawFallback.commonMistakes)[0] || '',
+      commonMistake: safeCommonMistakes[0] || '',
       example: mergeList(payload.examples, rawFallback.examples)[0] || '',
       memoryTip: mergeList(payload.memoryTips, rawFallback.memoryTips)[0] || '',
       correctAnswer: revealAnswer ? (normalizedCore.correctAnswer || question.answer || '') : '',
@@ -370,8 +423,8 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     extraExamples: mergeList(payload.extraExamples, rawFallback.extraExamples),
     tips: mergeList(tipsObject.tips || payload.tips, rawFallback.tips),
     memoryTips: mergeList(tipsObject.memoryTips || payload.memoryTips, rawFallback.memoryTips),
-    commonMistakes: mergeList(tipsObject.commonMistakes || payload.commonMistakes, rawFallback.commonMistakes),
-    followUpQuestions: mergeList(payload.followUpQuestions, rawFallback.followUpQuestions),
+    commonMistakes: safeCommonMistakes,
+    followUpQuestions: safeFollowUpQuestions,
     workedExamples: mergeList(payload.workedExamples, rawFallback.workedExamples),
     problemSolvingSteps: mergeList(payload.problemSolvingSteps, rawFallback.problemSolvingSteps),
     scientificFacts: mergeList(payload.scientificFacts, rawFallback.scientificFacts),
@@ -412,7 +465,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
       revealAnswer ? rawFallback.answerLine : '',
       revealAnswer && question?.answer ? `Jawapan: ${question.answer}` : ''
     ),
-    practicePrompt: pickFirstText(payload.practicePrompt, rawFallback.practicePrompt, rawFallback.followUpQuestions?.[0], 'Cuba sekali lagi selepas membaca penerangan ini.'),
+    practicePrompt: safePracticePrompt || subjectFallbacks?.practicePrompt || 'Cuba sekali lagi selepas membaca penerangan ini.',
     encouragement: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
     encouragementMessage: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
     fallbackReason: error ? normalizeError(error) : null

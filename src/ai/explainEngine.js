@@ -1,4 +1,4 @@
-import { detectLearningCategory, getLearningExamples, guardDistinctSections, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
+import { detectLearningCategory, getLearningExamples, getMathLearningGuidance, guardDistinctSections, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
 
@@ -53,6 +53,11 @@ const CATEGORY_RULES = {
     hint: 'Cari kata sendi nama yang menunjukkan tempat atau arah.',
     commonMistakes: ['Memilih kata kerja.', 'Memilih kata hubung.']
   },
+  properNoun: {
+    explanation: 'Jawapan ini ialah kata nama khas yang merujuk kepada nama tertentu.',
+    hint: 'Cari nama tertentu dan semak penggunaan huruf besar.',
+    commonMistakes: ['Memilih kata nama am.', 'Menulis kata nama khas dengan huruf kecil.']
+  },
   generic: {
     explanation: 'Jawapan ini betul kerana ia melengkapkan maksud soalan dengan tepat.',
     hint: 'Baca soalan sekali lagi dan cari kata kunci penting.',
@@ -73,8 +78,22 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
   const contextualGeneric = `Dalam soalan ini, teliti "${stem}" dan padankan jawapan dengan arahan yang diberi.`;
   const subjectId = String(question.subjectId || topic.subjectId || '').toLowerCase();
+  const mathGuidance = subjectId === 'math' ? getMathLearningGuidance(question, topic) : null;
   const isNumberOrder = subjectId === 'math' && /nombor\s+(?:selepas|sebelum)/i.test(stem);
+  const mathOperation = subjectId === 'math' && (/tambah|jumlah|lagi/i.test(stem) ? 'tambah' : /tolak|baki|beza/i.test(stem) ? 'tolak' : /darab|kali|×/i.test(stem) ? 'darab' : /bahagi/i.test(stem) ? 'bahagi' : '');
   const isBmPronoun = subjectId === 'bm' && /kata ganti nama|menyiapkan kerja kelas|meja belajar/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
+  const pronounMatch = String(question.answer || '').match(/\b(saya|kami|kita|awak|kamu|dia|beliau|mereka|anda)\b/i)
+    || stem.match(/\b(saya|kami|kita|awak|kamu|dia|beliau|mereka|anda)\b/i);
+  const pronounAnswer = isBmPronoun ? (pronounMatch?.[1] || 'saya').toLowerCase() : '';
+  const pronounLabel = pronounAnswer ? `${pronounAnswer.charAt(0).toUpperCase()}${pronounAnswer.slice(1)}` : 'Saya';
+  const pronounWhy = {
+    saya: '“Saya” digunakan apabila seorang penutur bercakap tentang diri sendiri.',
+    kami: '“Kami” digunakan apabila Amir dan Faris bercakap tentang diri mereka tanpa memasukkan orang yang mendengar.',
+    kita: '“Kita” digunakan apabila penutur bercakap tentang diri sendiri bersama orang yang mendengar.',
+    dia: '“Dia” digunakan untuk seorang yang sedang dibicarakan.',
+    beliau: '“Beliau” digunakan dengan sopan untuk seorang yang dihormati.',
+    mereka: '“Mereka” digunakan untuk beberapa orang yang sedang dibicarakan.'
+  }[pronounAnswer] || `Kata ganti nama “${pronounLabel}” dipilih berdasarkan siapa yang bercakap atau dirujuk.`;
   const isBmCommonNoun = subjectId === 'bm' && /kata nama am|kata_nama_am/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
   const isBmLightTulang = subjectId === 'bm' && /ringan\s+tulang/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
   const bmFamily = subjectId === 'bm' ? getBmFamily(topic, stem) : '';
@@ -87,8 +106,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const explanation = sanitizeAiText(
     isNumberOrder
       ? `${numberValue} ${numberMatch[1].toLowerCase() === 'selepas' ? '+' : '-'} 1 = ${numberAnswer}. Nombor ${numberMatch[1].toLowerCase()} ${numberValue} ialah ${numberAnswer}.`
+      : mathOperation
+        ? `Kenal pasti operasi ${mathOperation} dan susun nombor dalam soalan sebelum mengira.`
       : isBmPronoun
-        ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
+        ? `Gunakan “${pronounLabel}” berdasarkan siapa yang bercakap atau dirujuk dalam ayat.`
         : isBmCommonNoun
           ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
         : isBmLightTulang
@@ -98,8 +119,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const hint = sanitizeAiText(
     isNumberOrder
       ? (numberMatch[1].toLowerCase() === 'selepas' ? 'Tambah 1 pada nombor itu.' : 'Tolak 1 daripada nombor itu.')
+      : mathOperation
+        ? `Gunakan operasi ${mathOperation} satu langkah pada satu masa.`
       : isBmPronoun
-        ? 'Fikirkan perkataan yang kamu guna untuk menyebut diri sendiri.'
+        ? `Fikirkan sebab kata ganti nama “${pronounLabel}” digunakan dalam ayat.`
         : isBmCommonNoun
           ? 'Fikirkan sama ada perkataan itu nama umum atau nama khas.'
         : isBmLightTulang
@@ -109,15 +132,21 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
   const focus = isNumberOrder
     ? 'Mengenal nombor yang datang selepas sesuatu nombor.'
+    : mathOperation
+      ? `Menyelesaikan soalan ${mathOperation} dengan langkah yang betul.`
     : isBmPronoun
-      ? 'Memilih kata ganti nama diri yang sesuai.'
-      : isBmCommonNoun
+      ? `Memilih kata ganti nama diri yang sesuai, iaitu “${pronounLabel}”.`
+    : isBmCommonNoun
         ? 'Mengenal pasti kata nama am.'
+      : mathGuidance
+        ? mathGuidance.focus
       : bmFamilyContent?.focus || sanitizeChildFacingText(currentLearningObjective || topic.learningObjective || topic.objective || 'Fahami kemahiran dalam soalan semasa.');
   const simpleExplanation = isNumberOrder
     ? 'Nombor selepas diperoleh dengan menambah 1.'
+    : mathOperation
+      ? `Soalan ini menggunakan operasi ${mathOperation}.`
     : isBmPronoun
-      ? 'Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.'
+      ? `“${pronounLabel}” dipilih berdasarkan orang yang bercakap atau dirujuk.`
       : isBmCommonNoun
         ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
       : isBmLightTulang
@@ -125,8 +154,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       : bmFamilyContent?.simple || explanation;
   const whyCorrect = isNumberOrder
     ? `${numberValue} + 1 = ${numberAnswer}, jadi ${numberAnswer} datang selepas ${numberValue}.`
+    : mathOperation
+      ? `Operasi ${mathOperation} dipilih kerana arahan soalan meminta kamu menggabungkan atau membandingkan kuantiti.`
     : isBmPronoun
-      ? 'Orang dalam ayat itu bercakap tentang dirinya sendiri.'
+      ? pronounWhy
       : isBmCommonNoun
         ? `“${commonNounAnswer}” ialah nama umum bagi sejenis benda, bukan nama khas.`
       : isBmLightTulang
@@ -134,22 +165,28 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       : bmFamilyContent?.why || explanation;
   const steps = isNumberOrder
     ? [`Lihat nombor ${numberValue}.`, 'Tambah 1.', `Jawapannya ialah ${numberAnswer}.`]
+    : mathOperation
+      ? ['Kenal pasti nombor yang diberi.', `Pilih operasi ${mathOperation}.`, 'Kira dan semak unit jawapan.']
     : isBmPronoun
-      ? ['Lihat siapa yang bercakap.', 'Pilih kata ganti nama untuk diri sendiri.', 'Gunakan “Saya”.']
+      ? ['Lihat siapa yang bercakap atau dirujuk.', `Padankan situasi dengan kata ganti nama “${pronounLabel}”.`, `Lengkapkan ayat dengan “${pronounLabel}”.`]
       : isBmCommonNoun
         ? ['Kenal pasti perkataan yang diberi.', 'Tentukan kategorinya.', `“${commonNounAnswer}” ialah benda, jadi ia kata nama am.`]
       : isBmLightTulang
         ? ['Kenal pasti simpulan bahasa.', 'Cari maksud kiasannya.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
-      : bmFamilyContent?.steps || examples.slice(0, 3);
-  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? 'Saya membaca buku.' : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : isBmLightTulang ? 'Contohnya, kakak selalu membantu ibu mengemas rumah.' : (bmFamilyContent?.example || examples[0] || '');
+      : mathGuidance
+        ? mathGuidance.steps
+      : buildContextualSteps({ subjectId, category, bmFamilyContent });
+  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? `${pronounLabel} membaca buku.` : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : isBmLightTulang ? 'Contohnya, kakak selalu membantu ibu mengemas rumah.' : mathGuidance ? mathGuidance.examples[0] : (bmFamilyContent?.example || examples[0] || '');
   const commonMistakes = (isNumberOrder
     ? ['Menambah atau menolak dengan arah yang salah.', 'Tidak menyemak urutan nombor.']
     : isBmPronoun
-      ? ['Jangan pilih “dia” kerana “dia” digunakan untuk orang lain.', 'Tidak melihat siapa yang sedang bercakap.']
+      ? ['Jangan pilih kata ganti nama yang tidak sepadan dengan situasi.', 'Tidak melihat siapa yang sedang bercakap atau dirujuk.']
       : isBmCommonNoun
         ? ['Jangan keliru dengan kata nama khas seperti “Sekolah Kebangsaan Seri Murni”.', 'Nama khas merujuk kepada nama tertentu.']
       : isBmLightTulang
         ? ['Jangan faham maksudnya secara literal.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
+      : mathGuidance
+        ? mathGuidance.commonMistakes
       : bmFamilyContent?.mistake ? [bmFamilyContent.mistake] : rule.commonMistakes || []).map(item => sanitizeAiText(item));
   const summary = sanitizeChildFacingText([
     questionText || question.q || question.question ? `Soalan: ${questionText || question.q || question.question}.` : '',
@@ -192,9 +229,9 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     hint,
     examples,
     commonMistakes,
-    memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? '“Saya” untuk diri sendiri. “Dia” untuk orang lain.' : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : bmMemoryTip)),
+    memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? pronounWhy : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : mathGuidance?.memoryTip || bmMemoryTip)),
     encouragement: isBmPronoun
-      ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba fikirkan perkataan untuk diri sendiri.')
+      ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba lihat siapa yang bercakap atau dirujuk dalam ayat.')
       : isBmCommonNoun
         ? (wasCorrect ? 'Bagus. Kamu sudah dapat mengenal kata nama am.' : 'Cuba cari nama umum dalam ayat ini.')
       : encouragementBase,
@@ -211,10 +248,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       steps,
       commonMistake: commonMistakes[0] || '',
       example,
-      memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? '“Saya” untuk diri sendiri. “Dia” untuk orang lain.' : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : bmMemoryTip)),
+      memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? pronounWhy : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : mathGuidance?.memoryTip || bmMemoryTip)),
       correctAnswer: revealAnswer ? correctAnswer : '',
       coachMessage: sanitizeChildFacingText(isBmPronoun
-        ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba fikirkan perkataan untuk diri sendiri.')
+        ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba lihat siapa yang bercakap atau dirujuk dalam ayat.')
         : isBmCommonNoun
           ? (wasCorrect ? 'Bagus. Kamu sudah dapat mengenal kata nama am.' : 'Cuba cari nama umum dalam ayat ini.')
         : encouragementBase),
@@ -297,3 +334,30 @@ const BM_FAMILY_CONTENT = {
     focus: 'Memahami maklumat dalam petikan.', simple: 'Kefahaman bermaksud mencari maklumat penting dalam petikan.', why: 'Jawapan diambil daripada maksud dan maklumat dalam petikan.', hint: 'Cari ayat yang berkaitan dengan soalan.', steps: ['Baca petikan perlahan-lahan.', 'Cari kata kunci.', 'Padankan jawapan dengan petikan.'], example: 'Petikan menyebut bahawa Ali membaca buku.', mistake: 'Jangan jawab berdasarkan tekaan sahaja.', memory: 'Baca, cari, padan.'
   }
 };
+
+const CATEGORY_STEPS = {
+  person: ['Baca ayat dan cari nama orang.', 'Semak nama itu merujuk kepada siapa.', 'Pilih nama orang yang paling sesuai dengan arahan.'],
+  place: ['Baca ayat dan cari tempat yang disebut.', 'Semak tempat itu sesuai dengan maksud soalan.', 'Pilih kata nama tempat yang tepat.'],
+  animal: ['Baca ayat dan kenal pasti haiwan yang disebut.', 'Cari ciri atau maklumat yang berkaitan.', 'Pilih nama haiwan yang paling sesuai.'],
+  object: ['Baca ayat dan cari benda yang disebut.', 'Semak kegunaan atau ciri benda itu.', 'Pilih kata nama benda yang tepat.'],
+  verb: ['Baca ayat dengan teliti.', 'Cari perkataan yang menunjukkan perbuatan.', 'Semak sama ada perbuatan itu sesuai dengan ayat.'],
+  adjective: ['Baca ayat dan cari perkataan yang menerangkan.', 'Tentukan sifat atau keadaan yang dinyatakan.', 'Pilih kata adjektif yang paling sesuai.'],
+  penjodoh: ['Kenal pasti benda dan bilangannya.', 'Pilih penjodoh bilangan yang sesuai.', 'Baca semula frasa untuk menyemak padanan.'],
+  simpulan: ['Baca ayat dan kenal pasti situasinya.', 'Cari maksud simpulan bahasa, bukan maksud setiap perkataan.', 'Padankan maksud dengan situasi yang diberikan.'],
+  conjunction: ['Baca kedua-dua bahagian ayat.', 'Kenal pasti hubungan antara bahagian ayat.', 'Pilih kata hubung yang paling sesuai.'],
+  sendi: ['Baca ayat dan cari hubungan tempat atau arah.', 'Pilih kata sendi nama yang sesuai.', 'Baca semula ayat untuk menyemak maksudnya.'],
+  properNoun: ['Kenal pasti perkataan yang diberi.', 'Tentukan sama ada namanya khusus.', 'Semak huruf besar pada kata nama khas.'],
+  name: ['Baca ayat dan kenal pasti perkataan yang menamakan sesuatu.', 'Tentukan sama ada perkataan itu merujuk kepada orang, haiwan, benda atau tempat.', 'Pilih jawapan yang paling sesuai dengan arahan.'],
+  generic: ['Baca soalan perlahan-lahan.', 'Cari kata kunci yang penting.', 'Semak jawapan dengan maksud soalan.']
+};
+
+function buildContextualSteps({ subjectId = '', category = '', bmFamilyContent = null } = {}) {
+  if (bmFamilyContent?.steps?.length) return bmFamilyContent.steps;
+  if (subjectId === 'math') return ['Kenal pasti nombor atau maklumat yang diberi.', 'Pilih operasi atau kaedah yang sesuai.', 'Kira dan semak jawapan.'];
+  if (subjectId === 'english') return ['Read the sentence carefully.', 'Identify the word or form the question asks for.', 'Check the answer in the complete sentence.'];
+  if (subjectId === 'sains') return ['Kenal pasti benda atau proses dalam soalan.', 'Cari ciri atau sebab yang berkaitan.', 'Padankan jawapan dengan konsep Sains.'];
+  if (subjectId === 'arab') return ['Baca perkataan atau arahan dengan teliti.', 'Kenal pasti makna atau bentuk yang diminta.', 'Semak huruf dan jawapan sebelum memilih.'];
+  if (subjectId === 'islam') return ['Kenal pasti amalan atau istilah dalam soalan.', 'Hubungkan dengan pelajaran yang berkaitan.', 'Semak jawapan supaya tepat dan beradab.'];
+  if (subjectId === 'pj' || subjectId === 'pk') return ['Kenal pasti situasi atau aktiviti.', 'Pilih tindakan yang selamat dan sesuai.', 'Semak kesannya kepada kesihatan atau pergerakan.'];
+  return CATEGORY_STEPS[category] || CATEGORY_STEPS.generic;
+}

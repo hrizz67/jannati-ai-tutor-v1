@@ -1405,17 +1405,17 @@ export const sainsSubject = {
         },
         {
           "id": "SAINS-TUMBUHAN-050",
-          "q": "Perbuatan memotong daun kering berkaitan dengan ________ tumbuhan.",
-          "answer": "kemas",
+          "q": "Memotong daun kering membantu menjaga ________ tumbuhan.",
+          "answer": "kebersihan",
           "accepted": [
-            "kemas"
+            "kebersihan"
           ],
           "hint": "Fikirkan tujuan penjagaan tumbuhan.",
-          "explanation": "Daun kering dibuang supaya pokok lebih kemas.",
+          "explanation": "Daun kering dibuang supaya tumbuhan lebih bersih dan kemas.",
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Perbuatan memotong daun kering berkaitan dengan ________ tumbuhan."
+          "question": "Memotong daun kering membantu menjaga ________ tumbuhan."
         }
       ]
     },
@@ -1986,7 +1986,7 @@ export const sainsSubject = {
         },
         {
           "id": "SAINS-MANUSIA-041",
-          "q": "Untuk keselamatan, pisau perlu diingat kerana ________.",
+          "q": "Pisau dapur itu ________.",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -1996,11 +1996,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, pisau perlu diingat kerana ________."
+          "question": "Pisau dapur itu ________."
         },
         {
           "id": "SAINS-MANUSIA-042",
-          "q": "Untuk keselamatan, ubat perlu diingat kerana ________.",
+          "q": "Untuk keselamatan, ubat perlu diambil dengan bantuan ________.",
           "answer": "orang dewasa",
           "accepted": [
             "orang dewasa"
@@ -2010,11 +2010,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, ubat perlu diingat kerana ________."
+          "question": "Untuk keselamatan, ubat perlu diambil dengan bantuan ________."
         },
         {
           "id": "SAINS-MANUSIA-043",
-          "q": "Untuk keselamatan, jalan raya perlu diingat kerana ________.",
+          "q": "Kita perlu ________ ketika berada di jalan raya.",
           "answer": "berhati-hati",
           "accepted": [
             "berhati-hati"
@@ -2024,11 +2024,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, jalan raya perlu diingat kerana ________."
+          "question": "Kita perlu ________ ketika berada di jalan raya."
         },
         {
           "id": "SAINS-MANUSIA-044",
-          "q": "Untuk keselamatan, soket elektrik perlu diingat kerana ________.",
+          "q": "Jangan sentuh soket elektrik dengan ________.",
           "answer": "tangan basah",
           "accepted": [
             "tangan basah"
@@ -2038,11 +2038,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, soket elektrik perlu diingat kerana ________."
+          "question": "Jangan sentuh soket elektrik dengan ________."
         },
         {
           "id": "SAINS-MANUSIA-045",
-          "q": "Untuk keselamatan, air panas perlu diingat kerana ________.",
+          "q": "Air panas boleh menyebabkan kulit ________.",
           "answer": "melecur",
           "accepted": [
             "melecur"
@@ -2052,11 +2052,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, air panas perlu diingat kerana ________."
+          "question": "Air panas boleh menyebabkan kulit ________."
         },
         {
           "id": "SAINS-MANUSIA-046",
-          "q": "Untuk keselamatan, lantai basah perlu diingat kerana ________.",
+          "q": "Lantai basah boleh menjadi ________.",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -2066,11 +2066,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, lantai basah perlu diingat kerana ________."
+          "question": "Lantai basah boleh menjadi ________."
         },
         {
           "id": "SAINS-MANUSIA-047",
-          "q": "Untuk keselamatan, topi keledar perlu diingat kerana ________.",
+          "q": "Topi keledar melindungi ________.",
           "answer": "kepala",
           "accepted": [
             "kepala"
@@ -2080,11 +2080,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, topi keledar perlu diingat kerana ________."
+          "question": "Topi keledar melindungi ________."
         },
         {
           "id": "SAINS-MANUSIA-048",
-          "q": "Untuk keselamatan, tali kasut perlu diingat kerana ________.",
+          "q": "Tali kasut perlu ________ supaya tidak tersandung.",
           "answer": "diikat",
           "accepted": [
             "diikat"
@@ -2094,11 +2094,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, tali kasut perlu diingat kerana ________."
+          "question": "Tali kasut perlu ________ supaya tidak tersandung."
         },
         {
           "id": "SAINS-MANUSIA-049",
-          "q": "Untuk keselamatan, makanan basi perlu diingat kerana ________.",
+          "q": "Makanan basi boleh menyebabkan ________.",
           "answer": "sakit perut",
           "accepted": [
             "sakit perut"
@@ -2108,11 +2108,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, makanan basi perlu diingat kerana ________."
+          "question": "Makanan basi boleh menyebabkan ________."
         },
         {
           "id": "SAINS-MANUSIA-050",
-          "q": "Untuk keselamatan, bermain api perlu diingat kerana ________.",
+          "q": "Bermain api boleh menyebabkan ________.",
           "answer": "kebakaran",
           "accepted": [
             "kebakaran"
@@ -2122,7 +2122,7 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, bermain api perlu diingat kerana ________."
+          "question": "Bermain api boleh menyebabkan ________."
         }
       ]
     },
@@ -6019,12 +6019,12 @@ export const sainsSubject = {
         {
           "id": "SAINS-TEKNOLOGI-026",
           "q": "Ketika menggunakan wayar rosak, kita perlu ________.",
-          "answer": "orang dewasa",
+          "answer": "beritahu orang dewasa",
           "accepted": [
-            "orang dewasa"
+            "beritahu orang dewasa"
           ],
           "hint": "Fikirkan keselamatan menggunakan alat.",
-          "explanation": "Wayar rosak perlu diperiksa oleh orang dewasa.",
+          "explanation": "Kita perlu memberitahu orang dewasa supaya wayar rosak diperiksa dengan selamat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
           "dskp": "KSSR",

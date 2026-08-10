@@ -2,13 +2,13 @@
 
 ## Executive Summary
 
-- Total repair queue items: 2944
-- Readiness: NEEDS_ATTENTION
-- Question bank can be cleaned up in phases, but high-impact repairs remain.
+- Total repair queue items: 1790
+- Readiness: READY_FOR_PHASED_CLEANUP
+- Question bank is ready for phased cleanup planning.
 
 ## Current Question Bank Readiness
 
-- Repair-ready status: NEEDS_ATTENTION
+- Repair-ready status: READY_FOR_PHASED_CLEANUP
 - Audit source loaded: yes
 - Repair source loaded: yes
 
@@ -17,46 +17,41 @@
 | Priority | Count |
 | --- | ---: |
 | P0 | 0 |
-| P1 | 440 |
-| P2 | 2483 |
-| P3 | 21 |
+| P1 | 0 |
+| P2 | 1790 |
+| P3 | 0 |
 
 ## Subject Cleanup Roadmap
 
 | Subject | Queue Items |
 | --- | ---: |
-| Bahasa Melayu Tahun 2 | 653 |
-| Matematik Tahun 2 | 595 |
-| English Year 2 | 422 |
-| Bahasa Arab Tahun 2 | 383 |
-| Pendidikan Jasmani Tahun 2 | 328 |
+| Matematik Tahun 2 | 374 |
+| Bahasa Melayu Tahun 2 | 352 |
+| Pendidikan Jasmani Tahun 2 | 326 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
-| Pendidikan Islam Tahun 2 | 140 |
+| English Year 2 | 201 |
 | Sains Tahun 2 | 109 |
+| Pendidikan Islam Tahun 2 | 92 |
+| Bahasa Arab Tahun 2 | 22 |
 
 ## Issue Type Breakdown
 
 | Issue Type | Queue Items |
 | --- | ---: |
-| same_answer_pattern_repeated | 2483 |
-| multiple_possible_answers | 179 |
-| missing_arabic_text | 178 |
-| ambiguous_operation | 81 |
-| missing_unit | 21 |
-| missing_instruction | 2 |
+| same_answer_pattern_repeated | 1790 |
 
 ## Top 50 Highest Impact Repairs
 
-- [P1] ARAB-ANGGOTA_BADAN-001 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-002 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-003 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-004 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-005 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-006 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-007 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-008 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-009 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
-- [P1] ARAB-ANGGOTA_BADAN-010 (Bahasa Arab Tahun 2 / Anggota Badan) score=95: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-KELUARGA-044 (Bahasa Arab Tahun 2 / Ahli Keluarga) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-NOMBOR_ARAB-044 (Bahasa Arab Tahun 2 / Nombor Arab) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-011 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-012 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-013 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-014 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-015 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-016 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-017 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
+- [P2] ARAB-WARNA_ARAB-018 (Bahasa Arab Tahun 2 / Warna) score=55: Question quality issue requires cleanup. -> Review and improve the question.
 
 ## Recommended Next Sprint
 

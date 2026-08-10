@@ -57,7 +57,7 @@ function computeExpectedAnswer(operation, values = []) {
 }
 
 function getRepeatedAdditionPattern(text = '') {
-  return String(text || '').match(/(\d+(?:\s*\+\s*\d+){2,}\s*=\s*_{2,})/);
+  return String(text || '').match(/(\d+(?:\s*\+\s*\d+){2,})(?:\s*=\s*_{2,})?/);
 }
 
 function renderRepeatedAdditionStem(text = '', values = []) {
@@ -68,9 +68,12 @@ function renderRepeatedAdditionStem(text = '', values = []) {
   const match = getRepeatedAdditionPattern(source);
   if (!match) return null;
 
-  const renderedExpression = repeatCount === 1
-    ? `${term} x 1 = ________`
-    : `${Array.from({ length: repeatCount }, () => String(term)).join(' + ')} = ________`;
+  const renderedTerms = repeatCount === 1
+    ? `${term} x 1`
+    : Array.from({ length: repeatCount }, () => String(term)).join(' + ');
+  const renderedExpression = /\s*=\s*_{2,}/.test(match[0])
+    ? `${renderedTerms} = ________`
+    : renderedTerms;
   return source.replace(match[0], renderedExpression);
 }
 
@@ -479,6 +482,10 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
     q: nextText,
     answer: String(selected.answer),
     accepted: [String(selected.answer)],
+    // Keep the quality-engine answer cache in sync when the number engine
+    // regenerates a question. Otherwise a stale answer from the source item
+    // can remain visible and be accepted alongside the regenerated answer.
+    acceptedAnswers: [String(selected.answer)],
     explanation: buildExplanation(originalText, operation, selectedNumbers, selected.answer),
     qip: {
       ...(question.qip || {}),

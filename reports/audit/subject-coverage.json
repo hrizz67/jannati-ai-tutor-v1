@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-14T12:17:27.550Z",
+  "generatedAt": "2026-08-05T13:45:26.099Z",
   "subjects": [
     {
       "id": "bm",
       "title": "Bahasa Melayu Tahun 2",
-      "totalQuestions": 800,
-      "uniqueStems": 800,
+      "totalQuestions": 760,
+      "uniqueStems": 760,
       "duplicateStemCount": 0,
-      "uniqueTemplates": 800,
+      "uniqueTemplates": 760,
       "templateReuseCount": 0,
       "topics": [
         {
@@ -67,13 +67,6 @@
           "duplicateStemCount": 0
         },
         {
-          "id": "ayat",
-          "title": "Ayat Tanya, Seruan dan Perintah",
-          "totalQuestions": 50,
-          "uniqueStems": 50,
-          "duplicateStemCount": 0
-        },
-        {
           "id": "pemahaman_penulisan",
           "title": "Pemahaman dan Penulisan",
           "totalQuestions": 110,
@@ -81,17 +74,17 @@
           "duplicateStemCount": 0
         },
         {
-          "id": "tatabahasa",
-          "title": "Tatabahasa",
+          "id": "ayat",
+          "title": "Ayat Tanya, Seruan dan Perintah",
           "totalQuestions": 50,
           "uniqueStems": 50,
           "duplicateStemCount": 0
         },
         {
-          "id": "imbuhan",
-          "title": "Imbuhan",
-          "totalQuestions": 40,
-          "uniqueStems": 40,
+          "id": "tatabahasa",
+          "title": "Tatabahasa",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
           "duplicateStemCount": 0
         },
         {
@@ -123,8 +116,8 @@
       "id": "math",
       "title": "Matematik Tahun 2",
       "totalQuestions": 800,
-      "uniqueStems": 794,
-      "duplicateStemCount": 6,
+      "uniqueStems": 799,
+      "duplicateStemCount": 1,
       "uniqueTemplates": 800,
       "templateReuseCount": 0,
       "topics": [
@@ -153,8 +146,8 @@
           "id": "darab",
           "title": "Darab",
           "totalQuestions": 124,
-          "uniqueStems": 118,
-          "duplicateStemCount": 6
+          "uniqueStems": 124,
+          "duplicateStemCount": 0
         },
         {
           "id": "bahagi",
@@ -181,8 +174,8 @@
           "id": "panjang",
           "title": "Panjang",
           "totalQuestions": 50,
-          "uniqueStems": 50,
-          "duplicateStemCount": 0
+          "uniqueStems": 49,
+          "duplicateStemCount": 1
         },
         {
           "id": "jisim_isi_padu",
@@ -202,27 +195,7 @@
       "topTemplateReuses": [],
       "topDuplicateStems": [
         {
-          "value": "10 x 3 ________",
-          "count": 2
-        },
-        {
-          "value": "2 x 3 ________",
-          "count": 2
-        },
-        {
-          "value": "2 x 9 ________",
-          "count": 2
-        },
-        {
-          "value": "5 x 8 ________",
-          "count": 2
-        },
-        {
-          "value": "7 x 4 ________",
-          "count": 2
-        },
-        {
-          "value": "9 x 4 ________",
+          "value": "berapakah bilangan sentimeter cm yang bersamaan dengan 1 meter",
           "count": 2
         }
       ]

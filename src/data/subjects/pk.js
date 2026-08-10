@@ -62,10 +62,10 @@ const kebersihanPairs = [
   ["tuala sudah lembap dan berbau", "jemur tuala", "Tuala yang dijemur cepat kering dan kurang kuman."],
 ].flatMap(([situasi, answer, explanation]) => [
   ask(`Apakah amalan kebersihan yang betul ${situasi}?`, answer, [answer, "makan tanpa cuci tangan", "pakai baju kotor", "kongsi berus gigi"], "Pilih amalan yang menjaga kebersihan badan.", explanation),
-  ask(`Mengapakah murid perlu ${answer} ${situasi}?`, "mengelakkan kuman", ["mengelakkan kuman", "menambah kotoran", "supaya lambat ke kelas", "supaya tidak perlu mandi"], "Kebersihan membantu badan sihat.", `${answer} membantu mengurangkan kuman dan menjaga kesihatan diri.`),
+  ask(`Mengapakah murid perlu ${answer} apabila ${situasi}?`, "mengelakkan kuman", ["mengelakkan kuman", "menambah kotoran", "supaya lambat ke kelas", "supaya tidak perlu mandi"], "Kebersihan membantu badan sihat.", `${answer} membantu mengurangkan kuman dan menjaga kesihatan diri.`),
   ask(`Apakah akibat jika murid tidak menjaga kebersihan ${situasi}?`, "mudah sakit", ["mudah sakit", "semakin cergas", "gigi terus kuat", "baju menjadi wangi"], "Kotoran dan kuman boleh memudaratkan badan.", "Tidak menjaga kebersihan boleh menyebabkan bau badan, sakit perut, sakit gigi atau jangkitan."),
   ask(`Siapakah yang boleh mengingatkan murid tentang kebersihan diri ${situasi}?`, "ibu bapa", ["ibu bapa", "orang tidak dikenali", "pemandu lori", "penjual mainan"], "Pilih orang dewasa yang menjaga murid.", "Ibu bapa, penjaga dan guru boleh membimbing murid menjaga kebersihan diri."),
-  ask(`Nilai apakah yang ditunjukkan apabila murid ${answer} ${situasi}?`, "bertanggungjawab", nilai, "Menjaga diri ialah tanggungjawab sendiri.", "Murid yang menjaga kebersihan menunjukkan sikap bertanggungjawab terhadap kesihatan diri."),
+  ask(`Nilai apakah yang ditunjukkan apabila murid ${answer} apabila ${situasi}?`, "bertanggungjawab", nilai, "Menjaga diri ialah tanggungjawab sendiri.", "Murid yang menjaga kebersihan menunjukkan sikap bertanggungjawab terhadap kesihatan diri."),
 ]);
 
 const pemakananPairs = [

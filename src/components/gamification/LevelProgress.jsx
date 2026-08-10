@@ -35,6 +35,11 @@ export default function LevelProgress({
         className="gamification-progress-bar"
         value={safeCurrent}
         max={safeMax}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={safeMax}
+        aria-valuenow={safeCurrent}
+        aria-valuetext={`${safeProgress}% lengkap`}
         aria-label="Kemajuan ke tahap seterusnya"
       >
         {safeProgress}%

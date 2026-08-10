@@ -44,7 +44,7 @@ export default function JatiAvatar({ size = 64, className = '' }) {
         objectFit: 'cover',
         display: 'block',
       }}
-      loading="eager"
+      loading="lazy"
       decoding="async"
     />
   );

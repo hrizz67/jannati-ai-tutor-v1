@@ -1,18 +1,18 @@
 # Validation Summary
 
-Generated: 2026-07-17T15:31:00.201Z
+Generated: 2026-08-08T08:13:14.384Z
 
 Overall status: PASS
 
 | Validator | Status | Info | Warnings | Errors | Report |
 | --- | --- | ---: | ---: | ---: | --- |
-| questions | pass | 0 | 12 | 0 | reports/validation/question-report.json |
-| curriculum | pass | 13800 | 0 | 0 | reports/validation/curriculum-report.json |
+| questions | pass | 0 | 0 | 0 | reports/validation/question-report.json |
+| curriculum | pass | 13680 | 0 | 0 | reports/validation/curriculum-report.json |
 | metadata | pass | 0 | 0 | 0 | reports/validation/metadata-report.json |
 | storage | pass | 0 | 0 | 0 | reports/validation/storage-report.json |
 
-Total info: 13800
-Total warnings: 12
+Total info: 13680
+Total warnings: 0
 Total errors: 0
 
 CI failure rule: only ERROR severity fails the build.

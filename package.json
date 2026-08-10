@@ -1,13 +1,18 @@
 {
   "name": "jannati-ai-tutor-v1",
-  "version": "3.0.0",
-  
+  "version": "3.2.0",
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "validate": "node scripts/validate/index.js",
     "validate:questions": "node scripts/validate/questionValidator.js",
+    "validate:bm": "node scripts/validate/bmReleaseGate.mjs",
+    "validate:subjects": "node scripts/validate/subjectReleaseGate.mjs",
+    "validate:feedback": "node scripts/validate/quizFeedbackSafetyAudit.mjs",
+    "validate:adaptive-subject": "node scripts/validate/adaptivePracticeSubjectGuardAudit.mjs",
+    "validate:access": "node scripts/validate/accessControlAudit.mjs",
+    "validate:uasa-answers": "node scripts/validate/uasaAnswerAudit.mjs",
     "validate:curriculum": "node scripts/validate/curriculumValidator.js",
     "validate:metadata": "node scripts/validate/metadataValidator.js",
     "validate:storage": "node scripts/validate/storageValidator.js",
@@ -18,10 +23,11 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0"

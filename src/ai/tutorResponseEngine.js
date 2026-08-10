@@ -125,6 +125,15 @@ function getLearnerAnswer(explicit = '', question = {}) {
   return normalizeText(explicit || question?.learnerAnswer || question?.studentAnswer || question?.answerAttempt || '', '');
 }
 
+function extractPromptAnswer(prompt = '') {
+  const text = normalizeText(prompt, '');
+  if (!text || /petunjuk|terangkan|jelaskan|kenapa|bantuan|contoh|topik|cadangan|uasa/i.test(text)) return '';
+  const directNumber = text.match(/^-?\d+(?:[.,]\d+)?$/)?.[0];
+  if (directNumber) return directNumber.replace(',', '.');
+  const labelled = text.match(/^(?:jawapan(?:\s+saya)?|saya\s+jawab)\s*(?:ialah|adalah|=|:)?\s*(.+)$/i)?.[1];
+  return normalizeText(labelled?.replace(/[.!?]+$/g, ''), '');
+}
+
 function getSubjectContext(subject = {}, subjectId = '') {
   const resolvedId = normalizeText(subject?.id || subjectId, '');
   return {
@@ -175,8 +184,26 @@ function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}
   return 'general';
 }
 
+function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
+  const text = String(prompt || '').toLocaleLowerCase('ms-MY');
+  if (/kata nama am/.test(text)) return 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat. Contohnya guru, kucing, buku dan sekolah.';
+  if (/kata nama khas/.test(text)) return 'Kata nama khas ialah nama khusus bagi orang, tempat atau benda. Biasanya huruf pertama ditulis dengan huruf besar.';
+  if (/bahagi|hasil bahagi/.test(text) && subject?.id === 'math') return 'Bahagi bermaksud membahagi sesuatu sama rata kepada beberapa kumpulan. Semak jumlah dan bilangan kumpulan sebelum mengira.';
+  if (/tambah|penambahan/.test(text) && subject?.id === 'math') return 'Tambah bermaksud menggabungkan dua atau lebih jumlah untuk mendapatkan jumlah keseluruhan.';
+  if (/tolak|penolakan/.test(text) && subject?.id === 'math') return 'Tolak bermaksud mencari beza atau baki selepas sebahagian jumlah dikeluarkan.';
+  if (/darab|pendaraban/.test(text) && subject?.id === 'math') return 'Darab ialah penambahan berulang bagi kumpulan yang sama banyak.';
+  return '';
+}
+
 function buildSuggestionList(intent, context = {}) {
   const generic = ['Cuba tanya dengan soalan yang lebih khusus.', 'Klik petunjuk jika perlukan bantuan.', 'Semak jawapan dan cuba lagi.'];
+  if (context.subject?.id === 'math' && /\+|tambah|jumlah/i.test(context.questionText || '')) {
+    return [
+      'Kenal pasti nombor yang hendak ditambah.',
+      'Tambah sa dahulu, kemudian puluh dan ratus.',
+      'Semak jumlah akhir mengikut tempat nilai.'
+    ];
+  }
   switch (intent) {
     case 'weak_topic':
       return [
@@ -215,6 +242,13 @@ function buildSuggestionList(intent, context = {}) {
         'Bina keyakinan dengan satu latihan lagi.'
       ];
     case 'question_help':
+      if (context.subject?.id === 'math' && /\+|tambah|jumlah/i.test(context.questionText || '')) {
+        return [
+          'Kenal pasti nombor yang hendak ditambah.',
+          'Tambah sa dahulu, kemudian puluh dan ratus.',
+          'Semak jumlah akhir mengikut tempat nilai.'
+        ];
+      }
       return [
         'Fokus pada kata kunci soalan ini.',
         'Bandingkan soalan dengan jawapan kamu.',
@@ -264,6 +298,69 @@ function extractBinaAyatTokens(text = '') {
   return { word: normalizeText(word, ''), name: normalizeText(name, '') };
 }
 
+function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = '', questionText = '', instruction = '', expectedAnswer = '' } = {}) {
+  const subject = String(subjectId).toLowerCase();
+  const topic = `${topicId} ${topicTitle}`.toLowerCase();
+  const stem = normalizeText(questionText, 'soalan ini');
+  if (subject === 'bm') {
+    if (/kata_nama_am|kata nama am/.test(topic)) return { hint: 'Bezakan nama umum dengan nama khas dalam ayat.', steps: ['Cari perkataan yang menamakan orang, haiwan, benda atau tempat.', 'Tentukan sama ada nama itu umum atau khusus.', 'Semak pilihan dengan maksud ayat.'], example: 'Gunakan nama benda atau tempat daripada ayat semasa.' };
+    if (/kata_nama_khas|kata nama khas/.test(topic)) return { hint: 'Cari nama khusus dan semak penggunaan huruf besar.', steps: ['Kenal pasti nama orang, tempat atau benda tertentu.', 'Bezakan nama khusus daripada nama umum.', 'Semak huruf besar pada nama khas.'], example: 'Gunakan nama khusus yang terdapat dalam ayat.' };
+    if (/kata_ganti_nama|kata ganti nama/.test(topic)) return { hint: 'Lihat siapa yang bercakap atau dirujuk sebelum memilih kata ganti nama.', steps: ['Kenal pasti orang dalam ayat.', 'Pilih kata ganti nama yang sepadan.', 'Baca semula ayat supaya maksudnya jelas.'], example: 'Gunakan kata ganti nama daripada ayat semasa.' };
+    if (/kata_kerja|kata kerja/.test(topic)) return { hint: 'Cari perkataan yang menunjukkan perbuatan dalam ayat.', steps: ['Baca ayat dengan teliti.', 'Kenal pasti perbuatan yang dilakukan.', 'Padankan kata kerja dengan subjek.'], example: 'Gunakan perbuatan yang disebut dalam ayat.' };
+    if (/simpulan/.test(topic)) return { hint: 'Cari maksud kiasan simpulan bahasa, bukan makna setiap perkataan secara literal.', steps: ['Kenal pasti simpulan bahasa.', 'Fikirkan maksud kiasannya.', 'Padankan dengan situasi dalam soalan.'], example: 'Gunakan situasi daripada soalan semasa.' };
+    return { hint: `Fokus pada kemahiran ${topicTitle || 'Bahasa Melayu'} yang diminta dalam soalan.`, steps: ['Baca arahan dan ayat dengan teliti.', 'Kenal pasti unsur Bahasa Melayu yang diuji.', 'Semak jawapan dengan maksud ayat.'], example: 'Gunakan perkataan dan ayat daripada soalan semasa.' };
+  }
+  if (subject === 'math') {
+    const numbers = [...stem.matchAll(/\b\d+(?:\.\d+)?\b/g)].map(match => match[0]).slice(0, 3);
+    if (/nombor\s+sebelum|sebelum\s+\d|nombor\s+terdahulu/i.test(stem)) {
+      return {
+        hint: 'Nombor sebelum ialah nombor yang datang tepat satu langkah lebih awal.',
+        steps: [
+          `Kenal pasti nombor rujukan: ${numbers[0] || 'nombor yang diberi'}.`,
+          'Undur satu langkah dengan menolak 1.',
+          'Semak bahawa jawapan kamu datang tepat sebelum nombor rujukan.'
+        ],
+        example: 'Untuk mencari nombor sebelum, gunakan nombor rujukan − 1.'
+      };
+    }
+    if (/nombor\s+selepas|selepas\s+\d|nombor\s+berikutnya/i.test(stem)) {
+      return {
+        hint: 'Nombor selepas ialah nombor yang datang tepat satu langkah kemudian.',
+        steps: [
+          `Kenal pasti nombor rujukan: ${numbers[0] || 'nombor yang diberi'}.`,
+          'Maju satu langkah dengan menambah 1.',
+          'Semak bahawa jawapan kamu datang tepat selepas nombor rujukan.'
+        ],
+        example: 'Untuk mencari nombor selepas, gunakan nombor rujukan + 1.'
+      };
+    }
+    if (/\+|tambah|jumlah/i.test(`${topic} ${stem}`)) {
+      return {
+        hint: 'Gabungkan nilai mengikut tempat nilai: ratus, puluh dan sa.',
+        steps: [
+          `Kenal pasti nombor yang hendak ditambah: ${numbers.join(' dan ') || 'nombor yang diberi'}.`,
+          'Tambah sa dahulu, kemudian puluh dan ratus.',
+          'Semak jumlah akhir supaya tiada tempat nilai tertinggal.'
+        ],
+        example: 'Susun nombor mengikut tempat nilai sebelum menambah.'
+      };
+    }
+    const operation = /darab|×|x\s*\d|kali/i.test(`${topic} ${stem}`) ? 'darab' : /tolak|baki|beza/i.test(`${topic} ${stem}`) ? 'tolak' : /tambah|jumlah|lagi/i.test(`${topic} ${stem}`) ? 'tambah' : /bahagi/i.test(`${topic} ${stem}`) ? 'bahagi' : 'operasi';
+    return { hint: `Kenal pasti operasi ${operation}${numbers.length ? ` dan susun nombor ${numbers.join(' dan ')}` : ''}.`, steps: [`Tulis nombor penting daripada soalan: ${numbers.join(', ') || 'nombor yang diberi'}.`, `Gunakan operasi ${operation} satu langkah pada satu masa.`, 'Semak unit dan anggaran jawapan.'], example: 'Gunakan nombor dalam soalan semasa, bukan contoh lain.' };
+  }
+  if (subject === 'english') return { hint: `Fokus pada perkataan petunjuk dalam ayat dan bentuk ${topic.includes('verb') ? 'kata kerja' : topic.includes('noun') ? 'kata nama' : topic.includes('adjective') ? 'kata sifat' : 'tatabahasa'} yang diminta.`, steps: ['Baca ayat dan cari subjek.', 'Kenal pasti bentuk perkataan yang diperlukan.', 'Semak susunan ayat dan tanda baca.'], example: 'Gunakan perkataan daripada ayat semasa.' };
+  if (subject === 'sains') return { hint: `Fokus pada ciri atau proses untuk topik ${topicTitle || 'Sains'} dalam soalan ini.`, steps: ['Kenal pasti benda hidup atau bahan yang disebut.', 'Perhatikan ciri, fungsi atau perubahan yang diminta.', 'Padankan bukti dengan konsep Sains yang tepat.'], example: 'Gunakan pemerhatian daripada soalan semasa.' };
+  if (subject === 'islam') return { hint: `Cari kata kunci yang menunjukkan konsep ${topicTitle || 'Pendidikan Islam'} dan pilih amalan atau fakta yang tepat.`, steps: ['Baca istilah penting dalam soalan.', 'Hubungkan istilah itu dengan pelajaran topik semasa.', 'Semak jawapan supaya tepat dan beradab.'], example: 'Gunakan contoh daripada topik semasa.' };
+  if (subject === 'arab') return { hint: `Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.`, steps: ['Kenal pasti perkataan Arab yang diberi.', 'Padankan makna atau sebutan berdasarkan topik semasa.', 'Semak huruf dan baris jika ditunjukkan.'], example: 'Rujuk perkataan Arab dalam soalan semasa.' };
+  if (subject === 'pj' || subject === 'pk') return { hint: `Fokus pada tindakan, pergerakan atau amalan selamat untuk topik ${topicTitle || 'kesihatan'} dalam soalan ini.`, steps: ['Kenal pasti aktiviti atau situasi.', 'Pilih tindakan yang selamat dan sesuai.', 'Semak kesannya kepada pergerakan atau kesihatan.'], example: 'Gunakan situasi yang diberikan dalam soalan.' };
+  return null;
+}
+
+function isGenericTutorContent(value = '') {
+  const text = normalizeText(value, '').toLowerCase();
+  return !text || /jawapan yang tepat|cari kata kunci(?: penting)? dan baca ayat penuh|cari perkataan petunjuk dan baca ayat pendek|baca kata kunci|padang$|^ali$/.test(text);
+}
+
 function buildContextualSections({
   intent,
   questionText,
@@ -294,6 +391,7 @@ function buildContextualSections({
   const resolvedQuestion = questionText || getQuestionText(question);
   const resolvedInstruction = instruction || getInstruction(question);
   const resolvedOptions = options.length ? options : getOptions(question);
+  const expectedAnswer = getExpectedAnswer(question);
   const isBinaAyat = subject?.id === 'bm' && /bina\s+ayat|bina_ayat/i.test(`${topic?.id || ''} ${topic?.title || ''} ${resolvedQuestion}`);
   const binaTokens = isBinaAyat ? extractBinaAyatTokens(`${resolvedInstruction} ${resolvedQuestion}`) : { word: '', name: '' };
   const binaFocus = isBinaAyat && (binaTokens.name || binaTokens.word)
@@ -310,7 +408,7 @@ function buildContextualSections({
         'Akhiri ayat dengan tanda noktah.'
       ]
     : [];
-  const expectedAnswer = getExpectedAnswer(question);
+  const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer });
   const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
   const explanationText = normalizeText(
@@ -329,6 +427,7 @@ function buildContextualSections({
   );
   const hintText = normalizeText(
     binaHint ||
+    subjectGuidance?.hint ||
     guided?.hint ||
     coachResponse?.hint?.hint ||
     coachResponse?.hint ||
@@ -350,11 +449,12 @@ function buildContextualSections({
   const coachKnowledge = coachResponse?.knowledge || {};
   const steps = normalizeList(
     binaSteps.length ? binaSteps :
+    (subjectGuidance ? subjectGuidance.steps :
     coachResponse?.steps ||
     coachKnowledge?.steps ||
     coachKnowledge?.learningSteps ||
     INTENT_STEPS[intent] ||
-    INTENT_STEPS.general
+    INTENT_STEPS.general)
   );
   const commonMistake = normalizeText(
     isBinaAyat && !isCorrect
@@ -364,9 +464,10 @@ function buildContextualSections({
     categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const example = normalizeText(
+    subjectGuidance?.example ||
     coachKnowledge?.examples?.[0] ||
     coachResponse?.examples?.[0] ||
-    categoryRule.example && categoryRule.category !== 'generic' ? categoryRule.example : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
+    (categoryRule.example && categoryRule.category !== 'generic' ? categoryRule.example : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category }))
   );
   const memoryTip = normalizeText(
     coachKnowledge?.memoryTips?.[0] ||
@@ -624,16 +725,29 @@ export async function getTutorResponse(options = {}) {
   const topicContext = getTopicContext(topic || {}, topicId);
   const resolvedQuestion = question || {};
   const studentName = getStudentDisplayName(studentProfile, 'Murid');
-  const resolvedIntent = inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
+  let resolvedIntent = inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const resolvedQuestionText = getQuestionText(resolvedQuestion, questionText);
   const resolvedInstruction = getInstruction(resolvedQuestion, instruction);
   const resolvedOptions = getOptions(resolvedQuestion, questionOptions);
-  const answerText = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
+  const promptAnswer = extractPromptAnswer(prompt);
+  const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
   const acceptedAnswers = getAcceptedAnswers(resolvedQuestion);
   const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
-  const resolvedCorrect = typeof isCorrect === 'boolean'
-    ? isCorrect
-    : isAcceptedQuestionAnswer(answerText, resolvedQuestion);
+  const answerCheckQuestion = {
+    ...resolvedQuestion,
+    answer: expected || resolvedQuestion.answer,
+    acceptedAnswers: expected
+      ? [...new Set([expected, ...acceptedAnswers])]
+      : acceptedAnswers
+  };
+  const resolvedCorrect = promptAnswer
+    ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
+    : typeof isCorrect === 'boolean'
+      ? isCorrect
+      : isAcceptedQuestionAnswer(answerText, answerCheckQuestion);
+  if (promptAnswer && (!intent || intent === 'general')) {
+    resolvedIntent = resolvedCorrect ? 'correct_answer_reinforcement' : 'wrong_answer_coaching';
+  }
   const hasQuestionContext = Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id);
 
   let coachResponse = null;
@@ -741,7 +855,7 @@ export async function getTutorResponse(options = {}) {
     question: resolvedQuestion,
     answer: expected,
     learnerAnswer: answerText,
-    isCorrect,
+    isCorrect: resolvedCorrect,
     attemptCount: Number(attemptCount) || 0,
     hintsUsed: Number(hintsUsed) || 0,
     coachResponse,
@@ -755,6 +869,9 @@ export async function getTutorResponse(options = {}) {
     strongTopics,
     guided
   });
+  const standaloneAnswer = resolvedIntent === 'general'
+    ? buildStandaloneTutorAnswer(prompt, subjectContext)
+    : '';
 
   const suggestions = buildSuggestionList(resolvedIntent, {
     subject: subjectContext,
@@ -779,8 +896,8 @@ export async function getTutorResponse(options = {}) {
   );
 
   return {
-    text: contextBundle.text || fallbackText || DEFAULT_FALLBACK,
-    shortText: contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
+    text: standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
+    shortText: standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
     intent: resolvedIntent,
     confidence: clampPercent(confidence),
     suggestions,

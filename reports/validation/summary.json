@@ -1,11 +1,11 @@
 {
   "validator": "master",
-  "generatedAt": "2026-07-17T15:31:00.201Z",
+  "generatedAt": "2026-08-08T08:13:14.384Z",
   "status": "pass",
   "totals": {
-    "infos": 13800,
+    "infos": 13680,
     "errors": 0,
-    "warnings": 12
+    "warnings": 0
   },
   "validators": [
     {
@@ -13,13 +13,13 @@
       "status": "pass",
       "infos": 0,
       "errors": 0,
-      "warnings": 12,
+      "warnings": 0,
       "reportFile": "reports/validation/question-report.json"
     },
     {
       "validator": "curriculum",
       "status": "pass",
-      "infos": 13800,
+      "infos": 13680,
       "errors": 0,
       "warnings": 0,
       "reportFile": "reports/validation/curriculum-report.json"

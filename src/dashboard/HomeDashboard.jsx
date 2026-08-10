@@ -1,9 +1,10 @@
-import React, { Suspense, useEffect, useMemo, useRef } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
 import IconGlyph, { SubjectIcon } from '../components/IconGlyph.jsx';
 import JannaAvatar from '../components/JannaAvatar';
 import GamificationSummary from '../components/GamificationSummary.jsx';
+import ResumePracticeCard from '../components/ResumePracticeCard.jsx';
 import VoiceButton from '../components/VoiceButton.jsx';
 import DashboardLayout from './DashboardLayout.jsx';
 const StudentDashboard = React.lazy(() => import('./StudentDashboard.jsx'));
@@ -33,10 +34,85 @@ import {
 } from '../utils/displayFormatter';
 import { getAnalyticsNoData, getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
+import tutorAiBadge from '../assets/icons/3d/tutor-ai-badge.webp';
+import uasaBadge from '../assets/icons/3d/uasa-badge.webp';
+import ibuBapaBadge from '../assets/icons/3d/ibu-bapa-badge.webp';
+import homeBadge from '../assets/icons/3d/home-badge.webp';
+import notaBadge from '../assets/icons/3d/nota-badge.webp';
+import bukuTeksBadge from '../assets/icons/3d/buku-teks-badge.webp';
+import bmBadge from '../assets/icons/3d/bm-badge.webp';
+import mathBadge from '../assets/icons/3d/math-badge.webp';
+import englishBadge from '../assets/icons/3d/english-badge.webp';
+import sainsBadge from '../assets/icons/3d/sains-badge.webp';
+import arabBadge from '../assets/icons/3d/arab-badge.webp';
+import islamBadge from '../assets/icons/3d/islam-badge.webp';
+import pjBadge from '../assets/icons/3d/pj-badge.webp';
+import pkBadge from '../assets/icons/3d/pk-badge.webp';
+import bacaanBadge from '../assets/icons/3d/bacaan-badge.webp';
+import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
+import bertuturBadge from '../assets/icons/3d/bertutur-badge.webp';
+import menulisBadge from '../assets/icons/3d/menulis-badge.webp';
+import ganjaranBadge from '../assets/icons/3d/ganjaran-badge.webp';
+import targetBadge from '../assets/icons/3d/target-badge.webp';
+import clockBadge from '../assets/icons/3d/clock-badge.webp';
+import fireBadge from '../assets/icons/3d/fire-badge.webp';
+import bellBadge from '../assets/icons/3d/bell-badge.webp';
+
+// Legacy motion tokens remain documented while the resume UI uses the 3D replacements: IconGlyph name="play" and IconGlyph name="repeat".
+
+function GameBadge({ src, alt = '', className = '' }) {
+  return <img className={`game-badge-icon ${className}`.trim()} src={src} alt={alt} aria-hidden={!alt} loading="lazy" decoding="async" draggable="false" />;
+}
+
+const subjectBadges = { bm: bmBadge, math: mathBadge, english: englishBadge, sains: sainsBadge, arab: arabBadge, islam: islamBadge, pj: pjBadge, pk: pkBadge };
+
+function SubjectBadge({ subjectId }) {
+  const key = String(subjectId || '').toLowerCase();
+  const source = subjectBadges[key];
+  return source ? <GameBadge src={source} /> : <SubjectIcon subjectId={subjectId} size={18} />;
+}
+
+function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild, onCreateChild, onDeleteChild }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [name, setName] = useState('');
+  const [year, setYear] = useState('Tahun 2');
+  const activeChild = profiles.find(child => child.id === activeChildId) || profiles[0];
+
+  function submit(event) {
+    event.preventDefault();
+    if (!name.trim()) return;
+    const created = onCreateChild?.({ name: name.trim(), year, avatar: 'janna' });
+    if (created === false) return;
+    setName('');
+    setYear('Tahun 2');
+    setIsAdding(false);
+  }
+
+  return (
+    <section className="child-profile-switcher" aria-label="Profil anak">
+      <div className="child-profile-switcher-heading">
+        <div><p className="eyebrow">Akaun keluarga</p><b>Profil anak</b><small>{activeChild?.name || 'Murid'} · {activeChild?.year || 'Tahun 2'}</small></div>
+        <button type="button" className="secondary" onClick={() => setIsAdding(value => !value)}>{isAdding ? 'Tutup' : 'Tambah anak'}</button>
+      </div>
+      <select aria-label="Pilih profil anak" value={activeChildId || activeChild?.id || ''} onChange={event => onSelectChild?.(event.target.value)}>
+        {profiles.map(child => <option key={child.id} value={child.id}>{child.name} · {child.year || 'Tahun 2'}</option>)}
+      </select>
+      {profiles.length > 1 ? <button type="button" className="secondary child-profile-delete" onClick={() => onDeleteChild?.(activeChild?.id)}>Padam profil {activeChild?.name || 'anak ini'}</button> : null}
+      {isAdding ? (
+        <form className="child-profile-form" onSubmit={submit}>
+          <label>Nama anak<input value={name} onChange={event => setName(event.target.value)} placeholder="Contoh: Aina" autoFocus /></label>
+          <label>Tahun<select value={year} onChange={event => setYear(event.target.value)}>{['Tahun 1', 'Tahun 2', 'Tahun 3', 'Tahun 4', 'Tahun 5', 'Tahun 6'].map(item => <option key={item}>{item}</option>)}</select></label>
+          <button type="button" onClick={() => submit({ preventDefault: () => {} })} disabled={!name.trim()}>Simpan profil anak</button>
+        </form>
+      ) : null}
+    </section>
+  );
+}
 
 export default function HomeDashboard(props) {
   const {
     profile,
+    accessProfile,
     adaptiveProfile,
     subjectList,
     allSubjects,
@@ -67,14 +143,28 @@ export default function HomeDashboard(props) {
     onOpenAi,
     onReset,
     onExportBetaReport,
+    onImportLearningData,
+    onRecoverLearningData,
+    onSyncLearningData,
+    cloudSyncStatus,
+    onLoadLearningData,
     onResume,
     onRestartResume,
     onCompleteDaily,
-    onToggleFavourite
+    onToggleFavourite,
+    onLogout,
+    hasAccountSession,
+    childProfiles,
+    activeChildId,
+    onSelectChild,
+    onCreateChild,
+    onDeleteChild
   } = props;
 
   const adaptiveStore = adaptiveProfile || profile;
-  const studentName = getStudentDisplayName(adaptiveProfile?.name ? adaptiveProfile : profile, 'Murid');
+  const studentName = getStudentDisplayName([profile, adaptiveProfile], 'Murid');
+  const isPremiumAccount = Boolean(accessProfile?.isPremium ?? profile?.isPremium);
+  const accessLabel = accessProfile?.accessLabel || profile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Akses Free');
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
@@ -95,7 +185,9 @@ export default function HomeDashboard(props) {
   const effectiveMemory = useMemo(() => ({ ...aiMemory, topicMastery, masterySummary, mastery: masterySummary.masteryScore }), [aiMemory, topicMastery, masterySummary]);
   const smartLesson = useMemo(() => buildAdaptiveRecommendation({ profile, memory: effectiveMemory, subjects: adaptiveSubjects }), [profile, effectiveMemory, adaptiveSubjects]);
   const learningJourney = useMemo(() => buildLessonPlan({ subjects: adaptiveSubjects, topicMastery }), [adaptiveSubjects, topicMastery]);
-  const smartSubject = adaptiveSubjects.find(subject => subject.id === smartLesson?.nextSubject) || selectedSubject;
+  const todayLesson = learningJourney.todayLesson || null;
+  const smartTargetId = todayLesson?.subjectId || smartLesson?.nextSubject || '';
+  const smartSubject = adaptiveSubjects.find(subject => subject.id === smartTargetId) || selectedSubject;
   const smartTopic = smartSubject?.topics?.find(topic => topic.id === smartLesson?.nextTopic);
   const dashboardCharacter = getPersonalityForSubject(selectedSubject || {});
   const welcomeTopic = recommended?.title || learningJourney?.todayLesson?.title || smartTopic?.title || 'topik pilihan';
@@ -114,18 +206,15 @@ export default function HomeDashboard(props) {
   const missingSkSpRecommendation = recommendMissingSkSp(curriculumCoverage);
   const curriculumNoMappingMessage = 'Data liputan kurikulum belum tersedia untuk subjek ini.';
   const curriculumCoverageState = useMemo(() => getCurriculumCoverageState(curriculumCoverage.summary), [curriculumCoverage.summary]);
-  const resumeModeLabel = formatResumeTitle(resume);
-  const resumeProgress = Number.isInteger(resume?.currentIndex) ? resume.currentIndex : Number.isInteger(resume?.questionIndex) ? resume.questionIndex : null;
-  const resumeSubjectLabel = formatSubjectName(resume?.metadata?.subjectTitle || resume?.subjectId || 'Mod aktif');
   const selectedSubjectIndex = useMemo(() => visibleSubjects.findIndex(subject => subject?.id === selectedSubjectId), [visibleSubjects, selectedSubjectId]);
-  const smartTargetSubjectId = smartLesson?.nextSubject || smartLesson?.subjectId || smartSubject?.id || learningJourney?.todayLesson?.subjectId || '';
-  const smartTargetTopicLabel = learningJourney.todayLesson?.title || smartTopic?.title || formatTopicName(smartLesson?.nextTopic || smartLesson?.topicId || '');
+  const smartTargetSubjectId = todayLesson?.subjectId || smartLesson?.nextSubject || smartLesson?.subjectId || smartSubject?.id || selectedSubjectId || '';
+  const smartTargetTopicLabel = todayLesson?.title || smartTopic?.title || formatTopicName(smartLesson?.nextTopic || smartLesson?.topicId || '');
   const smartTargetSubjectLabel = formatSubjectYearLabel(smartTargetSubjectId || smartSubject?.id || selectedSubjectId);
   const smartCrossSubject = isCrossSubjectTarget(selectedSubjectId, smartTargetSubjectId);
-  const resumeTopicLabel = formatTopicName(resume?.metadata?.topicTitle || resume?.topicId || '', { subjectId: resume?.subjectId });
-  const resumeCrossSubject = isCrossSubjectTarget(selectedSubjectId, resume?.subjectId);
   const recommendationMinutes = adaptivePracticePreview?.summary?.estimatedMinutes || 0;
   const recommendationUsesResume = Boolean(resume && !resume.completed && resume.subjectId === selectedSubjectId && resume.topicId === recommendedPracticeTopic?.id);
+  const resumeTitle = resume ? formatResumeTitle(resume) : '';
+  const resumeCrossSubjectLabel = isCrossSubjectTarget(selectedSubjectId, resume?.subjectId) ? 'Sambung lintas subjek' : '';
   const aiRecommendationCta = formatRecommendationCta({
     reason: aiRecommendation?.reason,
     recommendationKey: /^Ulang/i.test(aiRecommendation?.reason || '') ? 'review' : '',
@@ -208,12 +297,12 @@ export default function HomeDashboard(props) {
     gamificationProfile,
     weeklyAnalytics: { totals: { questions: 0, accuracy: 0, studyMinutes: 0, activeDays: 0 }, daily: [], trend: { direction: 'insufficient_data', message: 'Belum ada data.' } },
     statsCards: [
-      { label: 'XP', value: canonicalGamification.globalXp, icon: <IconGlyph name="star" /> },
-      { label: 'Tahap', value: canonicalGamification.globalLevel, icon: <IconGlyph name="trophy" /> },
-      { label: 'Soalan', value: adaptiveStore.totalQuestions || 0, icon: <IconGlyph name="book" /> },
-      { label: 'Ketepatan', value: `${clampPercent(studentData.overallAccuracy)}%`, icon: <IconGlyph name="target" /> },
-      { label: 'Masa Belajar', value: formatDuration(adaptiveStore.studyMinutes || 0, { unit: 'minutes' }), icon: <IconGlyph name="clock" /> },
-      { label: 'Streak', value: canonicalGamification.currentStreak, icon: <IconGlyph name="fire" motion="breath" /> }
+      { label: 'XP', value: canonicalGamification.globalXp, icon: <GameBadge src={ganjaranBadge} /> },
+      { label: 'Tahap', value: canonicalGamification.globalLevel, icon: <GameBadge src={uasaBadge} /> },
+      { label: 'Soalan', value: adaptiveStore.totalQuestions || 0, icon: <GameBadge src={bukuTeksBadge} /> },
+      { label: 'Ketepatan', value: `${clampPercent(studentData.overallAccuracy)}%`, icon: <GameBadge src={targetBadge} /> },
+      { label: 'Masa Belajar', value: formatDuration(adaptiveStore.studyMinutes || 0, { unit: 'minutes' }), icon: <GameBadge src={clockBadge} /> },
+      { label: 'Streak', value: canonicalGamification.currentStreak, icon: <GameBadge src={fireBadge} /> }
     ],
     studentCore,
     masterySummary,
@@ -247,6 +336,11 @@ export default function HomeDashboard(props) {
     onOpenAi,
     onReset,
     onExportBetaReport,
+    onImportLearningData,
+    onRecoverLearningData,
+    onSyncLearningData,
+    cloudSyncStatus,
+    onLoadLearningData,
     resume,
     onResume,
     onRestartResume,
@@ -266,18 +360,38 @@ export default function HomeDashboard(props) {
     <DashboardLayout>
       <aside className="sidebar">
         <div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div>
-        <button className="nav active"><IconGlyph name="home" motion="hover" /> <span>Papan Utama</span></button>
-        <button className="nav" onClick={onOpenAi}><IconGlyph name="bot" motion="pulse" /> <span>Tutor AI</span></button>
-        <button className="nav" onClick={onOpenUasa}><IconGlyph name="trophy" motion="celebrate" /> <span>UASA</span></button>
-        <button className="nav" onClick={onOpenParent}><IconGlyph name="family" motion="hover" /> <span>Ibu Bapa</span></button>
-        <div className="sidebar-note"><b><IconGlyph name="spark" motion="shine" /> <span>Data Ringan</span></b><p>Data dimuat ikut subjek supaya lebih ringan.</p></div>
+        <button type="button" className="nav active"><GameBadge src={homeBadge} /> <span>Papan Utama</span></button>
+        <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('nota')}><GameBadge src={notaBadge} /> <span>Nota</span></button>
+        <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('buku')}><GameBadge src={bukuTeksBadge} /> <span>Buku Teks</span></button>
+        <button type="button" className="nav" onClick={onOpenAi}><GameBadge src={tutorAiBadge} /> <span>Tutor AI</span></button>
+        <button type="button" className="nav" onClick={onOpenUasa}><GameBadge src={uasaBadge} /> <span>UASA</span></button>
+        <button type="button" className="nav" onClick={onOpenParent}><GameBadge src={ibuBapaBadge} /> <span>Ibu Bapa</span></button>
       </aside>
       <section className="dashboard-main">
         <header className="brand-app-header">
-          <div className="brand-app-title"><BrandLogo horizontal size="sm" /><div><p className="eyebrow">Tahun 2</p><h1>Jannati AI Tutor</h1></div></div>
-          <div className="brand-student-strip"><JannaAvatar size={48} className="student-avatar" /><div><b title={studentName}>{studentName}</b><small>Tahun 2</small></div><span className="achievement-chip">Tahap {canonicalGamification.globalLevel}</span><span className="achievement-chip">XP {canonicalGamification.globalXp}</span>{canonicalGamification.starCount > 0 ? <span className="achievement-chip">Bintang {canonicalGamification.starCount}</span> : null}<span className="achievement-chip">Streak {canonicalGamification.currentStreak}</span><span className="achievement-chip">Akurasi {clampPercent(studentData.overallAccuracy)}%</span><button type="button" className="icon-button" aria-label="Notifikasi"><IconGlyph name="bell" /></button></div>
+          <div className="brand-student-strip">
+            <div className="student-identity">
+              <JannaAvatar size={48} className="student-avatar" />
+              <div className="student-identity-copy"><b title={studentName}>{studentName}</b><small>{profile?.year || 'Tahun 2'}</small></div>
+            </div>
+            <div className="student-achievement-chips">
+              <span className="achievement-chip">Tahap {canonicalGamification.globalLevel}</span>
+              <span className="achievement-chip">XP {canonicalGamification.globalXp}</span>
+              {canonicalGamification.starCount > 0 ? <span className="achievement-chip">Bintang {canonicalGamification.starCount}</span> : null}
+              <span className="achievement-chip">Streak {canonicalGamification.currentStreak}</span>
+              <span className="achievement-chip">Akurasi {clampPercent(studentData.overallAccuracy)}%</span>
+              <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
+                <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
+              </span>
+              <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
+              <button type="button" className="secondary header-account-action" onClick={onLogout}>{hasAccountSession ? 'Log keluar' : 'Tukar Akaun'}</button>
+            </div>
+          </div>
         </header>
-        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div className="avatar-large"><JannaAvatar size={84} /></div><div><p className="eyebrow">Edisi Data Ringan</p><h1>{personalityGreeting || `Assalamualaikum, ${studentName}`}</h1><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /><GamificationSummary profile={gamificationProfile} canonical={canonicalGamification} className="home-gamification-summary" /></div></section>
+        {childProfiles?.length ? <ChildProfileSwitcher profiles={childProfiles} activeChildId={activeChildId} onSelectChild={onSelectChild} onCreateChild={onCreateChild} onDeleteChild={onDeleteChild} /> : null}
+        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div><h2>{personalityGreeting || `Assalamualaikum, ${studentName}`}</h2><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /></div></section>
+        <GamificationSummary profile={gamificationProfile} canonical={canonicalGamification} className="home-gamification-summary" />
+        <div className="subject-rail-wrap">
         <div className="subject-quick-switch-shell">
           <button
             type="button"
@@ -296,7 +410,7 @@ export default function HomeDashboard(props) {
               <button
                 key={subject?.id}
                 type="button"
-                className={`subject-quick-pill ${isActive ? 'active' : ''}`}
+                className={`subject-quick-pill subject-quick-pill--${subject?.id || 'default'} ${isActive ? 'active' : ''}`}
                 aria-pressed={isActive}
                 onClick={() => onSelectSubject(subject?.id)}
                 ref={element => {
@@ -307,7 +421,7 @@ export default function HomeDashboard(props) {
                   }
                 }}
               >
-                <span className="subject-quick-pill-icon" aria-hidden="true"><SubjectIcon subjectId={subject?.id} size={18} /></span>
+                <span className="subject-quick-pill-icon" aria-hidden="true"><SubjectBadge subjectId={subject?.id} /></span>
                 <span className="subject-quick-pill-text">{subjectTitle}</span>
               </button>
             );
@@ -322,6 +436,8 @@ export default function HomeDashboard(props) {
           >
             {'\u203A'}
           </button>
+        </div>
+        <p className="subject-rail-hint" aria-live="polite">Leret atau guna anak panah untuk subjek lain.</p>
         </div>
         <Suspense fallback={<section className="card"><p className="eyebrow">Memuat</p><h2><IconGlyph name="spark" motion="load" /> <span>Dashboard sedang dimuat</span></h2><p>Sebentar ya, kandungan sedang disiapkan.</p></section>}>
           <details className="dashboard-disclosure" open>
@@ -338,7 +454,7 @@ export default function HomeDashboard(props) {
           </details>
         </Suspense>
 
-        <section className="quick-actions"><button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)}><IconGlyph name="play" motion="hover" /> <span>Sambung Belajar</span></button><button className="secondary" onClick={onOpenAi}><IconGlyph name="bot" motion="pulse" /> <span>Tutor AI</span></button><button className="secondary" onClick={onOpenUasa}><IconGlyph name="trophy" motion="celebrate" /> <span>Simulator UASA</span></button><button className="secondary" onClick={onStartBacaan}><IconGlyph name="headphones" motion="sound" /> <span>Bacaan</span></button><button className="secondary" onClick={onStartMendengar}><IconGlyph name="headphones" motion="sound" /> <span>Mendengar</span></button><button className="secondary" onClick={onStartBertutur}><IconGlyph name="mic" motion="pulse" /> <span>Bertutur</span></button><button className="secondary" onClick={onStartMenulis}><IconGlyph name="pen" motion="hover" /> <span>Menulis</span></button><button className="secondary" onClick={onOpenParent}><IconGlyph name="family" motion="hover" /> <span>Ibu Bapa</span></button></section>
+        <section className="quick-actions" aria-label="Aktiviti pembelajaran"><button type="button" onClick={resume ? onResume : () => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>{resume ? 'Sambung Latihan' : 'Sambung Belajar'}</span></button><button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button><button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button><button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button><button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button></section>
         <section className="card adaptive-practice-card">
           <p className="eyebrow">Latihan AI</p>
           <h2>Latihan AI</h2>
@@ -362,24 +478,7 @@ export default function HomeDashboard(props) {
             ))}
           </div>
         </section>
-        {resume && (
-          <section className="card resume-card">
-            <p className="eyebrow">Sambung Automatik</p>
-            <h2><IconGlyph name="play" motion="hover" /> <span>Sambung Latihan</span></h2>
-            <p>
-              {resumeModeLabel}
-              <br />
-              Subjek: <b>{resumeSubjectLabel}</b>
-              {resumeCrossSubject && <><br /><span className="badge cross-subject-badge">Sambung lintas subjek</span></>}
-              {resumeTopicLabel && <><br />Topik: <b>{resumeTopicLabel}</b></>}
-              {resumeProgress !== null && <><br />Soalan: <b>{resumeProgress + 1}</b></>}
-            </p>
-            <div className="actions">
-              <button onClick={onResume}><IconGlyph name="play" motion="hover" /> <span>Sambung</span></button>
-              <button className="secondary" onClick={onRestartResume}><IconGlyph name="repeat" motion="hover" /> <span>Mula Semula</span></button>
-            </div>
-          </section>
-        )}
+        <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
         <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>{canonicalAnalytics.hasEvidence ? <div className="mastery-summary-grid"><div><b>{canonicalAnalytics.masteryPercent}%</b><span>Skor Penguasaan</span></div><div><b>{canonicalAnalytics.masteredTopics.length}</b><span>Dikuasai</span></div><div><b>{canonicalAnalytics.learningTopics.length}</b><span>Sedang Belajar</span></div><div><b>{canonicalAnalytics.weakTopics.length}</b><span>Perlu Latihan</span></div></div> : <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
         <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + UASA</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
         <section className="card smart-lesson-card">
@@ -388,7 +487,7 @@ export default function HomeDashboard(props) {
           <p>{learningJourney.reason || smartLesson?.reason || 'Teruskan dengan langkah yang seimbang.'}</p>
           <div className="recommend-meta">
             {smartCrossSubject && <span className="badge cross-subject-badge">Cadangan lintas subjek</span>}
-            <span className="badge target-subject-badge"><SubjectIcon subjectId={smartTargetSubjectId || smartSubject?.id} size={16} /> {smartTargetSubjectLabel}</span>
+            <span className="badge target-subject-badge"><SubjectBadge className="target-subject-badge-icon" subjectId={smartTargetSubjectId || smartSubject?.id} /> {smartTargetSubjectLabel}</span>
             <span>Keyakinan AI {formatPriority(smartLesson?.priority || 'normal')}</span>
             <span>{learningJourney.blockedTopics?.length || 0} topik terkunci</span>
           </div>
@@ -397,7 +496,7 @@ export default function HomeDashboard(props) {
             <div><span>Seterusnya</span><b>{learningJourney.nextLesson?.title || 'Selepas dikuasai'}</b><small>{formatStatus(learningJourney.nextLesson?.masteryStatus || 'locked')}</small></div>
             <div><span>Ulang Kaji</span><b>{learningJourney.recommendedReview?.title || 'Tiada ulang kaji'}</b><small>{formatStatus(learningJourney.recommendedReview?.masteryStatus || 'clear')}</small></div>
           </div>
-          <button onClick={() => onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!learningJourney.todayLesson && !smartLesson?.nextQuestionId}>{smartLessonCta}</button>
+          <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)} disabled={!todayLesson && !smartLesson?.nextQuestionId}>{smartLessonCta}</button>
         </section>
         <section className="card ai-recommend-card">
           <p className="eyebrow">Cadangan Guru AI</p>
@@ -420,7 +519,7 @@ export default function HomeDashboard(props) {
           ) : (
             <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />
           )}
-          <button onClick={() => recommendationUsesResume ? onResume() : (recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic))} disabled={!recommendedPracticeTopic && !recommendationUsesResume}>{aiRecommendationCta}</button>
+          <button type="button" onClick={() => recommendationUsesResume ? onResume() : (recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic))} disabled={!recommendedPracticeTopic && !recommendationUsesResume}>{aiRecommendationCta}</button>
         </section>
       </section>
     </DashboardLayout>

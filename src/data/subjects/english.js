@@ -2002,7 +2002,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-ADJECTIVES-042",
-          "q": "The road is ________ after the rain.",
+          "q": "The path is ________ after the rain.",
           "answer": "slippery",
           "accepted": [
             "slippery"
@@ -4382,7 +4382,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-FOOD-010",
-          "q": "I drink ________ every morning.",
+          "q": "For breakfast, I drink ________ every morning.",
           "answer": "milk",
           "accepted": [
             "milk"
@@ -4392,7 +4392,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "I drink ________ every morning."
+          "question": "For breakfast, I drink ________ every morning."
         },
         {
           "id": "ENG-FOOD-011",

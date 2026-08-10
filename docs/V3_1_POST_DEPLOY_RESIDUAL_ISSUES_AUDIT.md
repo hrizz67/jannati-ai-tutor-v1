@@ -699,3 +699,45 @@ Static mobile rules cover 320×568, 375×667, 390×844, 393×852, and 430×932: 
 ### Recommendation
 
 Focused repairs are ready for commit and device-QA review. Existing 14 baseline validator failures remain separate release-triage items. No commit, push, or deploy was performed.
+
+## Cross-subject Tutor AI and feedback-pattern audit
+
+### Surface inventory
+
+| Surface | Component/path | Character/state | Answer risk | Mobile area |
+|---|---|---|---|---|
+| Tutor AI | `src/components/ai/TutorAIModal.jsx` | Janna, active/final | Expected answer gated by reveal state | Composer/footer |
+| Terangkan | `AIExplainModal.jsx` | Subject persona | Final answer only through existing reveal data | Sticky action footer |
+| Ajar Saya | `AITeacherModal.jsx` | Subject persona | Final answer only through existing reveal data | Sticky action footer |
+| Feedback card | `Quiz` in `src/App.jsx` | Jati/Janna by subject | Correct answer shown only when feedback provides it | Result actions |
+| Finish card | `Finish` in `src/App.jsx` | Session-complete | Completion copy confined to finish state | Result actions |
+
+### Subject fixture audit
+
+Representative first-topic fixtures were exercised for BM, Mathematics, English, Sains, Pendidikan Islam, Bahasa Arab, PJ, and PK. The audit covered opening, hint, progress/reveal gating, wrong/correct state payloads, examples, character routing, and reset keys. A repeated generic-help pattern was confirmed in cross-subject fallback content: hints/examples/steps could fall back to “cari kata kunci”, “jawapan yang tepat”, or unrelated examples. The reusable `buildCrossSubjectGuidance` path now supplies question/topic-aware guidance for BM grammar, Mathematics operations and numbers, English grammar form, Sains observation/concept, Pendidikan Islam terminology, Arabic RTL vocabulary, and PJ/PK safety contexts. Bina Ayat remains token-specific through the existing extractor.
+
+### Answer-leak and duplicate results
+
+Active fixtures across all eight loaded subject datasets keep `sections.correctAnswer` empty and do not place the expected answer in active hint/short text. Final reveal remains controlled by the existing correct/show-answer/attempt rules. Tutor AI uses normalized consecutive-message deduplication, resets on `open + sessionKey`, and no longer renders the same error as both a bubble and status duplicate. No hidden DOM or aria expected-answer path was found in active progress.
+
+### Character/state matrix
+
+Jati and Janna labels now derive from the displayed quiz character. Wrong-answer feedback uses continuation copy (`Jangan putus asa. Semak petunjuk dan cuba sekali lagi.`), while completion farewell remains in the finish path. The existing Jati farewell branch contains no Janna reference. No cross-subject avatar/copy mismatch was found in the audited result path.
+
+### Feedback accuracy
+
+The audit confirmed generic math explanations could repeat the same sentence; `explainEngine.js` now identifies add/subtract/multiply/divide operations and returns distinct operation focus, explanation, why-correct text, and steps without revealing the final number. The existing `ringan tulang` repair remains accurate and accepted-answer matching is unchanged. Arabic, Sains, Islam, PJ, and PK guidance remains subject-scoped and age-appropriate in the audited fixtures.
+
+### Mobile and state-reset audit
+
+Static viewport coverage includes 320×568, 360×640, 375×667, 390×844, 393×852, 430×932, 768×1024, and 1366×768 rules. Tutor, Explain, and Teacher surfaces retain one intended body scroll region, footer/composer clearance, safe-area padding, 44px controls, and mobile-scoped spacing. Tutor reopen resets seeded history by `sessionKey`; question transitions retain the existing App state reset flow and no storage/session schema was changed. Interactive browser console and physical iPhone/Safari checks were unavailable.
+
+### Validators and build
+
+All seven new cross-subject validators PASS, and all 15 requested related validators PASS. Full individual sweep: **103 total, 87 PASS, 16 FAIL, 0 TIMEOUT**. The 16 failures are baseline/out-of-scope audits: compact UI, gamification panel/simulation, knowledge, parent dashboard/insights, production polish, smart-check, study planner panel/simulation, tutor modal freeze/state legacy audits, UI audit, Stage 7A mobile chrome, visual-wow safety, and release-candidate checks. No focused cross-subject AI, answer-leak, duplicate, identity, feedback, state-reset, or mobile-safety validator failed.
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-Cg_XvPNQ.js`, 750.83 kB (gzip 221.31 kB); CSS: `index-sppZSbid.css`, 102.71 kB (gzip 19.86 kB). Existing >500 kB warning remains. Preview `http://127.0.0.1:4173/jannati-ai-tutor-v1/` returned HTTP 200 with the root mount. `git diff --check`, dist content comparison, and preview-log comparison passed.
+
+### Recommendation
+
+No new confirmed P0/P1/P2 remains in the audited cross-subject AI surfaces. Physical device and interactive browser checks remain manual. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**, with the 16 pre-existing baseline validator failures tracked separately. No commit, push, or deploy was performed.

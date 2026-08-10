@@ -2518,7 +2518,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-003",
-          "q": "Tentukan bilangan murid yang masih di dewan selepas 68 murid keluar.",
+          "q": "Dewan mempunyai 68 murid. Selepas 23 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "45",
           "accepted": [
             "45"
@@ -2560,7 +2560,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-006",
-          "q": "Hitung bilangan murid yang masih di dewan selepas 101 murid keluar.",
+          "q": "Dewan mempunyai 101 murid. Selepas 41 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "60",
           "accepted": [
             "60"
@@ -2602,7 +2602,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-009",
-          "q": "Apakah bilangan murid yang masih di dewan selepas 86 murid keluar?",
+          "q": "Dewan mempunyai 86 murid. Selepas 11 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "75",
           "accepted": [
             "75"
@@ -2644,7 +2644,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-012",
-          "q": "Cari bilangan murid yang masih di dewan selepas 119 murid keluar.",
+          "q": "Dewan mempunyai 119 murid. Selepas 29 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "90",
           "accepted": [
             "90"
@@ -2728,7 +2728,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-018",
-          "q": "Tentukan bilangan murid yang masih di dewan selepas 137 murid keluar.",
+          "q": "Dewan mempunyai 137 murid. Selepas 17 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "120",
           "accepted": [
             "120"
@@ -2770,7 +2770,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-021",
-          "q": "Hitung bilangan murid yang masih di dewan selepas 170 murid keluar.",
+          "q": "Dewan mempunyai 170 murid. Selepas 35 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "135",
           "accepted": [
             "135"
@@ -2812,7 +2812,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-024",
-          "q": "Apakah bilangan murid yang masih di dewan selepas 155 murid keluar?",
+          "q": "Dewan mempunyai 155 murid. Selepas 5 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "150",
           "accepted": [
             "150"
@@ -2854,7 +2854,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-027",
-          "q": "Cari bilangan murid yang masih di dewan selepas 188 murid keluar.",
+          "q": "Dewan mempunyai 188 murid. Selepas 23 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "165",
           "accepted": [
             "165"
@@ -2938,7 +2938,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-033",
-          "q": "Tentukan bilangan murid yang masih di dewan selepas 206 murid keluar.",
+          "q": "Dewan mempunyai 206 murid. Selepas 11 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "195",
           "accepted": [
             "195"
@@ -2980,7 +2980,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-036",
-          "q": "Hitung bilangan murid yang masih di dewan selepas 239 murid keluar.",
+          "q": "Dewan mempunyai 239 murid. Selepas 29 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "210",
           "accepted": [
             "210"
@@ -3022,7 +3022,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-039",
-          "q": "Apakah bilangan murid yang masih di dewan selepas 272 murid keluar?",
+          "q": "Dewan mempunyai 272 murid. Selepas 47 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "225",
           "accepted": [
             "225"
@@ -3064,7 +3064,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-042",
-          "q": "Cari bilangan murid yang masih di dewan selepas 257 murid keluar.",
+          "q": "Dewan mempunyai 257 murid. Selepas 17 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "240",
           "accepted": [
             "240"
@@ -3148,7 +3148,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-048",
-          "q": "Tentukan bilangan murid yang masih di dewan selepas 275 murid keluar.",
+          "q": "Dewan mempunyai 275 murid. Selepas 5 murid keluar, berapakah bilangan murid yang masih di dewan?",
           "answer": "270",
           "accepted": [
             "270"
@@ -3218,7 +3218,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-053",
-          "q": "Tentukan bilangan murid yang masih di kantin selepas 105 murid keluar.",
+          "q": "Kantin mempunyai 105 murid. Selepas 14 murid keluar, berapakah bilangan murid yang masih di kantin?",
           "answer": "91",
           "accepted": [
             "91"
@@ -3260,7 +3260,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-056",
-          "q": "Hitung bilangan murid yang masih di gelanggang selepas 138 murid keluar.",
+          "q": "Gelanggang mempunyai 138 murid. Selepas 24 murid keluar, berapakah bilangan murid yang masih di gelanggang?",
           "answer": "114",
           "accepted": [
             "114"
@@ -3302,7 +3302,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-059",
-          "q": "Apakah bilangan murid yang masih di dewan bacaan selepas 171 murid keluar?",
+          "q": "Dewan bacaan mempunyai 171 murid. Selepas 18 murid keluar, berapakah bilangan murid yang masih di dewan bacaan?",
           "answer": "153",
           "accepted": [
             "153"
@@ -3344,7 +3344,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-062",
-          "q": "Cari bilangan murid yang masih di padang selepas 204 murid keluar.",
+          "q": "Padang mempunyai 204 murid. Selepas 28 murid keluar, berapakah bilangan murid yang masih di padang?",
           "answer": "176",
           "accepted": [
             "176"
@@ -3428,7 +3428,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-068",
-          "q": "Tentukan bilangan murid yang masih di balai ilmu selepas 270 murid keluar.",
+          "q": "Balai ilmu mempunyai 270 murid. Selepas 17 murid keluar, berapakah bilangan murid yang masih di balai ilmu?",
           "answer": "253",
           "accepted": [
             "253"
@@ -3470,7 +3470,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-071",
-          "q": "Hitung bilangan murid yang masih di gelanggang tertutup selepas 303 murid keluar.",
+          "q": "Gelanggang tertutup mempunyai 303 murid. Selepas 18 murid keluar, berapakah bilangan murid yang masih di gelanggang tertutup?",
           "answer": "285",
           "accepted": [
             "285"
@@ -3512,7 +3512,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-074",
-          "q": "Apakah bilangan murid yang masih di astaka selepas 336 murid keluar?",
+          "q": "Astaka mempunyai 336 murid. Selepas 27 murid keluar, berapakah bilangan murid yang masih di astaka?",
           "answer": "309",
           "accepted": [
             "309"
@@ -3554,7 +3554,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-077",
-          "q": "Cari bilangan murid yang masih di dataran selepas 369 murid keluar.",
+          "q": "Dataran mempunyai 369 murid. Selepas 15 murid keluar, berapakah bilangan murid yang masih di dataran?",
           "answer": "354",
           "accepted": [
             "354"
@@ -3638,7 +3638,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-083",
-          "q": "Tentukan bilangan murid yang masih di auditorium selepas 435 murid keluar.",
+          "q": "Auditorium mempunyai 435 murid. Selepas 16 murid keluar, berapakah bilangan murid yang masih di auditorium?",
           "answer": "419",
           "accepted": [
             "419"
@@ -3680,7 +3680,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-TOLAK-086",
-          "q": "Hitung bilangan murid yang masih di dewan utama selepas 468 murid keluar.",
+          "q": "Dewan utama mempunyai 468 murid. Selepas 29 murid keluar, berapakah bilangan murid yang masih di dewan utama?",
           "answer": "439",
           "accepted": [
             "439"
@@ -5605,7 +5605,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-097",
-          "q": "Berapakah hasil darab 2 dengan 9?",
+          "q": "Berapakah hasil darab 2 dengan 9 dalam satu kumpulan?",
           "answer": "18",
           "accepted": [
             "18"
@@ -5647,7 +5647,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-100",
-          "q": "Berapakah hasil darab 5 dengan 8?",
+          "q": "Sebuah kotak ada 5 baris dengan 8 objek setiap baris. Berapa objek semuanya?",
           "answer": "40",
           "accepted": [
             "40"
@@ -5675,7 +5675,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-102",
-          "q": "Berapakah hasil darab 7 dengan 4?",
+          "q": "Berapakah jumlah objek jika terdapat 7 kumpulan dan setiap kumpulan mempunyai 4 objek?",
           "answer": "28",
           "accepted": [
             "28"
@@ -5717,7 +5717,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-105",
-          "q": "Berapakah hasil darab 10 dengan 3?",
+          "q": "Berapakah jumlah 10 kumpulan yang ada 3 objek setiap satu?",
           "answer": "30",
           "accepted": [
             "30"
@@ -5955,7 +5955,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-DARAB-122",
-          "q": "Berapakah hasil darab 9 dengan 4?",
+          "q": "Sembilan kumpulan mempunyai 4 objek. Berapa semuanya?",
           "answer": "36",
           "accepted": [
             "36"
@@ -8930,7 +8930,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-MASA-035",
-          "q": "Tuliskan jumlah hari dalam satu minggu.",
+          "q": "Dalam kalendar, berapakah jumlah hari bagi satu minggu?",
           "answer": "7",
           "accepted": [
             "7"
@@ -9000,7 +9000,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-MASA-040",
-          "q": "Berapa hari ada dalam satu minggu?",
+          "q": "Jika Isnin hingga Ahad dikira, berapa hari ada dalam satu minggu?",
           "answer": "7",
           "accepted": [
             "7"
@@ -9070,7 +9070,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-MASA-045",
-          "q": "Nyatakan bilangan hari bagi satu minggu.",
+          "q": "Nyatakan bilangan hari lengkap dalam seminggu.",
           "answer": "7",
           "accepted": [
             "7"
@@ -9140,7 +9140,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-MASA-050",
-          "q": "Satu minggu ada berapa hari?",
+          "q": "Satu minggu persekolahan mengikut kalendar mempunyai berapa hari?",
           "answer": "7",
           "accepted": [
             "7"
@@ -9189,7 +9189,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-003",
-          "q": "Cari ukuran yang lebih panjang antara 13 cm dan 19 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 13 cm dan 19 cm?",
           "answer": "19",
           "accepted": [
             "19"
@@ -9203,7 +9203,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-004",
-          "q": "Tuliskan bilangan cm yang sama dengan 1 meter.",
+          "q": "Berapakah bilangan sentimeter (cm) yang bersamaan dengan 1 meter?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9259,7 +9259,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-008",
-          "q": "Cari ukuran yang lebih panjang antara 18 cm dan 29 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 18 cm dan 29 cm?",
           "answer": "29",
           "accepted": [
             "29"
@@ -9288,12 +9288,12 @@ export const mathSubject = {
         {
           "id": "MATH-PANJANG-010",
           "q": "Benda apakah yang sesuai diukur dengan pembaris?",
-          "answer": "panjang",
+          "answer": "pensel",
           "accepted": [
-            "panjang"
+            "pensel"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
-          "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
+          "explanation": "Pensel ialah objek yang sesuai diukur menggunakan pembaris.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -9301,7 +9301,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-011",
-          "q": "Reben merah panjangnya 21 cm. Reben biru panjangnya 5 cm. Baca ukuran reben dan kira jumlahnya.",
+          "q": "Reben merah panjangnya 21 cm dan reben biru panjangnya 5 cm. Berapakah jumlah panjang kedua-dua reben?",
           "answer": "26",
           "accepted": [
             "26"
@@ -9329,7 +9329,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-013",
-          "q": "Cari ukuran yang lebih panjang antara 23 cm dan 30 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 23 cm dan 30 cm?",
           "answer": "30",
           "accepted": [
             "30"
@@ -9357,17 +9357,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-015",
-          "q": "Pilih alat yang sesuai untuk mengukur ________.",
-          "answer": "panjang",
+          "q": "Pilih alat yang sesuai untuk mengukur panjang meja.",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih alat yang sesuai untuk mengukur ________."
+          "question": "Pilih alat yang sesuai untuk mengukur panjang meja."
         },
         {
           "id": "MATH-PANJANG-016",
@@ -9399,7 +9399,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-018",
-          "q": "Cari ukuran yang lebih panjang antara 28 cm dan 31 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 28 cm dan 31 cm?",
           "answer": "31",
           "accepted": [
             "31"
@@ -9413,7 +9413,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-019",
-          "q": "Nyatakan bilangan sentimeter (cm) bagi 1 meter.",
+          "q": "Tukarkan 1 meter kepada sentimeter (cm).",
           "answer": "100",
           "accepted": [
             "100"
@@ -9427,17 +9427,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-020",
-          "q": "Apakah alat yang kita gunakan untuk mengukur ________?",
-          "answer": "panjang",
+          "q": "Apakah alat yang kita gunakan untuk mengukur panjang buku?",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah alat yang kita gunakan untuk mengukur ________?"
+          "question": "Apakah alat yang kita gunakan untuk mengukur panjang buku?"
         },
         {
           "id": "MATH-PANJANG-021",
@@ -9469,7 +9469,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-023",
-          "q": "Cari ukuran yang lebih panjang antara 33 cm dan 41 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 33 cm dan 41 cm?",
           "answer": "41",
           "accepted": [
             "41"
@@ -9497,17 +9497,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-025",
-          "q": "Nyatakan alat yang sesuai untuk mengukur ________.",
-          "answer": "panjang",
+          "q": "Nyatakan alat yang sesuai untuk mengukur panjang papan putih.",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nyatakan alat yang sesuai untuk mengukur ________."
+          "question": "Nyatakan alat yang sesuai untuk mengukur panjang papan putih."
         },
         {
           "id": "MATH-PANJANG-026",
@@ -9539,7 +9539,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-028",
-          "q": "Cari ukuran yang lebih panjang antara 38 cm dan 42 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 38 cm dan 42 cm?",
           "answer": "42",
           "accepted": [
             "42"
@@ -9567,17 +9567,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-030",
-          "q": "Apakah alat yang sesuai digunakan untuk mengukur ________?",
-          "answer": "panjang",
+          "q": "Apakah alat yang sesuai digunakan untuk mengukur panjang meja?",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah alat yang sesuai digunakan untuk mengukur ________?"
+          "question": "Apakah alat yang sesuai digunakan untuk mengukur panjang meja?"
         },
         {
           "id": "MATH-PANJANG-031",
@@ -9609,7 +9609,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-033",
-          "q": "Cari ukuran yang lebih panjang antara 43 cm dan 52 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 43 cm dan 52 cm?",
           "answer": "52",
           "accepted": [
             "52"
@@ -9623,7 +9623,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-034",
-          "q": "Tuliskan bilangan cm yang sama dengan 1 meter.",
+          "q": "Tukarkan 1 meter kepada sentimeter (cm). Berapakah nilainya?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9637,7 +9637,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-035",
-          "q": "Gunakan pembaris untuk mengukur ________.",
+          "q": "Apakah ukuran yang boleh diukur menggunakan pembaris? ________.",
           "answer": "panjang",
           "accepted": [
             "panjang"
@@ -9679,7 +9679,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-038",
-          "q": "Cari ukuran yang lebih panjang antara 48 cm dan 53 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 48 cm dan 53 cm?",
           "answer": "53",
           "accepted": [
             "53"
@@ -9693,7 +9693,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-039",
-          "q": "Kira nilai 1 meter dalam sentimeter (cm).",
+          "q": "Berapakah nilai 1 meter apabila ditulis dalam cm?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9707,21 +9707,21 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-040",
-          "q": "Benda apakah yang sesuai diukur dengan pembaris?",
-          "answer": "panjang",
+          "q": "Namakan satu benda yang sesuai diukur dengan pembaris.",
+          "answer": "pensel",
           "accepted": [
-            "panjang"
+            "pensel"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Benda apakah yang sesuai diukur dengan pembaris?"
+          "question": "Namakan satu benda yang sesuai diukur dengan pembaris."
         },
         {
           "id": "MATH-PANJANG-041",
-          "q": "Reben merah panjangnya 51 cm. Reben biru panjangnya 8 cm. Baca ukuran reben dan kira jumlahnya.",
+          "q": "Reben merah panjangnya 51 cm dan reben biru panjangnya 8 cm. Berapakah jumlah panjang kedua-dua reben?",
           "answer": "59",
           "accepted": [
             "59"
@@ -9749,7 +9749,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-043",
-          "q": "Cari ukuran yang lebih panjang antara 53 cm dan 63 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 53 cm dan 63 cm?",
           "answer": "63",
           "accepted": [
             "63"
@@ -9763,7 +9763,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-044",
-          "q": "1 meter bersamaan berapa sentimeter (cm)?",
+          "q": "Jika 1 m ditukar kepada cm, berapakah jawapannya?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9777,17 +9777,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-045",
-          "q": "Pilih alat yang sesuai untuk mengukur ________.",
-          "answer": "panjang",
+          "q": "Alat manakah sesuai untuk mengukur panjang pensel?",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih alat yang sesuai untuk mengukur ________."
+          "question": "Alat manakah sesuai untuk mengukur panjang pensel?"
         },
         {
           "id": "MATH-PANJANG-046",
@@ -9819,7 +9819,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-048",
-          "q": "Cari ukuran yang lebih panjang antara 58 cm dan 64 cm.",
+          "q": "Berapakah ukuran yang lebih panjang antara 58 cm dan 64 cm?",
           "answer": "64",
           "accepted": [
             "64"
@@ -9833,7 +9833,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-049",
-          "q": "Nyatakan bilangan sentimeter (cm) bagi 1 meter.",
+          "q": "Berapakah ukuran sentimeter yang bersamaan dengan 1 meter?",
           "answer": "100",
           "accepted": [
             "100"
@@ -9847,17 +9847,17 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-050",
-          "q": "Apakah alat yang kita gunakan untuk mengukur ________?",
-          "answer": "panjang",
+          "q": "Apakah alat yang digunakan untuk mengukur panjang meja?",
+          "answer": "pembaris",
           "accepted": [
-            "panjang"
+            "pembaris"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
           "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Apakah alat yang kita gunakan untuk mengukur ________?"
+          "question": "Apakah alat yang digunakan untuk mengukur panjang meja?"
         }
       ]
     },
@@ -10274,7 +10274,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-JISIM_ISI_PADU-030",
-          "q": "Apakah alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Untuk menimbang jisim buah-buahan, alat yang sesuai ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10344,7 +10344,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-JISIM_ISI_PADU-035",
-          "q": "Nyatakan alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Apakah alat yang digunakan untuk mengetahui jisim sebuah beg? ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10414,7 +10414,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-JISIM_ISI_PADU-040",
-          "q": "Alat apakah yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Jika hendak menimbang jisim sayur, gunakan alat ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10484,7 +10484,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-JISIM_ISI_PADU-045",
-          "q": "Pilih alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Pilih alat untuk menimbang jisim sebuah kotak: ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"
@@ -10554,7 +10554,7 @@ export const mathSubject = {
         },
         {
           "id": "MATH-JISIM_ISI_PADU-050",
-          "q": "Apakah alat yang sesuai untuk menimbang jisim ialah ________.",
+          "q": "Alat yang digunakan untuk mengukur jisim badan ialah ________.",
           "answer": "penimbang",
           "accepted": [
             "penimbang"

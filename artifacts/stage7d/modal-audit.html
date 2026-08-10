@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stage 7D Modal Audit</title>
+    <link rel="stylesheet" href="/src/styles/style.css" />
+    <style>
+      html, body, #root {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        font-family: Inter, system-ui, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(229, 242, 230, 0.92), rgba(242, 246, 238, 0.95)),
+          #f5f7f2;
+      }
+      .stage7d-backdrop {
+        min-height: 100dvh;
+        padding: 24px;
+      }
+      .stage7d-card {
+        max-width: 680px;
+        margin: 0 auto;
+        border-radius: 24px;
+        background: rgba(255,255,255,0.82);
+        border: 1px solid rgba(15, 138, 67, 0.12);
+        box-shadow: 0 16px 40px rgba(10, 35, 22, 0.12);
+        padding: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/artifacts/stage7d/modal-audit.js"></script>
+  </body>
+  </html>

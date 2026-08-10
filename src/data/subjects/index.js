@@ -74,26 +74,54 @@ export const subjectList = [
 ];
 
 export async function loadSubjectData(subjectId) {
+  let subjectModule;
   switch (subjectId) {
     case 'bm':
-      return (await import('./bm.js')).default;
+      subjectModule = await import('./bm.js');
+      break;
     case 'math':
-      return (await import('./math.js')).default;
+      subjectModule = await import('./math.js');
+      break;
     case 'english':
-      return (await import('./english.js')).default;
+      subjectModule = await import('./english.js');
+      break;
     case 'sains':
-      return (await import('./sains.js')).default;
+      subjectModule = await import('./sains.js');
+      break;
     case 'arab':
-      return (await import('./arab.js')).default;
+      subjectModule = await import('./arab.js');
+      break;
     case 'islam':
-      return (await import('./islam.js')).default;
+      subjectModule = await import('./islam.js');
+      break;
     case 'pj':
-      return (await import('./pj.js')).default;
+      subjectModule = await import('./pj.js');
+      break;
     case 'pk':
-      return (await import('./pk.js')).default;
+      subjectModule = await import('./pk.js');
+      break;
     default:
-      return (await import('./bm.js')).default;
+      subjectModule = await import('./bm.js');
+      break;
   }
+  return normalizeSubjectQuestionFields(subjectModule.default);
+}
+
+function normalizeSubjectQuestionFields(subject = {}) {
+  return {
+    ...subject,
+    topics: (subject.topics || []).map(topic => ({
+      ...topic,
+      questions: (topic.questions || []).map(question => {
+        const canonical = String(question.q ?? question.question ?? '').trim();
+        return {
+          ...question,
+          q: canonical,
+          question: canonical
+        };
+      })
+    }))
+  };
 }
 
 export async function loadAllSubjects() {

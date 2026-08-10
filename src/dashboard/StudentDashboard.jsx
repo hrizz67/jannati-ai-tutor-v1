@@ -3,7 +3,7 @@ import { EmptyState, getAdaptiveBestStreak, getAdaptiveMotivation } from './dash
 import { buildAdaptiveLearningSnapshot, explainWeakness } from '../ai/index.js';
 import { clampPercent, formatDataConfidence, formatDurationLabel, formatScopeLabel, formatStatus, formatStudyMinutes, formatStreakLabel, formatSubjectName, formatTopicName, getStudentDisplayName } from '../utils/displayFormatter';
 import GamificationSummary from '../components/GamificationSummary.jsx';
-import { SubjectIcon } from '../components/IconGlyph.jsx';
+import SubjectBadge from '../components/SubjectBadge.jsx';
 import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 
@@ -28,7 +28,7 @@ export default function StudentDashboard({
 }) {
   const analytics = canonicalAnalytics || getCanonicalAnalytics({ profile, adaptiveProfile });
   const gamification = canonicalGamification || createCanonicalGamification({ profile, adaptiveProfile, gamificationProfile });
-  const name = getStudentDisplayName(adaptiveProfile?.name ? adaptiveProfile : profile, 'Murid');
+  const name = getStudentDisplayName([profile, adaptiveProfile], 'Murid');
   const subjectRows = Array.isArray(adaptiveRecommendation?.subjectRows) ? adaptiveRecommendation.subjectRows : [];
   const topWeak = analytics.hasEvidence ? analytics.weakTopics.slice(0, 5) : adaptiveWeakTopics.slice(0, 5);
   const topStrong = analytics.hasEvidence ? analytics.strongTopics.slice(0, 5) : adaptiveStrongTopics.slice(0, 5);
@@ -50,8 +50,6 @@ export default function StudentDashboard({
   return (
     <>
       <section className="card adaptive-overview-card">
-        <p className="eyebrow">Ringkasan Murid</p>
-        <h2>Ringkasan Murid</h2>
         {(analytics.hasEvidence ?? adaptiveHasEvidence) ? (
           <>
             <p className="memory-last">{formatScopeLabel(analytics.scopeLabel)}</p>
@@ -83,16 +81,16 @@ export default function StudentDashboard({
       <section className="card">
         <p className="eyebrow">Prestasi Subjek</p>
         <h2>Prestasi Subjek</h2>
-        <div className="subject-report-grid">
+        {subjectRows.length ? <div className="subject-report-grid">
           {subjectRows.map(subject => (
             <div className="report-box" key={`student-${subject.id}`}>
-              <h3><SubjectIcon subjectId={subject.id} motion="hover" /> {subject.title || formatSubjectName(subject.id)}</h3>
+              <h3><SubjectBadge subjectId={subject.id} /> {subject.title || formatSubjectName(subject.id)}</h3>
               <b>{clampPercent(subject.accuracy)}%</b>
               <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
               <span>{subject.total} soalan dicuba</span>
             </div>
           ))}
-        </div>
+        </div> : <EmptyState title="Belum ada prestasi subjek." message="Lengkapkan latihan untuk melihat prestasi setiap subjek." />}
       </section>
 
       <section className="card">
