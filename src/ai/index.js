@@ -20,7 +20,7 @@ export { getReviewQueue } from './revision/spacedRepetitionEngine.js';
 export { getRecommendedDifficulty, buildDifficultyPlan } from './revision/difficultyEngine.js';
 export { buildMixedRevisionSession } from './revision/mixedRevisionEngine.js';
 export { buildRevisionCalendar } from './revision/revisionCalendarEngine.js';
-export { speak } from './voice/voiceEngine.js';
+export { speak, getVoiceAvailability } from './voice/voiceEngine.js';
 export { supportsVoice } from './voice/voiceCapability.js';
 
 export default {};

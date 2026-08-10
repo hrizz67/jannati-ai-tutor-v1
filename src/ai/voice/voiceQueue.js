@@ -71,9 +71,16 @@ async function speakNext() {
   }
 
   const language = next.options?.lang || 'ms-MY';
+  const voice = selectVoice(synth, language);
+  if (!voice) {
+    activeUtterance = null;
+    next.resolve?.(false);
+    speakNext();
+    return;
+  }
   const utterance = new SpeechSynthesisUtterance(next.text);
   utterance.lang = language;
-  utterance.voice = selectVoice(synth, language) || null;
+  utterance.voice = voice;
   utterance.rate = Number(next.options?.rate) || 0.88;
   utterance.pitch = Number(next.options?.pitch) || 1;
   utterance.volume = Number(next.options?.volume) || 1;
@@ -102,6 +109,18 @@ export function enqueueVoice(text, options = {}) {
   });
 }
 
+export function getVoiceAvailability(language = 'ms-MY') {
+  const synth = getSynth();
+  const voice = synth ? selectVoice(synth, language) : null;
+  return {
+    supported: Boolean(synth),
+    available: Boolean(voice),
+    language,
+    voiceName: voice?.name || '',
+    voiceLanguage: voice?.lang || ''
+  };
+}
+
 export function clearVoiceQueue() {
   const synth = getSynth();
   speakAttempt += 1;
@@ -127,6 +146,7 @@ export function isVoiceSpeaking() {
 
 export default {
   enqueueVoice,
+  getVoiceAvailability,
   clearVoiceQueue,
   pauseVoice,
   resumeVoice,

@@ -5131,6 +5131,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [typed, setTyped] = useState(() => resume?.state?.typed || '');
   const [arranged, setArranged] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
   const [feedback, setFeedback] = useState(() => resume?.state?.feedback || null);
+  const [audioMessage, setAudioMessage] = useState('');
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
   const resumeChangeRef = useRef(onResumeChange);
@@ -5146,6 +5147,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     setTyped('');
     setArranged([]);
     setFeedback(null);
+    setAudioMessage('');
   }, [sessionIndex, mode, setId]);
 
   useEffect(() => {
@@ -5211,20 +5213,19 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     } catch {}
   }
 
-  function playAudio() {
+  async function playAudio() {
     try {
       stopAudio();
-      speak(item.prompt, { lang: item.speechLang });
+      setAudioMessage('');
+      const played = await speak(item.prompt, { lang: item.speechLang });
+      if (!played) {
+        const languageLabel = base.language === 'BM'
+          ? 'Bahasa Melayu'
+          : base.language;
+        setAudioMessage(`Suara ${languageLabel} tidak tersedia pada peranti ini. Pasang voice pack ${languageLabel} dalam tetapan Text-to-speech peranti atau cuba Chrome/Edge yang terkini.`);
+      }
     } catch {
-      setFeedback({
-        status: 'technical-error',
-        score: 0,
-        correct: false,
-        expected: '',
-        response: '',
-        message: 'Audio tidak dapat dimainkan sekarang.',
-        errorCode: 'audio-unavailable'
-      });
+      setAudioMessage('Audio tidak dapat dimainkan sekarang. Semak volume, voice pack dan kebenaran bunyi peranti.');
     }
   }
 
@@ -5349,6 +5350,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
           ))}
         </div>
         <button className="full" onClick={playAudio}>Mainkan Audio</button>
+        {audioMessage && <p className="autosave-note" role="status">{audioMessage}</p>}
       </section>
 
       <section className="card">

@@ -1,6 +1,8 @@
 import VOICE_DEFAULTS from './voiceSettings.js';
-import { enqueueVoice, clearVoiceQueue, pauseVoice, resumeVoice, isVoiceSpeaking } from './voiceQueue.js';
+import { enqueueVoice, getVoiceAvailability, clearVoiceQueue, pauseVoice, resumeVoice, isVoiceSpeaking } from './voiceQueue.js';
 import { cancelActiveSpeechRecognition } from '../speech/speechEngine.js';
+
+export { getVoiceAvailability };
 
 export function speak(text, options = {}) {
   cancelActiveSpeechRecognition();
@@ -36,5 +38,6 @@ export default {
   pause,
   resume,
   isSpeaking,
+  getVoiceAvailability,
   cancel
 };
