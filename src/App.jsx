@@ -4746,27 +4746,42 @@ function getBertuturSpeechErrorMessage(errorCode = '') {
 // Semantic communication banks are the only active source for listening, speaking, and writing.
 const writingSets = semanticWritingSets;
 
-function scoreMenulis(task, answer, dictionary = []) {
+function scoreMenulis(task, answer, dictionary = [], mode = '') {
   const normalizedAnswer = normalizeBacaanWord(answer);
-  const matched = task.keywords.filter(keyword => normalizedAnswer.includes(normalizeBacaanWord(keyword)));
+  const expectedWords = splitBacaanWords(task.answer || '').map(word => word.text);
+  const arrangeMode = mode === 'arrange';
+  const requiredWords = arrangeMode && expectedWords.length ? expectedWords : task.keywords;
+  const matched = requiredWords.filter(keyword => normalizedAnswer.includes(normalizeBacaanWord(keyword)));
+  const exactStructure = arrangeMode && normalizeBacaanWord(answer) === normalizeBacaanWord(task.answer);
   const words = splitBacaanWords(answer);
   const spellingIssues = words.filter(word => {
     if (!dictionary.length || word.normalized.length <= 1) return false;
     return !dictionary.some(item => normalizeBacaanWord(item) === word.normalized);
   });
   const grammarPetunjuks = [];
-  if (answer.trim() && !/[.!??]$/.test(answer.trim())) grammarPetunjuks.push('Tambah tanda noktah di hujung ayat.');
+  if (!arrangeMode && answer.trim() && !/[.!??]$/.test(answer.trim())) grammarPetunjuks.push('Tambah tanda noktah di hujung ayat.');
   if (task.label === 'Perenggan mudah' && answer.split(/[.!??]+/).filter(sentence => sentence.trim()).length < 2) grammarPetunjuks.push('Tulis sekurang-kurangnya dua ayat pendek.');
-  if (task.label !== 'Isi tempat kosong' && words.length < Math.max(2, task.keywords.length)) grammarPetunjuks.push('Panjangkan jawapan sedikit lagi.');
-  const keywordScore = task.keywords.length ? Math.round((matched.length / task.keywords.length) * 60) : 0;
+  if (!arrangeMode && task.label !== 'Isi tempat kosong' && words.length < Math.max(2, task.keywords.length)) grammarPetunjuks.push('Panjangkan jawapan sedikit lagi.');
+  const keywordScore = requiredWords.length ? Math.round((matched.length / requiredWords.length) * 60) : 0;
   const spellingScore = Math.max(0, 20 - spellingIssues.length * 5);
   const grammarScore = Math.max(0, 20 - grammarPetunjuks.length * 6);
   const exactBonus = task.answer && normalizeBacaanWord(answer) === normalizeBacaanWord(task.answer) ? 20 : 0;
   const score = Math.min(100, keywordScore + spellingScore + grammarScore + exactBonus);
-  const explanation = matched.length === task.keywords.length
-    ? 'Bagus. Kamu masukkan idea penting dan ayat mudah disemak.'
-    : `Cuba masukkan idea penting ini: ${task.keywords.filter(keyword => !matched.includes(keyword)).join(', ') || 'tiada'}.`;
-  return { score, matched, spellingIssues, grammarPetunjuks, explanation };
+  const explanation = arrangeMode
+    ? (exactStructure ? 'Bagus. Susunan ayat kamu tepat.' : `Susun semula perkataan supaya menjadi ayat yang lengkap: ${task.answer}.`)
+    : matched.length === task.keywords.length
+      ? 'Bagus. Kamu masukkan idea penting dan ayat mudah disemak.'
+      : `Cuba masukkan idea penting ini: ${task.keywords.filter(keyword => !matched.includes(keyword)).join(', ') || 'tiada'}.`;
+  return {
+    score,
+    matched,
+    totalKeywords: requiredWords.length,
+    metricLabel: arrangeMode ? 'perkataan' : 'kata kunci',
+    structureMatch: exactStructure,
+    spellingIssues,
+    grammarPetunjuks,
+    explanation
+  };
 }
 
 function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
@@ -4795,6 +4810,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const safeResult = result && typeof result === 'object' ? {
     score: Number(result.score) || 0,
     matched: Array.isArray(result.matched) ? result.matched : [],
+    totalKeywords: Number(result.totalKeywords) || 0,
+    metricLabel: typeof result.metricLabel === 'string' ? result.metricLabel : 'kata kunci',
     spellingIssues: Array.isArray(result.spellingIssues) ? result.spellingIssues : [],
     grammarPetunjuks: Array.isArray(result.grammarPetunjuks) ? result.grammarPetunjuks : [],
     explanation: typeof result.explanation === 'string' ? result.explanation : '',
@@ -4890,7 +4907,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
         setResult({ status: 'empty', score: 0, matched: [], spellingIssues: [], grammarPetunjuks: [], explanation: '', message: 'Jawapan belum diterima.' });
         return;
       }
-      const nextResult = { ...scoreMenulis(safeTask, currentAnswer(), set?.dictionary || []), status: 'completed', answer: currentAnswer() };
+      const nextResult = { ...scoreMenulis(safeTask, currentAnswer(), set?.dictionary || [], mode), status: 'completed', answer: currentAnswer(), mode };
       recordCommunicationScore({
         ref: recordedSessionRef,
         itemKey: `${setId}:${mode}:${sessionIndex}`,
@@ -4922,7 +4939,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 
   function saveMenulis() {
     if (!safeTask || !set) return;
-    const nextResult = safeResult || scoreMenulis(safeTask, currentAnswer(), set.dictionary || []);
+    const nextResult = safeResult || scoreMenulis(safeTask, currentAnswer(), set.dictionary || [], mode);
     const contract = normalizeCommunicationResult(nextResult);
     const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
     if (!contract.isAssessed || !completedScores.length) {
@@ -4955,6 +4972,9 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
+  const resultWords = safeResult?.metricLabel === 'perkataan'
+    ? splitBacaanWords(safeTask.answer || '').map(word => word.text)
+    : (safeTask?.keywords || []);
 
   return (
     <main className="app writing-coach-page">
@@ -5037,12 +5057,12 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
             <>
               <h2>{clampPercent(safeResult.score)}%</h2>
               <div className="recommend-meta">
-                <span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeTask?.keywords?.length || 0} kata kunci</span>
+                <span>{Array.isArray(safeResult.matched) ? safeResult.matched.length : 0}/{safeResult.totalKeywords || resultWords.length} {safeResult.metricLabel || 'kata kunci'}</span>
                 <span>{Array.isArray(safeResult.spellingIssues) ? safeResult.spellingIssues.length : 0} isu ejaan</span>
                 <span>{Array.isArray(safeResult.grammarPetunjuks) ? safeResult.grammarPetunjuks.length : 0} petua tatabahasa</span>
               </div>
               <div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>
-                {(safeTask?.keywords || []).map(keyword => (
+                {resultWords.map(keyword => (
                   <span key={keyword} className={Array.isArray(safeResult.matched) && safeResult.matched.includes(keyword) ? 'word-good' : 'word-miss'}>
                     {keyword}
                   </span>

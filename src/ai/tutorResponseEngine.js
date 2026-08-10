@@ -78,6 +78,28 @@ function normalizeList(value) {
   return result;
 }
 
+function normalizeForDialogue(value = '') {
+  return normalizeText(value, '')
+    .toLocaleLowerCase('ms-MY')
+    .replace(/[.!?,:;\"'“”‘’]+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function pickFreshDialogue(candidates = [], history = []) {
+  const previous = new Set(
+    (Array.isArray(history) ? history : [])
+      .filter(item => item?.role === 'ai')
+      .map(item => normalizeForDialogue(item.text))
+      .filter(Boolean)
+  );
+  const fresh = candidates.find(item => {
+    const value = normalizeForDialogue(item);
+    return value && !previous.has(value);
+  });
+  return normalizeText(fresh || candidates.find(Boolean) || '', '');
+}
+
 function getQuestionText(question = {}, explicit = '') {
   const text = normalizeText(
     explicit ||
@@ -384,7 +406,8 @@ function buildContextualSections({
   currentLearningObjective,
   weakTopics = [],
   strongTopics = [],
-  guided = null
+  guided = null,
+  history = []
 }) {
   const categoryRule = getCategoryRule(question, topic);
   const subjectLabel = subject?.id === 'english' ? 'Bahasa Inggeris' : (subject?.title || formatSubjectName(subject?.id));
@@ -607,15 +630,38 @@ function buildContextualSections({
                 : 'Saya akan bantu langkah demi langkah.'
   );
 
-  const shortText = sanitizeTutorText(
-    isHintIntent
-        ? `${limitTutorText(hint, 'hint')}`
-      : intent === 'wrong_answer_coaching'
-        ? `${coachMessage}${commonMistake ? ` ${commonMistake}` : ''}`
-        : intent === 'correct_answer_reinforcement'
-          ? `${coachMessage}${revealAnswer && expectedAnswer ? ` Jawapan betul ialah ${expectedAnswer}.` : ''}`
-          : summary
-  );
+  const learnerLabel = learner ? `Kamu jawab “${learner}”.` : '';
+  const firstStep = steps[0] || 'baca soalan dan cari maklumat penting';
+  const dialogueCandidates = intent === 'hint'
+    ? [
+        `${safeHintLead} Cuba fikir dahulu sebelum memilih jawapan.`,
+        `Mari guna satu petunjuk: ${safeHintLead} Selepas itu, pilih jawapan yang paling sesuai.`,
+        `Baik, kita tambah bantuan sedikit. ${safeHintLead} Apakah jawapan yang kamu dapat?`
+      ]
+    : intent === 'wrong_answer_coaching'
+      ? [
+          `${learnerLabel} Belum tepat, tetapi kita boleh baiki bersama. ${commonMistake || 'Semak semula maksud soalan.'}`,
+          `${learnerLabel} Saya nampak cara kamu berfikir. Sekarang semak satu perkara: ${guided?.guidingQuestion || firstStep}`,
+          `Tak mengapa, kita cuba cara lain. ${commonMistake || safeHintLead} Cuba jawab sekali lagi.`
+        ]
+      : intent === 'correct_answer_reinforcement'
+        ? [
+            `${coachMessage} ${revealAnswer && expectedAnswer ? `Jawapan kamu, ${expectedAnswer}, tepat kerana ${simpleExplanationText || 'sepadan dengan kehendak soalan'}.` : 'Boleh terangkan kepada saya bagaimana kamu mendapat jawapan itu?'}`,
+            `Ya, betul. ${simpleExplanationText || 'Kamu sudah menggunakan petunjuk yang tepat.'} Sekarang cuba gunakan cara yang sama pada soalan seterusnya.`,
+            `Bagus, kamu sudah faham bahagian ini. ${revealAnswer && expectedAnswer ? `Jawapannya ialah ${expectedAnswer}.` : ''} Mari naik satu langkah.`
+          ]
+        : intent === 'question_help'
+          ? [
+              `${friendlyQuestionSummary} Mula dengan langkah kecil: ${firstStep}.`,
+              `Baik, kita pecahkan soalan ini. ${learnerLabel} Sekarang cari ${safeHintLead.toLocaleLowerCase('ms-MY')}`,
+              `Saya faham kamu perlukan penjelasan. Lihat dahulu ${resolvedInstruction || 'apa yang diminta oleh soalan'}; kemudian kita semak jawapan bersama.`
+            ]
+          : [
+              `${friendlyQuestionSummary} Saya bantu satu langkah pada satu masa.`,
+              `Mari kita lihat bahagian yang paling penting dahulu: ${firstStep}.`,
+              `Baik, kita belajar melalui soalan ini. Cuba beritahu saya bahagian yang paling mengelirukan.`
+            ];
+  const shortText = sanitizeTutorText(pickFreshDialogue(dialogueCandidates, history));
 
   const text = sanitizeTutorText([
     summary,
@@ -867,7 +913,8 @@ export async function getTutorResponse(options = {}) {
     currentLearningObjective,
     weakTopics,
     strongTopics,
-    guided
+    guided,
+    history
   });
   const standaloneAnswer = resolvedIntent === 'general'
     ? buildStandaloneTutorAnswer(prompt, subjectContext)

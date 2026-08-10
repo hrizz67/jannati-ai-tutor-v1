@@ -9,8 +9,15 @@ import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
 const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
-const INITIAL_GREETING = 'Hai! Saya boleh beri petunjuk, terangkan soalan, atau bantu semak jawapan kamu.';
 const RESPONSE_TIMEOUT_MS = 4500;
+
+function buildNaturalGreeting({ studentName = '', subjectLabel = '', topicLabel = '', questionText = '' } = {}) {
+  const name = studentName ? `Hai ${studentName}` : 'Hai';
+  const subject = subjectLabel || 'pelajaran ini';
+  if (questionText) return `${name}. Saya sudah lihat soalan ${subject} kamu. Kita fikir bersama — kamu mahu petunjuk, penerangan atau contoh?`;
+  if (topicLabel && topicLabel !== 'topik semasa') return `${name}. Hari ini kita fokus pada ${topicLabel}. Apa yang kamu mahu faham dahulu?`;
+  return `${name}. Saya sedia membantu kamu belajar, bukan sekadar memberi jawapan. Apa yang ingin kamu faham?`;
+}
 
 function withTimeout(promise, timeoutMs = RESPONSE_TIMEOUT_MS) {
   let timeoutId;
@@ -258,7 +265,16 @@ export default function TutorAIModal({
     if (!open) return undefined;
     const started = ++requestIdRef.current;
     if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:open');
-    setMessages([{ role: 'ai', text: INITIAL_GREETING, suggestions: [] }]);
+    setMessages([{
+      role: 'ai',
+      text: buildNaturalGreeting({
+        studentName,
+        subjectLabel,
+        topicLabel,
+        questionText: normalizedQuestionText
+      }),
+      suggestions: []
+    }]);
     setLoading(false);
     setStatus('idle');
     setError('');
