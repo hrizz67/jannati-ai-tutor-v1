@@ -5880,3 +5880,36 @@ input:focus {
     font-size: .74rem;
   }
 }
+
+/* Desktop polish: use the extra screen width without creating a stretched
+   reading surface or oversized empty columns. Mobile rules remain unchanged. */
+@media (min-width: 1100px) {
+  .app {
+    max-width: 1180px;
+    padding: 24px 32px;
+  }
+
+  .app > .card,
+  .app > .feedback {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .app > .card .question {
+    max-width: 52ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .app > .card .reading-target {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .app > .feedback {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
