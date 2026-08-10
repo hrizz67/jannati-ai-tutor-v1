@@ -155,6 +155,60 @@ const PERSONAL_PRONOUNS = new Set([
   'dia', 'beliau', 'mereka'
 ]);
 
+const ACTION_GROUPS = [
+  ['kutip', 'mengutip', 'memungut', 'ambil', 'mengambil', 'bersih', 'membersihkan'],
+  ['buang', 'membuang', 'membuangnya', 'masuk', 'masukkan', 'letak', 'meletakkan'],
+  ['bantu', 'membantu', 'tolong', 'menolong', 'beri', 'memberi', 'kongsi', 'berkongsi', 'pinjam', 'meminjam'],
+  ['tegur', 'menegur', 'nasihat', 'menasihati', 'ingatkan', 'mengingatkan'],
+  ['tutup', 'menutup', 'padam', 'memadam'],
+  ['beratur', 'tunggu', 'menunggu'],
+  ['lapor', 'melaporkan', 'beritahu', 'memberitahu', 'maklum']
+];
+
+const SCENARIO_STOP_WORDS = new Set([
+  'selepas', 'sebelum', 'semasa', 'apakah', 'tindakan', 'paling', 'sesuai',
+  'yang', 'ialah', 'dan', 'atau', 'dengan', 'untuk', 'dalam', 'ke', 'di',
+  'kelas', 'sekolah', 'kamu', 'mereka', 'melihat', 'nampak'
+]);
+
+function isScenarioActionQuestion(questionText = '') {
+  return /tindakan\s+paling\s+sesuai|apakah\s+tindakan|apakah\s+yang\s+patut/i.test(questionText);
+}
+
+function hasActionFromGroup(text, group) {
+  return group.some(word => text.includes(word));
+}
+
+function hasScenarioContext(candidate, questionText) {
+  const questionWords = normalizeAcceptedAnswer(questionText)
+    .split(' ')
+    .filter(word => word.length >= 4 && !SCENARIO_STOP_WORDS.has(word));
+  const candidateWords = new Set(normalizeAcceptedAnswer(candidate).split(' '));
+  return questionWords.some(word => candidateWords.has(word));
+}
+
+function isScenarioActionEquivalent(candidate, accepted, questionText) {
+  if (!isScenarioActionQuestion(questionText)) return false;
+  const expectedText = normalizeAcceptedAnswer(accepted);
+  const candidateText = normalizeAcceptedAnswer(candidate);
+  const actionMatches = ACTION_GROUPS.some(group =>
+    hasActionFromGroup(expectedText, group) && hasActionFromGroup(candidateText, group)
+  );
+  return actionMatches && hasScenarioContext(candidate, questionText) && candidateText.split(' ').length >= 2;
+}
+
+function isBinaAyatEquivalent(candidate, questionText) {
+  if (!/bina\s+ayat|tuliskan\s+ayat|gunakan\s+kata/i.test(questionText)) return false;
+  const quoted = [...questionText.matchAll(/["“”']([^"“”']+)["“”']/g)]
+    .flatMap(match => normalizeAcceptedAnswer(match[1]).split(' '));
+  const named = questionText.match(/nama\s+([a-zà-ÿ][a-zà-ÿ-]*)/i)?.[1] || '';
+  const required = [...new Set([...quoted, named ? normalizeAcceptedAnswer(named) : ''].filter(Boolean))];
+  const candidateText = normalizeAcceptedAnswer(candidate);
+  return required.length >= 2
+    && required.every(word => candidateText.split(' ').includes(word))
+    && candidateText.split(' ').length >= required.length + 1;
+}
+
 function getQuestionText(question = {}) {
   const nestedQuestion = question?.question && typeof question.question === 'object'
     ? question.question
@@ -224,6 +278,7 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
 
   const candidate = normalizeAcceptedAnswer(answer);
   if (!candidate) return false;
+  const rawQuestionText = getQuestionText(question);
   const questionText = normalizeAcceptedAnswer(getQuestionText(question));
   const acceptedAnswers = getAcceptedAnswers(question);
 
@@ -240,6 +295,10 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
     });
     if (expectedPronoun) return true;
   }
+
+  if (isBinaAyatEquivalent(candidate, rawQuestionText)) return true;
+
+  if (acceptedAnswers.some(value => isScenarioActionEquivalent(candidate, value, questionText))) return true;
 
   return acceptedAnswers.some(value => {
     const accepted = normalizeAcceptedAnswer(value);
