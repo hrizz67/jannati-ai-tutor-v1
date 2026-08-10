@@ -2,21 +2,79 @@ import { supportsVoice } from './voiceCapability.js';
 
 const queue = [];
 let activeUtterance = null;
+let speakAttempt = 0;
 
 function getSynth() {
   if (!supportsVoice()) return null;
   return window.speechSynthesis || null;
 }
 
-function speakNext() {
+function normalizeLanguage(language = '') {
+  return String(language || '').trim().toLowerCase().replace('_', '-');
+}
+
+function selectVoice(synth, language) {
+  const voices = typeof synth?.getVoices === 'function' ? synth.getVoices() : [];
+  if (!voices.length) return null;
+
+  const requested = normalizeLanguage(language);
+  const base = requested.split('-')[0];
+  const matching = voices.filter(voice => {
+    const voiceLanguage = normalizeLanguage(voice.lang);
+    return voiceLanguage === requested || voiceLanguage.split('-')[0] === base;
+  });
+  if (!matching.length) return null;
+
+  // Prefer a local, well-known system voice. This avoids PC/Android silently
+  // falling back to an unrelated default voice when the language is available.
+  const qualityScore = voice => {
+    const name = String(voice.name || '').toLowerCase();
+    let score = 0;
+    if (normalizeLanguage(voice.lang) === requested) score += 40;
+    if (voice.localService) score += 20;
+    if (/microsoft|google|samsung|enhanced|natural|premium/.test(name)) score += 10;
+    if (/compact|espeak|festival|default/.test(name)) score -= 5;
+    return score;
+  };
+  return [...matching].sort((left, right) => qualityScore(right) - qualityScore(left))[0];
+}
+
+function waitForVoices(synth) {
+  const voices = typeof synth?.getVoices === 'function' ? synth.getVoices() : [];
+  if (voices.length || typeof synth?.addEventListener !== 'function') return Promise.resolve();
+
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      synth.removeEventListener?.('voiceschanged', finish);
+      resolve();
+    };
+    synth.addEventListener('voiceschanged', finish, { once: true });
+    window.setTimeout(finish, 700);
+  });
+}
+
+async function speakNext() {
   const synth = getSynth();
   if (!synth || activeUtterance || queue.length === 0) return;
   const next = queue.shift();
   if (!next) return;
 
+  const attempt = ++speakAttempt;
+  activeUtterance = { starting: true };
+  await waitForVoices(synth);
+  if (attempt !== speakAttempt) {
+    activeUtterance = null;
+    return;
+  }
+
+  const language = next.options?.lang || 'ms-MY';
   const utterance = new SpeechSynthesisUtterance(next.text);
-  utterance.lang = next.options?.lang || 'ms-MY';
-  utterance.rate = Number(next.options?.rate) || 0.95;
+  utterance.lang = language;
+  utterance.voice = selectVoice(synth, language) || null;
+  utterance.rate = Number(next.options?.rate) || 0.88;
   utterance.pitch = Number(next.options?.pitch) || 1;
   utterance.volume = Number(next.options?.volume) || 1;
   utterance.onend = () => {
@@ -46,6 +104,7 @@ export function enqueueVoice(text, options = {}) {
 
 export function clearVoiceQueue() {
   const synth = getSynth();
+  speakAttempt += 1;
   queue.length = 0;
   if (synth?.speaking || synth?.pending) synth.cancel();
   activeUtterance = null;
