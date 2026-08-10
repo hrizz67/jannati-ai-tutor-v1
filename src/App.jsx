@@ -5156,6 +5156,10 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
     });
   }, [resume, setId, sessionIndex, mode, choice, typed, arranged, feedback, scoreHistory, item.title]);
 
+  useEffect(() => () => {
+    stopAudio();
+  }, []);
+
   function stopAudio() {
     try {
       window.speechSynthesis?.cancel?.();
@@ -5266,7 +5270,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   return (
     <main className="app listening-lab-page">
       <div className="topbar">
-        <button className="ghost" onClick={onBack}>← Papan Utama</button>
+        <button className="ghost" onClick={() => { stopAudio(); onBack?.(); }}>← Papan Utama</button>
         <span className="pill">Makmal Mendengar Luar Talian</span>
       </div>
 
