@@ -3772,7 +3772,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
     clearBacaanSession();
-    setSessionIndex(current => nextCommunicationSessionIndex(current, passageBase.sessionItems?.length || 1));
+    setSessionIndex(0);
     resetBacaanState();
   }, [passageId]);
 
@@ -4073,6 +4073,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const recordedSessionRef = useRef(new Set());
   const modeResetRef = useRef({ setId, mode });
   const languageInitializedRef = useRef(false);
+  const subjectInitializedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
   const recognitionRef = useRef(null);
   const readingSpeechSessionRef = useRef(null);
@@ -4265,7 +4266,11 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }, [setId]);
 
   useEffect(() => {
-    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
+    if (!subjectInitializedRef.current) {
+      subjectInitializedRef.current = true;
+      return;
+    }
+    setSessionIndex(0);
   }, [setId]);
 
   useEffect(() => {
@@ -4757,6 +4762,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
   const modeResetRef = useRef({ setId, mode });
+  const subjectInitializedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
   const setBase = writingSets.find(item => item.id === setId) || writingSets[0] || null;
@@ -4789,7 +4795,11 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }, [setId, mode]);
 
   useEffect(() => {
-    setSessionIndex(current => nextCommunicationSessionIndex(current, setBase?.sessionItems?.length || 1));
+    if (!subjectInitializedRef.current) {
+      subjectInitializedRef.current = true;
+      return;
+    }
+    setSessionIndex(0);
   }, [setId]);
 
   useEffect(() => {
