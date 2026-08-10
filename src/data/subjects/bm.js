@@ -8292,7 +8292,7 @@ const rawBMSSubject = {
             "sangat"
           ],
           "hint": "Pilih kata penguat yang paling sesuai.",
-          "explanation": "sangat ialah kata penguat yang sesuai untuk menerangkan keadaan bersih.",
+          "explanation": "Kata penguat “sangat” digunakan untuk menguatkan maksud kata adjektif “bersih”.",
           "difficulty": "mudah",
           "metadata": {
             "category": "tatabahasa",

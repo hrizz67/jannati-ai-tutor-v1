@@ -95,6 +95,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     mereka: '“Mereka” digunakan untuk beberapa orang yang sedang dibicarakan.'
   }[pronounAnswer] || `Kata ganti nama “${pronounLabel}” dipilih berdasarkan siapa yang bercakap atau dirujuk.`;
   const isBmCommonNoun = subjectId === 'bm' && /kata nama am|kata_nama_am/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
+  const isBmIntensifier = subjectId === 'bm' && /kata penguat|kata_penguat|penguat/i.test(`${stem} ${topic.id || ''} ${topic.title || ''} ${question.explanation || ''}`);
+  const intensifierAnswer = sanitizeAiText(question.answer || 'sangat');
+  const intensifierSentence = stem.replace(/_{2,}/, intensifierAnswer);
+  const intensifierAdjective = intensifierSentence.match(new RegExp(`\\b${intensifierAnswer}\\s+([\\p{L}]+)`, 'iu'))?.[1] || 'bersih';
   const isBmLightTulang = subjectId === 'bm' && /ringan\s+tulang/i.test(`${stem} ${topic.id || ''} ${topic.title || ''}`);
   const bmFamily = subjectId === 'bm' ? getBmFamily(topic, stem) : '';
   const bmFamilyContent = BM_FAMILY_CONTENT[bmFamily];
@@ -110,8 +114,10 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         ? `Kenal pasti operasi ${mathOperation} dan susun nombor dalam soalan sebelum mengira.`
       : isBmPronoun
         ? `Gunakan “${pronounLabel}” berdasarkan siapa yang bercakap atau dirujuk dalam ayat.`
-        : isBmCommonNoun
+      : isBmCommonNoun
           ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
+        : isBmIntensifier
+          ? `Dalam ayat “${intensifierSentence}”, “${intensifierAnswer}” ialah kata penguat yang menerangkan kata adjektif “${intensifierAdjective}”.`
         : isBmLightTulang
           ? '“Ringan tulang” bermaksud rajin bekerja atau suka membantu orang lain.'
         : bmFamilyContent?.simple || question.explanation || (category === 'generic' ? contextualGeneric : rule.explanation)
@@ -138,6 +144,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? `Memilih kata ganti nama diri yang sesuai, iaitu “${pronounLabel}”.`
     : isBmCommonNoun
         ? 'Mengenal pasti kata nama am.'
+      : isBmIntensifier
+        ? 'Menggunakan kata penguat untuk menguatkan maksud kata adjektif.'
       : mathGuidance
         ? mathGuidance.focus
       : bmFamilyContent?.focus || sanitizeChildFacingText(currentLearningObjective || topic.learningObjective || topic.objective || 'Fahami kemahiran dalam soalan semasa.');
@@ -149,6 +157,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? `“${pronounLabel}” dipilih berdasarkan orang yang bercakap atau dirujuk.`
       : isBmCommonNoun
         ? 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.'
+      : isBmIntensifier
+        ? `“${intensifierAnswer}” menguatkan maksud kata adjektif “${intensifierAdjective}”.`
       : isBmLightTulang
         ? '“Ringan tulang” bermaksud rajin bekerja atau suka membantu orang lain.'
       : bmFamilyContent?.simple || explanation;
@@ -160,6 +170,8 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? pronounWhy
       : isBmCommonNoun
         ? `“${commonNounAnswer}” ialah nama umum bagi sejenis benda, bukan nama khas.`
+      : isBmIntensifier
+        ? `“${intensifierAnswer}” tepat kerana menunjukkan keadaan “${intensifierAdjective}” pada tahap yang tinggi.`
       : isBmLightTulang
         ? 'Maksud ini tepat kerana orang yang ringan tulang rajin bekerja dan suka membantu orang lain.'
       : bmFamilyContent?.why || explanation;
@@ -171,18 +183,22 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       ? ['Lihat siapa yang bercakap atau dirujuk.', `Padankan situasi dengan kata ganti nama “${pronounLabel}”.`, `Lengkapkan ayat dengan “${pronounLabel}”.`]
       : isBmCommonNoun
         ? ['Kenal pasti perkataan yang diberi.', 'Tentukan kategorinya.', `“${commonNounAnswer}” ialah benda, jadi ia kata nama am.`]
+      : isBmIntensifier
+        ? ['Baca ayat lengkap selepas mengisi tempat kosong.', `Kenal pasti kata adjektif “${intensifierAdjective}”.`, `Gunakan kata penguat “${intensifierAnswer}” untuk menguatkan sifat itu.`]
       : isBmLightTulang
         ? ['Kenal pasti simpulan bahasa.', 'Cari maksud kiasannya.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
       : mathGuidance
         ? mathGuidance.steps
       : buildContextualSteps({ subjectId, category, bmFamilyContent });
-  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? `${pronounLabel} membaca buku.` : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : isBmLightTulang ? 'Contohnya, kakak selalu membantu ibu mengemas rumah.' : mathGuidance ? mathGuidance.examples[0] : (bmFamilyContent?.example || examples[0] || '');
+  const example = isNumberOrder ? 'Nombor selepas 25 ialah 26.' : isBmPronoun ? `${pronounLabel} membaca buku.` : isBmCommonNoun ? 'Sekolah ialah kata nama am bagi tempat.' : isBmIntensifier ? 'Bilik itu sangat kemas.' : isBmLightTulang ? 'Contohnya, kakak selalu membantu ibu mengemas rumah.' : mathGuidance ? mathGuidance.examples[0] : (bmFamilyContent?.example || examples[0] || '');
   const commonMistakes = (isNumberOrder
     ? ['Menambah atau menolak dengan arah yang salah.', 'Tidak menyemak urutan nombor.']
     : isBmPronoun
       ? ['Jangan pilih kata ganti nama yang tidak sepadan dengan situasi.', 'Tidak melihat siapa yang sedang bercakap atau dirujuk.']
       : isBmCommonNoun
         ? ['Jangan keliru dengan kata nama khas seperti “Sekolah Kebangsaan Seri Murni”.', 'Nama khas merujuk kepada nama tertentu.']
+      : isBmIntensifier
+        ? ['Jangan keliru antara kata penguat dengan kata adjektif.', 'Pastikan kata penguat hadir untuk menguatkan sifat atau keadaan.']
       : isBmLightTulang
         ? ['Jangan faham maksudnya secara literal.', 'Padankan dengan sikap rajin bekerja atau suka membantu.']
       : mathGuidance
