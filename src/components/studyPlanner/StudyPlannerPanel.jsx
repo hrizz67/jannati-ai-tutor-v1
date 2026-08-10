@@ -33,7 +33,6 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
   if (!planner) {
     return (
       <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
-        <p className="eyebrow">Pelan Belajar</p>
         <h2 id={titleId}>Pelan Belajar</h2>
         <p className="memory-last" role="status">Pelan belajar belum tersedia.</p>
       </section>
@@ -42,7 +41,6 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
 
   return (
     <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
-      <p className="eyebrow">Pelan Belajar</p>
       <h2 id={titleId}>Pelan Belajar</h2>
       <p className="memory-last" role="status">{buildSectionMessage(planner)}</p>
       {plannerError && (

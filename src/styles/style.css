@@ -4277,12 +4277,30 @@ input:focus {
   .dashboard-shell > .sidebar .brand {
     flex: 0 0 auto;
     margin: 0;
-    padding: 0 6px 0 2px;
+    padding: 0 8px 0 2px;
     border: 0;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
   }
 
   .dashboard-shell > .sidebar .brand > div {
-    display: none;
+    display: block;
+    text-align: center;
+  }
+
+  .dashboard-shell > .sidebar .brand h2 {
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1;
+  }
+
+  .dashboard-shell > .sidebar .brand p {
+    margin: 2px 0 0;
+    font-size: .56rem;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .dashboard-shell > .sidebar .brand .brand-logo-icon,

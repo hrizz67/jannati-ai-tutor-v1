@@ -235,7 +235,6 @@ export default function ParentDashboard({
       </div>
 
       <section className="card">
-        <p className="eyebrow">Ringkasan Prestasi Anak</p>
         <h2>Ringkasan Prestasi Anak</h2>
         {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
           <>
@@ -279,7 +278,6 @@ export default function ParentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Subjek dan Penguasaan</p>
         <h2>Subjek dan Penguasaan</h2>
         {subjectInsights.some(subject => subject.hasData) ? (
           <>
@@ -357,7 +355,6 @@ export default function ParentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Fokus dan Cadangan</p>
         <h2>Fokus dan Cadangan</h2>
         {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
           <>
@@ -387,7 +384,6 @@ export default function ParentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Jadual Ulang Kaji</p>
         <h2>Jadual Ulang Kaji</h2>
         {revisionItems.length ? (
           <div className="parent-topic-list">
@@ -407,7 +403,6 @@ export default function ParentDashboard({
       <StudyPlannerPanel planner={studyPlannerPayload} />
 
       <section className="card">
-        <p className="eyebrow">Sejarah UASA</p>
         <h2>Sejarah UASA</h2>
         <div className="timeline">
           {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
@@ -423,7 +418,6 @@ export default function ParentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Aktiviti Terkini</p>
         <h2>Aktiviti Terkini</h2>
         <div className="timeline">
           {(sourceProfile?.history || []).length === 0 ? (

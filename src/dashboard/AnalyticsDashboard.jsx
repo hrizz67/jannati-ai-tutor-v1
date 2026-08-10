@@ -204,7 +204,6 @@ export default function AnalyticsDashboard({
       </section>
 
       <section className="card ai-recommend-card">
-        <p className="eyebrow">Cadangan Guru AI</p>
         <h2>Cadangan Guru AI</h2>
         <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
         {canonicalAnalytics.hasEvidence ? (

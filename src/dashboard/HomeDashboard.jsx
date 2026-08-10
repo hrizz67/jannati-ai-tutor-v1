@@ -456,7 +456,6 @@ export default function HomeDashboard(props) {
 
         <section className="quick-actions" aria-label="Aktiviti pembelajaran"><button type="button" onClick={resume ? onResume : () => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>{resume ? 'Sambung Latihan' : 'Sambung Belajar'}</span></button><button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button><button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button><button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button><button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button></section>
         <section className="card adaptive-practice-card">
-          <p className="eyebrow">Latihan AI</p>
           <h2>Latihan AI</h2>
           <p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p>
           <div className="mastery-summary-grid">
@@ -499,7 +498,6 @@ export default function HomeDashboard(props) {
           <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)} disabled={!todayLesson && !smartLesson?.nextQuestionId}>{smartLessonCta}</button>
         </section>
         <section className="card ai-recommend-card">
-          <p className="eyebrow">Cadangan Guru AI</p>
           <h2>Cadangan Guru AI</h2>
           <p>{aiRecommendation.reason}</p>
           <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>

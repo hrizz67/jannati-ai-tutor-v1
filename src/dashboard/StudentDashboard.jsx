@@ -79,7 +79,6 @@ export default function StudentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Prestasi Subjek</p>
         <h2>Prestasi Subjek</h2>
         {subjectRows.length ? <div className="subject-report-grid">
           {subjectRows.map(subject => (
@@ -94,7 +93,6 @@ export default function StudentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Topik Perlu Diperbaiki</p>
         <h2>Topik Perlu Diperbaiki</h2>
         {topWeak.length ? (
           <div className="timeline">
@@ -116,7 +114,6 @@ export default function StudentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Topik Dikuasai</p>
         <h2>Topik Dikuasai</h2>
         {topStrong.length ? (
           <div className="timeline">
@@ -134,7 +131,6 @@ export default function StudentDashboard({
       </section>
 
       <section className="card adaptive-recommendation-card">
-        <p className="eyebrow">Cadangan Hari Ini</p>
         <h2>Cadangan Hari Ini</h2>
         <p>
           {studyPlan
@@ -155,7 +151,6 @@ export default function StudentDashboard({
       </section>
 
       <section className="card">
-        <p className="eyebrow">Streak Pembelajaran</p>
         <h2>Streak Pembelajaran</h2>
         <div className="mastery-summary-grid">
           <div><b>{formatStreakLabel(summaryStreak)}</b><span>Streak Semasa</span></div>
