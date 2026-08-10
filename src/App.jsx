@@ -3679,7 +3679,8 @@ function nextCommunicationSessionIndex(currentIndex, size) {
 function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const initialPassageId = readingPassages.find(item => item.id === resume?.state?.passageId)?.id || readingPassages[0]?.id || 'bm';
   const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && initialPassageId) || initialPassageId);
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
+  const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[initialPassageId]) ? resume.state.sessionIndexes[initialPassageId] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [listening, setMendengar] = useState(false);
   const [recognitionSupported, setRecognitionSupported] = useState(false);
@@ -3777,9 +3778,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
     clearBacaanSession();
-    setSessionIndex(0);
+    setSessionIndex(Number.isInteger(sessionIndexes[passageId]) ? sessionIndexes[passageId] : 0);
     resetBacaanState();
   }, [passageId]);
+
+  useEffect(() => {
+    setSessionIndexes(current => current[passageId] === sessionIndex ? current : { ...current, [passageId]: sessionIndex });
+  }, [passageId, sessionIndex]);
 
   useEffect(() => {
     resumeChangeRef.current = onResumeChange;
@@ -3820,12 +3825,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       state: {
         passageId,
         sessionIndex,
+        sessionIndexes: { ...sessionIndexes, [passageId]: sessionIndex },
         transcript: safeTranscript,
         result: safeResult,
         scoreHistory
       }
     });
-  }, [passageId, sessionIndex, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, scoreHistory, passage.id, passage.title]);
+  }, [passageId, sessionIndex, sessionIndexes, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, scoreHistory, passage.id, passage.title]);
 
   useEffect(() => () => {
     clearBacaanSession();
@@ -4061,7 +4067,8 @@ function createEmptyBacaanResult(message = '') {
 
 function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'speaking' && resume?.state?.setId) || 'bm');
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
+  const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm']) ? resume.state.sessionIndexes[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'intro');
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
   const [confirmedTranscript, setConfirmedTranscript] = useState(() => resume?.state?.transcript || '');
@@ -4275,8 +4282,12 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       subjectInitializedRef.current = true;
       return;
     }
-    setSessionIndex(0);
+    setSessionIndex(Number.isInteger(sessionIndexes[setId]) ? sessionIndexes[setId] : 0);
   }, [setId]);
+
+  useEffect(() => {
+    setSessionIndexes(current => current[setId] === sessionIndex ? current : { ...current, [setId]: sessionIndex });
+  }, [setId, sessionIndex]);
 
   useEffect(() => {
     resumeChangeRef.current = onResumeChange;
@@ -4311,13 +4322,14 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       state: {
         setId,
         sessionIndex,
+        sessionIndexes: { ...sessionIndexes, [setId]: sessionIndex },
         mode,
         transcript,
         result,
         scoreHistory
       }
     });
-  }, [setId, sessionIndex, mode, transcript, result, scoreHistory, set.title, safeModeKey]);
+  }, [setId, sessionIndex, sessionIndexes, mode, transcript, result, scoreHistory, set.title, safeModeKey]);
 
   useEffect(() => () => {
     stopRecognitionSilently();
@@ -4759,7 +4771,8 @@ function scoreMenulis(task, answer, dictionary = []) {
 
 function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => (resume?.mode === 'writing' && resume?.state?.setId) || 'bm');
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
+  const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[(resume?.mode === 'writing' && resume?.state?.setId) || 'bm']) ? resume.state.sessionIndexes[(resume?.mode === 'writing' && resume?.state?.setId) || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'arrange');
   const [answer, setAnswer] = useState(() => resume?.state?.answer || '');
   const [arranged, setSusund] = useState(() => Array.isArray(resume?.state?.arranged) ? resume.state.arranged : []);
@@ -4804,8 +4817,12 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
       subjectInitializedRef.current = true;
       return;
     }
-    setSessionIndex(0);
+    setSessionIndex(Number.isInteger(sessionIndexes[setId]) ? sessionIndexes[setId] : 0);
   }, [setId]);
+
+  useEffect(() => {
+    setSessionIndexes(current => current[setId] === sessionIndex ? current : { ...current, [setId]: sessionIndex });
+  }, [setId, sessionIndex]);
 
   useEffect(() => {
     if (!safeMode || safeMode === mode) return;
@@ -4855,10 +4872,12 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
         answer,
         arranged,
         result,
+        sessionIndex,
+        sessionIndexes: { ...sessionIndexes, [setId]: sessionIndex },
         scoreHistory
       }
     });
-  }, [setId, sessionIndex, mode, answer, arranged, result, scoreHistory, safeTask?.label]);
+  }, [setId, sessionIndex, sessionIndexes, mode, answer, arranged, result, scoreHistory, safeTask?.label]);
 
   function currentAnswer() {
     return mode === 'arrange' ? arranged.join(' ') : answer;
@@ -5085,7 +5104,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
   const [setId, setSetId] = useState(() => resume?.state?.setId || 'bm');
   const base = listeningSets.find(item => item.id === setId) || listeningSets[0];
-  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
+  const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
+  const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[resume?.state?.setId || 'bm']) ? resume.state.sessionIndexes[resume.state.setId || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'choose');
   const [choice, setChoice] = useState(() => resume?.state?.choice || '');
   const [typed, setTyped] = useState(() => resume?.state?.typed || '');
@@ -5146,6 +5166,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
       state: {
         setId,
         sessionIndex,
+        sessionIndexes: { ...sessionIndexes, [setId]: sessionIndex },
         mode,
         choice,
         typed,
@@ -5154,7 +5175,11 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
         scoreHistory
       }
     });
-  }, [resume, setId, sessionIndex, mode, choice, typed, arranged, feedback, scoreHistory, item.title]);
+  }, [resume, setId, sessionIndex, sessionIndexes, mode, choice, typed, arranged, feedback, scoreHistory, item.title]);
+
+  useEffect(() => {
+    setSessionIndexes(current => current[setId] === sessionIndex ? current : { ...current, [setId]: sessionIndex });
+  }, [setId, sessionIndex]);
 
   useEffect(() => () => {
     stopAudio();
@@ -5295,7 +5320,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
               onClick={() => {
                 stopAudio();
                 setSetId(language.id);
-                setSessionIndex(0);
+                setSessionIndex(Number.isInteger(sessionIndexes[language.id]) ? sessionIndexes[language.id] : 0);
                 setScoreHistory([]);
               }}
             >
