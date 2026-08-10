@@ -5913,3 +5913,20 @@ input:focus {
     margin-right: auto;
   }
 }
+
+.voice-button-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.voice-button-status {
+  color: #9a5b00;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tutor-ai-voice {
+  margin-top: 8px;
+}

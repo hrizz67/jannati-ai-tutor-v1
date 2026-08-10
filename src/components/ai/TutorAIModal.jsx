@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import JannaAvatar from '../JannaAvatar';
+import VoiceButton from '../VoiceButton.jsx';
 import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
@@ -149,11 +150,12 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
   };
 }
 
-function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '' }) {
+function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY' }) {
   const safeText = normalizeText(text, '');
   return (
     <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
       <p className="chat-bubble-text">{safeText}</p>
+      {role === 'ai' && !loading && safeText && <VoiceButton text={safeText} lang={voiceLang} label="Dengar" title="Dengar penerangan Tutor AI" className="voice-inline tutor-ai-voice" />}
       {loading && (
         <div className="chat-typing" aria-hidden="true">
           <span />
@@ -246,6 +248,7 @@ export default function TutorAIModal({
   const revealExpectedAnswer = isCorrect || normalizedExplanationMode === 'correct_answer_reinforcement' || normalizedExplanationMode === 'show_answer' || Number(attemptCount) >= 3;
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
+  const voiceLang = activeSubject?.id === 'english' ? 'en-US' : activeSubject?.id === 'arab' ? 'ar-SA' : 'ms-MY';
 
   const sessionKey = useMemo(() => [
     studentProfile?.studentId || studentProfile?.name || '',
@@ -523,9 +526,10 @@ export default function TutorAIModal({
               text={message.text}
               suggestions={message.suggestions || []}
               tone={message.tone || ''}
+              voiceLang={voiceLang}
             />
           ))}
-          {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading />}
+          {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading voiceLang={voiceLang} />}
         </div>
 
         <div className="ai-chat-input ai-modal-footer" data-modal-footer="true">

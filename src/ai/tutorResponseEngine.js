@@ -920,7 +920,7 @@ export async function getTutorResponse(options = {}) {
     ? buildStandaloneTutorAnswer(prompt, subjectContext)
     : '';
 
-  const suggestions = buildSuggestionList(resolvedIntent, {
+  const suggestions = standaloneAnswer ? [] : buildSuggestionList(resolvedIntent, {
     subject: subjectContext,
     topic: topicContext,
     question: resolvedQuestion,
