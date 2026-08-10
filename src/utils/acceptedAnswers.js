@@ -165,6 +165,17 @@ const ACTION_GROUPS = [
   ['lapor', 'melaporkan', 'beritahu', 'memberitahu', 'maklum']
 ];
 
+const SIMPULAN_MEANING_GROUPS = [
+  ['berjalan tanpa kasut', 'tidak memakai kasut', 'tidak pakai kasut', 'tanpa kasut', 'berkaki ayam'],
+  ['hadiah yang dibawa ketika melawat', 'hadiah ketika melawat', 'buah tangan', 'buah tangan ketika melawat'],
+  ['bijak mencari jalan penyelesaian', 'pandai mencari penyelesaian', 'pandai menyelesaikan masalah'],
+  ['cepat memahami pelajaran', 'cepat faham pelajaran', 'mudah memahami pelajaran'],
+  ['memberi perhatian', 'ambil berat', 'mengambil berat', 'prihatin'],
+  ['gembira atau bangga', 'gembira', 'bangga', 'berasa bangga'],
+  ['rajin membantu', 'suka membantu', 'ringan tulang'],
+  ['bercakap dengan lemah lembut', 'bercakap lembut', 'berkata sopan']
+];
+
 const SCENARIO_STOP_WORDS = new Set([
   'selepas', 'sebelum', 'semasa', 'apakah', 'tindakan', 'paling', 'sesuai',
   'yang', 'ialah', 'dan', 'atau', 'dengan', 'untuk', 'dalam', 'ke', 'di',
@@ -207,6 +218,17 @@ function isBinaAyatEquivalent(candidate, questionText) {
   return required.length >= 2
     && required.every(word => candidateText.split(' ').includes(word))
     && candidateText.split(' ').length >= required.length + 1;
+}
+
+function isSimpulanMeaningEquivalent(candidate, accepted, questionText) {
+  if (!/simpulan\s+bahasa/i.test(questionText)) return false;
+  const candidateText = normalizeAcceptedAnswer(candidate);
+  const acceptedText = normalizeAcceptedAnswer(accepted);
+  return SIMPULAN_MEANING_GROUPS.some(group => {
+    const normalizedGroup = group.map(normalizeAcceptedAnswer);
+    return normalizedGroup.some(variant => acceptedText.includes(variant))
+      && normalizedGroup.some(variant => candidateText.includes(variant));
+  });
 }
 
 function getQuestionText(question = {}) {
@@ -297,6 +319,8 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
   }
 
   if (isBinaAyatEquivalent(candidate, rawQuestionText)) return true;
+
+  if (acceptedAnswers.some(value => isSimpulanMeaningEquivalent(candidate, value, rawQuestionText))) return true;
 
   if (acceptedAnswers.some(value => isScenarioActionEquivalent(candidate, value, questionText))) return true;
 
