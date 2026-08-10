@@ -4342,12 +4342,43 @@ input:focus {
   .dashboard-main .ai-recommend-card,
   .dashboard-main .smart-lesson-card,
   .dashboard-main .daily-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .dashboard-main .ai-recommend-card .mascot-card,
+  .dashboard-main .daily-card .mascot-card {
+    min-width: 0;
+    max-width: 100%;
     overflow: hidden;
   }
 
   .dashboard-main .ai-recommend-card .mascot-card-avatar,
   .dashboard-main .daily-card .mascot-card-avatar {
     overflow: hidden;
+  }
+
+  .dashboard-main .mastery-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .dashboard-main .mastery-summary-grid > div,
+  .dashboard-main .subject-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .dashboard-main .mastery-summary-grid b,
+  .dashboard-main .mastery-summary-grid span,
+  .dashboard-main .subject-card * {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .dashboard-main .adaptive-practice-card > *,
