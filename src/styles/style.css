@@ -4243,6 +4243,160 @@ input:focus {
   }
 }
 
+/* Mobile dashboard pass: keep navigation compact and prevent desktop card
+   content from forcing a wider internal layout. */
+@media (max-width: 650px) {
+  .dashboard-shell {
+    display: block;
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .dashboard-shell > .sidebar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    margin: 0 0 10px;
+    padding: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 18px;
+    scrollbar-width: none;
+  }
+
+  .dashboard-shell > .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dashboard-shell > .sidebar .brand {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0 6px 0 2px;
+    border: 0;
+  }
+
+  .dashboard-shell > .sidebar .brand > div {
+    display: none;
+  }
+
+  .dashboard-shell > .sidebar .brand .brand-logo-icon,
+  .dashboard-shell > .sidebar .brand > svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dashboard-shell > .sidebar > .nav {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: auto;
+    min-height: 46px;
+    margin: 0;
+    padding: 7px 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .dashboard-shell > .sidebar > .nav span {
+    white-space: nowrap;
+    font-size: .78rem;
+  }
+
+  .dashboard-shell > .sidebar > .nav .game-badge-icon,
+  .dashboard-shell > .sidebar > .nav .icon-glyph {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    padding: 3px;
+  }
+
+  .dashboard-main {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+  }
+
+  .dashboard-main > *,
+  .dashboard-main .card,
+  .dashboard-main .profile,
+  .dashboard-main details,
+  .dashboard-main details > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .dashboard-main .hero-card::before,
+  .dashboard-main .hero-card::after {
+    display: none;
+  }
+
+  .dashboard-main .adaptive-practice-card,
+  .dashboard-main .resume-card,
+  .dashboard-main .ai-recommend-card,
+  .dashboard-main .smart-lesson-card,
+  .dashboard-main .daily-card {
+    overflow: hidden;
+  }
+
+  .dashboard-main .ai-recommend-card .mascot-card-avatar,
+  .dashboard-main .daily-card .mascot-card-avatar {
+    overflow: hidden;
+  }
+
+  .dashboard-main .adaptive-practice-card > *,
+  .dashboard-main .resume-card > *,
+  .dashboard-main .ai-recommend-card > *,
+  .dashboard-main .smart-lesson-card > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-main .recommend-meta,
+  .dashboard-main .journey-steps {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-main .mastery-summary-grid > div,
+  .dashboard-main .metric-card,
+  .dashboard-main .stat {
+    min-height: 0;
+  }
+
+  .dashboard-main .mastery-summary-grid > div > b,
+  .dashboard-main .metric-card-value,
+  .dashboard-main .stat b {
+    font-size: clamp(1.15rem, 6.5vw, 1.7rem);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-main .metric-card-label,
+  .dashboard-main .stat span:last-child {
+    font-size: clamp(.74rem, 3.2vw, .9rem);
+    line-height: 1.25;
+  }
+
+  .beta-feedback-fab {
+    max-width: calc(100vw - 24px);
+  }
+
+  .beta-feedback-fab > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
 @media print {
   body {
     background: #fff !important;
