@@ -234,12 +234,12 @@ function resolveChildSnapshot(childId) {
   if (!childId) return null;
   const regularSnapshot = readChildSnapshot(childId);
   const originalSnapshot = readOriginalChildSnapshot(childId);
-  // The regular snapshot belongs to the selected child and is the source of
-  // truth. The original snapshot is only a recovery fallback for legacy or
-  // partially-written snapshots; never choose it merely because it has a
-  // larger evidence score.
-  if (regularSnapshot && snapshotEvidenceScore(regularSnapshot) > 0) return regularSnapshot;
-  return originalSnapshot || regularSnapshot || null;
+  // A regular snapshot can be newer but incomplete when mobile storage or a
+  // cloud write was interrupted. Prefer the snapshot with the most learning
+  // evidence so an empty/partial snapshot cannot hide the original progress.
+  return [regularSnapshot, originalSnapshot]
+    .filter(Boolean)
+    .sort((left, right) => snapshotEvidenceScore(right) - snapshotEvidenceScore(left))[0] || null;
 }
 
 function captureOriginalChildSnapshot(childId) {
@@ -363,6 +363,8 @@ function buildCloudLearningPayload() {
 function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   repairChildSnapshotStorage();
   const localSnapshots = {};
+  const localProfiles = readChildProfiles();
+  const localActiveChildId = readActiveChildId();
   try {
     for (let index = 0; index < localStorage.length; index += 1) {
       const key = localStorage.key(index);
@@ -378,7 +380,7 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     try {
       const localSnapshot = JSON.parse(raw);
       const cloudSnapshot = JSON.parse(localStorage.getItem(key) || 'null');
-      if (snapshotEvidenceScore(localSnapshot) > snapshotEvidenceScore(cloudSnapshot || {})) {
+      if (snapshotEvidenceScore(localSnapshot) >= snapshotEvidenceScore(cloudSnapshot || {})) {
         localStorage.setItem(key, raw);
       }
     } catch {
@@ -387,12 +389,17 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   });
   try {
     const metadata = JSON.parse(cloudData[CLOUD_CHILD_STATE_KEY] || '{}');
-    const profiles = Array.isArray(metadata.profiles) ? metadata.profiles.filter(item => item?.id && item?.name) : [];
-    if (!profiles.length) return '';
-    writeChildProfiles(profiles);
-    const preferred = profiles.find(item => item.id === preferredChildId);
-    const cloudActive = profiles.find(item => item.id === metadata.activeChildId);
-    const active = preferred || cloudActive || profiles[0];
+    const cloudProfiles = Array.isArray(metadata.profiles) ? metadata.profiles.filter(item => item?.id && item?.name) : [];
+    const mergedProfiles = [...cloudProfiles];
+    localProfiles.forEach(localProfile => {
+      if (!mergedProfiles.some(profile => profile.id === localProfile.id)) mergedProfiles.push(localProfile);
+    });
+    if (!mergedProfiles.length) return '';
+    writeChildProfiles(mergedProfiles);
+    const preferred = mergedProfiles.find(item => item.id === preferredChildId);
+    const localActive = mergedProfiles.find(item => item.id === localActiveChildId);
+    const cloudActive = mergedProfiles.find(item => item.id === metadata.activeChildId);
+    const active = preferred || localActive || cloudActive || mergedProfiles[0];
     localStorage.setItem(ACTIVE_CHILD_KEY, active.id);
     const childSnapshot = readChildSnapshot(active.id);
     if (childSnapshot) restoreChildSnapshot(childSnapshot);
@@ -1262,6 +1269,7 @@ export default function App() {
       const existingProfiles = readChildProfiles();
       markLocalLearningMutation();
       const currentLearningSnapshot = readChildScopedData();
+      const currentSnapshotScore = snapshotEvidenceScore(currentLearningSnapshot);
       if (currentChildId && snapshotEvidenceScore(currentLearningSnapshot) > 0) {
         childSnapshotCacheRef.current.set(currentChildId, currentLearningSnapshot);
       }
@@ -1280,6 +1288,16 @@ export default function App() {
         }
       } catch (backupError) {
         console.warn('Child learning backup skipped:', backupError);
+      }
+
+      const persistedSnapshotScore = Math.max(
+        snapshotEvidenceScore(readChildSnapshot(currentChildId) || {}),
+        snapshotEvidenceScore(readOriginalChildSnapshot(currentChildId) || {}),
+        snapshotEvidenceScore(childSnapshotCacheRef.current.get(currentChildId) || {})
+      );
+      if (currentChildId && currentSnapshotScore > 0 && persistedSnapshotScore < currentSnapshotScore) {
+        setRecoveryMessages(prev => [...prev, 'Data pembelajaran belum berjaya disimpan dengan selamat. Profil anak baharu tidak dibuat supaya data lama tidak hilang. Sila kosongkan sedikit ruang storan dan cuba lagi.']);
+        return false;
       }
 
       const nextProfiles = [...existingProfiles.filter(item => item.id !== nextChild.id), nextChild];
