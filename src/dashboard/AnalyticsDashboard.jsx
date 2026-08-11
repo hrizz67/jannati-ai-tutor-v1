@@ -162,7 +162,7 @@ export default function AnalyticsDashboard({
 
       <section className="card curriculum-coverage-card">
         <p className="eyebrow">Liputan Kurikulum</p>
-        <h2>Analisis DSKP + UASA</h2>
+        <h2>Analisis DSKP + PBD</h2>
         {coverageState.state === 'available' || coverageState.state === 'partial' ? (
           <>
             <div className="metric-grid">
@@ -286,10 +286,10 @@ export default function AnalyticsDashboard({
       <SettingsPanel onExportBetaReport={onExportBetaReport} onImportLearningData={onImportLearningData} onRecoverLearningData={onRecoverLearningData} onSyncLearningData={onSyncLearningData} onLoadLearningData={onLoadLearningData} cloudSyncStatus={cloudSyncStatus} onReset={onReset} />
 
       <section className="card uasa-card">
-        <p className="eyebrow">Latihan UASA</p>
-        <h2><IconGlyph name="trophy" motion="celebrate" /> <span>Simulator UASA {formatSubjectName(selectedSubject?.id)}</span></h2>
+        <p className="eyebrow">Latihan Pentaksiran</p>
+        <h2><IconGlyph name="trophy" motion="celebrate" /> <span>Pentaksiran Sumatif {formatSubjectName(selectedSubject?.id)}</span></h2>
         <p>Latihan campuran mengikut topik.</p>
-        <button type="button" onClick={onOpenUasa}>Mula Simulator UASA</button>
+        <button type="button" onClick={onOpenUasa}>Mula Pentaksiran</button>
       </section>
 
       <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} onResume={onResume} onRestartResume={onRestartResume} />

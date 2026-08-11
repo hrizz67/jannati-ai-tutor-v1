@@ -93,7 +93,7 @@
         "uasa_kbat": {
           "SK": "BM.SK.2.1",
           "SP": "BM.SP.2.1.2",
-          "strand": "UASA/KBAT",
+          "strand": "Pentaksiran Sumatif/KBAT",
           "verified": true
         }
       }
@@ -547,8 +547,8 @@
         },
         "uasa_kesihatan": {
           "SK": "SK Integrasi Pendidikan Kesihatan",
-          "SP": "SP Aplikasi pengetahuan kesihatan dalam situasi harian/UASA",
-          "strand": "UASA Kesihatan",
+          "SP": "SP Aplikasi pengetahuan kesihatan dalam situasi harian/PBD",
+          "strand": "Pentaksiran Sumatif Kesihatan",
           "verified": false
         }
       }

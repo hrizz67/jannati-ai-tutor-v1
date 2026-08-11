@@ -4,6 +4,7 @@ const { runQuestionValidation } = require('./questionValidator');
 const { runCurriculumValidation } = require('./curriculumValidator');
 const { runMetadataValidation } = require('./metadataValidator');
 const { runStorageValidation } = require('./storageValidator');
+const { runContentQualityValidation } = require('./contentQualityValidator');
 
 const REPORT_DIR = path.resolve('reports/validation');
 const SUMMARY_JSON = path.join(REPORT_DIR, 'summary.json');
@@ -58,6 +59,7 @@ async function runMasterValidation() {
   reports.push(await runCurriculumValidation());
   reports.push(await runMetadataValidation());
   reports.push(await runStorageValidation());
+  reports.push(await runContentQualityValidation());
 
   const validators = reports.map(summarizeReport);
   const totals = validators.reduce((acc, item) => ({

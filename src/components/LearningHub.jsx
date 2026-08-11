@@ -101,6 +101,7 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
           {activeContent.source && <div className="learning-hub-sources"><b>Rujukan rasmi</b><span>Gunakan pautan ini untuk semakan kurikulum dan akses portal buku teks KPM. Kandungan buku teks tidak disalin ke dalam aplikasi.</span><div><a href={activeContent.source.curriculumUrl} target="_blank" rel="noreferrer">{activeContent.source.curriculumLabel}</a><a href={activeContent.source.textbookUrl} target="_blank" rel="noreferrer">{activeContent.source.textbookLabel}</a></div></div>}
         </> : <>
           <h3>Nota {formatTopicName(activeTopic?.title || 'topik ini')}</h3>
+          {activeContent.learningObjective && <div className="learning-hub-learning-goal"><b>Objektif pembelajaran</b><p>{activeContent.learningObjective}</p></div>}
           <p>{topicSummary(activeTopic, subject?.id)}</p>
           <ul className="learning-hub-key-points">{activeContent.keyPoints.map(point => <li key={point}>{point}</li>)}</ul>
           <div className="learning-hub-study-grid">
@@ -108,6 +109,11 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
             <article className="learning-hub-study-card learning-hub-study-card--yellow"><span className="learning-hub-study-number">02</span><b>Contoh mudah</b><p>{activeContent.example}</p></article>
             <article className="learning-hub-study-card learning-hub-study-card--blue"><span className="learning-hub-study-number">03</span><b>Cara ulang kaji</b><p>{activeContent.review}</p></article>
           </div>
+          {(activeContent.commonMistakes.length > 0 || activeContent.selfCheck) && <div className="learning-hub-study-grid learning-hub-study-grid--pilot">
+            {activeContent.commonMistakes.length > 0 && <article className="learning-hub-study-card learning-hub-study-card--red"><span className="learning-hub-study-number">AWAS</span><b>Kesalahan lazim</b><ul>{activeContent.commonMistakes.map(item => <li key={item}>{item}</li>)}</ul></article>}
+            {activeContent.selfCheck && <article className="learning-hub-study-card learning-hub-study-card--purple"><span className="learning-hub-study-number">SEMAK DIRI</span><b>Uji kefahaman</b><p>{activeContent.selfCheck}</p></article>}
+          </div>}
+          {activeContent.learningOutcome && <div className="learning-hub-method"><span className="learning-hub-method-icon"><IconGlyph name="check" /></span><div><b>Hasil pembelajaran</b><span>{activeContent.learningOutcome}</span></div></div>}
           <div className="learning-hub-method"><span className="learning-hub-method-icon"><IconGlyph name="spark" motion="pulse" /></span><div><b>Kaedah Janna</b><span>Kenal pasti → Faham maksud → Cuba satu soalan</span></div></div>
           {activeTopic?.questions?.[0] && <div className="learning-hub-example"><b>Contoh</b><span>{activeTopic.questions[0].q}</span><small>{activeContent.review}</small></div>}
         </>}

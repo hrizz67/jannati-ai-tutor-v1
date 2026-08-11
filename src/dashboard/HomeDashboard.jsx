@@ -364,7 +364,7 @@ export default function HomeDashboard(props) {
         <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('nota')}><GameBadge src={notaBadge} /> <span>Nota</span></button>
         <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('buku')}><GameBadge src={bukuTeksBadge} /> <span>Buku Teks</span></button>
         <button type="button" className="nav" onClick={onOpenAi}><GameBadge src={tutorAiBadge} /> <span>Tutor AI</span></button>
-        <button type="button" className="nav" onClick={onOpenUasa}><GameBadge src={uasaBadge} /> <span>UASA</span></button>
+        <button type="button" className="nav" onClick={onOpenUasa}><GameBadge src={uasaBadge} /> <span>Pentaksiran</span></button>
         <button type="button" className="nav" onClick={onOpenParent}><GameBadge src={ibuBapaBadge} /> <span>Ibu Bapa</span></button>
       </aside>
       <section className="dashboard-main">
@@ -449,7 +449,7 @@ export default function HomeDashboard(props) {
             <RevisionDashboard {...revisionData} />
           </details>
           <details className="dashboard-disclosure">
-            <summary><span>Analitik & Kemajuan</span><small>Subjek, kemahiran bahasa, gamifikasi dan UASA</small></summary>
+            <summary><span>Analitik & Kemajuan</span><small>Subjek, kemahiran bahasa, gamifikasi dan pentaksiran</small></summary>
             <AnalyticsDashboard {...analyticsData} />
           </details>
         </Suspense>
@@ -479,7 +479,7 @@ export default function HomeDashboard(props) {
         </section>
         <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
         <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>{canonicalAnalytics.hasEvidence ? <div className="mastery-summary-grid"><div><b>{canonicalAnalytics.masteryPercent}%</b><span>Skor Penguasaan</span></div><div><b>{canonicalAnalytics.masteredTopics.length}</b><span>Dikuasai</span></div><div><b>{canonicalAnalytics.learningTopics.length}</b><span>Sedang Belajar</span></div><div><b>{canonicalAnalytics.weakTopics.length}</b><span>Perlu Latihan</span></div></div> : <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
-        <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + UASA</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
+        <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + PBD</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
         <section className="card smart-lesson-card">
           <p className="eyebrow">Laluan Belajar Hari Ini</p>
           <h2>{smartTargetTopicLabel || 'Enjin Pembelajaran Adaptif'}</h2>

@@ -1,9 +1,9 @@
 {
   "validator": "master",
-  "generatedAt": "2026-08-08T08:13:14.384Z",
+  "generatedAt": "2026-08-11T16:05:40.607Z",
   "status": "pass",
   "totals": {
-    "infos": 13680,
+    "infos": 26510,
     "errors": 0,
     "warnings": 0
   },
@@ -19,7 +19,7 @@
     {
       "validator": "curriculum",
       "status": "pass",
-      "infos": 13680,
+      "infos": 26510,
       "errors": 0,
       "warnings": 0,
       "reportFile": "reports/validation/curriculum-report.json"
@@ -39,6 +39,14 @@
       "errors": 0,
       "warnings": 0,
       "reportFile": "reports/validation/storage-report.json"
+    },
+    {
+      "validator": "content-quality",
+      "status": "pass",
+      "infos": 0,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/content-quality-report.json"
     }
   ]
 }

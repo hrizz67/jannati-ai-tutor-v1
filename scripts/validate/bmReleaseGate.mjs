@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { bmSubject } from '../../src/data/subjects/bm.js';
 import { getAcceptedAnswers, normalizeAcceptedAnswer } from '../../src/utils/acceptedAnswers.js';
 
-const normalize = value => normalizeAcceptedAnswer(value).replace(/\s+/g, ' ').trim();
+const normalize = value => {
+  const raw = String(value ?? '').trim();
+  const standalonePunctuation = raw.match(/^[?!.,;:]$/)?.[0];
+  return standalonePunctuation
+    ? `punctuation:${standalonePunctuation}`
+    : normalizeAcceptedAnswer(raw).replace(/\s+/g, ' ').trim();
+};
 const records = (bmSubject.topics || []).flatMap(topic => (topic.questions || []).map(question => ({ topic, question })));
 const issues = [];
 const seenStems = new Map();

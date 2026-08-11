@@ -5,6 +5,9 @@ const { pathToFileURL } = require('url');
 const REPORT_DIR = path.resolve('reports/validation');
 const REPORT_PATH = path.join(REPORT_DIR, 'curriculum-report.json');
 const VALID_DIFFICULTIES = new Set(['mudah', 'sederhana', 'sukar', 'easy', 'medium', 'hard']);
+const VALID_QUESTION_TYPES = new Set(['short_answer', 'objective', 'multiple_response', 'matching', 'ordering', 'fill_blank', 'true_false', 'structured', 'oral', 'practical']);
+const VALID_COGNITIVE_LEVELS = new Set(['mengingat', 'memahami', 'mengaplikasi', 'menganalisis', 'menilai', 'mencipta']);
+const KBAT_COGNITIVE_LEVELS = new Set(['mengaplikasi', 'menganalisis', 'menilai', 'mencipta']);
 
 function ensureReportDir() {
   fs.mkdirSync(REPORT_DIR, { recursive: true });
@@ -54,6 +57,10 @@ async function runCurriculumValidation() {
   let explicitSK = 0;
   let explicitSP = 0;
   let explicitEstimatedTime = 0;
+  let explicitLearningOutcomes = 0;
+  let explicitCognitiveLevels = 0;
+  let inferredCognitiveLevels = 0;
+  let explicitQuestionTypes = 0;
   let uasaTagged = 0;
 
   subjects.forEach((subject, subjectIndex) => {
@@ -84,6 +91,14 @@ async function runCurriculumValidation() {
         const difficulty = String(question.difficulty || topic.difficulty || '').toLowerCase();
         const estimatedTime = estimatedTimeFor(question);
         const uasa = question.UASA || question.uasa || topic.UASA || topic.uasa;
+        const metadataReview = question.metadataReview || {};
+        const rawQuestionType = metadataReview.questionType === 'authored' || (!question.metadataReview && (question.questionType || question.type))
+          ? question.questionType || question.type
+          : '';
+        const rawCognitiveLevel = metadataReview.cognitiveLevel === 'authored' || (!question.metadataReview && (question.cognitiveLevel || question.cognitive_level))
+          ? String(question.cognitiveLevel || question.cognitive_level || '').toLowerCase()
+          : '';
+        const rawLearningOutcome = question.learningOutcome || question.learning_outcome || topic.learningOutcome || topic.learning_outcome;
 
         if (question.SK || question.sk || topic.SK || topic.sk) explicitSK += 1;
         else issues.push(issue('info', 'INFERRED_SK', 'Explicit SK is missing; inferred SK will be used.', { ...context, inferredSK: sksp.SK }));
@@ -97,10 +112,41 @@ async function runCurriculumValidation() {
           uasaTagged += 1;
         }
 
-        if (question.estimatedTime || question.estimated_time) {
+        if (metadataReview.estimatedTime === 'authored' || (!question.metadataReview && (question.estimatedTime || question.estimated_time))) {
           explicitEstimatedTime += 1;
         } else {
           issues.push(issue('info', 'INFERRED_ESTIMATED_TIME', 'Explicit estimatedTime is missing; inferred time will be used.', { ...context, inferredEstimatedTime: estimatedTime }));
+        }
+
+        if (rawLearningOutcome) explicitLearningOutcomes += 1;
+        else issues.push(issue('info', 'MISSING_LEARNING_OUTCOME', 'Explicit learning outcome is missing; topic/question objective must be added.', context));
+
+        if (metadataReview.cognitiveLevel === 'pilot-rule') inferredCognitiveLevels += 1;
+
+        if (rawCognitiveLevel) {
+          explicitCognitiveLevels += 1;
+          if (!VALID_COGNITIVE_LEVELS.has(rawCognitiveLevel)) {
+            issues.push(issue('error', 'INVALID_COGNITIVE_LEVEL', `Invalid cognitive level: ${rawCognitiveLevel}`, context));
+          }
+        } else if (metadataReview.cognitiveLevel === 'pilot-rule') {
+          issues.push(issue('info', 'PILOT_INFERRED_COGNITIVE_LEVEL', 'Cognitive level is provisionally assigned by the pilot rule and requires teacher review.', { ...context, cognitiveLevel: question.cognitiveLevel }));
+        } else {
+          issues.push(issue('info', 'MISSING_COGNITIVE_LEVEL', 'Cognitive level is missing; add an intentional Bloom/KBAT level.', context));
+        }
+
+        if (rawQuestionType) {
+          explicitQuestionTypes += 1;
+          if (!VALID_QUESTION_TYPES.has(String(rawQuestionType).toLowerCase())) {
+            issues.push(issue('error', 'INVALID_QUESTION_TYPE', `Invalid question type: ${rawQuestionType}`, context));
+          }
+        } else {
+          issues.push(issue('info', metadataReview.questionType === 'pilot-default' ? 'PILOT_DEFAULT_QUESTION_TYPE' : 'INFERRED_QUESTION_TYPE', 'Question type is inferred from the available fields.', context));
+        }
+
+        const displayedCognitiveLevel = String(question.cognitiveLevel || question.cognitive_level || '').toLowerCase();
+        const kbatLabel = /kbat/i.test(String(question.q || question.question || '')) || /kbat/i.test(String(uasa || ''));
+        if (topic.contentStatus === 'pilot' && kbatLabel && !KBAT_COGNITIVE_LEVELS.has(displayedCognitiveLevel)) {
+          issues.push(issue('warning', 'KBAT_COGNITIVE_MISMATCH', 'A question labelled KBAT must target at least the application level.', { ...context, cognitiveLevel: displayedCognitiveLevel || null }));
         }
 
         if (!sksp.SK) issues.push(issue('error', 'MISSING_NORMALIZED_SK', 'Normalized SK is missing.', context));
@@ -134,7 +180,14 @@ async function runCurriculumValidation() {
     inferredSP: totalQuestions - explicitSP,
     uasaTagged,
     explicitEstimatedTime,
-    inferredEstimatedTime: totalQuestions - explicitEstimatedTime
+    inferredEstimatedTime: totalQuestions - explicitEstimatedTime,
+    explicitLearningOutcomes,
+    missingLearningOutcomes: totalQuestions - explicitLearningOutcomes,
+    explicitCognitiveLevels,
+    missingCognitiveLevels: totalQuestions - explicitCognitiveLevels,
+    inferredCognitiveLevels,
+    explicitQuestionTypes,
+    inferredQuestionTypes: totalQuestions - explicitQuestionTypes
   };
   const report = {
     validator: 'curriculum',

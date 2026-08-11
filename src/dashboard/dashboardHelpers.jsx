@@ -109,7 +109,7 @@ export function buildParentRecommendation(memory, profile) {
   if ((profile.history || []).length === 0) {
     return 'Mulakan dengan satu sesi pendek hari ini. Sasarkan 5 hingga 10 soalan dahulu.';
   }
-  return 'Kemajuan stabil. Teruskan rutin latihan harian dan cuba Simulator UASA sekali seminggu.';
+  return 'Kemajuan stabil. Teruskan rutin latihan harian dan cuba pentaksiran sumatif sekali seminggu.';
 }
 
 export function buildLearningPathSections(topics = []) {

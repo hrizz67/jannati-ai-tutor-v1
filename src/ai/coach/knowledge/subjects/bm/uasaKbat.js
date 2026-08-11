@@ -3,19 +3,20 @@ import { createKnowledgePack } from '../../schemas/knowledgeSchema.js';
 const pack = createKnowledgePack({
   "subjectId": "bm",
   "topicId": "uasa_kbat",
-  "displayName": "UASA/KBAT",
+  "displayName": "Pentaksiran Sumatif & KBAT",
   "learningObjectives": [
-    "Menggunakan kemahiran bahasa dalam situasi harian.",
-    "Memilih jawapan yang paling sesuai berdasarkan konteks.",
-    "Berfikir dengan teliti sebelum menjawab soalan aplikasi."
+    "Menggabungkan kemahiran pemahaman, kosa kata, tatabahasa dan penulisan.",
+    "Memberikan jawapan berdasarkan rangsangan, bukti dan konteks.",
+    "Menganalisis, menilai dan menghasilkan jawapan yang jelas serta gramatis."
   ],
   "teacherExplanation": [
-    "UASA/KBAT melatih murid menggunakan pengetahuan bahasa dalam situasi sebenar.",
-    "Murid perlu membaca soalan dengan teliti dan memahami situasinya.",
-    "Jawapan yang betul ialah jawapan yang paling sesuai dengan konteks.",
-    "Latihan ini membantu murid berfikir secara mudah tetapi tepat."
+    "Pentaksiran sumatif PBD ini menggabungkan kemahiran bahasa yang telah dipelajari oleh murid Tahun 2.",
+    "Murid perlu mengenal pasti kata tugas, memahami rangsangan dan menentukan bentuk jawapan yang diminta.",
+    "Jawapan pemahaman perlu disokong oleh maklumat teks, manakala jawapan aplikasi perlu mempunyai sebab yang munasabah.",
+    "Jawapan bertulis perlu disemak dari segi maksud, tatabahasa, huruf besar, ejaan dan tanda baca.",
+    "Latihan ini bukan simulasi UASA rasmi; UASA sekolah rendah melibatkan murid Tahun 4 hingga Tahun 6."
   ],
-  "simpleExplanation": "Baca situasi dengan teliti dan pilih jawapan yang paling sesuai.",
+  "simpleExplanation": "Baca rangsangan, fahami kehendak soalan, cari bukti, jawab dengan jelas dan semak semula.",
   "examples": [
     {
       "category": "situasi",
@@ -91,9 +92,9 @@ const pack = createKnowledgePack({
   ],
   "encouragement": {
     "correct": [
-      "Bagus! Kamu sudah memahami UASA/KBAT dengan baik.",
-      "Syabas! Jawapan kamu tepat untuk UASA/KBAT.",
-      "Hebat! Kamu semakin yakin dengan UASA/KBAT.",
+      "Bagus! Kamu sudah memahami pentaksiran dan KBAT dengan baik.",
+      "Syabas! Jawapan kamu tepat dan disokong oleh konteks.",
+      "Hebat! Kamu semakin yakin menggunakan kemahiran bahasa.",
       "Tahniah! Kamu membaca soalan dengan teliti.",
       "Cemerlang! Kamu tahu cara mencari jawapan yang betul.",
       "Mantap! Penguasaan kamu semakin baik.",
@@ -103,7 +104,7 @@ const pack = createKnowledgePack({
       "Tahniah, kamu sedang berkembang dengan baik."
     ],
     "retry": [
-      "Tak mengapa, cuba cari petunjuk untuk UASA/KBAT.",
+      "Tak mengapa, cuba cari petunjuk dalam rangsangan.",
       "Baca soalan sekali lagi dengan perlahan.",
       "Cari perkataan yang paling sesuai dalam ayat.",
       "Ambil masa dan cuba lagi.",
@@ -115,7 +116,7 @@ const pack = createKnowledgePack({
       "Baca semula ayat sebelum memilih."
     ],
     "excellent": [
-      "Hebat! Kamu sangat mahir dengan UASA/KBAT.",
+      "Hebat! Kamu sangat mahir dengan pentaksiran dan KBAT.",
       "Cemerlang! Kamu memahami topik ini dengan yakin.",
       "Tahniah! Penguasaan kamu sangat baik.",
       "Luar biasa! Kamu menjawab dengan tepat.",
@@ -139,7 +140,8 @@ const pack = createKnowledgePack({
     "SP": "Murid dapat memilih jawapan yang paling sesuai berdasarkan konteks."
   },
   "keywords": [
-    "uasa",
+    "pbd",
+    "pentaksiran sumatif",
     "kbat",
     "situasi",
     "konteks",

@@ -1,5 +1,24 @@
 # RELEASE NOTES - Jannati AI Tutor
 
+## v3.2.18 - Kualiti Kandungan Bahasa Melayu
+
+Pelepasan ini melengkapkan peningkatan semua 14 topik Bahasa Melayu Tahun 2 berdasarkan tiga teras: pembelajaran, soalan dan nota.
+
+Sorotan:
+
+- 930 soalan BM dengan objektif, hasil pembelajaran dan metadata pentaksiran yang seragam.
+- 60 soalan Pentaksiran Sumatif dan KBAT menggantikan bank soalan lama yang berulang.
+- Nota diperkaya dengan contoh, kesalahan lazim, semakan kendiri dan panduan ulang kaji.
+- Jawapan terbuka menerima variasi yang munasabah tanpa melonggarkan tatabahasa dan konteks.
+- Terminologi Tahun 2 diselaraskan kepada PBD/Pentaksiran Sumatif berdasarkan skop KPM.
+- Validasi kandungan automatik ditambah untuk mengawal pengulangan, rubrik, aras kognitif dan pelabelan pentaksiran.
+
+Status pelepasan:
+
+- Validasi penuh: 0 ralat, 0 amaran.
+- Gerbang BM: 930 rekod, 0 isu.
+- Binaan produksi: lulus.
+
 ## Branding V2 - Final Brand Identity
 
 Jannati AI Tutor now uses the official brand identity across the app shell, runtime UI, manifest icons and favicon.

@@ -1,13 +1,13 @@
 # Subject Coverage Audit
 
-Generated: 2026-08-05T13:45:26.137Z
+Generated: 2026-08-11T12:54:39.697Z
 
 ## Summary
 
 | Subject | Questions | Unique Stems | Duplicate Stems | Unique Templates | Template Reuse |
 |---|---|---|---|---|---|
 | bm | 760 | 760 | 0 | 760 | 0 |
-| math | 800 | 799 | 1 | 800 | 0 |
+| math | 800 | 800 | 0 | 800 | 0 |
 | english | 500 | 500 | 0 | 500 | 0 |
 | sains | 500 | 500 | 0 | 500 | 0 |
 | arab | 500 | 500 | 0 | 500 | 0 |
@@ -45,8 +45,8 @@ Generated: 2026-08-05T13:45:26.137Z
 ## Matematik Tahun 2 (math)
 
 - Total questions: **800**
-- Unique normalized stems: **799**
-- Duplicate stems: **1**
+- Unique normalized stems: **800**
+- Duplicate stems: **0**
 - Unique templates: **800**
 - Template reuse count: **0**
 
@@ -61,15 +61,9 @@ Generated: 2026-08-05T13:45:26.137Z
 | bahagi | 124 | 124 | 0 |
 | wang | 50 | 50 | 0 |
 | masa | 50 | 50 | 0 |
-| panjang | 50 | 49 | 1 |
+| panjang | 50 | 50 | 0 |
 | jisim_isi_padu | 50 | 50 | 0 |
 | bentuk | 50 | 50 | 0 |
-
-### Top duplicate stems
-
-| Stem | Count |
-|---|---|
-| berapakah bilangan sentimeter cm yang bersamaan dengan 1 meter | 2 |
 
 ## English Year 2 (english)
 

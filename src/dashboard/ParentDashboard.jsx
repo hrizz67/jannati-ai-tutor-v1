@@ -403,7 +403,7 @@ export default function ParentDashboard({
       <StudyPlannerPanel planner={studyPlannerPayload} />
 
       <section className="card">
-        <h2>Sejarah UASA</h2>
+        <h2>Sejarah Pentaksiran</h2>
         <div className="timeline">
           {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
             <div className="timeline-item" key={index}>
@@ -412,7 +412,7 @@ export default function ParentDashboard({
               <em>{safePercent(item.score)}% · {safeNumber(item.total, 0)} soalan · {formatModeLabel('uasa')}</em>
             </div>
           )) : (
-            <EmptyState title="Belum ada sejarah UASA" message="Percubaan simulator yang disimpan akan muncul di sini." showMascot={false} />
+            <EmptyState title="Belum ada sejarah pentaksiran" message="Percubaan pentaksiran yang disimpan akan muncul di sini." showMascot={false} />
           )}
         </div>
       </section>

@@ -1,25 +1,25 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-08-09T14:06:19.093Z",
+  "generatedAt": "2026-08-11T16:05:40.536Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
-    "questions": 4560,
+    "questions": 4730,
     "diversitySessions": 5000,
     "infos": 0,
     "errors": 0,
     "warnings": 0
   },
   "difficultyCounts": {
-    "mudah": 2224,
-    "sederhana": 1494,
-    "sukar": 792,
+    "mudah": 2159,
+    "sederhana": 1509,
+    "sukar": 1012,
     "easy": 50
   },
   "diversityDiagnostics": {
     "repeatedTemplates": 0,
     "repeatedNumberPatterns": 0,
-    "repeatedAnswerPatterns": 2518,
+    "repeatedAnswerPatterns": 2511,
     "repeatedContexts": 0,
     "repeatedDistractors": 0,
     "repeatedAnswerPositions": 0,
@@ -29,7 +29,7 @@
     "averageDiversityScore": 80,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 0,
-    "averageSelectionTimeMs": 2.763,
+    "averageSelectionTimeMs": 2.839,
     "stemDiversity": 100,
     "stemReuseRate": 0,
     "repeatedStems": 0,
@@ -81,9 +81,9 @@
       "kesihatan_mental_emosi": 2500
     },
     "difficultyBalance": {
-      "mudah": 45948,
-      "sederhana": 30314,
-      "sukar": 21238,
+      "mudah": 46074,
+      "sederhana": 29849,
+      "sukar": 21577,
       "easy": 2500
     }
   },

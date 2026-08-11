@@ -1,4 +1,370 @@
 import { normalizeBMSubject } from '../../utils/bmSentenceQuality.js';
+import { enrichBinaAyatTopic } from '../bmBinaAyatQuestions.js';
+import { alignYearTwoAssessment } from '../bmPentaksiranSumatifQuestions.js';
+import { enrichSimpulanBahasaTopic } from '../bmSimpulanBahasaQuestions.js';
+
+const BM_COMPREHENSION_CONTEXTS = Object.freeze([
+  {
+    source: 'Aina membantu ibu mengemas meja makan keluarga.',
+    passage: 'Selepas makan, Aina membantu ibu mengemas meja makan keluarga di ruang makan kerana ingin membantu ibu.'
+  },
+  {
+    source: 'Faris membaca buku cerita bergambar di perpustakaan sekolah.',
+    passage: 'Pada waktu rehat, Faris membaca buku cerita bergambar bersama rakan-rakan di perpustakaan sekolah kerana suka membaca.'
+  },
+  {
+    source: 'Amir menyiram pokok cili di halaman rumah.',
+    passage: 'Pada petang, Amir menyiram pokok cili bersama ayah di halaman rumah kerana pokok itu perlu air.'
+  },
+  {
+    source: 'Hani menyediakan roti bakar di dapur.',
+    passage: 'Pada pagi, Hani menyediakan roti bakar bersama ibunya di dapur kerana keluarganya lapar.'
+  },
+  {
+    source: 'Danish menyapu lantai kelas pada pagi Jumaat.',
+    passage: 'Pada pagi Jumaat, Danish menyapu lantai kelas bersama kawan-kawan supaya kelas bersih.'
+  },
+  {
+    source: 'Mira berkongsi pensel warna dengan Farah di kelas seni.',
+    passage: 'Pada waktu seni, Mira berkongsi pensel warna dengan Farah di kelas seni kerana Farah memerlukannya.'
+  },
+  {
+    source: 'Hakim memakai baju hujan ketika hujan lebat.',
+    passage: 'Ketika hujan lebat, Hakim memakai baju hujan bersama abangnya di anjung rumah supaya badannya tidak basah.'
+  },
+  {
+    source: 'Iman menyiapkan kerja sekolah sebelum bermain.',
+    passage: 'Sebelum bermain, Iman menyiapkan kerja sekolah bersama adiknya di bilik belajar supaya ada masa bermain kemudian.'
+  }
+]);
+
+const BM_COMPREHENSION_QUESTION_OVERRIDES = Object.freeze({
+  'BM-PEMAHAMAN_PENULISAN-009': 'Lengkapkan ayat berdasarkan petikan: Aina membantu ibu mengemas ______ selepas makan.',
+  'BM-PEMAHAMAN_PENULISAN-010': 'Baca petikan: Selepas makan, Aina membantu ibu mengemas meja makan keluarga. Tulis satu ayat yang merumuskan tindakan utama Aina.',
+  'BM-PEMAHAMAN_PENULISAN-019': 'Lengkapkan ayat berdasarkan petikan: Faris membaca ______ di perpustakaan sekolah.',
+  'BM-PEMAHAMAN_PENULISAN-020': 'Baca petikan: Pada waktu rehat, Faris membaca buku cerita bergambar di perpustakaan sekolah. Tulis satu ayat yang merumuskan tindakan utama Faris.',
+  'BM-PEMAHAMAN_PENULISAN-029': 'Lengkapkan ayat berdasarkan petikan: Amir menyiram ______ di halaman rumah.',
+  'BM-PEMAHAMAN_PENULISAN-030': 'Baca petikan: Pada petang, Amir menyiram pokok cili di halaman rumah. Tulis satu ayat yang merumuskan tindakan utama Amir.',
+  'BM-PEMAHAMAN_PENULISAN-039': 'Lengkapkan ayat berdasarkan petikan: Hani menyediakan ______ di dapur.',
+  'BM-PEMAHAMAN_PENULISAN-040': 'Baca petikan: Pada pagi, Hani menyediakan roti bakar di dapur. Tulis satu ayat yang merumuskan tindakan utama Hani.',
+  'BM-PEMAHAMAN_PENULISAN-049': 'Lengkapkan ayat berdasarkan petikan: Danish menyapu ______ bersama kawan-kawan.',
+  'BM-PEMAHAMAN_PENULISAN-050': 'Baca petikan: Pada pagi Jumaat, Danish menyapu lantai kelas. Tulis satu ayat yang merumuskan tindakan utama Danish.',
+  'BM-PEMAHAMAN_PENULISAN-059': 'Lengkapkan ayat berdasarkan petikan: Mira berkongsi ______ dengan Farah.',
+  'BM-PEMAHAMAN_PENULISAN-060': 'Baca petikan: Pada waktu seni, Mira berkongsi pensel warna dengan Farah di kelas seni. Tulis satu ayat yang merumuskan tindakan utama Mira.',
+  'BM-PEMAHAMAN_PENULISAN-069': 'Lengkapkan ayat berdasarkan petikan: Hakim memakai ______ ketika hujan lebat.',
+  'BM-PEMAHAMAN_PENULISAN-070': 'Baca petikan: Ketika hujan lebat, Hakim memakai baju hujan. Tulis satu ayat yang merumuskan tindakan utama Hakim.',
+  'BM-PEMAHAMAN_PENULISAN-079': 'Lengkapkan ayat berdasarkan petikan: Iman menyiapkan ______ sebelum bermain.',
+  'BM-PEMAHAMAN_PENULISAN-080': 'Baca petikan: Sebelum bermain, Iman menyiapkan kerja sekolah. Tulis satu ayat yang merumuskan tindakan utama Iman.'
+});
+
+const BM_COMPREHENSION_ANSWER_OVERRIDES = Object.freeze({
+  'BM-PEMAHAMAN_PENULISAN-018': {
+    answer: 'membaca',
+    accepted: ['membaca', 'membaca buku cerita', 'membaca buku cerita bergambar'],
+    hint: 'Cari perkataan yang menunjukkan perbuatan Faris.',
+    explanation: 'Kata kerja yang menunjukkan perbuatan Faris ialah membaca.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-024': {
+    answer: 'kerana pokok itu perlu air',
+    accepted: ['kerana pokok itu perlu air', 'kerana pokok perlu air'],
+    hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
+    explanation: 'Amir menyiram pokok cili kerana pokok itu perlu air.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-034': {
+    answer: 'kerana keluarganya lapar',
+    accepted: ['kerana keluarganya lapar', 'kerana keluarga lapar'],
+    hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
+    explanation: 'Hani menyediakan roti bakar kerana keluarganya lapar.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-038': {
+    answer: 'menyediakan',
+    accepted: ['menyediakan', 'menyediakan roti bakar'],
+    hint: 'Cari perkataan yang menunjukkan perbuatan Hani.',
+    explanation: 'Kata kerja yang menunjukkan perbuatan Hani ialah menyediakan.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-054': {
+    answer: 'kerana Farah memerlukannya',
+    accepted: ['kerana Farah memerlukannya', 'Farah memerlukan pensel warna'],
+    hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
+    explanation: 'Mira berkongsi pensel warna kerana Farah memerlukannya.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-064': {
+    answer: 'supaya badannya tidak basah',
+    accepted: ['supaya badannya tidak basah', 'supaya tidak basah'],
+    hint: 'Fikirkan tujuan memakai baju hujan.',
+    explanation: 'Hakim memakai baju hujan supaya badannya tidak basah.'
+  }
+});
+
+const BM_COMPREHENSION_ADVANCED_QUESTIONS = Object.freeze({
+  'BM-PEMAHAMAN_PENULISAN-081': {
+    q: "Aplikasi: Pada hari Selasa, Sara meminjam buku cerita 'Haiwan' di perpustakaan. Lengkapkan rekod pinjaman dengan nama peminjam dan judul buku mengikut urutan.",
+    answer: 'Sara dan Haiwan',
+    accepted: ['Sara dan Haiwan', 'Sara, Haiwan', 'Sara - Haiwan'],
+    hint: 'Cari nama orang dan judul buku dalam petikan.',
+    explanation: 'Nama peminjam ialah Sara dan judul buku ialah Haiwan.',
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-082': {
+    q: "Aplikasi: Pada hari Selasa, Sara meminjam buku cerita 'Haiwan'. Dia mesti memulangkannya pada hari Jumaat. Apakah hari pemulangan yang perlu ditulis pada kad pinjaman?",
+    answer: 'Jumaat',
+    accepted: ['Jumaat', 'hari Jumaat'],
+    hint: 'Cari hari yang ditetapkan untuk memulangkan buku.',
+    explanation: 'Kad pinjaman perlu mencatat hari Jumaat sebagai hari pemulangan.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-083': {
+    q: "Aplikasi: Sara meminjam buku cerita 'Haiwan' di perpustakaan sekolah. Apakah tempat yang perlu dicatat dalam laporan aktiviti itu?",
+    answer: 'perpustakaan sekolah',
+    accepted: ['perpustakaan sekolah', 'di perpustakaan sekolah'],
+    hint: 'Cari tempat Sara meminjam buku.',
+    explanation: 'Aktiviti itu berlaku di perpustakaan sekolah.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-084': {
+    q: "Aplikasi: Gunakan maklumat 'Sara - meminjam - buku cerita Haiwan - perpustakaan' untuk menulis satu ayat lengkap.",
+    answer: "Sara meminjam buku cerita 'Haiwan' di perpustakaan.",
+    accepted: ["Sara meminjam buku cerita 'Haiwan' di perpustakaan.", 'Sara meminjam buku cerita Haiwan di perpustakaan', 'Sara meminjam buku Haiwan di perpustakaan'],
+    hint: 'Susun maklumat sebagai siapa, perbuatan, benda dan tempat.',
+    explanation: "Ayat lengkapnya ialah 'Sara meminjam buku cerita Haiwan di perpustakaan.'",
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-085': {
+    q: "Aplikasi: Kad pinjaman menyatakan buku cerita 'Haiwan' perlu dipulangkan pada hari Jumaat. Apakah tindakan yang patut dilakukan oleh Sara pada hari itu?",
+    answer: 'memulangkan buku kepada perpustakaan',
+    accepted: ['memulangkan buku kepada perpustakaan', 'memulangkan buku', 'pulangkan buku ke perpustakaan'],
+    hint: 'Ikut tarikh pemulangan pada kad pinjaman.',
+    explanation: 'Sara patut memulangkan buku kepada perpustakaan pada hari Jumaat.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-086': {
+    q: 'Aplikasi: Pada pagi Sabtu, murid Tahun 2 membersihkan kelas. Kumar menyapu lantai, Mei Ling mengelap tingkap dan Ravi menyusun meja. Apakah tugas Kumar?',
+    answer: 'menyapu lantai',
+    accepted: ['menyapu lantai', 'Kumar menyapu lantai'],
+    hint: 'Padankan nama Kumar dengan tugasnya.',
+    explanation: 'Kumar ditugaskan untuk menyapu lantai.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-087': {
+    q: 'Aplikasi: Pada pagi Sabtu, Kumar menyapu lantai, Mei Ling mengelap tingkap dan Ravi menyusun meja. Apakah tugas Mei Ling?',
+    answer: 'mengelap tingkap',
+    accepted: ['mengelap tingkap', 'Mei Ling mengelap tingkap'],
+    hint: 'Cari perbuatan yang dipadankan dengan Mei Ling.',
+    explanation: 'Mei Ling ditugaskan untuk mengelap tingkap.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-088': {
+    q: 'Aplikasi: Pada pagi Sabtu, Kumar menyapu lantai, Mei Ling mengelap tingkap dan Ravi menyusun meja. Ravi perlu memilih peralatan untuk tugasnya. Apakah tugas Ravi?',
+    answer: 'menyusun meja',
+    accepted: ['menyusun meja', 'Ravi menyusun meja'],
+    hint: 'Cari tugas yang dinyatakan selepas nama Ravi.',
+    explanation: 'Ravi ditugaskan untuk menyusun meja.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-089': {
+    q: 'Aplikasi: Kumar menyapu lantai, Mei Ling mengelap tingkap dan Ravi menyusun meja. Berapakah jumlah tugas berbeza yang dilakukan?',
+    answer: 'tiga',
+    accepted: ['tiga', '3', 'tiga tugas'],
+    hint: 'Kira setiap perbuatan yang berbeza.',
+    explanation: 'Terdapat tiga tugas, iaitu menyapu lantai, mengelap tingkap dan menyusun meja.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-090': {
+    q: "Aplikasi: Gunakan maklumat 'murid Tahun 2 - membersihkan kelas - pagi Sabtu' untuk menulis ayat laporan yang lengkap.",
+    answer: 'Murid Tahun 2 membersihkan kelas pada pagi Sabtu.',
+    accepted: ['Murid Tahun 2 membersihkan kelas pada pagi Sabtu.', 'Murid Tahun 2 membersihkan kelas pada pagi Sabtu'],
+    hint: 'Susun maklumat sebagai pelaku, perbuatan, tempat dan masa.',
+    explanation: "Ayat laporan lengkap ialah 'Murid Tahun 2 membersihkan kelas pada pagi Sabtu.'",
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-091': {
+    q: 'Aplikasi: Bekal Nadia mengandungi nasi, ayam panggang, sayur dan air kosong. Apakah minuman yang perlu dicatat dalam senarai menu?',
+    answer: 'air kosong',
+    accepted: ['air kosong'],
+    hint: 'Bezakan makanan daripada minuman dalam senarai.',
+    explanation: 'Air kosong ialah minuman dalam bekal Nadia.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-092': {
+    q: 'Aplikasi: Nadia membawa bekal makanan sihat untuk dimakan semasa waktu rehat. Bilakah dia akan makan bekal itu?',
+    answer: 'waktu rehat',
+    accepted: ['waktu rehat', 'semasa waktu rehat', 'pada waktu rehat'],
+    hint: 'Cari masa yang dinyatakan dalam ayat.',
+    explanation: 'Nadia akan makan bekalnya semasa waktu rehat.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-093': {
+    q: 'Aplikasi: Bekal Nadia mengandungi nasi, ayam panggang, sayur dan air kosong. Apakah makanan daripada kumpulan sayuran yang dinyatakan?',
+    answer: 'sayur',
+    accepted: ['sayur'],
+    hint: 'Cari perkataan yang menamakan kumpulan sayuran.',
+    explanation: 'Petikan menyatakan bahawa bekal Nadia mengandungi sayur.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-094': {
+    q: "Aplikasi: Gunakan maklumat 'Nadia - membawa - bekal makanan sihat - sekolah' untuk menulis satu ayat lengkap.",
+    answer: 'Nadia membawa bekal makanan sihat ke sekolah.',
+    accepted: ['Nadia membawa bekal makanan sihat ke sekolah.', 'Nadia membawa bekal makanan sihat ke sekolah'],
+    hint: 'Susun maklumat sebagai siapa, perbuatan, benda dan tempat.',
+    explanation: "Ayat lengkapnya ialah 'Nadia membawa bekal makanan sihat ke sekolah.'",
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-095': {
+    q: 'Aplikasi: Nadia mahu mengekalkan pilihan minuman yang lebih sihat. Antara air kosong dengan minuman bergas, apakah pilihan yang sepadan dengan bekalnya?',
+    answer: 'air kosong',
+    accepted: ['air kosong'],
+    hint: 'Pilih minuman yang dinyatakan dalam menu sihat Nadia.',
+    explanation: 'Air kosong sepadan dengan bekal makanan sihat Nadia.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-096': {
+    q: 'Aplikasi: Selepas kelas, Amir menemukan dompet di bawah kerusi. Lengkapkan catatan barang ditemui dengan nama benda dan lokasi mengikut urutan.',
+    answer: 'dompet dan bawah kerusi',
+    accepted: ['dompet dan bawah kerusi', 'dompet, bawah kerusi', 'dompet di bawah kerusi'],
+    hint: 'Cari benda yang ditemukan dan tempat benda itu berada.',
+    explanation: 'Benda yang ditemukan ialah dompet dan lokasinya di bawah kerusi.',
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-097': {
+    q: 'Aplikasi: Amir menemukan dompet di bawah kerusi lalu menyerahkannya kepada guru. Apakah tindakan Amir selepas menemukan dompet itu?',
+    answer: 'menyerahkan dompet kepada guru',
+    accepted: ['menyerahkan dompet kepada guru', 'menyerahkannya kepada guru', 'memberikan dompet kepada guru'],
+    hint: 'Cari perbuatan yang berlaku selepas dompet ditemukan.',
+    explanation: 'Selepas menemukan dompet, Amir menyerahkannya kepada guru.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-098': {
+    q: 'Aplikasi: Amir menyerahkan dompet yang ditemukan kepada guru supaya pemilik dapat mengambilnya. Mengapakah Amir menyerahkan dompet itu kepada guru?',
+    answer: 'supaya pemilik dapat mengambilnya',
+    accepted: ['supaya pemilik dapat mengambilnya', 'agar pemilik dapat mengambilnya', 'supaya dompet dapat dikembalikan kepada pemilik'],
+    hint: 'Cari tujuan yang dinyatakan selepas perkataan supaya.',
+    explanation: 'Amir menyerahkan dompet kepada guru supaya dompet itu dapat dikembalikan kepada pemilik.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-099': {
+    q: "Aplikasi: Amir mahu melaporkan dompet yang ditemukan. Lengkapkan dialognya: 'Cikgu, saya menemukan dompet ini ______.'",
+    answer: 'di bawah kerusi',
+    accepted: ['di bawah kerusi', 'bawah kerusi'],
+    hint: 'Masukkan lokasi dompet ditemukan.',
+    explanation: "Dialog lengkapnya ialah 'Cikgu, saya menemukan dompet ini di bawah kerusi.'"
+  },
+  'BM-PEMAHAMAN_PENULISAN-100': {
+    q: 'Aplikasi: Amir menemukan dompet dan menyerahkannya kepada guru untuk dikembalikan kepada pemilik. Apakah nilai yang boleh diamalkan dalam situasi yang sama?',
+    answer: 'jujur',
+    accepted: ['jujur', 'kejujuran', 'amanah', 'bertanggungjawab'],
+    hint: 'Fikirkan sikap tidak mengambil barang orang lain.',
+    explanation: 'Tindakan menyerahkan barang yang ditemukan menunjukkan nilai jujur dan amanah.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-101': {
+    q: 'Analisis KBAT: Petikan menyatakan cuaca mendung sebelum Aina keluar rumah. Apakah bukti dalam petikan yang menunjukkan hujan mungkin turun?',
+    answer: 'cuaca mendung',
+    accepted: ['cuaca mendung', 'mendung'],
+    hint: 'Cari keadaan cuaca sebelum Aina keluar.',
+    explanation: 'Cuaca mendung ialah petunjuk bahawa hujan mungkin turun.',
+    cognitiveLevel: 'menganalisis'
+  },
+  'BM-PEMAHAMAN_PENULISAN-102': {
+    q: 'Analisis KBAT: Cuaca mendung dan Aina membawa payung sebelum berjalan ke sekolah. Mengapakah Aina mungkin membuat persediaan itu?',
+    answer: 'kerana hujan mungkin turun',
+    accepted: ['kerana hujan mungkin turun', 'dia menjangka hujan', 'untuk melindungi diri jika hujan'],
+    hint: 'Hubungkan keadaan mendung dengan kegunaan payung.',
+    explanation: 'Aina membawa payung kerana keadaan mendung menunjukkan hujan mungkin turun.',
+    cognitiveLevel: 'menganalisis'
+  },
+  'BM-PEMAHAMAN_PENULISAN-103': {
+    q: 'Analisis KBAT: Dalam perjalanan, Aina berkongsi payung dengan Siti dan mereka tiba di sekolah tanpa basah. Apakah hubungan antara tindakan Aina dengan hasil itu?',
+    answer: 'perkongsian payung menyebabkan mereka tidak basah',
+    accepted: ['perkongsian payung menyebabkan mereka tidak basah', 'mereka tidak basah kerana berkongsi payung', 'berkongsi payung melindungi mereka daripada hujan'],
+    hint: 'Kenal pasti tindakan dan kesannya.',
+    explanation: 'Tindakan berkongsi payung melindungi Aina dan Siti daripada hujan, lalu mereka tidak basah.',
+    cognitiveLevel: 'menganalisis',
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-104': {
+    q: 'Analisis KBAT: Aina membawa payung untuk dirinya tetapi berkongsi dengan Siti yang tidak mempunyai payung. Apakah nilai yang dapat disimpulkan daripada tindakannya?',
+    answer: 'baik hati',
+    accepted: ['baik hati', 'suka membantu', 'prihatin', 'tolong-menolong'],
+    hint: 'Fikirkan sikap Aina terhadap rakannya yang memerlukan bantuan.',
+    explanation: 'Aina menunjukkan sikap baik hati dan prihatin kerana berkongsi payung dengan Siti.',
+    cognitiveLevel: 'menganalisis'
+  },
+  'BM-PEMAHAMAN_PENULISAN-105': {
+    q: 'Analisis KBAT: Petikan menceritakan cuaca mendung, Aina membawa payung dan dia berkongsi payung dengan Siti. Apakah tajuk yang paling sesuai?',
+    answer: 'Berkongsi Payung',
+    accepted: ['Berkongsi Payung', 'Payung untuk Sahabat', 'Aina Berkongsi Payung'],
+    hint: 'Pilih tajuk yang merangkumi peristiwa utama.',
+    explanation: 'Berkongsi Payung sesuai kerana tindakan utama dalam petikan ialah Aina berkongsi payung dengan Siti.',
+    cognitiveLevel: 'menganalisis'
+  },
+  'BM-PEMAHAMAN_PENULISAN-106': {
+    q: "Penilaian KBAT: Petikan menyatakan 'Hana menutup pili selepas membasuh tangan.' Antara 'Hana menutup pili' dengan 'Hana tergesa-gesa', pernyataan manakah disokong secara langsung oleh teks?",
+    answer: 'Hana menutup pili',
+    accepted: ['Hana menutup pili', 'pernyataan pertama'],
+    hint: 'Pilih maklumat yang benar-benar disebut dalam petikan.',
+    explanation: 'Teks menyatakan secara langsung bahawa Hana menutup pili, tetapi tidak menyatakan dia tergesa-gesa.',
+    cognitiveLevel: 'menilai'
+  },
+  'BM-PEMAHAMAN_PENULISAN-107': {
+    q: "Penilaian KBAT: Ravi memulangkan buku pada hari Isnin, sehari sebelum tarikh akhir hari Selasa. Manakah rumusan yang tepat: 'Ravi lewat' atau 'Ravi memulangkan buku lebih awal'?",
+    answer: 'Ravi memulangkan buku lebih awal',
+    accepted: ['Ravi memulangkan buku lebih awal', 'rumusan kedua', 'lebih awal'],
+    hint: 'Bandingkan hari Isnin dengan tarikh akhir hari Selasa.',
+    explanation: 'Ravi memulangkan buku sehari sebelum tarikh akhir, jadi dia memulangkannya lebih awal.',
+    cognitiveLevel: 'menilai'
+  },
+  'BM-PEMAHAMAN_PENULISAN-108': {
+    q: "Penilaian KBAT: Petikan menerangkan murid meletakkan tanda amaran di kawasan lantai basah. Antara tajuk 'Keselamatan di Sekolah' dengan 'Permainan di Padang', tajuk manakah lebih sesuai?",
+    answer: 'Keselamatan di Sekolah',
+    accepted: ['Keselamatan di Sekolah', 'tajuk pertama'],
+    hint: 'Pilih tajuk yang menggambarkan tujuan tanda amaran.',
+    explanation: 'Keselamatan di Sekolah lebih sesuai kerana tanda amaran membantu mengelakkan kemalangan.',
+    cognitiveLevel: 'menilai'
+  },
+  'BM-PEMAHAMAN_PENULISAN-109': {
+    q: "Penilaian KBAT: Petikan menyatakan 'Ali bersarapan supaya bertenaga di kelas.' Seorang murid menjawab, 'Ali bersarapan kerana bangun lewat.' Adakah jawapan itu disokong oleh teks? Berikan sebab.",
+    answer: 'Tidak, teks menyatakan Ali bersarapan supaya bertenaga',
+    accepted: ['Tidak, teks menyatakan Ali bersarapan supaya bertenaga', 'tidak kerana teks tidak menyatakan Ali bangun lewat', 'tidak, sebabnya untuk bertenaga'],
+    hint: 'Bandingkan alasan murid dengan alasan yang dinyatakan dalam petikan.',
+    explanation: 'Jawapan itu tidak disokong kerana teks menyatakan tujuan Ali bersarapan ialah supaya bertenaga.',
+    cognitiveLevel: 'menilai',
+    marks: 2
+  },
+  'BM-PEMAHAMAN_PENULISAN-110': {
+    q: "Penilaian KBAT: Kamu melihat sampah di lantai kelas. Antara 'biarkan sahaja' dengan 'kutip dan buang ke dalam tong sampah', tindakan manakah paling sesuai berdasarkan nilai menjaga kebersihan?",
+    answer: 'kutip dan buang ke dalam tong sampah',
+    accepted: ['kutip dan buang ke dalam tong sampah', 'mengutip sampah dan membuangnya ke dalam tong sampah', 'tindakan kedua'],
+    hint: 'Pilih tindakan yang menjadikan kelas bersih.',
+    explanation: 'Mengutip dan membuang sampah ke dalam tong ialah tindakan bertanggungjawab yang menjaga kebersihan kelas.',
+    cognitiveLevel: 'menilai'
+  }
+});
+
+function enrichBMComprehensionQuestions(subject) {
+  return {
+    ...subject,
+    topics: subject.topics.map(topic => topic.id !== 'pemahaman_penulisan' ? topic : {
+      ...topic,
+      questions: topic.questions.map(question => {
+        const advancedQuestion = BM_COMPREHENSION_ADVANCED_QUESTIONS[question.id];
+        if (advancedQuestion) {
+          return {
+            ...question,
+            ...advancedQuestion,
+            q: advancedQuestion.q,
+            question: advancedQuestion.q,
+            accepted: advancedQuestion.accepted || [advancedQuestion.answer],
+            difficulty: 'sukar',
+            marks: advancedQuestion.marks || 1,
+            estimatedTime: 90,
+            uasa: advancedQuestion.cognitiveLevel ? 'UASA/KBAT' : 'UASA'
+          };
+        }
+        const replaceContext = value => {
+          let result = value;
+          for (const context of BM_COMPREHENSION_CONTEXTS) {
+            result = result.replaceAll(context.source, context.passage);
+          }
+          return result;
+        };
+        const override = BM_COMPREHENSION_QUESTION_OVERRIDES[question.id];
+        const answerOverride = BM_COMPREHENSION_ANSWER_OVERRIDES[question.id] || {};
+        return {
+          ...question,
+          ...answerOverride,
+          q: override || replaceContext(question.q),
+          question: override || replaceContext(question.question)
+        };
+      })
+    })
+  };
+}
 
 const rawBMSSubject = {
   "id": "bm",
@@ -11,6 +377,11 @@ const rawBMSSubject = {
       "id": "kata_nama_am",
       "title": "Kata Nama Am",
       "note": "Nama umum bagi orang, haiwan, benda dan tempat.",
+      "learningObjective": "Murid dapat mengenal pasti kata nama am bagi orang, haiwan, benda dan tempat dalam ayat mudah.",
+      "learningOutcome": "Murid dapat mengelaskan dan menggunakan kata nama am dengan betul dalam ayat mudah.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_NAMA_AM-001",
@@ -714,6 +1085,197 @@ const rawBMSSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "Ayah memandu kereta ke pejabat pada waktu pagi. Nyatakan kata nama am bagi kenderaan."
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-051",
+          "q": "Analisis KBAT: Dalam frasa 'doktor Amir', doktor ialah nama pekerjaan manakala Amir ialah nama khusus. Perkataan manakah kata nama am?",
+          "answer": "doktor",
+          "accepted": [
+            "doktor"
+          ],
+          "hint": "Bezakan nama pekerjaan umum daripada nama seorang individu.",
+          "explanation": "Doktor ialah kata nama am bagi pekerjaan, manakala Amir ialah kata nama khas bagi orang.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam frasa 'doktor Amir', doktor ialah nama pekerjaan manakala Amir ialah nama khusus. Perkataan manakah kata nama am?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-052",
+          "q": "Analisis KBAT: Teliti ayat 'Kucing mengejar bola di halaman'. Nyatakan dua kata nama am yang masing-masing merujuk kepada haiwan dan benda.",
+          "answer": "kucing dan bola",
+          "accepted": [
+            "kucing dan bola",
+            "kucing, bola",
+            "kucing bola"
+          ],
+          "hint": "Cari satu nama haiwan dan satu nama benda.",
+          "explanation": "Kucing ialah kata nama am bagi haiwan dan bola ialah kata nama am bagi benda.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Kucing mengejar bola di halaman'. Nyatakan dua kata nama am yang masing-masing merujuk kepada haiwan dan benda."
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-053",
+          "q": "Analisis KBAT: Antara sekolah, Melaka dan guru, nyatakan dua perkataan yang merupakan kata nama am.",
+          "answer": "sekolah dan guru",
+          "accepted": [
+            "sekolah dan guru",
+            "sekolah, guru",
+            "sekolah guru"
+          ],
+          "hint": "Melaka ialah nama khusus bagi sebuah negeri.",
+          "explanation": "Sekolah ialah nama umum bagi tempat dan guru ialah nama umum bagi pekerjaan. Melaka ialah kata nama khas.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Antara sekolah, Melaka dan guru, nyatakan dua perkataan yang merupakan kata nama am."
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-054",
+          "q": "Analisis KBAT: Dalam ayat 'Aina membawa beg ke sekolah', Aina ialah nama khusus. Apakah dua kata nama am dalam ayat itu?",
+          "answer": "beg dan sekolah",
+          "accepted": [
+            "beg dan sekolah",
+            "beg, sekolah",
+            "beg sekolah"
+          ],
+          "hint": "Cari nama umum bagi satu benda dan satu tempat.",
+          "explanation": "Beg ialah kata nama am bagi benda dan sekolah ialah kata nama am bagi tempat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Aina membawa beg ke sekolah', Aina ialah nama khusus. Apakah dua kata nama am dalam ayat itu?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-055",
+          "q": "Analisis KBAT: Perkataan Si Putih ialah nama khusus bagi seekor haiwan peliharaan. Apakah kata nama am yang boleh menggantikannya dalam ayat?",
+          "answer": "kucing",
+          "accepted": [
+            "kucing",
+            "haiwan"
+          ],
+          "hint": "Gunakan nama umum bagi jenis haiwan itu.",
+          "explanation": "Kucing ialah kata nama am yang boleh digunakan untuk merujuk Si Putih secara umum.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Perkataan Si Putih ialah nama khusus bagi seekor haiwan peliharaan. Apakah kata nama am yang boleh menggantikannya dalam ayat?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-056",
+          "q": "Penilaian KBAT: Mira mengelaskan perkataan doktor sebagai kata nama khas. Apakah pengelasan yang betul?",
+          "answer": "kata nama am",
+          "accepted": [
+            "kata nama am",
+            "nama am"
+          ],
+          "hint": "Doktor ialah nama umum bagi sesuatu pekerjaan.",
+          "explanation": "Pengelasan yang betul ialah kata nama am kerana doktor merujuk pekerjaan secara umum.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Mira mengelaskan perkataan doktor sebagai kata nama khas. Apakah pengelasan yang betul?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-057",
+          "q": "Penilaian KBAT: Haziq mengatakan Melaka ialah kata nama am kerana Melaka ialah sebuah tempat. Apakah pengelasan yang betul?",
+          "answer": "kata nama khas",
+          "accepted": [
+            "kata nama khas",
+            "nama khas"
+          ],
+          "hint": "Melaka ialah nama khusus bagi sebuah negeri.",
+          "explanation": "Melaka ialah kata nama khas kerana merujuk kepada sebuah negeri yang tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Haziq mengatakan Melaka ialah kata nama am kerana Melaka ialah sebuah tempat. Apakah pengelasan yang betul?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-058",
+          "q": "Penilaian KBAT: Untuk ayat umum tentang pekerjaan, manakah perkataan lebih sesuai digunakan: doktor atau Dr. Siti?",
+          "answer": "doktor",
+          "accepted": [
+            "doktor"
+          ],
+          "hint": "Pilih perkataan yang tidak merujuk kepada seorang individu tertentu.",
+          "explanation": "Doktor lebih sesuai untuk ayat umum kerana perkataan itu ialah kata nama am bagi pekerjaan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Untuk ayat umum tentang pekerjaan, manakah perkataan lebih sesuai digunakan: doktor atau Dr. Siti?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-059",
+          "q": "Penilaian KBAT: Ayat 'Comel sedang tidur' merujuk kepada nama seekor kucing. Jika nama khusus itu hendak digantikan dengan kata nama am, apakah perkataan terbaik?",
+          "answer": "kucing",
+          "accepted": [
+            "kucing",
+            "seekor kucing"
+          ],
+          "hint": "Gantikan nama haiwan tertentu dengan nama jenis haiwan itu.",
+          "explanation": "Kucing ialah kata nama am yang paling tepat untuk menggantikan nama khusus Comel.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ayat 'Comel sedang tidur' merujuk kepada nama seekor kucing. Jika nama khusus itu hendak digantikan dengan kata nama am, apakah perkataan terbaik?"
+        },
+        {
+          "id": "BM-KATA_NAMA_AM-060",
+          "q": "Penilaian KBAT: Seorang murid mengatakan pasar ialah kata nama khas kerana pasar ialah tempat. Adakah pasar kata nama am atau kata nama khas?",
+          "answer": "kata nama am",
+          "accepted": [
+            "kata nama am",
+            "nama am"
+          ],
+          "hint": "Tentukan sama ada pasar merujuk kepada satu tempat khusus atau tempat secara umum.",
+          "explanation": "Pasar ialah kata nama am kerana merujuk kepada tempat secara umum dan bukan nama sebuah pasar tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Seorang murid mengatakan pasar ialah kata nama khas kerana pasar ialah tempat. Adakah pasar kata nama am atau kata nama khas?"
         }
       ]
     },
@@ -721,6 +1283,11 @@ const rawBMSSubject = {
       "id": "kata_nama_khas",
       "title": "Kata Nama Khas",
       "note": "Nama khusus bagi orang, tempat, jenama dan tajuk.",
+      "learningObjective": "Murid dapat mengenal pasti kata nama khas bagi orang, tempat, haiwan dan benda dalam ayat mudah.",
+      "learningOutcome": "Murid dapat membezakan serta menggunakan kata nama khas dengan huruf besar yang betul.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_NAMA_KHAS-001",
@@ -1186,7 +1753,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_KHAS-034",
-          "q": "KBAT: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?",
+          "q": "Situasi: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?",
           "answer": "Kuala Lumpur",
           "accepted": [
             "Kuala Lumpur"
@@ -1196,7 +1763,7 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?"
+          "question": "Situasi: Jika ayah bekerja di Kuala Lumpur, perkataan manakah ialah kata nama khas bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-035",
@@ -1421,6 +1988,166 @@ const rawBMSSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "Situasi: Encik Rahman menyampaikan hadiah kepada pemenang pertandingan pidato. Nyatakan kata nama khas bagi nama orang."
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-051",
+          "q": "Analisis KBAT: Dalam frasa 'bandar Kuala Lumpur', bandar ialah nama umum. Perkataan manakah kata nama khas?",
+          "answer": "Kuala Lumpur",
+          "accepted": ["Kuala Lumpur", "kuala lumpur"],
+          "hint": "Cari nama khusus bagi bandar tersebut.",
+          "explanation": "Kuala Lumpur ialah kata nama khas kerana merujuk kepada sebuah bandar tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam frasa 'bandar Kuala Lumpur', bandar ialah nama umum. Perkataan manakah kata nama khas?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-052",
+          "q": "Analisis KBAT: Teliti ayat 'Cikgu Farah mengajar murid di sekolah'. Nyatakan kata nama khas dalam ayat itu.",
+          "answer": "Cikgu Farah",
+          "accepted": ["Cikgu Farah", "Farah", "cikgu farah", "farah"],
+          "hint": "Bezakan gelaran bersama nama khusus daripada nama pekerjaan umum.",
+          "explanation": "Cikgu Farah ialah kata nama khas bagi seorang guru tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Cikgu Farah mengajar murid di sekolah'. Nyatakan kata nama khas dalam ayat itu."
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-053",
+          "q": "Analisis KBAT: Antara negeri, Johor dan sekolah, perkataan manakah berbeza kerana merujuk kepada nama khusus?",
+          "answer": "Johor",
+          "accepted": ["Johor", "johor"],
+          "hint": "Cari nama khusus bagi sebuah negeri.",
+          "explanation": "Johor ialah kata nama khas, manakala negeri dan sekolah ialah kata nama am.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Antara negeri, Johor dan sekolah, perkataan manakah berbeza kerana merujuk kepada nama khusus?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-054",
+          "q": "Analisis KBAT: Ayat 'sara melawat muzium negara' mempunyai dua kata nama khas yang tidak menggunakan huruf besar dengan betul. Nyatakan nama orang itu.",
+          "answer": "Sara",
+          "accepted": ["Sara", "sara"],
+          "hint": "Cari nama khusus bagi orang dalam ayat.",
+          "explanation": "Sara ialah kata nama khas bagi orang dan perlu bermula dengan huruf besar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'sara melawat muzium negara' mempunyai dua kata nama khas yang tidak menggunakan huruf besar dengan betul. Nyatakan nama orang itu."
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-055",
+          "q": "Analisis KBAT: Nama Si Tompok merujuk kepada seekor kucing tertentu. Antara kucing dan Si Tompok, yang manakah kata nama khas?",
+          "answer": "Si Tompok",
+          "accepted": ["Si Tompok", "si tompok"],
+          "hint": "Pilih nama khusus haiwan itu.",
+          "explanation": "Si Tompok ialah kata nama khas bagi haiwan tertentu, manakala kucing ialah kata nama am.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Nama Si Tompok merujuk kepada seekor kucing tertentu. Antara kucing dan Si Tompok, yang manakah kata nama khas?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-056",
+          "q": "Penilaian KBAT: Nina menulis namanya sebagai 'nina' pada buku latihan. Apakah ejaan yang betul?",
+          "answer": "Nina",
+          "accepted": ["Nina"],
+          "hint": "Nama orang mesti bermula dengan huruf besar.",
+          "explanation": "Nina ialah kata nama khas bagi orang, jadi huruf pertamanya mesti ditulis dengan huruf besar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Nina menulis namanya sebagai 'nina' pada buku latihan. Apakah ejaan yang betul?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-057",
+          "q": "Penilaian KBAT: Seorang murid mengelaskan Pulau Pinang sebagai kata nama am. Apakah pengelasan yang betul?",
+          "answer": "kata nama khas",
+          "accepted": ["kata nama khas", "nama khas"],
+          "hint": "Pulau Pinang ialah nama khusus bagi sebuah tempat.",
+          "explanation": "Pulau Pinang ialah kata nama khas kerana merujuk kepada tempat tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Seorang murid mengelaskan Pulau Pinang sebagai kata nama am. Apakah pengelasan yang betul?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-058",
+          "q": "Penilaian KBAT: Untuk merujuk kepada seorang guru tertentu, manakah lebih tepat: guru atau Cikgu Aminah?",
+          "answer": "Cikgu Aminah",
+          "accepted": ["Cikgu Aminah", "Aminah", "cikgu aminah", "aminah"],
+          "hint": "Pilih nama yang merujuk kepada individu tertentu.",
+          "explanation": "Cikgu Aminah lebih tepat kerana merupakan kata nama khas bagi seorang guru tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Untuk merujuk kepada seorang guru tertentu, manakah lebih tepat: guru atau Cikgu Aminah?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-059",
+          "q": "Penilaian KBAT: Ayat 'Kami melawat zoo negara pada hari Ahad' merujuk kepada nama tempat tertentu. Apakah penulisan yang betul bagi nama tempat itu?",
+          "answer": "Zoo Negara",
+          "accepted": ["Zoo Negara", "zoo negara"],
+          "hint": "Gunakan huruf besar pada setiap perkataan dalam nama khusus tempat itu.",
+          "explanation": "Zoo Negara ialah kata nama khas bagi tempat dan kedua-dua perkataan bermula dengan huruf besar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ayat 'Kami melawat zoo negara pada hari Ahad' merujuk kepada nama tempat tertentu. Apakah penulisan yang betul bagi nama tempat itu?"
+        },
+        {
+          "id": "BM-KATA_NAMA_KHAS-060",
+          "q": "Penilaian KBAT: Ravi mengatakan 'sekolah' ialah kata nama khas kerana dia belajar di situ. Apakah pengelasan yang betul bagi sekolah?",
+          "answer": "kata nama am",
+          "accepted": ["kata nama am", "nama am"],
+          "hint": "Sekolah ialah nama umum selagi nama khusus sekolah tidak disebut.",
+          "explanation": "Sekolah ialah kata nama am kerana tidak merujuk kepada nama sebuah sekolah tertentu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ravi mengatakan 'sekolah' ialah kata nama khas kerana dia belajar di situ. Apakah pengelasan yang betul bagi sekolah?"
         }
       ]
     },
@@ -1428,6 +2155,11 @@ const rawBMSSubject = {
       "id": "kata_ganti_nama",
       "title": "Kata Ganti Nama",
       "note": "Perkataan yang digunakan untuk menggantikan nama.",
+      "learningObjective": "Murid dapat mengenal pasti kata ganti nama berdasarkan penutur, pendengar dan pihak yang diperkatakan.",
+      "learningOutcome": "Murid dapat memilih dan menggunakan kata ganti nama yang sesuai dalam dialog serta ayat mudah.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_GANTI_NAMA-001",
@@ -2128,6 +2860,166 @@ const rawBMSSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "Betulkan ayat ini: \"Dia sedang makan bersama.\" (merujuk kepada Saya dan rakan-rakan)"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-051",
+          "q": "Analisis KBAT: Amir berkata kepada Siti, '___ akan membawa buku saya esok.' Kata ganti nama manakah merujuk Amir sebagai penutur?",
+          "answer": "Saya",
+          "accepted": ["Saya", "saya"],
+          "hint": "Amir bercakap tentang dirinya sendiri.",
+          "explanation": "Saya digunakan apabila seorang penutur merujuk kepada dirinya sendiri.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Amir berkata kepada Siti, '___ akan membawa buku saya esok.' Kata ganti nama manakah merujuk Amir sebagai penutur?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-052",
+          "q": "Analisis KBAT: Aina dan Siti berkata kepada Amir, '___ sudah menyiapkan tugasan ini.' Amir tidak menyertai mereka. Apakah kata ganti nama yang sesuai?",
+          "answer": "Kami",
+          "accepted": ["Kami", "kami"],
+          "hint": "Dua penutur bercakap tentang kumpulan mereka tanpa melibatkan pendengar.",
+          "explanation": "Kami merujuk penutur bersama kumpulannya tetapi tidak melibatkan orang yang mendengar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Aina dan Siti berkata kepada Amir, '___ sudah menyiapkan tugasan ini.' Amir tidak menyertai mereka. Apakah kata ganti nama yang sesuai?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-053",
+          "q": "Analisis KBAT: Guru berkata kepada semua murid, '___ akan membersihkan kelas bersama-sama.' Guru dan murid terlibat. Apakah kata ganti nama yang sesuai?",
+          "answer": "Kita",
+          "accepted": ["Kita", "kita"],
+          "hint": "Pilih kata yang melibatkan penutur dan pendengar.",
+          "explanation": "Kita digunakan kerana guru sebagai penutur dan murid sebagai pendengar sama-sama terlibat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Guru berkata kepada semua murid, '___ akan membersihkan kelas bersama-sama.' Guru dan murid terlibat. Apakah kata ganti nama yang sesuai?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-054",
+          "q": "Analisis KBAT: Farah bercakap tentang abangnya kepada Mei. '___ bermain bola di padang.' Apakah kata ganti nama yang sesuai untuk abang Farah?",
+          "answer": "Dia",
+          "accepted": ["Dia", "dia", "Beliau", "beliau"],
+          "hint": "Orang yang dimaksudkan tidak sedang bercakap atau mendengar.",
+          "explanation": "Dia digunakan untuk merujuk seorang yang diperkatakan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Farah bercakap tentang abangnya kepada Mei. '___ bermain bola di padang.' Apakah kata ganti nama yang sesuai untuk abang Farah?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-055",
+          "q": "Analisis KBAT: Hakim menceritakan tentang tiga orang rakannya. '___ sedang membaca di perpustakaan.' Apakah kata ganti nama yang sesuai?",
+          "answer": "Mereka",
+          "accepted": ["Mereka", "mereka"],
+          "hint": "Gunakan kata ganti nama untuk lebih daripada seorang yang diperkatakan.",
+          "explanation": "Mereka digunakan untuk merujuk lebih daripada seorang yang diperkatakan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Hakim menceritakan tentang tiga orang rakannya. '___ sedang membaca di perpustakaan.' Apakah kata ganti nama yang sesuai?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-056",
+          "q": "Penilaian KBAT: Aina berkata, 'Dia mahu menjawab soalan ini,' sedangkan Aina merujuk dirinya sendiri. Apakah kata ganti nama yang betul?",
+          "answer": "Saya",
+          "accepted": ["Saya", "saya"],
+          "hint": "Nilai siapa yang bercakap dan siapa yang dimaksudkan.",
+          "explanation": "Saya ialah pilihan yang betul kerana Aina sebagai penutur merujuk dirinya sendiri.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Aina berkata, 'Dia mahu menjawab soalan ini,' sedangkan Aina merujuk dirinya sendiri. Apakah kata ganti nama yang betul?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-057",
+          "q": "Penilaian KBAT: Ali dan Abu berkata kepada Siti, 'Kita akan pergi dahulu,' tetapi Siti tidak ikut. Apakah kata ganti nama yang lebih tepat?",
+          "answer": "Kami",
+          "accepted": ["Kami", "kami"],
+          "hint": "Pendengar tidak termasuk dalam kumpulan yang akan pergi.",
+          "explanation": "Kami lebih tepat kerana hanya Ali dan Abu terlibat, manakala Siti sebagai pendengar tidak ikut.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ali dan Abu berkata kepada Siti, 'Kita akan pergi dahulu,' tetapi Siti tidak ikut. Apakah kata ganti nama yang lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-058",
+          "q": "Penilaian KBAT: Guru berkata kepada Faris, 'Dia perlu menulis nama di sini.' Guru sebenarnya bercakap terus kepada Faris. Apakah kata ganti nama yang lebih sesuai?",
+          "answer": "Kamu",
+          "accepted": ["Kamu", "kamu", "Awak", "awak"],
+          "hint": "Pilih kata ganti nama untuk seorang pendengar.",
+          "explanation": "Kamu sesuai kerana guru sedang bercakap terus kepada Faris sebagai pendengar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Guru berkata kepada Faris, 'Dia perlu menulis nama di sini.' Guru sebenarnya bercakap terus kepada Faris. Apakah kata ganti nama yang lebih sesuai?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-059",
+          "q": "Penilaian KBAT: Ketua kumpulan berkata kepada semua ahli, 'Kami mesti bekerjasama,' dan dia mahu melibatkan semua pendengar. Apakah kata ganti nama yang lebih tepat?",
+          "answer": "Kita",
+          "accepted": ["Kita", "kita"],
+          "hint": "Semua penutur dan pendengar terlibat.",
+          "explanation": "Kita lebih tepat kerana merangkumi ketua kumpulan sebagai penutur dan semua ahli sebagai pendengar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ketua kumpulan berkata kepada semua ahli, 'Kami mesti bekerjasama,' dan dia mahu melibatkan semua pendengar. Apakah kata ganti nama yang lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_GANTI_NAMA-060",
+          "q": "Penilaian KBAT: Murid bercakap tentang guru besar dengan sopan. Antara dia dan beliau, kata ganti nama manakah lebih sesuai?",
+          "answer": "Beliau",
+          "accepted": ["Beliau", "beliau"],
+          "hint": "Pilih kata ganti nama yang lebih sopan untuk orang yang dihormati.",
+          "explanation": "Beliau lebih sesuai digunakan untuk merujuk orang yang dihormati seperti guru besar.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Murid bercakap tentang guru besar dengan sopan. Antara dia dan beliau, kata ganti nama manakah lebih sesuai?"
         }
       ]
     },
@@ -2135,6 +3027,11 @@ const rawBMSSubject = {
       "id": "kata_kerja",
       "title": "Kata Kerja",
       "note": "Kata kerja menunjukkan perbuatan.",
+      "learningObjective": "Murid dapat mengenal pasti kata kerja yang menunjukkan perbuatan dalam ayat mudah.",
+      "learningOutcome": "Murid dapat memilih dan menggunakan kata kerja yang sesuai berdasarkan situasi.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_KERJA-001",
@@ -2698,143 +3595,383 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_KERJA-041",
-          "q": "KBAT: Ketika hari hujan, adik duduk di rumah dan menyanyi lagu kegemaran. Apakah kata kerja dalam ayat ini?",
-          "answer": "menyanyi",
+          "q": "Aplikasi KBAT: Lantai anjung basah selepas hujan. Apakah kata kerja paling sesuai untuk tindakan yang perlu dilakukan oleh adik?",
+          "answer": "mengelap",
           "accepted": [
-            "menyanyi"
+            "mengelap",
+            "lap"
           ],
-          "hint": "Cari perkataan yang menunjukkan perbuatan.",
-          "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
+          "hint": "Fikirkan tindakan untuk mengeringkan lantai yang basah.",
+          "explanation": "Mengelap ialah tindakan yang sesuai untuk mengeringkan lantai dan mengelakkan orang tergelincir.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Ketika hari hujan, adik duduk di rumah dan menyanyi lagu kegemaran. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Lantai anjung basah selepas hujan. Apakah kata kerja paling sesuai untuk tindakan yang perlu dilakukan oleh adik?"
         },
         {
           "id": "BM-KATA_KERJA-042",
-          "q": "KBAT: Untuk makan malam, ibu memasak sup ayam dan ayah mengemas meja. Apakah kata kerja dalam ayat ini?",
-          "answer": "memasak",
+          "q": "Aplikasi KBAT: Buku-buku di sudut bacaan berselerak. Apakah kata kerja paling sesuai untuk tindakan Farah?",
+          "answer": "menyusun",
           "accepted": [
-            "memasak"
+            "menyusun",
+            "susun"
           ],
-          "hint": "Cari perbuatan ibu.",
-          "explanation": "memasak ialah kata kerja.",
+          "hint": "Pilih tindakan yang menjadikan buku teratur.",
+          "explanation": "Menyusun ialah kata kerja yang sesuai kerana Farah perlu meletakkan buku dengan teratur.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Untuk makan malam, ibu memasak sup ayam dan ayah mengemas meja. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Buku-buku di sudut bacaan berselerak. Apakah kata kerja paling sesuai untuk tindakan Farah?"
         },
         {
           "id": "BM-KATA_KERJA-043",
-          "q": "KBAT: Murid ingin menjadi rajin, lalu membaca buku di kelas selepas rehat. Apakah kata kerja dalam ayat ini?",
-          "answer": "membaca",
+          "q": "Aplikasi KBAT: Pokok bunga kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?",
+          "answer": "menyiram",
           "accepted": [
-            "membaca"
+            "menyiram",
+            "siram"
           ],
-          "hint": "Cari perbuatan murid.",
-          "explanation": "membaca ialah kata kerja.",
+          "hint": "Fikirkan tindakan untuk memberikan air kepada pokok.",
+          "explanation": "Menyiram ialah kata kerja yang sesuai untuk membantu pokok yang kekurangan air.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Murid ingin menjadi rajin, lalu membaca buku di kelas selepas rehat. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Pokok bunga kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?"
         },
         {
           "id": "BM-KATA_KERJA-044",
-          "q": "KBAT: Pada hujung minggu, ayah mencuci kereta supaya bersih. Apakah kata kerja dalam ayat ini?",
-          "answer": "mencuci",
+          "q": "Aplikasi KBAT: Lantai kelas berhabuk sebelum sesi pembelajaran bermula. Apakah kata kerja paling sesuai untuk tindakan Amir?",
+          "answer": "menyapu",
           "accepted": [
-            "mencuci"
+            "menyapu",
+            "sapu"
           ],
-          "hint": "Cari perbuatan ayah.",
-          "explanation": "mencuci ialah perbuatan.",
+          "hint": "Fikirkan alat dan tindakan untuk membersihkan habuk di lantai.",
+          "explanation": "Menyapu ialah kata kerja yang sesuai untuk membersihkan habuk di lantai kelas.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Pada hujung minggu, ayah mencuci kereta supaya bersih. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Lantai kelas berhabuk sebelum sesi pembelajaran bermula. Apakah kata kerja paling sesuai untuk tindakan Amir?"
         },
         {
           "id": "BM-KATA_KERJA-045",
-          "q": "KBAT: Kakak mahu mengucapkan terima kasih kepada nenek, lalu menulis surat dengan kemas. Apakah kata kerja dalam ayat ini?",
+          "q": "Aplikasi KBAT: Kakak mahu menyampaikan ucapan terima kasih kepada nenek melalui sepucuk surat. Apakah kata kerja yang perlu dilakukan oleh kakak?",
           "answer": "menulis",
           "accepted": [
             "menulis"
           ],
-          "hint": "Cari perbuatan kakak.",
-          "explanation": "menulis ialah kata kerja.",
+          "hint": "Fikirkan tindakan menghasilkan perkataan pada kertas.",
+          "explanation": "Menulis ialah kata kerja yang sesuai kerana kakak mahu menghasilkan sepucuk surat.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Kakak mahu mengucapkan terima kasih kepada nenek, lalu menulis surat dengan kemas. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Kakak mahu menyampaikan ucapan terima kasih kepada nenek melalui sepucuk surat. Apakah kata kerja yang perlu dilakukan oleh kakak?"
         },
         {
           "id": "BM-KATA_KERJA-046",
-          "q": "KBAT: Selepas bermain, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?",
-          "answer": "tidur",
+          "q": "Aplikasi KBAT: Adik tidak dapat mencapai buku di rak yang tinggi. Apakah kata kerja paling sesuai untuk tindakan abang?",
+          "answer": "membantu",
           "accepted": [
-            "tidur"
+            "membantu",
+            "tolong",
+            "menolong"
           ],
-          "hint": "Cari perbuatan haiwan itu.",
-          "explanation": "tidur ialah kata kerja.",
+          "hint": "Pilih tindakan baik apabila seseorang menghadapi kesukaran.",
+          "explanation": "Membantu ialah kata kerja yang sesuai kerana abang boleh menolong adik mengambil buku itu dengan selamat.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Selepas bermain, kucing itu tidur di sofa yang empuk. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Adik tidak dapat mencapai buku di rak yang tinggi. Apakah kata kerja paling sesuai untuk tindakan abang?"
         },
         {
           "id": "BM-KATA_KERJA-047",
-          "q": "KBAT: Abang mahu menjaringkan gol, lalu menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?",
+          "q": "Aplikasi KBAT: Bola berada di hadapan Hakim dan dia mahu menjaringkan gol. Apakah kata kerja yang perlu dilakukan oleh Hakim?",
           "answer": "menendang",
           "accepted": [
             "menendang"
           ],
-          "hint": "Cari aksi yang dilakukan.",
-          "explanation": "menendang ialah kata kerja.",
+          "hint": "Fikirkan tindakan kaki terhadap bola.",
+          "explanation": "Menendang ialah kata kerja yang sesuai untuk menggerakkan bola ke arah gol.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Abang mahu menjaringkan gol, lalu menendang bola dengan kuat. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Bola berada di hadapan Hakim dan dia mahu menjaringkan gol. Apakah kata kerja yang perlu dilakukan oleh Hakim?"
         },
         {
           "id": "BM-KATA_KERJA-048",
-          "q": "KBAT: Walaupun cuaca panas, nenek menyiram bunga supaya segar. Apakah kata kerja dalam ayat ini?",
-          "answer": "menyiram",
+          "q": "Aplikasi KBAT: Selepas bersukan, Ravi berasa sangat dahaga. Apakah kata kerja paling sesuai untuk tindakan Ravi?",
+          "answer": "minum",
           "accepted": [
-            "menyiram"
+            "minum",
+            "meminum"
           ],
-          "hint": "Cari perbuatan nenek.",
-          "explanation": "menyiram ialah kata kerja.",
+          "hint": "Fikirkan tindakan untuk menghilangkan dahaga.",
+          "explanation": "Minum ialah kata kerja yang sesuai kerana Ravi perlu menggantikan air selepas bersukan.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Walaupun cuaca panas, nenek menyiram bunga supaya segar. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Selepas bersukan, Ravi berasa sangat dahaga. Apakah kata kerja paling sesuai untuk tindakan Ravi?"
         },
         {
           "id": "BM-KATA_KERJA-049",
-          "q": "KBAT: Dalam kelas seni, Danish melukis gambar rumah untuk pameran. Apakah kata kerja dalam ayat ini?",
+          "q": "Aplikasi KBAT: Danish mahu menghasilkan gambar rumah untuk pameran seni. Apakah kata kerja yang perlu dilakukan oleh Danish?",
           "answer": "melukis",
           "accepted": [
             "melukis"
           ],
-          "hint": "Cari perbuatan Danish.",
-          "explanation": "melukis ialah kata kerja.",
+          "hint": "Fikirkan tindakan menghasilkan gambar.",
+          "explanation": "Melukis ialah kata kerja yang sesuai kerana Danish mahu menghasilkan sebuah gambar.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Dalam kelas seni, Danish melukis gambar rumah untuk pameran. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Danish mahu menghasilkan gambar rumah untuk pameran seni. Apakah kata kerja yang perlu dilakukan oleh Danish?"
         },
         {
           "id": "BM-KATA_KERJA-050",
-          "q": "KBAT: Sebelum tidur, Farah mengemas bilik tidur agar selesa. Apakah kata kerja dalam ayat ini?",
+          "q": "Aplikasi KBAT: Mainan Farah berselerak di atas lantai sebelum waktu tidur. Apakah kata kerja paling sesuai untuk tindakan Farah?",
           "answer": "mengemas",
           "accepted": [
             "mengemas"
           ],
-          "hint": "Cari perbuatan Farah.",
-          "explanation": "mengemas ialah kata kerja.",
+          "hint": "Pilih tindakan yang menjadikan bilik kembali teratur.",
+          "explanation": "Mengemas ialah kata kerja yang sesuai kerana Farah perlu menyimpan mainannya dan menjadikan bilik teratur.",
           "difficulty": "sukar",
-          "uasa": "UASA",
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
+          "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Sebelum tidur, Farah mengemas bilik tidur agar selesa. Apakah kata kerja dalam ayat ini?"
+          "question": "Aplikasi KBAT: Mainan Farah berselerak di atas lantai sebelum waktu tidur. Apakah kata kerja paling sesuai untuk tindakan Farah?"
+        },
+        {
+          "id": "BM-KATA_KERJA-051",
+          "q": "Analisis KBAT: Bandingkan ayat A dan B. A: Amir buku cerita. B: Amir membaca buku cerita. Apakah kata kerja yang menjadikan ayat B lengkap?",
+          "answer": "membaca",
+          "accepted": [
+            "membaca",
+            "baca"
+          ],
+          "hint": "Bandingkan kedua-dua ayat dan cari perkataan yang menunjukkan perbuatan Amir.",
+          "explanation": "Membaca ialah kata kerja yang menunjukkan perbuatan Amir dan menjadikan ayat B lengkap.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Bandingkan ayat A dan B. A: Amir buku cerita. B: Amir membaca buku cerita. Apakah kata kerja yang menjadikan ayat B lengkap?"
+        },
+        {
+          "id": "BM-KATA_KERJA-052",
+          "q": "Analisis KBAT: Dalam ayat 'Ibu menyediakan makanan', perkataan menyediakan dan makanan mempunyai fungsi berbeza. Perkataan manakah menunjukkan perbuatan?",
+          "answer": "menyediakan",
+          "accepted": [
+            "menyediakan",
+            "sediakan"
+          ],
+          "hint": "Bezakan perkataan yang menunjukkan tindakan daripada nama benda.",
+          "explanation": "Menyediakan menunjukkan tindakan ibu, manakala makanan ialah kata nama bagi benda.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Ibu menyediakan makanan', perkataan menyediakan dan makanan mempunyai fungsi berbeza. Perkataan manakah menunjukkan perbuatan?"
+        },
+        {
+          "id": "BM-KATA_KERJA-053",
+          "q": "Analisis KBAT: Teliti ayat 'Siti menyapu lantai sehingga bersih'. Antara menyapu dan bersih, perkataan manakah ialah kata kerja?",
+          "answer": "menyapu",
+          "accepted": [
+            "menyapu",
+            "sapu"
+          ],
+          "hint": "Satu perkataan menunjukkan tindakan dan satu lagi menerangkan keadaan.",
+          "explanation": "Menyapu ialah kata kerja kerana menunjukkan tindakan Siti, manakala bersih menerangkan keadaan lantai.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Siti menyapu lantai sehingga bersih'. Antara menyapu dan bersih, perkataan manakah ialah kata kerja?"
+        },
+        {
+          "id": "BM-KATA_KERJA-054",
+          "q": "Analisis KBAT: Ayat 'Aina membaca air' tidak sesuai. Apakah kata kerja yang patut menggantikan membaca supaya ayat itu masuk akal?",
+          "answer": "minum",
+          "accepted": [
+            "minum",
+            "meminum"
+          ],
+          "hint": "Fikirkan tindakan yang boleh dilakukan terhadap air.",
+          "explanation": "Minum sesuai digunakan dengan air. Membaca digunakan untuk bahan seperti buku atau teks.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Aina membaca air' tidak sesuai. Apakah kata kerja yang patut menggantikan membaca supaya ayat itu masuk akal?"
+        },
+        {
+          "id": "BM-KATA_KERJA-055",
+          "q": "Analisis KBAT: Ayat 'Burung itu berenang di langit' menggunakan kata kerja yang tidak sesuai. Apakah kata kerja yang lebih tepat?",
+          "answer": "terbang",
+          "accepted": [
+            "terbang",
+            "berterbangan"
+          ],
+          "hint": "Fikirkan cara burung bergerak di langit.",
+          "explanation": "Terbang ialah kata kerja yang sesuai untuk pergerakan burung di langit, manakala berenang berlaku di dalam air.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Burung itu berenang di langit' menggunakan kata kerja yang tidak sesuai. Apakah kata kerja yang lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_KERJA-056",
+          "q": "Penilaian KBAT: Amir nampak air tertumpah di laluan kelas. Antara berlari dan mengelap, apakah tindakan terbaik?",
+          "answer": "mengelap",
+          "accepted": [
+            "mengelap",
+            "lap"
+          ],
+          "hint": "Pilih tindakan yang menjaga keselamatan semua murid.",
+          "explanation": "Mengelap ialah tindakan terbaik kerana air yang tertumpah boleh menyebabkan murid tergelincir.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Amir nampak air tertumpah di laluan kelas. Antara berlari dan mengelap, apakah tindakan terbaik?"
+        },
+        {
+          "id": "BM-KATA_KERJA-057",
+          "q": "Penilaian KBAT: Sampah bertaburan selepas waktu rehat. Antara membiarkan dan mengutip, apakah tindakan paling bertanggungjawab?",
+          "answer": "mengutip",
+          "accepted": [
+            "mengutip",
+            "kutip"
+          ],
+          "hint": "Pilih tindakan yang membantu menjaga kebersihan sekolah.",
+          "explanation": "Mengutip ialah tindakan paling bertanggungjawab kerana persekitaran sekolah perlu dijaga bersama.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Sampah bertaburan selepas waktu rehat. Antara membiarkan dan mengutip, apakah tindakan paling bertanggungjawab?"
+        },
+        {
+          "id": "BM-KATA_KERJA-058",
+          "q": "Penilaian KBAT: Seorang rakan terjatuh di padang. Antara mentertawakan dan membantu, apakah tindakan terbaik?",
+          "answer": "membantu",
+          "accepted": [
+            "membantu",
+            "menolong",
+            "tolong"
+          ],
+          "hint": "Pilih tindakan yang menunjukkan sikap prihatin.",
+          "explanation": "Membantu ialah tindakan terbaik kerana rakan yang terjatuh mungkin memerlukan pertolongan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Seorang rakan terjatuh di padang. Antara mentertawakan dan membantu, apakah tindakan terbaik?"
+        },
+        {
+          "id": "BM-KATA_KERJA-059",
+          "q": "Penilaian KBAT: Faris mahu menyeberang jalan. Antara terus berlari dan melihat kiri serta kanan, apakah tindakan paling selamat?",
+          "answer": "melihat kiri dan kanan",
+          "accepted": [
+            "melihat kiri dan kanan",
+            "lihat kiri dan kanan",
+            "melihat kiri serta kanan"
+          ],
+          "hint": "Pilih tindakan yang membantu memastikan jalan selamat untuk diseberangi.",
+          "explanation": "Melihat kiri dan kanan ialah tindakan paling selamat sebelum menyeberang jalan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Faris mahu menyeberang jalan. Antara terus berlari dan melihat kiri serta kanan, apakah tindakan paling selamat?"
+        },
+        {
+          "id": "BM-KATA_KERJA-060",
+          "q": "Penilaian KBAT: Buku perpustakaan terkoyak sedikit. Antara menyembunyikan dan memberitahu guru, apakah tindakan paling jujur?",
+          "answer": "memberitahu guru",
+          "accepted": [
+            "memberitahu guru",
+            "beritahu guru",
+            "melaporkan kepada guru"
+          ],
+          "hint": "Pilih tindakan yang menunjukkan kejujuran dan tanggungjawab.",
+          "explanation": "Memberitahu guru ialah tindakan paling jujur supaya buku itu dapat dibaiki dengan betul.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Buku perpustakaan terkoyak sedikit. Antara menyembunyikan dan memberitahu guru, apakah tindakan paling jujur?"
         }
       ]
     },
@@ -2842,6 +3979,11 @@ const rawBMSSubject = {
       "id": "kata_adjektif",
       "title": "Kata Adjektif",
       "note": "Perkataan yang menerangkan sifat atau keadaan.",
+      "learningObjective": "Murid dapat mengenal pasti kata adjektif yang menerangkan sifat, warna, ukuran dan keadaan.",
+      "learningOutcome": "Murid dapat memilih serta menggunakan kata adjektif yang sesuai dalam frasa dan ayat mudah.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_ADJEKTIF-001",
@@ -3265,7 +4407,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_ADJEKTIF-031",
-          "q": "KBAT: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?",
+          "q": "Situasi: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?",
           "answer": "merah",
           "accepted": [
             "merah"
@@ -3275,11 +4417,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?"
+          "question": "Situasi: Untuk acara sukan, baju adik berwarna merah supaya mudah dikenal. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-032",
-          "q": "KBAT: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?",
+          "q": "Situasi: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?",
           "answer": "berat",
           "accepted": [
             "berat"
@@ -3289,11 +4431,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?"
+          "question": "Situasi: Selepas membeli buku latihan, beg sekolah itu menjadi berat. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-033",
-          "q": "KBAT: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?",
+          "q": "Situasi: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?",
           "answer": "panas",
           "accepted": [
             "panas"
@@ -3303,11 +4445,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?"
+          "question": "Situasi: Walaupun cuaca sejuk, air teh itu panas dan sesuai diminum. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-034",
-          "q": "KBAT: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?",
+          "q": "Situasi: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?",
           "answer": "besar",
           "accepted": [
             "besar"
@@ -3317,11 +4459,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?"
+          "question": "Situasi: Keluarga Amir berpindah ke rumah yang besar dan selesa. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-035",
-          "q": "KBAT: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?",
+          "q": "Situasi: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?",
           "answer": "manis",
           "accepted": [
             "manis"
@@ -3331,11 +4473,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?"
+          "question": "Situasi: Setelah dipetik, mangga itu terasa manis. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-036",
-          "q": "KBAT: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?",
+          "q": "Situasi: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -3345,11 +4487,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?"
+          "question": "Situasi: Cikgu meminta murid berhati-hati kerana lantai itu licin selepas dibasuh. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-037",
-          "q": "KBAT: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?",
+          "q": "Situasi: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?",
           "answer": "merdu",
           "accepted": [
             "merdu"
@@ -3359,11 +4501,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?"
+          "question": "Situasi: Persembahan koir di dewan sangat indah kerana suara penyanyi itu merdu. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-038",
-          "q": "KBAT: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?",
+          "q": "Situasi: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?",
           "answer": "dekat",
           "accepted": [
             "dekat"
@@ -3373,11 +4515,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?"
+          "question": "Situasi: Rumah Aina dekat dengan sekolah, jadi dia berjalan kaki. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-039",
-          "q": "KBAT: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?",
+          "q": "Situasi: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?",
           "answer": "gembira",
           "accepted": [
             "gembira"
@@ -3387,11 +4529,11 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?"
+          "question": "Situasi: Adik berasa gembira apabila menang pertandingan mewarna. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-040",
-          "q": "KBAT: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?",
+          "q": "Situasi: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -3401,7 +4543,7 @@ const rawBMSSubject = {
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?"
+          "question": "Situasi: Di dapur, pisau itu tajam supaya memotong buah dengan mudah. Apakah kata adjektif?"
         },
         {
           "id": "BM-KATA_ADJEKTIF-041",
@@ -3542,13 +4684,178 @@ const rawBMSSubject = {
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
           "question": "UASA: Pisau dapur itu tajam untuk memotong buah. Jawapan bagi kata adjektif ialah ________."
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-051",
+          "q": "Analisis KBAT: Dalam frasa 'sup panas', sup ialah nama benda. Perkataan manakah menerangkan keadaan sup?",
+          "answer": "panas",
+          "accepted": ["panas"],
+          "hint": "Bezakan nama benda daripada perkataan yang menerangkan keadaannya.",
+          "explanation": "Panas ialah kata adjektif yang menerangkan keadaan sup.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam frasa 'sup panas', sup ialah nama benda. Perkataan manakah menerangkan keadaan sup?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-052",
+          "q": "Analisis KBAT: Teliti ayat 'Bunga merah itu sangat cantik'. Nyatakan dua kata adjektif dalam ayat itu.",
+          "answer": "merah dan cantik",
+          "accepted": ["merah dan cantik", "merah, cantik", "merah cantik"],
+          "hint": "Cari satu perkataan warna dan satu perkataan sifat.",
+          "explanation": "Merah menerangkan warna bunga dan cantik menerangkan sifat bunga.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Bunga merah itu sangat cantik'. Nyatakan dua kata adjektif dalam ayat itu."
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-053",
+          "q": "Analisis KBAT: Dalam ayat 'Siti berlari dengan pantas', berlari menunjukkan perbuatan. Perkataan manakah menerangkan cara Siti berlari?",
+          "answer": "pantas",
+          "accepted": ["pantas"],
+          "hint": "Cari perkataan yang menerangkan kelajuan perbuatan itu.",
+          "explanation": "Pantas ialah kata adjektif yang menerangkan cara atau kelajuan Siti berlari.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Siti berlari dengan pantas', berlari menunjukkan perbuatan. Perkataan manakah menerangkan cara Siti berlari?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-054",
+          "q": "Analisis KBAT: Ayat 'Air sirap itu masin' tidak sesuai dengan rasa minuman tersebut. Apakah kata adjektif yang lebih sesuai?",
+          "answer": "manis",
+          "accepted": ["manis"],
+          "hint": "Fikirkan rasa biasa bagi air sirap.",
+          "explanation": "Manis ialah kata adjektif rasa yang lebih sesuai untuk menerangkan air sirap.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Air sirap itu masin' tidak sesuai dengan rasa minuman tersebut. Apakah kata adjektif yang lebih sesuai?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-055",
+          "q": "Analisis KBAT: Antara besar, membesar dan bola, perkataan manakah menerangkan ukuran sesuatu benda?",
+          "answer": "besar",
+          "accepted": ["besar"],
+          "hint": "Bezakan kata sifat, kata kerja dan kata nama.",
+          "explanation": "Besar ialah kata adjektif ukuran, membesar menunjukkan proses dan bola ialah kata nama.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Antara besar, membesar dan bola, perkataan manakah menerangkan ukuran sesuatu benda?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-056",
+          "q": "Penilaian KBAT: Untuk menerangkan bantal yang selesa disentuh, manakah lebih tepat: lembut atau berlari?",
+          "answer": "lembut",
+          "accepted": ["lembut"],
+          "hint": "Pilih perkataan yang menerangkan sifat bantal.",
+          "explanation": "Lembut ialah kata adjektif yang sesuai untuk menerangkan sifat bantal.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Untuk menerangkan bantal yang selesa disentuh, manakah lebih tepat: lembut atau berlari?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-057",
+          "q": "Penilaian KBAT: Ravi mengelaskan perkataan rajin sebagai kata kerja. Apakah pengelasan yang betul?",
+          "answer": "kata adjektif",
+          "accepted": ["kata adjektif", "adjektif", "kata sifat"],
+          "hint": "Rajin menerangkan sifat seseorang.",
+          "explanation": "Rajin ialah kata adjektif kerana menerangkan sifat seseorang, bukan perbuatannya.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ravi mengelaskan perkataan rajin sebagai kata kerja. Apakah pengelasan yang betul?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-058",
+          "q": "Penilaian KBAT: Susu yang telah rosak berbau kurang menyenangkan. Antara masam dan tinggi, kata adjektif manakah lebih sesuai?",
+          "answer": "masam",
+          "accepted": ["masam"],
+          "hint": "Pilih perkataan yang menerangkan rasa atau keadaan susu rosak.",
+          "explanation": "Masam lebih sesuai untuk menerangkan rasa atau keadaan susu yang telah rosak.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Susu yang telah rosak berbau kurang menyenangkan. Antara masam dan tinggi, kata adjektif manakah lebih sesuai?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-059",
+          "q": "Penilaian KBAT: Bilik itu tidak mempunyai lampu dan sukar dilihat. Apakah kata adjektif paling tepat untuk menerangkan bilik itu?",
+          "answer": "gelap",
+          "accepted": ["gelap"],
+          "hint": "Pilih perkataan yang menerangkan keadaan tanpa cahaya.",
+          "explanation": "Gelap ialah kata adjektif yang paling tepat untuk menerangkan bilik tanpa cahaya.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Bilik itu tidak mempunyai lampu dan sukar dilihat. Apakah kata adjektif paling tepat untuk menerangkan bilik itu?"
+        },
+        {
+          "id": "BM-KATA_ADJEKTIF-060",
+          "q": "Penilaian KBAT: Antara 'bola besar itu' dan 'besar bola itu', frasa manakah mempunyai susunan yang lebih tepat?",
+          "answer": "bola besar itu",
+          "accepted": ["bola besar itu", "bola besar"],
+          "hint": "Dalam frasa ini, nama benda hadir sebelum perkataan yang menerangkan ukurannya.",
+          "explanation": "Bola besar itu mempunyai susunan yang tepat kerana kata adjektif besar menerangkan kata nama bola.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Antara 'bola besar itu' dan 'besar bola itu', frasa manakah mempunyai susunan yang lebih tepat?"
         }
       ]
     },
     {
       "id": "kata_sendi",
       "title": "Kata Sendi Nama",
-      "note": "Kata sendi nama menghubungkan perkataan dalam ayat.",
+      "note": "Kata sendi nama hadir di hadapan kata nama atau frasa nama untuk menunjukkan tempat, arah, asal, masa, penerima, bahan, alat atau tujuan.",
+      "learningObjective": "Murid dapat mengenal pasti fungsi kata sendi nama dalam ayat mudah.",
+      "learningOutcome": "Murid dapat memilih dan menggunakan kata sendi nama yang sesuai berdasarkan tempat, arah, asal, masa, penerima, bahan, alat dan tujuan.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_SENDI-001",
@@ -4112,150 +5419,323 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_SENDI-041",
-          "q": "Pilih ayat yang betul: Buku itu disimpan ______ almari.",
+          "q": "Aplikasi: Aina bergerak dari kelas menuju perpustakaan. Lengkapkan laluan ini: ______ kelas ______ perpustakaan.",
+          "answer": "dari kelas ke perpustakaan",
+          "accepted": [
+            "dari kelas ke perpustakaan",
+            "dari, ke",
+            "dari ke",
+            "dari dan ke"
+          ],
+          "hint": "Gunakan satu kata sendi untuk tempat asal dan satu lagi untuk tempat tujuan.",
+          "explanation": "Dari menunjukkan tempat asal, manakala ke menunjukkan tempat yang dituju.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aplikasi: Aina bergerak dari kelas menuju perpustakaan. Lengkapkan laluan ini: ______ kelas ______ perpustakaan."
+        },
+        {
+          "id": "BM-KATA_SENDI-042",
+          "q": "Aplikasi: Sebuah papan tanda mempunyai anak panah yang menuju kantin. Tuliskan frasa arah yang sesuai.",
+          "answer": "ke kantin",
+          "accepted": [
+            "ke kantin",
+            "ke"
+          ],
+          "hint": "Gabungkan kata sendi arah dengan tempat tujuan.",
+          "explanation": "Frasa ke kantin menunjukkan arah menuju kantin.",
+          "difficulty": "sukar",
+          "uasa": "UASA",
+          "dskp": "KSSR Tahun 2",
+          "question": "Aplikasi: Sebuah papan tanda mempunyai anak panah yang menuju kantin. Tuliskan frasa arah yang sesuai."
+        },
+        {
+          "id": "BM-KATA_SENDI-043",
+          "q": "Aplikasi: Amir tidak bergerak dan sedang membaca di meja. Lengkapkan catatan lokasi: Amir membaca ______ meja.",
           "answer": "di",
           "accepted": [
             "di"
           ],
-          "hint": "Gunakan di untuk tempat yang tetap.",
-          "explanation": "di digunakan untuk menunjukkan tempat yang tetap.",
-          "difficulty": "mudah",
+          "hint": "Pilih kata sendi yang menunjukkan tempat tetap.",
+          "explanation": "Di digunakan kerana meja ialah lokasi Amir membaca, bukannya tempat yang dituju.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih ayat yang betul: Buku itu disimpan ______ almari."
-        },
-        {
-          "id": "BM-KATA_SENDI-042",
-          "q": "Adik bergerak ______ taman permainan selepas makan tengah hari.",
-          "answer": "ke",
-          "accepted": [
-            "ke"
-          ],
-          "hint": "Gunakan ke untuk arah atau tempat yang dituju.",
-          "explanation": "ke digunakan untuk menunjukkan arah atau tempat yang dituju.",
-          "difficulty": "mudah",
-          "uasa": "UASA",
-          "dskp": "KSSR Tahun 2",
-          "question": "Adik bergerak ______ taman permainan selepas makan tengah hari."
-        },
-        {
-          "id": "BM-KATA_SENDI-043",
-          "q": "Abang datang ______ sekolah dengan bas.",
-          "answer": "dari",
-          "accepted": [
-            "dari"
-          ],
-          "hint": "Gunakan dari untuk tempat asal.",
-          "explanation": "dari digunakan untuk menunjukkan tempat asal atau tempat datang.",
-          "difficulty": "mudah",
-          "uasa": "UASA",
-          "dskp": "KSSR Tahun 2",
-          "question": "Abang datang ______ sekolah dengan bas."
+          "question": "Aplikasi: Amir tidak bergerak dan sedang membaca di meja. Lengkapkan catatan lokasi: Amir membaca ______ meja."
         },
         {
           "id": "BM-KATA_SENDI-044",
-          "q": "Pingat kejayaan itu diserahkan ______ murid terbaik.",
+          "q": "Aplikasi: Pada kad hadiah tertulis 'Hadiah ini akan diserahkan ______ pemenang pertandingan.' Pilih kata sendi untuk penerima.",
           "answer": "kepada",
           "accepted": [
             "kepada"
           ],
-          "hint": "Gunakan kepada untuk penerima.",
-          "explanation": "kepada digunakan untuk orang yang menerima sesuatu.",
-          "difficulty": "mudah",
+          "hint": "Pemenang ialah orang yang menerima hadiah.",
+          "explanation": "Kepada digunakan untuk menunjukkan orang atau pihak yang menerima sesuatu.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pingat kejayaan itu diserahkan ______ murid terbaik."
+          "question": "Aplikasi: Pada kad hadiah tertulis 'Hadiah ini akan diserahkan ______ pemenang pertandingan.' Pilih kata sendi untuk penerima."
         },
         {
           "id": "BM-KATA_SENDI-045",
-          "q": "Kerusi kecil itu dibuat ______ batang buluh.",
+          "q": "Aplikasi: Kamu menyediakan label untuk bakul anyaman. Lengkapkan label: 'Bakul ini dibuat ______ rotan.'",
           "answer": "daripada",
           "accepted": [
             "daripada"
           ],
-          "hint": "Gunakan daripada untuk bahan.",
-          "explanation": "daripada digunakan untuk menunjukkan bahan sesuatu dibuat.",
-          "difficulty": "mudah",
+          "hint": "Rotan ialah bahan yang digunakan untuk membuat bakul.",
+          "explanation": "Daripada digunakan untuk menunjukkan bahan asal sesuatu benda.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kerusi kecil itu dibuat ______ batang buluh."
+          "question": "Aplikasi: Kamu menyediakan label untuk bakul anyaman. Lengkapkan label: 'Bakul ini dibuat ______ rotan.'"
         },
         {
           "id": "BM-KATA_SENDI-046",
-          "q": "Pertunjukan kelas bermula ______ waktu rehat.",
+          "q": "Aplikasi: Kamu menulis notis 'Program membaca bermula ______ pukul 8.00 pagi.' Pilih kata sendi masa yang sesuai.",
           "answer": "pada",
           "accepted": [
             "pada"
           ],
-          "hint": "Gunakan pada untuk masa.",
-          "explanation": "pada digunakan untuk masa atau waktu tertentu.",
-          "difficulty": "mudah",
+          "hint": "Pukul 8.00 pagi ialah waktu tertentu.",
+          "explanation": "Pada digunakan di hadapan masa atau waktu tertentu.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pertunjukan kelas bermula ______ waktu rehat."
+          "question": "Aplikasi: Kamu menulis notis 'Program membaca bermula ______ pukul 8.00 pagi.' Pilih kata sendi masa yang sesuai."
         },
         {
           "id": "BM-KATA_SENDI-047",
-          "q": "Siti menulis nama ______ pensel di buku latihan.",
+          "q": "Aplikasi: Arahan aktiviti berbunyi 'Tuliskan nama kamu ______ pen mata bulat.' Lengkapkan arahan dengan kata sendi alat.",
           "answer": "dengan",
           "accepted": [
             "dengan"
           ],
-          "hint": "Gunakan dengan untuk alat.",
-          "explanation": "dengan digunakan untuk menunjukkan alat yang dipakai.",
-          "difficulty": "mudah",
+          "hint": "Pen mata bulat ialah alat untuk menulis.",
+          "explanation": "Dengan digunakan untuk menunjukkan alat yang digunakan bagi melakukan sesuatu.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Siti menulis nama ______ pensel di buku latihan."
+          "question": "Aplikasi: Arahan aktiviti berbunyi 'Tuliskan nama kamu ______ pen mata bulat.' Lengkapkan arahan dengan kata sendi alat."
         },
         {
           "id": "BM-KATA_SENDI-048",
-          "q": "Kuih ini dibawa ______ kakak untuk tetamu.",
+          "q": "Aplikasi: Emak mahu menandakan bekal yang disediakan khas bagi adik. Lengkapkan label: 'Bekal ______ adik.'",
           "answer": "untuk",
           "accepted": [
             "untuk"
           ],
-          "hint": "Gunakan untuk bagi tujuan atau penerima.",
-          "explanation": "untuk digunakan bagi tujuan atau orang yang menerima sesuatu.",
-          "difficulty": "mudah",
+          "hint": "Pilih kata sendi yang menunjukkan tujuan atau kegunaan.",
+          "explanation": "Untuk menunjukkan bahawa bekal itu disediakan bagi kegunaan adik.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kuih ini dibawa ______ kakak untuk tetamu."
+          "question": "Aplikasi: Emak mahu menandakan bekal yang disediakan khas bagi adik. Lengkapkan label: 'Bekal ______ adik.'"
         },
         {
           "id": "BM-KATA_SENDI-049",
-          "q": "Burung itu hinggap ______ dahan pokok mangga.",
-          "answer": "di",
+          "q": "Aplikasi: Betulkan kata sendi dalam ayat 'Murid berjalan di dewan untuk perhimpunan.'",
+          "answer": "ke",
           "accepted": [
-            "di"
+            "ke",
+            "murid berjalan ke dewan untuk perhimpunan"
           ],
-          "hint": "Gunakan di untuk tempat yang tetap.",
-          "explanation": "di digunakan untuk menunjukkan tempat yang tetap.",
-          "difficulty": "mudah",
+          "hint": "Murid sedang bergerak menuju suatu tempat.",
+          "explanation": "Ke perlu menggantikan di kerana dewan ialah tempat yang dituju.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Burung itu hinggap ______ dahan pokok mangga."
+          "question": "Aplikasi: Betulkan kata sendi dalam ayat 'Murid berjalan di dewan untuk perhimpunan.'"
         },
         {
           "id": "BM-KATA_SENDI-050",
-          "q": "Murid-murid bergerak ______ dewan semasa latihan perbarisan.",
-          "answer": "ke",
+          "q": "Aplikasi: Gunakan maklumat 'tempat asal: rumah; tempat tujuan: sekolah' untuk melengkapkan ayat: Rina bergerak ______ rumah ______ sekolah.",
+          "answer": "dari rumah ke sekolah",
           "accepted": [
-            "ke"
+            "dari rumah ke sekolah",
+            "dari, ke",
+            "dari ke",
+            "dari dan ke"
           ],
-          "hint": "Gunakan ke untuk arah tempat yang dituju.",
-          "explanation": "ke digunakan untuk menunjukkan arah atau tempat yang dituju.",
-          "difficulty": "mudah",
+          "hint": "Gunakan kata sendi asal sebelum rumah dan kata sendi arah sebelum sekolah.",
+          "explanation": "Dari rumah menunjukkan tempat asal, manakala ke sekolah menunjukkan tempat tujuan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Murid-murid bergerak ______ dewan semasa latihan perbarisan."
+          "question": "Aplikasi: Gunakan maklumat 'tempat asal: rumah; tempat tujuan: sekolah' untuk melengkapkan ayat: Rina bergerak ______ rumah ______ sekolah."
+        },
+        {
+          "id": "BM-KATA_SENDI-051",
+          "q": "Analisis KBAT: Teliti ayat 'Aina belajar di sekolah dan pulang dari sekolah pada tengah hari.' Nyatakan kata sendi bagi tempat tetap dan tempat asal mengikut urutan.",
+          "answer": "di dan dari",
+          "accepted": ["di dan dari", "di, dari", "di dari"],
+          "hint": "Bezakan lokasi Aina belajar daripada lokasi permulaan perjalanannya pulang.",
+          "explanation": "Di menunjukkan tempat tetap Aina belajar, manakala dari menunjukkan tempat asal perjalanannya pulang.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Aina belajar di sekolah dan pulang dari sekolah pada tengah hari.' Nyatakan kata sendi bagi tempat tetap dan tempat asal mengikut urutan."
+        },
+        {
+          "id": "BM-KATA_SENDI-052",
+          "q": "Analisis KBAT: Ali menulis 'Kami pergi di perpustakaan.' Apakah pembetulan yang perlu dibuat pada kata sendi itu?",
+          "answer": "di ditukar kepada ke",
+          "accepted": ["di ditukar kepada ke", "tukar di kepada ke", "ke", "kami pergi ke perpustakaan"],
+          "hint": "Perbuatan pergi menunjukkan arah atau tempat yang dituju.",
+          "explanation": "Kata sendi ke digunakan untuk arah, jadi ayat yang betul ialah 'Kami pergi ke perpustakaan.'",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ali menulis 'Kami pergi di perpustakaan.' Apakah pembetulan yang perlu dibuat pada kata sendi itu?"
+        },
+        {
+          "id": "BM-KATA_SENDI-053",
+          "q": "Analisis KBAT: Dua ayat ini salah: 'Meja itu dibuat dari kayu' dan 'Zaki datang daripada Johor'. Nyatakan dua kata sendi yang betul mengikut urutan.",
+          "answer": "daripada dan dari",
+          "accepted": ["daripada dan dari", "daripada, dari", "daripada dari"],
+          "hint": "Bezakan bahan benda daripada tempat asal seseorang datang.",
+          "explanation": "Daripada digunakan untuk bahan kayu, manakala dari digunakan untuk tempat asal Johor.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dua ayat ini salah: 'Meja itu dibuat dari kayu' dan 'Zaki datang daripada Johor'. Nyatakan dua kata sendi yang betul mengikut urutan."
+        },
+        {
+          "id": "BM-KATA_SENDI-054",
+          "q": "Analisis KBAT: Dalam ayat 'Hadiah itu diserahkan kepada ibu dengan kedua-dua belah tangan', kata sendi manakah menunjukkan penerima dan cara mengikut urutan?",
+          "answer": "kepada dan dengan",
+          "accepted": ["kepada dan dengan", "kepada, dengan", "kepada dengan"],
+          "hint": "Ibu menerima hadiah, manakala kedua-dua belah tangan menunjukkan cara hadiah diserahkan.",
+          "explanation": "Kepada menunjukkan penerima dan dengan menunjukkan cara penyerahan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Hadiah itu diserahkan kepada ibu dengan kedua-dua belah tangan', kata sendi manakah menunjukkan penerima dan cara mengikut urutan?"
+        },
+        {
+          "id": "BM-KATA_SENDI-055",
+          "q": "Analisis KBAT: Bandingkan frasa 'di kelas' dengan perkataan 'ditulis'. Yang manakah menggunakan di sebagai kata sendi nama?",
+          "answer": "di kelas",
+          "accepted": ["di kelas", "frasa di kelas"],
+          "hint": "Kata sendi di ditulis terpisah sebelum nama tempat.",
+          "explanation": "Di dalam frasa di kelas ialah kata sendi nama kerana hadir terpisah sebelum tempat; di- dalam ditulis ialah imbuhan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Bandingkan frasa 'di kelas' dengan perkataan 'ditulis'. Yang manakah menggunakan di sebagai kata sendi nama?"
+        },
+        {
+          "id": "BM-KATA_SENDI-056",
+          "q": "Penilaian KBAT: Bola itu tidak bergerak dan berada di bawah meja. Antara 'Bola itu di bawah meja' dengan 'Bola itu ke bawah meja', ayat manakah lebih tepat?",
+          "answer": "Bola itu di bawah meja",
+          "accepted": ["bola itu di bawah meja", "di bawah meja", "ayat pertama"],
+          "hint": "Nilai sama ada situasi menunjukkan lokasi tetap atau arah pergerakan.",
+          "explanation": "Ayat 'Bola itu di bawah meja' lebih tepat kerana di menunjukkan lokasi yang tetap.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Bola itu tidak bergerak dan berada di bawah meja. Antara 'Bola itu di bawah meja' dengan 'Bola itu ke bawah meja', ayat manakah lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_SENDI-057",
+          "q": "Penilaian KBAT: Antara 'Bas itu datang dari Melaka' dengan 'Bas itu datang daripada Melaka', ayat manakah menggunakan kata sendi tempat asal dengan tepat?",
+          "answer": "Bas itu datang dari Melaka",
+          "accepted": ["bas itu datang dari melaka", "dari melaka", "ayat pertama"],
+          "hint": "Melaka ialah sebuah tempat.",
+          "explanation": "Dari digunakan untuk menunjukkan tempat atau arah asal, jadi 'Bas itu datang dari Melaka' ialah ayat yang tepat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Antara 'Bas itu datang dari Melaka' dengan 'Bas itu datang daripada Melaka', ayat manakah menggunakan kata sendi tempat asal dengan tepat?"
+        },
+        {
+          "id": "BM-KATA_SENDI-058",
+          "q": "Penilaian KBAT: Label produk manakah lebih gramatis: 'Baju ini dibuat dari kapas' atau 'Baju ini dibuat daripada kapas'?",
+          "answer": "Baju ini dibuat daripada kapas",
+          "accepted": ["baju ini dibuat daripada kapas", "daripada kapas", "ayat kedua"],
+          "hint": "Kapas ialah bahan yang digunakan untuk membuat baju.",
+          "explanation": "Daripada digunakan untuk menunjukkan bahan asal sesuatu benda.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Label produk manakah lebih gramatis: 'Baju ini dibuat dari kapas' atau 'Baju ini dibuat daripada kapas'?"
+        },
+        {
+          "id": "BM-KATA_SENDI-059",
+          "q": "Penilaian KBAT: Untuk notis sekolah, manakah lebih tepat: 'Mesyuarat di hari Isnin' atau 'Mesyuarat pada hari Isnin'?",
+          "answer": "Mesyuarat pada hari Isnin",
+          "accepted": ["mesyuarat pada hari isnin", "pada hari isnin", "ayat kedua"],
+          "hint": "Hari Isnin menunjukkan masa, bukan tempat.",
+          "explanation": "Pada digunakan untuk masa atau hari tertentu, jadi 'Mesyuarat pada hari Isnin' lebih tepat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Untuk notis sekolah, manakah lebih tepat: 'Mesyuarat di hari Isnin' atau 'Mesyuarat pada hari Isnin'?"
+        },
+        {
+          "id": "BM-KATA_SENDI-060",
+          "q": "Penilaian KBAT: Sara membetulkan ayat 'Kami pergi di muzium' kepada 'Kami pergi ke muzium'. Adakah pembetulan Sara tepat? Berikan jawapan ringkas berserta sebab.",
+          "answer": "Ya, kerana ke menunjukkan tempat yang dituju",
+          "accepted": ["ya, kerana ke menunjukkan tempat yang dituju", "ya kerana ke menunjukkan tempat yang dituju", "betul kerana ke menunjukkan arah", "tepat kerana ke menunjukkan arah"],
+          "hint": "Tentukan sama ada muzium ialah lokasi tetap atau tujuan pergerakan.",
+          "explanation": "Pembetulan Sara tepat kerana kata sendi ke digunakan untuk menunjukkan arah atau tempat yang dituju.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Sara membetulkan ayat 'Kami pergi di muzium' kepada 'Kami pergi ke muzium'. Adakah pembetulan Sara tepat? Berikan jawapan ringkas berserta sebab."
         }
       ]
     },
     {
       "id": "kata_hubung",
       "title": "Kata Hubung",
-      "note": "Kata yang menghubungkan perkataan atau ayat.",
+      "note": "Kata hubung menyambungkan perkataan, frasa atau ayat serta menunjukkan hubungan tambahan, pilihan, sebab, pertentangan, perbuatan serentak atau urutan.",
+      "learningObjective": "Murid dapat mengenal pasti fungsi kata hubung dalam ayat mudah.",
+      "learningOutcome": "Murid dapat memilih dan menggunakan kata hubung yang sesuai untuk menggabungkan idea berdasarkan hubungan maksud.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-KATA_HUBUNG-001",
@@ -4739,130 +6219,295 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-041",
-          "q": "Betulkan ayat ini supaya lebih tepat: \"Sara membawa payung atau hari hujan.\"",
-          "answer": "Sara membawa payung kerana hari hujan yang sangat lebat di kampung.",
-          "accepted": ["Sara membawa payung kerana hari hujan yang sangat lebat di kampung."],
-          "hint": "Ayat ini perlu menunjukkan sebab.",
-          "explanation": "kerana sesuai untuk menyatakan sebab.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Betulkan kata hubung dalam ayat 'Sara membawa payung atau hari hujan.' Apakah kata hubung yang sepatutnya digunakan?",
+          "answer": "kerana",
+          "accepted": ["kerana", "Sara membawa payung kerana hari hujan"],
+          "hint": "Bahagian kedua ayat menerangkan sebab Sara membawa payung.",
+          "explanation": "Kerana digunakan untuk menghubungkan tindakan dengan sebabnya.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya lebih tepat: \"Sara membawa payung atau hari hujan.\""
+          "question": "Aplikasi: Betulkan kata hubung dalam ayat 'Sara membawa payung atau hari hujan.' Apakah kata hubung yang sepatutnya digunakan?"
         },
         {
           "id": "BM-KATA_HUBUNG-042",
-          "q": "Betulkan ayat ini supaya lebih tepat: \"Kamu hendak minum air dan susu?\"",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas bersenam pagi.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas bersenam pagi."],
-          "hint": "Ayat ini perlu menunjukkan pilihan.",
-          "explanation": "atau sesuai apabila hanya satu pilihan dipilih.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Di kantin, kamu hanya boleh memilih satu minuman. Lengkapkan pertanyaan: 'Kamu hendak air ______ susu?'",
+          "answer": "atau",
+          "accepted": ["atau"],
+          "hint": "Pilih kata hubung yang menunjukkan satu daripada dua pilihan.",
+          "explanation": "Atau digunakan apabila seseorang perlu membuat pilihan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya lebih tepat: \"Kamu hendak minum air dan susu?\""
+          "question": "Aplikasi: Di kantin, kamu hanya boleh memilih satu minuman. Lengkapkan pertanyaan: 'Kamu hendak air ______ susu?'"
         },
         {
           "id": "BM-KATA_HUBUNG-043",
-          "q": "Betulkan ayat ini supaya lebih tepat: \"Ibu memasak dan menyanyi perlahan-lahan.\"",
-          "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah sambil melayan adik.",
-          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur rumah sambil melayan adik."],
-          "hint": "Ayat ini perlu menunjukkan dua perbuatan serentak.",
-          "explanation": "sambil sesuai untuk perbuatan yang berlaku bersama.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Dalam gambar, ibu mengacau sup dan pada masa yang sama mendengar radio. Kata hubung manakah paling sesuai untuk menggabungkan dua perbuatan itu?",
+          "answer": "sambil",
+          "accepted": ["sambil", "Ibu mengacau sup sambil mendengar radio"],
+          "hint": "Kedua-dua perbuatan berlaku serentak.",
+          "explanation": "Sambil digunakan untuk menghubungkan dua perbuatan yang berlaku pada masa yang sama.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya lebih tepat: \"Ibu memasak dan menyanyi perlahan-lahan.\""
+          "question": "Aplikasi: Dalam gambar, ibu mengacau sup dan pada masa yang sama mendengar radio. Kata hubung manakah paling sesuai untuk menggabungkan dua perbuatan itu?"
         },
         {
           "id": "BM-KATA_HUBUNG-044",
-          "q": "Betulkan ayat ini supaya lebih tepat: \"Loceng berbunyi dan murid masuk ke kelas.\"",
-          "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan cepat sebelum guru tiba.",
-          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan cepat sebelum guru tiba."],
-          "hint": "Ayat ini perlu menunjukkan urutan peristiwa.",
-          "explanation": "lalu sesuai untuk tindakan yang berlaku selepas itu.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Dua gambar bersiri menunjukkan loceng berbunyi, kemudian murid masuk ke kelas. Apakah kata hubung yang sesuai antara dua peristiwa itu?",
+          "answer": "lalu",
+          "accepted": ["lalu", "Loceng berbunyi lalu murid masuk ke kelas"],
+          "hint": "Peristiwa kedua berlaku selepas peristiwa pertama.",
+          "explanation": "Lalu menunjukkan peristiwa yang berlaku mengikut urutan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya lebih tepat: \"Loceng berbunyi dan murid masuk ke kelas.\""
+          "question": "Aplikasi: Dua gambar bersiri menunjukkan loceng berbunyi, kemudian murid masuk ke kelas. Apakah kata hubung yang sesuai antara dua peristiwa itu?"
         },
         {
           "id": "BM-KATA_HUBUNG-045",
-          "q": "Di rumah, Danish rajin belajar dan membuat latihan pada waktu malam. Pilih ayat yang paling natural tentang aktiviti di rumah.",
-          "answer": "Danish rajin belajar dan selalu membuat latihan di rumah setiap malam.",
-          "accepted": ["Danish rajin belajar dan selalu membuat latihan di rumah setiap malam."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "dan sesuai untuk dua aktiviti yang berlaku serentak.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Catatan aktiviti Danish ialah 'membaca buku' dan 'membuat latihan'. Apakah kata hubung yang sesuai untuk menambahkan kedua-dua aktiviti dalam satu ayat?",
+          "answer": "dan",
+          "accepted": ["dan", "Danish membaca buku dan membuat latihan"],
+          "hint": "Kedua-dua aktiviti dilakukan, bukan dipilih salah satu.",
+          "explanation": "Dan digunakan untuk menambahkan dua aktiviti atau maklumat.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rumah, Danish rajin belajar dan membuat latihan pada waktu malam. Pilih ayat yang paling natural tentang aktiviti di rumah."
+          "question": "Aplikasi: Catatan aktiviti Danish ialah 'membaca buku' dan 'membuat latihan'. Apakah kata hubung yang sesuai untuk menambahkan kedua-dua aktiviti dalam satu ayat?"
         },
         {
           "id": "BM-KATA_HUBUNG-046",
-          "q": "Pada pagi yang hujan, ibu membawa payung. Pilih ayat yang paling natural tentang cuaca hujan.",
-          "answer": "Ibu membawa payung kerana hujan turun dengan lebat.",
-          "accepted": ["Ibu membawa payung kerana hujan turun dengan lebat."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "kerana sesuai untuk menunjukkan sebab hujan turun dengan lebat.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu melihat jalan basah selepas hujan turun. Lengkapkan laporan: 'Jalan itu basah ______ hujan turun.'",
+          "answer": "kerana",
+          "accepted": ["kerana"],
+          "hint": "Hujan turun ialah sebab jalan menjadi basah.",
+          "explanation": "Kerana menghubungkan keadaan jalan basah dengan sebabnya.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pada pagi yang hujan, ibu membawa payung. Pilih ayat yang paling natural tentang cuaca hujan."
+          "question": "Aplikasi: Kamu melihat jalan basah selepas hujan turun. Lengkapkan laporan: 'Jalan itu basah ______ hujan turun.'"
         },
         {
           "id": "BM-KATA_HUBUNG-047",
-          "q": "Di kantin sekolah, murid memilih antara air dan susu. Pilih ayat yang paling natural tentang pilihan di kantin.",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas rehat.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas rehat."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "atau sesuai apabila murid perlu memilih antara dua minuman.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Aina mahu berbasikal, namun tayar basikalnya pancit. Lengkapkan ayat: 'Aina mahu berbasikal ______ tayar basikalnya pancit.'",
+          "answer": "tetapi",
+          "accepted": ["tetapi"],
+          "hint": "Bahagian kedua ayat menjadi halangan kepada kehendak Aina.",
+          "explanation": "Tetapi digunakan untuk menunjukkan pertentangan antara dua idea.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di kantin sekolah, murid memilih antara air dan susu. Pilih ayat yang paling natural tentang pilihan di kantin."
+          "question": "Aplikasi: Aina mahu berbasikal, namun tayar basikalnya pancit. Lengkapkan ayat: 'Aina mahu berbasikal ______ tayar basikalnya pancit.'"
         },
         {
           "id": "BM-KATA_HUBUNG-048",
-          "q": "Selepas waktu rehat, murid-murid menyusun meja dan menyapu lantai. Pilih ayat yang paling natural tentang kelas bersih.",
-          "answer": "Murid-murid menyusun meja dan menyapu lantai di dalam kelas.",
-          "accepted": ["Murid-murid menyusun meja dan menyapu lantai di dalam kelas."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "dan sesuai untuk menghubungkan dua aktiviti menjaga kebersihan kelas.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Arahan pertandingan menyatakan peserta hanya perlu membawa pensel atau pen. Lengkapkan arahan: 'Bawa pensel ______ pen sahaja.'",
+          "answer": "atau",
+          "accepted": ["atau"],
+          "hint": "Peserta memilih satu daripada dua alat tulis.",
+          "explanation": "Atau digunakan untuk menunjukkan pilihan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Selepas waktu rehat, murid-murid menyusun meja dan menyapu lantai. Pilih ayat yang paling natural tentang kelas bersih."
+          "question": "Aplikasi: Arahan pertandingan menyatakan peserta hanya perlu membawa pensel atau pen. Lengkapkan arahan: 'Bawa pensel ______ pen sahaja.'"
         },
         {
           "id": "BM-KATA_HUBUNG-049",
-          "q": "Di rumah, Danish belajar dan membuat latihan selepas makan malam. Pilih ayat yang paling natural tentang belajar di rumah.",
-          "answer": "Danish rajin belajar dan selalu membuat latihan di rumah setiap malam.",
-          "accepted": ["Danish rajin belajar dan selalu membuat latihan di rumah setiap malam."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "dan sesuai untuk menambah maklumat.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Semasa berjalan ke kelas, Ali berbual dengan rakannya pada masa yang sama. Lengkapkan ayat: 'Ali berjalan ______ berbual dengan rakannya.'",
+          "answer": "sambil",
+          "accepted": ["sambil"],
+          "hint": "Dua perbuatan berlaku serentak.",
+          "explanation": "Sambil menghubungkan dua perbuatan yang berlaku pada masa yang sama.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rumah, Danish belajar dan membuat latihan selepas makan malam. Pilih ayat yang paling natural tentang belajar di rumah."
+          "question": "Aplikasi: Semasa berjalan ke kelas, Ali berbual dengan rakannya pada masa yang sama. Lengkapkan ayat: 'Ali berjalan ______ berbual dengan rakannya.'"
         },
         {
           "id": "BM-KATA_HUBUNG-050",
-          "q": "Di pasar raya, Aina memilih pakaian untuk dipakai ke majlis sekolah. Pilih ayat yang paling natural tentang pakaian.",
-          "answer": "Baju itu cantik tetapi harganya mahal.",
-          "accepted": ["Baju itu cantik tetapi harganya mahal."],
-          "hint": "Pilih ayat yang paling semula jadi.",
-          "explanation": "tetapi sesuai untuk pertentangan yang mudah difahami.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Dalam eksperimen, murid menekan suis dan selepas itu kipas berpusing. Lengkapkan ayat: 'Murid menekan suis ______ kipas berpusing.'",
+          "answer": "lalu",
+          "accepted": ["lalu"],
+          "hint": "Perbuatan kedua berlaku selepas perbuatan pertama.",
+          "explanation": "Lalu digunakan untuk menghubungkan peristiwa yang berlaku secara berurutan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di pasar raya, Aina memilih pakaian untuk dipakai ke majlis sekolah. Pilih ayat yang paling natural tentang pakaian."
+          "question": "Aplikasi: Dalam eksperimen, murid menekan suis dan selepas itu kipas berpusing. Lengkapkan ayat: 'Murid menekan suis ______ kipas berpusing.'"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-051",
+          "q": "Analisis KBAT: Dalam ayat 'Aina membuka payung kerana hujan turun', apakah hubungan maksud yang ditunjukkan oleh kata hubung kerana?",
+          "answer": "sebab",
+          "accepted": ["sebab", "hubungan sebab", "menunjukkan sebab", "hujan ialah sebab Aina membuka payung"],
+          "hint": "Tentukan mengapa Aina membuka payung.",
+          "explanation": "Kerana menunjukkan hubungan sebab; hujan turun ialah sebab Aina membuka payung.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Aina membuka payung kerana hujan turun', apakah hubungan maksud yang ditunjukkan oleh kata hubung kerana?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-052",
+          "q": "Analisis KBAT: Ayat 'Amir mahu bermain dan hujan turun' tidak menunjukkan halangan dengan jelas. Kata hubung manakah perlu menggantikan dan?",
+          "answer": "tetapi",
+          "accepted": ["tetapi", "Amir mahu bermain tetapi hujan turun"],
+          "hint": "Hujan menjadi halangan kepada kehendak Amir.",
+          "explanation": "Tetapi perlu digunakan kerana dua bahagian ayat menunjukkan pertentangan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Amir mahu bermain dan hujan turun' tidak menunjukkan halangan dengan jelas. Kata hubung manakah perlu menggantikan dan?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-053",
+          "q": "Analisis KBAT: Siti menyanyi dan menepuk tangan pada masa yang sama. Antara sambil dengan lalu, kata hubung manakah lebih tepat?",
+          "answer": "sambil",
+          "accepted": ["sambil", "Siti menyanyi sambil menepuk tangan"],
+          "hint": "Bandingkan perbuatan serentak dengan perbuatan yang berlaku mengikut urutan.",
+          "explanation": "Sambil lebih tepat kerana menyanyi dan menepuk tangan berlaku serentak; lalu menunjukkan urutan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Siti menyanyi dan menepuk tangan pada masa yang sama. Antara sambil dengan lalu, kata hubung manakah lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-054",
+          "q": "Analisis KBAT: Arahan asal menyatakan murid boleh membawa kedua-dua pensel dan pemadam. Jika arahan berubah dan murid hanya boleh memilih satu, kata hubung apakah yang perlu menggantikan dan?",
+          "answer": "atau",
+          "accepted": ["atau"],
+          "hint": "Perubahan arahan menjadikan dua benda itu suatu pilihan.",
+          "explanation": "Atau menggantikan dan kerana murid kini perlu memilih satu daripada dua benda.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Arahan asal menyatakan murid boleh membawa kedua-dua pensel dan pemadam. Jika arahan berubah dan murid hanya boleh memilih satu, kata hubung apakah yang perlu menggantikan dan?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-055",
+          "q": "Analisis KBAT: Teliti ayat 'Ravi mahu bermain tetapi hujan turun, lalu dia membaca buku.' Nyatakan dua kata hubung mengikut urutan.",
+          "answer": "tetapi dan lalu",
+          "accepted": ["tetapi dan lalu", "tetapi, lalu", "tetapi lalu"],
+          "hint": "Cari perkataan yang menunjukkan pertentangan dan kemudian urutan peristiwa.",
+          "explanation": "Tetapi menunjukkan pertentangan, manakala lalu menunjukkan tindakan Ravi yang berlaku selepas hujan turun.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti ayat 'Ravi mahu bermain tetapi hujan turun, lalu dia membaca buku.' Nyatakan dua kata hubung mengikut urutan."
+        },
+        {
+          "id": "BM-KATA_HUBUNG-056",
+          "q": "Penilaian KBAT: Antara 'Baju Aina basah kerana hujan' dengan 'Baju Aina basah atau hujan', ayat manakah menerangkan sebab dengan tepat?",
+          "answer": "Baju Aina basah kerana hujan",
+          "accepted": ["baju Aina basah kerana hujan", "kerana hujan", "ayat pertama"],
+          "hint": "Pilih ayat yang menghubungkan keadaan baju dengan puncanya.",
+          "explanation": "Ayat 'Baju Aina basah kerana hujan' tepat kerana kerana menunjukkan sebab.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Antara 'Baju Aina basah kerana hujan' dengan 'Baju Aina basah atau hujan', ayat manakah menerangkan sebab dengan tepat?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-057",
+          "q": "Penilaian KBAT: Kumar menggunakan dan dalam pertanyaan 'Kamu mahu epal dan oren?' sedangkan rakannya hanya boleh memilih satu buah. Apakah kata hubung yang lebih tepat?",
+          "answer": "atau",
+          "accepted": ["atau", "Kamu mahu epal atau oren"],
+          "hint": "Nilai sama ada kedua-dua buah diterima atau hanya satu dipilih.",
+          "explanation": "Atau lebih tepat kerana rakannya perlu memilih satu daripada dua buah.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Kumar menggunakan dan dalam pertanyaan 'Kamu mahu epal dan oren?' sedangkan rakannya hanya boleh memilih satu buah. Apakah kata hubung yang lebih tepat?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-058",
+          "q": "Penilaian KBAT: Dua aksi berlaku serentak. Manakah lebih tepat: 'Ibu menyapu sambil mendengar radio' atau 'Ibu menyapu lalu mendengar radio'?",
+          "answer": "Ibu menyapu sambil mendengar radio",
+          "accepted": ["ibu menyapu sambil mendengar radio", "sambil", "ayat pertama"],
+          "hint": "Satu kata hubung menunjukkan serentak, satu lagi menunjukkan urutan.",
+          "explanation": "Sambil paling tepat kerana kedua-dua perbuatan berlaku pada masa yang sama.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Dua aksi berlaku serentak. Manakah lebih tepat: 'Ibu menyapu sambil mendengar radio' atau 'Ibu menyapu lalu mendengar radio'?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-059",
+          "q": "Penilaian KBAT: Aina rajin dan sering membantu ibu. Antara dan dengan tetapi, kata hubung manakah mengekalkan maksud dua sifat positif itu?",
+          "answer": "dan",
+          "accepted": ["dan", "Aina rajin dan sering membantu ibu"],
+          "hint": "Kedua-dua maklumat saling menambahkan, bukan bertentangan.",
+          "explanation": "Dan mengekalkan hubungan tambahan antara dua sifat positif Aina.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Aina rajin dan sering membantu ibu. Antara dan dengan tetapi, kata hubung manakah mengekalkan maksud dua sifat positif itu?"
+        },
+        {
+          "id": "BM-KATA_HUBUNG-060",
+          "q": "Penilaian KBAT: Farah menulis 'Amir tidak hadir kerana sakit.' Adakah penggunaan kata hubung itu tepat? Berikan jawapan ringkas berserta sebab.",
+          "answer": "Ya, kerana sakit ialah sebab Amir tidak hadir",
+          "accepted": ["ya, kerana sakit ialah sebab Amir tidak hadir", "ya kerana sakit ialah sebab Amir tidak hadir", "betul kerana sakit menunjukkan sebab", "tepat kerana kerana menunjukkan sebab"],
+          "hint": "Tentukan sama ada bahagian kedua ayat menerangkan punca ketidakhadiran Amir.",
+          "explanation": "Penggunaan kerana tepat kerana sakit ialah sebab Amir tidak hadir.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Farah menulis 'Amir tidak hadir kerana sakit.' Adakah penggunaan kata hubung itu tepat? Berikan jawapan ringkas berserta sebab."
         }
       ]
     },
     {
       "id": "penjodoh_bilangan",
       "title": "Penjodoh Bilangan",
-      "note": "Perkataan yang digunakan bersama bilangan.",
+      "note": "Penjodoh bilangan digunakan bersama kata bilangan untuk menerangkan bentuk, jenis atau kumpulan kata nama.",
+      "learningObjective": "Murid dapat mengenal pasti penjodoh bilangan berdasarkan bentuk dan jenis benda.",
+      "learningOutcome": "Murid dapat memilih serta menggunakan penjodoh bilangan yang sesuai dalam frasa dan ayat mudah.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-PENJODOH_BILANGAN-001",
@@ -4979,12 +6624,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-009",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ payung biru.",
-          "answer": "batang",
+          "answer": "kaki",
           "accepted": [
-            "batang"
+            "kaki"
           ],
-          "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah sebatang payung biru.",
+          "hint": "Penjodoh bilangan khusus bagi payung ialah kaki.",
+          "explanation": "Frasa yang betul ialah sekaki payung biru.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -5034,17 +6679,18 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-013",
-          "q": "Di bawah ini, pilih frasa yang betul untuk kunci rumah.",
-          "answer": "sekunci kunci rumah",
+          "q": "Pilih frasa penjodoh bilangan yang sesuai untuk satu kunci rumah.",
+          "answer": "sebentuk kunci rumah",
           "accepted": [
-            "sekunci kunci rumah"
+            "sebentuk kunci rumah",
+            "sebatang kunci rumah"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan sekunci kunci rumah.",
+          "hint": "Bentuk atau batang boleh digunakan berdasarkan bentuk fizikal kunci.",
+          "explanation": "DBP menerima sebentuk atau sebatang bagi satu anak kunci berdasarkan bentuk fizikalnya.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di bawah ini, pilih frasa yang betul untuk kunci rumah."
+          "question": "Pilih frasa penjodoh bilangan yang sesuai untuk satu kunci rumah."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-014",
@@ -5062,17 +6708,18 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-015",
-          "q": "Betulkan frasa ini supaya betul: se_____ sisir pisang.",
-          "answer": "sisir sisir pisang",
+          "q": "Pilih frasa yang betul untuk satu bahagian kecil daripada setandan pisang.",
+          "answer": "sesikat pisang",
           "accepted": [
-            "sisir sisir pisang"
+            "sesikat pisang",
+            "satu sikat pisang"
           ],
-          "hint": "Perhatikan frasa yang lengkap dan gramatis.",
-          "explanation": "Perbaiki frasa menjadi sisir sisir pisang.",
+          "hint": "Sikat digunakan untuk sekumpulan buah pisang yang tersusun bersama.",
+          "explanation": "Frasa yang betul ialah sesikat pisang.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan frasa ini supaya betul: se_____ sisir pisang."
+          "question": "Pilih frasa yang betul untuk satu bahagian kecil daripada setandan pisang."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-016",
@@ -5245,12 +6892,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-028",
           "q": "Di bawah ini, pilih frasa yang betul untuk cincin emas.",
-          "answer": "sebutir cincin emas",
+          "answer": "sebentuk cincin emas",
           "accepted": [
-            "sebutir cincin emas"
+            "sebentuk cincin emas"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan sebutir cincin emas.",
+          "hint": "Gunakan penjodoh bagi benda yang melengkung.",
+          "explanation": "Bentuk ialah penjodoh bilangan bagi benda melengkung seperti cincin.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -5258,31 +6905,31 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-029",
-          "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ biji getah.",
+          "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ manik kecil.",
           "answer": "butir",
           "accepted": [
             "butir"
           ],
           "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah sebutir biji getah.",
+          "explanation": "Frasa yang betul ialah sebutir manik kecil.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa penjodoh bilangan ini: se_____ biji getah."
+          "question": "Lengkapkan frasa penjodoh bilangan ini: se_____ manik kecil."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-030",
-          "q": "Betulkan frasa ini supaya betul: se_____ biskut coklat.",
-          "answer": "sebiji biskut coklat",
+          "q": "Pilih frasa yang sesuai untuk satu biskut coklat yang leper.",
+          "answer": "sekeping biskut coklat",
           "accepted": [
-            "sebiji biskut coklat"
+            "sekeping biskut coklat"
           ],
-          "hint": "Perhatikan frasa yang lengkap dan gramatis.",
-          "explanation": "Perbaiki frasa menjadi sebiji biskut coklat.",
+          "hint": "Gunakan penjodoh bagi benda yang nipis atau leper.",
+          "explanation": "Keping sesuai untuk biskut yang leper.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan frasa ini supaya betul: se_____ biskut coklat."
+          "question": "Pilih frasa yang sesuai untuk satu biskut coklat yang leper."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-031",
@@ -5328,17 +6975,18 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-034",
-          "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ gugus anggur.",
-          "answer": "gugus",
+          "q": "Pilih frasa penjodoh bilangan yang betul untuk buah anggur yang bertangkai bersama.",
+          "answer": "segugus anggur",
           "accepted": [
-            "gugus"
+            "segugus anggur",
+            "segugus buah anggur"
           ],
-          "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah segugus gugus anggur.",
+          "hint": "Gugus digunakan untuk buah yang berkelompok pada tangkai.",
+          "explanation": "Frasa yang betul ialah segugus anggur.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa penjodoh bilangan ini: se_____ gugus anggur."
+          "question": "Pilih frasa penjodoh bilangan yang betul untuk buah anggur yang bertangkai bersama."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-035",
@@ -5595,12 +7243,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-053",
           "q": "Di bawah ini, pilih frasa yang betul untuk payung lipat.",
-          "answer": "sebuah payung lipat",
+          "answer": "sekaki payung lipat",
           "accepted": [
-            "sebuah payung lipat"
+            "sekaki payung lipat"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan sebuah payung lipat.",
+          "hint": "Penjodoh bilangan khusus bagi payung ialah kaki.",
+          "explanation": "Frasa yang betul ialah sekaki payung lipat.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -5650,17 +7298,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-057",
-          "q": "Lengkapkan frasa ini: se_____ ikat rambut yang dibawa ke meja solek.",
+          "q": "Lengkapkan frasa ini: se_____ reben rambut yang dibawa ke meja solek.",
           "answer": "utas",
           "accepted": [
             "utas"
           ],
           "hint": "Cari frasa yang paling sesuai dengan benda itu.",
-          "explanation": "Sara menggunakan seutas ikat rambut.",
+          "explanation": "Sara menggunakan seutas reben rambut.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa ini: se_____ ikat rambut yang dibawa ke meja solek."
+          "question": "Lengkapkan frasa ini: se_____ reben rambut yang dibawa ke meja solek."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-058",
@@ -5692,17 +7340,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-060",
-          "q": "Betulkan frasa ini supaya betul: se_____ bidai tingkap.",
-          "answer": "sehelai bidai tingkap",
+          "q": "Pilih frasa yang betul untuk satu bidai tingkap yang dipasang rata.",
+          "answer": "sekeping bidai tingkap",
           "accepted": [
-            "sehelai bidai tingkap"
+            "sekeping bidai tingkap"
           ],
-          "hint": "Perhatikan frasa yang lengkap dan gramatis.",
-          "explanation": "Perbaiki frasa menjadi sehelai bidai tingkap.",
+          "hint": "Gunakan penjodoh bagi benda yang rata atau berbentuk kepingan.",
+          "explanation": "Keping sesuai untuk bidai yang dipasang rata; gulung boleh digunakan jika bidai digulung.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan frasa ini supaya betul: se_____ bidai tingkap."
+          "question": "Pilih frasa yang betul untuk satu bidai tingkap yang dipasang rata."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-061",
@@ -5805,12 +7453,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-068",
           "q": "Di bawah ini, pilih frasa yang betul untuk sarung bantal.",
-          "answer": "sebuah sarung bantal",
+          "answer": "sehelai sarung bantal",
           "accepted": [
-            "sebuah sarung bantal"
+            "sehelai sarung bantal"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan sebuah sarung bantal.",
+          "hint": "Sarung bantal diperbuat daripada kain yang nipis dan lebar.",
+          "explanation": "Helai digunakan untuk benda daripada kain seperti sarung bantal.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -5959,12 +7607,12 @@ const rawBMSSubject = {
         {
           "id": "BM-PENJODOH_BILANGAN-079",
           "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ cincin perak.",
-          "answer": "butir",
+          "answer": "bentuk",
           "accepted": [
-            "butir"
+            "bentuk"
           ],
-          "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah sebutir cincin perak.",
+          "hint": "Gunakan penjodoh bagi benda yang melengkung.",
+          "explanation": "Frasa yang betul ialah sebentuk cincin perak.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -5986,150 +7634,321 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-PENJODOH_BILANGAN-081",
-          "q": "Pilih penjodoh bilangan yang sesuai untuk alat makan ini: sudu plastik.",
+          "q": "Aplikasi: Guru menyediakan satu sudu plastik bagi setiap murid untuk aktiviti merasa makanan. Tuliskan frasa bilangannya.",
           "answer": "sebatang sudu plastik",
           "accepted": [
-            "sebatang sudu plastik"
+            "sebatang sudu plastik",
+            "sebatang sudu"
           ],
-          "hint": "Fikirkan pasangan penjodoh bilangan dan benda.",
-          "explanation": "Frasa yang betul ialah sebatang sudu plastik.",
-          "difficulty": "mudah",
+          "hint": "Sudu berbentuk panjang dan mempunyai pemegang.",
+          "explanation": "Batang sesuai untuk sudu kerana bentuknya yang panjang.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih penjodoh bilangan yang sesuai untuk alat makan ini: sudu plastik."
+          "question": "Aplikasi: Guru menyediakan satu sudu plastik bagi setiap murid untuk aktiviti merasa makanan. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-082",
-          "q": "Lengkapkan frasa ini: se_____ botol sos yang dibawa ke peti ais.",
-          "answer": "botol",
+          "q": "Aplikasi: Aina menyimpan satu botol yang berisi sos di dalam peti ais. Tuliskan frasa kuantiti bagi kandungan itu tanpa mengulang perkataan botol.",
+          "answer": "sebotol sos",
           "accepted": [
-            "botol"
+            "sebotol sos",
+            "satu botol sos"
           ],
-          "hint": "Cari frasa yang paling sesuai dengan benda itu.",
-          "explanation": "Aina menggunakan sebotol botol sos.",
-          "difficulty": "mudah",
+          "hint": "Nama bekas boleh menjadi kata ukuran bagi kandungannya.",
+          "explanation": "Frasa yang tepat ialah sebotol sos, bukannya sebotol botol sos.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa ini: se_____ botol sos yang dibawa ke peti ais."
+          "question": "Aplikasi: Aina menyimpan satu botol yang berisi sos di dalam peti ais. Tuliskan frasa kuantiti bagi kandungan itu tanpa mengulang perkataan botol."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-083",
-          "q": "Di bawah ini, pilih frasa yang betul untuk kuih lapis.",
-          "answer": "seketul kuih lapis",
+          "q": "Aplikasi: Ibu memotong kuih lapis kepada beberapa bahagian. Adik mengambil satu bahagian. Tuliskan frasa bilangannya.",
+          "answer": "sepotong kuih lapis",
           "accepted": [
-            "seketul kuih lapis"
+            "sepotong kuih lapis",
+            "satu potong kuih lapis"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan seketul kuih lapis.",
-          "difficulty": "mudah",
+          "hint": "Kuih itu telah dipotong kepada bahagian kecil.",
+          "explanation": "Potong digunakan untuk satu bahagian kuih yang telah dipotong.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di bawah ini, pilih frasa yang betul untuk kuih lapis."
+          "question": "Aplikasi: Ibu memotong kuih lapis kepada beberapa bahagian. Adik mengambil satu bahagian. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-084",
-          "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ sandal sekolah.",
-          "answer": "pasang",
+          "q": "Aplikasi: Ravi mengambil sandal kiri dan sandal kanan dari rak. Tuliskan frasa bilangan untuk kedua-duanya sebagai satu unit.",
+          "answer": "sepasang sandal",
           "accepted": [
-            "pasang"
+            "sepasang sandal",
+            "sepasang sandal sekolah"
           ],
-          "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah sepasang sandal sekolah.",
-          "difficulty": "mudah",
+          "hint": "Sandal kiri dan kanan digunakan bersama.",
+          "explanation": "Pasang digunakan untuk dua benda yang menjadi satu pasangan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa penjodoh bilangan ini: se_____ sandal sekolah."
+          "question": "Aplikasi: Ravi mengambil sandal kiri dan sandal kanan dari rak. Tuliskan frasa bilangan untuk kedua-duanya sebagai satu unit."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-085",
-          "q": "Betulkan frasa ini supaya betul: se_____ mutiara putih.",
+          "q": "Aplikasi: Dalam rekod barang kemas, terdapat satu mutiara putih yang kecil dan bulat. Tuliskan frasa bilangannya.",
           "answer": "sebutir mutiara putih",
           "accepted": [
             "sebutir mutiara putih"
           ],
-          "hint": "Perhatikan frasa yang lengkap dan gramatis.",
-          "explanation": "Perbaiki frasa menjadi sebutir mutiara putih.",
-          "difficulty": "mudah",
+          "hint": "Gunakan penjodoh untuk benda kecil dan bulat.",
+          "explanation": "Butir sesuai untuk mutiara yang kecil dan bulat.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan frasa ini supaya betul: se_____ mutiara putih."
+          "question": "Aplikasi: Dalam rekod barang kemas, terdapat satu mutiara putih yang kecil dan bulat. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-086",
-          "q": "Pilih penjodoh bilangan yang sesuai untuk benda panjang ini: tali nilon.",
+          "q": "Aplikasi: Pengakap menggunakan satu tali nilon yang panjang dan halus untuk mengikat bungkusan. Tuliskan frasa bilangannya.",
           "answer": "seutas tali nilon",
           "accepted": [
             "seutas tali nilon"
           ],
-          "hint": "Fikirkan pasangan penjodoh bilangan dan benda.",
-          "explanation": "Frasa yang betul ialah seutas tali nilon.",
-          "difficulty": "mudah",
+          "hint": "Gunakan penjodoh bagi benda panjang dan halus.",
+          "explanation": "Utas sesuai untuk tali yang panjang dan halus.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Pilih penjodoh bilangan yang sesuai untuk benda panjang ini: tali nilon."
+          "question": "Aplikasi: Pengakap menggunakan satu tali nilon yang panjang dan halus untuk mengikat bungkusan. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-087",
-          "q": "Lengkapkan frasa ini: se_____ bakul rotan yang dibawa ke bilik stor.",
-          "answer": "buah",
+          "q": "Aplikasi: Senarai barang stor mencatat satu bakul rotan. Tuliskan frasa bilangan yang lengkap.",
+          "answer": "sebuah bakul rotan",
           "accepted": [
-            "buah"
+            "sebuah bakul rotan",
+            "sebuah bakul"
           ],
-          "hint": "Cari frasa yang paling sesuai dengan benda itu.",
-          "explanation": "Johan menggunakan sebuah bakul rotan.",
-          "difficulty": "mudah",
+          "hint": "Bakul ialah benda yang tidak mempunyai penjodoh khusus dalam konteks ini.",
+          "explanation": "Buah digunakan sebagai penjodoh umum untuk bakul.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa ini: se_____ bakul rotan yang dibawa ke bilik stor."
+          "question": "Aplikasi: Senarai barang stor mencatat satu bakul rotan. Tuliskan frasa bilangan yang lengkap."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-088",
-          "q": "Di bawah ini, pilih frasa yang betul untuk selendang merah.",
+          "q": "Aplikasi: Untuk persembahan, Aina memerlukan satu selendang merah yang nipis dan lebar. Tuliskan frasa bilangannya.",
           "answer": "sehelai selendang merah",
           "accepted": [
             "sehelai selendang merah"
           ],
-          "hint": "Lihat bentuk dan jenis benda dalam ayat.",
-          "explanation": "Frasa itu sesuai dengan sehelai selendang merah.",
-          "difficulty": "mudah",
+          "hint": "Gunakan penjodoh bagi kain yang nipis atau lebar.",
+          "explanation": "Helai sesuai untuk selendang kerana bentuknya nipis dan lebar.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di bawah ini, pilih frasa yang betul untuk selendang merah."
+          "question": "Aplikasi: Untuk persembahan, Aina memerlukan satu selendang merah yang nipis dan lebar. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-089",
-          "q": "Lengkapkan frasa penjodoh bilangan ini: se_____ lilin panjang.",
-          "answer": "batang",
+          "q": "Aplikasi: Kakak meletakkan satu lilin yang panjang di atas kek hari jadi. Tuliskan frasa bilangannya.",
+          "answer": "sebatang lilin",
           "accepted": [
-            "batang"
+            "sebatang lilin",
+            "sebatang lilin panjang"
           ],
-          "hint": "Pilih penjodoh bilangan yang biasa digunakan.",
-          "explanation": "Frasa yang betul ialah sebatang lilin panjang.",
-          "difficulty": "mudah",
+          "hint": "Lilin itu berbentuk panjang.",
+          "explanation": "Batang sesuai untuk lilin yang berbentuk panjang.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Lengkapkan frasa penjodoh bilangan ini: se_____ lilin panjang."
+          "question": "Aplikasi: Kakak meletakkan satu lilin yang panjang di atas kek hari jadi. Tuliskan frasa bilangannya."
         },
         {
           "id": "BM-PENJODOH_BILANGAN-090",
-          "q": "Betulkan frasa ini supaya betul: se_____ pensel warna baharu.",
+          "q": "Aplikasi: Pensel warna baharu itu dijual bersama-sama di dalam satu kotak. Tuliskan frasa bilangan bagi keseluruhan bungkusan.",
           "answer": "sekotak pensel warna baharu",
           "accepted": [
             "sekotak pensel warna baharu"
           ],
-          "hint": "Perhatikan frasa yang lengkap dan gramatis.",
-          "explanation": "Perbaiki frasa menjadi sekotak pensel warna baharu.",
-          "difficulty": "mudah",
+          "hint": "Kira bungkusan pensel warna itu sebagai satu kotak.",
+          "explanation": "Kotak digunakan sebagai kata ukuran bagi sekumpulan pensel warna di dalamnya.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan frasa ini supaya betul: se_____ pensel warna baharu."
+          "question": "Aplikasi: Pensel warna baharu itu dijual bersama-sama di dalam satu kotak. Tuliskan frasa bilangan bagi keseluruhan bungkusan."
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-091",
+          "q": "Analisis KBAT: Kertas berbentuk nipis dan lebar, manakala pensel berbentuk panjang. Nyatakan frasa yang tepat bagi satu kertas dan satu pensel mengikut urutan.",
+          "answer": "sehelai kertas dan sebatang pensel",
+          "accepted": ["sehelai kertas dan sebatang pensel", "sehelai kertas, sebatang pensel", "helai dan batang"],
+          "hint": "Padankan setiap benda dengan ciri fizikalnya.",
+          "explanation": "Helai sesuai untuk kertas yang nipis dan lebar, manakala batang sesuai untuk pensel yang panjang.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Kertas berbentuk nipis dan lebar, manakala pensel berbentuk panjang. Nyatakan frasa yang tepat bagi satu kertas dan satu pensel mengikut urutan."
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-092",
+          "q": "Analisis KBAT: Teliti tiga frasa: 'seekor meja', 'sebuah meja' dan 'sebatang pensel'. Frasa manakah tidak sepadan dengan jenis bendanya?",
+          "answer": "seekor meja",
+          "accepted": ["seekor meja"],
+          "hint": "Ekor hanya digunakan untuk haiwan.",
+          "explanation": "Seekor meja tidak tepat kerana meja bukan haiwan; frasa yang sesuai ialah sebuah meja.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Teliti tiga frasa: 'seekor meja', 'sebuah meja' dan 'sebatang pensel'. Frasa manakah tidak sepadan dengan jenis bendanya?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-093",
+          "q": "Analisis KBAT: Anak kucing dan burung berbeza bentuk tetapi berada dalam kumpulan benda hidup yang sama. Apakah penjodoh bilangan yang boleh digunakan untuk kedua-duanya?",
+          "answer": "ekor",
+          "accepted": ["ekor", "seekor"],
+          "hint": "Kedua-duanya ialah haiwan.",
+          "explanation": "Ekor digunakan sebagai penjodoh bilangan bagi haiwan seperti kucing dan burung.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Anak kucing dan burung berbeza bentuk tetapi berada dalam kumpulan benda hidup yang sama. Apakah penjodoh bilangan yang boleh digunakan untuk kedua-duanya?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-094",
+          "q": "Analisis KBAT: Seorang peniaga membawa keseluruhan kelompok pisang yang masih bercantum pada tangkai utama, bukan satu biji pisang. Apakah frasa bilangan yang sesuai?",
+          "answer": "setandan pisang",
+          "accepted": ["setandan pisang", "satu tandan pisang"],
+          "hint": "Tandan merujuk kelompok buah yang masih bercantum pada tangkai utama.",
+          "explanation": "Setandan pisang tepat kerana yang dikira ialah keseluruhan kelompok pisang.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Seorang peniaga membawa keseluruhan kelompok pisang yang masih bercantum pada tangkai utama, bukan satu biji pisang. Apakah frasa bilangan yang sesuai?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-095",
+          "q": "Analisis KBAT: Cincin berbentuk melengkung, manakala mutiara kecil dan bulat. Nyatakan penjodoh bilangan bagi cincin dan mutiara mengikut urutan.",
+          "answer": "bentuk dan butir",
+          "accepted": ["bentuk dan butir", "bentuk, butir", "sebentuk cincin dan sebutir mutiara"],
+          "hint": "Bandingkan bentuk fizikal kedua-dua barang kemas.",
+          "explanation": "Bentuk digunakan untuk cincin yang melengkung dan butir untuk mutiara yang kecil serta bulat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Cincin berbentuk melengkung, manakala mutiara kecil dan bulat. Nyatakan penjodoh bilangan bagi cincin dan mutiara mengikut urutan."
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-096",
+          "q": "Penilaian KBAT: Mei Ling menulis 'sebutir cincin emas'. Adakah frasa itu tepat? Berikan pembetulan.",
+          "answer": "Tidak, frasa yang betul ialah sebentuk cincin emas",
+          "accepted": ["tidak, frasa yang betul ialah sebentuk cincin emas", "tidak, sebentuk cincin emas", "sebentuk cincin emas", "tidak kerana cincin menggunakan bentuk"],
+          "hint": "Cincin ialah benda yang melengkung.",
+          "explanation": "Frasa itu tidak tepat; bentuk digunakan untuk benda melengkung seperti cincin.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Mei Ling menulis 'sebutir cincin emas'. Adakah frasa itu tepat? Berikan pembetulan."
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-097",
+          "q": "Penilaian KBAT: Antara 'dua helai baju sekolah' dengan 'dua buah baju sekolah', frasa manakah lebih tepat?",
+          "answer": "dua helai baju sekolah",
+          "accepted": ["dua helai baju sekolah", "helai", "frasa pertama"],
+          "hint": "Baju diperbuat daripada kain yang nipis dan lebar.",
+          "explanation": "Helai lebih tepat untuk benda daripada kain seperti baju.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Antara 'dua helai baju sekolah' dengan 'dua buah baju sekolah', frasa manakah lebih tepat?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-098",
+          "q": "Penilaian KBAT: Seorang murid menulis 'sebatang payung'. Berdasarkan penjodoh khusus bagi payung, apakah pembetulan yang lebih tepat?",
+          "answer": "sekaki payung",
+          "accepted": ["sekaki payung", "kaki"],
+          "hint": "Rujuk penjodoh khusus bagi payung.",
+          "explanation": "Kaki ialah penjodoh bilangan khusus bagi payung, jadi frasa yang lebih tepat ialah sekaki payung.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Seorang murid menulis 'sebatang payung'. Berdasarkan penjodoh khusus bagi payung, apakah pembetulan yang lebih tepat?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-099",
+          "q": "Penilaian KBAT: Bidai tingkap itu dipasang rata. Antara 'sekeping bidai' dengan 'sehelai bidai', frasa manakah lebih tepat untuk konteks ini?",
+          "answer": "sekeping bidai",
+          "accepted": ["sekeping bidai", "keping", "frasa pertama"],
+          "hint": "Nilai bentuk bidai yang rata seperti satu kepingan.",
+          "explanation": "Keping lebih tepat bagi bidai yang dipasang rata; gulung boleh digunakan jika bidai itu digulung.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Bidai tingkap itu dipasang rata. Antara 'sekeping bidai' dengan 'sehelai bidai', frasa manakah lebih tepat untuk konteks ini?"
+        },
+        {
+          "id": "BM-PENJODOH_BILANGAN-100",
+          "q": "Penilaian KBAT: Faris menulis 'sebuah kucing putih'. Adakah penjodoh itu tepat? Berikan frasa yang betul.",
+          "answer": "Tidak, frasa yang betul ialah seekor kucing putih",
+          "accepted": ["tidak, frasa yang betul ialah seekor kucing putih", "tidak, seekor kucing putih", "seekor kucing putih", "tidak kerana kucing menggunakan ekor"],
+          "hint": "Kucing ialah haiwan.",
+          "explanation": "Buah tidak tepat untuk haiwan; ekor digunakan bagi haiwan seperti kucing.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Faris menulis 'sebuah kucing putih'. Adakah penjodoh itu tepat? Berikan frasa yang betul."
         }
       ]
     },
     {
       "id": "pemahaman_penulisan",
       "title": "Pemahaman dan Penulisan",
-      "note": "Latihan memahami ayat pendek dan menjawab soalan.",
+      "note": "Latihan membaca petikan pendek, mendapatkan maklumat tersurat dan tersirat, serta menulis jawapan yang lengkap berdasarkan bukti teks.",
+      "learningObjective": "Murid dapat memahami maklumat dalam petikan pendek dan menghasilkan jawapan bertulis yang sesuai.",
+      "learningOutcome": "Murid dapat mencari bukti dalam teks, membuat inferens mudah dan menulis jawapan lengkap berdasarkan situasi.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-PEMAHAMAN_PENULISAN-001",
@@ -7676,7 +9495,12 @@ const rawBMSSubject = {
     {
       "id": "ayat",
       "title": "Ayat Tanya, Seruan dan Perintah",
-      "note": "Latihan mengenal jenis ayat dan kata tanya.",
+      "note": "Ayat tanya digunakan untuk mendapatkan maklumat, ayat seruan meluahkan perasaan, manakala ayat perintah memberikan arahan, larangan, silaan, permintaan atau ajakan.",
+      "learningObjective": "Murid dapat mengenal pasti ayat tanya, ayat seruan dan ayat perintah berdasarkan tujuan serta tanda bahasanya.",
+      "learningOutcome": "Murid dapat membina dan menggunakan ayat tanya, seruan dan perintah yang sesuai dalam situasi harian.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-AYAT-001",
@@ -7837,8 +9661,8 @@ const rawBMSSubject = {
         {
           "id": "BM-AYAT-014",
           "q": "Lengkapkan ayat ini dengan tanda baca yang sesuai: Bilakah kamu pergi ke sekolah___",
-          "answer": "Bilakah kamu tiba di sekolah?",
-          "accepted": ["Bilakah kamu tiba di sekolah?"],
+          "answer": "Bilakah kamu pergi ke sekolah?",
+          "accepted": ["Bilakah kamu pergi ke sekolah?"],
           "hint": "Ayat ini menanyakan masa.",
           "explanation": "Tanda soal digunakan pada ayat tanya.",
           "difficulty": "mudah",
@@ -8160,129 +9984,294 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-AYAT-041",
-          "q": "Tukarkan ayat tanya berikut kepada ayat perintah yang sopan: \"Buka buku kamu.\"",
+          "q": "Aplikasi: Guru mahu meminta murid membuka buku dengan sopan. Tuliskan ayat perintah yang sesuai.",
           "answer": "Sila buka buku kamu.",
-          "accepted": ["Sila buka buku kamu."],
-          "hint": "Ayat ini perlu menjadi arahan sopan.",
-          "explanation": "Ayat perintah yang sopan boleh bermula dengan sila.",
-          "difficulty": "mudah",
+          "accepted": ["Sila buka buku kamu.", "Sila buka buku kamu", "Tolong buka buku kamu."],
+          "hint": "Mulakan arahan dengan sila atau tolong.",
+          "explanation": "Sila menjadikan arahan membuka buku lebih sopan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tukarkan ayat tanya berikut kepada ayat perintah yang sopan: \"Buka buku kamu.\""
+          "question": "Aplikasi: Guru mahu meminta murid membuka buku dengan sopan. Tuliskan ayat perintah yang sesuai."
         },
         {
           "id": "BM-AYAT-042",
-          "q": "Tukarkan ayat seruan berikut kepada ayat tanya yang sesuai: \"Wah, cantiknya bunga ini!\"",
-          "answer": "Siapakah yang menjaga bunga ini?",
-          "accepted": ["Siapakah yang menjaga bunga ini?"],
-          "hint": "Ayat ini perlu menjadi ayat tanya yang sesuai.",
-          "explanation": "Ayat tanya yang baik perlu bertanya maklumat dengan jelas.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu mahu mengetahui lokasi kantin sekolah. Tuliskan ayat tanya yang sesuai.",
+          "answer": "Di manakah kantin sekolah?",
+          "accepted": ["Di manakah kantin sekolah?", "Di manakah kantin sekolah", "Kantin sekolah di mana?"],
+          "hint": "Gunakan kata tanya untuk bertanya tempat.",
+          "explanation": "Di manakah digunakan untuk bertanya lokasi kantin sekolah.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tukarkan ayat seruan berikut kepada ayat tanya yang sesuai: \"Wah, cantiknya bunga ini!\""
+          "question": "Aplikasi: Kamu mahu mengetahui lokasi kantin sekolah. Tuliskan ayat tanya yang sesuai."
         },
         {
           "id": "BM-AYAT-043",
-          "q": "Tukarkan ayat perintah berikut kepada ayat tanya yang sesuai: \"Tolong ambilkan buku itu.\"",
-          "answer": "Bolehkah kamu ambilkan buku itu?",
-          "accepted": ["Bolehkah kamu ambilkan buku itu?"],
-          "hint": "Ayat ini perlu menjadi soalan.",
-          "explanation": "Ayat tanya boleh meminta pertolongan dengan sopan.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu terlihat pelangi yang sangat cantik selepas hujan. Tuliskan ayat seruan yang sesuai.",
+          "answer": "Wah, cantiknya pelangi itu!",
+          "accepted": ["Wah, cantiknya pelangi itu!", "Wah, indahnya pelangi itu!", "Cantiknya pelangi itu!"],
+          "hint": "Gunakan kata seru dan tanda seru untuk meluahkan rasa kagum.",
+          "explanation": "Wah dan tanda seru digunakan untuk meluahkan rasa kagum terhadap pelangi.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tukarkan ayat perintah berikut kepada ayat tanya yang sesuai: \"Tolong ambilkan buku itu.\""
+          "question": "Aplikasi: Kamu terlihat pelangi yang sangat cantik selepas hujan. Tuliskan ayat seruan yang sesuai."
         },
         {
           "id": "BM-AYAT-044",
-          "q": "Tukarkan ayat tanya berikut kepada ayat seruan yang sesuai: \"Bilakah kamu pulang?\"",
-          "answer": "Wah, cepatnya kamu pulang hari ini!",
-          "accepted": ["Wah, cepatnya kamu pulang hari ini!"],
-          "hint": "Ayat ini perlu menjadi seruan.",
-          "explanation": "Ayat seruan sesuai untuk meluahkan kagum atau terkejut.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu mahu melarang rakan daripada berlari di dalam kelas. Tuliskan ayat perintah larangan yang sesuai.",
+          "answer": "Jangan berlari di dalam kelas.",
+          "accepted": ["Jangan berlari di dalam kelas.", "Jangan berlari di dalam kelas", "Jangan lari di dalam kelas."],
+          "hint": "Mulakan ayat larangan dengan jangan.",
+          "explanation": "Jangan digunakan untuk membentuk ayat perintah larangan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tukarkan ayat tanya berikut kepada ayat seruan yang sesuai: \"Bilakah kamu pulang?\""
+          "question": "Aplikasi: Kamu mahu melarang rakan daripada berlari di dalam kelas. Tuliskan ayat perintah larangan yang sesuai."
         },
         {
           "id": "BM-AYAT-045",
-          "q": "Tukarkan ayat seruan berikut kepada ayat perintah yang sopan: \"Aduh, sakitnya kaki saya!\"",
-          "answer": "Sila duduk dan rehatlah di sini.",
-          "accepted": ["Sila duduk dan rehatlah di sini."],
-          "hint": "Ayat ini perlu menjadi arahan yang sopan.",
-          "explanation": "Ayat perintah boleh digunakan untuk memberi nasihat atau arahan.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu mahu mengajak rakan-rakan membersihkan kelas bersama-sama. Tuliskan ayat perintah ajakan yang sesuai.",
+          "answer": "Marilah kita membersihkan kelas.",
+          "accepted": ["Marilah kita membersihkan kelas.", "Marilah kita membersihkan kelas", "Mari kita membersihkan kelas."],
+          "hint": "Mulakan ayat ajakan dengan marilah atau mari.",
+          "explanation": "Marilah digunakan untuk mengajak orang lain melakukan sesuatu bersama-sama.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Tukarkan ayat seruan berikut kepada ayat perintah yang sopan: \"Aduh, sakitnya kaki saya!\""
+          "question": "Aplikasi: Kamu mahu mengajak rakan-rakan membersihkan kelas bersama-sama. Tuliskan ayat perintah ajakan yang sesuai."
         },
         {
           "id": "BM-AYAT-046",
-          "q": "Betulkan ayat ini supaya menjadi ayat tanya yang betul: \"Siapa nama awak?\"",
-          "answer": "Siapakah nama awak?",
-          "accepted": ["Siapakah nama awak?"],
-          "hint": "Ayat ini perlu menggunakan kata tanya yang betul.",
-          "explanation": "Dalam ayat tanya, siapakah lebih sesuai untuk bertanya nama.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Betulkan tanda baca ayat tanya ini: 'Siapakah ketua kelas.'",
+          "answer": "Siapakah ketua kelas?",
+          "accepted": ["Siapakah ketua kelas?"],
+          "hint": "Ayat tanya berakhir dengan tanda soal.",
+          "explanation": "Tanda soal perlu digunakan kerana ayat itu meminta maklumat.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya menjadi ayat tanya yang betul: \"Siapa nama awak?\""
+          "question": "Aplikasi: Betulkan tanda baca ayat tanya ini: 'Siapakah ketua kelas.'"
         },
         {
           "id": "BM-AYAT-047",
-          "q": "Betulkan ayat ini supaya menjadi ayat seruan yang betul: \"Wah cantiknya lukisan kamu!\"",
+          "q": "Aplikasi: Betulkan tanda baca dalam ayat seruan ini: 'Wah cantiknya lukisan kamu.'",
           "answer": "Wah, cantiknya lukisan kamu!",
           "accepted": ["Wah, cantiknya lukisan kamu!"],
-          "hint": "Ayat ini perlu ada tanda baca yang betul.",
-          "explanation": "Ayat seruan menggunakan tanda koma dan tanda seru dengan betul.",
-          "difficulty": "mudah",
+          "hint": "Letakkan koma selepas kata seru dan tanda seru pada akhir ayat.",
+          "explanation": "Koma hadir selepas Wah, manakala tanda seru mengakhiri ayat seruan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya menjadi ayat seruan yang betul: \"Wah cantiknya lukisan kamu!\""
+          "question": "Aplikasi: Betulkan tanda baca dalam ayat seruan ini: 'Wah cantiknya lukisan kamu.'"
         },
         {
           "id": "BM-AYAT-048",
-          "q": "Betulkan ayat ini supaya menjadi ayat perintah yang sopan: \"Beratur di luar kelas\"",
-          "answer": "Sila beratur di luar kelas.",
-          "accepted": ["Sila beratur di luar kelas."],
-          "hint": "Ayat ini perlu lebih sopan dan lengkap.",
-          "explanation": "Ayat perintah sopan sesuai menggunakan kata sila.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Ubah arahan 'Tutup pintu itu!' supaya menjadi permintaan yang lebih sopan.",
+          "answer": "Tolong tutup pintu itu.",
+          "accepted": ["Tolong tutup pintu itu.", "Tolong tutup pintu itu", "Sila tutup pintu itu."],
+          "hint": "Gunakan tolong atau sila.",
+          "explanation": "Tolong menjadikan arahan itu suatu permintaan yang sopan.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya menjadi ayat perintah yang sopan: \"Beratur di luar kelas\""
+          "question": "Aplikasi: Ubah arahan 'Tutup pintu itu!' supaya menjadi permintaan yang lebih sopan."
         },
         {
           "id": "BM-AYAT-049",
-          "q": "Betulkan ayat ini supaya menjadi ayat tanya yang betul: \"Dimanakah beg saya?\"",
-          "answer": "Di manakah beg saya?",
-          "accepted": ["Di manakah beg saya?"],
-          "hint": "Ayat ini perlu ada jarak kata tanya yang betul.",
-          "explanation": "Kata tanya di manakah perlu ditulis berasingan.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kamu mahu mengetahui sebab rakan tidak hadir semalam. Tuliskan ayat tanya yang sesuai.",
+          "answer": "Mengapakah kamu tidak hadir semalam?",
+          "accepted": ["Mengapakah kamu tidak hadir semalam?", "Mengapa kamu tidak hadir semalam?", "Mengapakah awak tidak hadir semalam?"],
+          "hint": "Gunakan kata tanya untuk bertanya sebab.",
+          "explanation": "Mengapakah digunakan untuk bertanya sebab ketidakhadiran seseorang.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya menjadi ayat tanya yang betul: \"Dimanakah beg saya?\""
+          "question": "Aplikasi: Kamu mahu mengetahui sebab rakan tidak hadir semalam. Tuliskan ayat tanya yang sesuai."
         },
         {
           "id": "BM-AYAT-050",
-          "q": "Betulkan ayat ini supaya menjadi ayat perintah yang sesuai: \"Jangan lari di dalam kelas\"",
-          "answer": "Jangan berlari di dalam kelas.",
-          "accepted": ["Jangan berlari di dalam kelas."],
-          "hint": "Ayat ini perlu menggunakan kata kerja yang betul.",
-          "explanation": "Ayat perintah larangan boleh digunakan untuk menegur dengan baik.",
-          "difficulty": "mudah",
+          "q": "Aplikasi: Kaki kamu terlanggar kerusi dan terasa sangat sakit. Tuliskan ayat seruan yang sesuai.",
+          "answer": "Aduh, sakitnya kaki saya!",
+          "accepted": ["Aduh, sakitnya kaki saya!", "Aduh, sakitnya kaki aku!", "Aduh, sakitnya!"],
+          "hint": "Gunakan kata seru yang menunjukkan rasa sakit.",
+          "explanation": "Aduh digunakan untuk meluahkan rasa sakit dan ayat itu diakhiri tanda seru.",
+          "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini supaya menjadi ayat perintah yang sesuai: \"Jangan lari di dalam kelas\""
+          "question": "Aplikasi: Kaki kamu terlanggar kerusi dan terasa sangat sakit. Tuliskan ayat seruan yang sesuai."
+        },
+        {
+          "id": "BM-AYAT-051",
+          "q": "Analisis KBAT: Kamu mahu mengetahui nama orang yang mengetuk pintu. Antara 'siapakah' dengan 'di manakah', kata tanya manakah lebih tepat?",
+          "answer": "siapakah",
+          "accepted": ["siapakah", "siapa"],
+          "hint": "Tentukan sama ada maklumat yang dicari ialah orang atau tempat.",
+          "explanation": "Siapakah digunakan untuk bertanya tentang orang, manakala di manakah bertanya tempat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Kamu mahu mengetahui nama orang yang mengetuk pintu. Antara 'siapakah' dengan 'di manakah', kata tanya manakah lebih tepat?"
+        },
+        {
+          "id": "BM-AYAT-052",
+          "q": "Analisis KBAT: Ayat 'Tolong duduk dengan tertib.' berakhir dengan tanda noktah. Berdasarkan tujuannya, apakah jenis ayat itu?",
+          "answer": "ayat perintah",
+          "accepted": ["ayat perintah", "perintah", "ayat permintaan"],
+          "hint": "Kenal pasti tujuan kata tolong, bukan tanda baca sahaja.",
+          "explanation": "Ayat itu ialah ayat perintah berbentuk permintaan kerana meminta seseorang duduk dengan tertib.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Tolong duduk dengan tertib.' berakhir dengan tanda noktah. Berdasarkan tujuannya, apakah jenis ayat itu?"
+        },
+        {
+          "id": "BM-AYAT-053",
+          "q": "Analisis KBAT: Dalam ayat 'Wah, tingginya bangunan itu!', nyatakan dua petunjuk yang menunjukkan ayat seruan.",
+          "answer": "kata seru Wah dan tanda seru",
+          "accepted": ["kata seru Wah dan tanda seru", "Wah dan tanda seru", "kata Wah dan tanda seru"],
+          "hint": "Cari petunjuk pada awal dan akhir ayat.",
+          "explanation": "Wah ialah kata seru pada awal ayat dan tanda seru digunakan pada akhirnya.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Wah, tingginya bangunan itu!', nyatakan dua petunjuk yang menunjukkan ayat seruan."
+        },
+        {
+          "id": "BM-AYAT-054",
+          "q": "Analisis KBAT: Bandingkan 'Jangan petik bunga itu.' dengan 'Sila duduk di sini.' Apakah bentuk ayat perintah bagi kedua-duanya mengikut urutan?",
+          "answer": "larangan dan silaan",
+          "accepted": ["larangan dan silaan", "ayat larangan dan ayat silaan", "larangan, silaan"],
+          "hint": "Jangan melarang, manakala sila mempersilakan secara sopan.",
+          "explanation": "Ayat pertama ialah larangan dan ayat kedua ialah silaan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Bandingkan 'Jangan petik bunga itu.' dengan 'Sila duduk di sini.' Apakah bentuk ayat perintah bagi kedua-duanya mengikut urutan?"
+        },
+        {
+          "id": "BM-AYAT-055",
+          "q": "Analisis KBAT: Ayat 'Dimanakah kasut saya?' mempunyai kesalahan ejaan kata tanya. Apakah pembetulannya?",
+          "answer": "Di manakah kasut saya?",
+          "accepted": ["Di manakah kasut saya?", "Di manakah kasut saya"],
+          "hint": "Kata sendi di ditulis terpisah daripada manakah.",
+          "explanation": "Bentuk yang betul ialah di manakah kerana di dan manakah ditulis terpisah.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Dimanakah kasut saya?' mempunyai kesalahan ejaan kata tanya. Apakah pembetulannya?"
+        },
+        {
+          "id": "BM-AYAT-056",
+          "q": "Penilaian KBAT: Untuk arahan kepada tetamu di dewan, pilih ayat yang lebih sopan antara 'Duduk sekarang!' dengan 'Sila duduk di tempat yang disediakan.'",
+          "answer": "Sila duduk di tempat yang disediakan.",
+          "accepted": ["Sila duduk di tempat yang disediakan.", "Sila duduk di tempat yang disediakan", "ayat kedua"],
+          "hint": "Pilih ayat yang menggunakan kata silaan dan nada hormat.",
+          "explanation": "Ayat yang bermula dengan sila lebih sopan dan sesuai untuk tetamu.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Untuk arahan kepada tetamu di dewan, pilih ayat yang lebih sopan antara 'Duduk sekarang!' dengan 'Sila duduk di tempat yang disediakan.'"
+        },
+        {
+          "id": "BM-AYAT-057",
+          "q": "Penilaian KBAT: Seorang murid menulis 'Aduh, sakitnya tangan saya?' Adakah tanda baca akhirnya tepat? Berikan pembetulan.",
+          "answer": "Tidak, gunakan tanda seru: Aduh, sakitnya tangan saya!",
+          "accepted": ["Tidak, gunakan tanda seru: Aduh, sakitnya tangan saya!", "Aduh, sakitnya tangan saya!", "tidak, tanda seru"],
+          "hint": "Aduh meluahkan rasa sakit.",
+          "explanation": "Ayat seruan yang meluahkan rasa sakit perlu diakhiri dengan tanda seru.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Seorang murid menulis 'Aduh, sakitnya tangan saya?' Adakah tanda baca akhirnya tepat? Berikan pembetulan."
+        },
+        {
+          "id": "BM-AYAT-058",
+          "q": "Penilaian KBAT: Kamu mahu bertanya masa latihan bermula. Pilih ayat yang lebih tepat antara 'Bilakah latihan bermula?' dengan 'Di manakah latihan bermula?'",
+          "answer": "Bilakah latihan bermula?",
+          "accepted": ["Bilakah latihan bermula?", "Bilakah latihan bermula", "ayat pertama"],
+          "hint": "Pilih kata tanya yang meminta maklumat masa.",
+          "explanation": "Bilakah digunakan untuk bertanya masa, manakala di manakah bertanya tempat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Kamu mahu bertanya masa latihan bermula. Pilih ayat yang lebih tepat antara 'Bilakah latihan bermula?' dengan 'Di manakah latihan bermula?'"
+        },
+        {
+          "id": "BM-AYAT-059",
+          "q": "Penilaian KBAT: Ravi mengatakan 'Marilah kita membaca bersama-sama.' ialah ayat penyata. Adakah penilaiannya tepat?",
+          "answer": "Tidak, ayat itu ialah ayat perintah ajakan",
+          "accepted": ["Tidak, ayat itu ialah ayat perintah ajakan", "tidak, ayat perintah", "ayat perintah ajakan"],
+          "hint": "Perhatikan fungsi perkataan marilah.",
+          "explanation": "Marilah menandakan ajakan, iaitu salah satu bentuk ayat perintah.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Ravi mengatakan 'Marilah kita membaca bersama-sama.' ialah ayat penyata. Adakah penilaiannya tepat?"
+        },
+        {
+          "id": "BM-AYAT-060",
+          "q": "Penilaian KBAT: Kamu terlihat api kecil berhampiran langsir. Antara 'Wah, cantiknya api itu!' dengan 'Awas, ada api!', ayat manakah paling sesuai dan selamat?",
+          "answer": "Awas, ada api!",
+          "accepted": ["Awas, ada api!", "Awas, ada api", "ayat kedua"],
+          "hint": "Pilih ayat yang memberikan amaran tentang bahaya.",
+          "explanation": "Awas, ada api! ialah ayat seruan amaran yang sesuai untuk memberi perhatian segera terhadap bahaya.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Kamu terlihat api kecil berhampiran langsir. Antara 'Wah, cantiknya api itu!' dengan 'Awas, ada api!', ayat manakah paling sesuai dan selamat?"
         }
       ]
     },    {
       "id": "tatabahasa",
       "title": "Tatabahasa",
-      "note": "Penggunaan kata dan struktur ayat yang betul.",
+      "note": "Tatabahasa membantu murid memilih kata, menggunakan imbuhan dan menyusun perkataan supaya ayat gramatis, jelas serta bermakna.",
+      "learningObjective": "Murid dapat mengenal pasti penggunaan kata dan susunan ayat yang gramatis.",
+      "learningOutcome": "Murid dapat melengkapkan, membetulkan dan membina ayat mudah dengan penggunaan kata serta struktur yang tepat.",
+      "contentStatus": "pilot",
+      "defaultQuestionType": "short_answer",
+      "defaultMarks": 1,
       "questions": [
         {
           "id": "BM-TATABAHASA-001",
@@ -8343,13 +10332,13 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-TATABAHASA-004",
-          "q": "Ayat yang betul ialah: Bola merah di padang itu ___ milik Amir.",
-          "answer": "itu",
+          "q": "Lengkapkan ayat: Bola merah di padang itu ______ Amir.",
+          "answer": "milik",
           "accepted": [
-            "itu"
+            "milik"
           ],
-          "hint": "Pilih kata tunjuk yang sesuai untuk benda yang jauh.",
-          "explanation": "itu digunakan untuk menunjukkan benda yang jauh atau sudah disebut.",
+          "hint": "Pilih perkataan yang menunjukkan kepunyaan.",
+          "explanation": "Milik menunjukkan bahawa bola itu kepunyaan Amir.",
           "difficulty": "mudah",
           "metadata": {
             "category": "tatabahasa",
@@ -8358,7 +10347,7 @@ const rawBMSSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ayat yang betul ialah: Bola merah di padang itu ___ milik Amir."
+          "question": "Lengkapkan ayat: Bola merah di padang itu ______ Amir."
         },
         {
           "id": "BM-TATABAHASA-005",
@@ -8780,13 +10769,13 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-TATABAHASA-027",
-          "q": "Kek itu dibeli ________ abang untuk jiran.",
-          "answer": "untuk",
+          "q": "Kek itu dibeli ________ abang untuk diberikan kepada jiran.",
+          "answer": "oleh",
           "accepted": [
-            "untuk"
+            "oleh"
           ],
-          "hint": "Pilih kata sendi nama yang menunjukkan tujuan.",
-          "explanation": "untuk digunakan bagi tujuan atau penerima sesuatu.",
+          "hint": "Pilih kata yang memperkenalkan pelaku dalam ayat pasif.",
+          "explanation": "Oleh menunjukkan bahawa abang ialah orang yang membeli kek itu.",
           "difficulty": "mudah",
           "metadata": {
             "category": "tatabahasa",
@@ -8795,7 +10784,7 @@ const rawBMSSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Kek itu dibeli ________ abang untuk jiran."
+          "question": "Kek itu dibeli ________ abang untuk diberikan kepada jiran."
         },
         {
           "id": "BM-TATABAHASA-028",
@@ -8951,13 +10940,13 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-TATABAHASA-036",
-          "q": "Di padang sekolah, bendera itu berkibar ________ cantik.",
-          "answer": "sangat",
+          "q": "Di padang sekolah, bendera itu berkibar ________ megah.",
+          "answer": "dengan",
           "accepted": [
-            "sangat"
+            "dengan"
           ],
-          "hint": "Pilih kata penguat yang sesuai.",
-          "explanation": "sangat digunakan untuk menguatkan maksud cantik.",
+          "hint": "Pilih kata yang menerangkan cara bendera berkibar.",
+          "explanation": "Dengan digunakan sebelum perkataan megah untuk menerangkan cara bendera berkibar.",
           "difficulty": "mudah",
           "metadata": {
             "category": "tatabahasa",
@@ -8966,7 +10955,7 @@ const rawBMSSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di padang sekolah, bendera itu berkibar ________ cantik."
+          "question": "Di padang sekolah, bendera itu berkibar ________ megah."
         },
         {
           "id": "BM-TATABAHASA-037",
@@ -9008,13 +10997,13 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-TATABAHASA-039",
-          "q": "Dialog di taman: \"Bola merah itu ___ milik Amir,\" kata Siti.",
-          "answer": "itu",
+          "q": "Dialog di taman: \"Bola merah itu ______ Amir,\" kata Siti.",
+          "answer": "milik",
           "accepted": [
-            "itu"
+            "milik"
           ],
-          "hint": "Pilih kata tunjuk untuk benda yang jauh.",
-          "explanation": "itu digunakan untuk menunjukkan benda yang jauh atau telah disebut.",
+          "hint": "Pilih perkataan yang menunjukkan kepunyaan.",
+          "explanation": "Milik menunjukkan bahawa bola merah itu kepunyaan Amir.",
           "difficulty": "mudah",
           "metadata": {
             "category": "tatabahasa",
@@ -9023,7 +11012,7 @@ const rawBMSSubject = {
           },
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Dialog di taman: \"Bola merah itu ___ milik Amir,\" kata Siti."
+          "question": "Dialog di taman: \"Bola merah itu ______ Amir,\" kata Siti."
         },
         {
           "id": "BM-TATABAHASA-040",
@@ -9046,193 +11035,401 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-TATABAHASA-041",
-          "q": "KBAT: Jika kamu memuji pakaian rakan, ayat yang paling sesuai ialah baju itu ________ cantik.",
-          "answer": "sangat",
+          "q": "Aplikasi: Betulkan ayat 'Bola merah itu itu milik Amir.'",
+          "answer": "Bola merah itu milik Amir.",
           "accepted": [
-            "sangat"
+            "Bola merah itu milik Amir.",
+            "Bola merah itu milik Amir"
           ],
-          "hint": "Pilih kata penguat yang paling sesuai.",
-          "explanation": "sangat digunakan untuk menguatkan maksud cantik.",
-          "difficulty": "mudah",
+          "hint": "Gugurkan satu kata tunjuk yang berulang.",
+          "explanation": "Satu kata tunjuk 'itu' sudah mencukupi untuk menerangkan bola merah tersebut.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_41"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Jika kamu memuji pakaian rakan, ayat yang paling sesuai ialah baju itu ________ cantik."
+          "question": "Aplikasi: Betulkan ayat 'Bola merah itu itu milik Amir.'"
         },
         {
           "id": "BM-TATABAHASA-042",
-          "q": "KBAT: Aiman membawa pensel ___ pemadam supaya mudah menulis.",
+          "q": "Aplikasi: Aiman mahu menyenaraikan dua alat tulis. Lengkapkan ayat: Aiman membawa pensel ______ pemadam.",
           "answer": "dan",
           "accepted": [
             "dan"
           ],
-          "hint": "Pilih kata hubung untuk menggabungkan dua benda.",
-          "explanation": "dan digunakan untuk menghubungkan dua benda atau perkara.",
-          "difficulty": "mudah",
+          "hint": "Gunakan kata hubung yang menggabungkan dua benda.",
+          "explanation": "Kata hubung 'dan' menggabungkan pensel dengan pemadam dalam satu senarai.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_42"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Aiman membawa pensel ___ pemadam supaya mudah menulis."
+          "question": "Aplikasi: Aiman mahu menyenaraikan dua alat tulis. Lengkapkan ayat: Aiman membawa pensel ______ pemadam."
         },
         {
           "id": "BM-TATABAHASA-043",
-          "q": "KBAT: Murid itu berjalan ___ perpustakaan apabila loceng rehat berbunyi.",
-          "answer": "ke",
+          "q": "Aplikasi: Betulkan kata sendi dalam ayat 'Murid itu berjalan di perpustakaan selepas kelas.'",
+          "answer": "Murid itu berjalan ke perpustakaan selepas kelas.",
           "accepted": [
+            "Murid itu berjalan ke perpustakaan selepas kelas.",
+            "Murid itu berjalan ke perpustakaan selepas kelas",
             "ke"
           ],
-          "hint": "Pilih kata sendi nama untuk arah.",
-          "explanation": "ke digunakan untuk menunjukkan arah atau tempat yang dituju.",
-          "difficulty": "mudah",
+          "hint": "Perbuatan berjalan menunjukkan arah menuju sesuatu tempat.",
+          "explanation": "Kata sendi 'ke' digunakan untuk menunjukkan arah atau tempat yang dituju.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_43"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Murid itu berjalan ___ perpustakaan apabila loceng rehat berbunyi."
+          "question": "Aplikasi: Betulkan kata sendi dalam ayat 'Murid itu berjalan di perpustakaan selepas kelas.'"
         },
         {
           "id": "BM-TATABAHASA-044",
-          "q": "KBAT: Bola yang terletak jauh di hujung padang ___ milik Amir.",
-          "answer": "itu",
+          "q": "Aplikasi: Semua tugasan telah siap. Lengkapkan ayat: Kami ______ menyiapkan semua tugasan.",
+          "answer": "sudah",
           "accepted": [
-            "itu"
+            "sudah",
+            "telah"
           ],
-          "hint": "Pilih kata tunjuk untuk benda yang jauh.",
-          "explanation": "itu digunakan untuk menunjukkan benda yang jauh atau telah disebut.",
-          "difficulty": "mudah",
+          "hint": "Pilih kata bantu yang menunjukkan perbuatan telah selesai.",
+          "explanation": "Kata bantu 'sudah' atau 'telah' menunjukkan semua tugasan selesai dilakukan.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_44"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Bola yang terletak jauh di hujung padang ___ milik Amir."
+          "question": "Aplikasi: Semua tugasan telah siap. Lengkapkan ayat: Kami ______ menyiapkan semua tugasan."
         },
         {
           "id": "BM-TATABAHASA-045",
-          "q": "KBAT: Setelah semua tugasan siap, kami ___ menyiapkan latihan.",
-          "answer": "sudah",
+          "q": "Aplikasi: Kamu mahu memuji lukisan rakan. Lengkapkan ayat: Lukisan kamu ______ cantik.",
+          "answer": "sangat",
           "accepted": [
-            "sudah"
+            "sangat",
+            "amat"
           ],
-          "hint": "Pilih kata bantu yang menunjukkan kerja telah selesai.",
-          "explanation": "sudah digunakan untuk menunjukkan sesuatu telah selesai dilakukan.",
-          "difficulty": "mudah",
+          "hint": "Gunakan kata penguat yang sesuai sebelum kata adjektif 'cantik'.",
+          "explanation": "Kata penguat 'sangat' atau 'amat' menguatkan maksud kata adjektif 'cantik'.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_45"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Setelah semua tugasan siap, kami ___ menyiapkan latihan."
+          "question": "Aplikasi: Kamu mahu memuji lukisan rakan. Lengkapkan ayat: Lukisan kamu ______ cantik."
         },
         {
           "id": "BM-TATABAHASA-046",
-          "q": "KBAT: Baju yang dipakai ke acara sukan itu ________ kemas.",
-          "answer": "sangat",
+          "q": "Aplikasi: Nyatakan bahan yang digunakan. Lengkapkan ayat: Bakul itu dibuat ______ rotan.",
+          "answer": "daripada",
           "accepted": [
-            "sangat"
+            "daripada"
           ],
-          "hint": "Pilih kata penguat yang sesuai.",
-          "explanation": "sangat digunakan untuk menguatkan maksud kemas.",
-          "difficulty": "mudah",
+          "hint": "Pilih kata sendi nama untuk menyatakan bahan asal.",
+          "explanation": "Kata sendi 'daripada' digunakan untuk menyatakan bahan yang membentuk sesuatu benda.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_46"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Baju yang dipakai ke acara sukan itu ________ kemas."
+          "question": "Aplikasi: Nyatakan bahan yang digunakan. Lengkapkan ayat: Bakul itu dibuat ______ rotan."
         },
         {
           "id": "BM-TATABAHASA-047",
-          "q": "KBAT: Dalam beg sekolah, Aiman membawa pensel ___ pembaris untuk kelas.",
-          "answer": "dan",
+          "q": "Aplikasi: Betulkan ejaan kata sendi dalam ayat 'Buku itu disimpan disekolah.'",
+          "answer": "Buku itu disimpan di sekolah.",
           "accepted": [
-            "dan"
+            "Buku itu disimpan di sekolah.",
+            "Buku itu disimpan di sekolah",
+            "di sekolah"
           ],
-          "hint": "Pilih kata hubung yang sesuai.",
-          "explanation": "dan digunakan untuk menghubungkan dua benda atau perkara.",
-          "difficulty": "mudah",
+          "hint": "Kata sendi nama yang menunjukkan tempat ditulis terpisah.",
+          "explanation": "'Di sekolah' ditulis terpisah kerana 'di' ialah kata sendi nama yang menunjukkan tempat.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_47"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Dalam beg sekolah, Aiman membawa pensel ___ pembaris untuk kelas."
+          "question": "Aplikasi: Betulkan ejaan kata sendi dalam ayat 'Buku itu disimpan disekolah.'"
         },
         {
           "id": "BM-TATABAHASA-048",
-          "q": "KBAT: Selepas makan, mereka pergi ___ perpustakaan untuk membaca.",
-          "answer": "ke",
+          "q": "Aplikasi: Lengkapkan ayat mengikut penerima: Hadiah itu diserahkan ______ pemenang pertandingan.",
+          "answer": "kepada",
           "accepted": [
-            "ke"
+            "kepada"
           ],
-          "hint": "Pilih kata sendi nama untuk tempat yang dituju.",
-          "explanation": "ke digunakan untuk menunjukkan arah atau tempat yang dituju.",
-          "difficulty": "mudah",
+          "hint": "Gunakan kata sendi nama yang merujuk penerima atau orang.",
+          "explanation": "Kata sendi 'kepada' digunakan untuk menunjukkan penerima, iaitu pemenang pertandingan.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_48"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Selepas makan, mereka pergi ___ perpustakaan untuk membaca."
+          "question": "Aplikasi: Lengkapkan ayat mengikut penerima: Hadiah itu diserahkan ______ pemenang pertandingan."
         },
         {
           "id": "BM-TATABAHASA-049",
-          "q": "KBAT: Bola merah di sebelah bangku itu ___ milik Amir.",
-          "answer": "itu",
+          "q": "Aplikasi: Susun perkataan 'di perpustakaan / membaca / Aina / buku' menjadi ayat gramatis.",
+          "answer": "Aina membaca buku di perpustakaan.",
           "accepted": [
-            "itu"
+            "Aina membaca buku di perpustakaan.",
+            "Aina membaca buku di perpustakaan"
           ],
-          "hint": "Pilih kata tunjuk untuk benda yang jauh.",
-          "explanation": "itu digunakan untuk menunjukkan benda yang jauh atau telah disebut.",
-          "difficulty": "mudah",
+          "hint": "Mulakan dengan pelaku, diikuti perbuatan, objek dan tempat.",
+          "explanation": "Susunan subjek-predikat yang gramatis ialah 'Aina membaca buku di perpustakaan.'",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_49"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Bola merah di sebelah bangku itu ___ milik Amir."
+          "question": "Aplikasi: Susun perkataan 'di perpustakaan / membaca / Aina / buku' menjadi ayat gramatis."
         },
         {
           "id": "BM-TATABAHASA-050",
-          "q": "KBAT: Kami ___ menyiapkan latihan dan kini sedang berehat di kantin.",
+          "q": "Aplikasi: Latihan telah selesai. Pilih 'sudah' atau 'sedang' untuk melengkapkan ayat: Kami ______ menyiapkan latihan.",
           "answer": "sudah",
           "accepted": [
             "sudah"
           ],
-          "hint": "Pilih kata bantu yang menunjukkan kerja telah siap.",
-          "explanation": "sudah digunakan untuk menunjukkan perbuatan telah selesai.",
-          "difficulty": "mudah",
+          "hint": "Maklumat awal menyatakan latihan telah selesai.",
+          "explanation": "'Sudah' menunjukkan perbuatan selesai, manakala 'sedang' menunjukkan perbuatan masih berlaku.",
+          "difficulty": "sukar",
           "metadata": {
             "category": "tatabahasa",
             "skill": "struktur_ayat",
             "set": "tatabahasa_50"
           },
+          "cognitiveLevel": "mengaplikasi",
+          "questionType": "short_answer",
+          "marks": 1,
+          "estimatedTime": 75,
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Kami ___ menyiapkan latihan dan kini sedang berehat di kantin."
+          "question": "Aplikasi: Latihan telah selesai. Pilih 'sudah' atau 'sedang' untuk melengkapkan ayat: Kami ______ menyiapkan latihan."
+        },
+        {
+          "id": "BM-TATABAHASA-051",
+          "q": "Analisis KBAT: Ayat 'Saya pergi di sekolah' tidak tepat. Kata sendi manakah perlu menggantikan 'di' dan mengapa?",
+          "answer": "ke, kerana menunjukkan arah atau tempat yang dituju",
+          "accepted": ["ke, kerana menunjukkan arah atau tempat yang dituju", "ke kerana menunjukkan arah", "ke"],
+          "hint": "Bezakan tempat berada dengan tempat yang dituju.",
+          "explanation": "Kata sendi 'ke' menunjukkan arah atau tempat yang dituju. Ayat yang betul ialah 'Saya pergi ke sekolah.'",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Ayat 'Saya pergi di sekolah' tidak tepat. Kata sendi manakah perlu menggantikan 'di' dan mengapa?"
+        },
+        {
+          "id": "BM-TATABAHASA-052",
+          "q": "Analisis KBAT: Lengkapkan kedua-dua ayat dengan 'dari' atau 'daripada': 'Pak cik datang ______ Johor. Meja itu dibuat ______ kayu.'",
+          "answer": "dari; daripada",
+          "accepted": ["dari; daripada", "dari dan daripada", "dari, daripada"],
+          "hint": "Satu ayat menyatakan tempat asal, manakala satu lagi menyatakan bahan.",
+          "explanation": "'Dari' digunakan untuk tempat atau arah, manakala 'daripada' digunakan untuk bahan atau sumber.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Lengkapkan kedua-dua ayat dengan 'dari' atau 'daripada': 'Pak cik datang ______ Johor. Meja itu dibuat ______ kayu.'"
+        },
+        {
+          "id": "BM-TATABAHASA-053",
+          "q": "Analisis KBAT: Dalam ayat 'Buku itu telah dibaca oleh Aina', nyatakan golongan kata bagi 'telah' dan 'oleh'.",
+          "answer": "telah ialah kata bantu; oleh ialah kata sendi nama",
+          "accepted": ["telah ialah kata bantu; oleh ialah kata sendi nama", "kata bantu dan kata sendi nama", "kata bantu; kata sendi nama"],
+          "hint": "Kenal pasti kata yang menunjukkan masa dan kata yang menghubungkan pelaku.",
+          "explanation": "'Telah' ialah kata bantu yang menunjukkan perbuatan selesai, manakala 'oleh' ialah kata sendi nama.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 90,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Dalam ayat 'Buku itu telah dibaca oleh Aina', nyatakan golongan kata bagi 'telah' dan 'oleh'."
+        },
+        {
+          "id": "BM-TATABAHASA-054",
+          "q": "Analisis KBAT: Susun dan jelaskan pola ayat daripada frasa 'di taman / bermain / kanak-kanak / bola'.",
+          "answer": "Kanak-kanak bermain bola di taman. Polanya ialah subjek diikuti predikat.",
+          "accepted": ["Kanak-kanak bermain bola di taman. Polanya ialah subjek diikuti predikat.", "Kanak-kanak bermain bola di taman.", "Kanak-kanak bermain bola di taman"],
+          "hint": "Cari pelaku sebagai subjek sebelum menyusun perbuatan, objek dan tempat.",
+          "explanation": "'Kanak-kanak' ialah subjek, manakala 'bermain bola di taman' ialah predikat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Susun dan jelaskan pola ayat daripada frasa 'di taman / bermain / kanak-kanak / bola'."
+        },
+        {
+          "id": "BM-TATABAHASA-055",
+          "q": "Analisis KBAT: Mengapakah ayat 'Bunga itu sangat tercantik' tidak gramatis? Berikan satu pembetulan.",
+          "answer": "Kata penguat digunakan secara berlebihan. Bunga itu sangat cantik.",
+          "accepted": ["Kata penguat digunakan secara berlebihan. Bunga itu sangat cantik.", "Bunga itu sangat cantik.", "Bunga itu tercantik.", "Bunga itu sangat cantik", "Bunga itu tercantik"],
+          "hint": "Perhatikan penggunaan 'sangat' bersama bentuk paling tinggi 'tercantik'.",
+          "explanation": "'Sangat' dan awalan 'ter-' sama-sama membawa maksud penguatan. Gunakan salah satu bentuk sahaja.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menganalisis",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Analisis KBAT: Mengapakah ayat 'Bunga itu sangat tercantik' tidak gramatis? Berikan satu pembetulan."
+        },
+        {
+          "id": "BM-TATABAHASA-056",
+          "q": "Penilaian KBAT: Apabila murid sedang bergerak menuju dewan, ayat manakah lebih tepat: 'Murid berjalan ke dewan' atau 'Murid berjalan di dewan'? Jelaskan.",
+          "answer": "Murid berjalan ke dewan kerana 'ke' menunjukkan arah yang dituju.",
+          "accepted": ["Murid berjalan ke dewan kerana 'ke' menunjukkan arah yang dituju.", "Murid berjalan ke dewan.", "Murid berjalan ke dewan", "ayat pertama"],
+          "hint": "Nilai sama ada murid berada di dalam dewan atau sedang menuju ke sana.",
+          "explanation": "Ayat pertama tepat kerana 'ke' menunjukkan arah atau destinasi pergerakan.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Apabila murid sedang bergerak menuju dewan, ayat manakah lebih tepat: 'Murid berjalan ke dewan' atau 'Murid berjalan di dewan'? Jelaskan."
+        },
+        {
+          "id": "BM-TATABAHASA-057",
+          "q": "Penilaian KBAT: Nilai ayat 'Hadiah itu diberikan ke Siti.' Adakah ayat itu gramatis? Berikan pembetulan.",
+          "answer": "Tidak. Hadiah itu diberikan kepada Siti.",
+          "accepted": ["Tidak. Hadiah itu diberikan kepada Siti.", "Hadiah itu diberikan kepada Siti.", "Hadiah itu diberikan kepada Siti", "tidak, gunakan kepada"],
+          "hint": "Siti ialah penerima, bukan tempat yang dituju.",
+          "explanation": "Kata sendi 'kepada' digunakan untuk penerima atau orang. 'Ke' digunakan untuk arah atau tempat.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Nilai ayat 'Hadiah itu diberikan ke Siti.' Adakah ayat itu gramatis? Berikan pembetulan."
+        },
+        {
+          "id": "BM-TATABAHASA-058",
+          "q": "Penilaian KBAT: Kerja telah selesai. Pilih ayat yang lebih tepat antara 'Kami sudah menyiapkan latihan' dengan 'Kami sedang menyiapkan latihan' dan berikan sebab.",
+          "answer": "Kami sudah menyiapkan latihan kerana 'sudah' menunjukkan kerja telah selesai.",
+          "accepted": ["Kami sudah menyiapkan latihan kerana 'sudah' menunjukkan kerja telah selesai.", "Kami sudah menyiapkan latihan.", "Kami sudah menyiapkan latihan", "ayat pertama"],
+          "hint": "Bandingkan maksud 'sudah' dengan 'sedang'.",
+          "explanation": "'Sudah' menandakan perbuatan selesai, sedangkan 'sedang' menandakan perbuatan masih berlangsung.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Kerja telah selesai. Pilih ayat yang lebih tepat antara 'Kami sudah menyiapkan latihan' dengan 'Kami sedang menyiapkan latihan' dan berikan sebab."
+        },
+        {
+          "id": "BM-TATABAHASA-059",
+          "q": "Penilaian KBAT: Antara 'Murid berkumpul disekolah' dengan 'Murid berkumpul di sekolah', pilih ejaan yang betul dan jelaskan sebabnya.",
+          "answer": "Murid berkumpul di sekolah kerana kata sendi nama 'di' yang menunjukkan tempat ditulis terpisah.",
+          "accepted": ["Murid berkumpul di sekolah kerana kata sendi nama 'di' yang menunjukkan tempat ditulis terpisah.", "Murid berkumpul di sekolah.", "Murid berkumpul di sekolah", "di sekolah"],
+          "hint": "Tentukan sama ada 'di' ialah imbuhan atau penanda tempat.",
+          "explanation": "'Di' ialah kata sendi nama apabila diikuti tempat, maka 'di sekolah' mesti ditulis terpisah.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Antara 'Murid berkumpul disekolah' dengan 'Murid berkumpul di sekolah', pilih ejaan yang betul dan jelaskan sebabnya."
+        },
+        {
+          "id": "BM-TATABAHASA-060",
+          "q": "Penilaian KBAT: Pilih ayat yang gramatis: 'Adik sangat suka membaca buku dan menulis' atau 'Adik sangat membaca buku dan menulis'. Berikan alasan ringkas.",
+          "answer": "Adik sangat suka membaca buku dan menulis kerana kata penguat 'sangat' diletakkan sebelum 'suka'.",
+          "accepted": ["Adik sangat suka membaca buku dan menulis kerana kata penguat 'sangat' diletakkan sebelum 'suka'.", "Adik sangat suka membaca buku dan menulis.", "Adik sangat suka membaca buku dan menulis", "ayat pertama"],
+          "hint": "Perhatikan kata yang diterangkan oleh kata penguat 'sangat'.",
+          "explanation": "Ayat pertama gramatis kerana 'sangat' menguatkan kata 'suka'. Frasa 'sangat membaca' tidak gramatis dalam konteks ini.",
+          "difficulty": "sukar",
+          "cognitiveLevel": "menilai",
+          "questionType": "short_answer",
+          "marks": 2,
+          "estimatedTime": 105,
+          "uasa": "UASA/KBAT",
+          "dskp": "KSSR Tahun 2",
+          "question": "Penilaian KBAT: Pilih ayat yang gramatis: 'Adik sangat suka membaca buku dan menulis' atau 'Adik sangat membaca buku dan menulis'. Berikan alasan ringkas."
         }
       ]
     },
@@ -10677,8 +12874,8 @@ const rawBMSSubject = {
     },
     {
       "id": "uasa_kbat",
-      "title": "UASA/KBAT",
-      "note": "Soalan aplikasi bahasa dalam situasi harian murid Tahun 2.",
+      "title": "Pentaksiran Sumatif & KBAT",
+      "note": "Latihan integrasi PBD sumatif untuk Tahun 2; bukan simulasi UASA rasmi.",
       "questions": [
         {
           "id": "BM-UASA_KBAT-001",
@@ -11350,6 +13547,14 @@ const rawBMSSubject = {
   ]
 };
 
-export const bmSubject = normalizeBMSubject(rawBMSSubject);
+export const bmSubject = normalizeBMSubject(
+  alignYearTwoAssessment(
+    enrichSimpulanBahasaTopic(
+      enrichBinaAyatTopic(
+        enrichBMComprehensionQuestions(rawBMSSubject)
+      )
+    )
+  )
+);
 
 export default bmSubject;

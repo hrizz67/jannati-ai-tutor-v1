@@ -1,3 +1,5 @@
+import { normalizeTopicContent } from '../contentSchema.js';
+
 export const subjectList = [
   {
     "id": "bm",
@@ -5,8 +7,8 @@ export const subjectList = [
     "short": "BM",
     "icon": "\u{1F4DA}",
     "color": "green",
-    "topicCount": 10,
-    "questionCount": 500
+    "topicCount": 14,
+    "questionCount": 930
   },
   {
     "id": "math",
@@ -15,7 +17,7 @@ export const subjectList = [
     "icon": "\u{1F4D0}",
     "color": "blue",
     "topicCount": 10,
-    "questionCount": 500
+    "questionCount": 800
   },
   {
     "id": "english",
@@ -108,19 +110,30 @@ export async function loadSubjectData(subjectId) {
 }
 
 function normalizeSubjectQuestionFields(subject = {}) {
+  const isYearTwoSubject = /(?:Tahun|Year)\s*2\b/i.test(String(subject.title || ''));
   return {
     ...subject,
-    topics: (subject.topics || []).map(topic => ({
-      ...topic,
-      questions: (topic.questions || []).map(question => {
+    topics: (subject.topics || []).map(topic => {
+      const normalizedTopic = normalizeTopicContent(topic);
+      return {
+        ...normalizedTopic,
+        title: isYearTwoSubject
+          ? String(normalizedTopic.title || '').replace(/\bUASA\b/gi, 'Pentaksiran Sumatif')
+          : normalizedTopic.title,
+        questions: normalizedTopic.questions.map(question => {
         const canonical = String(question.q ?? question.question ?? '').trim();
+        const hasUasaLabel = /\bUASA\b/i.test(String(question.uasa || ''));
+        const hasUasaAssessment = /\bUASA\b/i.test(String(question.assessment || ''));
         return {
           ...question,
           q: canonical,
-          question: canonical
+          question: canonical,
+          uasa: isYearTwoSubject && hasUasaLabel ? 'PBD Sumatif' : question.uasa,
+          assessment: isYearTwoSubject && hasUasaAssessment ? 'PBD Sumatif' : question.assessment
         };
       })
-    }))
+      };
+    })
   };
 }
 

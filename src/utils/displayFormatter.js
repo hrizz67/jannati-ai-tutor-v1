@@ -34,7 +34,7 @@ const TOPIC_LABELS = {
   penjodoh_bilangan: 'Penjodoh Bilangan',
   simpulan_bahasa: 'Simpulan Bahasa',
   ayat: 'Ayat',
-  uasa_kbat: 'Kemahiran Berfikir Aras Tinggi',
+  uasa_kbat: 'Pentaksiran Sumatif & KBAT',
   simple_sentences: 'Ayat Mudah',
   reading_comprehension: 'Kefahaman Bacaan',
   reading: 'Bacaan',
@@ -134,7 +134,7 @@ const RECOMMENDATION_LABELS = {
 };
 
 const MODE_LABELS = {
-  uasa: 'Simulator UASA',
+  uasa: 'Pentaksiran Sumatif',
   review: 'Ulang Kaji',
   adaptive: 'Latihan Adaptif',
   'adaptive-practice': 'Latihan Adaptif',
@@ -355,7 +355,7 @@ export function formatModeName(value) {
   if (MODE_LABELS[key]) return MODE_LABELS[key];
   if (displayKey.includes('adaptive')) return 'Latihan Adaptif';
   if (displayKey.includes('review')) return 'Ulang Kaji';
-  if (displayKey.includes('uasa')) return 'Simulator UASA';
+  if (displayKey.includes('uasa')) return 'Pentaksiran Sumatif';
   return toTitleCase(displayKey || key || value);
 }
 

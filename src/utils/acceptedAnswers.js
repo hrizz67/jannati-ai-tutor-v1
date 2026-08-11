@@ -167,13 +167,15 @@ const ACTION_GROUPS = [
 
 const SIMPULAN_MEANING_GROUPS = [
   ['berjalan tanpa kasut', 'tidak memakai kasut', 'tidak pakai kasut', 'tanpa kasut', 'berkaki ayam'],
-  ['hadiah yang dibawa ketika melawat', 'hadiah ketika melawat', 'buah tangan', 'buah tangan ketika melawat'],
-  ['bijak mencari jalan penyelesaian', 'pandai mencari penyelesaian', 'pandai menyelesaikan masalah'],
-  ['cepat memahami pelajaran', 'cepat faham pelajaran', 'mudah memahami pelajaran'],
+  ['barang yang dibawa pulang dari perjalanan sebagai hadiah', 'barang yang dibawa dari perjalanan', 'hadiah dari perjalanan', 'oleh oleh', 'buah tangan'],
+  ['boleh berfikir baik baik', 'cerdik mencari penyelesaian', 'bijak mencari jalan penyelesaian', 'pandai mencari penyelesaian', 'pandai menyelesaikan masalah', 'panjang akal'],
+  ['cepat menangkap atau memahami pelajaran', 'cepat menangkap pelajaran', 'cepat memahami pelajaran', 'cepat faham pelajaran', 'mudah memahami pelajaran', 'otak cair'],
   ['memberi perhatian', 'ambil berat', 'mengambil berat', 'prihatin'],
   ['gembira atau bangga', 'gembira', 'bangga', 'berasa bangga'],
-  ['rajin membantu', 'suka membantu', 'ringan tulang'],
-  ['bercakap dengan lemah lembut', 'bercakap lembut', 'berkata sopan']
+  ['rajin bekerja atau suka membantu', 'rajin membantu', 'suka membantu', 'rajin bekerja', 'ringan tulang'],
+  ['lemah lembut dan baik tutur katanya', 'bercakap dengan lemah lembut', 'bercakap lembut', 'baik tutur katanya', 'berkata sopan', 'mulut manis'],
+  ['orang yang sangat rajin membaca buku', 'orang yang rajin membaca', 'sangat suka membaca', 'suka membaca buku', 'ulat buku'],
+  ['orang yang tidak pandai bermain bola', 'tidak pandai bermain bola', 'tidak mahir bermain bola sepak', 'kaki bangku']
 ];
 
 const SCENARIO_STOP_WORDS = new Set([
@@ -208,16 +210,30 @@ function isScenarioActionEquivalent(candidate, accepted, questionText) {
   return actionMatches && hasScenarioContext(candidate, questionText) && candidateText.split(' ').length >= 2;
 }
 
-function isBinaAyatEquivalent(candidate, questionText) {
+function isBinaAyatEquivalent(candidate, questionText, question = {}) {
   if (!/bina\s+ayat|tuliskan\s+ayat|gunakan\s+kata/i.test(questionText)) return false;
+  const rawCandidate = String(candidate ?? '').normalize('NFKC').trim();
   const quoted = [...questionText.matchAll(/["“”']([^"“”']+)["“”']/g)]
     .flatMap(match => normalizeAcceptedAnswer(match[1]).split(' '));
   const named = questionText.match(/nama\s+([a-zà-ÿ][a-zà-ÿ-]*)/i)?.[1] || '';
   const required = [...new Set([...quoted, named ? normalizeAcceptedAnswer(named) : ''].filter(Boolean))];
-  const candidateText = normalizeAcceptedAnswer(candidate);
+  const candidateText = normalizeAcceptedAnswer(rawCandidate);
+  const candidateWords = candidateText.split(' ').filter(Boolean);
+  const semanticCues = Array.isArray(question?.responseRules?.semanticCues)
+    ? question.responseRules.semanticCues.map(normalizeAcceptedAnswer).filter(Boolean)
+    : [];
+  const hasRequiredContext = !semanticCues.length
+    || semanticCues.some(cue => candidateText.includes(cue));
+  const startsWithCapital = /^\p{Lu}/u.test(rawCandidate);
+  const hasTerminalPunctuation = /[.!?]$/u.test(rawCandidate);
+  const hasRepeatedWord = /\b([\p{L}][\p{L}'-]*)\s+\1\b/iu.test(candidateText);
   return required.length >= 2
-    && required.every(word => candidateText.split(' ').includes(word))
-    && candidateText.split(' ').length >= required.length + 1;
+    && required.every(word => candidateWords.includes(word))
+    && candidateWords.length >= Math.max(4, required.length + 2)
+    && startsWithCapital
+    && hasTerminalPunctuation
+    && !hasRepeatedWord
+    && hasRequiredContext;
 }
 
 function isSimpulanMeaningEquivalent(candidate, accepted, questionText) {
@@ -229,6 +245,25 @@ function isSimpulanMeaningEquivalent(candidate, accepted, questionText) {
     return normalizedGroup.some(variant => acceptedText.includes(variant))
       && normalizedGroup.some(variant => candidateText.includes(variant));
   });
+}
+
+function isSimpulanUsageEquivalent(candidate, question = {}) {
+  const rules = question?.responseRules || {};
+  const variants = Array.isArray(rules.requiredVariants) ? rules.requiredVariants : [];
+  const semanticCues = Array.isArray(rules.semanticCues) ? rules.semanticCues : [];
+  const rawCandidate = String(candidate ?? '').normalize('NFKC').trim();
+  const candidateText = normalizeAcceptedAnswer(rawCandidate);
+  const candidateWords = candidateText.split(' ').filter(Boolean);
+  const usesRequiredPhrase = variants.some(variant => candidateText.includes(normalizeAcceptedAnswer(variant)));
+  const showsMeaning = semanticCues.some(cue => candidateText.includes(normalizeAcceptedAnswer(cue)));
+  return variants.length > 0
+    && semanticCues.length > 0
+    && usesRequiredPhrase
+    && showsMeaning
+    && candidateWords.length >= 5
+    && /^\p{Lu}/u.test(rawCandidate)
+    && /[.!?]$/u.test(rawCandidate)
+    && !/\b([\p{L}][\p{L}'-]*)\s+\1\b/iu.test(candidateText);
 }
 
 function getQuestionText(question = {}) {
@@ -318,7 +353,24 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
     if (expectedPronoun) return true;
   }
 
-  if (isBinaAyatEquivalent(candidate, rawQuestionText)) return true;
+  const isCreativeSentenceTask = String(question?.cognitiveLevel || '').toLowerCase() === 'mencipta'
+    && Array.isArray(question?.rubric?.criteria);
+  const questionCategory = String(question?.metadata?.category || '').toLowerCase();
+  if (isCreativeSentenceTask && questionCategory === 'simpulan_bahasa') {
+    return isSimpulanUsageEquivalent(rawCandidate, question);
+  }
+  if (isCreativeSentenceTask) return isBinaAyatEquivalent(rawCandidate, rawQuestionText, question);
+  if (isBinaAyatEquivalent(rawCandidate, rawQuestionText, question)) return true;
+
+  const expectsSimpulanPhrase = questionCategory === 'simpulan_bahasa'
+    && String(question?.metadata?.responseKind || '').toLowerCase() === 'phrase';
+  if (expectsSimpulanPhrase) {
+    return acceptedAnswers.some(value => normalizeAcceptedAnswer(value) === candidate);
+  }
+  const expectsSimpulanMeaning = questionCategory === 'simpulan_bahasa'
+    && String(question?.metadata?.responseKind || '').toLowerCase() === 'meaning';
+  const sourcePhrase = normalizeAcceptedAnswer(question?.source?.phrase || '');
+  if (expectsSimpulanMeaning && sourcePhrase && candidate.includes(sourcePhrase)) return false;
 
   if (acceptedAnswers.some(value => isSimpulanMeaningEquivalent(candidate, value, rawQuestionText))) return true;
 

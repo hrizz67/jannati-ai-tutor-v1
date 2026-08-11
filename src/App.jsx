@@ -968,7 +968,7 @@ function autoBadges(profile) {
   if ((profile.xp || 0) >= 500) badges.add('Pejuang 500 XP');
   if ((profile.streak || 0) >= 3) badges.add('Hari berturut 3 Hari');
   if (completed >= 1) badges.add('Topik Pertama Siap');
-  if ((profile.uasaHistory || []).some(x => x.score >= 80)) badges.add('UASA A');
+  if ((profile.uasaHistory || []).some(x => x.score >= 80)) badges.add('Pentaksiran Cemerlang');
   return [...badges];
 }
 
@@ -2822,14 +2822,14 @@ export default function App() {
 
   function saveUasaResult(result) {
     const badges = new Set(profile.badges || []);
-    if (result.score >= 80) badges.add('UASA A');
+    if (result.score >= 80) badges.add('Pentaksiran Cemerlang');
     const updatedProfile = {
       ...profile,
       xp: (profile.xp || 0) + Math.round(result.score / 2),
       coins: (profile.coins || 0) + Math.round(result.score / 10),
       badges: [...badges],
       uasaHistory: [result, ...(profile.uasaHistory || [])].slice(0, 20),
-      history: [{ date: result.date, subject: result.subjectShort, topic: 'Simulator UASA', percent: result.score, stars: getStars(result.score) }, ...(profile.history || [])].slice(0, 50)
+      history: [{ date: result.date, subject: result.subjectShort, topic: 'Pentaksiran Sumatif', percent: result.score, stars: getStars(result.score) }, ...(profile.history || [])].slice(0, 50)
     };
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
@@ -3543,7 +3543,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
       correct: score.correct,
       wrong: score.wrong,
       metadata: {
-        displayTitle: 'Simulator UASA',
+        displayTitle: 'Pentaksiran Sumatif',
         subjectTitle: subject.title
       },
       startedAt: subjectResume?.startedAt || new Date().toISOString(),
@@ -3631,7 +3631,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setValidationMessage('');
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Simulator UASA</span></div><section className="card uasa-card"><p className="eyebrow">Latihan UASA</p><h1>Simulator UASA {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{renderUasaQuestionText(question.q)}</h2><input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan UASA." message="Pilih subjek lain untuk mencuba simulasi." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Pentaksiran Sumatif</span></div><section className="card uasa-card"><p className="eyebrow">Latihan Pentaksiran</p><h1>Pentaksiran Sumatif {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{renderUasaQuestionText(question.q)}</h2><input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan pentaksiran." message="Pilih subjek lain untuk mencuba pentaksiran." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = semanticReadingPassages;

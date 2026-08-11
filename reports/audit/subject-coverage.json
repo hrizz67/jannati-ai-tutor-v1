@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T13:45:26.099Z",
+  "generatedAt": "2026-08-11T12:54:39.660Z",
   "subjects": [
     {
       "id": "bm",
@@ -116,8 +116,8 @@
       "id": "math",
       "title": "Matematik Tahun 2",
       "totalQuestions": 800,
-      "uniqueStems": 799,
-      "duplicateStemCount": 1,
+      "uniqueStems": 800,
+      "duplicateStemCount": 0,
       "uniqueTemplates": 800,
       "templateReuseCount": 0,
       "topics": [
@@ -174,8 +174,8 @@
           "id": "panjang",
           "title": "Panjang",
           "totalQuestions": 50,
-          "uniqueStems": 49,
-          "duplicateStemCount": 1
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
         },
         {
           "id": "jisim_isi_padu",
@@ -193,12 +193,7 @@
         }
       ],
       "topTemplateReuses": [],
-      "topDuplicateStems": [
-        {
-          "value": "berapakah bilangan sentimeter cm yang bersamaan dengan 1 meter",
-          "count": 2
-        }
-      ]
+      "topDuplicateStems": []
     },
     {
       "id": "english",

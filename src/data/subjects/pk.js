@@ -252,7 +252,7 @@ export const pkSubject = {
     makeTopic({ id: "pertolongan_cemas_asas", code: "PERTOLONGAN_CEMAS_ASAS", title: "Pertolongan Cemas Asas", note: "Tindakan awal yang selamat", items: pertolonganPairs }),
     makeTopic({ id: "kesihatan_persekitaran", code: "KESIHATAN_PERSEKITARAN", title: "Kesihatan Persekitaran", note: "Kelas, rumah dan sekolah yang bersih", items: persekitaranPairs }),
     makeTopic({ id: "gaya_hidup_sihat", code: "GAYA_HIDUP_SIHAT", title: "Gaya Hidup Sihat", note: "Rehat, aktiviti fizikal dan tabiat harian sihat", items: gayaHidupPairs }),
-    makeTopic({ id: "uasa_kesihatan", code: "UASA_KESIHATAN", title: "UASA Kesihatan", note: "Latihan campuran Pendidikan Kesihatan", items: uasaCampuran }),
+    makeTopic({ id: "uasa_kesihatan", code: "UASA_KESIHATAN", title: "Pentaksiran Sumatif Kesihatan", note: "Latihan campuran PBD Pendidikan Kesihatan", items: uasaCampuran }),
   ],
 };
 

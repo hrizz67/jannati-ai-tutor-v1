@@ -6,20 +6,132 @@ const BM_SOURCE = {
 };
 
 const BM_CONTENT = {
-  kata_nama_am: { keyPoints: ['Nama umum untuk orang, haiwan, benda atau tempat.', 'Biasanya tidak merujuk kepada satu nama khusus sahaja.'], example: 'buku, kucing, sekolah', review: 'Pilih perkataan yang menamakan benda atau haiwan secara umum.' },
-  kata_nama_khas: { keyPoints: ['Nama khusus bagi orang, tempat, jenama atau tajuk.', 'Huruf pertama biasanya ditulis dengan huruf besar.'], example: 'Aina, Melaka, Jannati', review: 'Cari nama yang merujuk kepada satu orang atau tempat tertentu.' },
-  kata_ganti_nama: { keyPoints: ['Perkataan yang menggantikan nama orang.', 'Gunakan mengikut orang yang bercakap atau orang yang dimaksudkan.'], example: 'saya, kamu, dia, mereka', review: 'Baca ayat dan pilih kata yang menggantikan nama orang dengan tepat.' },
-  kata_kerja: { keyPoints: ['Kata yang menunjukkan perbuatan atau tindakan.', 'Tanya: apakah perbuatan yang berlaku dalam ayat?'], example: 'membaca, menyanyi, mengemas', review: 'Cari perkataan yang menunjukkan perbuatan.' },
-  kata_adjektif: { keyPoints: ['Kata yang menerangkan sifat, warna, saiz atau keadaan.', 'Kata ini membantu kita menerangkan sesuatu dengan lebih jelas.'], example: 'merah, besar, rajin', review: 'Cari perkataan yang menerangkan sifat atau keadaan.' },
-  kata_sendi: { keyPoints: ['Kata yang hadir di hadapan kata nama atau frasa nama.', 'Gunakan kata sendi yang sesuai dengan hubungan dalam ayat.'], example: 'di sekolah, ke rumah, dari pasar', review: 'Perhatikan tempat atau arah dalam ayat sebelum memilih jawapan.' },
-  kata_hubung: { keyPoints: ['Kata yang menghubungkan perkataan, frasa atau ayat.', 'Pilih kata hubung berdasarkan hubungan maksud ayat.'], example: 'dan, tetapi, kerana', review: 'Baca kedua-dua bahagian ayat dan cari perkataan yang menghubungkannya.' },
-  penjodoh_bilangan: { keyPoints: ['Kata yang digunakan bersama bilangan dan kata nama.', 'Pilih berdasarkan bentuk atau jenis benda.'], example: 'sebatang pensel, seekor kucing, sehelai baju', review: 'Lihat benda yang dikira dan tentukan penjodoh yang sesuai.' },
-  pemahaman_penulisan: { keyPoints: ['Baca ayat dengan teliti sebelum menjawab.', 'Cari maklumat yang dinyatakan secara terus dalam ayat.'], example: 'Siapakah, apakah, di manakah', review: 'Gariskan kata kunci soalan dan cari jawapannya dalam ayat.' },
-  ayat: { keyPoints: ['Ayat tanya digunakan untuk bertanya.', 'Ayat seruan menunjukkan perasaan, manakala ayat perintah memberikan arahan.'], example: 'Siapakah nama kamu? Tolong duduk.', review: 'Kenal pasti tujuan ayat: bertanya, berseru atau memberi arahan.' },
-  tatabahasa: { keyPoints: ['Ayat perlu mempunyai susunan dan penggunaan kata yang betul.', 'Baca semula ayat untuk memastikan maksudnya jelas.'], example: 'Baju itu bersih selepas dicuci.', review: 'Pilih perkataan yang menjadikan ayat lengkap dan bermakna.' },
-  bina_ayat: { keyPoints: ['Ayat lengkap mempunyai maksud yang jelas.', 'Gunakan kata kunci tanpa mengubah maksudnya.'], example: 'Ali rajin membaca buku.', review: 'Pastikan ayat bermula dengan huruf besar dan berakhir dengan tanda baca.' },
-  simpulan_bahasa: { keyPoints: ['Simpulan bahasa mempunyai maksud tertentu.', 'Maksudnya tidak semestinya sama dengan makna setiap perkataan.'], example: 'ringan tulang = suka membantu', review: 'Fikirkan maksud keseluruhan ungkapan dalam situasi.' },
-  uasa_kbat: { keyPoints: ['Gunakan pengetahuan bahasa dalam situasi harian.', 'Pilih tindakan atau jawapan yang paling sesuai dengan sebabnya.'], example: 'menjaga kebersihan kelas', review: 'Baca situasi, kenal pasti masalah dan pilih tindakan yang baik.' }
+  kata_nama_am: {
+    learningObjective: 'Murid dapat mengenal pasti kata nama am bagi orang, haiwan, benda dan tempat dalam ayat mudah.',
+    learningOutcome: 'Murid dapat mengelaskan dan menggunakan kata nama am dengan betul dalam ayat mudah.',
+    keyPoints: ['Nama umum untuk orang, haiwan, benda atau tempat.', 'Biasanya tidak merujuk kepada satu nama khusus sahaja.'],
+    example: 'Langkah 1: Cari nama yang disebut secara umum. Langkah 2: Kelaskan sebagai orang, haiwan, benda atau tempat. Contoh: Siti membaca buku di sekolah. Kata nama am ialah buku dan sekolah.',
+    commonMistakes: ['Menganggap nama orang seperti Siti sebagai kata nama am.', 'Memilih kata kerja seperti membaca kerana perkataan itu menunjukkan perbuatan.'],
+    selfCheck: 'Boleh kamu kelaskan guru, kucing, meja dan taman kepada kumpulan yang betul?',
+    review: 'Baca ayat, gariskan nama orang, haiwan, benda dan tempat, kemudian asingkan nama khusus daripada nama am.'
+  },
+  kata_nama_khas: {
+    learningObjective: 'Murid dapat mengenal pasti kata nama khas bagi orang, tempat, haiwan dan benda dalam ayat mudah.',
+    learningOutcome: 'Murid dapat membezakan serta menggunakan kata nama khas dengan huruf besar yang betul.',
+    keyPoints: ['Kata nama khas ialah nama khusus bagi orang, tempat, haiwan atau benda.', 'Huruf pertama kata nama khas ditulis dengan huruf besar.'],
+    example: 'Langkah 1: Cari nama yang merujuk kepada sesuatu secara khusus. Langkah 2: Semak huruf besar. Contoh: Aina tinggal di Melaka. Aina dan Melaka ialah kata nama khas.',
+    commonMistakes: ['Menulis nama khusus dengan huruf kecil seperti aina atau melaka.', 'Menganggap nama umum seperti murid dan sekolah sebagai kata nama khas.'],
+    selfCheck: 'Antara guru, Cikgu Farah, bandar dan Johor Bahru, yang manakah kata nama khas?',
+    review: 'Gariskan nama khusus dalam ayat, kemudian semak sama ada setiap nama bermula dengan huruf besar.'
+  },
+  kata_ganti_nama: {
+    learningObjective: 'Murid dapat mengenal pasti kata ganti nama berdasarkan penutur, pendengar dan pihak yang diperkatakan.',
+    learningOutcome: 'Murid dapat memilih dan menggunakan kata ganti nama yang sesuai dalam dialog serta ayat mudah.',
+    keyPoints: ['Saya digunakan oleh seorang penutur untuk dirinya sendiri.', 'Kamu atau awak merujuk pendengar, dia merujuk seorang yang diperkatakan, manakala mereka merujuk lebih daripada seorang.'],
+    example: 'Langkah 1: Kenal pasti siapa bercakap. Langkah 2: Tentukan siapa yang dimaksudkan. Contoh: Aina berkata, “Saya membaca buku.” Saya menggantikan nama Aina.',
+    commonMistakes: ['Menggunakan dia apabila penutur bercakap tentang dirinya sendiri.', 'Keliru antara kami yang tidak melibatkan pendengar dengan kita yang melibatkan pendengar.'],
+    selfCheck: 'Jika Aina dan Siti bercakap tentang diri mereka kepada Amir, patutkah mereka menggunakan kami atau kita?',
+    review: 'Tandakan penutur, pendengar dan orang yang diperkatakan sebelum memilih kata ganti nama.'
+  },
+  kata_kerja: {
+    learningObjective: 'Murid dapat mengenal pasti kata kerja yang menunjukkan perbuatan dalam ayat mudah.',
+    learningOutcome: 'Murid dapat memilih dan menggunakan kata kerja yang sesuai berdasarkan situasi.',
+    keyPoints: ['Kata yang menunjukkan perbuatan atau tindakan.', 'Tanya: apakah perbuatan yang berlaku dalam ayat?'],
+    example: 'Langkah 1: Baca ayat. Langkah 2: Tanya apakah yang dilakukan. Contoh: Amir menyiram pokok. Kata kerja ialah menyiram.',
+    commonMistakes: ['Memilih nama benda seperti pokok dan bukan perbuatan menyiram.', 'Memilih kata adjektif seperti rajin kerana kata itu menerangkan sifat, bukan tindakan.'],
+    selfCheck: 'Boleh kamu cari kata kerja dalam ayat “Aina melukis gambar di kelas”?',
+    review: 'Cari perkataan yang menunjukkan tindakan, kemudian bina satu ayat baharu menggunakan kata kerja itu.'
+  },
+  kata_adjektif: {
+    learningObjective: 'Murid dapat mengenal pasti kata adjektif yang menerangkan sifat, warna, ukuran dan keadaan.',
+    learningOutcome: 'Murid dapat memilih serta menggunakan kata adjektif yang sesuai dalam frasa dan ayat mudah.',
+    keyPoints: ['Kata adjektif menerangkan sifat, warna, ukuran, rasa atau keadaan.', 'Kata adjektif menjadikan penerangan tentang orang, haiwan, benda dan tempat lebih jelas.'],
+    example: 'Langkah 1: Cari perkara yang diterangkan. Langkah 2: Cari perkataan yang menerangkan sifatnya. Contoh: Bola itu besar. Besar ialah kata adjektif.',
+    commonMistakes: ['Memilih kata kerja seperti berlari sebagai kata adjektif.', 'Menggunakan kata sifat yang tidak sesuai dengan benda, seperti air yang keras.'],
+    selfCheck: 'Dalam ayat “Bunga merah itu cantik”, apakah dua kata adjektif yang digunakan?',
+    review: 'Cari kata nama dahulu, kemudian tanya apakah sifat, warna atau keadaannya.'
+  },
+  kata_sendi: {
+    learningObjective: 'Murid dapat mengenal pasti fungsi kata sendi nama dalam ayat mudah.',
+    learningOutcome: 'Murid dapat memilih dan menggunakan kata sendi nama yang sesuai berdasarkan tempat, arah, asal, masa, penerima, bahan, alat dan tujuan.',
+    keyPoints: ['Di menunjukkan tempat tetap, ke menunjukkan arah atau tujuan, manakala dari menunjukkan tempat atau arah asal.', 'Daripada digunakan untuk bahan, kepada untuk penerima, pada untuk masa, dengan untuk alat atau cara, dan untuk bagi tujuan atau kegunaan.', 'Kata sendi di dan ke ditulis terpisah daripada kata nama yang mengikutinya.'],
+    example: 'Langkah 1: Kenal pasti hubungan dalam ayat. Langkah 2: Pilih kata sendi yang sepadan. Contoh: Aina bergerak dari rumah ke sekolah. Dari menunjukkan tempat asal dan ke menunjukkan tempat tujuan.',
+    commonMistakes: ['Menggunakan di untuk pergerakan seperti pergi di sekolah; bentuk yang betul ialah pergi ke sekolah.', 'Keliru antara dari untuk tempat atau arah asal dengan daripada untuk bahan atau sumber.', 'Merapatkan kata sendi dengan nama tempat seperti disekolah; bentuk yang betul ialah di sekolah.'],
+    selfCheck: 'Bolehkah kamu melengkapkan ayat “Hadiah daripada ibu diberikan kepada Aina pada hari Isnin” dan menerangkan fungsi setiap kata sendi?',
+    review: 'Cari petunjuk tempat, arah, asal, masa, penerima, bahan, alat atau tujuan sebelum memilih kata sendi.'
+  },
+  kata_hubung: {
+    learningObjective: 'Murid dapat mengenal pasti fungsi kata hubung dalam ayat mudah.',
+    learningOutcome: 'Murid dapat memilih dan menggunakan kata hubung yang sesuai untuk menggabungkan idea berdasarkan hubungan maksud.',
+    keyPoints: ['Dan menambahkan maklumat, atau menunjukkan pilihan, tetapi menunjukkan pertentangan, dan kerana menunjukkan sebab.', 'Sambil digunakan untuk dua perbuatan yang berlaku serentak, manakala lalu menunjukkan urutan peristiwa.', 'Kata hubung perlu dipilih berdasarkan hubungan maksud antara dua bahagian ayat.'],
+    example: 'Langkah 1: Baca kedua-dua idea. Langkah 2: Tentukan hubungannya. Contoh: Aina membawa payung kerana hujan turun. Kerana menunjukkan sebab.',
+    commonMistakes: ['Menggunakan dan apabila hanya satu pilihan dibenarkan; gunakan atau.', 'Menggunakan kerana untuk dua idea yang bertentangan; gunakan tetapi.', 'Keliru antara sambil bagi perbuatan serentak dengan lalu bagi peristiwa berurutan.'],
+    selfCheck: 'Bolehkah kamu memilih kata hubung yang tepat untuk tambahan, pilihan, sebab, pertentangan, perbuatan serentak dan urutan?',
+    review: 'Asingkan dua idea dalam ayat, tentukan hubungan maksudnya, kemudian pilih kata hubung yang sepadan.'
+  },
+  penjodoh_bilangan: {
+    learningObjective: 'Murid dapat mengenal pasti penjodoh bilangan berdasarkan bentuk dan jenis benda.',
+    learningOutcome: 'Murid dapat memilih serta menggunakan penjodoh bilangan yang sesuai dalam frasa dan ayat mudah.',
+    keyPoints: ['Ekor digunakan untuk haiwan, orang untuk manusia, batang untuk benda panjang, helai untuk benda nipis atau lebar, dan buah untuk benda yang tiada penjodoh khusus.', 'Biji atau butir lazimnya untuk benda kecil dan bulat, pasang untuk benda berpasangan, utas untuk benda panjang dan halus, serta bentuk untuk benda melengkung.', 'Pemilihan penjodoh bergantung pada bentuk, jenis dan konteks benda; tidak semua kata nama semestinya memerlukan penjodoh bilangan.'],
+    example: 'Langkah 1: Kenal pasti benda. Langkah 2: Perhatikan bentuk atau jenisnya. Contoh: pensel panjang menggunakan batang, jadi frasanya ialah sebatang pensel.',
+    commonMistakes: ['Menggunakan buah untuk haiwan; gunakan ekor.', 'Menggunakan butir untuk cincin; gunakan bentuk kerana cincin melengkung.', 'Mengulang kata seperti segugus gugus anggur atau sebutir biji getah.'],
+    selfCheck: 'Bolehkah kamu memilih penjodoh yang tepat bagi kucing, baju, pensel, cincin, tali dan kasut?',
+    review: 'Namakan benda, perhatikan ciri fizikal atau kumpulannya, kemudian bina frasa bilangan yang lengkap.'
+  },
+  pemahaman_penulisan: {
+    learningObjective: 'Murid dapat memahami maklumat dalam petikan pendek dan menghasilkan jawapan bertulis yang sesuai.',
+    learningOutcome: 'Murid dapat mencari bukti dalam teks, membuat inferens mudah dan menulis jawapan lengkap berdasarkan situasi.',
+    keyPoints: ['Maklumat tersurat dinyatakan secara jelas dalam teks, manakala maklumat tersirat diperoleh melalui petunjuk dan penaakulan.', 'Kenal pasti kata tanya seperti siapa, apa, bila, di mana, mengapa dan bagaimana sebelum mencari jawapan.', 'Jawapan bertulis perlu tepat, lengkap dan tidak menambah fakta yang tiada dalam petikan.'],
+    example: 'Langkah 1: Gariskan kata kunci soalan. Langkah 2: Cari ayat bukti. Langkah 3: Tulis jawapan lengkap. Contoh: “Bilakah Faris membaca?” Jawapan: “Faris membaca pada waktu rehat.”',
+    commonMistakes: ['Meneka masa, tempat atau watak yang tidak dinyatakan dalam petikan.', 'Menyalin seluruh petikan tanpa memilih maklumat yang menjawab soalan.', 'Memberikan jawapan satu perkataan apabila soalan meminta ayat lengkap atau alasan.'],
+    selfCheck: 'Bolehkah kamu menunjukkan ayat bukti bagi setiap jawapan dan membezakan fakta daripada inferens?',
+    review: 'Baca petikan dua kali, tandakan bukti, kemudian semak sama ada jawapan benar-benar disokong oleh teks.'
+  },
+  ayat: {
+    learningObjective: 'Murid dapat mengenal pasti ayat tanya, ayat seruan dan ayat perintah berdasarkan tujuan serta tanda bahasanya.',
+    learningOutcome: 'Murid dapat membina dan menggunakan ayat tanya, seruan dan perintah yang sesuai dalam situasi harian.',
+    keyPoints: ['Ayat tanya mendapatkan maklumat dan biasanya berakhir dengan tanda soal.', 'Ayat seruan meluahkan perasaan seperti kagum, sakit, terkejut atau amaran dan lazimnya berakhir dengan tanda seru.', 'Ayat perintah merangkumi arahan, larangan, silaan, permintaan dan ajakan melalui kata seperti jangan, sila, tolong dan marilah.'],
+    example: 'Tanya tempat: Di manakah kantin? Seruan kagum: Wah, cantiknya lukisan itu! Perintah sopan: Sila duduk di sini.',
+    commonMistakes: ['Menentukan jenis ayat berdasarkan tanda baca sahaja tanpa melihat tujuannya.', 'Menggunakan kata tanya masa untuk bertanya tempat atau sebaliknya.', 'Terlupa koma selepas kata seru dan tanda seru pada akhir ayat seruan.'],
+    selfCheck: 'Bolehkah kamu membina satu ayat tanya, satu ayat seruan dan satu ayat perintah sopan untuk situasi di sekolah?',
+    review: 'Tentukan tujuan penutur, cari kata penanda, kemudian semak tanda baca pada akhir ayat.'
+  },
+  tatabahasa: {
+    learningObjective: 'Murid dapat mengenal pasti fungsi kata dan membetulkan kesalahan tatabahasa dalam ayat mudah.',
+    learningOutcome: 'Murid dapat memilih kata yang tepat, menyusun ayat gramatis dan memberikan alasan ringkas bagi pembetulan yang dibuat.',
+    keyPoints: ['Ayat gramatis mempunyai subjek dan predikat yang tersusun serta membawa maksud yang jelas.', 'Kata sendi dipilih mengikut fungsi: di untuk tempat berada, ke untuk arah, kepada untuk penerima, dari untuk tempat atau arah, dan daripada untuk bahan atau sumber.', 'Kata bantu seperti sudah atau telah menunjukkan perbuatan selesai, manakala sedang menunjukkan perbuatan masih berlaku.'],
+    example: 'Langkah 1: Kenal pasti maksud ayat. Langkah 2: Tentukan fungsi kata. Langkah 3: Baca semula. Contoh: “Saya pergi di sekolah” dibetulkan menjadi “Saya pergi ke sekolah” kerana ke menunjukkan arah.',
+    commonMistakes: ['Menulis kata sendi tempat secara bercantum seperti disekolah; bentuk yang betul ialah di sekolah.', 'Menggunakan ke untuk penerima; gunakan kepada seperti hadiah diberikan kepada Siti.', 'Mengulang kata yang tidak diperlukan atau menggunakan dua penguat serentak seperti sangat tercantik.'],
+    selfCheck: 'Bolehkah kamu membetulkan penggunaan di, ke, kepada, dari dan daripada serta menerangkan sebabnya?',
+    review: 'Semak susunan subjek-predikat, fungsi setiap kata dan ejaan kata sendi sebelum menerima sesuatu ayat sebagai gramatis.'
+  },
+  bina_ayat: {
+    learningObjective: 'Murid dapat mengenal pasti unsur ayat dan membina ayat lengkap yang gramatis berdasarkan pelbagai rangsangan.',
+    learningOutcome: 'Murid dapat menyusun, membetulkan, menilai dan mencipta ayat yang jelas dengan huruf besar serta tanda baca yang betul.',
+    keyPoints: ['Ayat lengkap sekurang-kurangnya mempunyai subjek dan predikat serta menyampaikan maksud yang jelas.', 'Susun maklumat secara teratur: siapa atau apa, perbuatan atau keadaan, diikuti objek, tempat, masa, sebab atau tujuan jika perlu.', 'Ayat mesti menggunakan kata kunci mengikut maksudnya, bermula dengan huruf besar dan berakhir dengan tanda baca yang sesuai.'],
+    example: 'Kata kunci: Mira, perpustakaan, meminjam. Langkah 1: Pilih Mira sebagai subjek. Langkah 2: Susun perbuatan dan tempat. Ayat: Mira pergi ke perpustakaan untuk meminjam buku.',
+    commonMistakes: ['Menyalin kata kunci tanpa membentuk subjek dan predikat.', 'Menyusun objek sebagai pelaku sehingga ayat tidak munasabah seperti Bola menendang Hakim.', 'Mengulang perkataan, menggunakan huruf kecil pada awal ayat atau meninggalkan tanda baca akhir.'],
+    selfCheck: 'Adakah ayat kamu menggunakan semua kata kunci, mempunyai pelaku dan cerita tentangnya, serta dapat difahami apabila dibaca semula?',
+    review: 'Semak lima perkara: kata kunci, subjek, predikat, maksud yang munasabah dan mekanik penulisan.'
+  },
+  simpulan_bahasa: {
+    learningObjective: 'Murid dapat mengenal pasti makna dan penggunaan simpulan bahasa asas berdasarkan konteks.',
+    learningOutcome: 'Murid dapat memadankan, membezakan, menilai dan menggunakan simpulan bahasa yang tepat dalam ayat.',
+    keyPoints: ['Simpulan bahasa ialah gabungan perkataan yang mempunyai makna kiasan, bukan semata-mata makna setiap perkataan.', 'Gunakan petunjuk situasi untuk memilih ungkapan: perbuatan, cara bertutur, perasaan, kebolehan atau keadaan seseorang.', 'Simpulan yang hampir perlu dibezakan dengan teliti, contohnya panjang akal bermaksud cerdik mencari penyelesaian, manakala otak cair bermaksud cepat memahami pelajaran.'],
+    example: 'Situasi: Sara selalu membantu ibu tanpa disuruh. Petunjuknya ialah rajin membantu. Oleh itu, simpulan bahasa yang sesuai ialah ringan tulang.',
+    commonMistakes: ['Memberikan maksud apabila soalan meminta simpulan bahasa, atau memberikan simpulan apabila soalan meminta maksud.', 'Mentafsir ungkapan secara harfiah seperti menyangka mulut manis berkaitan rasa gula.', 'Menggunakan kaki bangku untuk semua jenis sukan sedangkan ungkapan itu khusus kepada tidak pandai bermain bola.'],
+    selfCheck: 'Bolehkah kamu menyatakan maksud, memilih simpulan mengikut situasi dan membina satu ayat yang membuktikan makna kiasannya?',
+    review: 'Kenal pasti bentuk jawapan yang diminta, gariskan petunjuk konteks, pilih simpulan atau maksud, kemudian semak penggunaannya dalam ayat.'
+  },
+  uasa_kbat: {
+    learningObjective: 'Murid dapat menggabungkan pengetahuan bahasa untuk menjawab soalan pelbagai bentuk dan aras.',
+    learningOutcome: 'Murid dapat memahami rangsangan, menggunakan kemahiran bahasa, memberikan bukti dan menghasilkan ayat yang gramatis.',
+    keyPoints: ['Kenal pasti bentuk soalan dan maklumat penting dalam rangsangan sebelum menjawab.', 'Bezakan maklumat yang dinyatakan dengan inferens; sokong jawapan menggunakan bukti teks atau sebab yang munasabah.', 'Gunakan tatabahasa yang dipelajari dan semak huruf besar, ejaan serta tanda baca bagi jawapan bertulis.'],
+    example: "Teks: 'Nadia menyiram pokok kerana tanahnya kering.' Soalan: Mengapakah Nadia menyiram pokok? Jawapan: Nadia menyiram pokok kerana tanahnya kering. Jawapan itu disokong terus oleh teks.",
+    commonMistakes: ['Meneka menggunakan maklumat yang tidak terdapat dalam rangsangan.', 'Memberikan pilihan tanpa sebab apabila soalan meminta alasan atau bukti.', 'Tidak menyemak struktur ayat, huruf besar dan tanda baca bagi jawapan bertulis.'],
+    selfCheck: 'Adakah jawapan kamu menjawab kehendak soalan, disokong oleh rangsangan dan ditulis dengan jelas?',
+    review: 'Baca rangsangan, tandakan kata tugas, cari bukti, bina jawapan dan semak semula.'
+  }
 };
 
 const BM_TEXTBOOK_GUIDANCE = {
@@ -36,7 +148,7 @@ const BM_TEXTBOOK_GUIDANCE = {
   tatabahasa: { focus: 'Perhatikan susunan perkataan supaya ayat membawa maksud yang jelas.', activity: 'Susun perkataan bercampur menjadi ayat yang lengkap.', check: 'Boleh membina ayat yang gramatis dan bermakna.' },
   bina_ayat: { focus: 'Gunakan kata kunci untuk membina ayat lengkap.', activity: 'Bina ayat berdasarkan gambar, frasa atau perkataan yang diberi.', check: 'Boleh menulis ayat dengan huruf besar dan tanda baca.' },
   simpulan_bahasa: { focus: 'Fahami maksud keseluruhan simpulan bahasa dalam konteks.', activity: 'Padankan simpulan bahasa dengan maksud atau situasi yang sesuai.', check: 'Boleh menerangkan maksud simpulan bahasa dengan contoh.' },
-  uasa_kbat: { focus: 'Gunakan pengetahuan bahasa untuk menyelesaikan situasi harian.', activity: 'Baca situasi, pilih jawapan terbaik dan berikan alasan.', check: 'Boleh menyokong jawapan dengan sebab yang munasabah.' }
+  uasa_kbat: { focus: 'Gabungkan kemahiran pemahaman, kosa kata, tatabahasa dan penulisan dalam pentaksiran PBD.', activity: 'Jawab soalan pelbagai bentuk, tandakan bukti dan jelaskan alasan apabila diminta.', check: 'Boleh menjawab berdasarkan rangsangan serta menyemak ketepatan bahasa.' }
 };
 
 export function getLearningContent(subjectId, topic) {
@@ -46,6 +158,10 @@ export function getLearningContent(subjectId, topic) {
     source: subjectId === 'bm' ? BM_SOURCE : null,
     textbook: subjectId === 'bm' ? (BM_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti yang disediakan.', check: 'Semak kefahaman selepas selesai membaca.' }) : { focus: 'Ikuti fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti buku teks.', check: 'Semak kefahaman selepas selesai membaca.' },
     keyPoints: content?.keyPoints || [topic?.note || 'Fahami penerangan topik.', 'Baca contoh dan cuba latihan selepas memahami nota.'],
+    learningObjective: content?.learningObjective || topic?.learningObjective || '',
+    learningOutcome: content?.learningOutcome || topic?.learningOutcome || '',
+    commonMistakes: content?.commonMistakes || [],
+    selfCheck: content?.selfCheck || '',
     example: content?.example || topic?.questions?.[0]?.answer || 'Lihat contoh dalam latihan topik.',
     review: content?.review || 'Baca semula nota dan cuba satu soalan latihan.'
   };
