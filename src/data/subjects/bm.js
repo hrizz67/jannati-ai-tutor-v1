@@ -3633,7 +3633,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_KERJA-043",
-          "q": "Aplikasi KBAT: Pokok bunga kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?",
+          "q": "Aplikasi KBAT: Pokok bunga di dalam kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?",
           "answer": "menyiram",
           "accepted": [
             "menyiram",
@@ -3648,7 +3648,7 @@ const rawBMSSubject = {
           "estimatedTime": 75,
           "uasa": "UASA/KBAT",
           "dskp": "KSSR Tahun 2",
-          "question": "Aplikasi KBAT: Pokok bunga kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?"
+          "question": "Aplikasi KBAT: Pokok bunga di dalam kelas kelihatan layu dan tanahnya kering. Apakah kata kerja yang sesuai untuk tindakan murid?"
         },
         {
           "id": "BM-KATA_KERJA-044",

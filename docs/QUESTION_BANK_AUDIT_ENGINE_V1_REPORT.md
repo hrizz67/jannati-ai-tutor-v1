@@ -5,15 +5,15 @@
 - Total questions scanned: 4530
 - Average quality score: 99
 - Critical: 0
-- High: 15
+- High: 0
 - Medium: 0
-- Low: 4515
+- Low: 4530
 
 ## Issues by Subject
 
 | Subject | Issue Count |
 | --- | ---: |
-| Bahasa Melayu Tahun 2 | 380 |
+| Bahasa Melayu Tahun 2 | 365 |
 | Pendidikan Jasmani Tahun 2 | 326 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | English Year 2 | 201 |
@@ -27,7 +27,6 @@
 | --- | ---: |
 | same_answer_pattern_repeated | 1387 |
 | unclear_distractors | 42 |
-| answer_not_matching_options | 15 |
 
 ## Top Repeated Patterns
 
@@ -58,4 +57,4 @@
 
 ## Audit Readiness
 
-NOT READY
+READY FOR EXPANSION

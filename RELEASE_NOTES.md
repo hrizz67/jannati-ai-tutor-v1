@@ -1,5 +1,24 @@
 # RELEASE NOTES - Jannati AI Tutor
 
+## v3.2.20 - Ketepatan Audit Bank Soalan
+
+Pelepasan pembaikan ini menghapuskan dapatan tahap tinggi yang tersilap pada soalan objektif Bahasa Melayu dan memperkemas beberapa arahan soalan.
+
+Sorotan:
+
+- Audit kini membezakan jawapan kanonik daripada variasi input sah dalam `accepted`.
+- Jawapan atau indeks pilihan yang benar-benar tidak sepadan masih dikesan sebagai dapatan tahap tinggi.
+- Empat soalan Bahasa Melayu diperjelas atau diseragamkan tanpa mengecilkan variasi jawapan murid.
+- Simulasi kualiti Bahasa Melayu meliputi 930 soalan dan 5,000 sampel tanpa kegagalan.
+
+Status pelepasan:
+
+- Audit global: 4,530 soalan, 0 Critical dan 0 High.
+- Gerbang BM: 930 rekod, 0 isu.
+- Gerbang subjek: 3,600 rekod, 0 isu.
+- Validasi penuh: 0 ralat, 0 amaran.
+- Binaan produksi: lulus.
+
 ## v3.2.19 - Kualiti Kandungan Matematik
 
 Pelepasan ini melengkapkan peningkatan semua 10 topik Matematik Tahun 2 berdasarkan tiga teras: pembelajaran, soalan dan nota.

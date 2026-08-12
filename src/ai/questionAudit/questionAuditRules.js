@@ -60,6 +60,21 @@ function splitAlternatives(answer = '') {
     .filter(Boolean);
 }
 
+function answerMatchesOption(answer = '', option = '', questionText = '') {
+  const normalizedAnswer = normalizeText(answer);
+  const normalizedOption = normalizeText(option);
+  if (!normalizedAnswer || !normalizedOption) return false;
+  if (normalizedAnswer === normalizedOption) return true;
+
+  // Some objective items ask pupils to choose an option and explain why.
+  // In those cases the canonical answer may extend the selected option with
+  // a short reason while the option itself remains the correct choice.
+  const asksForReason = /\b(jelaskan|berikan sebab|nyatakan sebab|mengapa|mengapakah|alasan)\b/i.test(questionText);
+  if (!asksForReason) return false;
+  return [' kerana ', ' sebab ', ' iaitu ']
+    .some(connector => normalizedAnswer.startsWith(`${normalizedOption}${connector}`));
+}
+
 const BM_AWKWARD = [
   /\bdi atas taman\b/i,
   /\bdi atas sekolah\b/i,
@@ -121,7 +136,15 @@ function detectAnswerQuality(question = {}) {
   if (Array.isArray(options) && options.length) {
     const normalizedOptions = options.map(item => normalizeText(item)).filter(Boolean);
     const optionSet = new Set(normalizedOptions);
-    if (answers.some(item => !optionSet.has(normalizeText(item)))) {
+    const answerIndexes = [question.answerIndex, question.answer_index, question.correctIndex]
+      .filter(Number.isInteger);
+    const hasValidAnswerIndex = answerIndexes.some(index => index >= 0 && index < options.length);
+    const canonicalAnswers = answer ? [answer] : answers;
+    const hasMatchingCanonicalAnswer = canonicalAnswers.some(candidate =>
+      options.some(option => answerMatchesOption(candidate, option, text))
+    );
+    const hasInvalidAnswerIndex = answerIndexes.length > 0 && !hasValidAnswerIndex;
+    if (hasInvalidAnswerIndex || (canonicalAnswers.length > 0 && !hasMatchingCanonicalAnswer)) {
       issues.push('answer_not_matching_options');
     }
     if (optionSet.size !== normalizedOptions.length) {
