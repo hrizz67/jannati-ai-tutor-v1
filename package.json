@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "prevalidate": "node scripts/validate/questionAuditRegression.mjs",
     "validate": "node scripts/validate/index.js",
     "validate:questions": "node scripts/validate/questionValidator.js",
     "validate:bm": "node scripts/validate/bmReleaseGate.mjs",

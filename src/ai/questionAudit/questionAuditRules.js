@@ -134,8 +134,6 @@ function detectAnswerQuality(question = {}) {
   // spoken forms for the same learning target. Their presence is not evidence
   // that the question has competing correct concepts.
   if (Array.isArray(options) && options.length) {
-    const normalizedOptions = options.map(item => normalizeText(item)).filter(Boolean);
-    const optionSet = new Set(normalizedOptions);
     const answerIndexes = [question.answerIndex, question.answer_index, question.correctIndex]
       .filter(Number.isInteger);
     const hasValidAnswerIndex = answerIndexes.some(index => index >= 0 && index < options.length);
@@ -146,12 +144,6 @@ function detectAnswerQuality(question = {}) {
     const hasInvalidAnswerIndex = answerIndexes.length > 0 && !hasValidAnswerIndex;
     if (hasInvalidAnswerIndex || (canonicalAnswers.length > 0 && !hasMatchingCanonicalAnswer)) {
       issues.push('answer_not_matching_options');
-    }
-    if (optionSet.size !== normalizedOptions.length) {
-      issues.push('duplicate_answer_options');
-    }
-    if (options.length > 1 && normalizedOptions.length < 3) {
-      issues.push('unclear_distractors');
     }
   }
   if (!text && answer) issues.push('answer_without_question');

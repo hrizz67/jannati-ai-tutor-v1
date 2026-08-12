@@ -13,8 +13,8 @@
 
 | Subject | Issue Count |
 | --- | ---: |
-| Bahasa Melayu Tahun 2 | 365 |
 | Pendidikan Jasmani Tahun 2 | 326 |
+| Bahasa Melayu Tahun 2 | 323 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | English Year 2 | 201 |
 | Sains Tahun 2 | 109 |
@@ -26,7 +26,6 @@
 | Category | Issue Count |
 | --- | ---: |
 | same_answer_pattern_repeated | 1387 |
-| unclear_distractors | 42 |
 
 ## Top Repeated Patterns
 

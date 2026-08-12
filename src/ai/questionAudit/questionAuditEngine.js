@@ -22,15 +22,36 @@ function getOptions(question = {}) {
   return ensureArray(question.options || question.choices || question.answerOptions || question.answers);
 }
 
+function isExplicitBinaryChoice(question = {}, options = []) {
+  if (options.length !== 2) return false;
+  const type = String(question.questionType || question.type || '').toLowerCase();
+  if (['boolean', 'binary', 'true_false', 'true-false', 'yes_no', 'yes-no'].includes(type)) return true;
+
+  const normalized = options.map(item => normalizeText(item));
+  const pair = new Set(normalized);
+  const knownPairs = [
+    ['betul', 'salah'],
+    ['benar', 'palsu'],
+    ['true', 'false'],
+    ['ya', 'tidak'],
+    ['yes', 'no']
+  ];
+  if (knownPairs.some(values => values.every(value => pair.has(value)))) return true;
+
+  const text = getQuestionText(question);
+  return /\b(antara|atau|pilih|manakah|yang mana|adakah|lengkapkan)\b/i.test(text);
+}
+
 function detectUnclearDistractors(question = {}) {
   const options = getOptions(question);
   if (!options.length) return [];
-  const normalized = options.map(item => normalizeText(item)).filter(Boolean);
+  const populated = options.filter(item => String(item ?? '').trim());
+  const normalized = populated.map(item => normalizeText(item)).filter(Boolean);
   const unique = new Set(normalized);
   const issues = [];
   if (unique.size !== normalized.length) issues.push('duplicate_answer_options');
-  if (options.length > 1 && normalized.some(value => value.length <= 1)) issues.push('unclear_distractors');
-  if (options.length > 1 && options.filter(Boolean).length < 3) issues.push('unclear_distractors');
+  if (populated.length < 2) issues.push('unclear_distractors');
+  if (populated.length === 2 && !isExplicitBinaryChoice(question, populated)) issues.push('unclear_distractors');
   return issues;
 }
 
