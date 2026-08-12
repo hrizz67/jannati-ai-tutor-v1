@@ -17,7 +17,7 @@ export const subjectList = [
     "icon": "\u{1F4D0}",
     "color": "blue",
     "topicCount": 10,
-    "questionCount": 800
+    "questionCount": 600
   },
   {
     "id": "english",

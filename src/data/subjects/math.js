@@ -1,4 +1,15 @@
-export const mathSubject = {
+import { enrichMathNomborTopic } from '../mathNomborQuestions.js';
+import { enrichMathTambahTopic } from '../mathTambahQuestions.js';
+import { enrichMathTolakTopic } from '../mathTolakQuestions.js';
+import { enrichMathDarabTopic } from '../mathDarabQuestions.js';
+import { enrichMathBahagiTopic } from '../mathBahagiQuestions.js';
+import { enrichMathWangTopic } from '../mathWangQuestions.js';
+import { enrichMathMasaTopic } from '../mathMasaQuestions.js';
+import { enrichMathPanjangTopic } from '../mathPanjangQuestions.js';
+import { enrichMathJisimIsiPaduTopic } from '../mathJisimIsiPaduQuestions.js';
+import { enrichMathBentukTopic } from '../mathBentukQuestions.js';
+
+export const rawMathSubject = {
   "id": "math",
   "title": "Matematik Tahun 2",
   "short": "Math",
@@ -9413,9 +9424,10 @@ export const mathSubject = {
         },
         {
           "id": "MATH-PANJANG-019",
-          "q": "Tukarkan 1 meter kepada sentimeter (cm).",
-          "answer": "100",
+          "q": "Berapakah bilangan sentimeter yang bersamaan dengan 1 meter?",
+          "answer": "100 cm",
           "accepted": [
+            "100 cm",
             "100"
           ],
           "hint": "Ingat hubungan meter dan sentimeter.",
@@ -9423,7 +9435,7 @@ export const mathSubject = {
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Nyatakan bilangan sentimeter (cm) bagi 1 meter."
+          "question": "Berapakah bilangan sentimeter yang bersamaan dengan 1 meter?"
         },
         {
           "id": "MATH-PANJANG-020",
@@ -9710,10 +9722,13 @@ export const mathSubject = {
           "q": "Namakan satu benda yang sesuai diukur dengan pembaris.",
           "answer": "pensel",
           "accepted": [
-            "pensel"
+            "pensel",
+            "pemadam",
+            "buku",
+            "buku latihan"
           ],
           "hint": "Fikirkan kegunaan pembaris.",
-          "explanation": "Pembaris digunakan untuk mengukur panjang objek.",
+          "explanation": "Pensel ialah satu contoh objek pendek yang sesuai diukur dengan pembaris. Pemadam atau buku juga boleh diterima.",
           "difficulty": "sederhana",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
@@ -11277,5 +11292,7 @@ export const mathSubject = {
     }
   ]
 };
+
+export const mathSubject = enrichMathBentukTopic(enrichMathJisimIsiPaduTopic(enrichMathPanjangTopic(enrichMathMasaTopic(enrichMathWangTopic(enrichMathBahagiTopic(enrichMathDarabTopic(enrichMathTolakTopic(enrichMathTambahTopic(enrichMathNomborTopic(rawMathSubject))))))))));
 
 export default mathSubject;

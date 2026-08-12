@@ -1,5 +1,26 @@
 # RELEASE NOTES - Jannati AI Tutor
 
+## v3.2.19 - Kualiti Kandungan Matematik
+
+Pelepasan ini melengkapkan peningkatan semua 10 topik Matematik Tahun 2 berdasarkan tiga teras: pembelajaran, soalan dan nota.
+
+Sorotan:
+
+- 600 soalan Matematik yang disusun secara konsisten kepada 60 soalan bagi setiap topik.
+- Liputan aras kognitif merangkumi mengingat, memahami, mengaplikasi, menganalisis, menilai dan mencipta.
+- Nota diperkaya dengan objektif, hasil pembelajaran, contoh, kesalahan lazim, semakan kendiri dan aktiviti guru.
+- Jawapan angka, unit, langkah kerja dan respons kreatif dinilai menggunakan bukti serta rubrik yang bersesuaian.
+- Audit khusus ditambah untuk operasi nombor, wang, masa, ukuran, jisim, isi padu serta bentuk dan ruang.
+- Ujian tekanan mengesahkan kepelbagaian soalan, jawapan dan penerangan merentas semua topik Matematik.
+
+Status pelepasan:
+
+- Validasi penuh: 0 ralat, 0 amaran.
+- Gerbang subjek: 3,600 rekod, 0 isu.
+- Audit Matematik: 0 dapatan.
+- Ujian tekanan: 10,000 sesi dan 200,000 soalan tanpa ketidakpadanan.
+- Binaan produksi: lulus.
+
 ## v3.2.18 - Kualiti Kandungan Bahasa Melayu
 
 Pelepasan ini melengkapkan peningkatan semua 14 topik Bahasa Melayu Tahun 2 berdasarkan tiga teras: pembelajaran, soalan dan nota.

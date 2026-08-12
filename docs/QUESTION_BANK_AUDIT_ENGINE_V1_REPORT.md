@@ -2,19 +2,18 @@
 
 ## Summary
 
-- Total questions scanned: 4560
+- Total questions scanned: 4530
 - Average quality score: 99
 - Critical: 0
-- High: 0
+- High: 15
 - Medium: 0
-- Low: 4560
+- Low: 4515
 
 ## Issues by Subject
 
 | Subject | Issue Count |
 | --- | ---: |
-| Bahasa Melayu Tahun 2 | 384 |
-| Matematik Tahun 2 | 374 |
+| Bahasa Melayu Tahun 2 | 380 |
 | Pendidikan Jasmani Tahun 2 | 326 |
 | Pendidikan Kesihatan Tahun 2 | 314 |
 | English Year 2 | 201 |
@@ -26,31 +25,32 @@
 
 | Category | Issue Count |
 | --- | ---: |
-| same_answer_pattern_repeated | 1821 |
-| identical_question_text | 1 |
+| same_answer_pattern_repeated | 1387 |
+| unclear_distractors | 42 |
+| answer_not_matching_options | 15 |
 
 ## Top Repeated Patterns
 
-- Matematik Tahun 2 / Bahagi / same_answer_pattern_repeated: 117
-- Matematik Tahun 2 / Darab / same_answer_pattern_repeated: 74
-- Matematik Tahun 2 / Bentuk 2D dan 3D / same_answer_pattern_repeated: 44
-- Bahasa Melayu Tahun 2 / Kata Sendi Nama / same_answer_pattern_repeated: 42
+- Bahasa Melayu Tahun 2 / Kata Adjektif / same_answer_pattern_repeated: 43
 - English Year 2 / Simple Sentences / same_answer_pattern_repeated: 42
 - English Year 2 / Colours / same_answer_pattern_repeated: 41
 - Bahasa Melayu Tahun 2 / Kata Nama Khas / same_answer_pattern_repeated: 40
-- Bahasa Melayu Tahun 2 / Kata Kerja / same_answer_pattern_repeated: 40
-- Bahasa Melayu Tahun 2 / Kata Adjektif / same_answer_pattern_repeated: 40
 - English Year 2 / Animals / same_answer_pattern_repeated: 40
 - English Year 2 / Food / same_answer_pattern_repeated: 40
 - Pendidikan Jasmani Tahun 2 / Koordinasi / same_answer_pattern_repeated: 40
+- Bahasa Melayu Tahun 2 / Kata Sendi Nama / same_answer_pattern_repeated: 38
 - English Year 2 / Numbers / same_answer_pattern_repeated: 38
-- Bahasa Melayu Tahun 2 / Tatabahasa / same_answer_pattern_repeated: 37
+- Bahasa Melayu Tahun 2 / Kata Ganti Nama / same_answer_pattern_repeated: 37
+- Bahasa Melayu Tahun 2 / Kata Kerja / same_answer_pattern_repeated: 37
 - Pendidikan Jasmani Tahun 2 / Gaya Hidup Aktif / same_answer_pattern_repeated: 37
 - Pendidikan Kesihatan Tahun 2 / Kebersihan Diri / same_answer_pattern_repeated: 37
-- Matematik Tahun 2 / Jisim dan Isi Padu / same_answer_pattern_repeated: 36
 - Pendidikan Jasmani Tahun 2 / Lokomotor / same_answer_pattern_repeated: 36
 - Pendidikan Jasmani Tahun 2 / Bukan Lokomotor / same_answer_pattern_repeated: 36
 - Pendidikan Jasmani Tahun 2 / Kecergasan Fizikal / same_answer_pattern_repeated: 36
+- Pendidikan Jasmani Tahun 2 / Keselamatan Semasa Aktiviti / same_answer_pattern_repeated: 36
+- Pendidikan Jasmani Tahun 2 / Permainan Mudah / same_answer_pattern_repeated: 36
+- Pendidikan Jasmani Tahun 2 / Rekreasi / same_answer_pattern_repeated: 36
+- Pendidikan Kesihatan Tahun 2 / Keselamatan Diri / same_answer_pattern_repeated: 36
 
 ## Critical Questions
 
@@ -58,4 +58,4 @@
 
 ## Audit Readiness
 
-READY FOR EXPANSION
+NOT READY

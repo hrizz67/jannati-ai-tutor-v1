@@ -5,6 +5,159 @@ const BM_SOURCE = {
   textbookUrl: 'https://www.moe.gov.my/index.php/buku-teks'
 };
 
+const MATH_SOURCE = {
+  curriculumLabel: 'Dokumen Penjajaran KSSR Matematik Tahap I KPM',
+  curriculumUrl: 'https://www.moe.gov.my/surat-siaran-kpm-bil-6-tahun-2024',
+  textbookLabel: 'Portal Buku Teks KPM',
+  textbookUrl: 'https://www.moe.gov.my/index.php/buku-teks'
+};
+
+const MATH_CONTENT = {
+  nombor: {
+    learningObjective: 'Murid dapat memahami nombor hingga 1000 melalui nilai tempat, cerakinan, perbandingan, urutan dan pola.',
+    learningOutcome: 'Murid dapat membaca, menulis, mewakilkan, membanding, menyusun, menganalisis dan membina nombor hingga 1000 dengan tepat.',
+    keyPoints: ['Setiap digit mempunyai nilai mengikut tempatnya: ratus, puluh dan sa.', 'Bandingkan nombor dari digit paling kiri; jika sama, bergerak satu tempat ke kanan.', 'Cerakin nombor kepada nilai tempat, contohnya 406 = 400 + 6, bukan 400 + 60.', 'Kenal pasti beza yang tetap untuk meneruskan pola nombor.'],
+    example: 'Contoh: Bandingkan 582 dengan 528. Kedua-duanya mempunyai 5 ratus. Bandingkan puluh: 8 puluh lebih besar daripada 2 puluh. Oleh itu, 582 > 528.',
+    commonMistakes: ['Mengelirukan nilai tempat dengan nilai digit, contohnya menyebut tempat puluh sebagai 80.', 'Mengabaikan sifar sebagai pemegang tempat, lalu membaca 704 sebagai 74.', 'Membandingkan digit sa dahulu sedangkan perbandingan perlu bermula dari kiri.', 'Meneruskan pola tanpa mencari beza antara nombor berturutan.'],
+    selfCheck: 'Bolehkah kamu cerakinkan 709, menerangkan nilai digit 7 dan membandingkan 709 dengan 790?',
+    review: 'Baca nombor, tandakan ratus-puluh-sa, pilih operasi berfikir yang diminta dan semak jawapan menggunakan bentuk cerakinan atau garis nombor.'
+  },
+  tambah: {
+    learningObjective: 'Murid dapat memahami dan melaksanakan operasi tambah hingga 1000 menggunakan strategi yang sesuai.',
+    learningOutcome: 'Murid dapat menambah dua atau tiga nombor, melengkapkan penambah yang hilang, menyelesaikan masalah serta menilai dan menerangkan kaedah tambah dengan tepat.',
+    keyPoints: ['Jumlah ialah hasil apabila dua atau lebih kuantiti digabungkan.', 'Dalam bentuk lazim, susun digit mengikut tempat sa, puluh dan ratus.', 'Apabila jumlah satu lajur mencapai 10 atau lebih, kumpulkan semula 10 unit kepada satu unit di lajur sebelah kiri.', 'Tertib penambah boleh ditukar tanpa mengubah jumlah, contohnya 27 + 15 = 15 + 27.', 'Semak jawapan menggunakan strategi lain seperti cerakinan, nombor serasi atau operasi songsang.'],
+    example: 'Contoh: 268 + 157. Sa: 8 + 7 = 15, tulis 5 dan kumpul semula 1 puluh. Puluh: 6 + 5 + 1 = 12, tulis 2 dan kumpul semula 1 ratus. Ratus: 2 + 1 + 1 = 4. Jadi, jumlahnya 425.',
+    commonMistakes: ['Tidak menyusun digit mengikut nilai tempat yang sama.', 'Terlupa menambah nombor yang dikumpul semula pada lajur berikutnya.', 'Mencantumkan hasil setiap lajur, contohnya menulis 7 + 8 sebagai digit 15 tanpa pengumpulan semula.', 'Terus menambah semua nombor dalam masalah tanpa mengenal pasti maklumat yang diperlukan.'],
+    selfCheck: 'Bolehkah kamu menerangkan mengapa 176 + 248 memerlukan dua kali pengumpulan semula dan menyemak jumlah 424 dengan cara lain?',
+    review: 'Kenal pasti kuantiti yang digabungkan, susun nilai tempat, tambah dari kanan, kumpulkan semula jika perlu dan semak kemunasabahan jumlah.'
+  },
+  tolak: {
+    learningObjective: 'Murid dapat memahami dan melaksanakan operasi tolak hingga 1000 menggunakan strategi yang sesuai.',
+    learningOutcome: 'Murid dapat menolak secara terus atau berperingkat, melengkapkan nombor yang hilang, menyelesaikan masalah serta menilai dan menerangkan kaedah tolak dengan tepat.',
+    keyPoints: ['Baki atau beza ialah hasil apabila satu kuantiti dikeluarkan daripada kuantiti asal.', 'Dalam bentuk lazim, susun digit mengikut tempat sa, puluh dan ratus.', 'Jika digit atas lebih kecil, kumpulkan semula 1 unit daripada lajur kiri sebagai 10 unit pada lajur semasa.', 'Tertib nombor dalam operasi tolak penting dan tidak boleh ditukar seperti operasi tambah.', 'Semak jawapan menggunakan operasi tambah: baki + nombor yang ditolak mestilah sama dengan nombor asal.'],
+    example: 'Contoh: 402 - 176. Kumpul semula 1 ratus menjadi 10 puluh, kemudian 1 puluh menjadi 10 sa. Sa: 12 - 6 = 6. Puluh: 9 - 7 = 2. Ratus: 3 - 1 = 2. Jadi, bakinya 226.',
+    commonMistakes: ['Menolak digit yang lebih kecil daripada digit yang lebih besar tanpa mengikut kedudukan atas dan bawah.', 'Terlupa mengurangkan nilai lajur kiri selepas pengumpulan semula.', 'Tidak mengumpul semula merentasi sifar dengan betul.', 'Menukar tertib nombor dan menganggap jawapannya tetap sama seperti operasi tambah.', 'Menggunakan semua nombor dalam masalah walaupun ada maklumat yang tidak diperlukan.'],
+    selfCheck: 'Bolehkah kamu menerangkan pengumpulan semula bagi 503 - 217 dan menyemak jawapan 286 menggunakan operasi tambah?',
+    review: 'Kenal pasti kuantiti asal dan yang dikeluarkan, susun nilai tempat, tolak dari kanan, kumpulkan semula jika perlu dan semak menggunakan tambah.'
+  },
+  darab: {
+    learningObjective: 'Murid dapat memahami konsep darab dan menggunakan fakta asas darab hingga 10 x 10 dalam pelbagai perwakilan dan situasi.',
+    learningOutcome: 'Murid dapat mewakilkan, menghitung, melengkapkan faktor, menyelesaikan masalah serta menilai dan menerangkan strategi darab dengan tepat.',
+    keyPoints: ['Darab mewakili beberapa kumpulan yang mempunyai bilangan objek sama banyak.', 'Tambah berulang, tatasusunan, lompatan garis nombor dan ayat darab boleh mewakili situasi yang sama.', 'Menukar tertib faktor tidak mengubah hasil darab, contohnya 3 x 7 = 7 x 3.', 'Sebarang nombor didarab dengan 1 kekal nilainya, manakala didarab dengan 0 menghasilkan 0.', 'Fakta 2, 5 dan 10 boleh digunakan untuk membina fakta darab lain.'],
+    example: 'Contoh: 6 x 7. Gunakan fakta 5 x 7 = 35, kemudian tambah satu lagi kumpulan 7. Jadi, 35 + 7 = 42 dan 6 x 7 = 42.',
+    commonMistakes: ['Menambah dua faktor sahaja, contohnya menganggap 6 x 4 sebagai 6 + 4.', 'Tersalah mengira bilangan sebutan dalam tambah berulang.', 'Menganggap darab dengan 0 mengekalkan nombor asal.', 'Menggunakan operasi darab apabila kumpulan tidak sama banyak.', 'Menghafal jawapan tanpa dapat menerangkan kumpulan, baris atau tambah berulang yang diwakili.'],
+    selfCheck: 'Bolehkah kamu mewakilkan 4 x 6 sebagai tambah berulang dan tatasusunan, kemudian menerangkan mengapa hasilnya 24?',
+    review: 'Kenal pasti bilangan kumpulan dan objek setiap kumpulan, pilih perwakilan sesuai, kira hasil darab dan semak menggunakan fakta berkaitan.'
+  },
+  bahagi: {
+    learningObjective: 'Murid dapat memahami konsep bahagi dan menggunakan fakta asas bahagi dalam pelbagai perwakilan dan situasi.',
+    learningOutcome: 'Murid dapat mewakilkan, menghitung, melengkapkan nombor yang hilang, menyelesaikan masalah serta menilai dan menerangkan strategi bahagi dengan tepat.',
+    keyPoints: ['Bahagi boleh bermaksud berkongsi satu jumlah kepada beberapa kumpulan sama banyak.', 'Bahagi juga boleh bermaksud membentuk kumpulan apabila bilangan objek dalam setiap kumpulan diketahui.', 'Darab dan bahagi ialah operasi songsang; fakta 7 × 6 = 42 membantu menyelesaikan 42 ÷ 7 dan 42 ÷ 6.', 'Nombor yang dibahagi ditulis dahulu, diikuti pembahagi dan hasil bahagi.', 'Sifar dibahagi dengan nombor bukan sifar menghasilkan sifar; membahagi dengan sifar tidak dibenarkan.'],
+    example: 'Contoh: 42 ÷ 6. Cari fakta darab berkaitan: 6 × 7 = 42. Oleh itu, 42 ÷ 6 = 7. Semakan: 7 × 6 = 42.',
+    commonMistakes: ['Menukar tertib nombor lalu menulis 6 ÷ 42 apabila 42 objek dibahagi kepada 6 kumpulan.', 'Mengelirukan bilangan kumpulan dengan bilangan objek dalam setiap kumpulan.', 'Menggunakan satu kali tolak untuk situasi pengagihan sama rata.', 'Tidak menyemak hasil bahagi menggunakan operasi darab.', 'Menganggap sebarang nombor boleh dibahagi dengan sifar.'],
+    selfCheck: 'Bolehkah kamu menerangkan dua makna bagi 32 ÷ 4, mendapatkan jawapan 8 dan menyemaknya menggunakan 4 × 8?',
+    review: 'Kenal pasti jumlah asal dan perkara yang diketahui, tentukan sama ada mencari saiz atau bilangan kumpulan, bahagi dan semak menggunakan darab.'
+  },
+  wang: {
+    learningObjective: 'Murid dapat mengenal, mewakilkan dan menggunakan nilai wang Malaysia hingga RM 100 dalam pengiraan dan situasi harian.',
+    learningOutcome: 'Murid dapat membaca notasi ringgit dan sen, membina nilai setara, menambah dan menolak wang, menentukan baki serta menilai keputusan pembelian dengan tepat.',
+    keyPoints: ['Mata wang Malaysia menggunakan simbol RM bagi ringgit dan unit sen; 100 sen bersamaan dengan RM 1.', 'Dua digit selepas titik menunjukkan sen, contohnya RM 4.05 ialah empat ringgit lima sen.', 'Nilai wang yang sama boleh dibina menggunakan gabungan wang kertas atau syiling yang berbeza.', 'Semasa menambah atau menolak, susun ringgit dengan ringgit dan sen dengan sen; kumpulkan semula 100 sen sebagai RM 1.', 'Baki ialah wang yang tinggal selepas harga atau jumlah bayaran ditolak daripada wang asal.'],
+    example: 'Contoh: RM 10.00 - RM 4.65. Tukar RM 10.00 kepada RM 9 dan 100 sen. Kira 100 sen - 65 sen = 35 sen, kemudian RM 9 - RM 4 = RM 5. Jadi, bakinya RM 5.35.',
+    commonMistakes: ['Menganggap RM 3.05 sama dengan RM 3.50 kerana mengabaikan nilai tempat sen.', 'Menulis lima sen sebagai .5 sedangkan notasi yang betul ialah .05.', 'Tidak mengumpulkan 100 sen menjadi RM 1 semasa menambah.', 'Menambah harga kepada wang yang dibayar apabila soalan meminta baki.', 'Membandingkan bahagian sen sebelum memastikan bahagian ringgit sama.'],
+    selfCheck: 'Bolehkah kamu menerangkan nilai RM 7.05, membina gabungan wang yang setara dan mencari baki daripada RM 10 - RM 4.65?',
+    review: 'Kenal pasti nilai dan operasi, tukar kepada unit yang seragam jika perlu, kira ringgit dan sen mengikut tempat, kemudian semak jumlah atau baki.'
+  },
+  masa: {
+    learningObjective: 'Murid dapat membaca waktu dan menggunakan hubungan jam, minit, hari, minggu, bulan dan tahun dalam pengiraan serta situasi harian.',
+    learningOutcome: 'Murid dapat membaca jam tepat, suku dan setengah jam, menukar unit, menentukan tempoh atau waktu, mentafsir kalendar serta menilai dan membina jadual dengan tepat.',
+    keyPoints: ['Jarum pendek menunjukkan jam dan jarum panjang menunjukkan minit.', 'Satu jam bersamaan dengan 60 minit; setengah jam ialah 30 minit dan suku jam ialah 15 minit.', 'Tempoh ialah beza antara waktu mula dengan waktu tamat.', 'Satu minggu mempunyai 7 hari dan satu tahun mempunyai 12 bulan.', 'Apabila masa melintasi satu jam, gunakan tepat pada jam sebagai titik perantaraan untuk mengira dengan lebih mudah.'],
+    example: 'Contoh: Cari tempoh dari 9:35 hingga 10:20. Dari 9:35 ke 10:00 ialah 25 minit. Dari 10:00 ke 10:20 ialah 20 minit. Jadi, tempohnya 25 + 20 = 45 minit.',
+    commonMistakes: ['Menganggap satu jam mempunyai 100 minit.', 'Mengelirukan suku jam 15 minit dengan setengah jam 30 minit.', 'Menolak angka minit secara terus apabila waktu melintasi satu jam.', 'Tidak mengira hari mula apabila soalan menyatakan termasuk hari mula.', 'Menganggap waktu mula, waktu tamat dan tempoh sebagai perkara yang sama.'],
+    selfCheck: 'Bolehkah kamu membaca 4:30, menukar 1 jam 15 minit kepada minit dan mencari tempoh dari 7:45 hingga 8:20?',
+    review: 'Kenal pasti sama ada soalan meminta waktu atau tempoh, samakan unit, kira melalui tepat pada jam jika perlu dan semak pada garis masa.'
+  },
+  panjang: {
+    learningObjective: 'Murid dapat mengukur, menganggar, membanding dan menggunakan panjang dalam meter dan sentimeter dengan alat serta strategi yang sesuai.',
+    learningOutcome: 'Murid dapat membaca skala, menukar m dan cm, melaksanakan operasi panjang, menganalisis ketepatan ukuran serta membina penyelesaian pengukuran dengan tepat.',
+    keyPoints: ['Sentimeter (cm) sesuai untuk objek pendek, manakala meter (m) sesuai untuk objek atau jarak yang lebih panjang.', 'Satu meter bersamaan dengan 100 sentimeter.', 'Letakkan hujung objek pada tanda 0 dan pastikan pembaris lurus serta selari dengan objek.', 'Jika ukuran tidak bermula pada 0, panjang sebenar ialah bacaan akhir ditolak bacaan mula.', 'Sebelum menambah, menolak atau membandingkan panjang, tukarkan semua ukuran kepada unit yang sama.'],
+    example: 'Contoh: Cari baki tali 2 m selepas 65 cm digunakan. Tukarkan 2 m kepada 200 cm. Kira 200 - 65 = 135 cm. Tukarkan semula: 135 cm = 1 m 35 cm.',
+    commonMistakes: ['Menganggap 1 m bersamaan dengan 10 cm.', 'Membaca nombor pada hujung objek sebagai panjang walaupun objek tidak bermula pada 0.', 'Menggunakan pembaris yang senget atau tidak selari dengan objek.', 'Menambah nilai dalam m dan cm tanpa menyamakan unit.', 'Memilih meter untuk objek kecil atau sentimeter untuk jarak yang sangat panjang tanpa menilai kemunasabahan.'],
+    selfCheck: 'Bolehkah kamu mengukur objek dari tanda 4 cm hingga 19 cm, menukar 2 m 35 cm kepada cm dan mencari baki 2 m - 75 cm?',
+    review: 'Kenal pasti objek dan unit, pilih alat sesuai, sejajarkan titik mula, samakan unit sebelum mengira dan semak sama ada jawapan munasabah.'
+  },
+  jisim_isi_padu: {
+    learningObjective: 'Murid dapat mengukur, menganggar, membanding dan menggunakan jisim serta isi padu cecair dengan unit dan alat yang sesuai.',
+    learningOutcome: 'Murid dapat membaca skala, menukar kg-g dan L-mL, melaksanakan operasi ukuran, menilai kemunasabahan serta membina penyelesaian dengan tepat.',
+    keyPoints: ['Gram (g) sesuai untuk objek ringan dan kilogram (kg) untuk objek lebih berat; 1 kg = 1000 g.', 'Mililiter (mL) sesuai untuk kuantiti cecair kecil dan liter (L) untuk kuantiti lebih besar; 1 L = 1000 mL.', 'Gunakan penimbang untuk jisim dan jag atau silinder penyukat untuk isi padu cecair.', 'Baca skala cecair pada aras mata supaya bacaan tidak kelihatan terlalu tinggi atau rendah.', 'Sebelum menambah, menolak atau membandingkan ukuran, tukarkan semua nilai kepada unit yang sama.'],
+    example: 'Contoh: Cari baki air daripada 2 L selepas 750 mL digunakan. Tukarkan 2 L kepada 2000 mL. Kira 2000 - 750 = 1250 mL. Tukarkan semula: 1250 mL = 1 L 250 mL.',
+    commonMistakes: ['Menganggap 1 kg = 100 g atau 1 L = 100 mL.', 'Menggunakan jag penyukat untuk jisim atau penimbang untuk isi padu cecair.', 'Menambah kg dengan g atau L dengan mL tanpa menyamakan unit.', 'Membaca skala cecair dari arah atas atau bawah, bukan pada aras mata.', 'Menggunakan kg bagi objek sangat ringan atau mL bagi bekas besar tanpa menilai kemunasabahan.'],
+    selfCheck: 'Bolehkah kamu menukar 1 kg 750 g kepada gram, menukar 2 L 350 mL kepada mL dan mencari baki 2 L - 850 mL?',
+    review: 'Kenal pasti sama ada jisim atau isi padu cecair, pilih alat dan unit sesuai, samakan unit, kira dengan teliti dan semak kemunasabahan jawapan.'
+  },
+  bentuk: {
+    learningObjective: 'Murid dapat mengenal dan menerangkan ciri bentuk 2D serta objek 3D, membina pola dan menghubungkan bentuk dengan objek harian.',
+    learningOutcome: 'Murid dapat mengelaskan bentuk, membandingkan sisi, bucu dan permukaan, menganalisis perwakilan ruang serta mencipta pola atau reka bentuk dengan tepat.',
+    keyPoints: ['Bentuk 2D adalah rata dan dikenal melalui sisi lurus atau melengkung serta bucu.', 'Segi tiga mempunyai 3 sisi, segi empat sama dan segi empat tepat mempunyai 4 sisi, manakala bulatan tiada sisi lurus atau bucu.', 'Objek 3D mempunyai ruang dan dikenal melalui permukaan rata atau melengkung, bucu serta bentuk tapaknya.', 'Kubus dan kuboid mempunyai 6 permukaan rata serta 8 bucu; silinder, kon dan sfera mempunyai ciri permukaan melengkung yang berbeza.', 'Ciri geometri menentukan nama dan kegunaan bentuk; warna atau saiz sahaja tidak menentukan bentuk.'],
+    example: 'Contoh: Bandingkan kubus dengan kuboid. Kedua-duanya mempunyai 6 permukaan rata dan 8 bucu. Semua permukaan kubus ialah segi empat sama, manakala permukaan kuboid lazimnya segi empat tepat.',
+    commonMistakes: ['Mengelaskan bentuk berdasarkan warna atau saiz dan mengabaikan sisi, bucu serta permukaan.', 'Menganggap semua bentuk empat sisi ialah segi empat sama.', 'Mengatakan bulatan mempunyai sisi lurus atau bucu.', 'Mengelirukan permukaan rata dengan permukaan melengkung pada sfera, kon dan silinder.', 'Menganggap bentuk 2D dan objek 3D sama kerana namanya kelihatan serupa pada gambar.'],
+    selfCheck: 'Bolehkah kamu membezakan segi empat sama dengan segi empat tepat, menerangkan permukaan silinder dan mengenal objek daripada bilangan permukaan serta bucunya?',
+    review: 'Kenal pasti sama ada 2D atau 3D, kira dan namakan sisi, bucu serta permukaan, bandingkan ciri penting dan semak jawapan menggunakan objek maujud.'
+  }
+};
+
+const MATH_TEXTBOOK_GUIDANCE = {
+  nombor: {
+    focus: 'Hubungkan angka, perkataan, model nilai tempat, cerakinan, perbandingan dan pola nombor hingga 1000.',
+    activity: 'Bina nombor menggunakan kad digit atau blok asas sepuluh, kemudian susun dan terangkan alasan perbandingan.',
+    check: 'Boleh mewakilkan satu nombor dalam sekurang-kurangnya tiga cara dan menerangkan nilai setiap digit.'
+  },
+  tambah: {
+    focus: 'Hubungkan fakta asas, strategi mental, bentuk cerakinan dan bentuk lazim bagi penambahan hingga 1000.',
+    activity: 'Gunakan blok asas sepuluh atau jadual nilai tempat untuk menunjukkan pengumpulan semula, kemudian bandingkan dengan algoritma bentuk lazim.',
+    check: 'Boleh memilih strategi yang sesuai, menerangkan setiap langkah dan mengesan kesilapan pengumpulan semula.'
+  },
+  tolak: {
+    focus: 'Hubungkan fakta asas, strategi mental, bentuk cerakinan dan bentuk lazim bagi penolakan hingga 1000.',
+    activity: 'Gunakan blok asas sepuluh atau jadual nilai tempat untuk menunjukkan pengumpulan semula termasuk merentasi sifar, kemudian semak dengan operasi tambah.',
+    check: 'Boleh memilih strategi tolak yang sesuai, menerangkan pengumpulan semula dan membuktikan jawapan menggunakan hubungan tambah–tolak.'
+  },
+  darab: {
+    focus: 'Hubungkan kumpulan sama banyak, tambah berulang, tatasusunan, garis nombor dan fakta asas darab hingga 10 x 10.',
+    activity: 'Bina tatasusunan menggunakan objek maujud, tukarkan kepada tambah berulang dan ayat darab, kemudian cari fakta berkaitan.',
+    check: 'Boleh menerangkan maksud kedua-dua faktor, memilih strategi cekap dan mengesan kesilapan konsep darab.'
+  },
+  bahagi: {
+    focus: 'Hubungkan perkongsian sama rata, pembentukan kumpulan, tolak berulang, garis nombor dan hubungan songsang darab–bahagi.',
+    activity: 'Agihkan objek maujud kepada kumpulan sama banyak, kemudian ubah bilangan kumpulan atau saiz kumpulan dan tulis ayat bahagi serta ayat darab semakan.',
+    check: 'Boleh membezakan perkara yang dicari, memilih strategi bahagi yang sesuai dan membuktikan jawapan menggunakan fakta darab.'
+  },
+  wang: {
+    focus: 'Hubungkan wang kertas, syiling, notasi RM, nilai setara, jumlah harga dan baki dalam lingkungan RM 100.',
+    activity: 'Bina kedai mini dengan wang mainan, pilih gabungan bayaran tepat, kira jumlah pembelian dan tentukan baki menggunakan sekurang-kurangnya dua kaedah.',
+    check: 'Boleh membaca ringgit dan sen, membina nilai setara serta mengesan kesilapan notasi, jumlah atau baki.'
+  },
+  masa: {
+    focus: 'Hubungkan muka jam, waktu digital, unit masa, garis masa, kalendar dan jadual harian.',
+    activity: 'Gunakan jam model untuk membina waktu mula dan tamat, gerakkan jarum mengikut tempoh, kemudian catat pengiraan pada garis masa.',
+    check: 'Boleh membaca waktu, menentukan tempoh atau waktu hilang dan mengesan jadual yang bertindih.'
+  },
+  panjang: {
+    focus: 'Hubungkan objek maujud, alat ukur, bacaan skala, anggaran, hubungan 1 m = 100 cm dan operasi ukuran panjang.',
+    activity: 'Ukur beberapa objek menggunakan pembaris dan pita ukur, termasuk ukuran yang tidak bermula pada sifar; catat dalam cm, tukar kepada m dan cm, kemudian bandingkan hasil.',
+    check: 'Boleh memilih unit dan alat, membaca skala dengan betul, menukar m-cm serta mengesan kesilapan pengukuran atau pengiraan.'
+  },
+  jisim_isi_padu: {
+    focus: 'Bezakan jisim daripada isi padu cecair serta hubungkan alat, skala, anggaran, kg-g, L-mL dan operasi ukuran.',
+    activity: 'Timbang beberapa objek dan sukat beberapa cecair, catat bacaan dalam unit asas, tukar kepada unit gabungan dan bandingkan anggaran dengan ukuran sebenar.',
+    check: 'Boleh memilih alat dan unit yang betul, membaca skala pada aras mata, menukar kg-g atau L-mL dan mengesan jawapan yang tidak munasabah.'
+  },
+  bentuk: {
+    focus: 'Hubungkan bentuk 2D, objek 3D, sisi, bucu, permukaan, pola, bentangan mudah dan objek dalam persekitaran.',
+    activity: 'Asingkan kad bentuk 2D dan model 3D, jejak sisi atau permukaan, bina pola, buat cap permukaan dan reka objek gabungan seperti rumah atau roket.',
+    check: 'Boleh mengelaskan berdasarkan ciri geometri, menjelaskan persamaan dan perbezaan serta membina pola atau reka bentuk yang mematuhi syarat.'
+  }
+};
+
 const BM_CONTENT = {
   kata_nama_am: {
     learningObjective: 'Murid dapat mengenal pasti kata nama am bagi orang, haiwan, benda dan tempat dalam ayat mudah.',
@@ -152,11 +305,21 @@ const BM_TEXTBOOK_GUIDANCE = {
 };
 
 export function getLearningContent(subjectId, topic) {
-  const content = subjectId === 'bm' ? BM_CONTENT[topic?.id] : null;
+  const content = subjectId === 'bm'
+    ? BM_CONTENT[topic?.id]
+    : subjectId === 'math'
+      ? MATH_CONTENT[topic?.id]
+      : null;
+  const source = subjectId === 'bm' ? BM_SOURCE : subjectId === 'math' ? MATH_SOURCE : null;
+  const textbook = subjectId === 'bm'
+    ? (BM_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti yang disediakan.', check: 'Semak kefahaman selepas selesai membaca.' })
+    : subjectId === 'math'
+      ? (MATH_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami konsep matematik dan hubungkan dengan perwakilan konkrit, gambar serta simbol.', activity: 'Teroka contoh, tunjukkan langkah dan lengkapkan latihan secara berperingkat.', check: 'Semak jawapan menggunakan kaedah kedua atau bahan maujud.' })
+      : { focus: 'Ikuti fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti buku teks.', check: 'Semak kefahaman selepas selesai membaca.' };
   return {
     ...(content || {}),
-    source: subjectId === 'bm' ? BM_SOURCE : null,
-    textbook: subjectId === 'bm' ? (BM_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti yang disediakan.', check: 'Semak kefahaman selepas selesai membaca.' }) : { focus: 'Ikuti fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti buku teks.', check: 'Semak kefahaman selepas selesai membaca.' },
+    source,
+    textbook,
     keyPoints: content?.keyPoints || [topic?.note || 'Fahami penerangan topik.', 'Baca contoh dan cuba latihan selepas memahami nota.'],
     learningObjective: content?.learningObjective || topic?.learningObjective || '',
     learningOutcome: content?.learningOutcome || topic?.learningOutcome || '',

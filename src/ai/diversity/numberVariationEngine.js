@@ -138,6 +138,8 @@ export const VIRTUAL_QUESTION_TEMPLATES = [
 
 export function applyNumberVariation(question = {}, context = {}) {
   const subjectId = context.subject?.id || question.subjectId;
+  if (question.numberVariationPolicy === 'authored_locked'
+    || question.metadata?.numberVariationPolicy === 'authored_locked') return question;
   const placeValueVaried = applyPlaceValueVariation(question, context);
   if (placeValueVaried !== question) return placeValueVaried;
   const sourceText = question.q || '';
@@ -185,8 +187,10 @@ export function applyNumberVariation(question = {}, context = {}) {
   return {
     ...question,
     q: nextText,
+    question: nextText,
     answer: String(expectedAnswer),
     accepted: [String(expectedAnswer)],
+    acceptedAnswers: [String(expectedAnswer)],
     explanation: buildExplanation(operation, values, expectedAnswer) || question.explanation,
     qde: {
       ...(question.qde || {}),
@@ -227,8 +231,10 @@ export function buildVirtualQuestion(template, context = {}) {
   return {
     id: `${template.id}_${a}_${b}`,
     q: text,
+    question: text,
     answer: String(expectedAnswer),
     accepted: [String(expectedAnswer)],
+    acceptedAnswers: [String(expectedAnswer)],
     hint: template.operation === 'subtract' ? 'Tolak nombor kedua daripada nombor pertama.' : 'Tambah kedua-dua nombor.',
     explanation: template.operation === 'subtract' ? `${a} - ${b} = ${expectedAnswer}` : `${a} + ${b} = ${expectedAnswer}`,
     difficulty: template.difficulty || 'mudah',

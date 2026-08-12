@@ -132,6 +132,8 @@ function remember(memory, operation, values, selectionIndex = 0) {
 
 function canSafelyRotate(question = {}, operation, numbers = []) {
   if (question.subjectId && question.subjectId !== 'math') return false;
+  if (question.numberVariationPolicy === 'authored_locked'
+    || question.metadata?.numberVariationPolicy === 'authored_locked') return false;
   if (!['add', 'subtract', 'multiply', 'divide'].includes(operation)) return false;
   if (numbers.length < 2) return false;
   if (!/^\d+$/.test(String(question.answer || ''))) return false;
@@ -480,6 +482,7 @@ export function applyNumberIntelligence(question = {}, session = {}, options = {
   return {
     ...question,
     q: nextText,
+    question: nextText,
     answer: String(selected.answer),
     accepted: [String(selected.answer)],
     // Keep the quality-engine answer cache in sync when the number engine

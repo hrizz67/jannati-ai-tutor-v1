@@ -31,7 +31,9 @@ for (const subject of subjectList) {
 
       if (subject.id === 'math' && topic.id === 'panjang' && /\b(alat|benda)\b.*\b(pembaris|mengukur)\b/i.test(q)) {
         const normalizedAnswer = answer.toLocaleLowerCase();
-        if (/\balat\b|\bpembaris\b/i.test(q) && !['pembaris', 'pensel', 'panjang'].includes(normalizedAnswer)) {
+        const asksForTool = /\balat\b/i.test(q);
+        const namesValidTool = /\b(?:pembaris|pita ukur|meter pita|roda pengukur)\b/i.test(normalizedAnswer);
+        if (asksForTool && !namesValidTool) {
           issues.push({ id, code: 'length_tool_answer_mismatch' });
         }
       }

@@ -266,6 +266,79 @@ function isSimpulanUsageEquivalent(candidate, question = {}) {
     && !/\b([\p{L}][\p{L}'-]*)\s+\1\b/iu.test(candidateText);
 }
 
+function isMathOperationConstructionEquivalent(candidate, question = {}) {
+  const category = String(question?.metadata?.category || '').toLowerCase();
+  if (!['tambah', 'tolak', 'darab', 'bahagi', 'wang', 'masa', 'panjang', 'jisim_isi_padu', 'bentuk'].includes(category)
+    || String(question?.cognitiveLevel || '').toLowerCase() !== 'mencipta') return false;
+  const rules = question?.responseRules || {};
+  const requiredNumbers = Array.isArray(rules.requiredNumbers) ? rules.requiredNumbers.map(String) : [];
+  const requiredWords = Array.isArray(rules.requiredWords) ? rules.requiredWords.map(normalizeAcceptedAnswer) : [];
+  if (requiredNumbers.length + requiredWords.length < 3) return false;
+  const rawCandidate = String(candidate ?? '').normalize('NFKC').trim();
+  const candidateNumbers = rawCandidate.match(/\d+/g) || [];
+  if (!requiredNumbers.every(value => candidateNumbers.includes(value))) return false;
+  const candidateText = normalizeAcceptedAnswer(rawCandidate);
+  if (!requiredWords.every(value => candidateText.includes(value))) return false;
+
+  if (rules.responseKind === 'story') {
+    const candidateText = normalizeAcceptedAnswer(rawCandidate);
+    const semanticCues = Array.isArray(rules.semanticCues) ? rules.semanticCues.map(normalizeAcceptedAnswer) : [];
+    return candidateText.split(' ').filter(Boolean).length >= 8
+      && semanticCues.some(cue => candidateText.includes(cue));
+  }
+
+  if (category === 'darab' && rules.responseKind === 'array') {
+    const candidateText = normalizeAcceptedAnswer(rawCandidate);
+    return /\b(baris|lajur|tatasusunan|setiap)\b/.test(candidateText)
+      && candidateText.split(' ').filter(Boolean).length >= 6;
+  }
+
+  if (category === 'bahagi' && rules.responseKind === 'grouping') {
+    const candidateText = normalizeAcceptedAnswer(rawCandidate);
+    return /\b(kumpulan|setiap|susun|bahagi|diagih)\b/.test(candidateText)
+      && candidateText.split(' ').filter(Boolean).length >= 6;
+  }
+
+  if (category === 'masa' && ['schedule', 'representation'].includes(rules.responseKind)) {
+    return /\b(?:aktiviti|pertama|kedua|jarum|minit|jam|pukul|waktu)\b/.test(candidateText)
+      && candidateText.split(' ').filter(Boolean).length >= 6;
+  }
+
+  if (category === 'panjang' && rules.responseKind === 'representation') {
+    return /\b(?:cm|m|meter|sentimeter|panjang)\b/.test(candidateText)
+      && /[=+\-]/.test(rawCandidate);
+  }
+
+  if (category === 'jisim_isi_padu' && rules.responseKind === 'representation') {
+    return /\b(?:kg|g|l|ml|kilogram|gram|liter|mililiter)\b/.test(candidateText)
+      && /[=+\-]/.test(rawCandidate);
+  }
+
+  if (category === 'bentuk' && ['design', 'pattern', 'classification'].includes(rules.responseKind)) {
+    return /\b(?:bentuk|segi|bulatan|kubus|kuboid|silinder|kon|sfera|pola|rumah|roket)\b/.test(candidateText)
+      && candidateText.split(' ').filter(Boolean).length >= 6;
+  }
+
+  const hasOperationSymbol = category === 'tolak'
+    ? rawCandidate.includes('-')
+    : category === 'darab'
+      ? /[x×]/i.test(rawCandidate)
+      : category === 'bahagi'
+        ? /[÷/]/i.test(rawCandidate) || /\bbahagi\b/i.test(rawCandidate)
+        : category === 'wang'
+          ? /[+\-]/.test(rawCandidate)
+          : category === 'masa'
+            ? /[:+\-–]/.test(rawCandidate) || /\b(?:pukul|minit|jam|hari)\b/i.test(rawCandidate)
+            : category === 'panjang'
+              ? /[+\-]/.test(rawCandidate) || /\b(?:cm|m|meter|sentimeter|panjang)\b/i.test(rawCandidate)
+              : category === 'jisim_isi_padu'
+                ? /[+\-]/.test(rawCandidate) || /\b(?:kg|g|L|mL|jisim|isi padu)\b/i.test(rawCandidate)
+                : category === 'bentuk'
+                  ? /\b(?:segi|bulatan|kubus|kuboid|silinder|kon|sfera|pola)\b/i.test(rawCandidate)
+                  : rawCandidate.includes('+');
+  return hasOperationSymbol && rawCandidate.includes('=');
+}
+
 function getQuestionText(question = {}) {
   const nestedQuestion = question?.question && typeof question.question === 'object'
     ? question.question
@@ -353,12 +426,15 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
     if (expectedPronoun) return true;
   }
 
-  const isCreativeSentenceTask = String(question?.cognitiveLevel || '').toLowerCase() === 'mencipta'
+  const hasCreativeRubric = String(question?.cognitiveLevel || '').toLowerCase() === 'mencipta'
     && Array.isArray(question?.rubric?.criteria);
+  const isCreativeSentenceTask = hasCreativeRubric
+    && /bina\s+ayat|tuliskan\s+ayat|gunakan\s+kata/i.test(rawQuestionText);
   const questionCategory = String(question?.metadata?.category || '').toLowerCase();
-  if (isCreativeSentenceTask && questionCategory === 'simpulan_bahasa') {
+  if (hasCreativeRubric && questionCategory === 'simpulan_bahasa') {
     return isSimpulanUsageEquivalent(rawCandidate, question);
   }
+  if (hasCreativeRubric && isMathOperationConstructionEquivalent(rawCandidate, question)) return true;
   if (isCreativeSentenceTask) return isBinaAyatEquivalent(rawCandidate, rawQuestionText, question);
   if (isBinaAyatEquivalent(rawCandidate, rawQuestionText, question)) return true;
 

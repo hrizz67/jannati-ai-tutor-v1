@@ -41,7 +41,7 @@ function hasContext(text = '') {
 }
 
 function hasInstruction(text = '') {
-  return /\b(pilih|nyatakan|cari|apakah|siapakah|tandakan|bulatkan|isi|lengkapkan|padankan|senaraikan|jelaskan|bandingkan|ramalkan|kenal pasti|terangkan|kira|hitung)\b/i.test(String(text || ''));
+  return /\b(pilih|nyatakan|cari|apakah|berapakah|siapakah|tandakan|bulatkan|isi|lengkapkan|padankan|senaraikan|jelaskan|bandingkan|ramalkan|kenal pasti|terangkan|kira|hitung|tulis|susun|bina|gunakan|adakah|mengapakah)\b/i.test(String(text || ''));
 }
 
 function detectLanguage(text = '', subjectId = '') {
@@ -92,7 +92,9 @@ function detectQuestionCompleteness(question = {}) {
   const words = countWords(text);
   if (!text) return ['empty_question_text'];
   if (words < 2 && !isMathExpression(text)) issues.push('incomplete_sentence');
-  if (/^(pilih|nyatakan|cari|isi|lengkapkan|padankan|kenal pasti|apakah|siapakah)\b/i.test(text) && words <= 4) {
+  const conciseCompleteMathPrompt = /^(?:apakah|berapakah)\s+nombor\s+(?:selepas|sebelum)\s+\d+/i.test(text)
+    || (isMathExpression(text) && /^(?:apakah|berapakah|hitung|kira|cari|selesaikan|nyatakan)\b/i.test(text));
+  if (/^(pilih|nyatakan|cari|isi|lengkapkan|padankan|kenal pasti|apakah|berapakah|siapakah)\b/i.test(text) && words <= 4 && !conciseCompleteMathPrompt) {
     issues.push('missing_instruction');
   }
   if (hasInstruction(text) && !hasContext(text) && !isMathExpression(text) && words <= 6) {
@@ -113,13 +115,9 @@ function detectAnswerQuality(question = {}) {
   if (!answer && answers.length === 0 && !Number.isInteger(question.answerIndex) && !Number.isInteger(question.answer_index) && !Number.isInteger(question.correctIndex)) {
     issues.push('no_correct_answer');
   }
-  // Arabic lessons intentionally accept both the Malay meaning and the
-  // Arabic spelling/number form. They are aliases for one learning target,
-  // not competing correct answers.
-  const isArabicLesson = /^ARAB-/i.test(String(question.id || '')) || String(question.subjectId || '').toLowerCase() === 'arab';
-  if (answers.length > 1 && !isArabicLesson) {
-    issues.push('multiple_possible_answers');
-  }
+  // `accepted` and `acceptedAnswers` deliberately store equivalent typed or
+  // spoken forms for the same learning target. Their presence is not evidence
+  // that the question has competing correct concepts.
   if (Array.isArray(options) && options.length) {
     const normalizedOptions = options.map(item => normalizeText(item)).filter(Boolean);
     const optionSet = new Set(normalizedOptions);
@@ -161,8 +159,12 @@ function detectLanguageQuality(question = {}, subjectId = '') {
   } else if (language === 'math') {
     const hasNumbers = /\b\d+\b/.test(text);
     const hasOperator = /[+\-×x÷=*/]/.test(text);
+    const hasOperationCue = /\b(tambah|tolak|darab|bahagi|jumlah|baki|beza|hasil|jawapan|nilai|gabung(?:kan)?)\b/i.test(text)
+      || ['addition', 'subtraction', 'multiplication', 'division', 'money', 'time', 'length', 'measurement', 'geometry'].includes(String(question.metadata?.operation || '').toLowerCase());
     const mentionsUnit = MATH_UNIT_HINT.test(text) || MATH_UNIT_HINT.test(String(question.answer || ''));
-    if (hasNumbers && !hasOperator && !/\b(berapakah|jumlah|baki|hasil|jawapan|nilai|berapa)\b/i.test(text)) {
+    const isNumberSenseTask = String(question.metadata?.category || '').toLowerCase() === 'nombor'
+      || /^MATH-NOMBOR/i.test(String(question.id || ''));
+    if (hasNumbers && !hasOperator && !hasOperationCue && !isNumberSenseTask && !/\b(berapakah|berapa)\b/i.test(text)) {
       issues.push('ambiguous_operation');
     }
     if (hasNumbers && !mentionsUnit && /\b(RM|sen|cm|m|kg|g|mL|L|jam|minit|saat)\b/i.test(String(question.topicId || '')) === false) {

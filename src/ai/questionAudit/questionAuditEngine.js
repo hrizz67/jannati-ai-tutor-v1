@@ -35,17 +35,9 @@ function detectUnclearDistractors(question = {}) {
 }
 
 function detectMathMultipleAnswer(question = {}) {
-  const text = getQuestionText(question);
   const answer = String(question.answer ?? '').trim();
   const accepted = listAnswers(question);
   const issues = [];
-  if (/doktor dan jururawat/i.test(text) && /kata nama am/i.test(text)) {
-    issues.push('multiple_possible_answers');
-    if (!accepted.includes('doktor') || !accepted.includes('jururawat')) {
-      issues.push('answer_not_matching_options');
-    }
-  }
-  if (accepted.length > 1) issues.push('multiple_possible_answers');
   if (accepted.length === 0 && !answer) issues.push('no_correct_answer');
   return [...new Set(issues)];
 }

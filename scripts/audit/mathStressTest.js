@@ -137,6 +137,208 @@ function extractDisplayedNumbers(stem = '') {
   return String(stem).match(/\d+/g)?.map(Number) || [];
 }
 
+function extractMoneyValuesCents(text = '') {
+  const source = String(text || '');
+  const values = [];
+  for (const match of source.matchAll(/RM\s*(\d+)(?:\.(\d{1,2}))?/gi)) {
+    const ringgit = Number(match[1]);
+    const senText = match[2] || '';
+    const sen = senText ? Number(senText.padEnd(2, '0')) : 0;
+    values.push((ringgit * 100) + sen);
+  }
+  for (const match of source.matchAll(/\b(\d+)\s*sen\b/gi)) {
+    values.push(Number(match[1]));
+  }
+  return values;
+}
+
+function extractTimeValues(text = '') {
+  const source = String(text || '');
+  const values = [];
+  const dayValues = { isnin: 1, selasa: 2, rabu: 3, khamis: 4, jumaat: 5, sabtu: 6, ahad: 7 };
+  for (const match of source.matchAll(/\b(\d{1,2}):(\d{2})\b/g)) {
+    values.push((Number(match[1]) * 60) + Number(match[2]));
+  }
+  for (const match of source.matchAll(/\b(\d+)\s+jam\s+(\d+)\s+minit\b/gi)) {
+    values.push((Number(match[1]) * 60) + Number(match[2]));
+  }
+  for (const match of source.matchAll(/\b(\d+)\s+jam\b/gi)) values.push(Number(match[1]) * 60);
+  for (const match of source.matchAll(/\b(\d+)\s+minit\b/gi)) values.push(Number(match[1]));
+  for (const match of source.matchAll(/\b(isnin|selasa|rabu|khamis|jumaat|sabtu|ahad)\b/gi)) {
+    values.push(dayValues[match[1].toLowerCase()]);
+  }
+  values.push(...extractDisplayedNumbers(source));
+  return [...new Set(values.filter(Number.isFinite))];
+}
+
+function extractLengthValuesCm(text = '') {
+  const source = String(text || '');
+  const values = [];
+  for (const match of source.matchAll(/\b(\d+)\s*(?:m|meter)\s*(?:dan\s*)?(\d+)\s*(?:cm|sentimeter)\b/gi)) {
+    values.push((Number(match[1]) * 100) + Number(match[2]));
+  }
+  for (const match of source.matchAll(/\b(\d+)\s*(?:cm|sentimeter)\b/gi)) {
+    values.push(Number(match[1]));
+  }
+  for (const match of source.matchAll(/\b(\d+)\s*(?:m|meter)\b(?!\s*(?:dan\s*)?\d+\s*(?:cm|sentimeter))/gi)) {
+    values.push(Number(match[1]) * 100);
+  }
+  return [...new Set(values.filter(Number.isFinite))];
+}
+
+function extractMeasurementValuesBase(text = '', kind = '') {
+  const source = String(text || '');
+  const values = [];
+  if (kind === 'mass') {
+    for (const match of source.matchAll(/\b(\d+)\s*(?:kg|kilogram)\s*(?:dan\s*)?(\d+)\s*(?:g|gram)\b/gi)) {
+      values.push((Number(match[1]) * 1000) + Number(match[2]));
+    }
+    for (const match of source.matchAll(/\b(\d+)\s*(?:g|gram)\b/gi)) values.push(Number(match[1]));
+    for (const match of source.matchAll(/\b(\d+)\s*(?:kg|kilogram)\b(?!\s*(?:dan\s*)?\d+\s*(?:g|gram))/gi)) {
+      values.push(Number(match[1]) * 1000);
+    }
+  }
+  if (kind === 'volume') {
+    for (const match of source.matchAll(/\b(\d+)\s*(?:L|liter)\s*(?:dan\s*)?(\d+)\s*(?:mL|mililiter)\b/gi)) {
+      values.push((Number(match[1]) * 1000) + Number(match[2]));
+    }
+    for (const match of source.matchAll(/\b(\d+)\s*(?:mL|mililiter)\b/gi)) values.push(Number(match[1]));
+    for (const match of source.matchAll(/\b(\d+)\s*(?:L|liter)\b(?!\s*(?:dan\s*)?\d+\s*(?:mL|mililiter))/gi)) {
+      values.push(Number(match[1]) * 1000);
+    }
+  }
+  return [...new Set(values.filter(Number.isFinite))];
+}
+
+function computeAuditedCalculation(operation = '', operands = []) {
+  const values = Array.isArray(operands) ? operands.map(Number) : [];
+  if (values.length < 2 || values.some(value => !Number.isFinite(value))) return null;
+  if (operation === 'addition') return values.reduce((sum, value) => sum + value, 0);
+  if (operation === 'subtraction') return values.slice(1).reduce((result, value) => result - value, values[0]);
+  if (operation === 'multiplication') return values.reduce((product, value) => product * value, 1);
+  if (operation === 'division') {
+    return values.slice(1).reduce((result, value) => value === 0 ? null : result / value, values[0]);
+  }
+  if (operation === 'identity') return values[0];
+  if (operation === 'maximum') return Math.max(...values);
+  if (operation === 'minimum') return Math.min(...values);
+  if (operation === 'difference') return Math.max(...values) - Math.min(...values);
+  return null;
+}
+
+function auditedMoneyIntegrity(question = {}, displayedText = '') {
+  if (String(question.metadata?.category || '').toLowerCase() !== 'wang') return null;
+  const calculations = question.metadata?.calculations;
+  const operations = question.metadata?.calculationOperations;
+  const results = question.metadata?.calculationResultsCents;
+  const numericAnswerCents = Number(question.metadata?.numericAnswerCents);
+  const calculationsValid = Array.isArray(calculations)
+    && calculations.length > 0
+    && Array.isArray(operations)
+    && operations.length === calculations.length
+    && Array.isArray(results)
+    && results.length === calculations.length
+    && calculations.every((operands, index) => Array.isArray(operands)
+      && operands.length >= 2
+      && operands.every(value => Number.isFinite(Number(value)))
+      && computeAuditedCalculation(operations[index], operands) === Number(results[index]));
+  if (!calculationsValid || !Number.isInteger(numericAnswerCents)) return false;
+  const displayedValues = extractMoneyValuesCents(displayedText);
+  return displayedValues.includes(numericAnswerCents)
+    || (operations.every(operation => operation === 'identity')
+      && displayedValues.length === 0
+      && /\b(?:RM|ringgit|sen|wang|baki|bayaran)\b/i.test(String(displayedText || '')));
+}
+
+function auditedTimeIntegrity(question = {}, displayedText = '') {
+  if (String(question.metadata?.category || '').toLowerCase() !== 'masa') return null;
+  const calculations = question.metadata?.calculations;
+  const operations = question.metadata?.calculationOperations;
+  const results = question.metadata?.calculationResultsMinutes;
+  const numericAnswer = Number(question.metadata?.numericAnswerMinutes);
+  const calculationsValid = Array.isArray(calculations)
+    && calculations.length > 0
+    && Array.isArray(operations)
+    && operations.length === calculations.length
+    && Array.isArray(results)
+    && results.length === calculations.length
+    && calculations.every((operands, index) => Array.isArray(operands)
+      && operands.length >= 2
+      && operands.every(value => Number.isFinite(Number(value)))
+      && computeAuditedCalculation(operations[index], operands) === Number(results[index]));
+  if (!calculationsValid || !Number.isInteger(numericAnswer)) return false;
+  const displayedValues = extractTimeValues(displayedText);
+  return displayedValues.includes(numericAnswer)
+    || (operations.every(operation => operation === 'identity')
+      && /\b(?:hari|minggu|bulan|tahun|jam|minit|waktu|jarum)\b/i.test(String(displayedText || '')));
+}
+
+function auditedLengthIntegrity(question = {}, displayedText = '') {
+  if (String(question.metadata?.category || '').toLowerCase() !== 'panjang') return null;
+  const calculations = question.metadata?.calculations;
+  const operations = question.metadata?.calculationOperations;
+  const results = question.metadata?.calculationResultsCm;
+  const numericAnswer = Number(question.metadata?.numericAnswerCm);
+  const calculationsValid = Array.isArray(calculations)
+    && calculations.length > 0
+    && Array.isArray(operations)
+    && operations.length === calculations.length
+    && Array.isArray(results)
+    && results.length === calculations.length
+    && calculations.every((operands, index) => Array.isArray(operands)
+      && operands.length >= 2
+      && operands.every(value => Number.isFinite(Number(value)))
+      && computeAuditedCalculation(operations[index], operands) === Number(results[index]));
+  if (!calculationsValid || !Number.isInteger(numericAnswer)) return false;
+  const displayedValues = extractLengthValuesCm(displayedText);
+  return displayedValues.includes(numericAnswer)
+    || (operations.every(operation => operation === 'identity')
+      && /\b(?:cm|sentimeter|m|meter|panjang|tinggi|lebar|jarak|pembaris|pita ukur|skala|hujung)\b/i.test(String(displayedText || '')));
+}
+
+function auditedMeasurementIntegrity(question = {}, displayedText = '') {
+  if (String(question.metadata?.category || '').toLowerCase() !== 'jisim_isi_padu') return null;
+  const calculations = question.metadata?.calculations;
+  const operations = question.metadata?.calculationOperations;
+  const results = question.metadata?.calculationResultsBase;
+  const numericAnswer = Number(question.metadata?.numericAnswerBase);
+  const kind = String(question.metadata?.measurementKind || '').toLowerCase();
+  const calculationsValid = ['mass', 'volume'].includes(kind)
+    && Array.isArray(calculations)
+    && calculations.length > 0
+    && Array.isArray(operations)
+    && operations.length === calculations.length
+    && Array.isArray(results)
+    && results.length === calculations.length
+    && calculations.every((operands, index) => Array.isArray(operands)
+      && operands.length >= 2
+      && operands.every(value => Number.isFinite(Number(value)))
+      && computeAuditedCalculation(operations[index], operands) === Number(results[index]));
+  if (!calculationsValid || !Number.isInteger(numericAnswer)) return false;
+  const displayedValues = extractMeasurementValuesBase(displayedText, kind);
+  const contextPattern = kind === 'mass'
+    ? /\b(?:g|gram|kg|kilogram|jisim|penimbang|berat|ringan)\b/i
+    : /\b(?:mL|mililiter|L|liter|isi padu|cecair|jag|silinder|sukat|air|jus|skala|paras|bacaan)\b/i;
+  return displayedValues.includes(numericAnswer)
+    || (operations.every(operation => operation === 'identity')
+      && contextPattern.test(String(displayedText || '')));
+}
+
+function auditedGeometryIntegrity(question = {}, displayedText = '') {
+  if (String(question.metadata?.category || '').toLowerCase() !== 'bentuk') return null;
+  const domain = String(question.metadata?.geometryDomain || '').toLowerCase();
+  const shape = String(question.metadata?.shape || '').trim();
+  const factType = String(question.metadata?.factType || '').trim();
+  const tokens = Array.isArray(question.metadata?.answerTokens) ? question.metadata.answerTokens : [];
+  if (!['2d', '3d', 'spatial'].includes(domain) || !shape || !factType || !tokens.length) return false;
+  const source = String(displayedText || '')
+    .toLocaleLowerCase('ms-MY')
+    .replace(/[.,!?;:]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return tokens.every(token => source.includes(String(token || '').toLocaleLowerCase('ms-MY').trim()));
+}
+
 function expectedFromExpressionBeforeBlank(question = {}) {
   const stem = String(question.q || question.question || '');
   if (!stem.includes('______')) return null;
@@ -212,9 +414,43 @@ function explanationIntegrity(question = {}) {
 
   const normalizedAnswer = answer.toLowerCase();
   const normalizedExplanation = explanation.toLowerCase();
+  const auditedNumericAnswer = Number(question.metadata?.numericAnswer);
+  const auditedCalculations = question.metadata?.calculations;
+  const auditedResults = question.metadata?.calculationResults;
+  const auditedOperation = String(question.metadata?.operation || '').toLowerCase();
+  const moneyIntegrity = auditedMoneyIntegrity(question, explanation);
+  if (moneyIntegrity !== null) return moneyIntegrity;
+  const timeIntegrity = auditedTimeIntegrity(question, explanation);
+  if (timeIntegrity !== null) return timeIntegrity;
+  const lengthIntegrity = auditedLengthIntegrity(question, explanation);
+  if (lengthIntegrity !== null) return lengthIntegrity;
+  const measurementIntegrity = auditedMeasurementIntegrity(question, explanation);
+  if (measurementIntegrity !== null) return measurementIntegrity;
+  const geometryIntegrity = auditedGeometryIntegrity(question, explanation);
+  if (geometryIntegrity !== null) return geometryIntegrity;
+  if (!question.qde?.numberVariation && Number.isFinite(auditedNumericAnswer) && Array.isArray(auditedCalculations) && Array.isArray(auditedResults)) {
+    const calculationsValid = auditedCalculations.length === auditedResults.length
+      && auditedCalculations.every((operands, index) => Array.isArray(operands)
+        && operands.length >= 2
+        && operands.every(value => Number.isFinite(Number(value)))
+        && computeAuditedCalculation(auditedOperation, operands) === Number(auditedResults[index]));
+    return calculationsValid && extractDisplayedNumbers(explanation).includes(auditedNumericAnswer);
+  }
   if (normalizedExplanation.includes(normalizedAnswer)) return true;
   const wholeToken = new RegExp(`(^|[^\\p{L}\\p{N}])${normalizedAnswer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\\p{L}\\p{N}]|$)`, 'u');
   if (wholeToken.test(normalizedExplanation)) return true;
+
+  const answerNumbers = extractDisplayedNumbers(answer);
+  const explanationNumbers = extractDisplayedNumbers(explanation);
+  if (answerNumbers.length && answerNumbers.every(value => explanationNumbers.includes(value))) return true;
+
+  const answerTokens = normalizedAnswer.match(/[\p{L}\p{N}]+/gu) || [];
+  const stopwords = new Set(['dan', 'ialah', 'kerana', 'yang', 'itu', 'jawapan', 'betul', 'salah', 'tidak', 'ya']);
+  const meaningfulTokens = answerTokens.filter(token => !stopwords.has(token));
+  if (meaningfulTokens.length && meaningfulTokens.every(token => {
+    const tokenPattern = new RegExp(`(^|[^\\p{L}\\p{N}])${token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\\p{L}\\p{N}]|$)`, 'u');
+    return tokenPattern.test(normalizedExplanation);
+  })) return true;
 
   const numbers = extractDisplayedNumbers(question.q || question.question || '');
   const expressionExpected = expectedFromExpressionBeforeBlank(question);
@@ -229,6 +465,34 @@ function explanationIntegrity(question = {}) {
 }
 
 function answerIntegrity(question = {}) {
+  const topicId = String(question.topicId || question.qip?.metadata?.topic || question.metadata?.category || '').toLowerCase();
+  if (topicId === 'nombor') {
+    return String(question.answer ?? '').trim().length > 0;
+  }
+
+  const auditedNumericAnswer = Number(question.metadata?.numericAnswer);
+  const auditedCalculations = question.metadata?.calculations;
+  const auditedResults = question.metadata?.calculationResults;
+  const auditedOperation = String(question.metadata?.operation || '').toLowerCase();
+  const moneyIntegrity = auditedMoneyIntegrity(question, question.answer);
+  if (moneyIntegrity !== null) return moneyIntegrity;
+  const timeIntegrity = auditedTimeIntegrity(question, question.answer);
+  if (timeIntegrity !== null) return timeIntegrity;
+  const lengthIntegrity = auditedLengthIntegrity(question, question.answer);
+  if (lengthIntegrity !== null) return lengthIntegrity;
+  const measurementIntegrity = auditedMeasurementIntegrity(question, question.answer);
+  if (measurementIntegrity !== null) return measurementIntegrity;
+  const geometryIntegrity = auditedGeometryIntegrity(question, question.answer);
+  if (geometryIntegrity !== null) return geometryIntegrity;
+  if (!question.qde?.numberVariation && Number.isFinite(auditedNumericAnswer) && Array.isArray(auditedCalculations) && Array.isArray(auditedResults)) {
+    const calculationsValid = auditedCalculations.length === auditedResults.length
+      && auditedCalculations.every((operands, index) => Array.isArray(operands)
+        && operands.length >= 2
+        && operands.every(value => Number.isFinite(Number(value)))
+        && computeAuditedCalculation(auditedOperation, operands) === Number(auditedResults[index]));
+    return calculationsValid && extractDisplayedNumbers(question.answer).includes(auditedNumericAnswer);
+  }
+
   const blankEquationExpected = expectedFromBlankEquation(question);
   if (blankEquationExpected !== null) {
     return String(blankEquationExpected) === String(question.answer);
@@ -357,6 +621,19 @@ async function run() {
       const questionId = question.id || null;
       const stem = duplicateDetector.normalizeStem(question.q || question.question || '');
       const numberSignature = duplicateEngine.questionIntelligenceSignature(question).numbers || '';
+
+      if (typeof question.q === 'string' && typeof question.question === 'string' && question.q !== question.question) {
+        failure = {
+          sessionIndex,
+          questionIndex: index,
+          questionId,
+          topicId: topic.id,
+          code: 'STALE_QUESTION_TEXT_ALIAS',
+          q: question.q,
+          question: question.question
+        };
+        break;
+      }
 
       if (stem && localStems.has(stem)) {
         stats.duplicateStemEvents += 1;

@@ -1,6 +1,6 @@
 # Math Stress Test
 
-Generated: 2026-08-08T07:52:47.895Z
+Generated: 2026-08-12T15:19:46.540Z
 
 ## Status
 
@@ -21,9 +21,9 @@ Generated: 2026-08-08T07:52:47.895Z
 
 | Difficulty | Count | Percent |
 | --- | --- | --- |
-| easy | 87893 | 43.95% |
-| hard | 29807 | 14.90% |
-| medium | 82300 | 41.15% |
+| easy | 86988 | 43.49% |
+| hard | 36258 | 18.13% |
+| medium | 76754 | 38.38% |
 
 ## Topic Distribution
 
