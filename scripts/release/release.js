@@ -1,16 +1,29 @@
-const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
-const { generateVersion, RELEASE_DIR } = require('./generateVersion');
-const { generateChangelog } = require('./generateChangelog');
-const { generateReleaseNotes } = require('./generateReleaseNotes');
-
-const HEALTH_PATH = path.join(RELEASE_DIR, 'HEALTH.md');
-const README_PATH = path.resolve('README.md');
+const fs = require('fs');
+const { execFileSync } = require('child_process');
+const { ROOT_DIR, assertVersionAlignment } = require('./releaseMetadata');
 
 function runNpmScript(script) {
-  execSync(`npm run ${script}`, {
-    cwd: path.resolve('.'),
+  if (!/^[a-z0-9:_-]+$/i.test(script)) throw new Error(`Unsafe npm script name: ${script}`);
+
+  const options = { cwd: ROOT_DIR, stdio: 'inherit' };
+  const npmCli = process.env.npm_execpath;
+  if (npmCli && fs.existsSync(npmCli)) {
+    execFileSync(process.execPath, [npmCli, 'run', script], options);
+    return;
+  }
+
+  if (process.platform === 'win32') {
+    execFileSync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', `npm.cmd run ${script}`], options);
+    return;
+  }
+
+  execFileSync('npm', ['run', script], options);
+}
+
+function runNodeScript(relativePath) {
+  execFileSync(process.execPath, [path.join(ROOT_DIR, relativePath)], {
+    cwd: ROOT_DIR,
     stdio: 'inherit'
   });
 }
@@ -20,117 +33,52 @@ function readJson(filePath, fallback = {}) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-function badge(label, value, color) {
-  return `![${label}](https://img.shields.io/badge/${encodeURIComponent(label)}-${encodeURIComponent(value)}-${color})`;
-}
-
-function generateHealth(versionData) {
-  fs.mkdirSync(RELEASE_DIR, { recursive: true });
-  const summary = readJson(path.resolve('reports/validation/summary.json'));
-  const curriculum = readJson(path.resolve('reports/validation/curriculum-report.json'));
-  const coverage = curriculum.coverageSummary || {};
-  const validationPass = (summary.totals?.errors || 0) === 0;
-  const rows = [
-    ['Build', 'PASS'],
-    ['Validation', validationPass ? 'PASS' : 'FAIL'],
-    ['Coverage', versionData.curriculumCoverage],
-    ['Questions', String(coverage.questions || versionData.questionCount || 0)],
-    ['Subjects', String(coverage.subjects || 0)],
-    ['AI Modules', 'PASS'],
-    ['Parent Dashboard', 'PASS'],
-    ['Teacher Snapshot', 'PASS'],
-    ['Reading', 'PASS'],
-    ['Listening', 'PASS'],
-    ['Speaking', 'PASS'],
-    ['Writing', 'PASS'],
-    ['Overall Status', validationPass ? 'PASS' : 'FAIL']
-  ];
-  const lines = [
-    '# Release Health',
-    '',
-    `Version: ${versionData.version}`,
-    `Status: ${versionData.status}`,
-    `Build date: ${versionData.buildDate}`,
-    '',
-    '| Area | Status |',
-    '| --- | --- |',
-    ...rows.map(([area, status]) => `| ${area} | ${status} |`),
-    '',
-    '## Validation',
-    '',
-    `- Info: ${summary.totals?.infos || 0}`,
-    `- Warnings: ${summary.totals?.warnings || 0}`,
-    `- Errors: ${summary.totals?.errors || 0}`,
-    '',
-    '## Curriculum',
-    '',
-    `- Topics: ${coverage.topics || 0}`,
-    `- Unique SK/SP pairs: ${coverage.uniqueSkSpPairs || 0}`,
-    `- UASA-tagged questions: ${coverage.uasaTagged || 0}`,
-    ''
-  ];
-
-  fs.writeFileSync(HEALTH_PATH, `${lines.join('\n')}\n`);
-  return HEALTH_PATH;
-}
-
-function updateReadmeBadges(versionData) {
-  const buildBadge = badge('Build', 'PASS', 'brightgreen');
-  const validationBadge = badge('Validation', (versionData.validation?.errors || 0) === 0 ? 'PASS' : 'FAIL', (versionData.validation?.errors || 0) === 0 ? 'brightgreen' : 'red');
-  const coverageBadge = badge('Coverage', versionData.curriculumCoverage || '0%', 'blue');
-  const block = [
-    '<!-- release-badges:start -->',
-    `${buildBadge} ${validationBadge} ${coverageBadge}`,
-    '<!-- release-badges:end -->'
-  ].join('\n');
-
-  const existing = fs.existsSync(README_PATH) ? fs.readFileSync(README_PATH, 'utf8') : '# Jannati AI Tutor\n';
-  let next;
-  if (existing.includes('<!-- release-badges:start -->') && existing.includes('<!-- release-badges:end -->')) {
-    next = existing.replace(/<!-- release-badges:start -->[\s\S]*?<!-- release-badges:end -->/, block);
-  } else {
-    const lines = existing.split(/\r?\n/);
-    const insertAt = lines[0]?.startsWith('# ') ? 1 : 0;
-    lines.splice(insertAt, 0, '', block);
-    next = lines.join('\n');
-  }
-  fs.writeFileSync(README_PATH, next.endsWith('\n') ? next : `${next}\n`);
-}
-
 function verifyValidation() {
-  const summary = readJson(path.resolve('reports/validation/summary.json'));
+  const summary = readJson(path.join(ROOT_DIR, 'reports/validation/summary.json'));
   const errors = summary.totals?.errors || 0;
-  if (errors > 0) {
-    throw new Error(`Release aborted: validation reported ${errors} error(s).`);
+  const warnings = summary.totals?.warnings || 0;
+  const metadata = assertVersionAlignment();
+  if (summary.status !== 'pass' || errors > 0 || (metadata.status === 'stable' && warnings > 0)) {
+    throw new Error(
+      `Release aborted: validation status=${summary.status || 'unknown'}, errors=${errors}, warnings=${warnings}.`
+    );
   }
   return summary;
 }
 
 function runRelease() {
-  console.log('Release step 1/7: build');
-  runNpmScript('build');
+  console.log('Release step 1/10: verify package and lock metadata');
+  assertVersionAlignment();
 
-  console.log('Release step 2/7: validate');
+  console.log('Release step 2/10: validate');
   runNpmScript('validate');
 
-  console.log('Release step 3/7: verify validation');
+  console.log('Release step 3/10: verify validation gate');
   verifyValidation();
 
-  console.log('Release step 4/7: generate VERSION.json');
-  const versionData = generateVersion();
+  console.log('Release step 4/10: build production bundle');
+  runNpmScript('build');
 
-  console.log('Release step 5/7: generate CHANGELOG.md');
-  generateChangelog(versionData);
+  console.log('Release step 5/10: verify production build assets');
+  runNpmScript('release:build-check');
 
-  console.log('Release step 6/7: generate RELEASE_NOTES.md');
-  generateReleaseNotes(versionData);
+  console.log('Release step 6/10: generate VERSION.json');
+  runNodeScript('scripts/release/generateVersion.js');
 
-  console.log('Release step 7/7: generate HEALTH.md and README badges');
-  generateHealth(versionData);
-  updateReadmeBadges(versionData);
+  console.log('Release step 7/10: generate CHANGELOG.md');
+  runNodeScript('scripts/release/generateChangelog.js');
 
-  console.log(`Release pipeline complete: ${versionData.version}`);
-  return versionData;
+  console.log('Release step 8/10: generate RELEASE_NOTES.md');
+  runNodeScript('scripts/release/generateReleaseNotes.js');
+
+  console.log('Release step 9/10: generate health and README badges');
+  runNodeScript('scripts/release/generateHealth.js');
+
+  console.log('Release step 10/10: verify generated artifacts');
+  const metadata = assertVersionAlignment({ artifacts: true });
+
+  console.log(`Release pipeline complete: ${metadata.expectedTag}`);
+  return metadata;
 }
 
 if (require.main === module) {
@@ -143,9 +91,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-  HEALTH_PATH,
-  generateHealth,
   runRelease,
-  updateReadmeBadges,
+  runNodeScript,
   verifyValidation
 };

@@ -1,6 +1,6 @@
 # Validator Suite
 
-The Sprint 10B validator suite is a Node.js validation framework for Jannati AI Tutor V2.0 content, curriculum metadata, app metadata, and browser storage schemas.
+The validator suite is a Node.js validation framework for Jannati AI Tutor content, curriculum metadata, release metadata, app metadata, and browser storage schemas.
 
 ## Architecture
 
@@ -11,6 +11,7 @@ Entry points:
 - `npm run validate:curriculum`
 - `npm run validate:metadata`
 - `npm run validate:storage`
+- `npm run release:check`
 
 Files:
 
@@ -19,6 +20,9 @@ Files:
 - `scripts/validate/curriculumValidator.js` validates curriculum mapping and coverage metadata.
 - `scripts/validate/metadataValidator.js` validates subject/topic/question metadata shape.
 - `scripts/validate/storageValidator.js` validates localStorage schemas and migration keys.
+- `scripts/validate/questionAuditRegression.mjs` checks the full question-bank quality audit before the master suite.
+- `scripts/validate/releasePipelineAudit.mjs` checks version alignment and fail-closed CI/deploy ordering.
+- `scripts/release/verifyReleaseVersion.js` validates package, lockfile, optional tag, and generated release artifacts.
 
 Reports:
 
@@ -97,12 +101,12 @@ Storage validator:
 - `0`: Validation completed with no errors. Info and warning items may still be present in reports.
 - `1`: One or more hard validation errors were found, or the validator crashed.
 
-GitHub Actions fails only when `npm run validate` exits with a non-zero code. Warnings do not fail CI.
+GitHub Actions fails when release metadata, `npm run validate`, or the production build returns a non-zero code. Stable release preparation additionally rejects validation warnings.
 
 ## Future Extensions
 
 - Add a schema file for each report type.
 - Add severity configuration for alpha, beta, and production release gates.
-- Add per-subject validation thresholds.
-- Add automated remediation suggestions for missing SK/SP, hints, and explanations.
+- Convert inferred SK, SP, cognitive level, estimated time, and learning outcomes into teacher-reviewed explicit metadata.
+- Add automated Learning Journey Alignment checks between objectives, notes, examples, practice, assessment, and feedback.
 - Add a browser-storage fixture runner for real exported localStorage snapshots.

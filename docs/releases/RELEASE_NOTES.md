@@ -1,37 +1,39 @@
-# Jannati AI Tutor 2.0.0-alpha.1 Release Notes
+# Jannati AI Tutor 3.2.23 Release Notes
 
-Status: alpha
-Build date: 2026-07-02T15:33:34.627Z
+Status: stable
+Tag: v3.2.23
+Build date: 2026-08-13T12:01:56.760Z
 
-## New Features
+## Release Readiness
 
-- Fully automated V2.0 alpha release pipeline.
-- Generated release artifacts under `docs/releases/`.
-- Release health report with module readiness status.
+- Package, lockfile, release tag, and generated metadata are version-aligned.
+- Question-bank regression and release-pipeline audits run before the main validator suite.
+- Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
+- Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Improvements
+## Content Quality
 
-- Validation summary now separates INFO, WARNING, and ERROR severity.
-- CI and release gates fail only on ERROR severity validation issues.
-- README badges are generated from current release status.
-
-## Bug Fixes
-
-- Release metadata is generated from current build and validation outputs instead of hand-maintained values.
+- All eight Year 2 subjects are included in the release validation scope.
+- Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
 
 ## Validation Summary
 
 - Status: pass
-- Info: 12000
-- Warnings: 2
+- Info: 14660
+- Warnings: 0
 - Errors: 0
 
 ## Curriculum Coverage
 
 - Subjects: 8
-- Topics: 80
-- Questions: 4000
-- Unique SK/SP pairs: 400
+- Topics: 84
+- Questions: 4530
+- Unique SK/SP pairs: 453
 - Curriculum coverage: 100%
-- Difficulty balance: mudah 1600, sederhana 1600, sukar 800
+- Difficulty balance: mudah 2095, sederhana 1345, sukar 1090
+
+## Known Follow-ups
+
+- Large JavaScript chunks remain a performance improvement target.
+- Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
 

@@ -1,11 +1,11 @@
 {
   "name": "jannati-ai-tutor-v1",
-  "version": "3.2.0",
+  "version": "3.2.23",
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prevalidate": "node scripts/validate/questionAuditRegression.mjs",
+    "prevalidate": "node scripts/validate/questionAuditRegression.mjs && node scripts/validate/releasePipelineAudit.mjs",
     "validate": "node scripts/validate/index.js",
     "validate:questions": "node scripts/validate/questionValidator.js",
     "validate:bm": "node scripts/validate/bmReleaseGate.mjs",
@@ -22,7 +22,11 @@
     "validate:content-quality": "node scripts/validate/contentQualityValidator.js",
     "validate:storage": "node scripts/validate/storageValidator.js",
     "audit:subjects": "node scripts/audit/subjectCoverage.js",
-    "release": "node scripts/release/release.js",
+    "release": "node scripts/release/prepareRelease.js",
+    "release:artifacts": "node scripts/release/release.js",
+    "release:build-check": "node scripts/release/verifyBuildOutput.js",
+    "release:check": "node scripts/release/verifyReleaseVersion.js",
+    "release:smoke": "node scripts/release/smokeTestDeployment.mjs",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

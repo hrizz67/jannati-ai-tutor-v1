@@ -1,21 +1,21 @@
 # Changelog
 
-## 2.0.0-alpha.1 - 2026-07-02
+## 3.2.23 - 2026-08-13
 
-### Features
+### Release controls
 
-- V2.0 alpha release pipeline with automated build, validation, version, changelog, release notes, and health outputs.
-- Validator suite reports INFO, WARNING, and ERROR severity levels.
-- CI release readiness is based on ERROR severity only.
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
 
-### Fixes
+### Quality snapshot
 
-- Release generation now reads validation summaries and curriculum coverage directly from generated reports.
-- README badges are refreshed from release health data.
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
+- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
-### Known Issues
+### Follow-up work
 
-- Validation currently reports 2 warning(s) and 12000 info item(s).
-- Curriculum SK, SP, and estimated time values are inferred where explicit metadata is absent.
-- Alpha release remains pre-production until Sprint 11 sign-off.
+- Continue reducing large production chunks through route and subject-level code splitting.
+- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
 

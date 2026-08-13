@@ -2,62 +2,64 @@ name: CI
 
 on:
   push:
+    branches-ignore:
+      - gh-pages
   pull_request:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-validate:
-    name: Build and validate
+    name: Validate and build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci-placeholder
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js LTS
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 20
           cache: npm
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
 
-      - name: Build application
-        run: npm run build
-
-      - name: Check validation suite
-        id: validation-suite
-        shell: bash
-        run: |
-          if npm run | grep -qE '^  validate'; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Verify release metadata
+        id: release-metadata
+        run: npm run release:check
 
       - name: Run validation suite
-        if: steps.validation-suite.outputs.available == 'true'
+        id: validation
         run: npm run validate
 
-      - name: Skip validation suite
-        if: steps.validation-suite.outputs.available != 'true'
-        run: echo "No validate script found; skipping validation suite."
+      - name: Build production application
+        id: build
+        run: npm run build
+
+      - name: Verify production build assets
+        id: build-assets
+        run: npm run release:build-check
 
       - name: Upload QA reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: qa-reports
+          name: qa-reports-${{ github.sha }}
           path: |
-            QA_REPORT*.md
-            V2*_REPORT.md
-            V2_ALPHA_QA_REPORT.md
-            CURRICULUM_COVERAGE_REPORT.md
-            CURRICULUM_MATRIX.json
+            reports/audit/**
             reports/validation/**
+            docs/releases/**
           if-no-files-found: ignore
 
       - name: Generate workflow summary
@@ -67,16 +69,10 @@ jobs:
           {
             echo "## Jannati AI Tutor CI Summary"
             echo ""
-            echo "| Check | Result |"
+            echo "| Gate | Result |"
             echo "| --- | --- |"
-            echo "| Checkout repository | completed |"
-            echo "| Node.js LTS setup | completed |"
-            echo "| npm ci | completed |"
-            echo "| npm run build | completed |"
-            if [ "${{ steps.validation-suite.outputs.available }}" = "true" ]; then
-              echo "| npm run validate | completed |"
-            else
-              echo "| npm run validate | skipped - script not available |"
-            fi
-            echo "| QA report artifact upload | attempted |"
+            echo "| Release metadata | ${{ steps.release-metadata.outcome }} |"
+            echo "| Validation suite | ${{ steps.validation.outcome }} |"
+            echo "| Production build | ${{ steps.build.outcome }} |"
+            echo "| Build assets | ${{ steps.build-assets.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,133 +1,59 @@
-# Release Checklist — Jannati AI Tutor v2.0 RC1
+# Release Checklist
 
-Use this checklist before tagging the release candidate.
+Use this checklist for every tagged production release.
 
-## Build
+## 1. Prepare
 
-- [ ] Run `npm run build`
-- [ ] Confirm production build completes without errors
-- [ ] Verify generated assets load correctly
+- [ ] Confirm the intended semantic version, for example `3.2.23`.
+- [ ] Run `npm run release -- 3.2.23`.
+- [ ] Confirm `package.json`, `package-lock.json`, and `docs/releases/VERSION.json` show the same version.
+- [ ] Review generated release notes, changelog, health report, and README badges.
+- [ ] Confirm only intended source and generated release files changed.
+- [ ] Confirm GitHub Secrets `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are configured for production deploy.
 
-## Deployment
+## 2. Quality gates
 
-- [ ] Confirm deployment target and environment
-- [ ] Confirm release notes are approved
-- [ ] Confirm rollback plan exists
-- [ ] Confirm no emergency fixes are pending
+- [ ] `npm run release:check -- --artifacts` passes.
+- [ ] `npm run validate` passes with zero errors and zero warnings for a stable release.
+- [ ] `npm run build` completes successfully.
+- [ ] `npm run release:build-check` confirms every asset referenced by `dist/index.html` exists.
+- [ ] Question-bank audit covers all 8 subjects.
+- [ ] Curriculum, metadata, content-quality, storage, access, feedback, adaptive-subject, and UASA answer checks pass.
 
-## Subjects
+## 3. Manual acceptance
 
-- [ ] Bahasa Melayu content reviewed
-- [ ] English content reviewed
-- [ ] Matematik content reviewed
-- [ ] Sains content reviewed
-- [ ] Bahasa Arab content reviewed
-- [ ] Pendidikan Islam content reviewed
-- [ ] Pendidikan Jasmani & Kesihatan content reviewed
+- [ ] Core learning journey opens the correct subject and topic.
+- [ ] Notes, examples, questions, answers, hints, explanations, and next steps agree.
+- [ ] Progress and resume state survive refresh.
+- [ ] Arabic RTL text renders correctly.
+- [ ] 360 px and 390 px layouts are usable.
+- [ ] Keyboard focus, labels, contrast, and tap targets are usable.
+- [ ] Speech and audio fallbacks behave safely where supported.
 
-## Speech
+## 4. Commit and tag
 
-- [ ] Bacaan transcript flow verified
-- [ ] Bertutur transcript flow verified
-- [ ] Quiz microphone flow verified
-- [ ] Safari/iPhone speech behavior verified
-- [ ] Speech fallback messages verified
+- [ ] Commit the prepared release artifacts and source changes.
+- [ ] Create annotated tag `v<package-version>` on that commit.
+- [ ] Run `npm run release:check -- --tag v<package-version> --artifacts`.
+- [ ] Push the branch and tag.
 
-## AI
+## 5. Automated deployment
 
-- [ ] AI Explain verified
-- [ ] AI Teacher verified
-- [ ] Janna/Jati coach copy reviewed
-- [ ] Adaptive recommendation verified
-- [ ] Narrative layer verified
+The tag triggers `.github/workflows/deploy.yml`, which must complete these steps in order:
 
-## Adaptive Learning
+1. Install locked dependencies with `npm ci`.
+2. Verify required production environment values.
+3. Verify the tag, package, lockfile, and generated artifacts.
+4. Run the validation suite.
+5. Build the production application.
+6. Verify the local HTML-to-asset references.
+7. Publish `dist` to GitHub Pages.
+8. Smoke-test the public HTML and confirm its entry hash matches the newly built asset.
 
-- [ ] Adaptive profile loads correctly
-- [ ] Recommendation flow remains deterministic
-- [ ] Resume flow preserves progress
-- [ ] Daily mission and study plan remain stable
+## 6. Final verification
 
-## Resume Learning
-
-- [ ] Resume card opens the correct session
-- [ ] Resume state survives refresh
-- [ ] Malformed resume data falls back safely
-- [ ] No duplicate resume writes occur
-
-## Dashboards
-
-- [ ] Home Dashboard verified
-- [ ] Student Dashboard verified
-- [ ] Parent Dashboard verified
-- [ ] Analytics Dashboard verified
-- [ ] Revision Dashboard verified
-
-## Parent Dashboard
-
-- [ ] Weekly analytics verified
-- [ ] Subject comparison verified
-- [ ] Study habit cards verified
-- [ ] Recommendation cards verified
-- [ ] Timeline verified
-
-## Analytics
-
-- [ ] Weekly trend verified
-- [ ] Subject analytics verified
-- [ ] Curriculum summary verified
-- [ ] UASA readiness verified
-
-## Arabic
-
-- [ ] RTL rendering verified
-- [ ] Arabic text renders correctly
-- [ ] Arabic coach prompts reviewed
-- [ ] Arabic examples reviewed
-
-## Safari
-
-- [ ] iPhone Safari tested
-- [ ] iPad Safari tested
-- [ ] SpeechRecognition cleanup verified
-- [ ] Audio indicator turns off correctly
-
-## Mobile
-
-- [ ] 360px layout checked
-- [ ] 390px layout checked
-- [ ] Safe-area spacing verified
-- [ ] Floating buttons do not overlap actions
-
-## Accessibility
-
-- [ ] Tap targets are usable
-- [ ] Focus states are visible
-- [ ] Modal close buttons are accessible
-- [ ] Keyboard navigation works
-
-## Performance
-
-- [ ] Initial bundle reviewed
-- [ ] Large chunks acknowledged
-- [ ] Lazy-loaded surfaces still render safely
-
-## QA
-
-- [ ] Question validator passes
-- [ ] Curriculum audit reviewed
-- [ ] Speech regression validated
-- [ ] Smart Question Generator regression validated
-
-## Git
-
-- [ ] Working tree reviewed
-- [ ] Release branch confirmed
-- [ ] No accidental content changes remain
-
-## Release Tag
-
-- [ ] Tag name agreed
-- [ ] Release candidate notes approved
-- [ ] Final sign-off recorded
-
+- [ ] GitHub Actions deploy workflow is green.
+- [ ] Public site returns HTTP 200 and loads the new hashed entry asset.
+- [ ] Remote branch and peeled tag point to the intended commit.
+- [ ] Working tree is clean.
+- [ ] A rollback tag or previous known-good tag is recorded.

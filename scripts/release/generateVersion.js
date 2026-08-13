@@ -1,10 +1,16 @@
 const fs = require('fs');
 const path = require('path');
+const {
+  ROOT_DIR,
+  assertVersionAlignment,
+  writeTextWithRetry
+} = require('./releaseMetadata');
 
-const RELEASE_DIR = path.resolve('docs/releases');
+const RELEASE_DIR = path.join(ROOT_DIR, 'docs/releases');
 const VERSION_PATH = path.join(RELEASE_DIR, 'VERSION.json');
-const VERSION = '2.0.0-alpha.1';
-const STATUS = 'alpha';
+const releaseMetadata = assertVersionAlignment();
+const VERSION = releaseMetadata.version;
+const STATUS = releaseMetadata.status;
 
 function readJson(filePath, fallback = {}) {
   if (!fs.existsSync(filePath)) return fallback;
@@ -28,13 +34,14 @@ function calculateCoverage(curriculumReport = {}) {
 }
 
 function buildVersionData() {
-  const summary = readJson(path.resolve('reports/validation/summary.json'));
-  const curriculum = readJson(path.resolve('reports/validation/curriculum-report.json'));
+  const summary = readJson(path.join(ROOT_DIR, 'reports/validation/summary.json'));
+  const curriculum = readJson(path.join(ROOT_DIR, 'reports/validation/curriculum-report.json'));
   const coverage = curriculum.coverageSummary || {};
 
   return {
     version: VERSION,
     status: STATUS,
+    tag: releaseMetadata.expectedTag,
     buildDate: new Date().toISOString(),
     questionCount: coverage.questions || 0,
     curriculumCoverage: calculateCoverage(curriculum),
@@ -50,7 +57,7 @@ function buildVersionData() {
 function generateVersion() {
   ensureReleaseDir();
   const versionData = buildVersionData();
-  fs.writeFileSync(VERSION_PATH, `${JSON.stringify(versionData, null, 2)}\n`);
+  writeTextWithRetry(VERSION_PATH, `${JSON.stringify(versionData, null, 2)}\n`);
   return versionData;
 }
 
@@ -64,6 +71,7 @@ module.exports = {
   STATUS,
   RELEASE_DIR,
   VERSION_PATH,
+  buildVersionData,
   calculateCoverage,
   generateVersion
 };

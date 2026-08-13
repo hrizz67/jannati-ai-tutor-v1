@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { RELEASE_DIR, VERSION } = require('./generateVersion');
+const { writeTextWithRetry } = require('./releaseMetadata');
 
 const RELEASE_NOTES_PATH = path.join(RELEASE_DIR, 'RELEASE_NOTES.md');
 
@@ -18,24 +19,21 @@ function generateReleaseNotes(versionData = readJson(path.join(RELEASE_DIR, 'VER
   const lines = [
     `# Jannati AI Tutor ${versionData.version || VERSION} Release Notes`,
     '',
-    `Status: ${versionData.status || 'alpha'}`,
+    `Status: ${versionData.status || 'unknown'}`,
+    `Tag: ${versionData.tag || `v${versionData.version || VERSION}`}`,
     `Build date: ${versionData.buildDate || new Date().toISOString()}`,
     '',
-    '## New Features',
+    '## Release Readiness',
     '',
-    '- Fully automated V2.0 alpha release pipeline.',
-    '- Generated release artifacts under `docs/releases/`.',
-    '- Release health report with module readiness status.',
+    '- Package, lockfile, release tag, and generated metadata are version-aligned.',
+    '- Question-bank regression and release-pipeline audits run before the main validator suite.',
+    '- Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.',
+    '- Production smoke testing waits for the deployed JavaScript entry hash to match the new build.',
     '',
-    '## Improvements',
+    '## Content Quality',
     '',
-    '- Validation summary now separates INFO, WARNING, and ERROR severity.',
-    '- CI and release gates fail only on ERROR severity validation issues.',
-    '- README badges are generated from current release status.',
-    '',
-    '## Bug Fixes',
-    '',
-    '- Release metadata is generated from current build and validation outputs instead of hand-maintained values.',
+    '- All eight Year 2 subjects are included in the release validation scope.',
+    '- Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.',
     '',
     '## Validation Summary',
     '',
@@ -52,10 +50,15 @@ function generateReleaseNotes(versionData = readJson(path.join(RELEASE_DIR, 'VER
     `- Unique SK/SP pairs: ${coverage.uniqueSkSpPairs || 0}`,
     `- Curriculum coverage: ${versionData.curriculumCoverage || '0%'}`,
     `- Difficulty balance: mudah ${difficulty.mudah || 0}, sederhana ${difficulty.sederhana || 0}, sukar ${difficulty.sukar || 0}`,
+    '',
+    '## Known Follow-ups',
+    '',
+    '- Large JavaScript chunks remain a performance improvement target.',
+    '- Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.',
     ''
   ];
 
-  fs.writeFileSync(RELEASE_NOTES_PATH, `${lines.join('\n')}\n`);
+  writeTextWithRetry(RELEASE_NOTES_PATH, `${lines.join('\n')}\n`);
   return RELEASE_NOTES_PATH;
 }
 

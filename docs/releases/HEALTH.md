@@ -1,34 +1,34 @@
 # Release Health
 
-Version: 2.0.0-alpha.1
-Status: alpha
-Build date: 2026-07-02T15:33:34.627Z
+Version: 3.2.23
+Status: stable
+Build date: 2026-08-13T12:01:56.760Z
 
 | Area | Status |
 | --- | --- |
+| Release metadata | PASS |
 | Build | PASS |
+| Build assets | PASS |
 | Validation | PASS |
 | Coverage | 100% |
-| Questions | 4000 |
+| Questions | 4530 |
 | Subjects | 8 |
-| AI Modules | PASS |
-| Parent Dashboard | PASS |
-| Teacher Snapshot | PASS |
-| Reading | PASS |
-| Listening | PASS |
-| Speaking | PASS |
-| Writing | PASS |
+| Validator: questions | PASS |
+| Validator: curriculum | PASS |
+| Validator: metadata | PASS |
+| Validator: storage | PASS |
+| Validator: content-quality | PASS |
 | Overall Status | PASS |
 
 ## Validation
 
-- Info: 12000
-- Warnings: 2
+- Info: 14660
+- Warnings: 0
 - Errors: 0
 
 ## Curriculum
 
-- Topics: 80
-- Unique SK/SP pairs: 400
-- UASA-tagged questions: 4000
+- Topics: 84
+- Unique SK/SP pairs: 453
+- UASA-tagged questions: 4530
 
