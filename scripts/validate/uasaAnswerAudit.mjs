@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { getAcceptedAnswers, getQuestionAnswerDisplay, isAcceptedQuestionAnswer } from '../../src/utils/acceptedAnswers.js';
+import { smartCheck } from '../../src/utils/smartCheck.js';
 
 const question = {
   id: 'BM-AYAT-001',
@@ -28,6 +29,7 @@ const punctuationQuestions = [
 for (const [q, answer, symbol] of punctuationQuestions) {
   const punctuationQuestion = { q, answer };
   assert.equal(isAcceptedQuestionAnswer(symbol, punctuationQuestion), true, `must accept ${symbol} for ${q}`);
+  assert.equal(smartCheck(symbol, punctuationQuestion).status, 'correct', `quiz must accept ${symbol} for ${q}`);
   assert.equal(getQuestionAnswerDisplay(punctuationQuestion), symbol, `must display ${symbol} for ${q}`);
 }
 

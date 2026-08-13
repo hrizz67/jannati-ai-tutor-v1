@@ -14,12 +14,15 @@ export function isAcceptedAnswer(answer, acceptedAnswers = []) {
 }
 
 export function smartCheck(userAnswer, question) {
-  const user = normalizeAnswer(userAnswer);
+  const user = String(userAnswer ?? '').normalize('NFKC').trim();
 
   if (!user) {
     return { status: 'wrong', title: 'Belum jawab', message: 'Tulis jawapan dahulu ya.' };
   }
 
+  // Preserve casing and punctuation for question-specific checks. Eager
+  // normalization would turn valid symbols such as "." into an empty value
+  // and remove evidence required by creative sentence rubrics.
   if (isAcceptedQuestionAnswer(user, question)) {
     return { status: 'correct', title: 'Betul!', message: 'Jawapan kamu diterima.' };
   }
