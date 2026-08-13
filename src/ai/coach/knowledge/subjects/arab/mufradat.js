@@ -181,7 +181,17 @@ export default createKnowledgePack({
     "walad",
     "bint",
     "ma",
-    "taam"
+    "taam",
+    "buku",
+    "sekolah",
+    "pen",
+    "rumah",
+    "budak lelaki",
+    "budak perempuan",
+    "air",
+    "makanan",
+    "matahari",
+    "bulan"
   ],
   "questionPatterns": [
     "Apakah yang berkaitan dengan Mufradat?",

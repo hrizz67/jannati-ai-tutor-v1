@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.2.23 Release Notes
+# Jannati AI Tutor 3.3.0 Release Notes
 
 Status: stable
-Tag: v3.2.23
-Build date: 2026-08-13T12:01:56.760Z
+Tag: v3.3.0
+Build date: 2026-08-13T16:09:59.680Z
 
 ## Release Readiness
 
@@ -30,7 +30,7 @@ Build date: 2026-08-13T12:01:56.760Z
 - Questions: 4530
 - Unique SK/SP pairs: 453
 - Curriculum coverage: 100%
-- Difficulty balance: mudah 2095, sederhana 1345, sukar 1090
+- Difficulty balance: mudah 2065, sederhana 1363, sukar 1102
 
 ## Known Follow-ups
 

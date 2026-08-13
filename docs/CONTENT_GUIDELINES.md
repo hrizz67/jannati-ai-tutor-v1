@@ -24,9 +24,12 @@ These guidelines define how to add and maintain question content for Jannati AI 
 ## How to Add a New Topic
 
 1. Choose a clear Year 2 topic name.
-2. Write questions that match the skill outcome.
-3. Keep hints and explanations topic-specific.
-4. Ensure examples match the subject and topic.
+2. State an observable learning objective and curriculum mapping.
+3. Add an age-appropriate note, teacher explanation, and worked or modelled examples.
+4. Write guided and independent questions that only assess concepts already taught.
+5. Keep hints, explanations, common mistakes, and follow-up questions topic-specific.
+6. Link the topic to related skills for remediation or progression.
+7. Run `npm run validate:learning-journey`.
 
 ## Writing Standards
 
@@ -108,3 +111,14 @@ These guidelines define how to add and maintain question content for Jannati AI 
 - [ ] Curriculum mapping is present
 - [ ] No placeholder text remains
 
+## Learning Journey Checklist
+
+- [ ] Observable objective and curriculum mapping are present
+- [ ] Note and simple explanation are suitable for Year 2
+- [ ] Examples model the assessed skill
+- [ ] Guided questions have useful hints
+- [ ] Independent questions have verified answers and suitable challenge diversity
+- [ ] Explanations address the answer and common misconceptions
+- [ ] Wrong-answer patterns and follow-up questions support remediation
+- [ ] Related topics provide a safe next step
+- [ ] No canonical assessment concept is absent from the teaching material

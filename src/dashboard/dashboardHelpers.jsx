@@ -180,16 +180,16 @@ export function SettingsPanel({ onExportBetaReport, onImportLearningData, onReco
   return <section className="card settings-card">
     <p className="eyebrow">Tetapan Beta</p>
     <h2>Kesediaan Beta Tertutup</h2>
-    <p>Eksport atau import data pembelajaran apabila bertukar akaun. Import akan menggantikan data akaun semasa.</p>
+    <p>Backup ini mengandungi data pembelajaran mentah untuk pemulihan akaun. Gunakan laporan pilot tanpa nama di bahagian analitik apabila berkongsi data dengan guru.</p>
     <div className="settings-actions">
-      <button type="button" className="secondary" onClick={onExportBetaReport}>Eksport Laporan Beta JSON</button>
+      <button type="button" className="secondary" onClick={onExportBetaReport}>Backup Data Pembelajaran JSON</button>
       <label className="secondary settings-file-button">Import Data Pembelajaran JSON<input type="file" accept="application/json,.json" onChange={onImportLearningData} /></label>
       <button type="button" className="secondary" onClick={onRecoverLearningData}>Pulihkan Backup Lama</button>
       <button type="button" className="secondary" onClick={onSyncLearningData}>Sync Sekarang</button>
       <button type="button" className="secondary" onClick={onLoadLearningData}>Muat dari Cloud</button>
       <button type="button" className="danger-action" onClick={onReset}>Reset Semua Data</button>
     </div>
-    <p className="autosave-note" role="status">Status sync: {({ idle: 'Belum diuji', syncing: 'Sedang sync...', saved: 'Berjaya disimpan', loaded: 'Data cloud dimuat', empty: 'Cloud masih kosong', error: 'Sync gagal' })[cloudSyncStatus] || cloudSyncStatus}</p>
+    <p className="autosave-note" role="status">Status sync: {({ idle: 'Belum diuji', syncing: 'Sedang sync...', saved: 'Berjaya disimpan', loaded: 'Data cloud dimuat', empty: 'Cloud masih kosong', offline: 'Menunggu sambungan internet', error: 'Sync gagal' })[cloudSyncStatus] || cloudSyncStatus}</p>
   </section>;
 }
 

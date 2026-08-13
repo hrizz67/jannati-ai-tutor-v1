@@ -25,6 +25,24 @@ export default defineConfig(({ mode }) => {
     rollupOptions: {
       checks: {
         pluginTimings: false
+      },
+      output: {
+        manualChunks(id) {
+          const moduleId = id.replaceAll('\\', '/')
+          if (moduleId.includes('/node_modules/react/') || moduleId.includes('/node_modules/react-dom/') || moduleId.includes('/node_modules/scheduler/')) {
+            return 'vendor-react'
+          }
+          if (moduleId.includes('/node_modules/@supabase/')) {
+            return 'vendor-supabase'
+          }
+          if (/\/src\/(?:data\/bm(?:BinaAyat|PentaksiranSumatif|SimpulanBahasa)Questions|utils\/bmSentenceQuality)\.js$/.test(moduleId)) {
+            return 'bm-enrichment'
+          }
+          if (/\/src\/data\/math(?:Nombor|Tambah|Tolak|Darab|Bahagi|Wang|Masa|Panjang|JisimIsiPadu|Bentuk)Questions\.js$/.test(moduleId)) {
+            return 'math-enrichment'
+          }
+          return undefined
+        }
       }
     }
   },

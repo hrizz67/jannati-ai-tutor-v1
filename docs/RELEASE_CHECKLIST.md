@@ -18,6 +18,12 @@ Use this checklist for every tagged production release.
 - [ ] `npm run build` completes successfully.
 - [ ] `npm run release:build-check` confirms every asset referenced by `dist/index.html` exists.
 - [ ] Question-bank audit covers all 8 subjects.
+- [ ] `npm run validate:learning-journey` confirms all 84 topics connect objectives, notes, examples, practice, assessment, feedback, and remediation with no blockers.
+- [ ] `npm run validate:browser-device` confirms responsive, modal, bidi, recovery, and mobile touch-target contracts.
+- [ ] `npm run validate:physical-device` confirms safe-area, install metadata, offline shell, reconnect, speech fallback, and hardware-protocol readiness.
+- [ ] `npm run validate:performance` confirms lazy-loading, staged subject banks, focused imports, and deferred account SDK contracts.
+- [ ] `npm run validate:classroom-pilot` confirms aggregate metrics, evidence sufficiency, explicit completion and anonymous-export privacy.
+- [ ] The automatic postbuild bundle budget passes: entry ≤350 kB, initial JavaScript ≤900 kB, every chunk ≤480 kB.
 - [ ] Curriculum, metadata, content-quality, storage, access, feedback, adaptive-subject, and UASA answer checks pass.
 
 ## 3. Manual acceptance
@@ -29,6 +35,11 @@ Use this checklist for every tagged production release.
 - [ ] 360 px and 390 px layouts are usable.
 - [ ] Keyboard focus, labels, contrast, and tap targets are usable.
 - [ ] Speech and audio fallbacks behave safely where supported.
+- [ ] Real iPhone Safari passes safe-area, software-keyboard, install, reload, microphone and audio checks.
+- [ ] Real Android Chrome passes layout, permission, interrupted-network and install checks.
+- [ ] VoiceOver and TalkBack pass reading order, control labels, modal focus and live-status announcements.
+- [ ] Physical-device evidence is recorded using `docs/PHYSICAL_DEVICE_ACCEPTANCE_V1_PROTOCOL.md`.
+- [ ] Any classroom pilot follows `docs/CLASSROOM_PILOT_P2_PROTOCOL.md`; only the anonymous pilot report is shared with the pilot team.
 
 ## 4. Commit and tag
 

@@ -38,6 +38,27 @@ export default createKnowledgePack({
     "طفل",
     "طفلة"
   ],
+  "wordMeaning": [
+    "أَبٌ — ayah",
+    "أُمٌّ — ibu",
+    "أَخٌ — saudara lelaki atau abang",
+    "أُخْتٌ — saudara perempuan atau kakak",
+    "جَدٌّ — datuk",
+    "جَدَّةٌ — nenek",
+    "عَمٌّ — bapa saudara",
+    "عَمَّةٌ — ibu saudara",
+    "اِبْنٌ — anak lelaki",
+    "بِنْتٌ — anak perempuan",
+    "أَبِي — ayah saya",
+    "أُمِّي — ibu saya"
+  ],
+  "exampleSentences": [
+    "هَذَا أَبِي — Ini ayah saya.",
+    "هَذِهِ أُمِّي — Ini ibu saya.",
+    "هَذَا أَخِي — Ini saudara lelaki saya.",
+    "هَذِهِ أُخْتِي — Ini saudara perempuan saya.",
+    "هَذِهِ أُسْرَتِي — Ini keluarga saya."
+  ],
   "tips": [
     "Baca soalan tentang Ahli Keluarga dengan teliti.",
     "Cari kata kunci yang berkaitan dengan topik ini.",

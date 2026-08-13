@@ -12,6 +12,7 @@ import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 import { summarizeCommunicationHistory } from '../utils/communicationResult.js';
 import { getCurriculumCoverageState } from '../curriculum/coverageEngine';
+import { buildClassroomPilotReport } from '../analytics/classroomPilotEngine.js';
 
 function CommunicationSummarySection({ eyebrow, title, summary, onStart, buttonLabel }) {
   return (
@@ -94,6 +95,10 @@ export default function AnalyticsDashboard({
   gamificationProfile = null
 }) {
   const canonicalAnalytics = canonicalAnalyticsProp || getCanonicalAnalytics({ profile, adaptiveProfile, selectedSubject });
+  const classroomPilot = React.useMemo(() => buildClassroomPilotReport({
+    adaptiveProfile,
+    participantCode: 'PREVIEW'
+  }), [adaptiveProfile]);
   const canonicalGamification = canonicalGamificationProp || createCanonicalGamification({
     profile,
     adaptiveProfile,
@@ -158,6 +163,28 @@ export default function AnalyticsDashboard({
             onAction={() => onStartAdaptivePractice(adaptivePracticeCount)}
           />
         )}
+      </section>
+
+      <section className="card classroom-pilot-card">
+        <p className="eyebrow">Pilot Bilik Darjah</p>
+        <h2>Ringkasan Bukti 14 Hari</h2>
+        <p className="memory-last">{classroomPilot.readiness.label} · {classroomPilot.readiness.message}</p>
+        <div className="metric-grid">
+          <MetricCard value={classroomPilot.summary.activity.attempts} label="Cubaan Jawapan" subtitle={`${classroomPilot.summary.activity.activeDays} hari aktif`} />
+          <MetricCard value={`${classroomPilot.summary.comprehension.firstAttemptAccuracy}%`} label="Faham Kali Pertama" subtitle={`${classroomPilot.summary.comprehension.finalAnswerAccuracy}% jawapan akhir`} />
+          <MetricCard value={`${classroomPilot.summary.sessions.completionRate}%`} label="Sesi Lengkap" subtitle={`${classroomPilot.summary.sessions.completed} sesi disahkan`} />
+          <MetricCard value={`${classroomPilot.summary.support.hintUseRate}%`} label="Guna Petunjuk" subtitle={`${classroomPilot.summary.support.explainUseRate}% guna penjelasan`} />
+          <MetricCard value={classroomPilot.summary.misconceptions.wrongAttempts} label="Salah Faham Dikesan" subtitle={`${classroomPilot.summary.misconceptions.classificationCoverage}% diklasifikasi`} />
+          <MetricCard value={`${classroomPilot.summary.mastery.averageChange > 0 ? '+' : ''}${classroomPilot.summary.mastery.averageChange}%`} label="Perubahan Penguasaan" subtitle={`${classroomPilot.summary.mastery.topicsWithSnapshots} topik berbukti`} />
+        </div>
+        {classroomPilot.readiness.gaps.length ? (
+          <details className="parent-secondary-disclosure">
+            <summary><span>Bukti yang masih diperlukan</span><small>{classroomPilot.readiness.gaps.length} syarat</small></summary>
+            <ul>{classroomPilot.readiness.gaps.map(item => <li key={item}>{item}</li>)}</ul>
+          </details>
+        ) : null}
+        <p className="autosave-note">Eksport pilot hanya mengandungi metrik agregat, kod peserta rawak dan tiada nama atau jawapan mentah.</p>
+        <button type="button" onClick={() => onExportBetaReport?.({ reportType: 'classroom-pilot' })}>Eksport Laporan Pilot Tanpa Nama</button>
       </section>
 
       <section className="card curriculum-coverage-card">

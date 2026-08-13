@@ -342,7 +342,8 @@ const pjKnowledge = {
       'Keselamatan aktiviti penting supaya murid tidak cedera.',
       'Murid perlu memerhati ruang, alatan dan arahan guru.',
       'Setiap aktiviti harus dilakukan dengan tertib dan berhati-hati.',
-      'Keselamatan membantu semua murid bermain dengan tenang.'
+      'Keselamatan membantu semua murid bermain dengan tenang.',
+      'Peraturan keselamatan menerangkan cara menggunakan alat dan ruang dengan betul.'
     ],
     simpleExplanation: 'Keselamatan semasa aktiviti ialah cara menjaga diri supaya tidak cedera.',
     examples: ['memakai kasut sesuai', 'jaga jarak', 'ikut giliran', 'dengar arahan', 'guna alatan betul', 'berhenti jika sakit', 'ambil air', 'bermain di ruang selamat', 'susun alatan', 'berjalan dengan tertib'],

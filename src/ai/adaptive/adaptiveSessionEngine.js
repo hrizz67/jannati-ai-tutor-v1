@@ -51,16 +51,21 @@ function ensureSessionState(profile) {
 function normalizeSessionInfo(sessionInfo = {}) {
   const startedAt = sessionInfo.startedAt || nowIso();
   const sessionId = sessionInfo.sessionId || createSessionId();
+  const questions = Array.isArray(sessionInfo.questions) ? [...sessionInfo.questions] : [];
   return {
     sessionId,
     startedAt,
     endedAt: sessionInfo.endedAt || null,
     subjectId: sessionInfo.subjectId || null,
     topicId: sessionInfo.topicId || null,
-    questions: Array.isArray(sessionInfo.questions) ? [...sessionInfo.questions] : [],
+    questions,
+    plannedQuestionCount: Number.isFinite(sessionInfo.plannedQuestionCount)
+      ? Math.max(0, Math.floor(sessionInfo.plannedQuestionCount))
+      : questions.length,
     correct: Number.isFinite(sessionInfo.correct) ? sessionInfo.correct : 0,
     wrong: Number.isFinite(sessionInfo.wrong) ? sessionInfo.wrong : 0,
-    durationSeconds: Number.isFinite(sessionInfo.durationSeconds) ? sessionInfo.durationSeconds : 0
+    durationSeconds: Number.isFinite(sessionInfo.durationSeconds) ? sessionInfo.durationSeconds : 0,
+    completed: sessionInfo.completed === true
   };
 }
 
@@ -198,9 +203,13 @@ function finalizeSession(profile, sessionInfo = {}) {
     subjectId: candidate?.subjectId || sessionInfo.subjectId || null,
     topicId: candidate?.topicId || sessionInfo.topicId || null,
     questions: Array.isArray(candidate?.questions) ? [...candidate.questions] : Array.isArray(sessionInfo.questions) ? [...sessionInfo.questions] : [],
+    plannedQuestionCount: Number.isFinite(sessionInfo.plannedQuestionCount)
+      ? Math.max(0, Math.floor(sessionInfo.plannedQuestionCount))
+      : candidate?.plannedQuestionCount || (Array.isArray(candidate?.questions) ? candidate.questions.length : 0),
     correct: Number.isFinite(sessionInfo.correct) ? sessionInfo.correct : candidate?.correct || 0,
     wrong: Number.isFinite(sessionInfo.wrong) ? sessionInfo.wrong : candidate?.wrong || 0,
-    durationSeconds
+    durationSeconds,
+    completed: sessionInfo.completed === true || candidate?.completed === true
   };
 
   profile.sessionHistory = [endedSession, ...(profile.sessionHistory || [])].slice(0, MAX_SESSION_HISTORY);
@@ -238,6 +247,7 @@ export function recordSessionStart(profile, sessionInfo = {}) {
       subjectId: current.subjectId,
       topicId: current.topicId,
       durationSeconds: current.durationSeconds || 0,
+      completed: false,
       endedAt: nowIso()
     });
   }
@@ -270,7 +280,10 @@ export function recordQuestionResult(profile, result = {}) {
     difficulty = 'medium',
     timeSpent = 0,
     answeredAt = nowIso(),
-    sessionId
+    sessionId,
+    usedHint = false,
+    usedExplain = false,
+    misconceptionType = ''
   } = result || {};
 
   if (!questionId || !subjectId || !topicId) {
@@ -313,13 +326,18 @@ export function recordQuestionResult(profile, result = {}) {
   const levelBefore = calculateLevel(nextProfile.xp || 0);
   const safeCorrect = Boolean(correct);
   const xpEarned = calculateXP(safeCorrect ? 1 : 0, difficulty);
+  const topicBefore = nextProfile.topics?.[subjectId]?.[topicId] || {};
+  const masteryBefore = Number.isFinite(topicBefore.mastery) ? topicBefore.mastery : 0;
+  const confidenceBefore = Number.isFinite(topicBefore.confidence) ? topicBefore.confidence : 0;
 
   recordAnswer(nextProfile, {
     subjectId,
     topicId,
     correct: safeCorrect,
     difficulty,
-    timeSpent
+    timeSpent,
+    usedHint: Boolean(usedHint),
+    usedExplain: Boolean(usedExplain)
   });
 
   const afterXPProfile = addXP(nextProfile, xpEarned);
@@ -345,6 +363,13 @@ export function recordQuestionResult(profile, result = {}) {
       difficulty,
       xpEarned,
       timeSpent: Number.isFinite(timeSpent) ? timeSpent : 0,
+      usedHint: Boolean(usedHint),
+      usedExplain: Boolean(usedExplain),
+      misconceptionType: safeCorrect ? '' : String(misconceptionType || 'UNCLASSIFIED'),
+      masteryBefore,
+      masteryAfter: Number.isFinite(topicMastery.mastery) ? topicMastery.mastery : null,
+      confidenceBefore,
+      confidenceAfter: Number.isFinite(topicMastery.confidence) ? topicMastery.confidence : null,
       answeredAt: nextProfile.lastAnsweredAt,
       sessionId: activeSessionId
     },
@@ -368,13 +393,18 @@ export function recordQuestionResult(profile, result = {}) {
   nextProfile.totalQuestions = Number.isFinite(nextProfile.totalQuestions) ? nextProfile.totalQuestions : 0;
   const savedProfile = saveAdaptiveProfile(nextProfile);
   syncMemoryAfterAnswer(savedProfile, {
+    sessionId: activeSessionId,
     questionId,
     subjectId,
     topicId,
     correct: safeCorrect,
     difficulty,
     timeSpent,
-    answeredAt
+    answeredAt,
+    attemptNumber,
+    usedHint: Boolean(usedHint),
+    usedExplain: Boolean(usedExplain),
+    misconceptionType: safeCorrect ? '' : String(misconceptionType || 'UNCLASSIFIED')
   }, {
     xpEarned
   });

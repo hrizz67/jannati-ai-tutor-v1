@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
+import { createPortal, flushSync } from 'react-dom';
 import { subjectList, loadSubjectData, loadAllSubjects } from './data/subjects';
 import { smartCheck } from './utils/smartCheck';
 import { beep } from './utils/speech';
@@ -11,7 +11,7 @@ import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import GamificationSummary from './components/GamificationSummary.jsx';
-import TutorAIModal from './components/ai/TutorAIModal.jsx';
+const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
 import IconGlyph from './components/IconGlyph.jsx';
 import { explainAnswer } from './ai/explainEngine';
 import { updateStoredRecommendation } from './ai/recommendationEngine';
@@ -33,6 +33,7 @@ import { buildMasteryMap, summarizeMastery } from './ai/adaptive/masteryEngine';
 import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/adaptive/adaptivePracticeEngine';
 import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
+import { classifyMistake } from './ai/mistakes/index.js';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { createReadingSpeechSession } from './ai/speech/speechSession.js';
@@ -61,9 +62,11 @@ const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard
 const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
-import { supabase, supabaseConfigured } from './services/supabaseClient.js';
+import ConnectivityNotice from './components/ConnectivityNotice.jsx';
+import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient.js';
 import { loadCloudLearningData, saveCloudLearningData } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getAccessLabel, getDailyQuestionCount, isPremiumAccess, normalizeAccessStatus } from './services/accessControl.js';
+import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
@@ -85,11 +88,37 @@ const CHILD_SNAPSHOT_PREFIX = 'jannati_child_snapshot:';
 const CHILD_ORIGINAL_SNAPSHOT_PREFIX = 'jannati_child_original_snapshot:';
 const CLOUD_CHILD_STATE_KEY = 'jannati_cloud_child_state';
 const ACCOUNT_MIGRATION_KEY = 'jannati_account_storage_migrated_v1';
+const CLASSROOM_PILOT_CODE_PREFIX = 'jannati_classroom_pilot_code:';
 const PUBLIC_APP_URL = 'https://hrizz67.github.io/jannati-ai-tutor-v1/';
 const BETA_STATUS = 'Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
 const storageRecoveryEvents = [];
+
+function mergeLoadedSubjects(current = [], incoming = []) {
+  const subjectById = new Map((current || []).filter(Boolean).map(subject => [subject.id, subject]));
+  for (const subject of incoming || []) {
+    if (subject?.id) subjectById.set(subject.id, subject);
+  }
+  return subjectList.map(item => subjectById.get(item.id)).filter(Boolean);
+}
+
+function allowsBackgroundSubjectPreload() {
+  if (typeof navigator === 'undefined' || navigator.onLine === false) return false;
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (connection?.saveData) return false;
+  return !/(^|-)2g$/i.test(String(connection?.effectiveType || ''));
+}
+
+function createClassroomPilotCode() {
+  try {
+    const bytes = new Uint8Array(4);
+    crypto.getRandomValues(bytes);
+    return `PILOT-${[...bytes].map(value => value.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+  } catch {
+    return `PILOT-${Date.now().toString(36).slice(-8).toUpperCase()}`;
+  }
+}
 
 function isAccountDataKey(key = '') {
   return String(key).startsWith('jannati')
@@ -1080,6 +1109,7 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [recoveryMessages]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
+  const [supabase, setSupabase] = useState(null);
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
   const [activeChildId, setActiveChildId] = useState(() => readActiveChildId());
@@ -1099,11 +1129,13 @@ export default function App() {
   const cloudMutationAtRef = useRef(0);
   const cloudWritePendingRef = useRef(false);
   const cloudWriteQueueRef = useRef(Promise.resolve());
+  const pendingOfflineCloudSaveRef = useRef(false);
   const [accessNotice, setAccessNotice] = useState(null);
   const [accessReturnScreen, setAccessReturnScreen] = useState('dashboard');
   const [selectedSubjectId, setSelectedSubjectId] = useState('bm');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
+  const allSubjectsLoadRef = useRef(null);
   const [loadingSubject, setLoadingSubject] = useState(true);
   const [activeSubject, setActiveSubject] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
@@ -1124,6 +1156,30 @@ export default function App() {
   const effectiveAccess = accessProfile || { access_status: profile?.accessStatus || 'free', access_expires_at: profile?.accessExpiresAt || null };
   const isPremiumUser = accessProfile ? isPremiumAccess(accessProfile) : Boolean(profile?.isPremium);
   const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
+
+  useEffect(() => {
+    if (!supabaseConfigured) return undefined;
+    let cancelled = false;
+    let idleId = null;
+    const loadClient = () => {
+      void getSupabaseClient()
+        .then(client => {
+          if (!cancelled) setSupabase(client);
+        })
+        .catch(() => {
+          if (!cancelled) setRecoveryMessages(prev => [...prev, 'Sambungan akaun belum tersedia. Pembelajaran Free masih boleh diteruskan.']);
+        });
+    };
+    const timer = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(loadClient, { timeout: 2500 });
+      else loadClient();
+    }, profile?.accountId ? 0 : 1200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      if (idleId !== null && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+    };
+  }, []);
 
   function getSubjectDailyQuestionCount(subjectId) {
     return getDailyQuestionCount(profile, adaptiveProfile, todayKey(), subjectId);
@@ -1176,6 +1232,11 @@ export default function App() {
   function queueCloudLearningSave() {
     if (!supabase || !accountUser?.id) return Promise.resolve(false);
     markLocalLearningMutation();
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      pendingOfflineCloudSaveRef.current = true;
+      setCloudSyncStatus('offline');
+      return Promise.resolve(false);
+    }
     cloudWriteQueueRef.current = cloudWriteQueueRef.current
       .catch(() => false)
       .then(async () => {
@@ -1185,12 +1246,25 @@ export default function App() {
         setCloudSyncStatus('syncing');
         const ok = await saveCloudLearningData(supabase, buildCloudLearningPayload());
         cloudWritePendingRef.current = false;
-        if (ok) captureAccountSnapshot(accountUser.id);
+        if (ok) {
+          pendingOfflineCloudSaveRef.current = false;
+          captureAccountSnapshot(accountUser.id);
+        }
         setCloudSyncStatus(ok ? 'saved' : 'error');
         return ok;
       });
     return cloudWriteQueueRef.current;
   }
+
+  useEffect(() => {
+    if (!supabase || !accountUser?.id) return undefined;
+    const retryPendingCloudSave = () => {
+      if (!pendingOfflineCloudSaveRef.current) return;
+      void queueCloudLearningSave();
+    };
+    window.addEventListener('online', retryPendingCloudSave);
+    return () => window.removeEventListener('online', retryPendingCloudSave);
+  }, [accountUser?.id, profile, adaptiveProfile, gamificationProfile, resume]);
 
   function cacheCurrentChildSnapshot(childId) {
     if (!childId) return;
@@ -1455,7 +1529,7 @@ export default function App() {
       alive = false;
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     if (!supabase && profile?.name && !childProfiles.length) ensureChildProfiles(profile);
@@ -1470,6 +1544,7 @@ export default function App() {
   const adaptiveSessionRef = useRef(null);
   const questionStartedAtRef = useRef(Date.now());
   const quizSubmitKeyRef = useRef('');
+  const questionSupportRef = useRef({ questionId: null, usedHint: false, usedExplain: false });
   const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp, adaptiveProfile.updatedAt, adaptiveProfile.totalQuestions, adaptiveProfile.studyMinutes]);
   const learningObservation = useMemo(() => buildLearningObservation(adaptiveProfile, aiMemory, { subjects: allSubjects, profile }), [adaptiveProfile, aiMemory, allSubjects, profile]);
   const predictionProfile = useMemo(() => getPredictionProfile(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
@@ -1614,7 +1689,7 @@ export default function App() {
     }
 
     const pullLatestCloudData = async () => {
-      if (cancelled || inFlight || document.visibilityState === 'hidden') return;
+      if (cancelled || inFlight || document.visibilityState === 'hidden' || navigator.onLine === false) return;
       // A recent child/profile change must reach Supabase before a polling
       // request is allowed to restore an older cloud snapshot over it.
       if (cloudWritePendingRef.current || Date.now() - cloudMutationAtRef.current < 5000) return;
@@ -1677,14 +1752,43 @@ export default function App() {
     loadSubjectData(selectedSubjectId).then(subject => {
       if (!alive) return;
       setSelectedSubject(subject);
+      setAllSubjects(current => mergeLoadedSubjects(current, [subject]));
       setLoadingSubject(false);
     });
     return () => { alive = false; };
   }, [selectedSubjectId]);
 
+  function ensureAllSubjectsLoaded() {
+    if (!allSubjectsLoadRef.current) {
+      allSubjectsLoadRef.current = loadAllSubjects()
+        .then(subjects => {
+          setAllSubjects(subjects);
+          return subjects;
+        })
+        .catch(() => {
+          allSubjectsLoadRef.current = null;
+          setRecoveryMessages(prev => [...prev, 'Data semua subjek belum dapat dipramuat. Subjek semasa masih boleh digunakan.']);
+          return [];
+        });
+    }
+    return allSubjectsLoadRef.current;
+  }
+
   useEffect(() => {
-    loadAllSubjects().then(setAllSubjects);
-  }, []);
+    if (screen !== 'dashboard' || !selectedSubject?.id || allSubjects.length >= subjectList.length || !allowsBackgroundSubjectPreload()) return undefined;
+    let idleId = null;
+    const timer = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        idleId = window.requestIdleCallback(() => void ensureAllSubjectsLoaded(), { timeout: 5000 });
+      } else {
+        void ensureAllSubjectsLoaded();
+      }
+    }, 3500);
+    return () => {
+      window.clearTimeout(timer);
+      if (idleId !== null && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+    };
+  }, [screen, selectedSubject?.id, allSubjects.length]);
 
   const totalQuestions = useMemo(() => {
     return selectedSubject?.topics?.reduce((sum, topic) => sum + topic.questions.length, 0) || 0;
@@ -1804,7 +1908,11 @@ export default function App() {
     }
   }
 
-  function exportBetaReport() {
+  function exportBetaReport(request = {}) {
+    if (request?.reportType === 'classroom-pilot') {
+      exportClassroomPilotReport();
+      return;
+    }
     const aiMemory = loadAIMemory();
     const subjects = allSubjects?.length ? allSubjects : (selectedSubject ? [selectedSubject] : []);
     const topicMastery = {
@@ -1848,6 +1956,41 @@ export default function App() {
     const link = document.createElement('a');
     link.href = url;
     link.download = `jannati-closed-beta-report-${todayKey()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportClassroomPilotReport() {
+    const scopeId = activeChildId || 'default';
+    const storageKey = `${CLASSROOM_PILOT_CODE_PREFIX}${scopeId}`;
+    let participantCode = '';
+    try {
+      participantCode = localStorage.getItem(storageKey) || createClassroomPilotCode();
+      localStorage.setItem(storageKey, participantCode);
+    } catch {
+      participantCode = createClassroomPilotCode();
+    }
+    const pilotReport = buildClassroomPilotReport({
+      adaptiveProfile: getAdaptiveProfile(),
+      participantCode,
+      options: { windowDays: 14 }
+    });
+    const report = {
+      ...pilotReport,
+      metadata: {
+        ...pilotReport.metadata,
+        app: 'Jannati AI Tutor',
+        appVersion: APP_VERSION,
+        buildDate: APP_BUILD_DATE
+      }
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `jannati-classroom-pilot-${participantCode}-${todayKey()}.json`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -1918,6 +2061,12 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Sync tidak tersedia. Sila log masuk semula.']);
       return;
     }
+    if (navigator.onLine === false) {
+      pendingOfflineCloudSaveRef.current = true;
+      setCloudSyncStatus('offline');
+      setRecoveryMessages(prev => [...prev, 'Peranti sedang luar talian. Data kekal pada peranti dan akan disegerakkan apabila sambungan kembali.']);
+      return;
+    }
     if (!window.confirm('Sync data peranti ini ke cloud sekarang?')) return;
     setCloudSyncStatus('syncing');
     const ok = await saveCloudLearningData(supabase, buildCloudLearningPayload());
@@ -1929,6 +2078,11 @@ export default function App() {
     if (!supabase || !accountUser?.id) {
       setCloudSyncStatus('error');
       setRecoveryMessages(prev => [...prev, 'Muat dari cloud tidak tersedia. Sila log masuk semula.']);
+      return;
+    }
+    if (navigator.onLine === false) {
+      setCloudSyncStatus('offline');
+      setRecoveryMessages(prev => [...prev, 'Peranti sedang luar talian. Data cloud belum boleh dimuatkan.']);
       return;
     }
     if (!window.confirm('Muat data cloud dan gantikan data pada peranti ini?')) return;
@@ -2025,6 +2179,7 @@ export default function App() {
     setQuizStartedAt(Date.now());
     questionStartedAtRef.current = Date.now();
     quizSubmitKeyRef.current = '';
+    resetQuestionSupport(questions[startIndex]?.id || null);
     setSession(startSession);
     setScreen('quiz');
     adaptiveSessionRef.current = {
@@ -2047,7 +2202,9 @@ export default function App() {
       startedAt: adaptiveSessionRef.current.startedAt,
       subjectId: subject.id,
       topicId: topic.id,
-      questions: questions.map(item => item.id).filter(Boolean)
+      questions: questions.map(item => item.id).filter(Boolean),
+      plannedQuestionCount: questions.length,
+      completed: false
     });
 
     const resumeData = {
@@ -2229,8 +2386,13 @@ export default function App() {
       await startResume();
       return;
     }
-    if (!allSubjects.length) return;
-    const session = buildAdaptivePracticeSession(profile, allSubjects, {
+    let practiceSubjects = allSubjects;
+    if (practiceSubjects.length < subjectList.length) {
+      const loadedSubjects = await ensureAllSubjectsLoaded();
+      if (loadedSubjects.length) practiceSubjects = loadedSubjects;
+    }
+    if (!practiceSubjects.length) return;
+    const session = buildAdaptivePracticeSession(profile, practiceSubjects, {
       questionCount: allowedQuestionCount,
       mode: 'balanced',
       subjectId: selectedSubjectId,
@@ -2243,7 +2405,7 @@ export default function App() {
         adaptiveProfile.streak || 0,
         selectedSubjectId || '',
         allowedQuestionCount,
-        allSubjects.length,
+        practiceSubjects.length,
         aiMemory?.history?.length || 0
       ])
     });
@@ -2302,6 +2464,28 @@ export default function App() {
 
   function currentQuestion() {
     return activeTopic?.questions?.[questionIndex];
+  }
+
+  function resetQuestionSupport(questionId = null) {
+    questionSupportRef.current = { questionId, usedHint: false, usedExplain: false };
+  }
+
+  function markQuestionSupport(field) {
+    const questionId = currentQuestion()?.id || null;
+    const current = questionSupportRef.current?.questionId === questionId
+      ? questionSupportRef.current
+      : { questionId, usedHint: false, usedExplain: false };
+    questionSupportRef.current = { ...current, [field]: true };
+  }
+
+  function readQuestionSupport(questionId) {
+    if (questionSupportRef.current?.questionId !== questionId) {
+      return { usedHint: false, usedExplain: false };
+    }
+    return {
+      usedHint: Boolean(questionSupportRef.current.usedHint),
+      usedExplain: Boolean(questionSupportRef.current.usedExplain)
+    };
   }
 
   useEffect(() => {
@@ -2483,6 +2667,36 @@ export default function App() {
     const submitKey = [sessionId || 'session', question.id || 'question', attemptNumber].join('|');
     if (quizSubmitKeyRef.current === submitKey) return;
     quizSubmitKeyRef.current = submitKey;
+    const recordedSupport = readQuestionSupport(question.id);
+    const supportUsage = {
+      ...recordedSupport,
+      usedHint: recordedSupport.usedHint || feedback?.status === 'hint'
+    };
+    let misconceptionType = '';
+    if (result.status !== 'correct') {
+      try {
+        misconceptionType = classifyMistake({
+          question,
+          subjectId: question.subjectId || activeSubject?.id,
+          topicId: question.topicId || activeTopic?.id,
+          subject: {
+            id: question.subjectId || activeSubject?.id,
+            title: question.subjectTitle || activeSubject?.title,
+            short: question.subjectShort || activeSubject?.short
+          },
+          topic: {
+            id: question.topicId || activeTopic?.id,
+            title: question.topicTitle || activeTopic?.title,
+            difficulty: question.difficulty || activeTopic?.difficulty
+          },
+          answer,
+          correctAnswer: question.answer,
+          timestamp: answeredAt
+        }).mistakeType || 'UNCLASSIFIED';
+      } catch {
+        misconceptionType = 'UNCLASSIFIED';
+      }
+    }
 
     if (result.status === 'correct') {
       xp = 10; coins = 5; nextSession.correct += 1; beep('good');
@@ -2505,6 +2719,9 @@ export default function App() {
       status: result.status,
       correctAnswer: question.answer,
       attemptNumber,
+      usedHint: supportUsage.usedHint,
+      usedExplain: supportUsage.usedExplain,
+      misconceptionType,
       timeSpentMs: timeSpent * 1000,
       answeredAt
     });
@@ -2521,7 +2738,10 @@ export default function App() {
       correct: result.status === 'correct',
       difficulty: question?.difficulty || question?.level || activeTopic?.difficulty || 'medium',
       timeSpent,
-      answeredAt
+      answeredAt,
+      usedHint: supportUsage.usedHint,
+      usedExplain: supportUsage.usedExplain,
+      misconceptionType
     });
     recordGamification({
       type: 'quiz-answer',
@@ -2537,6 +2757,7 @@ export default function App() {
       eventType: 'quiz-answer'
     });
     refreshAdaptiveProfile();
+    resetQuestionSupport(question.id);
 
     setSession(nextSession);
     autoSave(questionIndex, nextSession);
@@ -2606,6 +2827,7 @@ export default function App() {
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback || feedback.status === 'empty') return;
+    markQuestionSupport('usedExplain');
     const snapshot = createCoachSnapshot('explain', question);
     const questionText = snapshot.questionText;
     const instruction = snapshot.instruction;
@@ -2657,6 +2879,7 @@ export default function App() {
   function openTeacher() {
     const question = currentQuestion();
     if (!question) return;
+    markQuestionSupport('usedExplain');
     const snapshot = createCoachSnapshot('teach', question);
     const questionText = snapshot.questionText;
     const instruction = snapshot.instruction;
@@ -2736,6 +2959,7 @@ export default function App() {
     }
     const nextIndex = questionIndex + 1;
     questionStartedAtRef.current = Date.now();
+    resetQuestionSupport(activeTopic.questions[nextIndex]?.id || null);
     setQuestionIndex(nextIndex);
     setAnswer('');
     setFeedback(null);
@@ -2760,9 +2984,11 @@ export default function App() {
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
       questions: (session.answers || []).map(item => item.questionId).filter(Boolean),
+      plannedQuestionCount: total,
       correct: session.correct || 0,
       wrong: session.wrong || 0,
       durationSeconds: studySeconds,
+      completed: true,
       endedAt: new Date().toISOString()
     });
     adaptiveSessionRef.current = null;
@@ -2959,7 +3185,8 @@ export default function App() {
   const coachSnapshot = coachRequestRef.current.snapshot;
   const coachSubject = allSubjects.find(item => item.id === coachSnapshot?.subjectId) || activeSubject;
   const chatWidget = chatOpen && chatSubject ? (
-    <TutorAIModal
+    <React.Suspense fallback={<TutorAIModalLoading onCancel={() => setChatOpen(false)} />}>
+      <TutorAIModal
       open={chatOpen}
       profile={profile}
       adaptiveProfile={adaptiveProfile}
@@ -2985,8 +3212,9 @@ export default function App() {
       gamificationProfile={gamificationProfile}
       weakTopics={tutorWeakTopics}
       strongTopics={tutorStrongTopics}
-      onTutup={() => setChatOpen(false)}
-    />
+        onTutup={() => setChatOpen(false)}
+      />
+    </React.Suspense>
   ) : null;
   const predictionGreeting = buildPredictionGreeting(profile, predictionProfile, readiness, studyPlan);
   const aiSummary = {
@@ -3003,7 +3231,10 @@ export default function App() {
   };
 
   function openTutorAi() {
-    if (requirePremium('tutorAi')) setChatOpen(true);
+    if (requirePremium('tutorAi')) {
+      if (screen === 'quiz') markQuestionSupport('usedExplain');
+      setChatOpen(true);
+    }
   }
 
   function openPremiumScreen(targetScreen, feature) {
@@ -3012,9 +3243,9 @@ export default function App() {
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
-  if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} /></BetaChrome>;
+  if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} onSupabaseReady={setSupabase} /></BetaChrome>;
 
-  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} /></BetaChrome>;
+  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} onSupabaseReady={setSupabase} /></BetaChrome>;
 
   if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} /></BetaChrome>;
 
@@ -3053,13 +3284,30 @@ function BetaChrome({ children, recoveryMessages = [], modalOpen = false, curren
   const feedbackSuppressed = modalOpen || ['quiz', 'uasa', 'reading', 'listening', 'speaking', 'writing', 'finish', 'parent'].includes(currentScreen);
   return <>
     <BrandSplash />
-    <div className="app-chrome-shell" data-modal-open={modalOpen ? 'true' : 'false'} aria-hidden={modalOpen ? 'true' : undefined} inert={modalOpen ? '' : undefined}>
+    <div className="app-chrome-shell" data-modal-open={modalOpen ? 'true' : 'false'} aria-hidden={modalOpen ? 'true' : undefined} inert={modalOpen ? true : undefined}>
+      <ConnectivityNotice />
       <div className="app-page-shell" data-screen={currentScreen}>{children}</div>
       {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
       <BetaFeedbackButton suppressed={feedbackSuppressed} />
       <AppVersiFooter />
     </div>
   </>;
+}
+
+function TutorAIModalLoading({ onCancel }) {
+  if (typeof document === 'undefined') return null;
+  return createPortal(
+    <div className="ai-chat-overlay" data-modal-open="true">
+      <section className="ai-chat ai-modal-shell" role="dialog" aria-modal="true" aria-labelledby="tutor-ai-loading-title">
+        <header className="ai-chat-head">
+          <strong className="ai-chat-title" id="tutor-ai-loading-title">Tutor AI</strong>
+          <button type="button" className="secondary" onClick={onCancel} aria-label="Tutup">Tutup</button>
+        </header>
+        <p className="chat-status chat-status-loading" role="status" aria-live="polite">Tutor AI sedang dimuat...</p>
+      </section>
+    </div>,
+    document.body
+  );
 }
 
 function getCanonicalQuestionAnswers(question = {}) {
@@ -3271,7 +3519,7 @@ function BetaFeedbackButton({ suppressed = false }) {
   </>;
 }
 
-function Login({ onStart, onBack }) {
+function Login({ onStart, onBack, onSupabaseReady }) {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('janna');
   const [email, setEmail] = useState('');
@@ -3286,10 +3534,16 @@ function Login({ onStart, onBack }) {
 
   async function handleAccountSubmit(event) {
     event.preventDefault();
-    if (!supabaseConfigured || !supabase) return;
+    if (!supabaseConfigured) return;
     setAccountBusy(true);
     setAccountMessage('');
     try {
+      const supabase = await getSupabaseClient();
+      if (!supabase) {
+        setAccountMessage('Sambungan akaun belum tersedia. Cuba lagi sebentar.');
+        return;
+      }
+      onSupabaseReady?.(supabase);
       const result = accountMode === 'signin'
         ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
       : await supabase.auth.signUp({
@@ -3456,7 +3710,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   }[speechState] || 'Mikrofon';
   const speechMessage = typeof speechResult?.message === 'string' ? speechResult.message : '';
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question">{renderUasaQuestionText(question.q)}</h1><input value={answer} onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span>{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b>{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p>{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1><input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className="autosave-note">Simpanan automatik aktif.</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ profile, session, topic, nextTopic, aiSummary, personality, voiceSummaryText, gamificationProfile, onDashboard, onRetry, onNextTopic, onOpenAi }) {
