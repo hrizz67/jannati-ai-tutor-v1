@@ -1,0 +1,1 @@
+var e=`/jannati-ai-tutor-v1/assets/nota-badge-D8N79752.webp`;export{e as t};
