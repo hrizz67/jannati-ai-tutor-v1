@@ -40,10 +40,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.2",
-    "@vitejs/plugin-react": "latest",
+    "@vitejs/plugin-react": "6.0.5",
     "react": "latest",
     "react-dom": "latest",
-    "vite": "latest"
+    "vite": "8.2.1"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0"
