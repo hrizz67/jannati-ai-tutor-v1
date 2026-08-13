@@ -4,11 +4,12 @@ import { subjectList } from '../../src/data/subjects/index.js';
 const root = process.cwd();
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const app = read('src/App.jsx');
+const resumeStorage = read('src/utils/resumeStorage.js');
 const packageJson = JSON.parse(read('package.json'));
 const checks = {
   subjectSelection: /onSelectSubject|startTopic/.test(app),
   quizAnswerFlow: /onCheckAnswer|checkAnswer|onNextQuestion/.test(app),
-  resumeFlow: /RESUME_KEY|startResume|persistResumeData/.test(app),
+  resumeFlow: /startResume|persistResumeData/.test(app) && /RESUME_KEY|RESUME_SLOTS_KEY/.test(resumeStorage),
   dashboards: /HomeDashboard|ParentDashboardPage|AnalyticsDashboard|RevisionDashboard/.test(app),
   speechSurfaces: /BacaanCoach|MendengarLab|BertuturCoach|MenulisCoach/.test(app),
   aiSurfaces: /TutorAIModal|AIExplainModal|AITeacherModal/.test(app),

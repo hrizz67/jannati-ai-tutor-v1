@@ -9,7 +9,7 @@ export const ACCESS_STATUS = Object.freeze({
 export const FREE_DAILY_QUESTION_LIMIT = 10;
 export const PREMIUM_FEATURES = Object.freeze({
   tutorAi: 'Tutor AI',
-  uasa: 'Simulator UASA',
+  uasa: 'Pentaksiran Sumatif',
   parent: 'Laporan Ibu Bapa',
   bacaan: 'Latihan Bacaan',
   mendengar: 'Makmal Mendengar',

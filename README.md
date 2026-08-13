@@ -1,7 +1,7 @@
 # Jannati AI Tutor
 
 <!-- release-badges:start -->
-![Release](https://img.shields.io/badge/Release-v3.3.1-blue) ![Build](https://img.shields.io/badge/Build-PASS-brightgreen) ![Validation](https://img.shields.io/badge/Validation-PASS-brightgreen) ![Coverage](https://img.shields.io/badge/Coverage-100%25-blue)
+![Release](https://img.shields.io/badge/Release-v3.3.2-blue) ![Build](https://img.shields.io/badge/Build-PASS-brightgreen) ![Validation](https://img.shields.io/badge/Validation-PASS-brightgreen) ![Coverage](https://img.shields.io/badge/Coverage-100%25-blue)
 <!-- release-badges:end -->
 
 React + Vite learning app for Malaysian Year 2 revision with split subject banks, learning paths, PBD summative assessment, AI explain/teacher helpers, parent dashboard, and tag-gated GitHub Pages deployment.

@@ -13,7 +13,8 @@ const DISTINCT_REPLACEMENTS = {
   farah: 'mira'
 };
 
-const ROLE_PATTERN = /\b([\p{L}][\p{L}'-]*)\b(?:\s+[\p{L}][\p{L}'-]*){0,6}\s+(berbual dengan|bermain dengan|pergi bersama|bersama|dengan|dan|menolong|membantu)\s+\1\b/giu;
+const PERSON_ROLE = '(?:Ali|Abu|Aina|Sara|Mira|Farah|Datuk|Nenek|Ibu|Ayah|Kakak|Abang|adik|murid|guru)';
+const ROLE_PATTERN = new RegExp(`\\b(${PERSON_ROLE})\\b(?:\\s+[\\p{L}][\\p{L}'-]*){0,6}\\s+(berbual dengan|bermain dengan|pergi bersama|bersama|dengan|dan|menolong|membantu)\\s+\\1\\b`, 'giu');
 const CONSECUTIVE_WORD_PATTERN = /\b([\p{L}][\p{L}'-]*)\s+\1\b/giu;
 const INTERNAL_TOKEN_PATTERN = /\b(?:BM-|questionId|topicId|adaptive[_-]|uasa[_-]|set[_-])\S*/i;
 

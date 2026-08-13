@@ -140,6 +140,8 @@ async function runStorageValidation() {
   ensureReportDir();
   const issues = [];
   const appSource = fs.readFileSync(path.resolve('src/App.jsx'), 'utf8');
+  const resumeSource = fs.readFileSync(path.resolve('src/utils/resumeStorage.js'), 'utf8');
+  const appStorageSources = `${appSource}\n${resumeSource}`;
   const memorySource = fs.readFileSync(path.resolve('src/ai/memoryEngine.js'), 'utf8');
 
   [
@@ -148,7 +150,7 @@ async function runStorageValidation() {
     ...EXPECTED_KEYS.legacyProfile,
     ...EXPECTED_KEYS.legacyResume
   ].forEach(key => {
-    if (!appSource.includes(key)) {
+    if (!appStorageSources.includes(key)) {
       issues.push(issue('error', 'MISSING_MIGRATION_KEY', 'Expected profile/resume migration key is missing from App.jsx.', { key }));
     }
   });

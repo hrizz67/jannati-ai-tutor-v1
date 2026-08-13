@@ -46,6 +46,8 @@ import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName, isPlaceholderStudentName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
+import { clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
+import { splitQuestionPresentationLines } from './utils/questionPresentation.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
@@ -70,16 +72,14 @@ import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
-const RESUME_KEY = 'jannati_v151_resume';
 // Increment whenever a question's wording, accepted answers, or explanation
 // is corrected. Resume sessions are rehydrated from the current question bank
 // so an old saved question can never keep stale answer text on screen.
-const QUESTION_BANK_VERSION = 2;
+const QUESTION_BANK_VERSION = 3;
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
-const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
 const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
@@ -688,33 +688,6 @@ function loadProfile() {
   return demoProfile;
 }
 
-function loadResume() {
-  try {
-    const saved = localStorage.getItem(RESUME_KEY);
-    if (saved) {
-      const parsed = normalizeResumeData(JSON.parse(saved));
-      if (parsed) return parsed;
-      clearResume();
-    }
-
-    for (const key of LEGACY_RESUME_KEYS) {
-      const legacy = localStorage.getItem(key);
-      if (legacy) {
-        const parsed = normalizeResumeData(JSON.parse(legacy));
-        if (parsed) {
-          localStorage.setItem(RESUME_KEY, JSON.stringify(parsed));
-          return parsed;
-        }
-      }
-    }
-  } catch {
-    storageRecoveryEvents.push('Data sambung latihan telah dipulihkan kerana simpanan peranti rosak.');
-    clearResume();
-  }
-
-  return null;
-}
-
 function normalizeStars(value) {
   const text = String(value ?? '').replace(/\s+/g, '').trim();
   if (!text) return '☆☆☆';
@@ -734,109 +707,6 @@ function getTopicDisplayName(topic = {}, fallback = '-') {
   return label && label !== ' ' ? label : fallback;
 }
 
-function saveResume(data) {
-  try {
-    const normalized = normalizeResumeData(data);
-    if (!normalized) return;
-    localStorage.setItem(RESUME_KEY, JSON.stringify(normalized));
-  } catch {
-    storageRecoveryEvents.push('Simpanan automatik latihan tidak dapat dibuat kerana simpanan peranti tidak tersedia.');
-  }
-}
-
-function clearResume() {
-  localStorage.removeItem(RESUME_KEY);
-  LEGACY_RESUME_KEYS.forEach(key => localStorage.removeItem(key));
-}
-
-function normalizeResumeData(value) {
-  if (!value || typeof value !== 'object') return null;
-  const state = value.state && typeof value.state === 'object' ? value.state : {};
-  const session = value.session && typeof value.session === 'object'
-    ? value.session
-    : state.session && typeof state.session === 'object'
-      ? state.session
-      : null;
-  const questions = Array.isArray(value.questions)
-    ? [...value.questions]
-    : Array.isArray(value.questionIds)
-      ? [...value.questionIds]
-      : Array.isArray(state.questions)
-        ? [...state.questions]
-        : Array.isArray(state.questionIds)
-          ? [...state.questionIds]
-          : null;
-  const subjectId = value.subjectId || value.subject || state.subjectId || state.subject || null;
-  const topicId = value.topicId || value.topic || state.topicId || state.topic || null;
-  const mode = value.mode || value.screen || state.mode || state.screen || 'quiz';
-  const questionIndexValue = Number.isInteger(value.currentIndex)
-    ? value.currentIndex
-    : Number.isInteger(value.questionIndex)
-      ? value.questionIndex
-      : Number.isInteger(state.currentIndex)
-        ? state.currentIndex
-        : Number.isInteger(state.questionIndex)
-          ? state.questionIndex
-          : 0;
-  const answers = Array.isArray(value.answers)
-    ? [...value.answers]
-    : Array.isArray(state.answers)
-      ? [...state.answers]
-      : Array.isArray(session?.answers)
-        ? [...session.answers]
-        : [];
-  const metadata = {
-    ...(state.metadata || {}),
-    ...(value.metadata || {})
-  };
-  const normalized = {
-    version: Number(value.version || state.version || 1),
-    questionBankVersion: Number(value.questionBankVersion || state.questionBankVersion || 1),
-    mode,
-    screen: value.screen || state.screen || mode,
-    sessionId: value.sessionId || session?.adaptiveSessionId || state.sessionId || state.adaptiveSessionId || null,
-    subjectId,
-    topicId,
-    questions,
-    questionIds: Array.isArray(value.questionIds)
-      ? [...value.questionIds]
-      : Array.isArray(state.questionIds)
-        ? [...state.questionIds]
-        : questions?.map(item => item?.id).filter(Boolean) || [],
-    currentIndex: questionIndexValue,
-    questionIndex: questionIndexValue,
-    answers,
-    score: Number(value.score ?? state.score ?? session?.percent ?? 0),
-    correct: Number(value.correct ?? state.correct ?? session?.correct ?? 0),
-    wrong: Number(value.wrong ?? state.wrong ?? session?.wrong ?? 0),
-    xp: Number(value.xp ?? state.xp ?? session?.xp ?? 0),
-    coins: Number(value.coins ?? state.coins ?? session?.coins ?? 0),
-    attemptNumber: Number(value.attemptNumber ?? state.attemptNumber ?? session?.attemptNumber ?? 0),
-    metadata,
-    startedAt: value.startedAt || state.startedAt || session?.startedAt || new Date().toISOString(),
-    updatedAt: value.updatedAt || state.updatedAt || new Date().toISOString(),
-    completed: Boolean(value.completed ?? state.completed ?? false),
-    session,
-    state: {
-      ...state,
-      ...value.state,
-      session,
-      metadata
-    }
-  };
-  if (!mode) return null;
-  const questionModes = new Set(['quiz', 'adaptive-practice', 'adaptive-lesson']);
-  if (questionModes.has(mode)) {
-    if (!subjectId || !topicId || !normalized.questions?.length) return null;
-  } else if (mode === 'uasa') {
-    if (!subjectId || !normalized.questions?.length) return null;
-  } else if (['reading', 'listening', 'speaking', 'writing'].includes(mode)) {
-    const hasState = Boolean(normalized.state?.passageId || normalized.state?.setId || normalized.state?.task || normalized.state?.prompt || normalized.state?.title);
-    if (!hasState) return null;
-  }
-  return normalized;
-}
-
 function persistResumeData(data, setResume) {
   const normalized = normalizeResumeData(data);
   if (!normalized) return null;
@@ -845,9 +715,9 @@ function persistResumeData(data, setResume) {
   return normalized;
 }
 
-function clearResumeData(setResume) {
-  clearResume();
-  setResume(null);
+function clearResumeData(setResume, targetResume = loadResume()) {
+  clearResume(targetResume);
+  setResume(loadResume());
 }
 
 function loadFeedbackItems() {
@@ -2115,17 +1985,22 @@ export default function App() {
       return;
     }
     const resumeMode = options.mode || 'quiz';
-    if (!options.restoreFromResume && resume && !resume.completed && resume.mode === resumeMode && isQuestionResumeMode(resumeMode)) {
-      const sameSubject = resume.subjectId === subject.id;
-      const sameTopic = resume.topicId === topic.id;
-      const hasResumeQuestions = Array.isArray(resume.questions) && resume.questions.length > 0;
+    const matchingResume = !options.restoreFromResume && isQuestionResumeMode(resumeMode)
+      ? loadResume({ mode: resumeMode, subjectId: subject.id, topicId: topic.id })
+      : null;
+    if (matchingResume && !matchingResume.completed) {
+      const sameSubject = matchingResume.subjectId === subject.id;
+      const sameTopic = matchingResume.topicId === topic.id;
+      const hasResumeQuestions = Array.isArray(matchingResume.questions) && matchingResume.questions.length > 0;
       if (sameSubject && sameTopic && hasResumeQuestions) {
-        startResume();
+        startResume(matchingResume);
         return;
       }
     }
     const sourceQuestions = options.questions || topic.questions;
-    const smartSession = buildSmartQuestionSession(sourceQuestions, {
+    const smartSession = options.restoreFromResume
+      ? { questions: sourceQuestions, variationSeed: null, revisionQueue: [] }
+      : buildSmartQuestionSession(sourceQuestions, {
       mode: resumeMode,
       subject,
       topic,
@@ -2140,7 +2015,7 @@ export default function App() {
       gamificationProfile,
       count: sourceQuestions.length,
       smartState: loadSmartQuestionState()
-    });
+      });
     const orderedQuestions = smartSession.questions.length ? smartSession.questions : sourceQuestions;
     const diversity = options.preserveQuestions
       ? { questions: orderedQuestions, score: null, debug: [], duplicateIssues: [] }
@@ -2244,57 +2119,58 @@ export default function App() {
     persistResumeData(resumeData, setResume);
   }
 
-  async function startResume() {
-    if (!resume) return;
-    if (resume.completed) return;
+  async function startResume(resumeToStart = resume) {
+    const targetResume = normalizeResumeData(resumeToStart);
+    if (!targetResume || targetResume.completed) return;
+    setResume(targetResume);
     const premiumResumeFeature = {
       uasa: 'uasa',
       reading: 'bacaan',
       listening: 'mendengar',
       speaking: 'bertutur',
       writing: 'menulis'
-    }[resume.mode];
+    }[targetResume.mode];
     if (premiumResumeFeature && !requirePremium(premiumResumeFeature)) return;
-    if (isQuestionResumeMode(resume.mode || 'quiz')) {
-      if ((resume.mode || 'quiz') === 'adaptive-practice') {
+    if (isQuestionResumeMode(targetResume.mode || 'quiz')) {
+      if ((targetResume.mode || 'quiz') === 'adaptive-practice') {
         const practiceSubject = {
-          id: resume.subjectId || 'adaptive',
-          title: resume.metadata?.displayTitle || 'Latihan AI',
+          id: targetResume.subjectId || 'adaptive',
+          title: targetResume.metadata?.displayTitle || 'Latihan AI',
           short: 'AI',
           icon: <AdaptivePracticeBadgeIcon />,
           topics: [
             {
-              id: resume.topicId || `adaptive_${resume.sessionId || resume.session?.adaptiveSessionId || 'resume'}`,
-              title: resume.metadata?.displayTitle || 'Latihan AI',
-              note: resume.metadata?.displayNote || 'Latihan adaptif berfokus',
-              questions: resume.questions || [],
+              id: targetResume.topicId || `adaptive_${targetResume.sessionId || targetResume.session?.adaptiveSessionId || 'resume'}`,
+              title: targetResume.metadata?.displayTitle || 'Latihan AI',
+              note: targetResume.metadata?.displayNote || 'Latihan adaptif berfokus',
+              questions: targetResume.questions || [],
               adaptivePractice: true,
-              adaptiveSessionId: resume.sessionId || resume.session?.adaptiveSessionId || null,
-              adaptivePlan: resume.metadata?.adaptivePlan || null,
-              adaptiveMetadata: resume.metadata?.adaptiveMetadata || resume.metadata || null
+              adaptiveSessionId: targetResume.sessionId || targetResume.session?.adaptiveSessionId || null,
+              adaptivePlan: targetResume.metadata?.adaptivePlan || null,
+              adaptiveMetadata: targetResume.metadata?.adaptiveMetadata || targetResume.metadata || null
             }
           ]
         };
         const practiceTopic = practiceSubject.topics[0];
         syncSelectedSubjectState(practiceSubject);
         startTopic(practiceTopic, practiceSubject, {
-          questions: resume.questions,
-          questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
-          session: resume.session,
+          questions: targetResume.questions,
+          questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
+          session: targetResume.session,
           preserveQuestions: true,
           mode: 'adaptive-practice',
           restoreFromResume: true
         });
         return;
       }
-      const subject = await loadSubjectData(resume.subjectId);
-      const topic = subject?.topics.find(t => t.id === resume.topicId);
+      const subject = await loadSubjectData(targetResume.subjectId);
+      const topic = subject?.topics.find(t => t.id === targetResume.topicId);
       if (!subject || !topic) return;
       // Resume data may contain a question surface generated by an older
       // release. Rehydrate each question from the current bank by ID so a
       // stale generic stem can never replace the original contextual wording.
       const bankById = new Map((topic.questions || []).map(question => [String(question.id || question.questionId || ''), question]));
-      const restoredQuestions = (resume.questions || []).map(savedQuestion => {
+      const restoredQuestions = (targetResume.questions || []).map(savedQuestion => {
         const source = bankById.get(String(savedQuestion.id || savedQuestion.questionId || ''));
         return source ? { ...source } : savedQuestion;
       });
@@ -2302,30 +2178,35 @@ export default function App() {
       syncSelectedSubjectState(subject);
       startTopic(topic, subject, {
         questions,
-        questionIndex: Number.isInteger(resume.currentIndex) ? resume.currentIndex : resume.questionIndex,
-        session: resume.session,
+        questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
+        session: targetResume.session,
         preserveQuestions: true,
-        mode: resume.mode || 'quiz',
+        mode: targetResume.mode || 'quiz',
         restoreFromResume: true
       });
       return;
     }
-    if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(resume.mode)) {
-      setScreen(resume.mode);
+    if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(targetResume.mode)) {
+      if (targetResume.mode === 'uasa' && targetResume.subjectId !== selectedSubjectId) {
+        const targetSubject = await loadSubjectData(targetResume.subjectId);
+        if (targetSubject) syncSelectedSubjectState(targetSubject);
+      }
+      setScreen(targetResume.mode);
     }
   }
 
   async function restartResume() {
     if (!resume) return;
-    const mode = resume.mode || 'quiz';
-    clearResumeData(setResume);
+    const targetResume = resume;
+    const mode = targetResume.mode || 'quiz';
+    clearResumeData(setResume, targetResume);
     if (mode === 'adaptive-practice') {
-      await startAdaptivePractice(resume.session?.requestedQuestions || resume.metadata?.requestedQuestions || adaptivePracticeCount, { forceFresh: true });
+      await startAdaptivePractice(targetResume.session?.requestedQuestions || targetResume.metadata?.requestedQuestions || adaptivePracticeCount, { forceFresh: true });
       return;
     }
     if (isQuestionResumeMode(mode)) {
-      const subject = await loadSubjectData(resume.subjectId);
-      const topic = subject?.topics.find(t => t.id === resume.topicId);
+      const subject = await loadSubjectData(targetResume.subjectId);
+      const topic = subject?.topics.find(t => t.id === targetResume.topicId);
       if (subject && topic) {
         syncSelectedSubjectState(subject);
         startTopic(topic, subject, { mode, restoreFromResume: true });
@@ -2333,6 +2214,7 @@ export default function App() {
       return;
     }
     if (['uasa', 'reading', 'listening', 'speaking', 'writing'].includes(mode)) {
+      setResume(null);
       setScreen(mode);
     }
   }
@@ -2380,10 +2262,11 @@ export default function App() {
     const allowedQuestionCount = isPremiumUser
       ? questionCount
       : Math.min(questionCount, Math.max(1, FREE_DAILY_QUESTION_LIMIT - subjectDailyQuestionCount));
-    const resumeSubjectId = resume?.subjectId || resume?.metadata?.subjectId || resume?.session?.subjectId;
+    const practiceResume = options.forceFresh ? null : loadResume({ mode: 'adaptive-practice', subjectId: selectedSubjectId });
+    const resumeSubjectId = practiceResume?.subjectId || practiceResume?.metadata?.subjectId || practiceResume?.session?.subjectId;
     const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === selectedSubjectId);
-    if (!options.forceFresh && resumeMatchesSelectedSubject && resume && !resume.completed && resume.mode === 'adaptive-practice' && Array.isArray(resume.questions) && resume.questions.length) {
-      await startResume();
+    if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
+      await startResume(practiceResume);
       return;
     }
     let practiceSubjects = allSubjects;
@@ -2519,6 +2402,7 @@ export default function App() {
     const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
     const resumeData = {
       version: 1,
+      questionBankVersion: QUESTION_BANK_VERSION,
       mode,
       screen: mode,
       sessionId: nextSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || null,
@@ -2535,6 +2419,11 @@ export default function App() {
       coins: nextSession.coins || 0,
       attemptNumber: (nextSession.answers || []).length || 0,
       metadata: {
+        displayTitle: activeTopic.title || activeSubject.title || 'Latihan',
+        displayNote: activeTopic.note || activeSubject.short || '',
+        subjectTitle: activeSubject.title,
+        topicTitle: activeTopic.title,
+        mode,
         diversityScore: activeTopic.qdeScore || activeTopic.qipScore || null,
         diversityDebug: activeTopic.qdeDebug || activeTopic.qipDebug || [],
         preserveQuestions: true
@@ -3023,8 +2912,11 @@ export default function App() {
     });
 
     setSession({ ...session, percent, stars });
-    clearResume();
-    setResume(null);
+    clearResumeData(setResume, {
+      mode: session.mode || activeTopic.resumeMode || 'quiz',
+      subjectId: activeSubject.id,
+      topicId: activeTopic.id
+    });
     setScreen('finish');
     refreshAdaptiveProfile();
   }
@@ -3069,7 +2961,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date(result?.date || todayKey())
     });
-    clearResumeData(setResume);
+    clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id });
   }
 
   function finishBacaan(result) {
@@ -3105,7 +2997,7 @@ export default function App() {
       passedCount,
       today: new Date()
     });
-    clearResumeData(setResume);
+    clearResumeData(setResume, { mode: 'reading' });
     setScreen('dashboard');
   }
 
@@ -3126,7 +3018,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume);
+    clearResumeData(setResume, { mode: 'listening' });
     setScreen('dashboard');
   }
 
@@ -3147,7 +3039,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume);
+    clearResumeData(setResume, { mode: 'speaking' });
     setScreen('dashboard');
   }
 
@@ -3168,7 +3060,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume);
+    clearResumeData(setResume, { mode: 'writing' });
     setScreen('dashboard');
   }
 
@@ -3237,8 +3129,19 @@ export default function App() {
     }
   }
 
+  function returnToDashboard() {
+    setResume(loadResume());
+    setScreen('dashboard');
+  }
+
   function openPremiumScreen(targetScreen, feature) {
-    if (requirePremium(feature)) setScreen(targetScreen);
+    if (!requirePremium(feature)) return;
+    if (targetScreen === 'uasa') {
+      setResume(loadResume({ mode: 'uasa', subjectId: selectedSubject?.id }));
+    } else if (['reading', 'listening', 'speaking', 'writing'].includes(targetScreen)) {
+      setResume(loadResume({ mode: targetScreen }));
+    }
+    setScreen(targetScreen);
   }
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
@@ -3264,12 +3167,12 @@ export default function App() {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} gamificationProfile={gamificationProfile} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={openTutorAi} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><BacaanCoach profile={profile} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMendengar} /></BetaChrome>;
-  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><MenulisCoach resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><BacaanCoach profile={profile} resume={resume?.mode === 'reading' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'reading' })} onBack={returnToDashboard} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume?.mode === 'listening' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'listening' })} onBack={returnToDashboard} onFinish={finishMendengar} /></BetaChrome>;
+  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume?.mode === 'speaking' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'speaking' })} onBack={returnToDashboard} onFinish={finishBertutur} /></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><MenulisCoach resume={resume?.mode === 'writing' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'writing' })} onBack={returnToDashboard} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume)} onBack={() => setScreen('dashboard')} onSave={saveUasaResult} /></BetaChrome>;
+  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume?.mode === 'uasa' && resume?.subjectId === selectedSubject?.id ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id })} onBack={returnToDashboard} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
@@ -3342,20 +3245,9 @@ function getCanonicalQuestionAnswers(question = {}) {
 
 function renderUasaQuestionText(text = '') {
   const value = String(text || '');
-  const sentencePair = value.match(/^(.+?[.!])\s+(.+\?)$/);
-  if (sentencePair && value.length >= 60) {
-    return <><span>{sentencePair[1]}</span><br /><span className="uasa-question-example">{sentencePair[2]}</span></>;
-  }
-  const match = value.match(/^(\s*[^:]+):\s*(.+)$/);
-  const instruction = match?.[1] || '';
-  const shouldSplit = /\b(?:baca|perhatikan|kenal pasti|tentukan|lengkapkan|pilih|tukarkan|nyatakan|isi|berdasarkan|situasi|dialog|petikan|soalan)\b/i.test(instruction);
-  if (!match || !shouldSplit) return value;
-  const content = match[2].trim();
-  const exampleAndQuestion = content.match(/^(.+?[.!])\s+(.+\?)$/);
-  if (exampleAndQuestion) {
-    return <>{match[1]}:<br /><span className="uasa-question-example">{exampleAndQuestion[1]}</span><br /><span className="uasa-question-example">{exampleAndQuestion[2]}</span></>;
-  }
-  return <>{match[1]}:<br /><span className="uasa-question-example">{content}</span></>;
+  const lines = splitQuestionPresentationLines(value);
+  if (lines.length <= 1) return value;
+  return <>{lines.map((line, index) => <React.Fragment key={`${index}-${line}`}><span className={index ? 'uasa-question-example question-line' : 'question-line'}>{line}</span>{index < lines.length - 1 ? <br /> : null}</React.Fragment>)}</>;
 }
 
 function buildChildSafeHint(question = {}, subject = {}, candidates = []) {
@@ -3749,9 +3641,13 @@ function Finish({ profile, session, topic, nextTopic, aiSummary, personality, vo
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
-  const subjectResume = resume?.subjectId === subject?.id
-    ? resume
-    : readSubjectScoped(subject?.id, profile?.year || 'Tahun 2', 'uasaSession', null);
+  const directResume = resume?.mode === 'uasa' && resume?.subjectId === subject?.id ? resume : null;
+  const storedSubjectResume = readSubjectScoped(subject?.id, profile?.year || 'Tahun 2', 'uasaSession', null);
+  const subjectResume = directResume || (
+    storedSubjectResume?.mode === 'uasa' && storedSubjectResume?.subjectId === subject?.id
+      ? storedSubjectResume
+      : null
+  );
   const questions = useMemo(() => Array.isArray(subjectResume?.questions) && subjectResume.questions.length ? subjectResume.questions : buildUasaSet(subject, 50), [subject?.id, subjectResume?.sessionId]);
   const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
   const [answer, setAnswer] = useState(() => subjectResume?.state?.answer || '');
@@ -3759,7 +3655,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   const [validationMessage, setValidationMessage] = useState('');
   const [score, setScore] = useState(() => subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
   const [uasaStateSubjectId, setUasaStateSubjectId] = useState(() => subject?.id || '');
-  const completedRef = useRef(Boolean(resume?.completed));
+  const completedRef = useRef(Boolean(subjectResume?.completed));
 
   useEffect(() => {
     setUasaStateSubjectId(null);
@@ -3885,7 +3781,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setValidationMessage('');
   }
 
-  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Pentaksiran Sumatif</span></div><section className="card uasa-card"><p className="eyebrow">Latihan Pentaksiran</p><h1>Pentaksiran Sumatif {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2>{renderUasaQuestionText(question.q)}</h2><input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan pentaksiran." message="Pilih subjek lain untuk mencuba pentaksiran." actionLabel="Papan Utama" onAction={onBack} />}</main>;
+  return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Pentaksiran Sumatif</span></div><section className="card uasa-card"><p className="eyebrow">Latihan Pentaksiran</p><h1>Pentaksiran Sumatif {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2 className="question uasa-question" dir="auto">{renderUasaQuestionText(question.q)}</h2><input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus /><div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan pentaksiran." message="Pilih subjek lain untuk mencuba pentaksiran." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
 const readingPassages = semanticReadingPassages;

@@ -242,7 +242,7 @@ function buildSuggestionList(intent, context = {}) {
     case 'uasa_summary':
       return [
         'Fokus pada topik yang belum stabil.',
-        'Buat Simulator UASA selepas ulang kaji.',
+        'Buat Pentaksiran Sumatif selepas ulang kaji.',
         'Semak sejarah UASA untuk lihat perkembangan.'
       ];
     case 'hint':

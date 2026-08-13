@@ -1,6 +1,13 @@
 # Changelog
 
-## 3.3.1 - 2026-08-13
+## 3.3.2 - 2026-08-13
+
+### Fixed
+
+- Isolated resume state by mode, subject and topic, including subject-specific Pentaksiran Sumatif sessions.
+- Repaired the Sambung action and preserved the original question order when resuming.
+- Improved semantic line wrapping for question prompts and clarified ambiguous Bahasa Melayu items.
+- Constrained automatic Bahasa Melayu person-role repair to valid person names and roles.
 
 ### Release controls
 
@@ -18,4 +25,3 @@
 
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
-
