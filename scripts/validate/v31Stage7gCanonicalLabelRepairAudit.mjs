@@ -7,6 +7,7 @@ const appPath = path.join(root, 'src/App.jsx');
 const contentPath = path.join(root, 'src/data/communicationContent.js');
 const app = fs.readFileSync(appPath, 'utf8');
 const content = fs.readFileSync(contentPath, 'utf8');
+const resumeStorage = fs.readFileSync(path.join(root, 'src/utils/resumeStorage.js'), 'utf8');
 const formatter = await import(pathToFileURL(path.join(root, 'src/utils/displayFormatter.js')).href + `?t=${Date.now()}`);
 const failures = [];
 const assert = (condition, message) => { if (!condition) failures.push(message); };
@@ -26,7 +27,7 @@ assert(app.includes('title: rawSetTitle'), 'Finish/session payload must preserve
 assert(content.includes('title: `${language} Bertutur ${index + 1}`'), 'Raw communication title source must remain unchanged');
 assert(app.includes('function recordCommunicationScore('), 'Communication scoring helper must remain present');
 assert(app.includes('itemKey: `${setId}:${mode}:${sessionIndex}`'), 'Communication session identity must remain unchanged');
-assert(app.includes("const RESUME_KEY = 'jannati_v151_resume';"), 'Resume storage key must remain unchanged');
+assert(resumeStorage.includes("RESUME_KEY = 'jannati_v151_resume';"), 'Resume storage key must remain unchanged');
 assert(app.includes("const PROFILE_KEY = 'jannati_v151_profile';"), 'Profile storage key must remain unchanged');
 assert(!app.includes('BM Bertutur 2</h1>'), 'Raw BM Bertutur 2 must not be a visible heading');
 

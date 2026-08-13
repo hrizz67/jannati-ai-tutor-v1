@@ -37,7 +37,7 @@ const REQUIRED_TOKENS = [
   'Analitik & Kemajuan',
   'Sambung Belajar',
   'Sambung Latihan',
-  'Simulator UASA',
+  'Pentaksiran Sumatif',
   'Bacaan',
   'Mendengar',
   'Bertutur',

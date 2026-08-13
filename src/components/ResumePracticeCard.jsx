@@ -15,7 +15,7 @@ export default function ResumePracticeCard({ resume, selectedSubjectId, onResume
       <p className="eyebrow">Sambung Automatik</p>
       <h2><GameBadge className="resume-action-badge" src={ganjaranBadge} /> <span>Sambung Latihan</span></h2>
       <p>{resumeTitle || formatResumeTitle(resume)}<br />Subjek: <b>{subjectLabel}</b>{crossSubject ? <><br /><span className="badge cross-subject-badge">{crossSubjectLabel}</span></> : null}{topicLabel ? <><br />Topik: <b>{topicLabel}</b></> : null}{progress !== null ? <><br />Soalan: <b>{progress + 1}</b></> : null}</p>
-      <div className="actions"><button type="button" onClick={onResume}><GameBadge className="resume-action-badge" src={ganjaranBadge} /> <span>Sambung</span></button><button type="button" className="secondary" onClick={onRestartResume}><GameBadge className="resume-action-badge" src={targetBadge} /> <span>Mula Semula</span></button></div>
+      <div className="actions"><button type="button" onClick={() => onResume?.(resume)}><GameBadge className="resume-action-badge" src={ganjaranBadge} /> <span>Sambung</span></button><button type="button" className="secondary" onClick={onRestartResume}><GameBadge className="resume-action-badge" src={targetBadge} /> <span>Mula Semula</span></button></div>
     </section>
   );
 }

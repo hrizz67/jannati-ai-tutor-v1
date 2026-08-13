@@ -11,10 +11,18 @@
 
 /* Quiz readability and safe empty-answer feedback. */
 .question {
-  max-width: 46ch;
+  max-width: 58ch;
   font-size: clamp(23px, 2.6vw, 30px);
   line-height: 1.28;
-  text-wrap: balance;
+  text-wrap: pretty;
+}
+
+.question-line {
+  display: inline;
+}
+
+.uasa-question {
+  color: #111;
 }
 
 .feedback.empty .explain-box,
@@ -5931,7 +5939,7 @@ input:focus {
   }
 
   .app > .card .question {
-    max-width: 52ch;
+    max-width: 64ch;
     margin-left: auto;
     margin-right: auto;
   }

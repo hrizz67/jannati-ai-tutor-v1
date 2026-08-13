@@ -399,17 +399,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-002",
-          "q": "Ayah membeli ikan di pasar. Pilih kata nama am yang menunjukkan haiwan atau makanan.",
+          "q": "Ayah membeli ikan di pasar. Apakah kata nama am bagi haiwan dalam ayat itu?",
           "answer": "ikan",
           "accepted": [
             "ikan"
           ],
-          "hint": "Cari nama haiwan atau makanan dalam ayat.",
+          "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Ayah membeli ikan di pasar. Pilih kata nama am yang menunjukkan haiwan atau makanan."
+          "question": "Ayah membeli ikan di pasar. Apakah kata nama am bagi haiwan dalam ayat itu?"
         },
         {
           "id": "BM-KATA_NAMA_AM-003",
@@ -539,17 +539,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-012",
-          "q": "Di pasar pagi, ayah memilih ikan yang segar. Cari kata nama am bagi haiwan atau makanan.",
+          "q": "Di pasar pagi, ayah memilih ikan yang segar. Apakah kata nama am bagi haiwan dalam ayat itu?",
           "answer": "ikan",
           "accepted": [
             "ikan"
           ],
-          "hint": "Cari nama haiwan atau makanan dalam ayat.",
+          "hint": "Cari nama haiwan dalam ayat.",
           "explanation": "ikan ialah kata nama am bagi haiwan.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di pasar pagi, ayah memilih ikan yang segar. Cari kata nama am bagi haiwan atau makanan."
+          "question": "Di pasar pagi, ayah memilih ikan yang segar. Apakah kata nama am bagi haiwan dalam ayat itu?"
         },
         {
           "id": "BM-KATA_NAMA_AM-013",
@@ -966,7 +966,7 @@ const rawBMSSubject = {
           "accepted": [
             "roti"
           ],
-          "hint": "Cari nama haiwan atau makanan dalam ayat.",
+          "hint": "Cari makanan yang dibuat daripada tepung.",
           "explanation": "roti ialah kata nama am bagi makanan.",
           "difficulty": "sukar",
           "uasa": "UASA",

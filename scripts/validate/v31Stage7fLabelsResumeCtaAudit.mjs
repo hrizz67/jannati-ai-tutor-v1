@@ -62,7 +62,7 @@ assertEqual(fixtureResults.resumeSubject, 'Bertutur Bahasa Melayu Tahun 2', 'Res
 assertEqual(fixtureResults.resumeTopic, 'Pengenalan Bertutur', 'Resume topic label');
 assertEqual(fixtureResults.resumeModeReview, 'Ulang Kaji', 'Resume mode review');
 assertEqual(fixtureResults.resumeModeAdaptive, 'Latihan Adaptif', 'Resume mode adaptive');
-assertEqual(fixtureResults.resumeModeUasa, 'Simulator UASA', 'Resume mode uasa');
+assertEqual(fixtureResults.resumeModeUasa, 'Pentaksiran Sumatif', 'Resume mode uasa');
 assertEqual(fixtureResults.newTopicCta, 'Mula Latihan', 'New-topic CTA');
 assertEqual(fixtureResults.reviewCta, 'Latih Semula', 'Weak-topic CTA');
 assertEqual(fixtureResults.resumeCta, 'Sambung Latihan', 'Incomplete-session CTA');
@@ -76,7 +76,7 @@ assertEqual(fixtureResults.scopeLabel, 'Subjek dipilih: Bahasa Inggeris Tahun 2'
 assertEqual(fixtureResults.crossSubjectCta, 'Mula Matematik', 'Cross-subject CTA');
 assertEqual(fixtureResults.modeReview, 'Ulang Kaji', 'Mode review mapping');
 assertEqual(fixtureResults.modeAdaptive, 'Latihan Adaptif', 'Mode adaptive mapping');
-assertEqual(fixtureResults.modeUasa, 'Simulator UASA', 'Mode uasa mapping');
+assertEqual(fixtureResults.modeUasa, 'Pentaksiran Sumatif', 'Mode uasa mapping');
 
 const stageFiles = [
   'src/dashboard/HomeDashboard.jsx',
@@ -97,6 +97,7 @@ const studentText = stageFiles.find(item => item.file.endsWith('StudentDashboard
 const revisionText = stageFiles.find(item => item.file.endsWith('RevisionDashboard.jsx')).text;
 const studyBlockText = stageFiles.find(item => item.file.endsWith('StudyBlockItem.jsx')).text;
 const appText = fs.readFileSync(path.join(root, 'src/App.jsx'), 'utf8');
+const resumeStorageText = fs.readFileSync(path.join(root, 'src/utils/resumeStorage.js'), 'utf8');
 
 assert(homeText.includes('formatResumeTitle('), 'HomeDashboard should use shared formatResumeTitle');
 assert(homeText.includes('formatRecommendationCta('), 'HomeDashboard should use shared formatRecommendationCta');
@@ -122,7 +123,7 @@ assert(!/Keutamaan\s+\d+/.test(homeText), 'HomeDashboard should not contain raw 
 assert(!/Keutamaan\s+\d+/.test(parentText), 'ParentDashboard should not contain raw numeric priority copy');
 assert(!/Keutamaan\s+\d+/.test(revisionText), 'RevisionDashboard should not contain raw numeric priority copy');
 
-assert(appText.includes("const RESUME_KEY = 'jannati_v151_resume';"), 'Resume storage key should remain unchanged');
+assert(resumeStorageText.includes("RESUME_KEY = 'jannati_v151_resume';"), 'Resume storage key should remain unchanged');
 assert(appText.includes("const PROFILE_KEY = 'jannati_v151_profile';"), 'Profile storage key should remain unchanged');
 
 if (failures.length) {
