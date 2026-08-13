@@ -7,18 +7,49 @@ const difficultyFor = (index) => {
   return "sukar";
 };
 
+const COGNITIVE_SEQUENCE_BY_TOPIC = Object.freeze({
+  KEBERSIHAN_DIRI: ["mengaplikasi", "memahami", "menganalisis", "mengaplikasi", "menilai"],
+  PEMAKANAN_SIHAT: ["memahami", "mengaplikasi", "menganalisis", "mengaplikasi", "memahami"],
+  KESELAMATAN_DIRI: ["mengaplikasi", "mengaplikasi", "mengaplikasi", "menganalisis", "menilai"],
+  KESIHATAN_MENTAL_EMOSI: ["mengaplikasi", "memahami", "mengaplikasi", "menganalisis", "menganalisis"],
+  KESELAMATAN_JALAN_RAYA: ["mengaplikasi", "menganalisis", "mengaplikasi", "mengaplikasi", "menilai"],
+  PENCEGAHAN_PENYAKIT: ["mengaplikasi", "memahami", "mengaplikasi", "menganalisis", "menilai"],
+  PERTOLONGAN_CEMAS_ASAS: ["mengaplikasi", "mengaplikasi", "menganalisis", "menganalisis", "memahami"],
+  KESIHATAN_PERSEKITARAN: ["mengaplikasi", "menganalisis", "mengaplikasi", "menilai", "menganalisis"],
+  GAYA_HIDUP_SIHAT: ["memahami", "memahami", "menganalisis", "mengaplikasi", "menganalisis"],
+});
+
+const cognitiveLevelFor = (topicCode, index) => {
+  const sequence = COGNITIVE_SEQUENCE_BY_TOPIC[topicCode];
+  if (sequence) return sequence[index % sequence.length];
+  if (index < 10) return "mengingat";
+  if (index < 20) return "memahami";
+  if (index < 35) return "mengaplikasi";
+  if (index < 45) return "menganalisis";
+  return "menilai";
+};
+
 const optionSet = (answer, options) => {
   const unique = [answer, ...options.filter((item) => item !== answer)];
   return [...new Set(unique)].slice(0, 4).sort();
 };
 
-const ask = (question, answer, options, hint, explanation) => ({
+const ask = (question, answer, options, hint, explanation, extras = {}) => ({
   question,
   answer,
   options,
   hint,
   explanation,
+  ...extras,
 });
+
+const contextualChoiceAsk = (question, answer, options, frame, hint, explanation, extras = {}) => {
+  const render = (choice) => frame(choice);
+  return ask(question, render(answer), options.map(render), hint, explanation, {
+    accepted: [answer],
+    ...extras,
+  });
+};
 
 const makeQuestion = (topicCode, topicTitle, item, index) => {
   const question = item.question;
@@ -31,7 +62,9 @@ const makeQuestion = (topicCode, topicTitle, item, index) => {
     q: question,
     options: optionSet(item.answer, item.options),
     answer: item.answer,
-    accepted: [item.answer],
+    accepted: [...new Set([item.answer, ...(item.accepted || [])])],
+    questionType: item.questionType || "objective",
+    cognitiveLevel: item.cognitiveLevel || cognitiveLevelFor(topicCode, index),
     hint: item.hint,
     explanation: item.explanation,
     uasa: "UASA",
@@ -61,11 +94,11 @@ const kebersihanPairs = [
   ["muka berpeluh selepas bermain", "cuci muka", "Mencuci muka membersihkan peluh dan kotoran."],
   ["tuala sudah lembap dan berbau", "jemur tuala", "Tuala yang dijemur cepat kering dan kurang kuman."],
 ].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah amalan kebersihan yang betul ${situasi}?`, answer, [answer, "makan tanpa cuci tangan", "pakai baju kotor", "kongsi berus gigi"], "Pilih amalan yang menjaga kebersihan badan.", explanation),
-  ask(`Mengapakah murid perlu ${answer} apabila ${situasi}?`, "mengelakkan kuman", ["mengelakkan kuman", "menambah kotoran", "supaya lambat ke kelas", "supaya tidak perlu mandi"], "Kebersihan membantu badan sihat.", `${answer} membantu mengurangkan kuman dan menjaga kesihatan diri.`),
-  ask(`Apakah akibat jika murid tidak menjaga kebersihan ${situasi}?`, "mudah sakit", ["mudah sakit", "semakin cergas", "gigi terus kuat", "baju menjadi wangi"], "Kotoran dan kuman boleh memudaratkan badan.", "Tidak menjaga kebersihan boleh menyebabkan bau badan, sakit perut, sakit gigi atau jangkitan."),
-  ask(`Siapakah yang boleh mengingatkan murid tentang kebersihan diri ${situasi}?`, "ibu bapa", ["ibu bapa", "orang tidak dikenali", "pemandu lori", "penjual mainan"], "Pilih orang dewasa yang menjaga murid.", "Ibu bapa, penjaga dan guru boleh membimbing murid menjaga kebersihan diri."),
-  ask(`Nilai apakah yang ditunjukkan apabila murid ${answer} apabila ${situasi}?`, "bertanggungjawab", nilai, "Menjaga diri ialah tanggungjawab sendiri.", "Murid yang menjaga kebersihan menunjukkan sikap bertanggungjawab terhadap kesihatan diri."),
+  contextualChoiceAsk(`Apakah amalan kebersihan yang betul ${situasi}?`, answer, [answer, "makan tanpa cuci tangan", "pakai baju kotor", "kongsi berus gigi"], (choice) => `Dalam situasi ${situasi}, amalan yang betul ialah "${choice}".`, "Pilih amalan yang menjaga kebersihan badan.", explanation),
+  contextualChoiceAsk(`Mengapakah murid perlu ${answer} apabila ${situasi}?`, "mengelakkan kuman", ["mengelakkan kuman", "menambah kotoran", "melambatkan perjalanan ke kelas", "mengelakkan keperluan untuk mandi"], (choice) => `Amalan "${answer}" dalam situasi ${situasi} membantu ${choice}.`, "Kebersihan membantu badan sihat.", `${answer} membantu mengurangkan kuman dan menjaga kesihatan diri.`),
+  contextualChoiceAsk(`Apakah akibat jika murid tidak menjaga kebersihan ${situasi}?`, "mudah sakit", ["mudah sakit", "semakin cergas", "gigi terus kuat", "baju menjadi wangi"], (choice) => `Kesan jika kebersihan tidak dijaga dalam situasi ${situasi} ialah ${choice}.`, "Kotoran dan kuman boleh memudaratkan badan.", "Tidak menjaga kebersihan boleh menyebabkan bau badan, sakit perut, sakit gigi atau jangkitan."),
+  contextualChoiceAsk(`Siapakah yang boleh mengingatkan murid tentang kebersihan diri ${situasi}?`, "ibu bapa", ["ibu bapa", "orang tidak dikenali", "pemandu lori", "penjual mainan"], (choice) => `Orang yang boleh mengingatkan murid tentang kebersihan diri dalam situasi ${situasi} ialah ${choice}.`, "Pilih orang dewasa yang menjaga murid.", "Ibu bapa, penjaga dan guru boleh membimbing murid menjaga kebersihan diri."),
+  contextualChoiceAsk(`Nilai apakah yang ditunjukkan apabila murid ${answer} apabila ${situasi}?`, "bertanggungjawab", nilai, (choice) => `Apabila murid melakukan amalan "${answer}" dalam situasi ${situasi}, nilai yang ditunjukkan ialah ${choice}.`, "Menjaga diri ialah tanggungjawab sendiri.", "Murid yang menjaga kebersihan menunjukkan sikap bertanggungjawab terhadap kesihatan diri."),
 ]);
 
 const pemakananPairs = [
@@ -80,11 +113,11 @@ const pemakananPairs = [
   ["memilih makanan di kantin", "pilih makanan bersih", "Makanan yang bersih lebih selamat dimakan."],
   ["makan secara sederhana", "elak makan berlebihan", "Makan sederhana membantu badan kekal sihat dan selesa."],
 ].flatMap(([amalan, answer, explanation]) => [
-  ask(`Apakah kebaikan ${amalan}?`, answer, [answer, "menyebabkan cepat letih", "membuat badan kotor", "mengurangkan tumpuan"], "Fikirkan manfaat makanan kepada badan.", explanation),
-  ask(`Apakah pilihan paling sihat berkaitan amalan ${amalan}?`, amalan.includes("air kosong") ? "air kosong" : amalan.includes("buah") ? "buah" : amalan.includes("sayur") ? "sayur" : "makanan seimbang", ["air kosong", "buah", "sayur", "makanan seimbang", "gula-gula", "minuman bergas"], "Pilih makanan atau minuman yang membantu badan sihat.", "Pilihan makanan sihat membantu murid membesar, belajar dan bermain dengan baik."),
-  ask(`Mengapakah murid tidak digalakkan makan makanan terlalu manis setiap hari semasa ${amalan}?`, "boleh merosakkan gigi", ["boleh merosakkan gigi", "membuat kuku bersih", "membuat mata lebih besar", "menjadikan kasut kemas"], "Gula yang banyak tidak baik untuk gigi.", "Makanan terlalu manis boleh merosakkan gigi dan tidak baik jika diambil berlebihan."),
-  ask(`Apakah tindakan betul jika makanan berbau pelik ketika ${amalan}?`, "jangan makan dan beritahu guru", ["jangan makan dan beritahu guru", "makan cepat-cepat", "kongsi dengan rakan", "simpan dalam beg"], "Makanan rosak boleh menyebabkan sakit perut.", "Murid perlu menolak makanan yang rosak dan memberitahu orang dewasa."),
-  ask(`Apakah maksud pemakanan sihat dalam situasi ${amalan}?`, "memilih makanan baik untuk tubuh", ["memilih makanan baik untuk tubuh", "makan jajan sahaja", "tidak minum air", "makan tanpa basuh tangan"], "Pemakanan sihat membantu badan.", "Pemakanan sihat bermaksud memilih makanan bersih, seimbang dan sesuai untuk tubuh."),
+  contextualChoiceAsk(`Apakah kebaikan ${amalan}?`, answer, [answer, "menyebabkan cepat letih", "membuat badan kotor", "mengurangkan tumpuan"], (choice) => `Kebaikan ${amalan} ialah ${choice}.`, "Fikirkan manfaat makanan kepada badan.", explanation),
+  contextualChoiceAsk(`Apakah pilihan paling sihat berkaitan amalan ${amalan}?`, amalan.includes("air kosong") ? "air kosong" : amalan.includes("buah") ? "buah" : amalan.includes("sayur") ? "sayur" : "makanan seimbang", ["air kosong", "buah", "sayur", "makanan seimbang", "gula-gula", "minuman bergas"], (choice) => `Pilihan sihat berkaitan ${amalan} ialah ${choice}.`, "Pilih makanan atau minuman yang membantu badan sihat.", "Pilihan makanan sihat membantu murid membesar, belajar dan bermain dengan baik."),
+  contextualChoiceAsk(`Mengapakah murid tidak digalakkan makan makanan terlalu manis setiap hari semasa ${amalan}?`, "boleh merosakkan gigi", ["boleh merosakkan gigi", "membuat kuku bersih", "membuat mata lebih besar", "menjadikan kasut kemas"], (choice) => `Jika diambil terlalu kerap semasa ${amalan}, makanan terlalu manis ${choice}.`, "Gula yang banyak tidak baik untuk gigi.", "Makanan terlalu manis boleh merosakkan gigi dan tidak baik jika diambil berlebihan."),
+  contextualChoiceAsk(`Apakah tindakan betul jika makanan berbau pelik ketika ${amalan}?`, "jangan makan dan beritahu guru", ["jangan makan dan beritahu guru", "makan cepat-cepat", "kongsi dengan rakan", "simpan dalam beg"], (choice) => `Jika makanan berbau pelik ketika ${amalan}, tindakan murid ialah ${choice}.`, "Makanan rosak boleh menyebabkan sakit perut.", "Murid perlu menolak makanan yang rosak dan memberitahu orang dewasa."),
+  contextualChoiceAsk(`Apakah maksud pemakanan sihat dalam situasi ${amalan}?`, "memilih makanan baik untuk tubuh", ["memilih makanan baik untuk tubuh", "makan jajan sahaja", "tidak minum air", "makan tanpa basuh tangan"], (choice) => `Dalam situasi ${amalan}, pemakanan sihat bermaksud ${choice}.`, "Pemakanan sihat membantu badan.", "Pemakanan sihat bermaksud memilih makanan bersih, seimbang dan sesuai untuk tubuh."),
 ]);
 
 const keselamatanDiriPairs = [
@@ -99,68 +132,68 @@ const keselamatanDiriPairs = [
   ["menerima mesej pelik di telefon keluarga", "beritahu ibu bapa", "Murid perlu meminta bantuan orang dewasa untuk perkara dalam talian."],
   ["rakan mengajak keluar kawasan sekolah", "jangan ikut tanpa izin", "Murid mesti mendapat izin guru atau ibu bapa sebelum keluar."],
 ].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah tindakan paling selamat jika ${situasi}?`, answer, [answer, "ikut sahaja", "diam dan simpan rahsia", "sentuh benda itu"], "Utamakan keselamatan diri.", explanation),
-  ask(`Siapakah orang yang boleh dipercayai apabila ${situasi}?`, "guru", orangDipercayai, "Pilih orang dewasa yang menjaga keselamatan murid.", "Guru, ibu bapa dan penjaga ialah orang dipercayai yang boleh membantu murid."),
-  ask(`Apakah ayat yang sesuai digunakan apabila murid berasa tidak selamat kerana ${situasi}?`, "Tidak, saya tidak mahu", ["Tidak, saya tidak mahu", "Saya ikut semua arahan awak", "Jangan beritahu sesiapa", "Saya akan pergi sendiri"], "Murid boleh berkata tidak dengan tegas.", "Berkata tidak dengan tegas membantu murid melindungi diri daripada situasi berbahaya."),
-  ask(`Mengapakah murid perlu memberitahu orang dewasa apabila ${situasi}?`, "supaya mendapat bantuan", ["supaya mendapat bantuan", "supaya masalah disembunyikan", "supaya kawan takut", "supaya boleh ponteng"], "Orang dewasa boleh bertindak.", "Memberitahu orang dewasa membantu murid mendapat perlindungan dan nasihat yang betul."),
-  ask(`Nilai apakah yang penting apabila menghadapi situasi ${situasi}?`, "berani berkata tidak", nilai, "Keselamatan diri memerlukan keberanian.", "Berani berkata tidak membantu murid menjaga tubuh, ruang diri dan keselamatan."),
+  contextualChoiceAsk(`Apakah tindakan paling selamat jika ${situasi}?`, answer, [answer, "ikut sahaja", "diam dan simpan rahsia", "sentuh benda itu"], (choice) => `Jika ${situasi}, tindakan paling selamat ialah "${choice}".`, "Utamakan keselamatan diri.", explanation),
+  contextualChoiceAsk(`Siapakah orang yang boleh dipercayai apabila ${situasi}?`, "guru", orangDipercayai, (choice) => `Apabila ${situasi}, orang dipercayai yang boleh membantu murid ialah ${choice}.`, "Pilih orang dewasa yang menjaga keselamatan murid.", "Guru, ibu bapa dan penjaga ialah orang dipercayai yang boleh membantu murid."),
+  contextualChoiceAsk(`Apakah ayat yang sesuai digunakan apabila murid berasa tidak selamat kerana ${situasi}?`, "Tidak, saya tidak mahu", ["Tidak, saya tidak mahu", "Saya ikut semua arahan awak", "Jangan beritahu sesiapa", "Saya akan pergi sendiri"], (choice) => `Apabila ${situasi}, murid boleh berkata, "${choice}."`, "Murid boleh berkata tidak dengan tegas.", "Berkata tidak dengan tegas membantu murid melindungi diri daripada situasi berbahaya."),
+  contextualChoiceAsk(`Mengapakah murid perlu memberitahu orang dewasa apabila ${situasi}?`, "supaya mendapat bantuan", ["supaya mendapat bantuan", "supaya masalah disembunyikan", "supaya kawan takut", "supaya boleh ponteng"], (choice) => `Murid perlu memberitahu orang dewasa apabila ${situasi} ${choice}.`, "Orang dewasa boleh bertindak.", "Memberitahu orang dewasa membantu murid mendapat perlindungan dan nasihat yang betul."),
+  contextualChoiceAsk(`Nilai apakah yang penting apabila menghadapi situasi ${situasi}?`, "berani berkata tidak", nilai, (choice) => `Nilai penting apabila menghadapi situasi ${situasi} ialah ${choice}.`, "Keselamatan diri memerlukan keberanian.", "Berani berkata tidak membantu murid menjaga tubuh, ruang diri dan keselamatan."),
 ]);
 
 const emosiPairs = [
-  ["kecewa kerana kalah permainan", "tarik nafas dan cuba lagi", "Menarik nafas membantu murid bertenang sebelum mencuba semula."],
-  ["marah apabila mainan diambil rakan", "bercakap dengan baik", "Bercakap dengan baik membantu menyelesaikan masalah tanpa bergaduh."],
-  ["takut membuat persembahan", "beritahu guru", "Guru boleh memberi sokongan dan galakan."],
-  ["sedih kerana ditegur", "dengar nasihat dan baiki diri", "Teguran yang baik membantu murid belajar menjadi lebih baik."],
-  ["gembira mendapat pujian", "ucap terima kasih", "Mengucapkan terima kasih menunjukkan adab yang baik."],
-  ["risau sebelum ujian", "ulang kaji dan bertenang", "Ulang kaji dan bertenang membantu murid lebih yakin."],
-  ["rakan kelihatan muram", "bertanya dengan sopan", "Bertanya dengan sopan menunjukkan sikap prihatin."],
-  ["tidak dipilih dalam kumpulan", "minta bantuan guru", "Guru boleh membantu membahagikan kumpulan dengan adil."],
-  ["terlalu seronok hingga menjerit", "kawal suara", "Mengawal suara menjaga ketenteraman kelas."],
-  ["buat salah kepada rakan", "minta maaf", "Meminta maaf membantu memulihkan hubungan dengan rakan."],
-].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah cara yang baik untuk mengurus emosi apabila murid ${situasi}?`, answer, [answer, "menolak rakan", "menjerit kuat", "menyimpan marah"], "Pilih cara yang tenang dan sopan.", explanation),
-  ask(`Apakah emosi yang mungkin dirasai apabila murid ${situasi}?`, situasi.includes("marah") ? "marah" : situasi.includes("takut") ? "takut" : situasi.includes("sedih") ? "sedih" : situasi.includes("gembira") ? "gembira" : situasi.includes("risau") ? "risau" : "kecewa", ["marah", "takut", "sedih", "gembira", "risau", "kecewa"], "Kenal pasti perasaan dalam situasi itu.", "Mengenal emosi sendiri membantu murid memilih tindakan yang baik."),
-  ask(`Siapakah yang boleh membantu murid apabila ${situasi}?`, "guru", orangDipercayai, "Cari orang dewasa yang dipercayai.", "Guru dan ibu bapa boleh mendengar masalah murid serta memberi nasihat."),
-  ask(`Mengapakah murid perlu bercakap dengan sopan apabila ${situasi}?`, "mengelakkan pergaduhan", ["mengelakkan pergaduhan", "menambah marah", "supaya rakan menangis", "supaya kelas bising"], "Kata-kata yang baik menenangkan keadaan.", "Bercakap dengan sopan membantu menjaga hubungan baik dengan rakan."),
-  ask(`Apakah tanda emosi diurus dengan baik apabila ${situasi}?`, "murid menjadi lebih tenang", ["murid menjadi lebih tenang", "murid menolak meja", "murid mengejek rakan", "murid lari keluar kelas"], "Emosi yang baik membuat badan dan fikiran tenang.", "Murid yang tenang boleh berfikir dan bertindak dengan lebih selamat."),
+  ["kecewa kerana kalah permainan", "tarik nafas dan cuba lagi", "kecewa", "Menarik nafas membantu murid bertenang sebelum mencuba semula."],
+  ["marah apabila mainan diambil rakan", "bercakap dengan baik", "marah", "Bercakap dengan baik membantu menyelesaikan masalah tanpa bergaduh."],
+  ["takut membuat persembahan", "beritahu guru", "takut", "Guru boleh memberi sokongan dan galakan."],
+  ["sedih kerana ditegur", "dengar nasihat dan baiki diri", "sedih", "Teguran yang baik membantu murid belajar menjadi lebih baik."],
+  ["gembira mendapat pujian", "ucap terima kasih", "gembira", "Mengucapkan terima kasih menunjukkan adab yang baik."],
+  ["risau sebelum ujian", "ulang kaji dan bertenang", "risau", "Ulang kaji dan bertenang membantu murid lebih yakin."],
+  ["rakan kelihatan muram", "bertanya dengan sopan", "bimbang", "Bertanya dengan sopan menunjukkan sikap prihatin."],
+  ["tidak dipilih dalam kumpulan", "minta bantuan guru", "kecewa", "Guru boleh membantu membahagikan kumpulan dengan adil."],
+  ["terlalu seronok hingga menjerit", "kawal suara", "teruja", "Mengawal suara menjaga ketenteraman kelas."],
+  ["buat salah kepada rakan", "minta maaf", "bersalah", "Meminta maaf membantu memulihkan hubungan dengan rakan."],
+].flatMap(([situasi, answer, emotion, explanation]) => [
+  contextualChoiceAsk(`Apakah cara yang baik untuk mengurus emosi apabila murid ${situasi}?`, answer, [answer, "menolak rakan", "menjerit kuat", "menyimpan marah"], (choice) => `Apabila murid ${situasi}, cara yang baik untuk mengurus emosi ialah "${choice}".`, "Pilih cara yang tenang dan sopan.", explanation),
+  contextualChoiceAsk(`Apakah emosi yang mungkin dirasai apabila murid ${situasi}?`, emotion, ["marah", "takut", "sedih", "gembira", "risau", "kecewa", "bimbang", "teruja", "bersalah"], (choice) => `Emosi yang mungkin dirasai apabila murid ${situasi} ialah ${choice}.`, "Kenal pasti perasaan dalam situasi itu.", "Mengenal emosi sendiri membantu murid memilih tindakan yang baik."),
+  contextualChoiceAsk(`Siapakah yang boleh membantu murid apabila ${situasi}?`, "guru", orangDipercayai, (choice) => `Apabila ${situasi}, orang yang boleh membantu murid ialah ${choice}.`, "Cari orang dewasa yang dipercayai.", "Guru dan ibu bapa boleh mendengar masalah murid serta memberi nasihat."),
+  contextualChoiceAsk(`Mengapakah murid perlu bercakap dengan sopan apabila ${situasi}?`, "mengelakkan pergaduhan", ["mengelakkan pergaduhan", "menambah kemarahan", "membuat rakan menangis", "membuat kelas bising"], (choice) => `Bercakap dengan sopan apabila ${situasi} membantu ${choice}.`, "Kata-kata yang baik menenangkan keadaan.", "Bercakap dengan sopan membantu menjaga hubungan baik dengan rakan."),
+  contextualChoiceAsk(`Apakah tanda emosi diurus dengan baik apabila ${situasi}?`, "murid menjadi lebih tenang", ["murid menjadi lebih tenang", "murid menolak meja", "murid mengejek rakan", "murid lari keluar kelas"], (choice) => `Tanda emosi diurus dengan baik apabila ${situasi} ialah ${choice}.`, "Emosi yang baik membuat badan dan fikiran tenang.", "Murid yang tenang boleh berfikir dan bertindak dengan lebih selamat."),
 ]);
 
 const jalanRayaPairs = [
-  ["melintas jalan di hadapan sekolah", "guna lintasan pejalan kaki", "Lintasan pejalan kaki membantu pemandu melihat murid dengan lebih jelas."],
-  ["lampu isyarat pejalan kaki berwarna merah", "berhenti", "Merah bermaksud pejalan kaki perlu berhenti."],
-  ["lampu isyarat pejalan kaki berwarna hijau", "melintas dengan berhati-hati", "Hijau membenarkan pejalan kaki melintas selepas melihat kiri dan kanan."],
-  ["menaiki kereta ke sekolah", "pakai tali pinggang keledar", "Tali pinggang keledar membantu melindungi penumpang."],
-  ["menaiki motosikal dengan ayah", "pakai topi keledar", "Topi keledar melindungi kepala jika berlaku kemalangan."],
-  ["berjalan di tepi jalan", "guna laluan pejalan kaki", "Laluan pejalan kaki lebih selamat daripada berjalan di tengah jalan."],
-  ["turun dari bas sekolah", "tunggu bas bergerak sebelum melintas", "Murid perlu pastikan jalan jelas sebelum melintas."],
-  ["bola tergolek ke jalan raya", "minta bantuan orang dewasa", "Murid tidak patut berlari mengejar bola ke jalan raya."],
-  ["jalan raya sibuk", "pegang tangan orang dewasa", "Orang dewasa boleh membantu murid melintas dengan selamat."],
-  ["berbasikal di kawasan rumah", "pakai topi keselamatan", "Topi keselamatan membantu melindungi kepala semasa berbasikal."],
-].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah tindakan selamat apabila ${situasi}?`, answer, [answer, "berlari tanpa melihat", "bermain di jalan raya", "melintas sambil bergurau"], "Fikirkan peraturan keselamatan jalan raya.", explanation),
-  ask(`Mengapakah murid perlu berhati-hati apabila ${situasi}?`, "mengelakkan kemalangan", ["mengelakkan kemalangan", "supaya cepat sampai", "supaya boleh bermain", "supaya jalan sesak"], "Jalan raya mempunyai kenderaan.", "Berhati-hati di jalan raya dapat mengurangkan risiko kemalangan."),
-  ask(`Apakah yang perlu dilihat sebelum melintas dalam situasi ${situasi}?`, "kiri dan kanan", ["kiri dan kanan", "kasut sahaja", "awan", "beg sekolah"], "Lihat arah kenderaan datang.", "Melihat kiri dan kanan membantu murid memastikan jalan selamat untuk dilintas."),
-  ask(`Siapakah yang sesuai membantu murid Tahun 2 apabila ${situasi}?`, "orang dewasa", ["orang dewasa", "rakan sebaya sahaja", "orang tidak dikenali", "diri sendiri sahaja"], "Murid kecil perlu bimbingan.", "Orang dewasa boleh membimbing murid mematuhi peraturan jalan raya."),
-  ask(`Apakah nilai yang ditunjukkan apabila murid mematuhi peraturan ketika ${situasi}?`, "berdisiplin", nilai, "Peraturan memerlukan disiplin.", "Berdisiplin di jalan raya membantu menjaga keselamatan diri dan orang lain."),
+  ["melintas jalan di hadapan sekolah", "guna lintasan pejalan kaki", "kiri dan kanan", "Lintasan pejalan kaki membantu pemandu melihat murid dengan lebih jelas."],
+  ["lampu isyarat pejalan kaki berwarna merah", "berhenti", "lampu isyarat dan keadaan jalan", "Merah bermaksud pejalan kaki perlu berhenti."],
+  ["lampu isyarat pejalan kaki berwarna hijau", "melintas dengan berhati-hati", "kiri dan kanan", "Hijau membenarkan pejalan kaki melintas selepas melihat kiri dan kanan."],
+  ["menaiki kereta ke sekolah", "pakai tali pinggang keledar", "tali pinggang keledar sudah dipasang", "Tali pinggang keledar membantu melindungi penumpang."],
+  ["menaiki motosikal dengan ayah", "pakai topi keledar", "topi keledar dipasang dengan betul", "Topi keledar melindungi kepala jika berlaku kemalangan."],
+  ["berjalan di tepi jalan", "guna laluan pejalan kaki", "kenderaan yang datang", "Laluan pejalan kaki lebih selamat daripada berjalan di tengah jalan."],
+  ["turun dari bas sekolah", "tunggu bas bergerak sebelum melintas", "jalan sudah jelas", "Murid perlu pastikan jalan jelas sebelum melintas."],
+  ["bola tergolek ke jalan raya", "minta bantuan orang dewasa", "kenderaan di jalan", "Murid tidak patut berlari mengejar bola ke jalan raya."],
+  ["jalan raya sibuk", "pegang tangan orang dewasa", "kiri dan kanan", "Orang dewasa boleh membantu murid melintas dengan selamat."],
+  ["berbasikal di kawasan rumah", "pakai topi keselamatan", "jalan dan kenderaan di hadapan", "Topi keselamatan membantu melindungi kepala semasa berbasikal."],
+].flatMap(([situasi, answer, safetyCheck, explanation]) => [
+  contextualChoiceAsk(`Apakah tindakan selamat apabila ${situasi}?`, answer, [answer, "berlari tanpa melihat", "bermain di jalan raya", "melintas sambil bergurau"], (choice) => `Apabila ${situasi}, tindakan yang selamat ialah "${choice}".`, "Fikirkan peraturan keselamatan jalan raya.", explanation),
+  contextualChoiceAsk(`Mengapakah murid perlu berhati-hati apabila ${situasi}?`, "mengelakkan kemalangan", ["mengelakkan kemalangan", "cepat sampai", "boleh bermain", "membuat jalan sesak"], (choice) => `Murid perlu berhati-hati apabila ${situasi} untuk ${choice}.`, "Jalan raya mempunyai kenderaan.", "Berhati-hati di jalan raya dapat mengurangkan risiko kemalangan."),
+  contextualChoiceAsk(`Apakah perkara yang perlu diperhatikan apabila ${situasi}?`, safetyCheck, [safetyCheck, "kasut sahaja", "awan", "beg sekolah"], (choice) => `Apabila ${situasi}, murid perlu melihat atau memastikan ${choice}.`, "Perhatikan peraturan, alat keselamatan dan arah kenderaan.", "Memerhatikan keadaan sekeliling dan alat keselamatan membantu murid mengelakkan bahaya."),
+  contextualChoiceAsk(`Siapakah yang sesuai membantu murid Tahun 2 apabila ${situasi}?`, "orang dewasa", ["orang dewasa", "rakan sebaya sahaja", "orang tidak dikenali", "diri sendiri sahaja"], (choice) => `Apabila ${situasi}, pihak yang sesuai membantu murid Tahun 2 ialah ${choice}.`, "Murid kecil perlu bimbingan.", "Orang dewasa boleh membimbing murid mematuhi peraturan jalan raya."),
+  contextualChoiceAsk(`Apakah nilai yang ditunjukkan apabila murid mematuhi peraturan ketika ${situasi}?`, "berdisiplin", nilai, (choice) => `Mematuhi peraturan ketika ${situasi} menunjukkan nilai ${choice}.`, "Peraturan memerlukan disiplin.", "Berdisiplin di jalan raya membantu menjaga keselamatan diri dan orang lain."),
 ]);
 
 const penyakitPairs = [
-  ["demam dan batuk", "berehat dan beritahu ibu bapa", "Berehat dan memberitahu ibu bapa membantu murid mendapat penjagaan."],
-  ["selesema di kelas", "tutup hidung ketika bersin", "Menutup hidung mengurangkan penyebaran titisan kuman."],
-  ["sebelum makan", "basuh tangan", "Mencuci tangan sebelum makan membantu mencegah sakit perut."],
-  ["nyamuk banyak di rumah", "buang air bertakung", "Air bertakung boleh menjadi tempat pembiakan nyamuk."],
-  ["rakan sakit mata", "elak berkongsi tuala", "Tidak berkongsi tuala membantu mengurangkan jangkitan."],
-  ["luka kecil di lutut", "bersihkan luka", "Luka yang dibersihkan kurang risiko dijangkiti kuman."],
-  ["makanan terdedah kepada lalat", "jangan makan", "Lalat boleh membawa kuman ke makanan."],
-  ["kelas berhabuk", "bersihkan kelas", "Persekitaran bersih membantu mengurangkan habuk dan kuman."],
-  ["selepas bermain di luar", "mandi atau cuci tangan dan kaki", "Membersihkan diri selepas bermain mengurangkan kotoran."],
-  ["batuk berpanjangan", "berjumpa doktor", "Doktor boleh memeriksa dan memberi rawatan yang sesuai."],
-].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah cara mencegah penyakit apabila ${situasi}?`, answer, [answer, "kongsi tuala", "biar makanan terbuka", "tidak cuci tangan"], "Pilih tindakan yang mengurangkan kuman.", explanation),
-  ask(`Mengapakah amalan ${answer} penting apabila ${situasi}?`, "mengurangkan kuman", ["mengurangkan kuman", "menambah kotoran", "membuat badan lemah", "menyebabkan kelas bising"], "Kuman boleh menyebabkan penyakit.", `${answer} membantu mengurangkan risiko penyakit dan menjaga kesihatan.`),
-  ask(`Siapakah yang perlu diberitahu jika murid tidak sihat kerana ${situasi}?`, "ibu bapa", orangDipercayai, "Orang dewasa boleh membantu.", "Ibu bapa, penjaga atau guru boleh membawa murid mendapatkan bantuan yang sesuai."),
-  ask(`Apakah tanda murid mungkin tidak sihat dalam situasi ${situasi}?`, situasi.includes("luka") ? "luka sakit" : "badan tidak selesa", ["badan tidak selesa", "terlalu bertenaga", "kasut bersih", "rambut kemas"], "Penyakit membuat badan rasa tidak selesa.", "Murid perlu peka terhadap tanda badan tidak sihat supaya boleh mendapatkan bantuan."),
-  ask(`Apakah sikap yang baik untuk mencegah penyakit berkaitan ${situasi}?`, "menjaga kebersihan", ["menjaga kebersihan", "berkongsi botol air", "membuang sampah merata-rata", "tidak mandi"], "Kebersihan ialah kunci kesihatan.", "Menjaga kebersihan diri dan persekitaran membantu mencegah penyakit."),
+  ["demam dan batuk", "berehat dan beritahu ibu bapa", "mendapat penjagaan yang sesuai", "Berehat dan memberitahu ibu bapa membantu murid mendapat penjagaan."],
+  ["selesema di kelas", "tutup hidung ketika bersin", "mengurangkan penyebaran titisan kuman", "Menutup hidung mengurangkan penyebaran titisan kuman."],
+  ["sebelum makan", "basuh tangan", "menyingkirkan kuman pada tangan", "Mencuci tangan sebelum makan membantu mencegah sakit perut."],
+  ["nyamuk banyak di rumah", "buang air bertakung", "menghalang nyamuk daripada membiak", "Air bertakung boleh menjadi tempat pembiakan nyamuk."],
+  ["rakan sakit mata", "elak berkongsi tuala", "mengurangkan risiko jangkitan", "Tidak berkongsi tuala membantu mengurangkan jangkitan."],
+  ["luka kecil di lutut", "bersihkan luka", "mengurangkan risiko luka dijangkiti", "Luka yang dibersihkan kurang risiko dijangkiti kuman."],
+  ["makanan terdedah kepada lalat", "jangan makan", "mengelakkan sakit akibat makanan tercemar", "Lalat boleh membawa kuman ke makanan."],
+  ["kelas berhabuk", "bersihkan kelas", "mengurangkan habuk dan kuman", "Persekitaran bersih membantu mengurangkan habuk dan kuman."],
+  ["selepas bermain di luar", "mandi atau cuci tangan dan kaki", "menanggalkan kotoran pada badan", "Membersihkan diri selepas bermain mengurangkan kotoran."],
+  ["batuk berpanjangan", "berjumpa doktor", "mendapat pemeriksaan dan rawatan", "Doktor boleh memeriksa dan memberi rawatan yang sesuai."],
+].flatMap(([situasi, answer, benefit, explanation]) => [
+  contextualChoiceAsk(`Apakah tindakan menjaga kesihatan apabila ${situasi}?`, answer, [answer, "kongsi tuala", "biar makanan terbuka", "tidak cuci tangan"], (choice) => `Apabila ${situasi}, tindakan menjaga kesihatan ialah "${choice}".`, "Pilih tindakan yang mengurangkan risiko penyakit.", explanation),
+  contextualChoiceAsk(`Mengapakah amalan ${answer} penting apabila ${situasi}?`, benefit, [benefit, "menambah kotoran", "membuat badan lemah", "menyebabkan kelas bising"], (choice) => `Amalan "${answer}" penting apabila ${situasi} kerana membantu ${choice}.`, "Fikirkan manfaat tindakan itu kepada kesihatan.", `${answer} membantu ${benefit}.`),
+  contextualChoiceAsk(`Siapakah yang perlu diberitahu jika murid tidak sihat kerana ${situasi}?`, "ibu bapa", orangDipercayai, (choice) => `Jika murid tidak sihat kerana ${situasi}, murid perlu memberitahu ${choice}.`, "Orang dewasa boleh membantu.", "Ibu bapa, penjaga atau guru boleh membawa murid mendapatkan bantuan yang sesuai."),
+  contextualChoiceAsk(`Apakah tanda murid mungkin tidak sihat dalam situasi ${situasi}?`, situasi.includes("luka") ? "luka sakit" : "badan tidak selesa", ["badan tidak selesa", "terlalu bertenaga", "kasut bersih", "rambut kemas"], (choice) => `Dalam situasi ${situasi}, tanda murid mungkin tidak sihat ialah ${choice}.`, "Penyakit membuat badan rasa tidak selesa.", "Murid perlu peka terhadap tanda badan tidak sihat supaya boleh mendapatkan bantuan."),
+  contextualChoiceAsk(`Apakah sikap yang baik untuk mencegah penyakit berkaitan ${situasi}?`, "menjaga kebersihan", ["menjaga kebersihan", "berkongsi botol air", "membuang sampah merata-rata", "tidak mandi"], (choice) => `Sikap yang berkaitan dengan pencegahan penyakit apabila ${situasi} ialah ${choice}.`, "Kebersihan ialah kunci kesihatan.", "Menjaga kebersihan diri dan persekitaran membantu mencegah penyakit."),
 ]);
 
 const pertolonganPairs = [
@@ -173,13 +206,13 @@ const pertolonganPairs = [
   ["terkena serpihan kecil", "jangan korek sendiri", "Mengorek sendiri boleh menyebabkan luka lebih teruk."],
   ["terseliuh semasa bermain", "hentikan aktiviti", "Berhenti bermain membantu mengelakkan kecederaan menjadi lebih teruk."],
   ["terkena air panas", "jauhkan dari punca panas", "Menjauhkan diri daripada punca panas mengelakkan kecederaan tambahan."],
-  ["melihat peti pertolongan cemas", "guna dengan bantuan guru", "Peti pertolongan cemas perlu digunakan dengan pengawasan orang dewasa."],
+  ["perlu menggunakan peti pertolongan cemas", "guna dengan bantuan guru", "Peti pertolongan cemas perlu digunakan dengan pengawasan orang dewasa."],
 ].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah tindakan awal yang betul apabila ${situasi}?`, answer, [answer, "ketawa", "sembunyikan kejadian", "terus bermain"], "Pertolongan cemas perlu selamat dan tenang.", explanation),
-  ask(`Siapakah yang perlu dipanggil apabila ${situasi}?`, "guru", orangDipercayai, "Di sekolah, guru boleh membantu.", "Guru atau orang dewasa perlu dipanggil supaya bantuan diberi dengan betul."),
-  ask(`Mengapakah murid tidak boleh panik apabila ${situasi}?`, "supaya boleh mendapatkan bantuan", ["supaya boleh mendapatkan bantuan", "supaya rakan takut", "supaya lambat bertindak", "supaya luka kotor"], "Tenang membantu kita fikir dengan baik.", "Bertenang membantu murid memanggil bantuan dan mengikut arahan dengan selamat."),
-  ask(`Apakah perkara yang tidak patut dibuat apabila ${situasi}?`, "sembunyikan kejadian", ["sembunyikan kejadian", "beritahu guru", "duduk dengan tenang", "minta bantuan"], "Kecederaan perlu diketahui orang dewasa.", "Menyembunyikan kejadian boleh melambatkan bantuan dan membahayakan murid."),
-  ask(`Apakah tujuan pertolongan cemas dalam situasi ${situasi}?`, "memberi bantuan awal", ["memberi bantuan awal", "menggantikan doktor sepenuhnya", "membuat rakan malu", "meneruskan permainan"], "Pertolongan cemas ialah bantuan pertama.", "Pertolongan cemas memberi bantuan awal sebelum rawatan lanjut jika diperlukan."),
+  contextualChoiceAsk(`Apakah tindakan awal yang betul apabila ${situasi}?`, answer, [answer, "ketawa", "sembunyikan kejadian", "terus bermain"], (choice) => `Apabila ${situasi}, tindakan awal yang betul ialah "${choice}".`, "Pertolongan cemas perlu selamat dan tenang.", explanation),
+  contextualChoiceAsk(`Siapakah yang perlu dipanggil apabila ${situasi}?`, "guru", orangDipercayai, (choice) => `Apabila ${situasi}, murid perlu memanggil ${choice}.`, "Di sekolah, guru boleh membantu.", "Guru atau orang dewasa perlu dipanggil supaya bantuan diberi dengan betul."),
+  contextualChoiceAsk(`Mengapakah murid tidak boleh panik apabila ${situasi}?`, "supaya boleh mendapatkan bantuan", ["supaya boleh mendapatkan bantuan", "supaya rakan takut", "supaya lambat bertindak", "supaya luka kotor"], (choice) => `Murid perlu bertenang apabila ${situasi} ${choice}.`, "Tenang membantu kita fikir dengan baik.", "Bertenang membantu murid memanggil bantuan dan mengikut arahan dengan selamat."),
+  contextualChoiceAsk(`Apakah perkara yang tidak patut dibuat apabila ${situasi}?`, "sembunyikan kejadian", ["sembunyikan kejadian", "beritahu guru", "duduk dengan tenang", "minta bantuan"], (choice) => `Perkara yang tidak patut dilakukan apabila ${situasi} ialah ${choice}.`, "Kecederaan perlu diketahui orang dewasa.", "Menyembunyikan kejadian boleh melambatkan bantuan dan membahayakan murid."),
+  contextualChoiceAsk(`Apakah tujuan pertolongan cemas dalam situasi ${situasi}?`, "memberi bantuan awal", ["memberi bantuan awal", "menggantikan doktor sepenuhnya", "membuat rakan malu", "meneruskan permainan"], (choice) => `Dalam situasi ${situasi}, tujuan pertolongan cemas ialah ${choice}.`, "Pertolongan cemas ialah bantuan pertama.", "Pertolongan cemas memberi bantuan awal sebelum rawatan lanjut jika diperlukan."),
 ]);
 
 const persekitaranPairs = [
@@ -194,11 +227,11 @@ const persekitaranPairs = [
   ["tong sampah penuh", "beritahu pekerja atau guru", "Tong sampah penuh perlu diurus supaya tidak berbau."],
   ["alat permainan berselerak", "susun semula alat", "Alat tersusun mengelakkan murid tersadung."],
 ].flatMap(([situasi, answer, explanation]) => [
-  ask(`Apakah tindakan menjaga kesihatan persekitaran apabila ${situasi}?`, answer, [answer, "biarkan sahaja", "tambah sampah", "sembunyikan kotoran"], "Persekitaran bersih membantu kesihatan.", explanation),
-  ask(`Mengapakah murid perlu menjaga kebersihan persekitaran semasa ${situasi}?`, "mengelakkan kuman dan bahaya", ["mengelakkan kuman dan bahaya", "supaya kelas berbau", "supaya nyamuk banyak", "supaya lantai licin"], "Tempat bersih lebih selamat.", "Persekitaran bersih membantu mencegah penyakit dan kemalangan kecil."),
-  ask(`Siapakah yang patut bekerjasama apabila ${situasi}?`, "semua murid", ["semua murid", "seorang murid sahaja", "orang tidak dikenali", "murid yang lewat sahaja"], "Kebersihan sekolah ialah tanggungjawab bersama.", "Semua murid perlu bekerjasama menjaga kelas dan sekolah."),
-  ask(`Apakah nilai yang diamalkan apabila murid ${answer} semasa ${situasi}?`, "bertanggungjawab", nilai, "Menjaga tempat belajar ialah tanggungjawab.", "Bertanggungjawab terhadap persekitaran menjadikan sekolah lebih selesa."),
-  ask(`Apakah kesan baik jika murid bertindak betul apabila ${situasi}?`, "tempat lebih bersih dan selamat", ["tempat lebih bersih dan selamat", "lebih banyak kuman", "lebih banyak lalat", "murid mudah jatuh"], "Fikirkan kebaikan kepada semua.", "Tempat yang bersih dan selamat membantu murid belajar dengan selesa."),
+  contextualChoiceAsk(`Apakah tindakan menjaga kesihatan persekitaran apabila ${situasi}?`, answer, [answer, "biarkan sahaja", "tambah sampah", "sembunyikan kotoran"], (choice) => `Apabila ${situasi}, tindakan menjaga kesihatan persekitaran ialah "${choice}".`, "Persekitaran bersih membantu kesihatan.", explanation),
+  contextualChoiceAsk(`Mengapakah murid perlu menjaga kebersihan persekitaran semasa ${situasi}?`, "mengelakkan kuman dan bahaya", ["mengelakkan kuman dan bahaya", "membuat kelas berbau", "menambah bilangan nyamuk", "membuat lantai licin"], (choice) => `Menjaga kebersihan persekitaran semasa ${situasi} membantu ${choice}.`, "Tempat bersih lebih selamat.", "Persekitaran bersih membantu mencegah penyakit dan kemalangan kecil."),
+  contextualChoiceAsk(`Siapakah yang patut bekerjasama apabila ${situasi}?`, "semua murid", ["semua murid", "seorang murid sahaja", "orang tidak dikenali", "murid yang lewat sahaja"], (choice) => `Apabila ${situasi}, pihak yang patut bekerjasama ialah ${choice}.`, "Kebersihan sekolah ialah tanggungjawab bersama.", "Semua murid perlu bekerjasama menjaga kelas dan sekolah."),
+  contextualChoiceAsk(`Apakah nilai yang diamalkan apabila murid ${answer} semasa ${situasi}?`, "bertanggungjawab", nilai, (choice) => `Apabila murid melakukan tindakan "${answer}" semasa ${situasi}, nilai yang diamalkan ialah ${choice}.`, "Menjaga tempat belajar ialah tanggungjawab.", "Bertanggungjawab terhadap persekitaran menjadikan sekolah lebih selesa."),
+  contextualChoiceAsk(`Apakah kesan baik jika murid bertindak betul apabila ${situasi}?`, "tempat lebih bersih dan selamat", ["tempat lebih bersih dan selamat", "lebih banyak kuman", "lebih banyak lalat", "murid mudah jatuh"], (choice) => `Kesan apabila murid bertindak betul semasa ${situasi} ialah ${choice}.`, "Fikirkan kebaikan kepada semua.", "Tempat yang bersih dan selamat membantu murid belajar dengan selesa."),
 ]);
 
 const gayaHidupPairs = [
@@ -213,11 +246,11 @@ const gayaHidupPairs = [
   ["mengurus marah dengan tenang", "emosi lebih sihat", "Emosi yang diurus baik membantu hubungan dengan rakan."],
   ["membantu kerja ringan di rumah", "aktif dan bertanggungjawab", "Kerja ringan seperti mengemas boleh melatih tanggungjawab dan pergerakan."],
 ].flatMap(([amalan, answer, explanation]) => [
-  ask(`Apakah kebaikan amalan ${amalan}?`, answer, [answer, "badan mudah letih", "lebih banyak kuman", "makan tidak teratur"], "Gaya hidup sihat baik untuk tubuh dan emosi.", explanation),
-  ask(`Apakah contoh gaya hidup sihat berkaitan ${amalan}?`, amalan, [amalan, "tidur terlalu lewat", "makan jajan setiap masa", "tidak mahu bergerak"], "Pilih amalan yang baik untuk kesihatan.", `${amalan} ialah amalan sesuai untuk murid Tahun 2 membina gaya hidup sihat.`),
-  ask(`Mengapakah murid perlu mengamalkan ${amalan}?`, "supaya badan dan minda sihat", ["supaya badan dan minda sihat", "supaya mudah sakit", "supaya lambat belajar", "supaya tidak berkawan"], "Kesihatan melibatkan badan dan perasaan.", "Amalan sihat membantu murid belajar, bermain dan bergaul dengan lebih baik."),
-  ask(`Siapakah yang boleh menggalakkan murid melakukan ${amalan}?`, "keluarga", ["keluarga", "orang tidak dikenali", "pemandu lori", "penjual mainan"], "Keluarga membimbing amalan harian.", "Keluarga boleh memberi galakan dan menjadi contoh gaya hidup sihat."),
-  ask(`Apakah tanda murid mengamalkan gaya hidup sihat melalui ${amalan}?`, "lebih cergas dan ceria", ["lebih cergas dan ceria", "selalu mengantuk", "mudah marah", "tidak mahu mandi"], "Amalan sihat memberi kesan baik.", "Murid yang sihat biasanya lebih cergas, ceria dan bersedia untuk belajar."),
+  contextualChoiceAsk(`Apakah kebaikan amalan ${amalan}?`, answer, [answer, "badan mudah letih", "lebih banyak kuman", "makan tidak teratur"], (choice) => `Kebaikan amalan ${amalan} ialah ${choice}.`, "Gaya hidup sihat baik untuk tubuh dan emosi.", explanation),
+  contextualChoiceAsk(`Apakah contoh gaya hidup sihat berkaitan ${amalan}?`, amalan, [amalan, "tidur terlalu lewat", "makan jajan setiap masa", "tidak mahu bergerak"], (choice) => `Contoh gaya hidup sihat yang berkaitan dengan ${amalan} ialah ${choice}.`, "Pilih amalan yang baik untuk kesihatan.", `${amalan} ialah amalan sesuai untuk murid Tahun 2 membina gaya hidup sihat.`),
+  contextualChoiceAsk(`Mengapakah murid perlu mengamalkan ${amalan}?`, "supaya badan dan minda sihat", ["supaya badan dan minda sihat", "supaya mudah sakit", "supaya lambat belajar", "supaya tidak berkawan"], (choice) => `Murid perlu meneruskan amalan ${amalan} ${choice}.`, "Kesihatan melibatkan badan dan perasaan.", "Amalan sihat membantu murid belajar, bermain dan bergaul dengan lebih baik."),
+  contextualChoiceAsk(`Siapakah yang boleh menggalakkan murid melakukan ${amalan}?`, "keluarga", ["keluarga", "orang tidak dikenali", "pemandu lori", "penjual mainan"], (choice) => `Pihak yang boleh menggalakkan amalan ${amalan} ialah ${choice}.`, "Keluarga membimbing amalan harian.", "Keluarga boleh memberi galakan dan menjadi contoh gaya hidup sihat."),
+  contextualChoiceAsk(`Apakah tanda murid mengamalkan gaya hidup sihat melalui ${amalan}?`, "lebih cergas dan ceria", ["lebih cergas dan ceria", "selalu mengantuk", "mudah marah", "tidak mahu mandi"], (choice) => `Tanda murid mengamalkan gaya hidup sihat melalui ${amalan} ialah ${choice}.`, "Amalan sihat memberi kesan baik.", "Murid yang sihat biasanya lebih cergas, ceria dan bersedia untuk belajar."),
 ]);
 
 const uasaCampuran = [
@@ -225,15 +258,16 @@ const uasaCampuran = [
   ...pemakananPairs.slice(5, 10),
   ...keselamatanDiriPairs.slice(10, 15),
   ...emosiPairs.slice(15, 20),
+  ...gayaHidupPairs.slice(40, 50),
   ...jalanRayaPairs.slice(20, 25),
   ...penyakitPairs.slice(25, 30),
   ...pertolonganPairs.slice(30, 35),
   ...persekitaranPairs.slice(35, 40),
-  ...gayaHidupPairs.slice(40, 50),
-].map((item) => ({
+].map((item, index) => ({
   ...item,
   question: `Soalan ulang kaji UASA: ${item.question}`,
   explanation: `${item.explanation} Jawapan ini sesuai untuk soalan situasi Pendidikan Kesihatan Tahun 2.`,
+  cognitiveLevel: ["mengingat", "memahami", "mengaplikasi", "menganalisis", "menilai"][index % 5],
 }));
 
 export const pkSubject = {

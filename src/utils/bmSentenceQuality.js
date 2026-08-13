@@ -383,7 +383,52 @@ export function repairBMSentence(sentence = '', options = {}) {
   };
 }
 
-export function normalizeBMQuestionRecord(record = {}) {
+function inferBMQuestionType(record = {}, context = {}) {
+  if (record.questionType) return record.questionType;
+  const options = record.options || record.choices || record.answerOptions;
+  if (Array.isArray(options) && options.length >= 2) return 'objective';
+  const text = String(record.q || record.question || '').trim();
+  if (/\b(susun|atur)\b.*\b(urutan|perkataan|frasa|ayat)\b/i.test(text)) return 'ordering';
+  if (Number(record.marks || 1) > 1 || /\b(tulis|bina|hasilkan|jelaskan|terangkan|berikan sebab|beri sebab)\b/i.test(text)) return 'structured';
+  return context.defaultQuestionType || 'short_answer';
+}
+
+const BM_PROGRESSIVE_GRAMMAR_TOPICS = new Set([
+  'kata_nama_am',
+  'kata_nama_khas',
+  'kata_ganti_nama',
+  'kata_kerja',
+  'kata_adjektif',
+  'kata_sendi',
+  'kata_hubung',
+  'penjodoh_bilangan',
+  'ayat',
+  'tatabahasa'
+]);
+
+function inferBMCognitiveLevel(record = {}, context = {}) {
+  if (record.cognitiveLevel) return record.cognitiveLevel;
+  if (BM_PROGRESSIVE_GRAMMAR_TOPICS.has(context.topicId) && Number.isInteger(context.index)) {
+    const phase = context.index % 50;
+    if (phase < 10) return 'mengingat';
+    if (phase < 20) return 'memahami';
+    if (phase < 35) return 'mengaplikasi';
+    if (phase < 45) return 'menganalisis';
+    return 'menilai';
+  }
+  const text = String(record.q || record.question || '').trim();
+  if (/\b(cipta|hasilkan|bina ayat|tulis (?:satu )?ayat|karang)\b/i.test(text)) return 'mencipta';
+  if (/\b(penilaian kbat|nilaikan|wajarkah|paling sesuai)\b/i.test(text) || /\b(berikan|beri) sebab\b/i.test(text)) return 'menilai';
+  if (/\b(analisis kbat|analisis|bandingkan|bezakan|bukti|rumuskan)\b/i.test(text)) return 'menganalisis';
+  if (/\b(aplikasi|gunakan|lengkapkan|susun|padankan)\b/i.test(text)) return 'mengaplikasi';
+  if (/\b(mengapakah|jelaskan|terangkan|maksud|jenis|kelaskan|kategorikan)\b/i.test(text)) return 'memahami';
+  const difficulty = String(record.difficulty || '').toLowerCase();
+  if (difficulty === 'sukar') return 'mengaplikasi';
+  if (difficulty === 'sederhana') return 'memahami';
+  return 'mengingat';
+}
+
+export function normalizeBMQuestionRecord(record = {}, context = {}) {
   const next = { ...record };
   const sourceQuestion = typeof next.q === 'string' ? next.q : (typeof next.question === 'string' ? next.question : '');
   const repairedQuestion = sourceQuestion ? repairBMSentence(sourceQuestion).repairedSentence : sourceQuestion;
@@ -421,6 +466,8 @@ export function normalizeBMQuestionRecord(record = {}) {
   if (Array.isArray(next.acceptedAnswers)) {
     next.acceptedAnswers = next.acceptedAnswers.map(value => typeof value === 'string' ? repairBMSentence(value).repairedSentence : value);
   }
+  next.questionType = inferBMQuestionType(next, context);
+  next.cognitiveLevel = inferBMCognitiveLevel(next, context);
   return next;
 }
 
@@ -430,7 +477,13 @@ export function normalizeBMSubject(subject = {}) {
     topics: Array.isArray(subject.topics)
       ? subject.topics.map(topic => ({
           ...topic,
-          questions: Array.isArray(topic.questions) ? topic.questions.map(normalizeBMQuestionRecord) : topic.questions
+          questions: Array.isArray(topic.questions)
+            ? topic.questions.map((question, index) => normalizeBMQuestionRecord(question, {
+                topicId: topic.id,
+                index,
+                defaultQuestionType: topic.defaultQuestionType
+              }))
+            : topic.questions
         }))
       : subject.topics
   };

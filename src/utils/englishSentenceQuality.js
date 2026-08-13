@@ -148,8 +148,8 @@ export function validateEnglishQuestionCompleteness(question = {}) {
   return { valid: issues.length === 0, issues: [...new Set(issues)], severity: issues.some(issue => ['missing_question_text', 'missing_expected_answer', 'mixed_language', 'unresolved_placeholder', 'incomplete_question'].includes(issue)) ? 'high' : issues.length ? 'medium' : 'low' };
 }
 
-export function normalizeEnglishQuestionObject(question = {}) {
-  const next = normalizeEnglishQuestionRecord(question);
+export function normalizeEnglishQuestionObject(question = {}, context = {}) {
+  const next = normalizeEnglishQuestionRecord(question, context);
   if (!next.q && next.question) next.q = next.question;
   if (!next.question && next.q) next.question = next.q;
   const completeness = validateEnglishQuestionCompleteness(next);
@@ -181,7 +181,7 @@ export function validateEnglishSentence(sentence = '', context = {}) {
   if (/(?<!does )(?<!and )\b(?:he|she|it|ali|aina|sara|amir|ravi|lina|mei|maya|hakim)\s+(?:run|read|play|go|eat|like|have|do)\b/i.test(value)) issues.push('subject_verb_agreement');
   if (/\b(?:they|we|you|the boys|the girls)\s+(?:runs|reads|plays|goes|eats|likes|has|does)\b/i.test(value)) issues.push('subject_verb_agreement');
   if (/\b(?:they|we|you|the boys|the girls|the children)\s+is\b/i.test(value) || /\b(?:he|she|it|Ali|Aina|Sara|Amir|Ravi|Lina|Mei)\s+are\b/i.test(value)) issues.push('is_are_confusion');
-  if (/\b(?:they|we|you|the boys|the girls|the children)\s+has\b/i.test(value) || /\b(?:he|she|it|Ali|Aina|Sara|Amir|Ravi|Lina|Mei)\s+have\b/i.test(value)) issues.push('has_have_confusion');
+  if (/\b(?:they|we|you|the boys|the girls|the children)\s+has\b/i.test(value) || /(?<!does )\b(?:he|she|it|Ali|Aina|Sara|Amir|Ravi|Lina|Mei)\s+have\b/i.test(value)) issues.push('has_have_confusion');
   if (/\b(?:a|an)\s+(?:cats|dogs|books|birds|pencils)\b/i.test(value)) issues.push('singular_plural');
   if (/\b(?:Aina|Sara|Maya)\s+is\b[\s\S]*\bHe\b/.test(value) || /\b(?:The boys|The girls)\s+are\b[\s\S]*\bShe\b/.test(value)) issues.push('pronoun_mismatch');
   if (/\b(?:two|three|four|these|those)\s+[a-z]+\b/i.test(value) && /\b(?:cat|book|dog|bird|pencil)\b/i.test(value) && !/\b(?:cats|books|dogs|birds|pencils)\b/i.test(value)) issues.push('singular_plural');
@@ -203,12 +203,12 @@ export function repairEnglishSentence(sentence = '', context = {}) {
   repaired = repaired.replace(COORDINATED_DUPLICATE_PATTERN, (full, first) => `${first} and ${replacementFor(first, context.candidates || ['Ali', 'Adam', 'Sara', 'Lina', 'Aina', 'Maya'])}`);
   COORDINATED_DUPLICATE_PATTERN.lastIndex = 0;
   for (const [pattern, replacement] of UNNATURAL_PATTERNS) repaired = repaired.replace(pattern, replacement);
-  repaired = repaired.replace(/\b(he|she|it|Ali|Aina|Sara|Maya)\s+(run|read|play|go|eat|like|have|do)\b/gi, (full, subject, verb) => `${subject} ${THIRD_PERSON_FORMS[verb.toLowerCase()] || verb}`);
+  repaired = repaired.replace(/(?<!does )\b(he|she|it|Ali|Aina|Sara|Maya|Mei)\s+(run|read|play|go|eat|like|have|do)\b/gi, (full, subject, verb) => `${subject} ${THIRD_PERSON_FORMS[verb.toLowerCase()] || verb}`);
   repaired = repaired.replace(/\b(they|we|you|the boys|the girls)\s+(runs|reads|plays|goes|eats|likes|has|does)\b/gi, (full, subject, verb) => `${subject} ${PLURAL_FORMS[verb.toLowerCase()] || verb}`);
   repaired = repaired.replace(/\b(they|we|you|the boys|the girls|the children)\s+is\b/gi, '$1 are');
   repaired = repaired.replace(/\b(he|she|it)\s+are\b/gi, '$1 is');
   repaired = repaired.replace(/\b(they|we|you|the boys|the girls|the children)\s+has\b/gi, '$1 have');
-  repaired = repaired.replace(/\b(he|she|it)\s+have\b/gi, '$1 has');
+  repaired = repaired.replace(/(?<!does )\b(he|she|it)\s+have\b/gi, '$1 has');
   repaired = repaired.replace(/\b(two|three|four|these|those)\s+(cat|book|dog|bird|pencil)\b/gi, '$1 $2s');
   repaired = repaired.replace(/\b(Aina|Sara|Maya)\s+is\b([\s\S]*?)\bHe\b/g, '$1 is$2She');
   repaired = repaired.replace(/\b(The boys|The girls)\s+are\b([\s\S]*?)\bShe\b/g, '$1 are$2They');
@@ -244,16 +244,65 @@ export function validateEnglishQuestion(question = {}) {
   return { valid: issues.length === 0, issues, severity: issues.some(item => ['internal_id', 'expected_answer_missing'].includes(item)) ? 'high' : issues.length ? 'medium' : 'low' };
 }
 
-export function normalizeEnglishQuestionRecord(record = {}) {
+function answerUsesAnArticle(answer = '') {
+  const firstWord = key(answer).match(/^[a-z]+/)?.[0] || '';
+  if (!firstWord) return false;
+  if (/^(?:one|once|uni(?:form|corn|versity)|use|user|useful|euro)/.test(firstWord)) return false;
+  return /^[aeiou]/.test(firstWord);
+}
+
+function repairBlankArticle(value = '', answer = '') {
+  const article = answerUsesAnArticle(answer) ? 'an' : 'a';
+  return String(value).replace(/\b(a|an)(\s+_{2,})/gi, (full, current, blank) => {
+    const corrected = /^\p{Lu}/u.test(current) ? `${article.charAt(0).toUpperCase()}${article.slice(1)}` : article;
+    return `${corrected}${blank}`;
+  });
+}
+
+function inferEnglishQuestionType(record = {}, context = {}) {
+  if (record.questionType) return record.questionType;
+  const options = record.options || record.choices || record.answerOptions;
+  if (Array.isArray(options) && options.length >= 2) return 'objective';
+  const value = String(record.q || record.question || '').trim();
+  if (/\b(?:rearrange|put|arrange)\b.*\b(?:words?|sentences?|order)\b/i.test(value)) return 'ordering';
+  if (Number(record.marks || 1) > 1 || /\b(?:write|create|explain|describe|give a reason)\b/i.test(value)) return 'structured';
+  return context.defaultQuestionType || 'short_answer';
+}
+
+function inferEnglishCognitiveLevel(record = {}, context = {}) {
+  if (record.cognitiveLevel) return record.cognitiveLevel;
+  const value = String(record.q || record.question || '').trim();
+  if (/choose the best title/i.test(value)) return 'menilai';
+  if (/\bwhy\b[^?]*\?$/i.test(value)) return 'menganalisis';
+  if (/\bhow many\b[^?]*\?$/i.test(value) || /\b(?:rearrange|arrange|complete|fill in)\b/i.test(value)) return 'mengaplikasi';
+  if (context.topicId === 'reading') return 'memahami';
+  if (Number.isInteger(context.index)) {
+    const phase = context.index % 50;
+    if (phase < 10) return 'mengingat';
+    if (phase < 20) return 'memahami';
+    if (phase < 35) return 'mengaplikasi';
+    if (phase < 45) return 'menganalisis';
+    return 'menilai';
+  }
+  const difficulty = String(record.difficulty || '').toLowerCase();
+  if (difficulty === 'sukar') return 'mengaplikasi';
+  if (difficulty === 'sederhana') return 'memahami';
+  return 'mengingat';
+}
+
+export function normalizeEnglishQuestionRecord(record = {}, context = {}) {
   const next = { ...record };
   const sourceFields = ['q', 'question', 'explanation', 'hint'];
   for (const field of sourceFields) {
     if (typeof next[field] !== 'string') continue;
-    const result = repairEnglishSentence(next[field]);
+    const articleRepaired = repairBlankArticle(next[field], next.answer || next.correctAnswer || '');
+    const result = repairEnglishSentence(articleRepaired);
     next[field] = result.repairedText;
   }
   if (Array.isArray(next.options)) next.options = next.options.map(value => normalizeEnglishChildText(value));
   if (Array.isArray(next.accepted)) next.accepted = next.accepted.map(value => normalizeEnglishChildText(value));
+  next.questionType = inferEnglishQuestionType(next, context);
+  next.cognitiveLevel = inferEnglishCognitiveLevel(next, context);
   return next;
 }
 
@@ -263,7 +312,13 @@ export function normalizeEnglishSubject(subject = {}) {
     topics: Array.isArray(subject.topics)
       ? subject.topics.map(topic => ({
           ...topic,
-          questions: Array.isArray(topic.questions) ? topic.questions.map(normalizeEnglishQuestionObject) : topic.questions
+          questions: Array.isArray(topic.questions)
+            ? topic.questions.map((question, index) => normalizeEnglishQuestionObject(question, {
+                topicId: topic.id,
+                index,
+                defaultQuestionType: topic.defaultQuestionType
+              }))
+            : topic.questions
         }))
       : subject.topics
   };

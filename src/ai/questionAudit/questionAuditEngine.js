@@ -207,12 +207,13 @@ function auditQuestionBank(subjects = []) {
   const stats = createEmptyStats();
   const qualityScores = [];
   const patterns = new Map();
-  const recentTexts = [];
-  const recentAnswers = [];
-  const recentTemplates = [];
 
   for (const subject of ensureArray(subjects)) {
     for (const topic of ensureArray(subject.topics)) {
+      const recentTexts = [];
+      const recentAnswers = [];
+      const recentTemplates = [];
+      const recentAnswerTemplates = [];
       for (const question of ensureArray(topic.questions)) {
         const context = {
           subjectId: subject.id,
@@ -221,14 +222,15 @@ function auditQuestionBank(subjects = []) {
           topic: topic.title || topic.id,
           recentTexts,
           recentAnswers,
-          recentTemplates
+          recentTemplates,
+          recentAnswerTemplates
         };
         const result = analyzeQuestion(question, context);
         qualityScores.push(result.qualityScore);
         allIssues.push(...result.issues);
-        stats.severityCounts[result.severity] = (stats.severityCounts[result.severity] || 0) + 1;
         stats.issuesBySubject[context.subject] = (stats.issuesBySubject[context.subject] || 0) + result.issues.length;
         for (const issue of result.issues) {
+          stats.severityCounts[issue.severity] = (stats.severityCounts[issue.severity] || 0) + 1;
           stats.issuesByCategory[issue.issueType] = (stats.issuesByCategory[issue.issueType] || 0) + 1;
           if (issue.severity === 'Critical') {
             stats.criticalQuestions.push(issue);
@@ -236,13 +238,16 @@ function auditQuestionBank(subjects = []) {
         }
         const text = normalizeText(getQuestionText(question));
         const answerKey = normalizeText(splitAlternatives(listAnswers(question).join('|')).join('|'));
-        const templateKey = String(question.qip?.metadata?.templateId || question.templateId || question.questionStyle || '').trim();
+        const templateKey = normalizeText(question.qip?.metadata?.templateId || question.templateId || question.questionStyle || '');
+        const answerTemplateKey = templateKey && answerKey ? `${templateKey}::${answerKey}` : '';
         if (text) recentTexts.push(text);
         if (answerKey) recentAnswers.push(answerKey);
         if (templateKey) recentTemplates.push(templateKey);
+        if (answerTemplateKey) recentAnswerTemplates.push(answerTemplateKey);
         recentTexts.splice(0, Math.max(0, recentTexts.length - 25));
         recentAnswers.splice(0, Math.max(0, recentAnswers.length - 25));
         recentTemplates.splice(0, Math.max(0, recentTemplates.length - 25));
+        recentAnswerTemplates.splice(0, Math.max(0, recentAnswerTemplates.length - 25));
         if (text) patterns.set(text, (patterns.get(text) || 0) + 1);
         if (answerKey) patterns.set(`answer:${answerKey}`, (patterns.get(`answer:${answerKey}`) || 0) + 1);
         if (templateKey) patterns.set(`template:${templateKey}`, (patterns.get(`template:${templateKey}`) || 0) + 1);

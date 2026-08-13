@@ -160,7 +160,8 @@ function detectLanguageQuality(question = {}, subjectId = '') {
     if (countWords(text) > 28) issues.push('too_long');
     if (/\b(AI|engine|confidence|adaptive)\b/i.test(text)) issues.push('non_year2_wording');
   } else if (language === 'english') {
-    if (countWords(text) > 24) issues.push('too_long');
+    const isReadingStimulus = /^read\s*:/i.test(text) || /\bpassage\b/i.test(text);
+    if (countWords(text) > (isReadingStimulus ? 45 : 24)) issues.push('too_long');
     if (/\b(goed|eated|buyed|drinked)\b/i.test(text)) issues.push('incorrect_tense');
     if (/\b(he|she|it)\s+(go|play|drink|eat)\b/i.test(text)) issues.push('grammar_error');
   } else if (language === 'arabic') {
@@ -216,14 +217,15 @@ function detectDifficultyQuality(question = {}, subjectId = '') {
 function detectRepetitionQuality(question = {}, state = {}) {
   const text = normalizeText(getQuestionText(question));
   const answerPattern = normalizeText(listAnswers(question).join('|'));
-  const template = String(question.qip?.metadata?.templateId || question.templateId || question.questionStyle || '').trim();
+  const template = normalizeText(question.qip?.metadata?.templateId || question.templateId || question.questionStyle || '');
+  const answerTemplatePattern = template && answerPattern ? `${template}::${answerPattern}` : '';
   const issues = [];
   if (!text) return issues;
   const recentTexts = Array.isArray(state.recentTexts) ? state.recentTexts : [];
-  const recentAnswers = Array.isArray(state.recentAnswers) ? state.recentAnswers : [];
   const recentTemplates = Array.isArray(state.recentTemplates) ? state.recentTemplates : [];
+  const recentAnswerTemplates = Array.isArray(state.recentAnswerTemplates) ? state.recentAnswerTemplates : [];
   if (recentTexts.includes(text)) issues.push('identical_question_text');
-  if (answerPattern && recentAnswers.includes(answerPattern)) issues.push('same_answer_pattern_repeated');
+  if (answerTemplatePattern && recentAnswerTemplates.includes(answerTemplatePattern)) issues.push('same_answer_pattern_repeated');
   if (template && recentTemplates.filter(item => item === template).length >= 3) issues.push('same_wording_template_too_frequent');
   return [...new Set(issues)];
 }

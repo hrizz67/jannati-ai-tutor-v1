@@ -1015,7 +1015,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-VERBS-022",
-          "q": "At the map, I ________ carefully.",
+          "q": "I ________ carefully at the map.",
           "answer": "look",
           "accepted": [
             "look"
@@ -1025,7 +1025,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "At the map, I ________ carefully."
+          "question": "I ________ carefully at the map."
         },
         {
           "id": "ENG-VERBS-023",
@@ -1058,12 +1058,12 @@ const rawEnglishSubject = {
         {
           "id": "ENG-VERBS-025",
           "q": "During assembly, the teacher ________ near the whiteboard.",
-          "answer": "stand",
+          "answer": "stands",
           "accepted": [
-            "stand"
+            "stands"
           ],
           "hint": "Choose the action for being on your feet.",
-          "explanation": "stand is the correct verb.",
+          "explanation": "stands is the correct verb for one teacher.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
@@ -1169,7 +1169,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-VERBS-033",
-          "q": "At the camera, the children ________.",
+          "q": "The children ________ at the camera.",
           "answer": "smile",
           "accepted": [
             "smile"
@@ -1179,7 +1179,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "At the camera, the children ________."
+          "question": "The children ________ at the camera."
         },
         {
           "id": "ENG-VERBS-034",
@@ -1456,7 +1456,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-ADJECTIVES-003",
-          "q": "The pillow is ________ and soft.",
+          "q": "The pillow is ________ and comfortable.",
           "answer": "soft",
           "accepted": [
             "soft"
@@ -1466,11 +1466,11 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "The pillow is ________ and soft."
+          "question": "The pillow is ________ and comfortable."
         },
         {
           "id": "ENG-ADJECTIVES-004",
-          "q": "Choose the adjective for the chilli: The chilli is ________.",
+          "q": "Choose the word that describes the chilli: The chilli is ________.",
           "answer": "hot",
           "accepted": [
             "hot"
@@ -1480,7 +1480,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Choose the adjective for the chilli: The chilli is ________."
+          "question": "Choose the word that describes the chilli: The chilli is ________."
         },
         {
           "id": "ENG-ADJECTIVES-005",
@@ -1750,17 +1750,17 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-ADJECTIVES-024",
-          "q": "The floor is ________. Be careful.",
+          "q": "The floor is ________ after the children play with toys.",
           "answer": "messy",
           "accepted": [
             "messy"
           ],
-          "hint": "Choose a word that means not neat.",
-          "explanation": "messy describes the floor.",
+          "hint": "Choose the word for toys that are not arranged.",
+          "explanation": "messy describes a floor with toys that are not arranged.",
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "The floor is ________. Be careful."
+          "question": "The floor is ________ after the children play with toys."
         },
         {
           "id": "ENG-ADJECTIVES-025",
@@ -1806,7 +1806,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-ADJECTIVES-028",
-          "q": "The new bag is ________.",
+          "q": "The bag was bought yesterday. It is ________.",
           "answer": "new",
           "accepted": [
             "new"
@@ -1816,11 +1816,11 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "The new bag is ________."
+          "question": "The bag was bought yesterday. It is ________."
         },
         {
           "id": "ENG-ADJECTIVES-029",
-          "q": "The old book is ________.",
+          "q": "This book belonged to my grandfather. It is very ________.",
           "answer": "old",
           "accepted": [
             "old"
@@ -1830,7 +1830,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "The old book is ________."
+          "question": "This book belonged to my grandfather. It is very ________."
         },
         {
           "id": "ENG-ADJECTIVES-030",
@@ -5796,7 +5796,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-SENTENCES-010",
-          "q": "My mother ________ rice in the kitchen.",
+          "q": "My mother ________ cooking rice in the kitchen.",
           "answer": "is",
           "accepted": [
             "is"
@@ -5806,7 +5806,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "My mother ________ rice in the kitchen."
+          "question": "My mother ________ cooking rice in the kitchen."
         },
         {
           "id": "ENG-SENTENCES-011",
@@ -6104,7 +6104,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-SENTENCES-032",
-          "q": "My friend at school ________ my friend.",
+          "q": "Aina ________ my friend at school.",
           "answer": "is",
           "accepted": [
             "is"
@@ -6114,7 +6114,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "My friend at school ________ my friend."
+          "question": "Aina ________ my friend at school."
         },
         {
           "id": "ENG-SENTENCES-033",
@@ -6160,7 +6160,7 @@ const rawEnglishSubject = {
         },
         {
           "id": "ENG-SENTENCES-036",
-          "q": "Before breakfast, I ________ to school.",
+          "q": "After breakfast, I ________ to school.",
           "answer": "go",
           "accepted": [
             "go"
@@ -6170,7 +6170,7 @@ const rawEnglishSubject = {
           "difficulty": "mudah",
           "uasa": "CEFR / UASA",
           "dskp": "Malaysian Year 2 CEFR",
-          "question": "Before breakfast, I ________ to school."
+          "question": "After breakfast, I ________ to school."
         },
         {
           "id": "ENG-SENTENCES-037",
@@ -7080,6 +7080,68 @@ const rawEnglishSubject = {
   ]
 };
 
-export const englishSubject = normalizeEnglishSubject(rawEnglishSubject);
+const ENGLISH_READING_PASSAGE_REPAIRS = Object.freeze({
+  "Aina has a red bag. She puts a book in it.": "Aina has a red bag. She puts a book in it. She smiles because she likes her books.",
+  "Ben has a cat. The cat sleeps under the chair.": "Ben has a cat at home. The cat sleeps quietly under the chair because the room is cool.",
+  "Sara eats rice for lunch. She drinks water after lunch.": "Sara eats rice for lunch. She drinks water after lunch because she is thirsty.",
+  "Ravi goes to school by bus. The bus is yellow.": "Ravi leaves home at seven o'clock and goes to school by a yellow bus. The bus arrives early because school starts soon.",
+  "The dog runs in the park. It plays with a ball near the fountain.": "The dog is happy. It runs in the park and plays with a ball near the fountain.",
+  "Lina likes apples. She eats one apple every day.": "Lina likes apples because they are sweet. She eats one apple every day.",
+  "The boy wears a blue shirt. He is going to the shop after tea.": "The boy wears a blue shirt. It looks nice because it is clean. He is going to the shop after tea.",
+  "Mother bakes a cake in the kitchen for a family party.": "Mother bakes a cake in the kitchen for a family party. The cake is special because it is for the party.",
+  "The bird is in the tree. It sings in the morning.": "The bird is in the tree. It sings in the morning because it wants food."
+});
+
+const ENGLISH_READING_OVERRIDES = Object.freeze({
+  "ENG-READING-004": {
+    answer: "She smiles",
+    accepted: ["She smiles", "smiles"],
+    hint: "Look for the action that shows happiness.",
+    explanation: "Aina's smile shows that she is happy."
+  },
+  "ENG-READING-008": {
+    questionReplacement: ["Where is Ben's cat?", "Where does Ben's cat sleep?"],
+    answer: "under the chair",
+    accepted: ["under the chair", "The cat sleeps under the chair"],
+    hint: "Look for the place where the cat sleeps.",
+    explanation: "Ben's cat sleeps under the chair."
+  },
+  "ENG-READING-009": {
+    answer: "because the room is cool",
+    accepted: ["because the room is cool", "the room is cool"],
+    hint: "Look for the reason the cat rests quietly.",
+    explanation: "The cat rests quietly because the room is cool."
+  },
+  "ENG-READING-044": {
+    answer: "because it is for a family party",
+    accepted: ["because it is for a family party", "it is for a family party", "for a family party"],
+    hint: "Look for the event mentioned in the passage.",
+    explanation: "The cake is special because it is for a family party."
+  }
+});
+
+function enrichEnglishReadingQuestions(subject) {
+  return {
+    ...subject,
+    topics: subject.topics.map(topic => topic.id !== 'reading' ? topic : {
+      ...topic,
+      questions: topic.questions.map(question => {
+        const override = ENGLISH_READING_OVERRIDES[question.id] || {};
+        const { questionReplacement, ...replacementFields } = override;
+        const next = { ...question, ...replacementFields };
+        for (const field of ['q', 'question']) {
+          if (typeof next[field] !== 'string') continue;
+          for (const [source, replacement] of Object.entries(ENGLISH_READING_PASSAGE_REPAIRS)) {
+            next[field] = next[field].replace(source, replacement);
+          }
+          if (questionReplacement) next[field] = next[field].replace(...questionReplacement);
+        }
+        return next;
+      })
+    })
+  };
+}
+
+export const englishSubject = normalizeEnglishSubject(enrichEnglishReadingQuestions(rawEnglishSubject));
 
 export default englishSubject;

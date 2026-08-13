@@ -7,6 +7,28 @@ const difficultyFor = (index) => {
   return "sukar";
 };
 
+const COGNITIVE_SEQUENCE_BY_TOPIC = Object.freeze({
+  LOKOMOTOR: ["mengingat", "memahami", "mengaplikasi", "memahami", "mengaplikasi"],
+  BUKAN_LOKOMOTOR: ["mengingat", "memahami", "mengaplikasi", "memahami", "mengaplikasi"],
+  MANIPULASI_ALATAN: ["mengingat", "mengaplikasi", "mengaplikasi", "mengaplikasi", "menilai"],
+  KOORDINASI: ["memahami", "memahami", "mengaplikasi", "menilai", "menganalisis"],
+  KECERGASAN_FIZIKAL: ["memahami", "memahami", "menganalisis", "mengaplikasi", "mengaplikasi"],
+  KESELAMATAN_AKTIVITI: ["mengaplikasi", "menganalisis", "mengaplikasi", "menilai", "mengaplikasi"],
+  PERMAINAN_MUDAH: ["memahami", "menilai", "mengaplikasi", "menilai", "memahami"],
+  REKREASI: ["memahami", "memahami", "menilai", "mengaplikasi", "mengaplikasi"],
+  GAYA_HIDUP_AKTIF: ["memahami", "menganalisis", "mengaplikasi", "menganalisis", "mengaplikasi"],
+});
+
+const cognitiveLevelFor = (topicCode, index) => {
+  const sequence = COGNITIVE_SEQUENCE_BY_TOPIC[topicCode];
+  if (sequence) return sequence[index % sequence.length];
+  if (index < 10) return "mengingat";
+  if (index < 20) return "memahami";
+  if (index < 35) return "mengaplikasi";
+  if (index < 45) return "menganalisis";
+  return "menilai";
+};
+
 const shuffleOptions = (answer, wrongOptions) => {
   const options = [answer, ...wrongOptions.filter((item) => item !== answer)].slice(0, 4);
   return options.sort();
@@ -23,7 +45,9 @@ const makeQuestion = (topicCode, topicTitle, item, index) => {
     q: question,
     options: shuffleOptions(item.answer, item.options),
     answer: item.answer,
-    accepted: [item.answer],
+    accepted: [...new Set([item.answer, ...(item.accepted || [])])],
+    questionType: item.questionType || "objective",
+    cognitiveLevel: item.cognitiveLevel || cognitiveLevelFor(topicCode, index),
     hint: item.hint,
     explanation: item.explanation,
     uasa: "UASA",
@@ -38,13 +62,22 @@ const makeTopic = ({ id, code, title, note, items }) => ({
   questions: items.slice(0, 50).map((item, index) => makeQuestion(code, title, item, index)),
 });
 
-const ask = (question, answer, options, hint, explanation) => ({
+const ask = (question, answer, options, hint, explanation, extras = {}) => ({
   question,
   answer,
   options,
   hint,
   explanation,
+  ...extras,
 });
+
+const contextualAsk = (question, answer, accepted, wrongOptions, hint, explanation, extras = {}) =>
+  ask(question, answer, [answer, ...wrongOptions], hint, explanation, {
+    accepted: Array.isArray(accepted) ? accepted : [accepted],
+    ...extras,
+  });
+
+const sentenceCase = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 const actionOptions = ["berjalan", "berlari", "melompat", "mencongklang", "mengilas", "membongkok", "menolak", "menarik"];
 const safetyOptions = ["berhenti dan beritahu guru", "terus bermain", "tolak kawan", "berlari di lantai licin", "ambil alat tanpa izin"];
@@ -61,7 +94,7 @@ const pergerakanAsas = [
   ask("Apakah pergerakan apabila murid menarik tali ke arah badan?", "menarik", actionOptions, "Objek bergerak mendekati badan.", "Menarik memerlukan genggaman yang baik dan postur badan yang stabil."),
   ask("Apakah pergerakan apabila murid mendarat dengan lutut dibengkokkan selepas melompat?", "mendarat", ["mendarat", "menyepak", "menggolek", "menepuk"], "Fikirkan pergerakan selepas berada di udara.", "Mendarat dengan lutut dibengkokkan membantu menyerap hentakan dan mengurangkan risiko kecederaan."),
   ask("Apakah pergerakan apabila murid berguling di atas tilam gimnastik?", "mengguling", ["mengguling", "berlari", "menyambut", "menolak"], "Badan bergerak secara bulat di atas tilam.", "Mengguling perlu dibuat di kawasan beralas dan dengan pengawasan guru."),
-  ask("Apakah pergerakan yang sesuai untuk melalui laluan sempit tanpa berlanggar?", "berjalan", actionOptions, "Pilih pergerakan yang paling terkawal.", "Berjalan memberi kawalan badan yang lebih baik di ruang sempit."),
+  contextualAsk("Apakah pergerakan yang sesuai untuk melalui laluan sempit tanpa berlanggar?", "Berjalan dengan terkawal sesuai untuk melalui laluan sempit.", "berjalan", ["Berlari laju sesuai untuk melalui laluan sempit.", "Melompat ke arah rakan sesuai untuk melalui laluan sempit.", "Mencongklang tanpa melihat sesuai untuk melalui laluan sempit."], "Pilih pergerakan yang paling terkawal.", "Berjalan memberi kawalan badan yang lebih baik di ruang sempit."),
   ask("Semasa bergerak dalam barisan, apakah sikap yang paling baik?", "ikut giliran", valuesOptions, "Jangan memotong barisan rakan.", "Mengikut giliran menjadikan aktiviti lebih teratur dan selamat."),
   ask("Apakah bahagian badan yang paling banyak digunakan semasa melompat?", "kaki", ["kaki", "telinga", "hidung", "leher"], "Fikirkan bahagian yang menolak badan dari lantai.", "Kaki menghasilkan tolakan utama semasa melompat."),
   ask("Apakah tujuan membengkokkan lutut ketika mendarat?", "mengurangkan hentakan", ["mengurangkan hentakan", "melambatkan arahan", "membuat bunyi kuat", "menolak rakan"], "Lutut yang lembut membantu badan.", "Lutut yang dibengkokkan membantu menyerap hentakan dan menjaga sendi."),
@@ -118,10 +151,10 @@ const lokomotor = [
 ].flatMap(([activity, answer, explanation], group) =>
   [
     ask(`Dalam aktiviti ${activity}, apakah pergerakan lokomotor utama?`, answer, actionOptions, "Lokomotor ialah pergerakan yang berpindah tempat.", explanation),
-    ask(`Murid Tahun 2 melakukan ${activity}. Pergerakan ini sesuai dikelaskan sebagai ________.`, "lokomotor", ["lokomotor", "bukan lokomotor", "rehat", "rawatan"], "Badan bergerak dari satu tempat ke tempat lain.", `${activity} ialah aktiviti lokomotor kerana murid berpindah tempat.`),
-    ask(`Apakah perkara penting semasa melakukan ${activity}?`, "jaga ruang", ["jaga ruang", "pejam mata", "tolak rakan", "lari keluar kawasan"], "Fikirkan keselamatan rakan.", `Menjaga ruang semasa ${activity} dapat mengelakkan perlanggaran.`),
-    ask(`Apakah anggota badan yang paling banyak membantu semasa ${activity}?`, "kaki", ["kaki", "hidung", "telinga", "rambut"], "Pergerakan lokomotor banyak menggunakan bahagian bawah badan.", `Kaki membantu murid bergerak dan mengawal imbangan semasa ${activity}.`),
-    ask(`Jika guru meminta murid melakukan ${activity} secara selamat, apakah tindakan terbaik?`, "dengar arahan guru", ["dengar arahan guru", "mula sebelum wisel", "berebut laluan", "berlari sambil menolak"], "Arahan guru membantu kelas bergerak teratur.", `Mendengar arahan guru menjadikan ${activity} lebih teratur dan selamat.`),
+    contextualAsk(`Murid Tahun 2 melakukan ${activity}. Pergerakan ini sesuai dikelaskan sebagai ________.`, `${sentenceCase(activity)} ialah pergerakan lokomotor.`, "lokomotor", [`${sentenceCase(activity)} ialah pergerakan bukan lokomotor.`, `${sentenceCase(activity)} ialah waktu rehat.`, `${sentenceCase(activity)} ialah rawatan.`], "Badan bergerak dari satu tempat ke tempat lain.", `${sentenceCase(activity)} ialah aktiviti lokomotor kerana murid berpindah tempat.`),
+    contextualAsk(`Apakah perkara penting semasa melakukan ${activity}?`, `Murid perlu menjaga ruang semasa ${activity}.`, "jaga ruang", [`Murid perlu memejamkan mata semasa ${activity}.`, `Murid perlu menolak rakan semasa ${activity}.`, `Murid perlu keluar dari kawasan semasa ${activity}.`], "Fikirkan keselamatan rakan.", `Menjaga ruang semasa ${activity} dapat mengelakkan perlanggaran.`),
+    contextualAsk(`Apakah anggota badan yang paling banyak membantu semasa ${activity}?`, `Kaki paling banyak membantu semasa ${activity}.`, "kaki", [`Hidung paling banyak membantu semasa ${activity}.`, `Telinga paling banyak membantu semasa ${activity}.`, `Rambut paling banyak membantu semasa ${activity}.`], "Pergerakan lokomotor banyak menggunakan bahagian bawah badan.", `Kaki membantu murid bergerak dan mengawal imbangan semasa ${activity}.`),
+    contextualAsk(`Jika guru meminta murid melakukan ${activity} secara selamat, apakah tindakan terbaik?`, `Murid perlu mendengar arahan guru sebelum ${activity}.`, "dengar arahan guru", [`Murid perlu bermula sebelum wisel untuk ${activity}.`, `Murid perlu berebut laluan semasa ${activity}.`, `Murid boleh berlari sambil menolak semasa ${activity}.`], "Arahan guru membantu kelas bergerak teratur.", `Mendengar arahan guru menjadikan ${activity} lebih teratur dan selamat.`),
   ].map((item, index) => ({
     ...item,
     hint: index === 1 && group > 5 ? "Perhatikan sama ada badan berpindah tempat." : item.hint,
@@ -141,10 +174,10 @@ const bukanLokomotorPairs = [
   ["menepuk tangan mengikut rentak", "menepuk", "Menepuk mengikut rentak melatih koordinasi dan tumpuan."],
 ].flatMap(([activity, answer, explanation]) => [
   ask(`Apakah pergerakan bukan lokomotor dalam aktiviti ${activity}?`, answer, ["membongkok", "mengilas", "mengayun", "meregang", "menolak", "menarik", "mencangkung", "mengimbang"], "Bukan lokomotor dibuat di tempat sendiri.", explanation),
-  ask(`Mengapakah ${activity} dipanggil bukan lokomotor?`, "tidak berpindah tempat", ["tidak berpindah tempat", "mesti berlari", "mesti menggunakan bola", "dibuat di kantin"], "Badan bergerak tetapi tempat tidak berubah.", `${activity} ialah bukan lokomotor kerana murid bergerak di ruang sendiri tanpa berpindah jauh.`),
-  ask(`Apakah sikap yang baik semasa murid melakukan ${activity}?`, "buat dengan terkawal", ["buat dengan terkawal", "buat terlalu laju", "tolak rakan", "ketawa kuat"], "Pergerakan di tempat juga perlu selamat.", `Pergerakan yang terkawal mengurangkan risiko terseliuh atau terlanggar rakan.`),
-  ask(`Apakah manfaat aktiviti ${activity}?`, "melatih kawalan badan", ["melatih kawalan badan", "menghilangkan kasut", "menambah gaduh", "membuang alat"], "Fikirkan kebaikan kepada tubuh.", `${activity} membantu murid mengenal pergerakan badan dan mengawal postur.`),
-  ask(`Sebelum melakukan ${activity}, apakah yang perlu murid pastikan?`, "ada ruang sendiri", ["ada ruang sendiri", "rakan terlalu dekat", "lantai penuh air", "alat berselerak"], "Ruang mengelakkan sentuhan dengan rakan.", "Ruang sendiri membantu murid bergerak dengan selamat walaupun tidak berpindah tempat."),
+  contextualAsk(`Mengapakah ${activity} dipanggil bukan lokomotor?`, `${sentenceCase(activity)} tidak memindahkan badan ke tempat lain.`, "tidak berpindah tempat", [`${sentenceCase(activity)} mesti dilakukan sambil berlari.`, `${sentenceCase(activity)} mesti menggunakan bola.`, `${sentenceCase(activity)} hanya boleh dibuat di kantin.`], "Badan bergerak tetapi tempat tidak berubah.", `${sentenceCase(activity)} ialah bukan lokomotor kerana murid bergerak di ruang sendiri tanpa berpindah jauh.`),
+  contextualAsk(`Apakah sikap yang baik semasa murid melakukan ${activity}?`, `Murid perlu melakukan ${activity} dengan terkawal.`, "buat dengan terkawal", [`Murid perlu melakukan ${activity} terlalu laju.`, `Murid perlu menolak rakan semasa ${activity}.`, `Murid perlu mengabaikan arahan semasa ${activity}.`], "Pergerakan di tempat juga perlu selamat.", "Pergerakan yang terkawal mengurangkan risiko terseliuh atau terlanggar rakan."),
+  contextualAsk(`Apakah manfaat aktiviti ${activity}?`, `${sentenceCase(activity)} membantu melatih kawalan badan.`, "melatih kawalan badan", [`${sentenceCase(activity)} menyebabkan kasut hilang.`, `${sentenceCase(activity)} menambah pergaduhan.`, `${sentenceCase(activity)} menyebabkan alat dibuang.`], "Fikirkan kebaikan kepada tubuh.", `${sentenceCase(activity)} membantu murid mengenal pergerakan badan dan mengawal postur.`),
+  contextualAsk(`Sebelum melakukan ${activity}, apakah yang perlu murid pastikan?`, `Murid perlu memastikan ada ruang sendiri sebelum ${activity}.`, "ada ruang sendiri", [`Murid perlu berdiri terlalu dekat dengan rakan sebelum ${activity}.`, `Murid perlu memilih lantai yang penuh air sebelum ${activity}.`, `Murid perlu membiarkan alat berselerak sebelum ${activity}.`], "Ruang mengelakkan sentuhan dengan rakan.", "Ruang sendiri membantu murid bergerak dengan selamat walaupun tidak berpindah tempat."),
 ]);
 
 const manipulasiAlatanPairs = [
@@ -160,10 +193,10 @@ const manipulasiAlatanPairs = [
   ["menyepak bola perlahan ke sasaran", "menyepak", "Menyepak perlahan membantu murid mengawal daya tendangan."],
 ].flatMap(([activity, answer, explanation]) => [
   ask(`Dalam aktiviti ${activity}, apakah kemahiran manipulasi alatan yang digunakan?`, answer, ["membaling", "menangkap", "menendang", "menggolek", "melantun", "memukul", "menyambut", "melambung"], "Manipulasi alatan bermaksud mengawal objek.", explanation),
-  ask(`Apakah alat yang sesuai digunakan untuk ${activity}?`, activity.includes("pundi") ? "pundi kacang" : activity.includes("belon") ? "belon" : "bola", ["bola", "pundi kacang", "belon", "batu"], "Pilih alat yang selamat untuk murid kecil.", "Alat yang lembut dan sesuai saiz membantu murid berlatih dengan selamat."),
-  ask(`Apakah bahagian badan yang perlu fokus semasa ${activity}?`, activity.includes("menendang") || activity.includes("menyepak") ? "mata dan kaki" : "mata dan tangan", ["mata dan tangan", "mata dan kaki", "telinga dan rambut", "hidung dan siku"], "Lihat objek dan gunakan anggota yang sesuai.", `${activity} memerlukan koordinasi supaya objek bergerak ke arah yang dikehendaki.`),
-  ask(`Apakah tindakan selamat sebelum melakukan ${activity}?`, "pastikan kawasan lapang", ["pastikan kawasan lapang", "berdiri terlalu dekat", "baling tanpa melihat", "ambil alat rakan"], "Lihat ruang sekeliling dahulu.", "Kawasan lapang mengurangkan risiko terkena rakan atau halangan."),
-  ask(`Apakah nilai baik semasa berlatih ${activity} bersama rakan?`, "bekerjasama", valuesOptions, "Aktiviti berpasangan memerlukan sikap baik.", "Bekerjasama membantu latihan berjalan lancar dan menyeronokkan."),
+  contextualAsk(`Apakah alat yang sesuai digunakan untuk ${activity}?`, `Alat yang sesuai untuk ${activity} ialah ${activity.includes("pundi") ? "pundi kacang" : activity.includes("belon") ? "belon" : "bola"}.`, activity.includes("pundi") ? "pundi kacang" : activity.includes("belon") ? "belon" : "bola", [`Batu ialah alat yang sesuai untuk ${activity}.`, `Kayu tajam ialah alat yang sesuai untuk ${activity}.`, `Botol kaca ialah alat yang sesuai untuk ${activity}.`], "Pilih alat yang selamat untuk murid kecil.", "Alat yang lembut dan sesuai saiz membantu murid berlatih dengan selamat."),
+  contextualAsk(`Apakah bahagian badan yang perlu fokus semasa ${activity}?`, `Murid perlu menumpukan ${activity.includes("menendang") || activity.includes("menyepak") ? "mata dan kaki" : "mata dan tangan"} semasa ${activity}.`, activity.includes("menendang") || activity.includes("menyepak") ? "mata dan kaki" : "mata dan tangan", [`Murid perlu menumpukan telinga dan rambut semasa ${activity}.`, `Murid perlu menumpukan hidung dan siku semasa ${activity}.`, `Murid tidak perlu melihat alat semasa ${activity}.`], "Lihat objek dan gunakan anggota yang sesuai.", `${sentenceCase(activity)} memerlukan koordinasi supaya objek bergerak ke arah yang dikehendaki.`),
+  contextualAsk(`Apakah tindakan selamat sebelum melakukan ${activity}?`, `Murid perlu memastikan kawasan lapang sebelum ${activity}.`, "pastikan kawasan lapang", [`Murid perlu berdiri terlalu dekat dengan rakan sebelum ${activity}.`, `Murid boleh membaling tanpa melihat sebelum ${activity}.`, `Murid perlu mengambil alat rakan tanpa izin sebelum ${activity}.`], "Lihat ruang sekeliling dahulu.", "Kawasan lapang mengurangkan risiko terkena rakan atau halangan."),
+  contextualAsk(`Apakah nilai baik semasa berlatih ${activity} bersama rakan?`, `Murid perlu bekerjasama semasa berlatih ${activity} bersama rakan.`, "bekerjasama", [`Murid perlu berebut semasa berlatih ${activity}.`, `Murid perlu mengejek rakan semasa berlatih ${activity}.`, `Murid perlu mementingkan diri semasa berlatih ${activity}.`], "Aktiviti berpasangan memerlukan sikap baik.", "Bekerjasama membantu latihan berjalan lancar dan menyeronokkan."),
 ]);
 
 const koordinasiPairs = [
@@ -178,11 +211,11 @@ const koordinasiPairs = [
   ["menggolek bola tepat kepada rakan", "koordinasi mata dan tangan"],
   ["berjalan di atas garisan lurus", "imbangan dan koordinasi"],
 ].flatMap(([activity, answer]) => [
-  ask(`Apakah koordinasi yang dilatih melalui aktiviti ${activity}?`, answer, ["koordinasi mata dan tangan", "koordinasi mata dan kaki", "koordinasi tangan dan kaki", "imbangan dan koordinasi"], "Fikirkan anggota badan yang bekerja bersama.", `Aktiviti ${activity} memerlukan beberapa anggota badan bekerja bersama dengan tumpuan.`),
-  ask(`Mengapakah murid perlu melihat sasaran semasa ${activity}?`, "supaya pergerakan lebih tepat", ["supaya pergerakan lebih tepat", "supaya boleh menjerit", "supaya alat hilang", "supaya rakan takut"], "Mata membantu arah pergerakan.", "Melihat sasaran membantu murid mengawal arah dan ketepatan pergerakan."),
-  ask(`Apakah cara baik untuk meningkatkan koordinasi dalam aktiviti ${activity}?`, "berlatih secara berulang", ["berlatih secara berulang", "berhenti terus", "buat sambil bergaduh", "pejam mata sepanjang masa"], "Kemahiran bertambah dengan latihan.", "Latihan berulang secara selamat membantu koordinasi menjadi lebih baik."),
-  ask(`Apakah yang perlu dibuat jika murid gagal kali pertama semasa ${activity}?`, "cuba lagi dengan tenang", ["cuba lagi dengan tenang", "marah kepada rakan", "campak alat", "tinggalkan kelas"], "Kesilapan ialah sebahagian daripada belajar.", "Mencuba lagi dengan tenang membina keyakinan dan kemahiran."),
-  ask(`Apakah tanda koordinasi murid semakin baik semasa ${activity}?`, "pergerakan lebih terkawal", ["pergerakan lebih terkawal", "semakin banyak menolak", "semakin tidak dengar arahan", "alat selalu terjatuh"], "Kawalan ialah tanda kemajuan.", "Pergerakan yang terkawal menunjukkan anggota badan bekerja dengan lebih baik."),
+  contextualAsk(`Apakah koordinasi yang dilatih melalui aktiviti ${activity}?`, `${sentenceCase(activity)} melatih ${answer}.`, answer, [`${sentenceCase(activity)} hanya melatih pendengaran.`, `${sentenceCase(activity)} tidak memerlukan koordinasi badan.`, `${sentenceCase(activity)} hanya melatih suara.`], "Fikirkan anggota badan yang bekerja bersama.", `Aktiviti ${activity} memerlukan beberapa anggota badan bekerja bersama dengan tumpuan.`),
+  contextualAsk(`Mengapakah murid perlu melihat sasaran semasa ${activity}?`, `Melihat sasaran semasa ${activity} menjadikan pergerakan lebih tepat.`, "supaya pergerakan lebih tepat", [`Melihat sasaran semasa ${activity} membolehkan murid menjerit.`, `Melihat sasaran semasa ${activity} menyebabkan alat hilang.`, `Melihat sasaran semasa ${activity} bertujuan menakutkan rakan.`], "Mata membantu arah pergerakan.", "Melihat sasaran membantu murid mengawal arah dan ketepatan pergerakan."),
+  contextualAsk(`Apakah cara baik untuk meningkatkan koordinasi dalam aktiviti ${activity}?`, `Murid boleh meningkatkan koordinasi melalui latihan ${activity} secara berulang.`, "berlatih secara berulang", [`Murid boleh meningkatkan koordinasi dengan berhenti terus daripada ${activity}.`, `Murid boleh meningkatkan koordinasi dengan bergaduh semasa ${activity}.`, `Murid boleh meningkatkan koordinasi dengan memejamkan mata sepanjang ${activity}.`], "Kemahiran bertambah dengan latihan.", "Latihan berulang secara selamat membantu koordinasi menjadi lebih baik."),
+  contextualAsk(`Apakah yang perlu dibuat jika murid gagal kali pertama semasa ${activity}?`, `Murid perlu mencuba ${activity} lagi dengan tenang.`, "cuba lagi dengan tenang", [`Murid perlu marah kepada rakan selepas gagal ${activity}.`, `Murid perlu mencampakkan alat selepas gagal ${activity}.`, `Murid perlu meninggalkan kelas selepas gagal ${activity}.`], "Kesilapan ialah sebahagian daripada belajar.", "Mencuba lagi dengan tenang membina keyakinan dan kemahiran."),
+  contextualAsk(`Apakah tanda koordinasi murid semakin baik semasa ${activity}?`, `Pergerakan ${activity} yang lebih terkawal menunjukkan koordinasi semakin baik.`, "pergerakan lebih terkawal", [`Semakin banyak menolak rakan semasa ${activity} menunjukkan koordinasi semakin baik.`, `Tidak mendengar arahan semasa ${activity} menunjukkan koordinasi semakin baik.`, `Alat yang selalu terjatuh semasa ${activity} menunjukkan koordinasi semakin baik.`], "Kawalan ialah tanda kemajuan.", "Pergerakan yang terkawal menunjukkan anggota badan bekerja dengan lebih baik."),
 ]);
 
 const kecergasanPairs = [
@@ -198,10 +231,10 @@ const kecergasanPairs = [
   ["membongkok menyentuh hujung kaki", "kelenturan"],
 ].flatMap(([activity, answer]) => [
   ask(`Komponen kecergasan apakah yang dilatih melalui aktiviti ${activity}?`, answer, fitnessOptions.concat(["kekuatan kaki"]), "Fikirkan keupayaan tubuh yang digunakan.", `${activity} membantu membina ${answer} apabila dibuat dengan teknik yang betul.`),
-  ask(`Mengapakah murid perlu memanaskan badan sebelum ${activity}?`, "mengurangkan risiko kecederaan", ["mengurangkan risiko kecederaan", "supaya kasut kotor", "supaya boleh lambat", "supaya rakan kalah"], "Pemanasan badan menyediakan otot.", "Memanaskan badan membantu menyediakan otot dan sendi sebelum aktiviti."),
-  ask(`Apakah tanda murid perlu berehat semasa ${activity}?`, "terlalu penat", ["terlalu penat", "masih bertenaga", "guru tersenyum", "skital tersusun"], "Dengar keadaan badan sendiri.", "Berehat apabila terlalu penat membantu mengelakkan pening atau kecederaan."),
-  ask(`Apakah minuman terbaik selepas melakukan ${activity}?`, "air kosong", ["air kosong", "minuman bergas", "air terlalu manis", "kopi"], "Pilih minuman yang menyegarkan badan.", "Air kosong membantu menggantikan cecair badan selepas aktiviti fizikal."),
-  ask(`Apakah tabiat baik untuk meningkatkan kecergasan selepas latihan ${activity}?`, "aktif setiap hari", valuesOptions, "Kecergasan dibina secara konsisten.", "Aktif setiap hari melalui permainan dan senaman ringan membantu tubuh lebih sihat."),
+  contextualAsk(`Mengapakah murid perlu memanaskan badan sebelum ${activity}?`, `Memanaskan badan sebelum ${activity} mengurangkan risiko kecederaan.`, "mengurangkan risiko kecederaan", [`Memanaskan badan sebelum ${activity} bertujuan mengotorkan kasut.`, `Memanaskan badan sebelum ${activity} membolehkan murid datang lambat.`, `Memanaskan badan sebelum ${activity} memastikan rakan kalah.`], "Pemanasan badan menyediakan otot.", "Memanaskan badan membantu menyediakan otot dan sendi sebelum aktiviti."),
+  contextualAsk(`Apakah tanda murid perlu berehat semasa ${activity}?`, `Murid perlu berehat jika terlalu penat semasa ${activity}.`, "terlalu penat", [`Murid perlu berehat apabila masih bertenaga semasa ${activity}.`, `Murid perlu berehat apabila guru tersenyum semasa ${activity}.`, `Murid perlu berehat apabila skital tersusun semasa ${activity}.`], "Dengar keadaan badan sendiri.", "Berehat apabila terlalu penat membantu mengelakkan pening atau kecederaan."),
+  contextualAsk(`Apakah minuman terbaik selepas melakukan ${activity}?`, `Air kosong ialah minuman terbaik selepas ${activity}.`, "air kosong", [`Minuman bergas ialah minuman terbaik selepas ${activity}.`, `Air terlalu manis ialah minuman terbaik selepas ${activity}.`, `Kopi ialah minuman terbaik selepas ${activity}.`], "Pilih minuman yang menyegarkan badan.", "Air kosong membantu menggantikan cecair badan selepas aktiviti fizikal."),
+  contextualAsk(`Apakah tabiat baik untuk meningkatkan kecergasan selepas latihan ${activity}?`, `Murid perlu kekal aktif setiap hari untuk meningkatkan kecergasan bagi ${activity}.`, "aktif setiap hari", [`Murid perlu duduk sepanjang hari selepas latihan ${activity}.`, `Murid perlu mengelakkan semua pergerakan selepas latihan ${activity}.`, `Murid perlu tidur lewat setiap hari selepas latihan ${activity}.`], "Kecergasan dibina secara konsisten.", "Aktif setiap hari melalui permainan dan senaman ringan membantu tubuh lebih sihat."),
 ]);
 
 const keselamatanPairs = [
@@ -217,10 +250,10 @@ const keselamatanPairs = [
   ["gelanggang terlalu sesak", "tunggu giliran", "Menunggu giliran membantu mengelakkan perlanggaran."],
 ].flatMap(([situation, answer, explanation]) => [
   ask(`Apakah tindakan paling selamat jika ${situation}?`, answer, safetyOptions.concat(["berhenti dan ikat tali kasut", "minta bantuan guru", "minum air dan rehat di tempat teduh", "tunggu giliran"]), "Pilih tindakan yang menjaga diri dan rakan.", explanation),
-  ask(`Mengapakah murid tidak boleh meneruskan aktiviti apabila ${situation}?`, "boleh menyebabkan kecederaan", ["boleh menyebabkan kecederaan", "boleh mendapat markah penuh", "boleh menjadi permainan baru", "boleh membuat guru gembira"], "Fikirkan risiko kepada tubuh.", `${situation} ialah keadaan yang perlu dikawal supaya murid tidak cedera.`),
-  ask(`Siapakah orang yang patut dimaklumkan apabila ${situation}?`, "guru", ["guru", "penjaja", "pemandu bas", "orang tidak dikenali"], "Di sekolah, guru menjaga aktiviti PJ.", "Guru boleh memberi arahan dan bantuan yang sesuai semasa aktiviti."),
-  ask(`Apakah nilai yang ditunjukkan apabila murid bertindak selamat ketika ${situation}?`, "berhati-hati", valuesOptions, "Keselamatan memerlukan sikap cermat.", "Berhati-hati menunjukkan murid menjaga keselamatan diri dan rakan."),
-  ask(`Apakah peraturan umum semasa aktiviti PJ apabila ${situation}?`, "dengar arahan guru", ["dengar arahan guru", "berlari tanpa arah", "guna alat rosak", "tolak rakan"], "Peraturan membantu semua murid selamat.", "Mendengar arahan guru memastikan aktiviti berjalan lancar dan selamat."),
+  contextualAsk(`Mengapakah murid tidak boleh meneruskan aktiviti apabila ${situation}?`, `Meneruskan aktiviti apabila ${situation} boleh menyebabkan kecederaan.`, "boleh menyebabkan kecederaan", [`Meneruskan aktiviti apabila ${situation} menjamin markah penuh.`, `Meneruskan aktiviti apabila ${situation} mewujudkan permainan baharu.`, `Meneruskan aktiviti apabila ${situation} sentiasa menggembirakan guru.`], "Fikirkan risiko kepada tubuh.", `${sentenceCase(situation)} ialah keadaan yang perlu dikawal supaya murid tidak cedera.`),
+  contextualAsk(`Siapakah orang yang patut dimaklumkan apabila ${situation}?`, `Murid perlu memaklumkan guru apabila ${situation}.`, "guru", [`Murid perlu memaklumkan penjaja apabila ${situation}.`, `Murid perlu memaklumkan pemandu bas apabila ${situation}.`, `Murid perlu memaklumkan orang tidak dikenali apabila ${situation}.`], "Di sekolah, guru menjaga aktiviti PJ.", "Guru boleh memberi arahan dan bantuan yang sesuai semasa aktiviti."),
+  contextualAsk(`Apakah nilai yang ditunjukkan apabila murid bertindak selamat ketika ${situation}?`, `Murid menunjukkan sikap berhati-hati apabila menghadapi keadaan ${situation}.`, "berhati-hati", [`Murid menunjukkan sikap cuai apabila menghadapi keadaan ${situation}.`, `Murid menunjukkan sikap suka berebut apabila menghadapi keadaan ${situation}.`, `Murid menunjukkan sikap mementingkan diri apabila menghadapi keadaan ${situation}.`], "Keselamatan memerlukan sikap cermat.", "Berhati-hati menunjukkan murid menjaga keselamatan diri dan rakan."),
+  contextualAsk(`Apakah peraturan umum semasa aktiviti PJ apabila ${situation}?`, `Murid perlu mendengar arahan guru apabila ${situation}.`, "dengar arahan guru", [`Murid perlu berlari tanpa arah apabila ${situation}.`, `Murid perlu menggunakan alat rosak apabila ${situation}.`, `Murid perlu menolak rakan apabila ${situation}.`], "Peraturan membantu semua murid selamat.", "Mendengar arahan guru memastikan aktiviti berjalan lancar dan selamat."),
 ]);
 
 const permainanPairs = [
@@ -236,10 +269,10 @@ const permainanPairs = [
   ["ambil dan hantar", "bekerjasama menghantar alat"],
 ].flatMap(([game, skill]) => [
   ask(`Dalam permainan ${game}, apakah kemahiran utama yang digunakan?`, skill, [skill, "menolak rakan", "menjerit kepada lawan", "keluar kawasan"], "Fikirkan aksi utama permainan.", `Permainan ${game} melatih murid menggunakan kemahiran ${skill} secara menyeronokkan.`),
-  ask(`Apakah sikap penting semasa bermain ${game}?`, "bermain secara jujur", ["bermain secara jujur", "menipu markah", "marah apabila kalah", "ambil giliran rakan"], "Permainan perlu adil.", "Bermain secara jujur menjadikan permainan adil dan mendidik nilai murni."),
-  ask(`Apakah yang perlu dibuat sebelum mula permainan ${game}?`, "dengar peraturan", ["dengar peraturan", "lari dahulu", "sembunyi alat", "tolak rakan"], "Peraturan membantu permainan selamat.", "Mendengar peraturan membantu murid faham cara bermain dan menjaga keselamatan."),
-  ask(`Apakah tindakan baik jika pasukan kalah dalam ${game}?`, "terima keputusan dengan baik", ["terima keputusan dengan baik", "menyalahkan rakan", "menangis dan menolak", "buang alat"], "Kalah menang ialah adat permainan.", "Menerima keputusan dengan baik menunjukkan semangat kesukanan."),
-  ask(`Apakah manfaat permainan mudah seperti ${game}?`, "melatih kerjasama dan kecergasan", ["melatih kerjasama dan kecergasan", "membuat murid malas", "mengurangkan kawan", "membuang masa rehat"], "Permainan PJ ada kebaikan fizikal dan sosial.", "Permainan mudah membantu murid bergerak aktif, bekerjasama dan belajar peraturan."),
+  contextualAsk(`Apakah sikap penting semasa bermain ${game}?`, `Murid perlu bermain ${game} secara jujur.`, "bermain secara jujur", [`Murid perlu menipu markah semasa bermain ${game}.`, `Murid perlu marah apabila kalah dalam ${game}.`, `Murid perlu mengambil giliran rakan semasa bermain ${game}.`], "Permainan perlu adil.", "Bermain secara jujur menjadikan permainan adil dan mendidik nilai murni."),
+  contextualAsk(`Apakah yang perlu dibuat sebelum mula permainan ${game}?`, `Murid perlu mendengar peraturan sebelum bermain ${game}.`, "dengar peraturan", [`Murid perlu berlari dahulu sebelum mendengar peraturan ${game}.`, `Murid perlu menyembunyikan alat sebelum bermain ${game}.`, `Murid perlu menolak rakan sebelum bermain ${game}.`], "Peraturan membantu permainan selamat.", "Mendengar peraturan membantu murid faham cara bermain dan menjaga keselamatan."),
+  contextualAsk(`Apakah tindakan baik jika pasukan kalah dalam ${game}?`, `Murid perlu menerima keputusan dengan baik jika kalah dalam ${game}.`, "terima keputusan dengan baik", [`Murid perlu menyalahkan rakan jika kalah dalam ${game}.`, `Murid perlu menangis dan menolak rakan jika kalah dalam ${game}.`, `Murid perlu membuang alat jika kalah dalam ${game}.`], "Kalah menang ialah adat permainan.", "Menerima keputusan dengan baik menunjukkan semangat kesukanan."),
+  contextualAsk(`Apakah manfaat permainan mudah seperti ${game}?`, `${sentenceCase(game)} membantu melatih kerjasama dan kecergasan.`, "melatih kerjasama dan kecergasan", [`${sentenceCase(game)} membuat murid malas.`, `${sentenceCase(game)} mengurangkan bilangan kawan.`, `${sentenceCase(game)} hanya membuang masa rehat.`], "Permainan PJ ada kebaikan fizikal dan sosial.", "Permainan mudah membantu murid bergerak aktif, bekerjasama dan belajar peraturan."),
 ]);
 
 const rekreasiPairs = [
@@ -255,29 +288,29 @@ const rekreasiPairs = [
   ["senaman keluarga pada hujung minggu", "gaya hidup aktif"],
 ].flatMap(([activity, answer]) => [
   ask(`Aktiviti seperti ${activity} sesuai dikelaskan sebagai apa?`, answer, ["rekreasi aktif", "aktiviti berirama", "aktiviti berkumpulan", "rekreasi selamat", "aktiviti luar kelas", "rekreasi budaya", "gaya hidup aktif"], "Rekreasi ialah aktiviti masa lapang yang sihat.", `${activity} membantu murid bergerak aktif sambil menikmati aktiviti yang menyeronokkan.`),
-  ask(`Apakah tujuan aktiviti rekreasi seperti ${activity}?`, "menyihatkan badan", ["menyihatkan badan", "mencari gaduh", "mengelak semua pergerakan", "membazir masa"], "Rekreasi aktif memberi manfaat kepada tubuh.", "Aktiviti rekreasi yang selamat membantu badan sihat dan emosi lebih gembira."),
-  ask(`Apakah sikap baik semasa menyertai ${activity}?`, "ikut giliran", valuesOptions, "Aktiviti berkumpulan perlu teratur.", "Mengikut giliran memberi peluang kepada semua murid untuk mencuba."),
-  ask(`Apakah yang perlu dibawa selepas aktiviti luar seperti ${activity}?`, "botol air", ["botol air", "mainan tajam", "telefon guru", "batu besar"], "Aktiviti luar membuat badan berpeluh.", "Botol air membantu murid minum air kosong dan kekal bertenaga."),
-  ask(`Apakah tempat yang sesuai untuk aktiviti seperti ${activity}?`, "kawasan lapang dan selamat", ["kawasan lapang dan selamat", "tepi jalan raya", "lantai licin", "stor gelap"], "Pilih tempat yang kurang risiko.", "Kawasan lapang dan selamat membolehkan murid bergerak tanpa bahaya."),
+  contextualAsk(`Apakah tujuan aktiviti rekreasi seperti ${activity}?`, `${sentenceCase(activity)} membantu menyihatkan badan.`, "menyihatkan badan", [`${sentenceCase(activity)} bertujuan mencari gaduh.`, `${sentenceCase(activity)} membantu murid mengelak semua pergerakan.`, `${sentenceCase(activity)} hanya membazir masa.`], "Rekreasi aktif memberi manfaat kepada tubuh.", "Aktiviti rekreasi yang selamat membantu badan sihat dan emosi lebih gembira."),
+  contextualAsk(`Apakah sikap baik semasa menyertai ${activity}?`, `Murid perlu mengikut giliran semasa ${activity}.`, "ikut giliran", [`Murid perlu berebut semasa ${activity}.`, `Murid perlu memotong giliran rakan semasa ${activity}.`, `Murid perlu mengejek rakan semasa ${activity}.`], "Aktiviti berkumpulan perlu teratur.", "Mengikut giliran memberi peluang kepada semua murid untuk mencuba."),
+  contextualAsk(`Apakah yang perlu dibawa selepas aktiviti luar seperti ${activity}?`, `Murid perlu membawa botol air untuk diminum selepas ${activity}.`, "botol air", [`Murid perlu membawa mainan tajam selepas ${activity}.`, `Murid perlu membawa telefon guru selepas ${activity}.`, `Murid perlu membawa batu besar selepas ${activity}.`], "Aktiviti luar membuat badan berpeluh.", "Botol air membantu murid minum air kosong dan kekal bertenaga."),
+  contextualAsk(`Apakah tempat yang sesuai untuk aktiviti seperti ${activity}?`, `Kawasan lapang dan selamat sesuai untuk ${activity}.`, "kawasan lapang dan selamat", [`Tepi jalan raya sesuai untuk ${activity}.`, `Lantai licin sesuai untuk ${activity}.`, `Stor gelap sesuai untuk ${activity}.`], "Pilih tempat yang kurang risiko.", "Kawasan lapang dan selamat membolehkan murid bergerak tanpa bahaya."),
 ]);
 
 const gayaHidupPairs = [
-  ["bermain di padang pada waktu petang", "aktif bergerak"],
-  ["membantu menyapu halaman rumah", "aktiviti fizikal harian"],
-  ["naik tangga dengan selamat", "menggunakan tenaga badan"],
-  ["berjalan kaki bersama keluarga", "rekreasi keluarga"],
-  ["mengurangkan masa menonton skrin", "lebih banyak bergerak"],
-  ["minum air kosong selepas bermain", "menjaga hidrasi"],
-  ["tidur awal selepas hari aktif", "rehat yang cukup"],
-  ["makan buah selepas aktiviti", "pilihan makanan sihat"],
-  ["mengemas alat permainan selepas digunakan", "tanggungjawab"],
-  ["bermain secara selamat dengan jiran", "hubungan sosial sihat"],
-].flatMap(([habit, answer]) => [
-  ask(`Amalan ${habit} menunjukkan gaya hidup apa?`, answer, ["aktif bergerak", "aktiviti fizikal harian", "rekreasi keluarga", "lebih banyak bergerak", "menjaga hidrasi", "rehat yang cukup", "pilihan makanan sihat", "tanggungjawab"], "Gaya hidup aktif berlaku di sekolah dan di rumah.", `${habit} ialah contoh amalan sihat yang sesuai untuk murid Tahun 2.`),
-  ask(`Mengapakah murid digalakkan ${habit}?`, "untuk badan sihat", ["untuk badan sihat", "supaya tidak perlu mandi", "supaya cepat marah", "supaya lewat tidur"], "Aktiviti sihat baik untuk tubuh.", "Amalan sihat membantu tubuh cergas, kuat dan bersedia untuk belajar."),
-  ask(`Apakah pilihan yang lebih sihat selepas amalan ${habit}?`, "minum air kosong", ["minum air kosong", "minum air bergas", "makan gula-gula sahaja", "tidak minum langsung"], "Badan perlukan air.", "Air kosong membantu menggantikan air yang hilang melalui peluh."),
-  ask(`Apakah yang perlu diseimbangkan dengan amalan aktif seperti ${habit}?`, "rehat yang cukup", ["rehat yang cukup", "bermain tanpa henti", "tidur terlalu lewat", "makan berlebihan"], "Tubuh juga perlu pulih.", "Rehat yang cukup membantu badan pulih selepas bergerak aktif."),
-  ask(`Apakah contoh gaya hidup aktif di sekolah yang sepadan dengan amalan ${habit}?`, "menyertai aktiviti PJ", ["menyertai aktiviti PJ", "duduk sepanjang rehat", "menolak rakan", "tidak mahu bergerak"], "PJ membantu murid bergerak.", "Menyertai aktiviti PJ memberi peluang kepada murid membina kecergasan dan kemahiran."),
+  { habit: "bermain di padang pada waktu petang", category: "aktif bergerak", benefit: ["Bermain di padang membantu meningkatkan kecergasan.", "meningkatkan kecergasan"], support: ["Murid perlu minum air kosong selepas bermain di padang.", "minum air kosong"], balance: ["Murid perlu berehat selepas bermain di padang.", "berehat selepas bermain"], school: ["Murid boleh menyertai aktiviti PJ di padang sekolah.", "menyertai aktiviti PJ"] },
+  { habit: "membantu menyapu halaman rumah", category: "aktiviti fizikal harian", benefit: ["Menyapu halaman menjadikan kerja rumah satu aktiviti fizikal.", "kerja rumah menjadi aktiviti fizikal"], support: ["Murid perlu mencuci tangan selepas menyapu halaman.", "mencuci tangan"], balance: ["Murid perlu berhenti seketika jika penat semasa menyapu halaman.", "berehat jika penat"], school: ["Murid boleh membantu menyusun alatan PJ selepas kelas.", "menyusun alatan PJ"] },
+  { habit: "naik tangga dengan selamat", category: "menggunakan tenaga badan", benefit: ["Naik tangga dengan selamat membantu menguatkan kaki.", "menguatkan kaki"], support: ["Murid perlu memegang susur tangan semasa naik tangga.", "memegang susur tangan"], balance: ["Murid perlu berjalan dan tidak berebut semasa naik tangga.", "berjalan dan tidak berebut"], school: ["Murid perlu menggunakan tangga sekolah secara tertib.", "menggunakan tangga secara tertib"] },
+  { habit: "berjalan kaki bersama keluarga", category: "rekreasi keluarga", benefit: ["Berjalan kaki bersama keluarga membantu meningkatkan daya tahan.", "meningkatkan daya tahan"], support: ["Murid perlu memakai kasut yang sesuai semasa berjalan kaki.", "memakai kasut yang sesuai"], balance: ["Keluarga perlu memilih laluan yang selamat dan berehat jika penat.", "pilih laluan selamat dan berehat"], school: ["Murid boleh berjalan antara stesen aktiviti PJ dengan teratur.", "berjalan antara stesen PJ"] },
+  { habit: "mengurangkan masa menonton skrin", category: "lebih banyak bergerak", benefit: ["Mengurangkan masa skrin memberi lebih banyak masa untuk bergerak aktif.", "lebih banyak masa untuk bergerak"], support: ["Murid boleh menggantikan masa skrin dengan permainan luar yang selamat.", "bermain di luar dengan selamat"], balance: ["Murid perlu membahagikan masa untuk belajar, berehat dan bergerak aktif.", "bahagikan masa dengan seimbang"], school: ["Murid boleh bergerak aktif secara selamat pada waktu rehat.", "bergerak aktif waktu rehat"] },
+  { habit: "minum air kosong selepas bermain", category: "menjaga hidrasi", benefit: ["Minum air kosong selepas bermain membantu menggantikan cecair badan.", "menggantikan cecair badan"], support: ["Murid perlu membawa botol air sendiri ketika melakukan aktiviti.", "membawa botol air"], balance: ["Murid perlu minum air sedikit demi sedikit mengikut keperluan.", "minum mengikut keperluan"], school: ["Murid boleh mengisi semula botol air di tempat yang dibenarkan.", "mengisi semula botol air"] },
+  { habit: "tidur awal selepas hari aktif", category: "rehat yang cukup", benefit: ["Tidur awal membantu badan pulih selepas hari yang aktif.", "membantu badan pulih"], support: ["Murid perlu mempunyai waktu tidur yang tetap setiap malam.", "waktu tidur yang tetap"], balance: ["Murid perlu aktif pada waktu siang dan mendapat tidur yang cukup.", "aktif siang dan cukup tidur"], school: ["Tidur yang cukup membantu murid bertenaga semasa kelas PJ.", "bertenaga semasa kelas PJ"] },
+  { habit: "makan buah selepas aktiviti", category: "pilihan makanan sihat", benefit: ["Makan buah membekalkan vitamin dan serat kepada badan.", "membekalkan vitamin dan serat"], support: ["Murid perlu memilih buah segar sebagai snek yang sihat.", "memilih buah segar"], balance: ["Murid perlu makan buah bersama makanan daripada kumpulan lain.", "makan pelbagai kumpulan makanan"], school: ["Murid boleh membawa potongan buah sebagai bekal sekolah.", "membawa buah sebagai bekal"] },
+  { habit: "mengemas alat permainan selepas digunakan", category: "tanggungjawab", benefit: ["Mengemas alat permainan melatih tanggungjawab sambil menggerakkan badan.", "melatih tanggungjawab"], support: ["Murid perlu mengangkat dan menyimpan alat satu demi satu dengan selamat.", "menyimpan alat dengan selamat"], balance: ["Murid perlu berkongsi tugas mengemas alat bersama rakan.", "berkongsi tugas"], school: ["Murid perlu memulangkan alatan PJ ke tempat simpanan selepas kelas.", "memulangkan alatan PJ"] },
+  { habit: "bermain secara selamat dengan jiran", category: "hubungan sosial sihat", benefit: ["Bermain dengan jiran membantu murid aktif dan membina persahabatan.", "aktif dan membina persahabatan"], support: ["Murid perlu bersetuju tentang peraturan dan kawasan permainan.", "setuju peraturan dan kawasan"], balance: ["Murid perlu berhenti untuk berehat dan minum air apabila penat.", "rehat dan minum air"], school: ["Murid perlu bekerjasama dengan rakan dalam permainan mudah di sekolah.", "bekerjasama dalam permainan"] },
+].flatMap(({ habit, category, benefit, support, balance, school }) => [
+  ask(`Amalan ${habit} menunjukkan gaya hidup apa?`, category, ["aktif bergerak", "aktiviti fizikal harian", "rekreasi keluarga", "lebih banyak bergerak", "menjaga hidrasi", "rehat yang cukup", "pilihan makanan sihat", "tanggungjawab", "hubungan sosial sihat"], "Gaya hidup aktif berlaku di sekolah dan di rumah.", `${sentenceCase(habit)} ialah contoh amalan sihat yang sesuai untuk murid Tahun 2.`),
+  contextualAsk(`Apakah manfaat utama amalan ${habit}?`, benefit[0], benefit[1], [`${sentenceCase(habit)} menyebabkan badan tidak sihat.`, `${sentenceCase(habit)} menyebabkan murid cepat marah.`, `${sentenceCase(habit)} menghalang murid daripada belajar.`], "Fikirkan kesan baik amalan itu kepada tubuh atau emosi.", `${benefit[0]} Amalan yang konsisten menyokong gaya hidup sihat.`),
+  contextualAsk(`Apakah tindakan yang menyokong amalan ${habit}?`, support[0], support[1], [`Murid perlu mengabaikan keselamatan ketika ${habit}.`, `Murid perlu berebut dengan rakan ketika ${habit}.`, `Murid perlu melakukan ${habit} tanpa mengikut kemampuan.`], "Pilih tindakan yang selamat dan sesuai dengan amalan tersebut.", `${support[0]} Tindakan ini membantu amalan dilakukan dengan lebih selamat.`),
+  contextualAsk(`Bagaimanakah amalan ${habit} boleh dilakukan secara seimbang?`, balance[0], balance[1], [`Murid perlu melakukan ${habit} tanpa henti.`, `Murid perlu tidur terlalu lewat selepas ${habit}.`, `Murid perlu mengabaikan keadaan badan semasa ${habit}.`], "Seimbang bermaksud menjaga masa, rehat dan kemampuan diri.", `${balance[0]} Keseimbangan membantu murid kekal sihat.`),
+  contextualAsk(`Apakah amalan di sekolah yang paling berkaitan dengan ${habit}?`, school[0], school[1], [`Murid perlu duduk sepanjang waktu rehat.`, `Murid perlu menolak rakan semasa aktiviti.`, `Murid perlu mengelakkan semua pergerakan di sekolah.`], "Hubungkan amalan di rumah dengan rutin sihat di sekolah.", `${school[0]} Amalan di rumah dan sekolah boleh saling menyokong.`),
 ]);
 
 const sukanSekolahPairs = [

@@ -1,3 +1,5 @@
+import { normalizeArabSubject } from '../../utils/arabContentQuality.js';
+
 const difficultyFor = (index) => {
   if (index <= 20) return "mudah";
   if (index <= 40) return "sederhana";
@@ -60,7 +62,7 @@ const hijaiyahHintVariants = [
 ];
 
 const hijaiyahLetters = [
-  ["ا", "alif"], ["ب", "ba"], ["ت", "ta"], ["ث", "sa"], ["ج", "jim"],
+  ["ا", "alif"], ["ب", "ba"], ["ت", "ta"], ["ث", "tha"], ["ج", "jim"],
   ["ح", "ha"], ["خ", "kha"], ["د", "dal"], ["ذ", "zal"], ["ر", "ra"],
   ["ز", "zai"], ["س", "sin"], ["ش", "syin"], ["ص", "sad"], ["ض", "dad"],
   ["ط", "tho"], ["ظ", "zho"], ["ع", "ain"], ["غ", "ghain"], ["ف", "fa"],
@@ -72,37 +74,44 @@ const hurufHijaiyahRawQuestions = [
   ...hijaiyahLetters.map(([letter, name], index) => {
     const answer = letter === "ه" ? "ه" : name;
     const prompt = letter === "ه"
-      ? "Huruf Arab bagi bunyi ha lembut (ه) ialah ________."
+      ? "Huruf Arab bagi bunyi ha lembut ialah ________."
       : `Nama huruf Arab ${letter} ialah ________.`;
     const explanation = letter === "ه" ? "Huruf ه dibunyikan ha lembut." : `Ini huruf ${name}.`;
+    const acceptedNames = {
+      "ث": ["tha", "sa"],
+      "ط": ["tho", "to", "ta"],
+      "ظ": ["zho", "zo", "za"],
+      "ع": ["ain", "‘ain"],
+      "غ": ["ghain", "ghayn"]
+    }[letter] || [answer];
     return fill(
       prompt,
       answer,
       hijaiyahHintVariants[index % hijaiyahHintVariants.length],
       explanation,
-      [answer]
+      acceptedNames
     );
   }),
-  fill("Huruf hijaiyah pertama (ا) ialah ________.", "ا", "Ingat huruf alif.", "Huruf hijaiyah pertama ialah alif, ا."),
-  fill("Huruf hijaiyah terakhir yang biasa dipelajari (ي) ialah ________.", "ي", "Ingat huruf ya.", "Huruf ya ditulis ي."),
-  fill("Huruf ب mempunyai satu titik di ________. Huruf itu ialah ________.", "ب", "Lihat titik huruf ba.", "Huruf ba mempunyai satu titik di bawah.", ["ب"]),
-  fill("Huruf ت mempunyai dua titik di ________. Huruf itu ialah ________.", "ت", "Lihat titik huruf ta.", "Huruf ta mempunyai dua titik di atas.", ["ت"]),
-  fill("Huruf ث mempunyai tiga titik di ________. Huruf itu ialah ________.", "ث", "Lihat titik huruf sa.", "Huruf ث mempunyai tiga titik di atas.", ["ث"]),
-  fill("Huruf ج mempunyai satu titik di ________. Huruf itu ialah ________.", "ج", "Lihat titik huruf jim.", "Huruf jim mempunyai satu titik di bawah.", ["ج"]),
-  fill("Huruf خ mempunyai satu titik di ________. Huruf itu ialah ________.", "خ", "Lihat titik huruf kha.", "Huruf kha mempunyai satu titik di atas.", ["خ"]),
-  fill("Huruf ذ mempunyai satu titik di ________. Huruf itu ialah ________.", "ذ", "Lihat titik huruf zal.", "Huruf zal mempunyai satu titik di atas.", ["ذ"]),
-  fill("Huruf ز mempunyai satu titik di ________. Huruf itu ialah ________.", "ز", "Lihat titik huruf zai.", "Huruf zai mempunyai satu titik di atas.", ["ز"]),
-  fill("Huruf ش mempunyai tiga titik di ________. Huruf itu ialah ________.", "ش", "Lihat titik huruf syin.", "Huruf syin mempunyai tiga titik di atas.", ["ش"]),
-  fill("Huruf ض mempunyai satu titik di ________. Huruf itu ialah ________.", "ض", "Lihat titik huruf dad.", "Huruf dad mempunyai satu titik di atas.", ["ض"]),
-  fill("Huruf ظ mempunyai satu titik di ________. Huruf itu ialah ________.", "ظ", "Lihat titik huruf zho.", "Huruf zho mempunyai satu titik di atas.", ["ظ"]),
-  fill("Huruf غ mempunyai satu titik di ________. Huruf itu ialah ________.", "غ", "Lihat titik huruf ghain.", "Huruf ghain mempunyai satu titik di atas.", ["غ"]),
-  fill("Huruf ف mempunyai satu titik di ________. Huruf itu ialah ________.", "ف", "Lihat titik huruf fa.", "Huruf fa mempunyai satu titik di atas.", ["ف"]),
-  fill("Huruf ق mempunyai dua titik di ________. Huruf itu ialah ________.", "ق", "Lihat titik huruf qaf.", "Huruf qaf mempunyai dua titik di atas.", ["ق"]),
-  fill("Huruf ن mempunyai satu titik di ________. Huruf itu ialah ________.", "ن", "Lihat titik huruf nun.", "Huruf nun mempunyai satu titik di atas.", ["ن"]),
-  fill("Tulisan Arab ditulis dari kanan ke ________.", "kiri", "Ingat arah tulisan Arab.", "Tulisan Arab ditulis dari kanan ke kiri."),
-  fill("Baris atas dalam Arab disebut ________.", "fathah", "Fathah menghasilkan bunyi a.", "Fathah ialah baris atas."),
-  fill("Baris bawah dalam Arab disebut ________.", "kasrah", "Kasrah menghasilkan bunyi i.", "Kasrah ialah baris bawah."),
-  fill("Baris depan dalam Arab disebut ________.", "dammah", "Dammah menghasilkan bunyi u.", "Dammah ialah baris depan."),
+  fill("Huruf hijaiyah pertama ialah ________.", "ا", "Ingat huruf alif.", "Huruf hijaiyah pertama ialah alif, ا."),
+  fill("Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.", "ي", "Ingat huruf ya.", "Huruf ya ditulis ي."),
+  fill("Huruf yang mempunyai satu titik di bawah ialah ________.", "ب", "Ingat bentuk huruf ba.", "Huruf ba, ب, mempunyai satu titik di bawah.", ["ب"]),
+  fill("Huruf yang mempunyai dua titik di atas ialah ________.", "ت", "Ingat bentuk huruf ta.", "Huruf ta, ت, mempunyai dua titik di atas.", ["ت"]),
+  fill("Huruf yang mempunyai tiga titik di atas ialah ________.", "ث", "Ingat bentuk huruf tha.", "Huruf tha, ث, mempunyai tiga titik di atas.", ["ث"]),
+  fill("Huruf berbentuk seperti ح tetapi mempunyai satu titik di bawah ialah ________.", "ج", "Bandingkan jim dengan ha.", "Huruf jim, ج, mempunyai satu titik di bawah.", ["ج"]),
+  fill("Huruf berbentuk seperti ح tetapi mempunyai satu titik di atas ialah ________.", "خ", "Bandingkan kha dengan ha.", "Huruf kha, خ, mempunyai satu titik di atas.", ["خ"]),
+  fill("Huruf berbentuk seperti د tetapi mempunyai satu titik di atas ialah ________.", "ذ", "Bandingkan zal dengan dal.", "Huruf zal, ذ, mempunyai satu titik di atas.", ["ذ"]),
+  fill("Huruf berbentuk seperti ر tetapi mempunyai satu titik di atas ialah ________.", "ز", "Bandingkan zai dengan ra.", "Huruf zai, ز, mempunyai satu titik di atas.", ["ز"]),
+  fill("Huruf berbentuk seperti س tetapi mempunyai tiga titik di atas ialah ________.", "ش", "Bandingkan syin dengan sin.", "Huruf syin, ش, mempunyai tiga titik di atas.", ["ش"]),
+  fill("Huruf berbentuk seperti ص tetapi mempunyai satu titik di atas ialah ________.", "ض", "Bandingkan dad dengan sad.", "Huruf dad, ض, mempunyai satu titik di atas.", ["ض"]),
+  fill("Huruf berbentuk seperti ط tetapi mempunyai satu titik di atas ialah ________.", "ظ", "Bandingkan zho dengan tho.", "Huruf zho, ظ, mempunyai satu titik di atas.", ["ظ"]),
+  fill("Huruf berbentuk seperti ع tetapi mempunyai satu titik di atas ialah ________.", "غ", "Bandingkan ghain dengan ain.", "Huruf ghain, غ, mempunyai satu titik di atas.", ["غ"]),
+  fill("Huruf yang hampir sama dengan ق tetapi mempunyai satu titik di atas ialah ________.", "ف", "Bandingkan fa dengan qaf.", "Huruf fa, ف, mempunyai satu titik di atas.", ["ف"]),
+  fill("Huruf yang hampir sama dengan ف tetapi mempunyai dua titik di atas ialah ________.", "ق", "Bandingkan qaf dengan fa.", "Huruf qaf, ق, mempunyai dua titik di atas.", ["ق"]),
+  fill("Huruf berbentuk seperti mangkuk dengan satu titik di atas ialah ________.", "ن", "Ingat bentuk huruf nun.", "Huruf nun, ن, mempunyai satu titik di atas.", ["ن"]),
+  fill("Perkataan كِتَابٌ dibaca dari kanan ke ________.", "kiri", "Ikut arah tulisan Arab.", "Tulisan Arab dibaca dan ditulis dari kanan ke kiri."),
+  fill("Tanda pada huruf بَ disebut ________.", "fathah", "Fathah menghasilkan bunyi a.", "Tanda َ di atas huruf ialah fathah."),
+  fill("Tanda pada huruf بِ disebut ________.", "kasrah", "Kasrah menghasilkan bunyi i.", "Tanda ِ di bawah huruf ialah kasrah."),
+  fill("Tanda pada huruf بُ disebut ________.", "dammah", "Dammah menghasilkan bunyi u.", "Tanda ُ di atas huruf ialah dammah."),
   fill("Huruf ا dibaca ________.", "alif", "Lihat bentuk huruf ا.", "ا ialah huruf alif.", ["alif"]),
   fill("Huruf م dibaca ________.", "mim", "Lihat bentuk huruf م.", "م ialah huruf mim.", ["mim"]),
 ];
@@ -361,16 +370,16 @@ const hurufHijaiyahQuestions = hurufHijaiyahRawQuestions.map((item, index) => ({
 }));
 
 const vocab = [
-  ["كِتَابٌ", "buku"], ["قَلَمٌ", "pensel"], ["حَقِيبَةٌ", "beg"], ["مِسْطَرَةٌ", "pembaris"], ["مِمْحَاةٌ", "pemadam"],
+  ["كِتَابٌ", "buku"], ["قَلَمٌ", "pen"], ["حَقِيبَةٌ", "beg"], ["مِسْطَرَةٌ", "pembaris"], ["مِمْحَاةٌ", "pemadam"],
   ["مَدْرَسَةٌ", "sekolah"], ["فَصْلٌ", "kelas"], ["بَابٌ", "pintu"], ["نَافِذَةٌ", "tingkap"], ["كُرْسِيٌّ", "kerusi"],
-  ["مَكْتَبٌ", "meja"], ["سَبُّورَةٌ", "papan putih"], ["بَيْتٌ", "rumah"], ["مَسْجِدٌ", "masjid"], ["سُوقٌ", "pasar"],
+  ["مَكْتَبٌ", "meja"], ["سَبُّورَةٌ", "papan tulis"], ["بَيْتٌ", "rumah"], ["مَسْجِدٌ", "masjid"], ["سُوقٌ", "pasar"],
   ["مَاءٌ", "air"], ["طَعَامٌ", "makanan"], ["خُبْزٌ", "roti"], ["أَرُزٌّ", "nasi"], ["حَلِيبٌ", "susu"],
   ["تُفَّاحٌ", "epal"], ["مَوْزٌ", "pisang"], ["عِنَبٌ", "anggur"], ["تَمْرٌ", "kurma"], ["عَصِيرٌ", "jus"],
   ["صَبَاحٌ", "pagi"], ["مَسَاءٌ", "petang"], ["لَيْلٌ", "malam"], ["يَوْمٌ", "hari"], ["أُسْبُوعٌ", "minggu"],
   ["كَبِيرٌ", "besar"], ["صَغِيرٌ", "kecil"], ["جَدِيدٌ", "baharu"], ["قَدِيمٌ", "lama"], ["جَمِيلٌ", "cantik"],
   ["نَظِيفٌ", "bersih"], ["قَرِيبٌ", "dekat"], ["بَعِيدٌ", "jauh"], ["سَرِيعٌ", "laju"], ["بَطِيءٌ", "perlahan"],
   ["طَالِبٌ", "murid lelaki"], ["طَالِبَةٌ", "murid perempuan"], ["مُعَلِّمٌ", "guru lelaki"], ["مُعَلِّمَةٌ", "guru perempuan"], ["صَدِيقٌ", "kawan lelaki"],
-  ["صَدِيقَةٌ", "kawan perempuan"], ["هَذَا", "ini lelaki"], ["هَذِهِ", "ini perempuan"], ["مَا", "apa"], ["مَنْ", "siapa"],
+  ["صَدِيقَةٌ", "kawan perempuan"], ["هَذَا", "ini (maskulin)"], ["هَذِهِ", "ini (feminin)"], ["مَا", "apa"], ["مَنْ", "siapa"],
 ];
 
 const mufradatQuestions = vocab.map(([arabic, meaning]) =>
@@ -386,10 +395,10 @@ const numbers = [
 
 const nomborArabQuestions = [
   ...numbers.map(([digit, word, meaning]) =>
-    fill(`Nombor Arab ${digit} dibaca ________.`, meaning, "Lihat simbol nombor Arab.", `${digit} dibaca ${meaning}, iaitu ${word}.`, [meaning, word, digit])
+    fill(`Simbol ${digit} mewakili nombor ________ dalam Bahasa Melayu.`, meaning, "Kenal pasti nilai simbol nombor Arab.", `Simbol ${digit} mewakili ${meaning}; perkataan Arabnya ialah ${word}.`, [meaning])
   ),
   ...numbers.map(([digit, word, meaning]) =>
-    fill(`Perkataan ${word} bermaksud ________.`, meaning, "Padankan nombor Arab dengan Bahasa Melayu.", `${word} bermaksud ${meaning}.`, [meaning, digit, word])
+    fill(`Perkataan ${word} bermaksud ________.`, meaning, "Padankan nombor Arab dengan Bahasa Melayu.", `${word} bermaksud ${meaning}.`, [meaning])
   ),
   fill("Nombor selepas وَاحِدٌ ialah ________.", "اِثْنَانِ", "Kira satu, dua.", "Selepas satu ialah dua, اِثْنَانِ.", ["اِثْنَانِ", "dua"]),
   fill("Nombor selepas اِثْنَانِ ialah ________.", "ثَلَاثَةٌ", "Kira dua, tiga.", "Selepas dua ialah tiga, ثَلَاثَةٌ.", ["ثَلَاثَةٌ", "tiga"]),
@@ -449,11 +458,11 @@ const warnaQuestions = [
 ];
 
 const family = [
-  ["أَبٌ", "ayah"], ["أُمٌّ", "ibu"], ["أَخٌ", "abang"], ["أُخْتٌ", "kakak"], ["جَدٌّ", "datuk"],
+  ["أَبٌ", "ayah"], ["أُمٌّ", "ibu"], ["أَخٌ", "saudara lelaki"], ["أُخْتٌ", "saudara perempuan"], ["جَدٌّ", "datuk"],
   ["جَدَّةٌ", "nenek"], ["عَمٌّ", "bapa saudara"], ["عَمَّةٌ", "ibu saudara"], ["اِبْنٌ", "anak lelaki"], ["بِنْتٌ", "anak perempuan"],
-  ["أَبِي", "ayah saya"], ["أُمِّي", "ibu saya"], ["أَخِي", "abang saya"], ["أُخْتِي", "kakak saya"], ["جَدِّي", "datuk saya"],
+  ["أَبِي", "ayah saya"], ["أُمِّي", "ibu saya"], ["أَخِي", "saudara lelaki saya"], ["أُخْتِي", "saudara perempuan saya"], ["جَدِّي", "datuk saya"],
   ["جَدَّتِي", "nenek saya"], ["أُسْرَةٌ", "keluarga"], ["وَالِدٌ", "bapa"], ["وَالِدَةٌ", "ibu"], ["طِفْلٌ", "kanak-kanak lelaki"],
-  ["طِفْلَةٌ", "kanak-kanak perempuan"], ["زَوْجٌ", "suami"], ["زَوْجَةٌ", "isteri"], ["قَرِيبٌ", "saudara lelaki"], ["قَرِيبَةٌ", "saudara perempuan"],
+  ["طِفْلَةٌ", "kanak-kanak perempuan"], ["زَوْجٌ", "suami"], ["زَوْجَةٌ", "isteri"], ["قَرِيبٌ", "kerabat lelaki"], ["قَرِيبَةٌ", "kerabat perempuan"],
 ];
 
 const keluargaQuestions = [
@@ -487,7 +496,7 @@ const haiwanQuestions = [
 const bodyParts = [
   ["رَأْسٌ", "kepala"], ["شَعْرٌ", "rambut"], ["وَجْهٌ", "muka"], ["عَيْنٌ", "mata"], ["أُذُنٌ", "telinga"],
   ["أَنْفٌ", "hidung"], ["فَمٌ", "mulut"], ["لِسَانٌ", "lidah"], ["سِنٌّ", "gigi"], ["يَدٌ", "tangan"],
-  ["رِجْلٌ", "kaki"], ["إِصْبَعٌ", "jari"], ["بَطْنٌ", "perut"], ["ظَهْرٌ", "belakang"], ["قَلْبٌ", "hati"],
+  ["رِجْلٌ", "kaki"], ["إِصْبَعٌ", "jari"], ["بَطْنٌ", "perut"], ["ظَهْرٌ", "belakang"], ["قَلْبٌ", "jantung"],
   ["كَتِفٌ", "bahu"], ["رُكْبَةٌ", "lutut"], ["قَدَمٌ", "tapak kaki"], ["ذِرَاعٌ", "lengan"], ["جِسْمٌ", "badan"],
   ["رَأْسِي", "kepala saya"], ["عَيْنِي", "mata saya"], ["يَدِي", "tangan saya"], ["رِجْلِي", "kaki saya"], ["فَمِي", "mulut saya"],
 ];
@@ -502,10 +511,10 @@ const anggotaQuestions = [
 ];
 
 const simpleSentences = [
-  ["هَذَا كِتَابٌ", "Ini buku"], ["هَذَا قَلَمٌ", "Ini pensel"], ["هَذِهِ حَقِيبَةٌ", "Ini beg"], ["هَذَا بَابٌ", "Ini pintu"], ["هَذِهِ نَافِذَةٌ", "Ini tingkap"],
+  ["هَذَا كِتَابٌ", "Ini buku"], ["هَذَا قَلَمٌ", "Ini pen"], ["هَذِهِ حَقِيبَةٌ", "Ini beg"], ["هَذَا بَابٌ", "Ini pintu"], ["هَذِهِ نَافِذَةٌ", "Ini tingkap"],
   ["أَنَا طَالِبٌ", "Saya murid lelaki"], ["أَنَا طَالِبَةٌ", "Saya murid perempuan"], ["أَنَا أَكْتُبُ", "Saya menulis"], ["أَنَا أَقْرَأُ", "Saya membaca"], ["أَنَا آكُلُ", "Saya makan"],
   ["أَنَا أَشْرَبُ", "Saya minum"], ["أَبِي فِي الْبَيْتِ", "Ayah saya di rumah"], ["أُمِّي فِي الْمَطْبَخِ", "Ibu saya di dapur"], ["الْقِطُّ صَغِيرٌ", "Kucing itu kecil"], ["الْبَيْتُ كَبِيرٌ", "Rumah itu besar"],
-  ["الْكِتَابُ جَدِيدٌ", "Buku itu baharu"], ["الْفَصْلُ نَظِيفٌ", "Kelas itu bersih"], ["الْقَلَمُ أَزْرَقُ", "Pensel itu biru"], ["الْحَقِيبَةُ حَمْرَاءُ", "Beg itu merah"], ["الْوَلَدُ يَكْتُبُ", "Budak lelaki menulis"],
+  ["الْكِتَابُ جَدِيدٌ", "Buku itu baharu"], ["الْفَصْلُ نَظِيفٌ", "Kelas itu bersih"], ["الْقَلَمُ أَزْرَقُ", "Pen itu biru"], ["الْحَقِيبَةُ حَمْرَاءُ", "Beg itu merah"], ["الْوَلَدُ يَكْتُبُ", "Budak lelaki menulis"],
   ["الْبِنْتُ تَقْرَأُ", "Budak perempuan membaca"], ["الْمُعَلِّمُ فِي الْفَصْلِ", "Guru lelaki di kelas"], ["الْمُعَلِّمَةُ فِي الْمَدْرَسَةِ", "Guru perempuan di sekolah"], ["الْمَاءُ بَارِدٌ", "Air itu sejuk"], ["الطَّعَامُ لَذِيذٌ", "Makanan itu sedap"],
 ];
 
@@ -514,13 +523,13 @@ const ayatMudahQuestions = [
     fill(`Ayat ${arabic} bermaksud ________.`, meaning, "Baca ayat Arab dan pilih maksud.", `${arabic} bermaksud ${meaning}.`, [meaning])
   ),
   ...simpleSentences.map(([arabic, meaning]) =>
-    fill(`Bahasa Arab bagi ayat "${meaning}" ialah ________. Rujukan ayat: ${arabic}`, arabic, "Padankan ayat Melayu dengan Arab.", `Ayat Arab yang betul ialah ${arabic}.`, [arabic])
+    fill(`Bahasa Arab bagi ayat "${meaning}" ialah ________.`, arabic, "Ingat susunan ayat Arab dan tulis dari kanan ke kiri.", `Ayat Arab yang betul ialah ${arabic}.`, [arabic])
   ),
 ];
 
 const hiwarPairs = [
-  ["السَّلَامُ عَلَيْكُمْ", "Salam sejahtera ke atas kamu"], ["وَعَلَيْكُمُ السَّلَامُ", "Dan salam sejahtera ke atas kamu"], ["مَا اسْمُكَ؟", "Siapa nama kamu?"], ["اِسْمِي أَحْمَدُ", "Nama saya Ahmad"], ["اِسْمِي فَاطِمَةُ", "Nama saya Fatimah"],
-  ["كَيْفَ حَالُكَ؟", "Apa khabar kamu?"], ["أَنَا بِخَيْرٍ", "Saya baik"], ["شُكْرًا", "Terima kasih"], ["عَفْوًا", "Sama-sama"], ["صَبَاحُ الْخَيْرِ", "Selamat pagi"],
+  ["السَّلَامُ عَلَيْكُمْ", "Salam sejahtera ke atas kamu"], ["وَعَلَيْكُمُ السَّلَامُ", "Dan salam sejahtera ke atas kamu"], ["مَا اسْمُكَ؟", "Apakah nama kamu?"], ["اِسْمِي أَحْمَدُ", "Nama saya Ahmad"], ["اِسْمِي فَاطِمَةُ", "Nama saya Fatimah"],
+  ["كَيْفَ حَالُكَ؟", "Apa khabar kamu?"], ["أَنَا بِخَيْرٍ", "Saya sihat"], ["شُكْرًا", "Terima kasih"], ["عَفْوًا", "Sama-sama"], ["صَبَاحُ الْخَيْرِ", "Selamat pagi"],
   ["صَبَاحُ النُّورِ", "Selamat pagi juga"], ["مَسَاءُ الْخَيْرِ", "Selamat petang"], ["إِلَى اللِّقَاءِ", "Jumpa lagi"], ["أَيْنَ الْكِتَابُ؟", "Di manakah buku?"], ["الْكِتَابُ عَلَى الْمَكْتَبِ", "Buku di atas meja"],
   ["مَنْ هَذَا؟", "Siapakah ini?"], ["هَذَا أَبِي", "Ini ayah saya"], ["هَذِهِ أُمِّي", "Ini ibu saya"], ["مَاذَا تَفْعَلُ؟", "Apakah yang kamu buat?"], ["أَقْرَأُ كِتَابًا", "Saya membaca buku"],
   ["هَلْ أَنْتَ طَالِبٌ؟", "Adakah kamu murid lelaki?"], ["نَعَمْ", "Ya"], ["لَا", "Tidak"], ["تَفَضَّلْ", "Silakan"], ["أَنَا آسِفٌ", "Saya minta maaf"],
@@ -531,7 +540,7 @@ const hiwarQuestions = [
     fill(`Ungkapan ${arabic} bermaksud ________.`, meaning, "Padankan ungkapan dialog.", `${arabic} bermaksud ${meaning}.`, [meaning])
   ),
   ...hiwarPairs.map(([arabic, meaning]) =>
-    fill(`Bahasa Arab bagi "${meaning}" ialah ________. Contoh hiwar: ${arabic}`, arabic, "Pilih ungkapan Arab yang sesuai.", `Ungkapan Arab yang betul ialah ${arabic}.`, [arabic])
+    fill(`Bahasa Arab bagi "${meaning}" ialah ________.`, arabic, "Ingat ungkapan yang sesuai dengan situasi dialog.", `Ungkapan Arab yang betul ialah ${arabic}.`, [arabic])
   ),
 ];
 
@@ -557,10 +566,10 @@ const comprehension = [
   ["الْفَصْلُ نَظِيفٌ", "Apakah keadaan kelas?", "bersih", "نَظِيفٌ bermaksud bersih."],
   ["الْمَسْجِدُ قَرِيبٌ", "Apakah keadaan masjid?", "dekat", "قَرِيبٌ bermaksud dekat."],
   ["الْبَيْتُ بَعِيدٌ", "Apakah keadaan rumah?", "jauh", "بَعِيدٌ bermaksud jauh."],
-  ["عِنْدِي كِتَابٌ", "Apakah frasa Arab bagi saya ada buku?", "Saya ada buku.", "عِنْدِي كِتَابٌ bermaksud saya ada buku."],
-  ["عِنْدِي قَلَمٌ", "Apakah frasa Arab bagi saya ada pen?", "Saya ada pen.", "عِنْدِي قَلَمٌ bermaksud saya ada pen."],
-  ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah perkataan Arab bagi pemadam?", "pemadam", "مِمْحَاةٌ bermaksud pemadam."],
-  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah perkataan Arab bagi papan putih?", "papan putih", "سَبُّورَةٌ bermaksud papan putih."],
+  ["عِنْدِي كِتَابٌ", "Apakah maksud ayat ini?", "Saya ada buku", "عِنْدِي كِتَابٌ bermaksud saya ada buku."],
+  ["عِنْدِي قَلَمٌ", "Apakah maksud ayat ini?", "Saya ada pen", "عِنْدِي قَلَمٌ bermaksud saya ada pen."],
+  ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah benda yang ada di dalam beg?", "pemadam", "مِمْحَاةٌ bermaksud pemadam."],
+  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah benda yang ada di dalam kelas?", "papan tulis", "سَبُّورَةٌ bermaksud papan tulis."],
 ];
 
 const comprehensionFollowUps = [
@@ -570,12 +579,12 @@ const comprehensionFollowUps = [
   ["الْكَلْبُ كَبِيرٌ", "Apakah perkataan Arab bagi anjing?", "كَلْبٌ", "كَلْبٌ bermaksud anjing."],
   ["الْقَلَمُ أَزْرَقُ", "Apakah perkataan Arab bagi biru?", "أَزْرَقُ", "أَزْرَقُ bermaksud biru."],
   ["الْحَقِيبَةُ حَمْرَاءُ", "Apakah perkataan Arab bagi merah?", "حَمْرَاءُ", "حَمْرَاءُ bermaksud merah."],
-  ["أَنَا أَكْتُبُ بِالْقَلَمِ", "Apakah frasa Arab bagi dengan pen?", "بِالْقَلَمِ", "بِالْقَلَمِ bermaksud dengan pen."],
+  ["أَنَا أَكْتُبُ بِالْقَلَمِ", "Apakah frasa Arab yang bermaksud \"dengan pen\"?", "بِالْقَلَمِ", "بِالْقَلَمِ bermaksud dengan pen."],
   ["أَقْرَأُ كِتَابًا", "Apakah perkataan Arab bagi buku?", "كِتَابًا", "كِتَابًا bermaksud buku."],
   ["أَشْرَبُ مَاءً", "Apakah perkataan Arab bagi air?", "مَاءً", "مَاءً bermaksud air."],
   ["آكُلُ تُفَّاحًا", "Apakah perkataan Arab bagi epal?", "تُفَّاحًا", "تُفَّاحًا bermaksud epal."],
-  ["أَبِي فِي الْبَيْتِ", "Apakah perkataan Arab bagi ayah?", "أَبِي", "أَبِي bermaksud ayah saya."],
-  ["أُمِّي فِي الْمَطْبَخِ", "Apakah perkataan Arab bagi ibu?", "أُمِّي", "أُمِّي bermaksud ibu saya."],
+  ["أَبِي فِي الْبَيْتِ", "Apakah perkataan Arab bagi ayah saya?", "أَبِي", "أَبِي bermaksud ayah saya."],
+  ["أُمِّي فِي الْمَطْبَخِ", "Apakah perkataan Arab bagi ibu saya?", "أُمِّي", "أُمِّي bermaksud ibu saya."],
   ["الْمُعَلِّمُ فِي الْفَصْلِ", "Apakah perkataan Arab bagi guru lelaki?", "الْمُعَلِّمُ", "الْمُعَلِّمُ bermaksud guru lelaki."],
   ["الطَّالِبُ فِي الْمَدْرَسَةِ", "Apakah perkataan Arab bagi murid lelaki?", "الطَّالِبُ", "الطَّالِبُ bermaksud murid lelaki."],
   ["الْبِنْتُ تَقْرَأُ", "Apakah perkataan Arab bagi membaca?", "تَقْرَأُ", "تَقْرَأُ bermaksud membaca."],
@@ -585,10 +594,10 @@ const comprehensionFollowUps = [
   ["الْفَصْلُ نَظِيفٌ", "Apakah perkataan Arab bagi bersih?", "نَظِيفٌ", "نَظِيفٌ bermaksud bersih."],
   ["الْمَسْجِدُ قَرِيبٌ", "Apakah perkataan Arab bagi dekat?", "قَرِيبٌ", "قَرِيبٌ bermaksud dekat."],
   ["الْبَيْتُ بَعِيدٌ", "Apakah perkataan Arab bagi jauh?", "بَعِيدٌ", "بَعِيدٌ bermaksud jauh."],
-  ["عِنْدِي كِتَابٌ", "Apakah frasa Arab bagi saya ada buku?", "عِنْدِي كِتَابٌ", "عِنْدِي كِتَابٌ bermaksud saya ada buku."],
-  ["عِنْدِي قَلَمٌ", "Apakah frasa Arab bagi saya ada pen?", "عِنْدِي قَلَمٌ", "عِنْدِي قَلَمٌ bermaksud saya ada pen."],
+  ["عِنْدِي كِتَابٌ", "Apakah perkataan Arab bagi buku?", "كِتَابٌ", "كِتَابٌ bermaksud buku."],
+  ["عِنْدِي قَلَمٌ", "Apakah perkataan Arab bagi pen?", "قَلَمٌ", "قَلَمٌ bermaksud pen."],
   ["فِي حَقِيبَتِي مِمْحَاةٌ", "Apakah perkataan Arab bagi pemadam?", "مِمْحَاةٌ", "مِمْحَاةٌ bermaksud pemadam."],
-  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah perkataan Arab bagi papan putih?", "سَبُّورَةٌ", "سَبُّورَةٌ bermaksud papan putih."],
+  ["فِي فَصْلِي سَبُّورَةٌ", "Apakah perkataan Arab bagi papan tulis?", "سَبُّورَةٌ", "سَبُّورَةٌ bermaksud papan tulis."],
 ];
 
 const kefahamanQuestions = [
@@ -596,11 +605,18 @@ const kefahamanQuestions = [
     fill(`${arabic}. ${question} ________.`, answer, "Baca ayat Arab dan cari maklumat penting.", explanation)
   ),
   ...comprehensionFollowUps.map(([arabic, question, answer, explanation]) =>
-    fill(`Baca ayat ${arabic}. ${question} ________.`, answer, "Cari perkataan Arab yang tepat dalam ayat.", explanation)
+    fill(
+      `Baca ayat ${arabic}. ${question
+        .replace(/^Apakah perkataan Arab (?:bagi|yang bermaksud\s+)["“]?(.+?)["”]?\?$/u, 'Salin perkataan Arab dalam ayat yang bermaksud "$1".')
+        .replace(/^Apakah frasa Arab (?:bagi|yang bermaksud\s+)["“]?(.+?)["”]?\?$/u, 'Salin frasa Arab dalam ayat yang bermaksud "$1".')} ________.`,
+      answer,
+      "Cari dan salin perkataan atau frasa Arab yang menjadi bukti dalam ayat.",
+      explanation
+    )
   ),
 ];
 
-export const arabSubject = {
+const rawArabSubject = {
   id: "arab",
   title: "Bahasa Arab Tahun 2",
   short: "Arab",
@@ -669,5 +685,113 @@ export const arabSubject = {
     },
   ],
 };
+
+const ARAB_TOPIC_ENRICHMENTS = Object.freeze({
+  huruf_hijaiyah: {
+    note: "Murid mengenal, menyebut dan membezakan huruf hijaiyah serta tanda baris asas melalui bentuk, titik dan arah bacaan.",
+    learningObjectives: [
+      "Mengenal dan menyebut huruf hijaiyah dengan tepat.",
+      "Membezakan huruf berdasarkan bentuk, bilangan titik dan kedudukan titik.",
+      "Mengenal fathah, kasrah, dammah dan arah bacaan tulisan Arab."
+    ]
+  },
+  mufradat: {
+    note: "Murid membaca, menyebut dan memadankan kosa kata asas berkaitan sekolah, rumah, makanan, masa, sifat dan orang.",
+    learningObjectives: [
+      "Menyebut kosa kata asas dengan panduan Rumi yang sesuai.",
+      "Memadankan perkataan Arab dengan maksud Bahasa Melayu yang tepat.",
+      "Membezakan kata tunjuk maskulin هَذَا dan feminin هَذِهِ."
+    ]
+  },
+  nombor_arab: {
+    note: "Murid mengenal simbol, membaca perkataan dan menggunakan urutan nombor Arab ١ hingga ٢٠.",
+    learningObjectives: [
+      "Memadankan simbol nombor Arab dengan nilai Bahasa Melayu.",
+      "Membaca perkataan nombor Arab satu hingga dua puluh.",
+      "Melengkapkan urutan nombor sebelum dan selepas."
+    ]
+  },
+  warna_arab: {
+    note: "Murid menyebut, memahami dan menggunakan kosa kata warna asas Bahasa Arab dalam konteks mudah.",
+    learningObjectives: [
+      "Memadankan perkataan warna Arab dengan maksudnya.",
+      "Menulis perkataan warna Arab berdasarkan warna yang diberi.",
+      "Menggunakan petunjuk objek harian untuk mengenal warna."
+    ]
+  },
+  keluarga: {
+    note: "Murid membaca dan menggunakan kosa kata ahli keluarga dengan perbezaan jantina dan milikan yang jelas.",
+    learningObjectives: [
+      "Memadankan kosa kata ahli keluarga Arab dengan maksud Bahasa Melayu.",
+      "Membezakan istilah lelaki, perempuan dan bentuk milikan saya.",
+      "Menulis kosa kata keluarga dalam tulisan Arab."
+    ]
+  },
+  haiwan_arab: {
+    note: "Murid menyebut, memahami dan menulis nama haiwan biasa dalam Bahasa Arab.",
+    learningObjectives: [
+      "Mengenal nama haiwan melalui perkataan Arab.",
+      "Memadankan nama haiwan Arab dan Bahasa Melayu.",
+      "Menulis nama haiwan yang diberi dalam tulisan Arab."
+    ]
+  },
+  anggota_badan: {
+    note: "Murid menyebut, memahami dan menulis kosa kata anggota badan termasuk bentuk milikan saya.",
+    learningObjectives: [
+      "Memadankan perkataan anggota badan Arab dengan maksud tepat.",
+      "Membezakan kosa kata kaki, tapak kaki dan jantung.",
+      "Mengenal bentuk milikan seperti رَأْسِي dan يَدِي."
+    ]
+  },
+  ayat_mudah_arab: {
+    note: "Murid membaca, memahami dan membina semula ayat mudah tentang diri, keluarga, sekolah, rumah dan benda.",
+    learningObjectives: [
+      "Menterjemah ayat mudah Arab kepada Bahasa Melayu.",
+      "Memadankan ayat Bahasa Melayu dengan ayat Arab tanpa petunjuk jawapan langsung.",
+      "Membaca ayat mengikut susunan perkataan dari kanan ke kiri."
+    ]
+  },
+  hiwar: {
+    note: "Murid memahami dan menggunakan ungkapan dialog asas untuk salam, nama, khabar, pertanyaan dan respons sopan.",
+    learningObjectives: [
+      "Memadankan ungkapan hiwar dengan maksud yang tepat.",
+      "Memilih ungkapan Arab yang sesuai bagi situasi perbualan.",
+      "Menyebut soalan dan respons dengan intonasi yang jelas."
+    ]
+  },
+  kefahaman_arab: {
+    note: "Murid memahami ayat ringkas, mengenal maklumat tersurat dan mengekstrak perkataan Arab yang menjadi bukti jawapan.",
+    learningObjectives: [
+      "Mengenal orang, benda, tempat, warna, perbuatan dan keadaan dalam ayat.",
+      "Menjawab soalan berdasarkan maklumat yang dinyatakan dalam ayat.",
+      "Mengenal pasti perkataan atau frasa Arab yang menyokong jawapan."
+    ]
+  }
+});
+
+const ARAB_QUESTION_OVERRIDES = Object.freeze({
+  "ARAB-MUFRADAT-002": { accepted: ["pen", "pensel"] },
+  "ARAB-MUFRADAT-012": { accepted: ["papan tulis", "papan putih", "papan hitam"] },
+  "ARAB-MUFRADAT-047": { accepted: ["ini (maskulin)", "ini", "ini untuk lelaki", "ini untuk kata nama maskulin"] },
+  "ARAB-MUFRADAT-048": { accepted: ["ini (feminin)", "ini", "ini untuk perempuan", "ini untuk kata nama feminin"] },
+  "ARAB-KELUARGA-003": { accepted: ["saudara lelaki", "abang", "adik lelaki"] },
+  "ARAB-KELUARGA-004": { accepted: ["saudara perempuan", "kakak", "adik perempuan"] },
+  "ARAB-KELUARGA-013": { accepted: ["saudara lelaki saya", "abang saya", "adik lelaki saya"] },
+  "ARAB-KELUARGA-014": { accepted: ["saudara perempuan saya", "kakak saya", "adik perempuan saya"] },
+  "ARAB-KELUARGA-024": { accepted: ["kerabat lelaki", "saudara-mara lelaki", "saudara lelaki"] },
+  "ARAB-KELUARGA-025": { accepted: ["kerabat perempuan", "saudara-mara perempuan", "saudara perempuan"] },
+  "ARAB-ANGGOTA_BADAN-015": { accepted: ["jantung", "hati"] },
+  "ARAB-AYAT_MUDAH_ARAB-002": { accepted: ["Ini pen", "Ini pensel"] },
+  "ARAB-AYAT_MUDAH_ARAB-018": { accepted: ["Pen itu biru", "Pensel itu biru"] },
+  "ARAB-HIWAR-003": { accepted: ["Apakah nama kamu?", "Siapa nama kamu?"] },
+  "ARAB-HIWAR-007": { accepted: ["Saya sihat", "Saya baik", "Saya dalam keadaan baik"] },
+  "ARAB-KEFAHAMAN_ARAB-007": { accepted: ["pen", "pensel"] },
+  "ARAB-KEFAHAMAN_ARAB-025": { accepted: ["papan tulis", "papan putih"] }
+});
+
+export const arabSubject = normalizeArabSubject(rawArabSubject, {
+  topicEnrichments: ARAB_TOPIC_ENRICHMENTS,
+  questionOverrides: ARAB_QUESTION_OVERRIDES
+});
 
 export default arabSubject;

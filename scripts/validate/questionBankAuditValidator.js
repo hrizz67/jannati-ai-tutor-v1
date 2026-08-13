@@ -18,17 +18,6 @@ async function loadAuditEngine() {
   return import(`${pathToFileURL(modulePath).href}?v=${Date.now()}`);
 }
 
-function makeTopRepeatedPatterns(issues = []) {
-  const map = new Map();
-  for (const issue of issues) {
-    const key = `${issue.subject}::${issue.topic}::${issue.issueType}`;
-    const entry = map.get(key) || { subject: issue.subject, topic: issue.topic, issueType: issue.issueType, count: 0 };
-    entry.count += 1;
-    map.set(key, entry);
-  }
-  return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 20);
-}
-
 function issueToSummary(issue = {}) {
   return {
     questionId: issue.questionId,
@@ -48,13 +37,8 @@ async function main() {
   const result = audit.auditQuestionBank(subjects);
   const issues = Array.isArray(result.issues) ? result.issues : [];
   const stats = result.statistics || {};
-  const issuesBySubject = {};
-  const issuesByCategory = {};
-
-  for (const issue of issues) {
-    issuesBySubject[issue.subject] = (issuesBySubject[issue.subject] || 0) + 1;
-    issuesByCategory[issue.issueType] = (issuesByCategory[issue.issueType] || 0) + 1;
-  }
+  const issuesBySubject = { ...(stats.issuesBySubject || {}) };
+  const issuesByCategory = { ...(stats.issuesByCategory || {}) };
 
   const report = {
     generatedAt: new Date().toISOString(),
@@ -63,7 +47,7 @@ async function main() {
       averageQualityScore: stats.averageQualityScore || 0,
       issuesBySubject,
       issuesByCategory,
-      topRepeatedPatterns: makeTopRepeatedPatterns(issues),
+      topRepeatedPatterns: stats.topRepeatedPatterns || [],
       criticalQuestions: (stats.criticalQuestions || []).map(issueToSummary),
       severityCounts: stats.severityCounts || { Critical: 0, High: 0, Medium: 0, Low: 0 }
     },
@@ -82,7 +66,7 @@ async function main() {
     .join('\n') || '| None | 0 |';
 
   const topPatternRows = (report.summary.topRepeatedPatterns || []).length
-    ? report.summary.topRepeatedPatterns.map(item => `- ${item.subject} / ${item.topic} / ${item.issueType}: ${item.count}`).join('\n')
+    ? report.summary.topRepeatedPatterns.map(item => `- \`${item.pattern}\`: ${item.count}`).join('\n')
     : '- None found.';
 
   const criticalList = (report.summary.criticalQuestions || [])
@@ -90,7 +74,7 @@ async function main() {
     .map(item => `- [${item.subject} / ${item.topic}] ${item.questionId} - ${item.issueType}: ${item.explanation} (${item.suggestion})`)
     .join('\n') || '- None found.';
 
-  const doc = `# Question Bank Audit Engine v1 Report\n\n## Summary\n\n- Total questions scanned: ${report.summary.totalQuestionsScanned}\n- Average quality score: ${report.summary.averageQualityScore}\n- Critical: ${(report.summary.severityCounts || {}).Critical || 0}\n- High: ${(report.summary.severityCounts || {}).High || 0}\n- Medium: ${(report.summary.severityCounts || {}).Medium || 0}\n- Low: ${(report.summary.severityCounts || {}).Low || 0}\n\n## Issues by Subject\n\n| Subject | Issue Count |\n| --- | ---: |\n${subjectRows}\n\n## Issues by Category\n\n| Category | Issue Count |\n| --- | ---: |\n${categoryRows}\n\n## Top Repeated Patterns\n\n${topPatternRows}\n\n## Critical Questions\n\n${criticalList}\n\n## Audit Readiness\n\n${(report.summary.severityCounts || {}).Critical === 0 && (report.summary.severityCounts || {}).High === 0 ? 'READY FOR EXPANSION' : 'NOT READY'}\n`;
+  const doc = `# Question Bank Audit Engine v1 Report\n\n## Summary\n\n- Total questions scanned: ${report.summary.totalQuestionsScanned}\n- Average quality score: ${report.summary.averageQualityScore}\n- Critical: ${(report.summary.severityCounts || {}).Critical || 0}\n- High: ${(report.summary.severityCounts || {}).High || 0}\n- Medium: ${(report.summary.severityCounts || {}).Medium || 0}\n- Low: ${(report.summary.severityCounts || {}).Low || 0}\n\n## Issues by Subject\n\n| Subject | Issue Count |\n| --- | ---: |\n${subjectRows}\n\n## Issues by Category\n\n| Category | Issue Count |\n| --- | ---: |\n${categoryRows}\n\n## Top Repeated Pattern Signals\n\nThese counts are diagnostic signals, not audit findings by themselves.\n\n${topPatternRows}\n\n## Critical Questions\n\n${criticalList}\n\n## Audit Readiness\n\n${(report.summary.severityCounts || {}).Critical === 0 && (report.summary.severityCounts || {}).High === 0 ? 'READY FOR EXPANSION' : 'NOT READY'}\n`;
 
   await fs.writeFile(REPORT_JSON, JSON.stringify(report, null, 2), 'utf8');
   await fs.writeFile(REPORT_DOC, doc, 'utf8');
