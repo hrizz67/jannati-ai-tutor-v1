@@ -215,24 +215,31 @@ const jawiLetters = [
 ];
 
 const jawiQuestions = [
-  ...jawiLetters.slice(0, 35).map(([letter, name]) =>
-    buildJawiQuestionMeta(buildLetterQuestion(letter, name))
-  ),
-  ...jawiLetters.slice(35).map(([q, answer, hint, explanation]) => buildJawiQuestionMeta({
-    question: q,
-    answer,
-    acceptedAnswers: [answer],
-    hint,
-    pronunciationHint: answer === "kanan" ? "ka-nan" : `${answer}`,
-    explanation,
-    commonMistake: answer === "kanan"
-      ? "Jangan baca Jawi dari kiri ke kanan."
-      : "Jangan tertukar bentuk huruf Jawi.",
-    memoryTip: answer === "kanan"
-      ? "Ingat: Jawi bergerak dari kanan ke kiri."
-      : `Ingat bentuk huruf ${answer}.`,
-    difficulty: "easy",
-    helper: answer === "kanan" ? "direction" : undefined,
+  ...jawiLetters.slice(0, 35).map(([letter, name], index) => ({
+    ...buildJawiQuestionMeta(buildLetterQuestion(letter, name)),
+    difficulty: index < 20 ? 'mudah' : index < 30 ? 'sederhana' : 'sukar',
+    cognitiveLevel: index < 20 ? 'mengingat' : index < 30 ? 'memahami' : 'mengaplikasi',
+    questionType: 'short_answer'
+  })),
+  ...jawiLetters.slice(35).map(([q, answer, hint, explanation], index) => ({
+    ...buildJawiQuestionMeta({
+      question: q,
+      answer,
+      acceptedAnswers: [answer],
+      hint,
+      pronunciationHint: answer === "kanan" ? "ka-nan" : `${answer}`,
+      explanation,
+      commonMistake: answer === "kanan"
+        ? "Jangan baca Jawi dari kiri ke kanan."
+        : "Jangan tertukar bentuk huruf Jawi.",
+      memoryTip: answer === "kanan"
+        ? "Ingat: Jawi bergerak dari kanan ke kiri."
+        : `Ingat bentuk huruf ${answer}.`,
+      difficulty: index < 8 ? 'sederhana' : 'sukar',
+      helper: answer === "kanan" ? "direction" : undefined,
+    }),
+    cognitiveLevel: index < 8 ? 'memahami' : 'mengaplikasi',
+    questionType: 'fill_blank'
   })),
 ];
 

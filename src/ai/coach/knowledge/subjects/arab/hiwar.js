@@ -13,7 +13,8 @@ const hiwarKnowledge = createKnowledgePack({
     'Hiwar ialah perbualan ringkas antara dua orang dalam bahasa Arab.',
     'Guru boleh menunjukkan siapa bercakap, apa yang ditanya, dan apa jawapannya.',
     'Murid perlu membaca dialog dengan intonasi yang betul dan memahami maknanya.',
-    'Latihan ini membantu murid bercakap secara mudah dalam situasi harian.'
+    'Latihan ini membantu murid bercakap secara mudah dalam situasi harian.',
+    'Dalam jawapan ringkas, نَعَمْ bermaksud ya dan لَا bermaksud tidak.'
   ],
   simpleExplanation: 'Hiwar ialah perbualan ringkas antara dua orang dalam bahasa Arab.',
   explanations: [

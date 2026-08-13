@@ -38,6 +38,29 @@ export default createKnowledgePack({
     "زرافة",
     "سلحفاة"
   ],
+  "wordMeaning": [
+    "قِطٌّ (qitta) — kucing",
+    "كَلْبٌ (kalb) — anjing",
+    "سَمَكٌ (samakah) — ikan",
+    "طَائِرٌ (tayr) — burung",
+    "أَسَدٌ (asad) — singa",
+    "فِيلٌ (fil) — gajah",
+    "أَرْنَبٌ (arnab) — arnab",
+    "دَجَاجَةٌ (dajajah) — ayam",
+    "بَقَرَةٌ (baqarah) — lembu",
+    "حِصَانٌ (husan) — kuda",
+    "مَاعِزٌ — kambing",
+    "نَمِرٌ — harimau",
+    "قِرْدٌ — monyet",
+    "بَطَّةٌ — itik"
+  ],
+  "exampleSentences": [
+    "هَذَا قِطٌّ — Ini seekor kucing.",
+    "هَذَا كَلْبٌ — Ini seekor anjing.",
+    "هَذَا أَرْنَبٌ — Ini seekor arnab.",
+    "هَذَا فِيلٌ — Ini seekor gajah.",
+    "هَذَا حِصَانٌ — Ini seekor kuda."
+  ],
   "tips": [
     "Baca soalan tentang Haiwan dengan teliti.",
     "Cari kata kunci yang berkaitan dengan topik ini.",
@@ -120,7 +143,20 @@ export default createKnowledgePack({
     "dajajah",
     "baqarah",
     "husan",
-    "kosa kata"
+    "kosa kata",
+    "kucing",
+    "anjing",
+    "ikan",
+    "burung",
+    "singa",
+    "gajah",
+    "ayam",
+    "lembu",
+    "kuda",
+    "kambing",
+    "harimau",
+    "monyet",
+    "itik"
   ],
   "questionPatterns": [
     "Apakah yang berkaitan dengan Haiwan?",

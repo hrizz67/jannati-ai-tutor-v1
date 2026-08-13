@@ -3498,8 +3498,8 @@ h2:hover > .icon-glyph {
   }
 
   .subject-switch-arrow {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .dashboard-disclosure > summary {
@@ -4523,6 +4523,41 @@ input:focus {
   --jannati-mobile-browser-bottom-clearance: calc(env(safe-area-inset-bottom, 0px) + 88px);
   --jannati-mobile-bottom-clearance: var(--jannati-mobile-browser-bottom-clearance);
   --jannati-mobile-fab-bottom: calc(env(safe-area-inset-bottom, 0px) + 92px);
+}
+
+.connectivity-notice {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  left: 50%;
+  z-index: var(--z-toast);
+  width: max-content;
+  max-width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 24px);
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(98, 66, 8, 0.24);
+  border-radius: 14px;
+  background: #fff4ce;
+  color: #493000;
+  box-shadow: 0 10px 28px rgba(29, 45, 37, 0.18);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.connectivity-notice-restored {
+  border-color: rgba(15, 138, 67, 0.24);
+  background: #e9f9ef;
+  color: #075c2d;
+}
+
+@media (max-width: 480px) {
+  .connectivity-notice {
+    width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 20px);
+    padding-inline: 12px;
+    font-size: 0.82rem;
+  }
 }
 
 .app-page-shell {
@@ -5677,7 +5712,7 @@ input:focus {
 }
 
 .header-account-action {
-  min-height: 38px;
+  min-height: 44px;
   padding: 8px 12px;
   white-space: nowrap;
 }

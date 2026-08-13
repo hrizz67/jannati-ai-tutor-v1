@@ -178,7 +178,9 @@ export function recordAnswer(profile = {}, {
   topicId,
   correct,
   difficulty = 'medium',
-  timeSpent = 0
+  timeSpent = 0,
+  usedHint = false,
+  usedExplain = false
 } = {}) {
   if (!subjectId || !topicId) {
     return profile;
@@ -203,6 +205,8 @@ export function recordAnswer(profile = {}, {
   }
 
   record.totalTime += safeTime;
+  record.usedHintCount = Math.max(0, toNumber(record.usedHintCount ?? record.hintsUsed, 0)) + (usedHint ? 1 : 0);
+  record.usedExplainCount = Math.max(0, toNumber(record.usedExplainCount ?? record.explanationsUsed, 0)) + (usedExplain ? 1 : 0);
   record.averageTime = record.total ? Math.round(record.totalTime / record.total) : 0;
   record.accuracy = calculateAccuracy(record);
   record.xp = Math.max(0, (record.xp || 0) + weightedXP);

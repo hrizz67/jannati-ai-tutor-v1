@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { speak, supportsVoice } from '../ai/index.js';
+import { speak } from '../ai/voice/voiceEngine.js';
+import { supportsVoice } from '../ai/voice/voiceCapability.js';
 import GameBadge from './GameBadge.jsx';
 import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
 

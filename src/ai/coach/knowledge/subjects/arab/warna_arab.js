@@ -38,6 +38,26 @@ export default createKnowledgePack({
     "لامع",
     "هادئ"
   ],
+  "wordMeaning": [
+    "أَحْمَرُ — merah",
+    "أَزْرَقُ — biru",
+    "أَصْفَرُ — kuning",
+    "أَخْضَرُ — hijau",
+    "أَبْيَضُ — putih",
+    "أَسْوَدُ — hitam",
+    "بُنِّيٌّ — coklat",
+    "بُرْتُقَالِيٌّ — jingga",
+    "وَرْدِيٌّ — merah jambu",
+    "رَمَادِيٌّ — kelabu",
+    "بَنَفْسَجِيٌّ — ungu"
+  ],
+  "exampleSentences": [
+    "التُّفَّاحُ أَحْمَرُ — Epal itu berwarna merah.",
+    "السَّمَاءُ زَرْقَاءُ — Langit itu berwarna biru.",
+    "الْمَوْزُ أَصْفَرُ — Pisang itu berwarna kuning.",
+    "الْعُشْبُ أَخْضَرُ — Rumput itu berwarna hijau.",
+    "الْحَلِيبُ أَبْيَضُ — Susu itu berwarna putih."
+  ],
   "tips": [
     "Baca soalan tentang Warna dengan teliti.",
     "Cari kata kunci yang berkaitan dengan topik ini.",

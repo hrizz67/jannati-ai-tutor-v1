@@ -38,6 +38,29 @@ export default createKnowledgePack({
     "ركبة",
     "لسان"
   ],
+  "wordMeaning": [
+    "رَأْسٌ (rās) — kepala",
+    "شَعْرٌ — rambut",
+    "وَجْهٌ (wajh) — muka",
+    "عَيْنٌ (ain) — mata",
+    "أُذُنٌ (udhun) — telinga",
+    "أَنْفٌ (anf) — hidung",
+    "فَمٌ (fam) — mulut",
+    "لِسَانٌ — lidah",
+    "سِنٌّ — gigi",
+    "يَدٌ (yad) — tangan",
+    "رِجْلٌ (rijl) — kaki",
+    "إِصْبَعٌ — jari",
+    "بَطْنٌ — perut",
+    "ظَهْرٌ — belakang"
+  ],
+  "exampleSentences": [
+    "هَذَا رَأْسِي — Ini kepala saya.",
+    "هَذِهِ عَيْنِي — Ini mata saya.",
+    "هَذِهِ يَدِي — Ini tangan saya.",
+    "هَذِهِ رِجْلِي — Ini kaki saya.",
+    "هَذَا فَمِي — Ini mulut saya."
+  ],
   "tips": [
     "Baca soalan tentang Anggota Badan dengan teliti.",
     "Cari kata kunci yang berkaitan dengan topik ini.",
@@ -120,7 +143,21 @@ export default createKnowledgePack({
     "sha",
     "dada",
     "bahagian badan",
-    "tubuh"
+    "tubuh",
+    "kepala",
+    "rambut",
+    "muka",
+    "mata",
+    "telinga",
+    "hidung",
+    "mulut",
+    "lidah",
+    "gigi",
+    "tangan",
+    "kaki",
+    "jari",
+    "perut",
+    "belakang"
   ],
   "questionPatterns": [
     "Apakah yang berkaitan dengan Anggota Badan?",
