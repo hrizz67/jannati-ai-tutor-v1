@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.0 - 2026-08-13
+## 3.3.1 - 2026-08-13
 
 ### Release controls
 

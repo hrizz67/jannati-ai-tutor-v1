@@ -352,6 +352,7 @@ export function recordQuestionResult(profile, result = {}) {
 
   applyLifetimeTotals(nextProfile, { correct: safeCorrect, timeSpent });
   applySubjectTotals(nextProfile, subjectId, safeCorrect);
+  const topicMastery = nextProfile.topics?.[subjectId]?.[topicId] || {};
 
   nextProfile.learningHistory = [
     {
@@ -388,7 +389,6 @@ export function recordQuestionResult(profile, result = {}) {
 
   updateCurrentSession(nextProfile, { questionId, subjectId, topicId, correct: safeCorrect }, activeSessionId);
 
-  const topicMastery = nextProfile.topics?.[subjectId]?.[topicId] || {};
   nextProfile.correctQuestions = Number.isFinite(nextProfile.correctQuestions) ? nextProfile.correctQuestions : 0;
   nextProfile.totalQuestions = Number.isFinite(nextProfile.totalQuestions) ? nextProfile.totalQuestions : 0;
   const savedProfile = saveAdaptiveProfile(nextProfile);
