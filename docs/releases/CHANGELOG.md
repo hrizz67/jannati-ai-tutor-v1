@@ -1,13 +1,13 @@
 # Changelog
 
-## 3.3.2 - 2026-08-13
+## 3.3.3 - 2026-08-14
 
-### Fixed
+### Infrastructure and CI
 
-- Isolated resume state by mode, subject and topic, including subject-specific Pentaksiran Sumatif sessions.
-- Repaired the Sambung action and preserved the original question order when resuming.
-- Improved semantic line wrapping for question prompts and clarified ambiguous Bahasa Melayu items.
-- Constrained automatic Bahasa Melayu person-role repair to valid person names and roles.
+- Upgraded CI and tagged deployment from Node.js 20 to Node.js 24.
+- Upgraded `actions/checkout`, `actions/setup-node`, `actions/upload-artifact`, and `peaceiris/actions-gh-pages` to Node 24-compatible releases.
+- Added release-pipeline regression gates for the required runtime and action generations.
+- Declared the source ESM boundary explicitly and renamed the Vite configuration to `vite.config.mjs` to remove module-loader warnings.
 
 ### Release controls
 

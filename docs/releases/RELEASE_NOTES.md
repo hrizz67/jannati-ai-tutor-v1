@@ -1,15 +1,8 @@
-# Jannati AI Tutor 3.3.2 Release Notes
+# Jannati AI Tutor 3.3.3 Release Notes
 
 Status: stable
-Tag: v3.3.2
-Build date: 2026-08-13T18:13:32.262Z
-
-## Release Highlights
-
-- Resume latihan, latihan AI, Pentaksiran Sumatif dan empat modul komunikasi kini disimpan dalam slot berasingan supaya sesi tidak bercampur.
-- Butang Sambung memulihkan nombor, susunan dan identiti soalan yang sama selepas murid kembali ke Papan Utama.
-- Soalan berbilang ayat dipaparkan mengikut sempadan makna yang sesuai tanpa memecahkan masa seperti 3:30.
-- Ayat Kata Nama Am yang kabur diperjelas dan pembaikan ayat automatik tidak lagi menukar frasa biasa menjadi nama orang.
+Tag: v3.3.3
+Build date: 2026-08-14T10:59:33.578Z
 
 ## Release Readiness
 
@@ -17,6 +10,13 @@ Build date: 2026-08-13T18:13:32.262Z
 - Question-bank regression and release-pipeline audits run before the main validator suite.
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
+
+## Infrastructure Quality
+
+- CI and tagged deployment now validate and build on Node.js 24.
+- GitHub Actions were upgraded to Node 24-compatible generations for checkout, dependency setup, QA artifact upload, and GitHub Pages publication.
+- Source modules now have an explicit ESM boundary, while the Vite configuration uses the `.mjs` extension; Node and Vite validation logs are clean.
+- Release-pipeline regression checks prevent the retired action and runtime versions from being restored accidentally.
 
 ## Content Quality
 

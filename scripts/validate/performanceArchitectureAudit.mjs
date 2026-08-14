@@ -19,7 +19,7 @@ const [app, voiceButton, supabaseClient, main, viteConfig, packageSource] = awai
   read('src/components/VoiceButton.jsx'),
   read('src/services/supabaseClient.js'),
   read('src/main.jsx'),
-  read('vite.config.js'),
+  read('vite.config.mjs'),
   read('package.json')
 ]);
 const packageJson = JSON.parse(packageSource);
