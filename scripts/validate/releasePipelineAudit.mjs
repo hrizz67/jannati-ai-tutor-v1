@@ -33,6 +33,14 @@ assert.equal(packageJson.scripts?.release, 'node scripts/release/prepareRelease.
 assert.equal(packageJson.scripts?.['release:check'], 'node scripts/release/verifyReleaseVersion.js');
 assert.equal(packageJson.scripts?.['release:build-check'], 'node scripts/release/verifyBuildOutput.js');
 assert.equal(packageJson.scripts?.['release:smoke'], 'node scripts/release/smokeTestDeployment.mjs');
+assert.match(ciWorkflow, /actions\/checkout@v7/, 'CI must use the current Node 24 checkout action.');
+assert.match(deployWorkflow, /actions\/checkout@v7/, 'Deploy must use the current Node 24 checkout action.');
+assert.match(ciWorkflow, /actions\/setup-node@v7/, 'CI must use the current setup-node action.');
+assert.match(deployWorkflow, /actions\/setup-node@v7/, 'Deploy must use the current setup-node action.');
+assert.match(ciWorkflow, /node-version:\s*24/, 'CI must validate and build on Node.js 24.');
+assert.match(deployWorkflow, /node-version:\s*24/, 'Deploy must validate and build on Node.js 24.');
+assert.match(ciWorkflow, /actions\/upload-artifact@v7/, 'CI must upload QA reports with the current artifact action.');
+assert.match(deployWorkflow, /peaceiris\/actions-gh-pages@v4/, 'Deploy must use the Node 24 GitHub Pages action.');
 assert.match(deployWorkflow, /tags:\s*(?:\r?\n\s*-\s*)?['"]v\*['"]/m, 'Deploy workflow must be triggered by version tags.');
 assert.match(deployWorkflow, /release:check[^\n]*--tag[^\n]*--artifacts/, 'Deploy must verify tag and generated artifacts.');
 assert.ok(

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const config = fs.readFileSync('vite.config.js', 'utf8');
+const config = fs.readFileSync('vite.config.mjs', 'utf8');
 const packageJson = fs.readFileSync('package.json', 'utf8');
 const lockFiles = ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'].filter(file => fs.existsSync(file));
 

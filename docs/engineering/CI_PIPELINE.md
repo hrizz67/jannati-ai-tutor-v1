@@ -8,7 +8,7 @@ File: `.github/workflows/ci.yml`
 
 CI runs on pushes and pull requests, excluding generated `gh-pages` updates. It uses non-production Supabase placeholders strictly for compile-time validation and:
 
-1. Installs the lockfile exactly with `npm ci` on Node.js 20.
+1. Installs the lockfile exactly with `npm ci` on Node.js 24.
 2. Verifies that package and lockfile versions agree.
 3. Runs the full validation suite.
 4. Builds the production application.
