@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.3.4 Release Notes
+# Jannati AI Tutor 3.3.5 Release Notes
 
 Status: stable
-Tag: v3.3.4
-Build date: 2026-08-14T11:51:15.523Z
+Tag: v3.3.5
+Build date: 2026-08-14T13:16:49.957Z
 
 ## Release Readiness
 
@@ -11,13 +11,13 @@ Build date: 2026-08-14T11:51:15.523Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Learning Sync and Profile Safety
+## Multi-device Sync Hotfix
 
-- Desktop and mobile now merge learning data by child profile instead of allowing a stale whole-account snapshot to replace unrelated profile progress.
-- Autosave waits for cloud hydration, persists pending offline changes, retries after reconnect or focus, and refreshes the active child snapshot before upload.
-- Deleted child profiles remain deleted across devices; both normal and original backup snapshots are removed and protected by deletion tombstones.
-- Cloud pulls update the live profile list and active learning state without overwriting newer answers created while an upload is in flight.
-- A failed initial cloud request no longer causes unchanged local data to be pushed over the cloud when connectivity returns.
+- Quiz answers now mark the active child profile as pending immediately and use a persistent autosave timer, so rapid React state updates cannot cancel the final cloud write.
+- Devices that remain open check for newer cloud learning data every five seconds and still refresh immediately after focus, visibility, or network recovery.
+- The dashboard and quiz now distinguish local-device storage from authenticated Cloud sync and provide a direct sign-in action when Cloud is inactive.
+- Signing in no longer clears existing local learning. First-time and returning account flows merge meaningful local progress into the selected account before Cloud hydration.
+- All Cloud reads and writes remain scoped to the authenticated account, while child-profile snapshots remain isolated during merge, retry, and restore.
 
 ## Content Quality
 

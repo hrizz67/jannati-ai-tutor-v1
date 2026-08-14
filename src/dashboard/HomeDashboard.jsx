@@ -109,6 +109,19 @@ function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild
   );
 }
 
+function getCloudSyncPresentation(hasAccountSession, status) {
+  if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.' };
+  return {
+    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan sedang dihantar ke cloud.' },
+    saved: { label: 'Cloud disimpan', tone: 'saved', detail: 'Data peranti ini sudah dihantar ke cloud.' },
+    loaded: { label: 'Cloud dikemas kini', tone: 'saved', detail: 'Perubahan daripada peranti lain sudah dimuatkan.' },
+    empty: { label: 'Cloud baharu', tone: 'syncing', detail: 'Data pertama sedang disediakan untuk akaun ini.' },
+    offline: { label: 'Menunggu internet', tone: 'offline', detail: 'Data kekal pada peranti dan akan dicuba semula.' },
+    error: { label: 'Sync gagal', tone: 'error', detail: 'Tekan untuk cuba sync semula.' },
+    idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync cloud aktif untuk akaun ini.' }
+  }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync cloud aktif untuk akaun ini.' };
+}
+
 export default function HomeDashboard(props) {
   const {
     profile,
@@ -165,6 +178,7 @@ export default function HomeDashboard(props) {
   const studentName = getStudentDisplayName([profile, adaptiveProfile], 'Murid');
   const isPremiumAccount = Boolean(accessProfile?.isPremium ?? profile?.isPremium);
   const accessLabel = accessProfile?.accessLabel || profile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Akses Free');
+  const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus);
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
@@ -383,8 +397,9 @@ export default function HomeDashboard(props) {
               <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
                 <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
               </span>
+              <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout}>{cloudSyncPresentation.label}</button>
               <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
-              <button type="button" className="secondary header-account-action" onClick={onLogout}>{hasAccountSession ? 'Log keluar' : 'Tukar Akaun'}</button>
+              <button type="button" className="secondary header-account-action" onClick={onLogout}>{hasAccountSession ? 'Log keluar' : 'Log masuk untuk Sync'}</button>
             </div>
           </div>
         </header>

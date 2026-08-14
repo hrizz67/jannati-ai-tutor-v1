@@ -5725,10 +5725,52 @@ input:focus {
   white-space: nowrap;
 }
 
+.cloud-sync-chip {
+  min-height: 38px;
+  padding: 7px 11px;
+  border: 1px solid #b9d8c7;
+  background: #edf8f1;
+  color: #12633a;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.cloud-sync-chip.inactive,
+.cloud-sync-chip.offline {
+  border-color: #e6c76d;
+  background: #fff8dc;
+  color: #6e5200;
+}
+
+.cloud-sync-chip.error {
+  border-color: #efb4b4;
+  background: #fff0f0;
+  color: #9b2525;
+}
+
+.cloud-sync-chip.syncing {
+  border-color: #9bc3e9;
+  background: #eef7ff;
+  color: #245c91;
+}
+
+.device-only-save-note {
+  padding: 10px 12px;
+  border: 1px solid #e6c76d;
+  border-radius: 12px;
+  background: #fff8dc;
+  color: #6e5200;
+}
+
 @media (max-width: 650px) {
   .header-account-action {
     padding: 7px 9px;
     font-size: 12px;
+  }
+
+  .cloud-sync-chip {
+    padding: 7px 9px;
+    font-size: 11px;
   }
 }
 

@@ -1,14 +1,14 @@
 # Changelog
 
-## 3.3.4 - 2026-08-14
+## 3.3.5 - 2026-08-14
 
-### Multi-device learning sync
+### Multi-device sync hotfix
 
-- Gated account autosave until the first cloud hydration completes, preventing stale device state from replacing newer cloud learning data at sign-in.
-- Added per-child snapshot merging, dirty-profile tracking, deletion tombstones, and persistent offline retry markers so separate child profiles remain isolated across desktop and mobile.
-- Refreshed the active child snapshot before each upload and applied completed uploads without restoring stale in-flight answers over newer local work.
-- Distinguished empty cloud state from network/RPC failures and prevented an initial failed pull from turning unchanged device data into an upload.
-- Added regression coverage for multi-device changes, profile isolation, offline retry, clock skew, deletion safety, and account-scoped cloud access.
+- Replaced the render-owned Cloud debounce timer with a persistent timer and explicitly scheduled a Cloud save after each checked quiz answer.
+- Reduced visible-device Cloud polling from 15 seconds to five seconds while preserving focus, visibility, and reconnect refreshes.
+- Added clear local-only, syncing, saved, loaded, offline, and failed states to the dashboard and quiz UI.
+- Preserved anonymous learning during sign-in and merged meaningful local progress into both first-time and returning account snapshots before hydration.
+- Added regression gates for answer-triggered sync, migration safety, account login preservation, status disclosure, and prompt cross-device refresh.
 
 ### Release controls
 
