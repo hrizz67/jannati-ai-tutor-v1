@@ -1,13 +1,14 @@
 # Changelog
 
-## 3.3.3 - 2026-08-14
+## 3.3.4 - 2026-08-14
 
-### Infrastructure and CI
+### Multi-device learning sync
 
-- Upgraded CI and tagged deployment from Node.js 20 to Node.js 24.
-- Upgraded `actions/checkout`, `actions/setup-node`, `actions/upload-artifact`, and `peaceiris/actions-gh-pages` to Node 24-compatible releases.
-- Added release-pipeline regression gates for the required runtime and action generations.
-- Declared the source ESM boundary explicitly and renamed the Vite configuration to `vite.config.mjs` to remove module-loader warnings.
+- Gated account autosave until the first cloud hydration completes, preventing stale device state from replacing newer cloud learning data at sign-in.
+- Added per-child snapshot merging, dirty-profile tracking, deletion tombstones, and persistent offline retry markers so separate child profiles remain isolated across desktop and mobile.
+- Refreshed the active child snapshot before each upload and applied completed uploads without restoring stale in-flight answers over newer local work.
+- Distinguished empty cloud state from network/RPC failures and prevented an initial failed pull from turning unchanged device data into an upload.
+- Added regression coverage for multi-device changes, profile isolation, offline retry, clock skew, deletion safety, and account-scoped cloud access.
 
 ### Release controls
 

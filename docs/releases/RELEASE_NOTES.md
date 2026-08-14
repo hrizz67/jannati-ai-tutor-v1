@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.3.3 Release Notes
+# Jannati AI Tutor 3.3.4 Release Notes
 
 Status: stable
-Tag: v3.3.3
-Build date: 2026-08-14T10:59:33.578Z
+Tag: v3.3.4
+Build date: 2026-08-14T11:51:15.523Z
 
 ## Release Readiness
 
@@ -11,12 +11,13 @@ Build date: 2026-08-14T10:59:33.578Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Infrastructure Quality
+## Learning Sync and Profile Safety
 
-- CI and tagged deployment now validate and build on Node.js 24.
-- GitHub Actions were upgraded to Node 24-compatible generations for checkout, dependency setup, QA artifact upload, and GitHub Pages publication.
-- Source modules now have an explicit ESM boundary, while the Vite configuration uses the `.mjs` extension; Node and Vite validation logs are clean.
-- Release-pipeline regression checks prevent the retired action and runtime versions from being restored accidentally.
+- Desktop and mobile now merge learning data by child profile instead of allowing a stale whole-account snapshot to replace unrelated profile progress.
+- Autosave waits for cloud hydration, persists pending offline changes, retries after reconnect or focus, and refreshes the active child snapshot before upload.
+- Deleted child profiles remain deleted across devices; both normal and original backup snapshots are removed and protected by deletion tombstones.
+- Cloud pulls update the live profile list and active learning state without overwriting newer answers created while an upload is in flight.
+- A failed initial cloud request no longer causes unchanged local data to be pushed over the cloud when connectivity returns.
 
 ## Content Quality
 
