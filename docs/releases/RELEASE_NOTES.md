@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.3.6 Release Notes
+# Jannati AI Tutor 3.3.7 Release Notes
 
 Status: stable
-Tag: v3.3.6
-Build date: 2026-08-20T11:40:12.669Z
+Tag: v3.3.7
+Build date: 2026-08-20T14:49:54.493Z
 
 ## Release Readiness
 
@@ -11,14 +11,17 @@ Build date: 2026-08-20T11:40:12.669Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Free/Premium Access Isolation
+## Mobile Notes and Textbooks
 
-- Premium access is granted only when the server profile ID matches the currently authenticated account.
-- A new Free account can no longer inherit a Premium badge or protected feature access from local data or the previous account.
-- Logout, expired sessions, account changes, Premium expiry, and server-side access revocation now update the interface safely.
-- The dashboard, imported backups, child profiles, and restored learning state cannot promote an account using cached access fields.
-- Supabase schema definitions explicitly default profile creation to Free and deny direct client writes to entitlement rows.
-- The access-control audit now runs as part of the required release validation gate.
+- Learning cards use one readable column on phones, two columns on tablets, and three columns on wider desktop layouts.
+- Text wrapping and minimum-width guards prevent long Malay, English, Arabic, and reference text from overflowing narrow cards.
+- Responsive checks cover 390, 430, 600, 700, and 980 pixel viewports without changing any learning, note, or textbook data.
+
+## Supabase Migration Baseline
+
+- Added a version-controlled Supabase CLI configuration, declarative schema snapshot, and ordered production migrations.
+- Documented the safe link, pull, history review, dry-run, and push workflow for future database changes.
+- Database defaults, grants, RPC permissions, and profile isolation remain explicit and reproducible from source control.
 
 ## Content Quality
 
