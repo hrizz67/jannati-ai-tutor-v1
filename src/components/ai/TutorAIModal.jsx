@@ -7,7 +7,7 @@ import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
-const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+const FALLBACK_MESSAGE = 'Saya belum memahami soalan itu dengan tepat. Cuba tanya semula dengan ayat lain.';
 const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
 const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
 const RESPONSE_TIMEOUT_MS = 4500;
@@ -185,13 +185,13 @@ export default function TutorAIModal({
   const closeButtonRef = useRef(null);
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
-  const questionActionsRef = useRef(null);
   const requestIdRef = useRef(0);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [activeToolPanel, setActiveToolPanel] = useState('');
 
   const studentProfile = adaptiveProfile || profile || {};
   const studentName = getStudentDisplayName(studentProfile, '');
@@ -225,6 +225,8 @@ export default function TutorAIModal({
   const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
   const isCorrect = questionContext.isCorrect;
   const revealExpectedAnswer = isCorrect || normalizedExplanationMode === 'correct_answer_reinforcement' || normalizedExplanationMode === 'show_answer' || Number(attemptCount) >= 3;
+  const hasExerciseContext = Boolean(normalizedQuestionText || normalizedInstruction || normalizedExpectedAnswer || normalizedOptions.length);
+  const hasVisibleQuestionContext = Boolean(normalizedInstruction || normalizedQuestionText || (normalizedExpectedAnswer && revealExpectedAnswer));
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
   const voiceLang = activeSubject?.id === 'english' ? 'en-US' : activeSubject?.id === 'arab' ? 'ar-SA' : 'ms-MY';
@@ -260,6 +262,7 @@ export default function TutorAIModal({
     setLoading(false);
     setStatus('idle');
     setError('');
+    setActiveToolPanel('');
     return () => {
       if (requestIdRef.current === started) requestIdRef.current += 1;
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:open');
@@ -270,7 +273,7 @@ export default function TutorAIModal({
     const body = bodyRef.current;
     if (!body) return;
     body.scrollTop = body.scrollHeight;
-  }, [messages, loading]);
+  }, [messages, loading, activeToolPanel]);
 
   useEffect(() => {
     if (messages.length > 1 && !loading) bodyRef.current?.focus?.({ preventScroll: true });
@@ -372,8 +375,12 @@ export default function TutorAIModal({
   }
 
   function handlePromptClick(prompt, intent) {
-    if (questionActionsRef.current) questionActionsRef.current.open = false;
+    setActiveToolPanel('');
     void sendMessage(prompt, intent);
+  }
+
+  function toggleToolPanel(panel) {
+    setActiveToolPanel(current => current === panel ? '' : panel);
   }
 
   if (!open) return null;
@@ -389,6 +396,8 @@ export default function TutorAIModal({
     { label: 'Apa cadangan ulang kaji?', intent: 'revision_plan' },
     { label: 'Bagaimana UASA saya?', intent: 'uasa_summary' }
   ];
+  const activeToolPrompts = activeToolPanel === 'question' ? exercisePrompts : activeToolPanel === 'progress' ? analyticsPrompts : [];
+  const activeToolLabel = activeToolPanel === 'question' ? 'Pilihan bantuan soalan' : 'Pilihan kemajuan pembelajaran';
 
   const statusLabel = status === 'loading'
     ? 'Tutor AI sedang menaip...'
@@ -397,6 +406,7 @@ export default function TutorAIModal({
       : status === 'fallback'
         ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : FALLBACK_MESSAGE)
         : 'Tutor AI sedia membantu.';
+  const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
 
   const modalNode = (
     <div className="ai-chat-overlay" data-modal-open="true">
@@ -426,68 +436,40 @@ export default function TutorAIModal({
           </p>
         </header>
 
-        <div className={`chat-status chat-status-${status}`} aria-live="polite">
-          {statusLabel}
-        </div>
+        {showStatus && (
+          <div className={`chat-status chat-status-${status}`} aria-live="polite">
+            {statusLabel}
+          </div>
+        )}
         <p className="tutor-ai-disclosure">
           Tutor AI membantu pembelajaran dan boleh tersilap. Jangan kongsi maklumat peribadi; semak perkara penting bersama guru atau penjaga.
         </p>
 
         <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
-          <section className="ai-chat-context-card" aria-label="Konteks soalan semasa">
-            <div className="ai-chat-context-grid">
-              {normalizedInstruction && (
-                <div>
-                  <span className="ai-chat-context-label">Arahan</span>
-                  <p>{normalizedInstruction}</p>
-                </div>
-              )}
-              {normalizedQuestionText && (
-                <div>
-                  <span className="ai-chat-context-label">Soalan</span>
-                  <p>{normalizedQuestionText}</p>
-                </div>
-              )}
-              {normalizedExpectedAnswer && revealExpectedAnswer && (
-                <div>
-                  <span className="ai-chat-context-label">Jawapan dijangka</span>
-                  <p>{normalizedExpectedAnswer}</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          <details ref={questionActionsRef} className="tutor-ai-actions">
-            <summary>Bantuan untuk soalan ini</summary>
-            <div className="quick-prompts" aria-label="Prompt pantas Tutor AI">
-              {exercisePrompts.map(prompt => (
-                <button
-                  key={prompt.label}
-                  type="button"
-                  onClick={() => handlePromptClick(prompt.label, prompt.intent)}
-                  disabled={loading}
-                >
-                  {prompt.label}
-                </button>
-              ))}
-            </div>
-          </details>
-
-          <details className="quick-prompts-analytics">
-            <summary>Lihat kemajuan saya</summary>
-            <div className="quick-prompts" aria-label="Prompt kemajuan Tutor AI">
-              {analyticsPrompts.map(prompt => (
-                <button
-                  key={prompt.label}
-                  type="button"
-                  onClick={() => handlePromptClick(prompt.label, prompt.intent)}
-                  disabled={loading}
-                >
-                  {prompt.label}
-                </button>
-              ))}
-            </div>
-          </details>
+          {hasVisibleQuestionContext && (
+            <section className="ai-chat-context-card" aria-label="Konteks soalan semasa">
+              <div className="ai-chat-context-grid">
+                {normalizedInstruction && (
+                  <div>
+                    <span className="ai-chat-context-label">Arahan</span>
+                    <p>{normalizedInstruction}</p>
+                  </div>
+                )}
+                {normalizedQuestionText && (
+                  <div>
+                    <span className="ai-chat-context-label">Soalan</span>
+                    <p>{normalizedQuestionText}</p>
+                  </div>
+                )}
+                {normalizedExpectedAnswer && revealExpectedAnswer && (
+                  <div>
+                    <span className="ai-chat-context-label">Jawapan dijangka</span>
+                    <p>{normalizedExpectedAnswer}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           {messages.map((message, index) => (
             <MessageBubble
@@ -502,6 +484,54 @@ export default function TutorAIModal({
             />
           ))}
           {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading voiceLang={voiceLang} />}
+
+          <nav className="tutor-ai-tools" aria-label="Alat pembelajaran Tutor AI">
+            <button
+              type="button"
+              className="tutor-ai-tool-button"
+              onClick={() => handlePromptClick('Hari ini saya patut belajar apa?', 'learning_recommendation')}
+              disabled={loading}
+            >
+              Cadangan belajar
+            </button>
+            {hasExerciseContext && (
+              <button
+                type="button"
+                className={`tutor-ai-tool-button${activeToolPanel === 'question' ? ' is-active' : ''}`}
+                onClick={() => toggleToolPanel('question')}
+                aria-expanded={activeToolPanel === 'question'}
+                disabled={loading}
+              >
+                Bantuan untuk soalan ini
+              </button>
+            )}
+            <button
+              type="button"
+              className={`tutor-ai-tool-button${activeToolPanel === 'progress' ? ' is-active' : ''}`}
+              onClick={() => toggleToolPanel('progress')}
+              aria-expanded={activeToolPanel === 'progress'}
+              disabled={loading}
+            >
+              Lihat kemajuan saya
+            </button>
+          </nav>
+
+          {activeToolPrompts.length > 0 && (
+            <section className="tutor-ai-tool-panel" aria-label={activeToolLabel}>
+              <div className="quick-prompts">
+                {activeToolPrompts.map(prompt => (
+                  <button
+                    key={prompt.label}
+                    type="button"
+                    onClick={() => handlePromptClick(prompt.label, prompt.intent)}
+                    disabled={loading}
+                  >
+                    {prompt.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <div className="ai-chat-input ai-modal-footer" data-modal-footer="true">

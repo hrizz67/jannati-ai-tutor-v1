@@ -4961,6 +4961,59 @@ input:focus {
   margin-top: 10px;
 }
 
+.tutor-ai-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.tutor-ai-tool-button {
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid rgba(15, 138, 67, 0.2);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b6f38;
+  box-shadow: none;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.tutor-ai-tool-button:hover,
+.tutor-ai-tool-button:focus-visible,
+.tutor-ai-tool-button.is-active {
+  border-color: rgba(15, 138, 67, 0.55);
+  background: #eef9f1;
+  color: #075b2e;
+}
+
+.tutor-ai-tool-panel {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid rgba(15, 138, 67, 0.14);
+  border-radius: 14px;
+  background: rgba(247, 251, 248, 0.98);
+}
+
+.tutor-ai-tool-panel .quick-prompts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.tutor-ai-tool-panel .quick-prompts button {
+  min-height: 40px;
+  border: 1px solid rgba(15, 138, 67, 0.14);
+  border-radius: 11px;
+  background: #fff;
+  color: #145b34;
+  font-weight: 750;
+  text-align: left;
+}
+
 .ai-chat-input,
 .ai-explain-footer,
 .ai-teacher-footer {
@@ -5056,6 +5109,17 @@ input:focus {
   .ai-explain-footer button,
   .ai-teacher-footer button {
     width: 100%;
+  }
+
+  .tutor-ai-tools {
+    gap: 6px;
+  }
+
+  .tutor-ai-tool-button {
+    flex: 1 1 auto;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
   }
 }
 
