@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.4.0 Release Notes
+# Jannati AI Tutor 3.4.1 Release Notes
 
 Status: stable
-Tag: v3.4.0
-Build date: 2026-08-20T16:04:25.276Z
+Tag: v3.4.1
+Build date: 2026-08-20T16:38:00.591Z
 
 ## Release Readiness
 
@@ -11,27 +11,19 @@ Build date: 2026-08-20T16:04:25.276Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Tutor AI Two-Way Teaching
+## Premium Profile Hotfix
 
-- Tutor AI now recognises what a learner is asking, including concept questions, comparisons, reasons, methods, misunderstandings, requests for another explanation, and follow-up turns.
-- Conversation context is carried into follow-up prompts so the learner can ask for an example or a different explanation without restarting the topic.
-- Replies guide the learner in small steps and finish with a comprehension check or clickable quick response.
-- The local curriculum engine always answers first and remains available if any optional remote service is unavailable.
+- Logging into an existing Premium account now reuses the learner's established child profile instead of creating or selecting a same-name empty profile.
+- When a local anonymous snapshot and an existing Premium snapshot conflict during login recovery, the snapshot with meaningful learning evidence is retained.
+- Accounts already affected by the older duplicate-profile behaviour can automatically recover when the active duplicate is empty and the matching Premium profile owns the learning history.
+- The recovered Premium child ID becomes active across local metadata, snapshots, React state, and the next cloud save.
 
-## Privacy and Child Safety
+## Data Isolation
 
-- The optional generative gateway is authenticated, Premium-gated on the server, rate-limited, origin-restricted, and disabled by default.
-- Remote payloads exclude learner identity, progress, scores, rewards, complete profiles, answer banks, and sync data.
-- Known learner names are redacted, obvious personal-data prompts are stopped locally, and high-risk prompts route to an age-appropriate adult-help response.
-- Input and output moderation, strict JSON Schema output, pseudonymous safety identifiers, and fail-closed local fallback protect every remote call.
-- Enabling remote generation still requires explicit under-18 compliance confirmation, approved data controls, server-only secrets, and a supervised pilot.
-
-## Compatibility and Acceptance
-
-- Existing questions, notes, textbooks, assessments, resume state, and multi-device learning data are unchanged.
-- Free-account Tutor AI blocking passed on desktop and at a 390-pixel mobile viewport.
-- The mobile access view has no horizontal overflow, its primary controls remain at least 50 pixels high, and the browser reported no runtime warnings.
-- The deployed `tutor-ai` Edge Function is active with JWT verification; an unauthenticated request is rejected with HTTP 401.
+- Login recovery requires both normalized learner name and school year to match.
+- Name-based reconciliation is disabled during ordinary sync, so separate profiles are not merged by display name alone.
+- Same-name learners in different school years remain separate.
+- No Supabase schema migration is required for this hotfix.
 
 ## Content Quality
 
@@ -45,6 +37,8 @@ Build date: 2026-08-20T16:04:25.276Z
 - Warnings: 0
 - Errors: 0
 
+Learning-sync regression coverage includes Premium profile reuse, pre-existing cloud duplicate recovery, richer-snapshot preservation, and child-profile isolation.
+
 ## Curriculum Coverage
 
 - Subjects: 8
@@ -56,7 +50,5 @@ Build date: 2026-08-20T16:04:25.276Z
 
 ## Known Follow-ups
 
-- Run Premium end-to-end acceptance against the newly deployed v3.4.0 frontend before considering remote generation.
-- Keep remote generation disabled until the under-18 privacy and data-retention review is approved.
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
