@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.4.2 Release Notes
+# Jannati AI Tutor 3.5.0 Release Notes
 
 Status: stable
-Tag: v3.4.2
-Build date: 2026-08-20T17:09:06.291Z
+Tag: v3.5.0
+Build date: 2026-08-20T17:50:33.209Z
 
 ## Release Readiness
 
@@ -11,20 +11,24 @@ Build date: 2026-08-20T17:09:06.291Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## One Canonical Child Profile
+## Contextual AI Teacher
 
-- Accounts affected by the older logout/login bug no longer keep two same-name, same-year child profiles when both profiles contain learning data.
-- The oldest established Premium profile remains canonical and becomes the active profile after cloud reconciliation.
-- Distinct topic progress and history from both profiles are retained, while XP, scores, streaks, and other counters use conservative maximum values to avoid duplication.
-- Exact same-name profiles in different school years remain separate.
+- Tutor AI now understands open learning-planning questions such as “Hari ini saya patut belajar apa?” and requests to learn a named topic.
+- Recommendations use the active learner profile and prioritise a topic that needs strengthening within the selected subject.
+- When evidence is still limited, Tutor AI says so clearly before suggesting a suitable starting topic instead of pretending to know a weakness.
+- Replies include a short teaching plan and a useful follow-up question so the conversation can continue with an explanation or practice.
 
-## Data Recovery and Sync Safety
+## Chat-first Experience
 
-- The duplicate profile is archived in a hidden account-scoped backup before its visible profile and snapshot are removed.
-- Its old ID receives a cloud tombstone so stale desktop or mobile state cannot recreate the duplicate.
-- Backup data is excluded from child snapshots to prevent recursive storage growth.
-- Creating a child with an existing normalized name and school year now reuses the existing profile.
-- No Supabase schema migration is required.
+- Large persistent help and progress panels are replaced by compact contextual learning tools beneath the conversation.
+- Question help appears only when an active question exists, while learning recommendations and progress remain available throughout the chat.
+- Empty question-context cards and routine idle status bars no longer consume the conversation area.
+- The update changes Tutor AI presentation and response logic only; learner profiles, progress records, sync storage and assessment data remain unchanged.
+
+## Regression Protection
+
+- Conversation tests cover Malay learning-plan variations, named-topic requests, greetings, personalised recommendations and actionable follow-up replies.
+- Answer-leak, generative-gateway, access-control, resume-isolation and multi-device learning-sync regressions remain green.
 
 ## Content Quality
 
@@ -37,8 +41,6 @@ Build date: 2026-08-20T17:09:06.291Z
 - Info: 14660
 - Warnings: 0
 - Errors: 0
-
-Learning-sync regression coverage includes two meaningful duplicate profiles, cross-profile progress retention, conservative counters, hidden backup creation, tombstone propagation, and duplicate-creation prevention.
 
 ## Curriculum Coverage
 

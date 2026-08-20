@@ -1,32 +1,30 @@
 # Changelog
 
-## 3.4.2 - 2026-08-20
+## 3.5.0 - 2026-08-20
 
-### Duplicate child-profile consolidation
+### Contextual Tutor AI
 
-- Consolidated same-name and same-year child profiles created by the legacy logout/login migration bug, even when both profiles already contain learning data.
-- Kept the oldest established Premium child ID as the canonical profile and realigned the active child to that ID.
-- Merged distinct topic progress, learning history, achievements, memory, and resume slots conservatively instead of discarding either profile's learning.
-- Used maximum values for cumulative counters such as XP and scores to avoid double counting overlapping data.
+- Added recognition for open learning-planning questions, named-topic learning requests and natural Malay phrasing.
+- Added profile-aware topic recommendations that favour the selected subject and topics requiring more support.
+- Added an evidence-aware fallback that clearly states when there is not enough learning history to identify a weak topic.
+- Added short teaching plans and follow-up choices so Tutor AI continues as a two-way teacher instead of returning generic advice.
 
-### Recovery and multi-device safeguards
+### Chat-first interface
 
-- Stored the removed duplicate snapshot in a hidden account-scoped recovery backup before consolidation.
-- Added a deletion tombstone for the duplicate ID so an older desktop or mobile device cannot resurrect it during the next sync.
-- Prevented recovery backups from being copied recursively into child snapshots.
-- Reused an existing profile when a user attempts to create the same learner name and school year again.
+- Replaced the two large persistent action panels with compact contextual learning tools beneath the conversation.
+- Showed question-help controls only when a real exercise context exists.
+- Removed empty question-context cards and hid idle status bars that reduced usable chat space.
+- Preserved learner profiles, progress, sync, resume and assessment data without schema or storage changes.
 
-### Release controls
+### Regression protection
 
-- Package metadata is the single source of truth for version and release status.
-- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
-- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+- Covered learning recommendations, named-topic requests, greetings and personalised follow-up actions in Tutor conversation regression tests.
+- Retained answer-leak safety and local curriculum grounding while keeping the under-18 generative gateway privacy gate unchanged.
 
 ### Quality snapshot
 
 - 8 subjects, 84 topics, and 4530 questions validated.
 - Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
-- Duplicate-profile data consolidation, backup, tombstone, profile-isolation, and multi-device sync regressions passed.
 - Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
 ### Follow-up work

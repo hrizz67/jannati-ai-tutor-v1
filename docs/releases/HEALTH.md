@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.4.2
+Version: 3.5.0
 Status: stable
-Build date: 2026-08-20T17:09:06.291Z
+Build date: 2026-08-20T17:50:33.209Z
 
 | Area | Status |
 | --- | --- |
@@ -10,10 +10,6 @@ Build date: 2026-08-20T17:09:06.291Z
 | Build | PASS |
 | Build assets | PASS |
 | Validation | PASS |
-| Duplicate profile consolidation | PASS |
-| Split learning-data preservation | PASS |
-| Multi-device tombstone propagation | PASS |
-| Account-scoped recovery backup | PASS |
 | Coverage | 100% |
 | Questions | 4530 |
 | Subjects | 8 |
@@ -22,6 +18,9 @@ Build date: 2026-08-20T17:09:06.291Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
+| Tutor conversation regression | PASS |
+| Tutor answer-leak protection | PASS |
+| Learning sync and profile isolation | PASS |
 | Overall Status | PASS |
 
 ## Validation
