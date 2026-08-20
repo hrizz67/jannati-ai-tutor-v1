@@ -10,6 +10,8 @@ Use this checklist for every tagged production release.
 - [ ] Review generated release notes, changelog, health report, and README badges.
 - [ ] Confirm only intended source and generated release files changed.
 - [ ] Confirm GitHub Secrets `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are configured for production deploy.
+- [ ] Keep `VITE_TUTOR_AI_REMOTE_ENABLED=false` unless the generative gateway has passed the under-18 privacy and safety review.
+- [ ] If enabling the gateway, confirm OpenAI data controls, parental/legal requirements, server-only secrets, allowed origins and Premium server checks are documented and approved.
 
 ## 2. Quality gates
 
@@ -25,6 +27,7 @@ Use this checklist for every tagged production release.
 - [ ] `npm run validate:classroom-pilot` confirms aggregate metrics, evidence sufficiency, explicit completion and anonymous-export privacy.
 - [ ] The automatic postbuild bundle budget passes: entry ≤350 kB, initial JavaScript ≤900 kB, every chunk ≤480 kB.
 - [ ] Curriculum, metadata, content-quality, storage, access, feedback, adaptive-subject, and UASA answer checks pass.
+- [ ] Tutor conversation and generative-gateway regressions pass, including privacy redaction, child-safety routing, input/output moderation, pseudonymous safety identifiers, strict output schema and local fallback.
 
 ## 3. Manual acceptance
 

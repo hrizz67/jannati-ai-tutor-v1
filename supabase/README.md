@@ -22,3 +22,7 @@ The production project is linked locally through ignored files under
 
 Never run `supabase db reset --linked` against production. It is destructive.
 Do not use `--include-seed` for production deployments.
+
+## Tutor AI Edge Function
+
+The `tutor-ai` function is authenticated and Premium-gated, but its generative path is disabled unless both `TUTOR_AI_GENERATIVE_ENABLED` and `TUTOR_AI_U18_COMPLIANCE_CONFIRMED` are explicitly set to `true`. Input and output moderation plus a server-only `TUTOR_AI_SAFETY_SALT` are mandatory. Review `docs/engineering/TUTOR_AI_GENERATIVE_GATEWAY.md` before configuring or deploying it. Never commit `OPENAI_API_KEY` or expose it through a browser environment variable.

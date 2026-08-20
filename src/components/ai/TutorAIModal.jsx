@@ -4,7 +4,7 @@ import VoiceButton from '../VoiceButton.jsx';
 import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDisplayName } from '../../utils/displayFormatter';
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
-import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../../utils/acceptedAnswers.js';
+import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const FALLBACK_MESSAGE = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
@@ -17,7 +17,7 @@ function buildNaturalGreeting({ studentName = '', subjectLabel = '', topicLabel 
   const subject = subjectLabel || 'pelajaran ini';
   if (questionText) return `${name}. Saya sudah lihat soalan ${subject} kamu. Kita fikir bersama — kamu mahu petunjuk, penerangan atau contoh?`;
   if (topicLabel && topicLabel !== 'topik semasa') return `${name}. Hari ini kita fokus pada ${topicLabel}. Apa yang kamu mahu faham dahulu?`;
-  return `${name}. Saya sedia membantu kamu belajar, bukan sekadar memberi jawapan. Apa yang ingin kamu faham?`;
+  return `${name}. Saya sedia mengajar dan membimbing kamu, bukan sekadar memberi jawapan. Apa yang ingin kamu faham?`;
 }
 
 function withTimeout(promise, timeoutMs = RESPONSE_TIMEOUT_MS) {
@@ -45,32 +45,6 @@ function normalizeList(value) {
     .filter(Boolean)
     .map(item => normalizeText(item, ''))
     .filter(Boolean);
-}
-
-function extractDirectAnswer(text = '') {
-  const normalized = normalizeText(text, '').replace(',', '.');
-  if (!normalized || /petunjuk|terangkan|jelaskan|kenapa|bantuan|contoh|topik|cadangan|uasa|^apa\b|^bagaimana\b|^mengapa\b|^tolong\b/i.test(normalized)) return '';
-  if (/^-?\d+(?:\.\d+)?$/.test(normalized)) return normalized;
-  const labelled = normalized.match(/^(?:jawapan(?:\s+saya)?|saya\s+jawab)\s*(?:ialah|adalah|=|:)?\s*(.+)$/i)?.[1];
-  if (labelled) return labelled.replace(/[.!?]+$/g, '').trim();
-  if (/^[\p{L}\p{N}][\p{L}\p{N}\s'’-]{0,79}$/u.test(normalized) && normalized.split(/\s+/).length <= 8) return normalized;
-  return '';
-}
-
-function directAnswersMatch(left = '', right = '', question = {}, acceptedAnswers = []) {
-  if (isAcceptedQuestionAnswer(left, {
-    ...question,
-    answer: right || question?.answer,
-    acceptedAnswers: [...acceptedAnswers, ...(question?.accepted || [])]
-  })) return true;
-
-  const normalizeAnswer = value => String(value || '')
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase('ms-MY')
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim();
-  return Boolean(normalizeAnswer(left) && normalizeAnswer(left) === normalizeAnswer(right));
 }
 
 function normalizeForDuplicate(value) {
@@ -150,11 +124,14 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
   };
 }
 
-function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY' }) {
+function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY', source = '', onSuggestion = null }) {
   const safeText = normalizeText(text, '');
   return (
     <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
       <p className="chat-bubble-text">{safeText}</p>
+      {role === 'ai' && source === 'generative-gateway' && (
+        <small className="tutor-ai-source-label">Jawapan AI generatif · semak bersama guru</small>
+      )}
       {role === 'ai' && !loading && safeText && <VoiceButton text={safeText} lang={voiceLang} label="Dengar" title="Dengar penerangan Tutor AI" className="voice-inline tutor-ai-voice" />}
       {loading && (
         <div className="chat-typing" aria-hidden="true">
@@ -164,9 +141,11 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
         </div>
       )}
       {role === 'ai' && suggestions.length > 0 && (
-        <ul className="chat-suggestions" aria-label="Cadangan tindakan">
+        <ul className="chat-suggestions" aria-label="Balasan pantas">
           {suggestions.slice(0, 3).map((item, index) => (
-            <li key={`${safeText.slice(0, 12)}-${index}`}>{item}</li>
+            <li key={`${safeText.slice(0, 12)}-${index}`}>
+              <button type="button" onClick={() => onSuggestion?.(item)}>{item}</button>
+            </li>
           ))}
         </ul>
       )}
@@ -318,13 +297,6 @@ export default function TutorAIModal({
   async function sendMessage(rawText = input, intent = 'general') {
     const text = normalizeText(rawText, '');
     if (!text || loading) return;
-    const directAnswer = extractDirectAnswer(text);
-    const directExpectedAnswer = normalizeText(normalizedExpectedAnswer || currentQuestion?.answer || '', '');
-    const directAnswerCorrect = Boolean(
-      directAnswer &&
-      directExpectedAnswer &&
-      directAnswersMatch(directAnswer, directExpectedAnswer, currentQuestion, normalizedAcceptedAnswers)
-    );
     const started = ++requestIdRef.current;
     const nextHistory = [...messages, { role: 'user', text }];
     setMessages(nextHistory);
@@ -366,18 +338,13 @@ export default function TutorAIModal({
       }));
       if (requestIdRef.current !== started) return;
       setMessages(prev => {
-        const nextText = directAnswer && directExpectedAnswer
-          ? (directAnswerCorrect
-            ? `Betul! Jawapan ${directAnswer} tepat. Teruskan ke soalan seterusnya.`
-            : `Belum tepat. Jawapan ${directAnswer} perlu disemak semula. Cuba lihat petunjuk soalan.`)
-          : normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
+        const nextText = normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
         if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
         return [...prev, {
         role: 'ai',
         text: nextText,
-        tone: directAnswer && directExpectedAnswer
-          ? (directAnswerCorrect ? 'correct' : 'pulse')
-          : response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
+        tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
+        source: response?.source || '',
         suggestions: normalizeList(
           response?.quickReplies?.length
             ? response.quickReplies
@@ -447,7 +414,7 @@ export default function TutorAIModal({
             <JannaAvatar size={72} className="ai-chat-avatar" />
             <div className="ai-chat-brand-copy">
               <small className="eyebrow">JANNA</small>
-              <strong>Rakan Pembelajaran AI</strong>
+              <strong>Guru Pembelajaran AI</strong>
               <span>{studentName ? `Hai ${studentName}.` : 'Syabas! Teruskan usaha kamu.'}</span>
             </div>
           </div>
@@ -462,6 +429,9 @@ export default function TutorAIModal({
         <div className={`chat-status chat-status-${status}`} aria-live="polite">
           {statusLabel}
         </div>
+        <p className="tutor-ai-disclosure">
+          Tutor AI membantu pembelajaran dan boleh tersilap. Jangan kongsi maklumat peribadi; semak perkara penting bersama guru atau penjaga.
+        </p>
 
         <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
           <section className="ai-chat-context-card" aria-label="Konteks soalan semasa">
@@ -527,6 +497,8 @@ export default function TutorAIModal({
               suggestions={message.suggestions || []}
               tone={message.tone || ''}
               voiceLang={voiceLang}
+              source={message.source || ''}
+              onSuggestion={suggestion => void sendMessage(suggestion, 'general')}
             />
           ))}
           {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading voiceLang={voiceLang} />}
