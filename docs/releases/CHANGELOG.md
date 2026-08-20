@@ -1,20 +1,20 @@
 # Changelog
 
-## 3.4.1 - 2026-08-20
+## 3.4.2 - 2026-08-20
 
-### Premium child-profile recovery
+### Duplicate child-profile consolidation
 
-- Reused the existing Premium child profile when an anonymous/local profile has the same normalized learner name and school year during account-login migration.
-- Prevented a newer empty local snapshot from hiding a richer Premium learning snapshot.
-- Repaired the legacy corrupted state where an empty duplicate profile was active while the original Premium profile still held the learner's progress.
-- Realigned the active child ID, child metadata, snapshots, and current learning state after reconciliation.
+- Consolidated same-name and same-year child profiles created by the legacy logout/login migration bug, even when both profiles already contain learning data.
+- Kept the oldest established Premium child ID as the canonical profile and realigned the active child to that ID.
+- Merged distinct topic progress, learning history, achievements, memory, and resume slots conservatively instead of discarding either profile's learning.
+- Used maximum values for cumulative counters such as XP and scores to avoid double counting overlapping data.
 
-### Profile isolation safeguards
+### Recovery and multi-device safeguards
 
-- Restricted name-and-year reconciliation to the explicit login-recovery path; normal multi-device sync continues to use stable child IDs.
-- Kept same-name profiles in different school years separate.
-- Preserved the Premium profile as the canonical record and removed only the reconciled anonymous alias.
-- Added regression coverage for Premium profile reuse, existing cloud duplicates, snapshot evidence priority, and multi-profile isolation.
+- Stored the removed duplicate snapshot in a hidden account-scoped recovery backup before consolidation.
+- Added a deletion tombstone for the duplicate ID so an older desktop or mobile device cannot resurrect it during the next sync.
+- Prevented recovery backups from being copied recursively into child snapshots.
+- Reused an existing profile when a user attempts to create the same learner name and school year again.
 
 ### Release controls
 
@@ -26,7 +26,7 @@
 
 - 8 subjects, 84 topics, and 4530 questions validated.
 - Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
-- Learning-sync, resume-isolation, access-control, and profile-reconciliation regressions passed.
+- Duplicate-profile data consolidation, backup, tombstone, profile-isolation, and multi-device sync regressions passed.
 - Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
 ### Follow-up work

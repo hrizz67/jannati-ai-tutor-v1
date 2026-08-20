@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.4.1 Release Notes
+# Jannati AI Tutor 3.4.2 Release Notes
 
 Status: stable
-Tag: v3.4.1
-Build date: 2026-08-20T16:38:00.591Z
+Tag: v3.4.2
+Build date: 2026-08-20T17:09:06.291Z
 
 ## Release Readiness
 
@@ -11,19 +11,20 @@ Build date: 2026-08-20T16:38:00.591Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Premium Profile Hotfix
+## One Canonical Child Profile
 
-- Logging into an existing Premium account now reuses the learner's established child profile instead of creating or selecting a same-name empty profile.
-- When a local anonymous snapshot and an existing Premium snapshot conflict during login recovery, the snapshot with meaningful learning evidence is retained.
-- Accounts already affected by the older duplicate-profile behaviour can automatically recover when the active duplicate is empty and the matching Premium profile owns the learning history.
-- The recovered Premium child ID becomes active across local metadata, snapshots, React state, and the next cloud save.
+- Accounts affected by the older logout/login bug no longer keep two same-name, same-year child profiles when both profiles contain learning data.
+- The oldest established Premium profile remains canonical and becomes the active profile after cloud reconciliation.
+- Distinct topic progress and history from both profiles are retained, while XP, scores, streaks, and other counters use conservative maximum values to avoid duplication.
+- Exact same-name profiles in different school years remain separate.
 
-## Data Isolation
+## Data Recovery and Sync Safety
 
-- Login recovery requires both normalized learner name and school year to match.
-- Name-based reconciliation is disabled during ordinary sync, so separate profiles are not merged by display name alone.
-- Same-name learners in different school years remain separate.
-- No Supabase schema migration is required for this hotfix.
+- The duplicate profile is archived in a hidden account-scoped backup before its visible profile and snapshot are removed.
+- Its old ID receives a cloud tombstone so stale desktop or mobile state cannot recreate the duplicate.
+- Backup data is excluded from child snapshots to prevent recursive storage growth.
+- Creating a child with an existing normalized name and school year now reuses the existing profile.
+- No Supabase schema migration is required.
 
 ## Content Quality
 
@@ -37,7 +38,7 @@ Build date: 2026-08-20T16:38:00.591Z
 - Warnings: 0
 - Errors: 0
 
-Learning-sync regression coverage includes Premium profile reuse, pre-existing cloud duplicate recovery, richer-snapshot preservation, and child-profile isolation.
+Learning-sync regression coverage includes two meaningful duplicate profiles, cross-profile progress retention, conservative counters, hidden backup creation, tombstone propagation, and duplicate-creation prevention.
 
 ## Curriculum Coverage
 

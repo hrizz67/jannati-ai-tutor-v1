@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
+  CHILD_MERGED_BACKUP_PREFIX,
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
+  hasRecoverableChildProfileDuplicates,
   hasRecoverableActiveProfileDuplicate,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload
@@ -118,6 +120,54 @@ assert.deepEqual(repairedCloudState.profiles.map(profile => profile.id), [premiu
 assert.equal(repairedCloudState.activeChildId, premiumId);
 assert.equal(repairedCloudState.profiles[0].createdAt, '2026-07-01T00:00:00.000Z');
 
+const premiumSplitLearning = JSON.stringify({
+  __childSnapshotChildId: premiumId,
+  __childSnapshotCapturedAt: 200,
+  jannati_v151_profile: JSON.stringify({
+    name: 'Fayyadh',
+    year: 'Tahun 2',
+    xp: 80,
+    progress: { bm_kata_nama: { best: 80, attempts: 2 } },
+    history: [{ id: 'bm-session', subjectId: 'bm', score: 80 }]
+  })
+});
+const duplicateSplitLearning = JSON.stringify({
+  __childSnapshotChildId: anonymousId,
+  __childSnapshotCapturedAt: 300,
+  jannati_v151_profile: JSON.stringify({
+    name: 'Fayyadh',
+    year: 'Tahun 2',
+    xp: 35,
+    progress: { math_tambah: { best: 90, attempts: 1 } },
+    history: [{ id: 'math-session', subjectId: 'math', score: 90 }]
+  })
+});
+const meaningfulDuplicatePayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: premiumId, name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
+    { id: anonymousId, name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+  ], anonymousId),
+  [`${CHILD_SNAPSHOT_PREFIX}${premiumId}`]: premiumSplitLearning,
+  [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: duplicateSplitLearning
+};
+assert.equal(hasRecoverableChildProfileDuplicates(meaningfulDuplicatePayload), true, 'Same-name/year cloud duplicates must be detected even when both contain learning.');
+const mergedMeaningfulDuplicate = mergeCloudLearningPayload(meaningfulDuplicatePayload, meaningfulDuplicatePayload, {
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId,
+  reconcileChildIdentity: true
+});
+const mergedMeaningfulState = JSON.parse(mergedMeaningfulDuplicate[CLOUD_CHILD_STATE_KEY]);
+const mergedMeaningfulSnapshot = JSON.parse(mergedMeaningfulDuplicate[`${CHILD_SNAPSHOT_PREFIX}${premiumId}`]);
+const mergedMeaningfulProfile = JSON.parse(mergedMeaningfulSnapshot.jannati_v151_profile);
+assert.deepEqual(mergedMeaningfulState.profiles.map(profile => profile.id), [premiumId], 'Two meaningful duplicate profiles must become one canonical Premium profile.');
+assert.equal(mergedMeaningfulState.activeChildId, premiumId);
+assert.equal(mergedMeaningfulProfile.xp, 80, 'XP must use a conservative maximum instead of double counting.');
+assert.deepEqual(Object.keys(mergedMeaningfulProfile.progress).sort(), ['bm_kata_nama', 'math_tambah'], 'Topic progress from both duplicate profiles must be retained.');
+assert.deepEqual(mergedMeaningfulProfile.history.map(item => item.id).sort(), ['bm-session', 'math-session'], 'Distinct learning history from both profiles must be retained.');
+assert.ok(mergedMeaningfulState.deletedChildren[anonymousId] > 0, 'The duplicate ID needs a tombstone so an older device cannot resurrect it.');
+assert.equal(mergedMeaningfulDuplicate[`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`], undefined);
+assert.ok(mergedMeaningfulDuplicate[`${CHILD_MERGED_BACKUP_PREFIX}${anonymousId}`], 'The removed duplicate must remain recoverable from a hidden account backup.');
+
 const differentYearPayload = {
   ...anonymousPayload,
   [CLOUD_CHILD_STATE_KEY]: childState([
@@ -169,6 +219,8 @@ assert.match(dashboardSource, /Log masuk untuk Sync/, 'The dashboard must give l
 assert.match(appSource, /reloadCloudLearningState\(restoredChildId\)/, 'A cloud pull must refresh active profile state in React.');
 assert.match(appSource, /applyMergedCloudMetadata\(payload, activeChildId\)/, 'A completed upload must not restore an older in-flight payload over newer active learning state.');
 assert.match(appSource, /localStorage\.removeItem\(`\$\{CHILD_ORIGINAL_SNAPSHOT_PREFIX\}\$\{target\.id\}`\)/, 'Deleting a profile must remove its original backup.');
+assert.match(appSource, /!key\.startsWith\(CHILD_MERGED_BACKUP_PREFIX\)/, 'A merged-profile recovery backup must never be copied recursively into a child snapshot.');
+assert.match(appSource, /const duplicateProfile = existingProfiles\.find[\s\S]{0,450}Profil \$\{duplicateProfile\.name\}[\s\S]{0,150}return true;/, 'Creating the same child name and year must reuse the existing profile.');
 assert.match(sqlSource, /where id = auth\.uid\(\)/, 'Cloud learning reads and writes must remain scoped to the authenticated account.');
 assert.match(sqlSource, /if auth\.uid\(\) is null then/, 'Anonymous writes must fail closed.');
 

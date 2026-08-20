@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.4.1
+Version: 3.4.2
 Status: stable
-Build date: 2026-08-20T16:38:00.591Z
+Build date: 2026-08-20T17:09:06.291Z
 
 | Area | Status |
 | --- | --- |
@@ -10,9 +10,10 @@ Build date: 2026-08-20T16:38:00.591Z
 | Build | PASS |
 | Build assets | PASS |
 | Validation | PASS |
-| Premium profile recovery | PASS |
-| Multi-profile isolation | PASS |
-| Multi-device learning sync | PASS |
+| Duplicate profile consolidation | PASS |
+| Split learning-data preservation | PASS |
+| Multi-device tombstone propagation | PASS |
+| Account-scoped recovery backup | PASS |
 | Coverage | 100% |
 | Questions | 4530 |
 | Subjects | 8 |

@@ -1,5 +1,6 @@
 export const CHILD_SNAPSHOT_PREFIX = 'jannati_child_snapshot:';
 export const CHILD_ORIGINAL_SNAPSHOT_PREFIX = 'jannati_child_original_snapshot:';
+export const CHILD_MERGED_BACKUP_PREFIX = 'jannati_merged_child_backup:';
 export const CLOUD_CHILD_STATE_KEY = 'jannati_cloud_child_state';
 export const CLOUD_SYNC_META_KEY = 'jannati_cloud_sync_meta';
 export const CLOUD_SYNC_VERSION = 2;
@@ -117,7 +118,7 @@ function normalizeProfileIdentityPart(value = '') {
     .trim();
 }
 
-function getProfileIdentity(profile = {}) {
+export function getChildProfileIdentity(profile = {}) {
   const name = normalizeProfileIdentityPart(profile.name);
   const year = normalizeProfileIdentityPart(profile.year);
   if (!name || !year || ['anak', 'murid', 'pelajar', 'demo murid'].includes(name)) return '';
@@ -132,7 +133,7 @@ function listProfiles(metadata = {}, deletedChildren = {}) {
 function buildUniqueIdentityMap(profiles = []) {
   const groups = new Map();
   profiles.forEach(profile => {
-    const identity = getProfileIdentity(profile);
+    const identity = getChildProfileIdentity(profile);
     if (!identity) return;
     const current = groups.get(identity) || [];
     current.push(profile);
@@ -183,6 +184,122 @@ function rewriteSnapshotChildId(rawSnapshot, childId) {
   }
 }
 
+const CANONICAL_PROFILE_FIELDS = new Set([
+  'name',
+  'year',
+  'avatar',
+  'email',
+  'accountId',
+  'accessStatus',
+  'accessLabel',
+  'accessExpiresAt',
+  'isPremium',
+  'isDemo'
+]);
+
+function isDateLikeField(key = '', value = '') {
+  if (!value || typeof value !== 'string') return false;
+  return /(at|date|day|laststudy|lastplayed|lastpractised)$/i.test(key)
+    && parseTimestamp(value) > 0;
+}
+
+function arrayItemKey(item) {
+  if (!isObject(item)) return `${typeof item}:${String(item)}`;
+  if (item.id) return `id:${item.id}`;
+  if (item.key) return `key:${item.key}`;
+  if (item.eventKey) return `event:${item.eventKey}`;
+  if (item.sessionId) return `session:${item.sessionId}`;
+  if (item.questionId) {
+    return `question:${item.questionId}:${item.answeredAt || item.timestamp || item.date || item.attemptNumber || ''}`;
+  }
+  try {
+    return `json:${JSON.stringify(item)}`;
+  } catch {
+    return '';
+  }
+}
+
+function mergeLearningArrays(canonical = [], duplicate = [], depth = 0) {
+  const merged = [];
+  const indexByKey = new Map();
+  [...canonical, ...duplicate].forEach(item => {
+    const key = arrayItemKey(item);
+    if (!key || !indexByKey.has(key)) {
+      if (key) indexByKey.set(key, merged.length);
+      merged.push(item);
+      return;
+    }
+    const index = indexByKey.get(key);
+    merged[index] = mergeLearningValue(merged[index], item, '', depth + 1);
+  });
+  return merged.slice(0, 500);
+}
+
+function mergeLearningValue(canonical, duplicate, key = '', depth = 0) {
+  if (duplicate === undefined || duplicate === null) return canonical;
+  if (canonical === undefined || canonical === null) return duplicate;
+  if (depth > 12) return canonical;
+  if (Array.isArray(canonical) && Array.isArray(duplicate)) {
+    return mergeLearningArrays(canonical, duplicate, depth + 1);
+  }
+  if (isObject(canonical) && isObject(duplicate)) {
+    const merged = { ...canonical };
+    Object.entries(duplicate).forEach(([nestedKey, value]) => {
+      merged[nestedKey] = mergeLearningValue(merged[nestedKey], value, nestedKey, depth + 1);
+    });
+    return merged;
+  }
+  if (typeof canonical === 'number' && typeof duplicate === 'number') return Math.max(canonical, duplicate);
+  if (typeof canonical === 'boolean' && typeof duplicate === 'boolean') {
+    return CANONICAL_PROFILE_FIELDS.has(key) ? canonical : canonical || duplicate;
+  }
+  if (typeof canonical === 'string' && typeof duplicate === 'string') {
+    if (CANONICAL_PROFILE_FIELDS.has(key)) return canonical || duplicate;
+    if (isDateLikeField(key, canonical) || isDateLikeField(key, duplicate)) {
+      return parseTimestamp(duplicate) > parseTimestamp(canonical) ? duplicate : canonical;
+    }
+    return canonical || duplicate;
+  }
+  return canonical;
+}
+
+function mergeStoredLearningValue(canonicalRaw, duplicateRaw, storageKey = '') {
+  if (typeof canonicalRaw !== 'string') return duplicateRaw;
+  if (typeof duplicateRaw !== 'string') return canonicalRaw;
+  try {
+    const canonical = JSON.parse(canonicalRaw);
+    const duplicate = JSON.parse(duplicateRaw);
+    if (storageKey === 'jannati_v151_resume') {
+      return parseTimestamp(duplicate?.updatedAt) > parseTimestamp(canonical?.updatedAt) ? duplicateRaw : canonicalRaw;
+    }
+    return JSON.stringify(mergeLearningValue(canonical, duplicate));
+  } catch {
+    return canonicalRaw || duplicateRaw;
+  }
+}
+
+function mergeLearningSnapshots(canonicalRaw, duplicateRaw, childId) {
+  if (typeof canonicalRaw !== 'string') return rewriteSnapshotChildId(duplicateRaw, childId);
+  if (typeof duplicateRaw !== 'string') return rewriteSnapshotChildId(canonicalRaw, childId);
+  const canonical = parseObject(canonicalRaw);
+  const duplicate = parseObject(duplicateRaw);
+  const merged = { ...canonical };
+  Object.entries(duplicate).forEach(([key, value]) => {
+    if (key.startsWith('__')) return;
+    merged[key] = mergeStoredLearningValue(merged[key], value, key);
+  });
+  return JSON.stringify({
+    ...merged,
+    __childSnapshotChildId: childId,
+    __childSnapshotCapturedAt: Math.max(
+      parseTimestamp(canonical.__childSnapshotCapturedAt),
+      parseTimestamp(duplicate.__childSnapshotCapturedAt),
+      Date.now()
+    ),
+    __childSnapshotDeviceId: canonical.__childSnapshotDeviceId || duplicate.__childSnapshotDeviceId || null
+  });
+}
+
 function remapPayloadProfiles(payload = {}, metadata = {}, aliases = new Map(), canonicalProfiles = new Map()) {
   const next = { ...payload };
   const mappedProfiles = listProfiles(metadata).map(profile => {
@@ -193,11 +310,27 @@ function remapPayloadProfiles(payload = {}, metadata = {}, aliases = new Map(), 
   });
 
   for (const [aliasId, targetId] of aliases) {
+    const aliasProfile = (Array.isArray(metadata.profiles) ? metadata.profiles : [])
+      .find(profile => profile?.id === aliasId);
+    const aliasSnapshot = next[`${CHILD_SNAPSHOT_PREFIX}${aliasId}`];
+    const aliasOriginalSnapshot = next[`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${aliasId}`];
+    const backupKey = `${CHILD_MERGED_BACKUP_PREFIX}${aliasId}`;
+    if (!next[backupKey] && (aliasProfile || aliasSnapshot || aliasOriginalSnapshot)) {
+      next[backupKey] = JSON.stringify({
+        version: 1,
+        aliasId,
+        canonicalId: targetId,
+        mergedAt: new Date().toISOString(),
+        profile: aliasProfile || null,
+        snapshot: aliasSnapshot || null,
+        originalSnapshot: aliasOriginalSnapshot || null
+      });
+    }
     [CHILD_SNAPSHOT_PREFIX, CHILD_ORIGINAL_SNAPSHOT_PREFIX].forEach(prefix => {
       const aliasKey = `${prefix}${aliasId}`;
       const targetKey = `${prefix}${targetId}`;
-      const selected = chooseRicherSnapshot(next[aliasKey], next[targetKey]);
-      if (typeof selected === 'string') next[targetKey] = rewriteSnapshotChildId(selected, targetId);
+      const selected = mergeLearningSnapshots(next[targetKey], next[aliasKey], targetId);
+      if (typeof selected === 'string') next[targetKey] = selected;
       delete next[aliasKey];
     });
   }
@@ -220,6 +353,19 @@ function buildCanonicalProfileMap(profiles = [], aliases = new Map()) {
   return canonicalProfiles;
 }
 
+function chooseCanonicalChildProfile(profiles = [], localPayload = {}, cloudPayload = {}) {
+  return [...profiles].sort((left, right) => {
+    const leftCreatedAt = parseTimestamp(left.createdAt);
+    const rightCreatedAt = parseTimestamp(right.createdAt);
+    if (leftCreatedAt && rightCreatedAt && leftCreatedAt !== rightCreatedAt) return leftCreatedAt - rightCreatedAt;
+    if (leftCreatedAt !== rightCreatedAt) return leftCreatedAt ? -1 : 1;
+    const leftScore = Math.max(snapshotScoreForChild(localPayload, left.id), snapshotScoreForChild(cloudPayload, left.id));
+    const rightScore = Math.max(snapshotScoreForChild(localPayload, right.id), snapshotScoreForChild(cloudPayload, right.id));
+    if (leftScore !== rightScore) return rightScore - leftScore;
+    return String(left.id).localeCompare(String(right.id));
+  })[0] || null;
+}
+
 function buildProfileReconciliation(localPayload = {}, cloudPayload = {}, options = {}) {
   const localMeta = parseObject(localPayload[CLOUD_CHILD_STATE_KEY]);
   const cloudMeta = parseObject(cloudPayload[CLOUD_CHILD_STATE_KEY]);
@@ -235,54 +381,52 @@ function buildProfileReconciliation(localPayload = {}, cloudPayload = {}, option
     if (cloudProfile && localProfile.id !== cloudProfile.id) aliases.set(localProfile.id, cloudProfile.id);
   }
 
-  // Repair the already-corrupted shape produced by older releases: a newer,
-  // empty duplicate is active while the same named/year profile still owns the
-  // learning history. Only an evidence-free active duplicate is auto-collapsed.
-  const requestedActiveId = String(options.localActiveChildId || localMeta.activeChildId || cloudMeta.activeChildId || '').trim();
-  const resolvedActiveId = resolveAlias(aliases, requestedActiveId);
   const combinedProfiles = new Map([...cloudProfiles, ...localProfiles].map(profile => [profile.id, profile]));
-  const activeProfile = combinedProfiles.get(resolvedActiveId);
-  const activeIdentity = getProfileIdentity(activeProfile);
-  const activeScore = Math.max(
-    snapshotScoreForChild(localPayload, resolvedActiveId),
-    snapshotScoreForChild(cloudPayload, resolvedActiveId)
-  );
-  if (activeIdentity && activeScore === 0) {
-    const candidates = [...combinedProfiles.values()]
-      .filter(profile => profile.id !== resolvedActiveId && getProfileIdentity(profile) === activeIdentity)
-      .map(profile => ({
-        profile,
-        score: Math.max(snapshotScoreForChild(localPayload, profile.id), snapshotScoreForChild(cloudPayload, profile.id))
-      }))
-      .filter(candidate => candidate.score > 0)
-      .sort((left, right) => right.score - left.score);
-    if (candidates.length === 1 || candidates[0]?.score > candidates[1]?.score) {
-      aliases.set(resolvedActiveId, resolveAlias(aliases, candidates[0].profile.id));
-    }
-  }
+  const identityGroups = new Map();
+  [...combinedProfiles.values()].forEach(profile => {
+    const identity = getChildProfileIdentity(profile);
+    const resolvedId = resolveAlias(aliases, profile.id);
+    if (!identity || resolvedId !== profile.id) return;
+    const group = identityGroups.get(identity) || [];
+    group.push(profile);
+    identityGroups.set(identity, group);
+  });
+  identityGroups.forEach(group => {
+    if (group.length < 2) return;
+    const canonical = chooseCanonicalChildProfile(group, localPayload, cloudPayload);
+    group.forEach(profile => {
+      if (canonical && profile.id !== canonical.id) aliases.set(profile.id, canonical.id);
+    });
+  });
 
+  const reconciliationAt = Date.now();
+  const reconciledDeletedChildren = { ...deletedChildren };
+  aliases.forEach((targetId, aliasId) => {
+    if (resolveAlias(aliases, aliasId) !== aliasId) {
+      reconciledDeletedChildren[aliasId] = Math.max(reconciledDeletedChildren[aliasId] || 0, reconciliationAt);
+    }
+  });
   const canonicalProfiles = buildCanonicalProfileMap([...localProfiles, ...cloudProfiles], aliases);
-  const local = remapPayloadProfiles(localPayload, localMeta, aliases, canonicalProfiles);
-  const cloud = remapPayloadProfiles(cloudPayload, cloudMeta, aliases, canonicalProfiles);
+  const local = remapPayloadProfiles(localPayload, {
+    ...localMeta,
+    deletedChildren: reconciledDeletedChildren
+  }, aliases, canonicalProfiles);
+  const cloud = remapPayloadProfiles(cloudPayload, {
+    ...cloudMeta,
+    deletedChildren: reconciledDeletedChildren
+  }, aliases, canonicalProfiles);
   const dirtyChildIds = new Set((options.dirtyChildIds || [])
     .filter(Boolean)
     .map(childId => resolveAlias(aliases, childId)));
 
-  // A meaningful Premium snapshot must not be replaced by an empty anonymous
-  // snapshot merely because the anonymous profile was marked dirty at login.
-  for (const [aliasId, targetId] of aliases) {
-    const localScore = Math.max(snapshotScoreForChild(local, targetId), snapshotScoreForChild(localPayload, aliasId));
-    const cloudScore = snapshotScoreForChild(cloud, targetId);
-    if (cloudScore > localScore) {
-      dirtyChildIds.delete(targetId);
-      [CHILD_SNAPSHOT_PREFIX, CHILD_ORIGINAL_SNAPSHOT_PREFIX].forEach(prefix => {
-        const targetKey = `${prefix}${targetId}`;
-        if (getLearningSnapshotEvidenceScore(cloud[targetKey]) > getLearningSnapshotEvidenceScore(local[targetKey])) {
-          delete local[targetKey];
-        }
-      });
-    }
-  }
+  new Set([...aliases.values()].map(childId => resolveAlias(aliases, childId))).forEach(targetId => {
+    [CHILD_SNAPSHOT_PREFIX, CHILD_ORIGINAL_SNAPSHOT_PREFIX].forEach(prefix => {
+      const targetKey = `${prefix}${targetId}`;
+      const selected = mergeLearningSnapshots(cloud[targetKey], local[targetKey], targetId);
+      if (typeof selected === 'string') local[targetKey] = selected;
+    });
+    dirtyChildIds.add(targetId);
+  });
 
   return {
     local,
@@ -293,16 +437,22 @@ function buildProfileReconciliation(localPayload = {}, cloudPayload = {}, option
   };
 }
 
-export function hasRecoverableActiveProfileDuplicate(payload = {}) {
+export function hasRecoverableChildProfileDuplicates(payload = {}) {
   const metadata = parseObject(payload[CLOUD_CHILD_STATE_KEY]);
   const deletedChildren = normalizeDeletedChildren(metadata.deletedChildren);
   const profiles = listProfiles(metadata, deletedChildren);
-  const activeProfile = profiles.find(profile => profile.id === metadata.activeChildId);
-  const identity = getProfileIdentity(activeProfile);
-  if (!identity || snapshotScoreForChild(payload, activeProfile.id) > 0) return false;
-  return profiles.some(profile => profile.id !== activeProfile.id
-    && getProfileIdentity(profile) === identity
-    && snapshotScoreForChild(payload, profile.id) > 0);
+  const identities = new Set();
+  return profiles.some(profile => {
+    const identity = getChildProfileIdentity(profile);
+    if (!identity) return false;
+    if (identities.has(identity)) return true;
+    identities.add(identity);
+    return false;
+  });
+}
+
+export function hasRecoverableActiveProfileDuplicate(payload = {}) {
+  return hasRecoverableChildProfileDuplicates(payload);
 }
 
 function mergeChildProfiles(localProfiles = [], cloudProfiles = [], deletedChildren = {}) {

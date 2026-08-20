@@ -67,11 +67,13 @@ import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
 import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient.js';
 import {
+  CHILD_MERGED_BACKUP_PREFIX,
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
   CLOUD_SYNC_META_KEY,
-  hasRecoverableActiveProfileDuplicate,
+  getChildProfileIdentity,
+  hasRecoverableChildProfileDuplicates,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload,
   saveCloudLearningData
@@ -262,7 +264,8 @@ function isChildScopedDataKey(key = '') {
     && key !== CLOUD_CHILD_STATE_KEY
     && key !== CLOUD_SYNC_META_KEY
     && !key.startsWith(CHILD_SNAPSHOT_PREFIX)
-    && !key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX);
+    && !key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)
+    && !key.startsWith(CHILD_MERGED_BACKUP_PREFIX);
 }
 
 function readChildScopedData() {
@@ -554,8 +557,16 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '') {
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
     if (typeof payload[CLOUD_CHILD_STATE_KEY] === 'string') localStorage.setItem(CLOUD_CHILD_STATE_KEY, payload[CLOUD_CHILD_STATE_KEY]);
     if (typeof payload[CLOUD_SYNC_META_KEY] === 'string') localStorage.setItem(CLOUD_SYNC_META_KEY, payload[CLOUD_SYNC_META_KEY]);
+    Object.keys(deletedChildren).forEach(childId => {
+      localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`);
+      localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`);
+    });
 
     Object.entries(payload).forEach(([key, raw]) => {
+      if (key.startsWith(CHILD_MERGED_BACKUP_PREFIX) && typeof raw === 'string') {
+        localStorage.setItem(key, raw);
+        return;
+      }
       const prefix = key.startsWith(CHILD_SNAPSHOT_PREFIX)
         ? CHILD_SNAPSHOT_PREFIX
         : key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)
@@ -1464,6 +1475,15 @@ export default function App() {
       const nextChild = { id: createChildId(), name: cleanName, year: year || 'Tahun 2', avatar, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
       const currentChildId = activeChildId || readActiveChildId();
       const existingProfiles = readChildProfiles();
+      const duplicateProfile = existingProfiles.find(item => (
+        getChildProfileIdentity(item)
+        && getChildProfileIdentity(item) === getChildProfileIdentity(nextChild)
+      ));
+      if (duplicateProfile) {
+        if (duplicateProfile.id !== currentChildId) handleSelectChild(duplicateProfile.id);
+        setRecoveryMessages(prev => [...prev, `Profil ${duplicateProfile.name} untuk ${duplicateProfile.year} sudah wujud dan telah digunakan semula.`]);
+        return true;
+      }
       markLocalLearningMutation();
       const currentLearningSnapshot = readChildScopedData();
       const currentSnapshotScore = snapshotEvidenceScore(currentLearningSnapshot);
@@ -1635,7 +1655,7 @@ export default function App() {
 
       if (!alive || syncSequence !== accountSyncSequenceRef.current) return;
       const cloudLearningData = cloudResult.data || {};
-      if (!cloudResult.error && hasRecoverableActiveProfileDuplicate(cloudLearningData)) {
+      if (!cloudResult.error && hasRecoverableChildProfileDuplicates(cloudLearningData)) {
         setPendingProfileReconciliation(user.id, true);
         setPendingCloudMutation(user.id, true);
       }
