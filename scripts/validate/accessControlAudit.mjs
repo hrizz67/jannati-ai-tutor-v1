@@ -76,6 +76,17 @@ const app = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8
 const dashboard = fs.readFileSync(new URL('../../src/dashboard/HomeDashboard.jsx', import.meta.url), 'utf8');
 const schema = fs.readFileSync(new URL('../../supabase/schema.sql', import.meta.url), 'utf8');
 const learningSql = fs.readFileSync(new URL('../../supabase/learning_data.sql', import.meta.url), 'utf8');
+const migrationDirectory = new URL('../../supabase/migrations/', import.meta.url);
+const migrationNames = fs.readdirSync(migrationDirectory);
+const baselineMigrationName = migrationNames
+  .find(name => name.endsWith('_remote_schema_baseline.sql'));
+const accessMigrationName = migrationNames
+  .find(name => name.endsWith('_access_isolation_hardening.sql'));
+assert.ok(baselineMigrationName, 'A production schema baseline migration must exist.');
+assert.ok(accessMigrationName, 'Access-isolation database migration must exist.');
+const baselineMigration = fs.readFileSync(new URL(baselineMigrationName, migrationDirectory), 'utf8');
+const accessMigration = fs.readFileSync(new URL(accessMigrationName, migrationDirectory), 'utf8');
+const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/public/tables/profiles.sql', import.meta.url), 'utf8');
 for (const token of ['openTutorAi', 'openPremiumScreen', 'FREE_DAILY_QUESTION_LIMIT', 'onOpenUasa={() => openPremiumScreen']) {
   assert.ok(app.includes(token), `Missing access gate token: ${token}`);
 }
@@ -93,5 +104,15 @@ assert.match(dashboard, /hasAccountSession && accessProfile\?\.isPremium/, 'Dash
 assert.match(schema, /values \(new\.id, coalesce\([\s\S]{0,100}, 'free'\)/, 'New auth users must be inserted explicitly as Free.');
 assert.match(schema, /revoke insert, update, delete on table public\.profiles from anon, authenticated;/, 'Client roles must not write entitlement rows directly.');
 assert.match(learningSql, /values \(auth\.uid\(\), 'Murid', 'free'\)/, 'Learning-data fallback profile creation must be explicitly Free.');
+assert.match(learningSql, /revoke all on function public\.save_learning_data\(jsonb\) from public, anon, authenticated;/, 'Anonymous users must not execute the learning-data write RPC.');
+assert.match(accessMigration, /revoke all on table public\.profiles from anon, authenticated;/, 'Migration must remove legacy browser-role table grants.');
+assert.match(accessMigration, /grant select on table public\.profiles to authenticated;/, 'Authenticated users still need RLS-scoped profile reads.');
+assert.match(accessMigration, /revoke all on function public\.save_learning_data\(jsonb\) from public, anon, authenticated;/, 'Migration must remove anonymous learning-data RPC access.');
+assert.match(accessMigration, /grant execute on function public\.save_learning_data\(jsonb\) to authenticated;/, 'Authenticated learning sync must remain available.');
+assert.match(accessMigration, /alter default privileges for role postgres in schema public[\s\S]*revoke all on tables from anon, authenticated;/, 'Future tables must fail closed for browser roles.');
+assert.match(baselineMigration, /create table if not exists public\.profiles/, 'Baseline must recreate the profile schema without production data.');
+assert.match(baselineMigration, /learning_data jsonb not null default '\{\}'::jsonb/, 'Baseline must recreate Cloud learning storage.');
+assert.doesNotMatch(declarativeProfiles, /grant[\s\S]{0,200}on table "public"\."profiles" to "anon"/, 'Declarative production schema must not grant profile-table access to anonymous users.');
+assert.match(declarativeProfiles, /grant select on table "public"\."profiles" to "authenticated";/, 'Declarative schema must preserve RLS-scoped authenticated reads.');
 
 console.log('Access-control audit: PASS');

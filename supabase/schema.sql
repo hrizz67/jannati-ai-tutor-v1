@@ -44,6 +44,14 @@ create policy "Users can read their own profile"
 -- user can never upgrade their own account.
 revoke insert, update, delete on table public.profiles from anon, authenticated;
 
+-- New public objects must opt in to browser access explicitly.
+alter default privileges for role postgres in schema public
+  revoke all on tables from anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke all on sequences from anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke all on functions from public, anon, authenticated;
+
 create or replace function public.touch_profile_updated_at()
 returns trigger
 language plpgsql
@@ -58,6 +66,9 @@ drop trigger if exists profiles_updated_at on public.profiles;
 create trigger profiles_updated_at
   before update on public.profiles
   for each row execute procedure public.touch_profile_updated_at();
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+revoke all on function public.touch_profile_updated_at() from public, anon, authenticated;
 
 -- Manual admin workflow (run only from the SQL editor):
 -- update public.profiles

@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "redactSecrets": true,
+  "scope": "database",
+  "profile": "supabase",
+  "defaultOwner": "postgres",
+  "files": [
+    "_cluster/extensions/pgcrypto.sql",
+    "_cluster/extensions/uuid-ossp.sql",
+    "auth/tables/users.sql",
+    "public/default_privileges.sql",
+    "public/functions/get_learning_data.sql",
+    "public/functions/handle_new_user.sql",
+    "public/functions/save_learning_data.sql",
+    "public/functions/touch_profile_updated_at.sql",
+    "public/schema.sql",
+    "public/tables/profiles.sql"
+  ]
+}

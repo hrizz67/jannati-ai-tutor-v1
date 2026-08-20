@@ -38,7 +38,7 @@ begin
 end;
 $$;
 
-revoke all on function public.get_learning_data() from public;
-revoke all on function public.save_learning_data(jsonb) from public;
+revoke all on function public.get_learning_data() from public, anon, authenticated;
+revoke all on function public.save_learning_data(jsonb) from public, anon, authenticated;
 grant execute on function public.get_learning_data() to authenticated;
 grant execute on function public.save_learning_data(jsonb) to authenticated;
