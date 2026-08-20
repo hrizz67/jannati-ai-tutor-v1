@@ -4,6 +4,7 @@ import {
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
+  hasRecoverableActiveProfileDuplicate,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload
 } from '../../src/services/learningSync.js';
@@ -60,6 +61,75 @@ const localWinsWhenDirty = mergeCloudLearningPayload(localPayload, cloudPayload,
   localActiveChildId: 'child-a'
 });
 assert.equal(localWinsWhenDirty[`${CHILD_SNAPSHOT_PREFIX}child-a`], localA, 'An explicitly dirty profile must survive clock skew while it is being uploaded.');
+
+const anonymousId = 'child-anonymous-aisyah';
+const premiumId = 'child-premium-aisyah';
+const anonymousEmpty = snapshot(anonymousId, 300, 'Aisyah', 0);
+const premiumLearning = snapshot(premiumId, 200, 'Aisyah', 80);
+const anonymousPayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: anonymousId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+  ], anonymousId),
+  [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: anonymousEmpty,
+  jannati_v151_profile: JSON.stringify({ name: 'Aisyah', xp: 0 })
+};
+const premiumPayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: premiumId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' }
+  ], premiumId),
+  [`${CHILD_SNAPSHOT_PREFIX}${premiumId}`]: premiumLearning,
+  jannati_v151_profile: JSON.stringify({ name: 'Aisyah', xp: 80 })
+};
+
+const isolatedWithoutLoginReconciliation = mergeCloudLearningPayload(anonymousPayload, premiumPayload, {
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId
+});
+assert.equal(JSON.parse(isolatedWithoutLoginReconciliation[CLOUD_CHILD_STATE_KEY]).profiles.length, 2, 'Normal sync must not merge profiles by display name.');
+
+const reconciledLogin = mergeCloudLearningPayload(anonymousPayload, premiumPayload, {
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId,
+  reconcileChildIdentity: true
+});
+const reconciledState = JSON.parse(reconciledLogin[CLOUD_CHILD_STATE_KEY]);
+assert.deepEqual(reconciledState.profiles.map(profile => profile.id), [premiumId], 'Login migration must reuse the existing Premium child ID.');
+assert.equal(reconciledState.activeChildId, premiumId, 'The existing Premium child must become active after reconciliation.');
+assert.equal(reconciledState.profiles[0].createdAt, '2026-07-01T00:00:00.000Z', 'Premium profile metadata must remain canonical.');
+assert.equal(reconciledLogin[`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`], undefined, 'The anonymous alias snapshot must be removed.');
+assert.equal(JSON.parse(reconciledLogin.jannati_v151_profile).xp, 80, 'An empty anonymous profile must not hide richer Premium learning data.');
+
+const corruptedCloudPayload = {
+  ...premiumPayload,
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: premiumId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
+    { id: anonymousId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+  ], anonymousId),
+  [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: anonymousEmpty
+};
+assert.equal(hasRecoverableActiveProfileDuplicate(corruptedCloudPayload), true, 'An active empty duplicate already stored in cloud must be detected.');
+const repairedCloudDuplicate = mergeCloudLearningPayload(corruptedCloudPayload, corruptedCloudPayload, {
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId,
+  reconcileChildIdentity: true
+});
+const repairedCloudState = JSON.parse(repairedCloudDuplicate[CLOUD_CHILD_STATE_KEY]);
+assert.deepEqual(repairedCloudState.profiles.map(profile => profile.id), [premiumId], 'A previously stored empty duplicate must collapse into the richer Premium profile.');
+assert.equal(repairedCloudState.activeChildId, premiumId);
+assert.equal(repairedCloudState.profiles[0].createdAt, '2026-07-01T00:00:00.000Z');
+
+const differentYearPayload = {
+  ...anonymousPayload,
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: anonymousId, name: 'Aisyah', year: 'Tahun 3', createdAt: '2026-08-20T00:00:00.000Z' }
+  ], anonymousId)
+};
+const differentYearMerge = mergeCloudLearningPayload(differentYearPayload, premiumPayload, {
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId,
+  reconcileChildIdentity: true
+});
+assert.equal(JSON.parse(differentYearMerge[CLOUD_CHILD_STATE_KEY]).profiles.length, 2, 'Same-name children in different years must remain isolated.');
 
 const deleted = mergeCloudLearningPayload(localPayload, {
   ...cloudPayload,

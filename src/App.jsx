@@ -71,6 +71,7 @@ import {
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
   CLOUD_SYNC_META_KEY,
+  hasRecoverableActiveProfileDuplicate,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload,
   saveCloudLearningData
@@ -94,6 +95,7 @@ const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
 const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
 const CLOUD_PENDING_PREFIX = 'jannati_cloud_sync_pending:';
+const PROFILE_RECONCILIATION_PREFIX = 'jannati_profile_reconciliation_pending:';
 const SYNC_DEVICE_KEY = 'jannati_sync_device_id';
 const ACCOUNT_MIGRATION_KEY = 'jannati_account_storage_migrated_v1';
 const CLASSROOM_PILOT_CODE_PREFIX = 'jannati_classroom_pilot_code:';
@@ -142,6 +144,7 @@ function isAccountDataKey(key = '') {
     && key !== ACCOUNT_MIGRATION_KEY
     && key !== SYNC_DEVICE_KEY
     && !key.startsWith(CLOUD_PENDING_PREFIX)
+    && !key.startsWith(PROFILE_RECONCILIATION_PREFIX)
     && !key.startsWith(ACCOUNT_SNAPSHOT_PREFIX);
 }
 
@@ -186,6 +189,30 @@ function setPendingCloudMutation(accountId, pending) {
     else localStorage.removeItem(key);
   } catch {
     // The in-memory pending flag still protects the active session.
+  }
+}
+
+function getProfileReconciliationKey(accountId) {
+  return `${PROFILE_RECONCILIATION_PREFIX}${String(accountId || '').trim()}`;
+}
+
+function hasPendingProfileReconciliation(accountId) {
+  if (!accountId) return false;
+  try {
+    return localStorage.getItem(getProfileReconciliationKey(accountId)) === 'pending';
+  } catch {
+    return false;
+  }
+}
+
+function setPendingProfileReconciliation(accountId, pending) {
+  if (!accountId) return;
+  try {
+    const key = getProfileReconciliationKey(accountId);
+    if (pending) localStorage.setItem(key, 'pending');
+    else localStorage.removeItem(key);
+  } catch {
+    // A later login can safely retry reconciliation from cloud metadata.
   }
 }
 
@@ -518,6 +545,11 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '') {
     const profiles = Array.isArray(metadata.profiles)
       ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id])
       : readChildProfiles();
+    const requestedActiveProfile = profiles.find(item => item.id === activeChildId);
+    const resolvedActiveChildId = requestedActiveProfile?.id
+      || profiles.find(item => item.id === metadata.activeChildId)?.id
+      || profiles[0]?.id
+      || '';
     writeChildProfiles(profiles);
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
     if (typeof payload[CLOUD_CHILD_STATE_KEY] === 'string') localStorage.setItem(CLOUD_CHILD_STATE_KEY, payload[CLOUD_CHILD_STATE_KEY]);
@@ -537,10 +569,20 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '') {
         localStorage.setItem(key, raw);
       }
     });
-    if (activeChildId) captureChildSnapshot(activeChildId, { force: true });
+    if (requestedActiveProfile) {
+      captureChildSnapshot(activeChildId, { force: true });
+    } else if (resolvedActiveChildId) {
+      localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`);
+      localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`);
+      localStorage.setItem(ACTIVE_CHILD_KEY, resolvedActiveChildId);
+      const reconciledSnapshot = resolveChildSnapshot(resolvedActiveChildId);
+      if (reconciledSnapshot) restoreChildSnapshot(reconciledSnapshot);
+    }
+    return resolvedActiveChildId;
   } catch {
     // The completed cloud save remains valid even if optional local metadata refresh fails.
   }
+  return activeChildId;
 }
 
 function clearAccountData() {
@@ -643,11 +685,13 @@ function activateAccountStorage(accountId) {
       const mergedSnapshot = mergeCloudLearningPayload(anonymousPayload, existingSnapshot, {
         dirtyChildIds: anonymousDirtyChildIds,
         localActiveChildId: readActiveChildId(),
-        deviceId: getSyncDeviceId()
+        deviceId: getSyncDeviceId(),
+        reconcileChildIdentity: true
       });
       restoreAccountSnapshot(mergedSnapshot);
       captureAccountSnapshot(nextId);
       setPendingCloudMutation(nextId, true);
+      setPendingProfileReconciliation(nextId, true);
     } else if (existingSnapshot) {
       restoreAccountSnapshot(existingSnapshot);
     } else if (localStorage.getItem(ACCOUNT_MIGRATION_KEY) === 'done') {
@@ -657,6 +701,7 @@ function activateAccountStorage(accountId) {
       // the first authenticated account without copying it to later accounts.
       captureAccountSnapshot(nextId);
       setPendingCloudMutation(nextId, true);
+      if (readChildProfiles().length) setPendingProfileReconciliation(nextId, true);
       localStorage.setItem(ACCOUNT_MIGRATION_KEY, 'done');
     }
     localStorage.setItem(ACCOUNT_SCOPE_KEY, nextId);
@@ -1290,17 +1335,22 @@ export default function App() {
         const payload = mergeCloudLearningPayload(buildCloudLearningPayload(), cloudResult.data, {
           dirtyChildIds,
           localActiveChildId: activeChildId,
-          deviceId: getSyncDeviceId()
+          deviceId: getSyncDeviceId(),
+          reconcileChildIdentity: hasPendingProfileReconciliation(accountUser.id)
         });
         const ok = await saveCloudLearningData(supabase, payload);
         cloudWritePendingRef.current = false;
         if (ok) {
-          applyMergedCloudMetadata(payload, activeChildId);
+          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId);
+          if (resolvedActiveChildId && resolvedActiveChildId !== activeChildId) {
+            reloadCloudLearningState(resolvedActiveChildId);
+          }
           setChildProfiles(readChildProfiles());
           setActiveChildId(readActiveChildId());
           lastCloudSignatureRef.current = JSON.stringify(payload);
           pendingOfflineCloudSaveRef.current = false;
           setPendingCloudMutation(accountUser.id, false);
+          setPendingProfileReconciliation(accountUser.id, false);
           dirtyChildIds.forEach(childId => dirtyChildIdsRef.current.delete(childId));
           captureAccountSnapshot(accountUser.id);
         } else {
@@ -1584,8 +1634,12 @@ export default function App() {
       ]);
 
       if (!alive || syncSequence !== accountSyncSequenceRef.current) return;
-      const hasPendingLocalData = hasPendingCloudMutation(user.id);
       const cloudLearningData = cloudResult.data || {};
+      if (!cloudResult.error && hasRecoverableActiveProfileDuplicate(cloudLearningData)) {
+        setPendingProfileReconciliation(user.id, true);
+        setPendingCloudMutation(user.id, true);
+      }
+      const hasPendingLocalData = hasPendingCloudMutation(user.id);
       lastCloudSignatureRef.current = cloudResult.error ? '' : JSON.stringify(cloudLearningData);
       if (!cloudResult.error && Object.keys(cloudLearningData).length && !hasPendingLocalData) {
         skipNextCloudSaveRef.current = true;
