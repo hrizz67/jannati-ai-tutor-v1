@@ -1,25 +1,22 @@
 # Changelog
 
-## 3.5.0 - 2026-08-20
+## 3.5.1 - 2026-08-20
 
-### Contextual Tutor AI
+### Fixed
 
-- Added recognition for open learning-planning questions, named-topic learning requests and natural Malay phrasing.
-- Added profile-aware topic recommendations that favour the selected subject and topics requiring more support.
-- Added an evidence-aware fallback that clearly states when there is not enough learning history to identify a weak topic.
-- Added short teaching plans and follow-up choices so Tutor AI continues as a two-way teacher instead of returning generic advice.
+- Tutor AI tidak lagi menyapa profil anak bernama sebagai “Murid” apabila profil adaptif tidak membawa nama.
+- Nama profil aktif kini diteruskan kepada enjin Tutor AI melalui salinan konteks tanpa mengubah data profil atau rekod pembelajaran.
+- Kapitalisasi respons cadangan pembelajaran diperbetulkan untuk keadaan nama profil tidak tersedia.
 
-### Chat-first interface
+### Tests
 
-- Replaced the two large persistent action panels with compact contextual learning tools beneath the conversation.
-- Showed question-help controls only when a real exercise context exists.
-- Removed empty question-context cards and hid idle status bars that reduced usable chat space.
-- Preserved learner profiles, progress, sync, resume and assessment data without schema or storage changes.
+- Tambah regresi untuk sapaan nama profil aktif dan cadangan belajar bagi murid yang masih mempunyai rekod pembelajaran terhad.
 
-### Regression protection
+### Release controls
 
-- Covered learning recommendations, named-topic requests, greetings and personalised follow-up actions in Tutor conversation regression tests.
-- Retained answer-leak safety and local curriculum grounding while keeping the under-18 generative gateway privacy gate unchanged.
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
 
 ### Quality snapshot
 

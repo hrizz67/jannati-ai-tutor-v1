@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.5.0
+Version: 3.5.1
 Status: stable
-Build date: 2026-08-20T17:50:33.209Z
+Build date: 2026-08-20T18:07:29.603Z
 
 | Area | Status |
 | --- | --- |
@@ -21,6 +21,7 @@ Build date: 2026-08-20T17:50:33.209Z
 | Tutor conversation regression | PASS |
 | Tutor answer-leak protection | PASS |
 | Learning sync and profile isolation | PASS |
+| Tutor AI active-profile greeting | PASS |
 | Overall Status | PASS |
 
 ## Validation

@@ -164,6 +164,19 @@ assert.match(learningRecommendation.text, /penerangan atau latihan/i, 'Tutor mes
 assert.doesNotMatch(learningRecommendation.text, /tanya dengan soalan yang lebih khusus|klik petunjuk|semak jawapan dan cuba lagi/i, 'Permintaan cadangan belajar tidak boleh menerima balasan generik.');
 assert.ok(learningRecommendation.quickReplies.some(item => /ajar saya kata nama am/i.test(item)), 'Cadangan mesti menyediakan tindakan susulan khusus.');
 
+const sparseLearningRecommendation = await getTutorResponse({
+  student: { id: 'student-2', name: 'Fayyadh' },
+  subject: { ...subject, topics: [topic] },
+  topic: null,
+  question: null,
+  weakTopics: [],
+  studyPlan: { focusCount: 3, estimatedMinutes: 15 },
+  prompt: 'Hari ni nak belajar apa?',
+  intent: 'general',
+  history: []
+});
+assert.match(sparseLearningRecommendation.text, /^Fayyadh, saya belum mempunyai cukup rekod/i, 'Tutor mesti menggunakan nama profil anak aktif walaupun rekod pembelajaran masih terhad.');
+
 const modalText = readFileSync(modalPath, 'utf8');
 assert.match(modalText, /onSuggestion=\{suggestion => void sendMessage\(suggestion, 'general'\)\}/, 'Balasan pantas mesti boleh dihantar sebagai mesej pelajar.');
 assert.match(modalText, /<button type="button" onClick=\{\(\) => onSuggestion\?\.\(item\)\}>/, 'Cadangan Tutor AI mesti berupa butang interaktif.');
@@ -172,5 +185,7 @@ assert.match(modalText, /Guru Pembelajaran AI/, 'Identiti Tutor AI mesti jelas s
 assert.match(modalText, /hasVisibleQuestionContext &&/, 'Kad konteks kosong tidak boleh dipaparkan tanpa soalan yang boleh dilihat.');
 assert.match(modalText, /className="tutor-ai-tools"/, 'Alat bantuan mesti dipaparkan sebagai tindakan chat yang ringkas.');
 assert.doesNotMatch(modalText, /<details[^>]+className="(?:tutor-ai-actions|quick-prompts-analytics)"/, 'Panel besar sebelum perbualan tidak boleh dikekalkan.');
+assert.match(modalText, /getStudentDisplayName\(\[profile, adaptiveProfile\], ''\)/, 'Nama Tutor AI mesti mengutamakan profil anak aktif sebelum profil adaptif.');
+assert.match(modalText, /student: tutorStudentProfile/, 'Enjin Tutor AI mesti menerima nama profil anak aktif tanpa memutasi data pembelajaran.');
 
 console.log('Tutor conversation regression: PASS');

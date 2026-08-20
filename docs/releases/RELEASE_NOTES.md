@@ -1,8 +1,15 @@
-# Jannati AI Tutor 3.5.0 Release Notes
+# Jannati AI Tutor 3.5.1 Release Notes
 
 Status: stable
-Tag: v3.5.0
-Build date: 2026-08-20T17:50:33.209Z
+Tag: v3.5.1
+Build date: 2026-08-20T18:07:29.603Z
+
+## Highlights
+
+- Tutor AI kini mengutamakan nama profil anak yang sedang aktif apabila menyapa dan memberi cadangan pembelajaran.
+- Statistik adaptif terus digunakan untuk bimbingan tanpa menggantikan identiti profil anak atau memutasi data pembelajaran.
+- Ayat cadangan Tutor AI kekal menggunakan huruf besar yang betul apabila nama profil tidak tersedia.
+- Regresi baharu melindungi pemetaan nama profil dan respons cadangan pembelajaran dengan rekod terhad.
 
 ## Release Readiness
 
@@ -10,25 +17,6 @@ Build date: 2026-08-20T17:50:33.209Z
 - Question-bank regression and release-pipeline audits run before the main validator suite.
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
-
-## Contextual AI Teacher
-
-- Tutor AI now understands open learning-planning questions such as “Hari ini saya patut belajar apa?” and requests to learn a named topic.
-- Recommendations use the active learner profile and prioritise a topic that needs strengthening within the selected subject.
-- When evidence is still limited, Tutor AI says so clearly before suggesting a suitable starting topic instead of pretending to know a weakness.
-- Replies include a short teaching plan and a useful follow-up question so the conversation can continue with an explanation or practice.
-
-## Chat-first Experience
-
-- Large persistent help and progress panels are replaced by compact contextual learning tools beneath the conversation.
-- Question help appears only when an active question exists, while learning recommendations and progress remain available throughout the chat.
-- Empty question-context cards and routine idle status bars no longer consume the conversation area.
-- The update changes Tutor AI presentation and response logic only; learner profiles, progress records, sync storage and assessment data remain unchanged.
-
-## Regression Protection
-
-- Conversation tests cover Malay learning-plan variations, named-topic requests, greetings, personalised recommendations and actionable follow-up replies.
-- Answer-leak, generative-gateway, access-control, resume-isolation and multi-device learning-sync regressions remain green.
 
 ## Content Quality
 

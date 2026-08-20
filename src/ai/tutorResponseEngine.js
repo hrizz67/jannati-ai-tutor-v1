@@ -246,8 +246,12 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
 
   if (focus.label) {
     const opening = focus.basedOnProgress
-      ? `${nameLead}berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`
-      : `${nameLead}saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`;
+      ? (nameLead
+          ? `${nameLead}berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`
+          : `Berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`)
+      : (nameLead
+          ? `${nameLead}saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`
+          : `Saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`);
     return {
       text: `${opening} ${shortPlan} Kamu mahu saya mula dengan penerangan atau latihan?`,
       quickReplies: [
@@ -260,7 +264,9 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
   }
 
   return {
-    text: `${nameLead}hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`,
+    text: nameLead
+      ? `${nameLead}hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`
+      : `Hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`,
     quickReplies: ['Pilih topik untuk saya', 'Mulakan latihan ringkas', 'Lihat topik lemah saya'],
     grounded: Boolean(subject?.id)
   };

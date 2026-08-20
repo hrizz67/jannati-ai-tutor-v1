@@ -194,7 +194,8 @@ export default function TutorAIModal({
   const [activeToolPanel, setActiveToolPanel] = useState('');
 
   const studentProfile = adaptiveProfile || profile || {};
-  const studentName = getStudentDisplayName(studentProfile, '');
+  const studentName = getStudentDisplayName([profile, adaptiveProfile], '');
+  const tutorStudentProfile = studentName ? { ...studentProfile, name: studentName } : studentProfile;
   const activeSubject = selectedSubject || null;
   const activeTopic = selectedTopic || null;
   const currentQuestion = question || null;
@@ -309,7 +310,7 @@ export default function TutorAIModal({
     try {
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:response');
       const response = await withTimeout(getTutorResponse({
-        student: studentProfile,
+        student: tutorStudentProfile,
         subject: activeSubject,
         topic: activeTopic,
         question: currentQuestion,
