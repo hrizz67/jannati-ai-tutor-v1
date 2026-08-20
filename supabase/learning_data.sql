@@ -26,8 +26,8 @@ begin
     raise exception 'not_authenticated';
   end if;
 
-  insert into public.profiles (id, display_name)
-  values (auth.uid(), 'Murid')
+  insert into public.profiles (id, display_name, access_status)
+  values (auth.uid(), 'Murid', 'free')
   on conflict (id) do nothing;
 
   update public.profiles

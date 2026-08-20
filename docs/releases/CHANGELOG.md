@@ -1,14 +1,15 @@
 # Changelog
 
-## 3.3.5 - 2026-08-14
+## 3.3.6 - 2026-08-20
 
-### Multi-device sync hotfix
+### Free/Premium access isolation hotfix
 
-- Replaced the render-owned Cloud debounce timer with a persistent timer and explicitly scheduled a Cloud save after each checked quiz answer.
-- Reduced visible-device Cloud polling from 15 seconds to five seconds while preserving focus, visibility, and reconnect refreshes.
-- Added clear local-only, syncing, saved, loaded, offline, and failed states to the dashboard and quiz UI.
-- Preserved anonymous learning during sign-in and merged meaningful local progress into both first-time and returning account snapshots before hydration.
-- Added regression gates for answer-triggered sync, migration safety, account login preservation, status disclosure, and prompt cross-device refresh.
+- Made the authenticated Supabase profile the only authoritative source of Premium entitlement.
+- Failed closed to Free when an entitlement is missing, stale, expired, or belongs to a different account.
+- Cleared in-memory account, child, resume, and entitlement state on logout or external session expiry.
+- Rechecked access on focus, visibility changes, and a 60-second interval, and closed protected screens after access revocation.
+- Added database defaults and permission hardening so new or fallback profiles are explicitly Free.
+- Added regression coverage for account switching, stale local Premium flags, expired access, logout persistence, and protected routes.
 
 ### Release controls
 

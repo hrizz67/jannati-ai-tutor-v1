@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.3.5 Release Notes
+# Jannati AI Tutor 3.3.6 Release Notes
 
 Status: stable
-Tag: v3.3.5
-Build date: 2026-08-14T13:16:49.957Z
+Tag: v3.3.6
+Build date: 2026-08-20T11:40:12.669Z
 
 ## Release Readiness
 
@@ -11,13 +11,14 @@ Build date: 2026-08-14T13:16:49.957Z
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
-## Multi-device Sync Hotfix
+## Free/Premium Access Isolation
 
-- Quiz answers now mark the active child profile as pending immediately and use a persistent autosave timer, so rapid React state updates cannot cancel the final cloud write.
-- Devices that remain open check for newer cloud learning data every five seconds and still refresh immediately after focus, visibility, or network recovery.
-- The dashboard and quiz now distinguish local-device storage from authenticated Cloud sync and provide a direct sign-in action when Cloud is inactive.
-- Signing in no longer clears existing local learning. First-time and returning account flows merge meaningful local progress into the selected account before Cloud hydration.
-- All Cloud reads and writes remain scoped to the authenticated account, while child-profile snapshots remain isolated during merge, retry, and restore.
+- Premium access is granted only when the server profile ID matches the currently authenticated account.
+- A new Free account can no longer inherit a Premium badge or protected feature access from local data or the previous account.
+- Logout, expired sessions, account changes, Premium expiry, and server-side access revocation now update the interface safely.
+- The dashboard, imported backups, child profiles, and restored learning state cannot promote an account using cached access fields.
+- Supabase schema definitions explicitly default profile creation to Free and deny direct client writes to entitlement rows.
+- The access-control audit now runs as part of the required release validation gate.
 
 ## Content Quality
 
