@@ -43,6 +43,7 @@ const INTENT_STEPS = {
   question_help: ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.', 'Semak jawapan dengan ayat penuh.'],
   wrong_answer_coaching: ['Semak semula jawapan yang kamu pilih.', 'Cari petunjuk dalam ayat.', 'Bandingkan dengan maksud soalan.'],
   correct_answer_reinforcement: ['Ulang sebab jawapan itu betul.', 'Cuba soalan yang sedikit lebih mencabar.'],
+  learning_recommendation: ['Pilih satu topik berdasarkan kemajuan.', 'Fahami satu idea.', 'Cuba beberapa soalan ringkas.'],
   weak_topic: ['Lihat topik yang paling lemah dahulu.', 'Ulang satu langkah pada satu masa.'],
   revision_plan: ['Ikut topik keutamaan hari ini.', 'Buat ulang kaji ringkas dahulu.'],
   uasa_summary: ['Semak skor dan topik yang perlu dikuatkan.', 'Rancang ulang kaji sebelum simulasi seterusnya.'],
@@ -197,6 +198,74 @@ function resolveTopicLabel({ subject = null, topic = null, question = null, meta
   return normalizeText(label, 'topik semasa');
 }
 
+function isSpecificTopicLabel(value = '') {
+  const label = normalizeForDialogue(value);
+  return Boolean(label && label !== 'topik semasa' && label !== 'latihan ai' && label !== 'latihan adaptif');
+}
+
+function resolveLearningFocus({ subject = null, topic = null, weakTopics = [] } = {}) {
+  const subjectId = normalizeText(subject?.id, '');
+  const subjectTopics = Array.isArray(subject?.topics) ? subject.topics : [];
+  const scopedWeakTopic = (Array.isArray(weakTopics) ? weakTopics : []).find(item => (
+    item?.topicId && (!subjectId || !item?.subjectId || item.subjectId === subjectId)
+  ));
+  const matchedWeakTopic = scopedWeakTopic
+    ? subjectTopics.find(item => item?.id === scopedWeakTopic.topicId) || {
+        id: scopedWeakTopic.topicId,
+        title: scopedWeakTopic.topicTitle || scopedWeakTopic.title || ''
+      }
+    : null;
+  const activeTopic = topic?.id && isSpecificTopicLabel(topic?.title || formatTopicName(topic.id)) ? topic : null;
+  const firstSubjectTopic = subjectTopics.find(item => (
+    item?.id && isSpecificTopicLabel(item?.title || item?.name || formatTopicName(item.id))
+  ));
+  const selectedTopic = matchedWeakTopic || activeTopic || firstSubjectTopic || null;
+  const label = selectedTopic
+    ? normalizeText(getHumanReadableTopic({
+        subject,
+        topic: selectedTopic,
+        metadata: {
+          topicId: selectedTopic.id || '',
+          displayName: selectedTopic.title || selectedTopic.name || ''
+        }
+      }), '')
+    : '';
+
+  return {
+    label: isSpecificTopicLabel(label) ? label : '',
+    basedOnProgress: Boolean(matchedWeakTopic),
+    subjectLabel: normalizeText(subject?.title || formatSubjectName(subjectId), 'pelajaran kamu')
+  };
+}
+
+function buildLearningRecommendationReply({ studentName = '', subject = null, topic = null, weakTopics = [], studyPlan = null } = {}) {
+  const focus = resolveLearningFocus({ subject, topic, weakTopics });
+  const nameLead = studentName && studentName !== 'Murid' ? `${studentName}, ` : '';
+  const focusCount = Math.max(2, Math.min(5, Number(studyPlan?.focusCount) || 3));
+  const shortPlan = `Pelan kita: fahami satu idea, lihat satu contoh, kemudian cuba ${focusCount} soalan ringkas.`;
+
+  if (focus.label) {
+    const opening = focus.basedOnProgress
+      ? `${nameLead}berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`
+      : `${nameLead}saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`;
+    return {
+      text: `${opening} ${shortPlan} Kamu mahu saya mula dengan penerangan atau latihan?`,
+      quickReplies: [
+        `Boleh ajar saya ${focus.label}?`,
+        `Apa itu ${focus.label}?`,
+        'Lihat topik lemah saya'
+      ],
+      grounded: true
+    };
+  }
+
+  return {
+    text: `${nameLead}hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`,
+    quickReplies: ['Pilih topik untuk saya', 'Mulakan latihan ringkas', 'Lihat topik lemah saya'],
+    grounded: Boolean(subject?.id)
+  };
+}
+
 function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}) {
   const direct = String(intent ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
   if (direct) return direct;
@@ -280,6 +349,12 @@ function buildSuggestionList(intent, context = {}) {
     ];
   }
   switch (intent) {
+    case 'learning_recommendation':
+      return [
+        'Pilih topik untuk saya.',
+        'Mulakan sesi belajar ringkas.',
+        'Lihat topik lemah saya.'
+      ];
     case 'weak_topic':
       return [
         'Latih topik lemah ini sekali lagi.',
@@ -629,6 +704,8 @@ function buildContextualSections({
             resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
             subjectLabel ? `Subjek: ${subjectLabel}.` : ''
           ].filter(Boolean).join(' ')
+        : intent === 'learning_recommendation'
+          ? 'Saya akan mencadangkan satu fokus pembelajaran yang sesuai untuk hari ini.'
         : intent === 'revision_plan'
           ? [
               'Cadangan ulang kaji hari ini memfokuskan latihan yang perlu dikuatkan.',
@@ -786,8 +863,12 @@ function buildConversationalTeachingReply({
   studentTurn = null,
   standaloneAnswer = '',
   contextBundle = null,
+  studentName = '',
+  subject = null,
   topic = null,
-  questionText = ''
+  questionText = '',
+  weakTopics = [],
+  studyPlan = null
 } = {}) {
   if (!studentTurn) return null;
   const sections = contextBundle?.sections || {};
@@ -812,6 +893,19 @@ function buildConversationalTeachingReply({
   });
 
   switch (studentTurn.intent) {
+    case 'learning_recommendation': {
+      const recommendation = buildLearningRecommendationReply({ studentName, subject, topic, weakTopics, studyPlan });
+      return withReplies(recommendation.text, recommendation.quickReplies, recommendation.grounded);
+    }
+    case 'general':
+      if (studentTurn.messageType === 'social') {
+        return withReplies(
+          `${studentName && studentName !== 'Murid' ? `Hai ${studentName}. ` : 'Hai. '}Saya boleh mencadangkan pelajaran hari ini, menerangkan sesuatu topik, atau membimbing kamu menjawab soalan. Kamu mahu mula dengan yang mana?`,
+          ['Apa patut saya belajar hari ini?', 'Saya mahu belajar satu topik', 'Bantu soalan saya'],
+          Boolean(subject?.id)
+        );
+      }
+      return null;
     case 'clarification_needed':
       return withReplies(
         studentTurn.clarifyingQuestion || 'Bahagian mana yang kamu mahu saya terangkan: maksud, langkah, atau contoh?',
@@ -1111,8 +1205,8 @@ export async function getTutorResponse(options = {}) {
     profile: studentProfile,
     explanationMode,
     currentLearningObjective,
-    weakTopics,
-    strongTopics,
+    weakTopics: weakList,
+    strongTopics: strongList,
     guided,
     history
   });
@@ -1123,8 +1217,12 @@ export async function getTutorResponse(options = {}) {
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     standaloneAnswer,
     contextBundle,
+    studentName,
+    subject: subjectContext,
     topic: conversationalTopic,
-    questionText: resolvedQuestionText
+    questionText: resolvedQuestionText,
+    weakTopics: weakList,
+    studyPlan
   });
 
   const suggestions = conversationalReply?.quickReplies?.length
@@ -1137,7 +1235,14 @@ export async function getTutorResponse(options = {}) {
   });
 
   const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
-  const confidence = fallbackUsed
+  const usesGroundedConversationReply = Boolean(conversationalReply?.text && conversationalReply.grounded);
+  const responseSource = resolvedIntent === 'learning_recommendation' && usesGroundedConversationReply
+    ? 'adaptive-teacher'
+    : usesGroundedConversationReply
+      ? 'conversation-engine'
+      : source;
+  const responseFallbackUsed = usesGroundedConversationReply ? false : fallbackUsed;
+  const confidence = responseFallbackUsed
     ? 45
     : hasQuestionContext
       ? 92
@@ -1158,8 +1263,8 @@ export async function getTutorResponse(options = {}) {
     confidence: clampPercent(confidence),
     suggestions,
     suggestedActions: suggestions,
-    source,
-    fallbackUsed: Boolean(fallbackUsed),
+    source: responseSource,
+    fallbackUsed: Boolean(responseFallbackUsed),
     error: null,
     studentName,
     subject: subjectContext.title,

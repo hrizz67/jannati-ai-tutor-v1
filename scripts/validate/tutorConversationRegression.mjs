@@ -52,6 +52,9 @@ assert.ok(understand('Saya masih tak faham').quickReplies.length >= 2, 'Isyarat 
 assert.equal(understand('Apa beza kata nama am dan kata nama khas?').intent, 'comparison_question', 'Soalan perbandingan mesti dikesan.');
 assert.equal(understand('Boleh ajar saya darab?').intent, 'how_question', 'Permintaan mengajar cara mesti dikesan.');
 assert.equal(understand('Boleh ajar saya darab?').answerCandidate, '', 'Permintaan belajar tidak boleh dianggap sebagai jawapan latihan.');
+assert.equal(understand('Hari ni nak belajar apa?', { hasExerciseContext: false }).intent, 'learning_recommendation', 'Permintaan cadangan pelajaran hari ini mesti dikesan.');
+assert.equal(understand('Apa patut saya belajar sekarang?', { hasExerciseContext: false }).intent, 'learning_recommendation', 'Variasi ayat cadangan belajar mesti dikesan.');
+assert.equal(understand('Saya nak belajar kata nama am', { hasExerciseContext: false }).intent, 'how_question', 'Permintaan belajar topik tertentu mesti dikesan sebagai permintaan mengajar.');
 assert.equal(understand('buku').intent, 'direct_answer', 'Jawapan ringkas yang sepadan mesti dianggap cubaan jawapan.');
 assert.equal(understand('pensel').intent, 'direct_answer', 'Cubaan jawapan ringkas yang salah masih mesti disemak.');
 assert.equal(understand('tolong').intent, 'clarification_needed', 'Permintaan kabur mesti menghasilkan soalan penjelasan.');
@@ -87,6 +90,10 @@ assert.equal(misunderstood.intent, 'misunderstanding');
 assert.match(misunderstood.text, /cara yang lebih mudah|idea paling asas/i);
 assert.match(misunderstood.text, /bahagian mana/i);
 assert.ok(misunderstood.quickReplies.includes('Terangkan cara lain'));
+
+const greeting = await ask('Hai');
+assert.equal(greeting.fallbackUsed, false, 'Sapaan biasa mesti menerima balasan perbualan, bukan keadaan fallback.');
+assert.match(greeting.text, /mencadangkan pelajaran|menerangkan sesuatu topik/i, 'Sapaan mesti diteruskan dengan pilihan pembelajaran yang berguna.');
 
 const crossTopic = await ask('Boleh ajar saya darab?');
 assert.equal(crossTopic.intent, 'how_question');
@@ -129,10 +136,41 @@ assert.notEqual(helpRequest.studentTurn?.messageType, 'answer_attempt', 'Permint
 const hint = await ask('Beri saya petunjuk', { intent: 'hint', attemptCount: 0, isCorrect: false });
 assert.doesNotMatch(hint.text, /jawapan (?:betul|yang diterima).*buku|jawapannya ialah buku/i, 'Petunjuk awal tidak boleh membocorkan jawapan.');
 
+const learningRecommendation = await getTutorResponse({
+  student: {
+    id: 'student-1',
+    name: 'Alya',
+    topics: {
+      bm: {
+        kata_nama_am: { total: 5, correct: 2, wrong: 3, mastery: 40, accuracy: 40, confidence: 50 }
+      }
+    }
+  },
+  subject: { ...subject, topics: [topic] },
+  topic: null,
+  question: null,
+  weakTopics: [{ subjectId: 'bm', topicId: 'kata_nama_am', priority: 85, status: 'weak' }],
+  studyPlan: { focusCount: 3, estimatedMinutes: 15 },
+  prompt: 'Hari ni nak belajar apa?',
+  intent: 'general',
+  history: []
+});
+assert.equal(learningRecommendation.intent, 'learning_recommendation');
+assert.equal(learningRecommendation.source, 'adaptive-teacher');
+assert.equal(learningRecommendation.fallbackUsed, false, 'Cadangan pembelajaran setempat bukan keadaan fallback.');
+assert.match(learningRecommendation.text, /kata nama am/i, 'Tutor mesti memilih topik khusus daripada kemajuan murid.');
+assert.match(learningRecommendation.text, /berdasarkan kemajuan|perlu dikuatkan/i, 'Tutor mesti menerangkan sebab cadangan secara mesra murid.');
+assert.match(learningRecommendation.text, /penerangan atau latihan/i, 'Tutor mesti meneruskan komunikasi dua hala.');
+assert.doesNotMatch(learningRecommendation.text, /tanya dengan soalan yang lebih khusus|klik petunjuk|semak jawapan dan cuba lagi/i, 'Permintaan cadangan belajar tidak boleh menerima balasan generik.');
+assert.ok(learningRecommendation.quickReplies.some(item => /ajar saya kata nama am/i.test(item)), 'Cadangan mesti menyediakan tindakan susulan khusus.');
+
 const modalText = readFileSync(modalPath, 'utf8');
 assert.match(modalText, /onSuggestion=\{suggestion => void sendMessage\(suggestion, 'general'\)\}/, 'Balasan pantas mesti boleh dihantar sebagai mesej pelajar.');
 assert.match(modalText, /<button type="button" onClick=\{\(\) => onSuggestion\?\.\(item\)\}>/, 'Cadangan Tutor AI mesti berupa butang interaktif.');
 assert.doesNotMatch(modalText, /function extractDirectAnswer|function directAnswersMatch/, 'UI tidak boleh mempunyai enjin semakan jawapan pendua.');
 assert.match(modalText, /Guru Pembelajaran AI/, 'Identiti Tutor AI mesti jelas sebagai guru pembelajaran.');
+assert.match(modalText, /hasVisibleQuestionContext &&/, 'Kad konteks kosong tidak boleh dipaparkan tanpa soalan yang boleh dilihat.');
+assert.match(modalText, /className="tutor-ai-tools"/, 'Alat bantuan mesti dipaparkan sebagai tindakan chat yang ringkas.');
+assert.doesNotMatch(modalText, /<details[^>]+className="(?:tutor-ai-actions|quick-prompts-analytics)"/, 'Panel besar sebelum perbualan tidak boleh dikekalkan.');
 
 console.log('Tutor conversation regression: PASS');
