@@ -47,6 +47,38 @@ export function getAccessLabel(access) {
   }[status];
 }
 
+export function resolveAuthoritativeAccess(accountId, access) {
+  const activeAccountId = String(accountId || '').trim();
+  const accessAccountId = String(access?.id || '').trim();
+  const matchesActiveAccount = Boolean(activeAccountId && accessAccountId === activeAccountId);
+  const declaredStatus = matchesActiveAccount
+    ? normalizeAccessStatus(access?.access_status)
+    : ACCESS_STATUS.FREE;
+  const serverCandidate = {
+    ...(matchesActiveAccount ? access : {}),
+    id: activeAccountId || null,
+    access_status: declaredStatus,
+    access_expires_at: matchesActiveAccount ? access?.access_expires_at || null : null,
+  };
+  const premiumActive = matchesActiveAccount && isPremiumAccess(serverCandidate);
+  const resolved = {
+    ...serverCandidate,
+    access_status: declaredStatus === ACCESS_STATUS.PREMIUM && !premiumActive
+      ? ACCESS_STATUS.EXPIRED
+      : declaredStatus,
+    access_source: matchesActiveAccount
+      ? access?.access_source || 'server'
+      : activeAccountId ? 'unverified' : 'local',
+    verifiedForAccount: matchesActiveAccount
+  };
+
+  return {
+    ...resolved,
+    isPremium: premiumActive,
+    accessLabel: getAccessLabel(resolved)
+  };
+}
+
 export function getAccessStatus(access) {
   return normalizeAccessStatus(access?.access_status);
 }

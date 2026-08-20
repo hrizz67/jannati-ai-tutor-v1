@@ -176,8 +176,8 @@ export default function HomeDashboard(props) {
 
   const adaptiveStore = adaptiveProfile || profile;
   const studentName = getStudentDisplayName([profile, adaptiveProfile], 'Murid');
-  const isPremiumAccount = Boolean(accessProfile?.isPremium ?? profile?.isPremium);
-  const accessLabel = accessProfile?.accessLabel || profile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Akses Free');
+  const isPremiumAccount = Boolean(hasAccountSession && accessProfile?.isPremium);
+  const accessLabel = accessProfile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Versi Free');
   const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus);
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);

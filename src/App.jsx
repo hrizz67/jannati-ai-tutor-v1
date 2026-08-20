@@ -75,7 +75,7 @@ import {
   mergeCloudLearningPayload,
   saveCloudLearningData
 } from './services/learningSync.js';
-import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getAccessLabel, getDailyQuestionCount, isPremiumAccess, normalizeAccessStatus } from './services/accessControl.js';
+import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
@@ -101,6 +101,14 @@ const PUBLIC_APP_URL = 'https://hrizz67.github.io/jannati-ai-tutor-v1/';
 const BETA_STATUS = 'Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
+const PREMIUM_SCREEN_FEATURES = Object.freeze({
+  reading: 'bacaan',
+  listening: 'mendengar',
+  speaking: 'bertutur',
+  writing: 'menulis',
+  parent: 'parent',
+  uasa: 'uasa'
+});
 const storageRecoveryEvents = [];
 
 function mergeLoadedSubjects(current = [], incoming = []) {
@@ -1144,9 +1152,24 @@ export default function App() {
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
-  const effectiveAccess = accessProfile || { access_status: profile?.accessStatus || 'free', access_expires_at: profile?.accessExpiresAt || null };
-  const isPremiumUser = accessProfile ? isPremiumAccess(accessProfile) : Boolean(profile?.isPremium);
+  const effectiveAccess = useMemo(
+    () => resolveAuthoritativeAccess(accountUser?.id, accessProfile),
+    [accountUser?.id, accessProfile]
+  );
+  const isPremiumUser = Boolean(effectiveAccess.isPremium);
   const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
+
+  function applyAuthoritativeProfileAccess(candidate = {}) {
+    return {
+      ...candidate,
+      accountId: accountUser?.id || '',
+      email: accountUser?.email || '',
+      accessStatus: effectiveAccess.access_status,
+      accessLabel: effectiveAccess.accessLabel,
+      accessExpiresAt: effectiveAccess.access_expires_at || null,
+      isPremium: isPremiumUser
+    };
+  }
 
   useEffect(() => {
     if (!supabaseConfigured) return undefined;
@@ -1190,22 +1213,14 @@ export default function App() {
 
   function reloadActiveChildState(child) {
     const storedProfile = loadStudentCore(loadProfile());
-    const accountAccess = accessProfile || profile || {};
-    const accessStatus = normalizeAccessStatus(accountAccess.access_status || accountAccess.accessStatus || 'free');
-    const nextProfile = child
+    const nextProfile = applyAuthoritativeProfileAccess(child
       ? {
         ...storedProfile,
         name: child.name,
         year: child.year || storedProfile.year || 'Tahun 2',
-        avatar: child.avatar || storedProfile.avatar,
-        accountId: profile?.accountId || storedProfile.accountId,
-        email: profile?.email || storedProfile.email,
-        accessStatus,
-        accessLabel: getAccessLabel(accountAccess),
-        accessExpiresAt: accountAccess.access_expires_at || accountAccess.accessExpiresAt || null,
-        isPremium: isPremiumAccess(accountAccess)
+        avatar: child.avatar || storedProfile.avatar
       }
-      : { ...storedProfile, accessStatus, accessLabel: getAccessLabel(accountAccess), isPremium: isPremiumAccess(accountAccess) };
+      : storedProfile);
     localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
     saveSelectedStudentName(nextProfile.name);
     setProfile(nextProfile);
@@ -1225,7 +1240,7 @@ export default function App() {
     setActiveChildId(resolvedChildId);
     if (activeChild) reloadActiveChildState(activeChild);
     else {
-      setProfile(loadStudentCore(loadProfile()));
+      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
       setGamificationProfile(loadGamificationState());
       setResume(loadResume());
@@ -1435,7 +1450,7 @@ export default function App() {
       const nextProfiles = [...existingProfiles.filter(item => item.id !== nextChild.id), nextChild];
       writeChildProfiles(nextProfiles);
       clearChildScopedData();
-      localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...defaultProfile, name: nextChild.name, year: nextChild.year, avatar: nextChild.avatar, accountId: profile?.accountId, email: profile?.email, accessStatus: profile?.accessStatus, accessLabel: profile?.accessLabel, accessExpiresAt: profile?.accessExpiresAt, isPremium: profile?.isPremium }));
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(applyAuthoritativeProfileAccess({ ...defaultProfile, name: nextChild.name, year: nextChild.year, avatar: nextChild.avatar })));
       resetAdaptiveStudentProfile();
       setGamificationProfile(resetGamificationProfile());
       resetSmartQuestionState();
@@ -1477,18 +1492,12 @@ export default function App() {
         restoreChildSnapshot(snapshot);
       } else {
         clearChildScopedData();
-        localStorage.setItem(PROFILE_KEY, JSON.stringify({
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(applyAuthoritativeProfileAccess({
           ...defaultProfile,
           name: nextChild.name,
           year: nextChild.year || 'Tahun 2',
-          avatar: nextChild.avatar || 'janna',
-          accountId: profile?.accountId,
-          email: profile?.email,
-          accessStatus: profile?.accessStatus,
-          accessLabel: profile?.accessLabel,
-          accessExpiresAt: profile?.accessExpiresAt,
-          isPremium: profile?.isPremium
-        }));
+          avatar: nextChild.avatar || 'janna'
+        })));
         resetAdaptiveStudentProfile();
         setGamificationProfile(resetGamificationProfile());
         resetSmartQuestionState();
@@ -1507,6 +1516,39 @@ export default function App() {
     return true;
   }
 
+  function resetSignedOutAccountState(scopedAccountId = '') {
+    const previousAccountId = String(scopedAccountId || '').trim();
+    const activeScopedAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+    if (previousAccountId && activeScopedAccountId === previousAccountId) {
+      captureAccountSnapshot(previousAccountId);
+    }
+    clearAccountData();
+    try {
+      localStorage.removeItem(ACCOUNT_SCOPE_KEY);
+    } catch {
+      // Ignore storage cleanup failures.
+    }
+    if (cloudSaveTimerRef.current) {
+      window.clearTimeout(cloudSaveTimerRef.current);
+      cloudSaveTimerRef.current = null;
+    }
+    setAccountUser(null);
+    setAccessProfile(null);
+    setCloudHydratedAccountId('');
+    lastCloudSignatureRef.current = '';
+    setProfile({ ...defaultProfile });
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setGamificationProfile(loadGamificationState());
+    setResume(null);
+    setChildProfiles([]);
+    setActiveChildId('');
+    childSnapshotCacheRef.current.clear();
+    dirtyChildIdsRef.current.clear();
+    pendingOfflineCloudSaveRef.current = false;
+    setShowAccountLogin(false);
+    setScreen('login');
+  }
+
   useEffect(() => {
     if (!supabase) return undefined;
     let alive = true;
@@ -1517,12 +1559,19 @@ export default function App() {
       if (!alive) return;
       setAccountUser(user || null);
       if (!user) {
-        setAccessProfile(null);
-        setCloudHydratedAccountId('');
-        lastCloudSignatureRef.current = '';
+        const scopedAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+        if (scopedAccountId) resetSignedOutAccountState(scopedAccountId);
+        else {
+          setAccessProfile(null);
+          setCloudHydratedAccountId('');
+          lastCloudSignatureRef.current = '';
+        }
         return;
       }
 
+      // Never expose the previous account's entitlement while the current
+      // account profile is still being verified by Supabase.
+      setAccessProfile(current => String(current?.id || '') === String(user.id) ? current : null);
       setCloudHydratedAccountId('');
       activateAccountStorage(user.id);
       const [{ data, error }, cloudResult] = await Promise.all([
@@ -1556,7 +1605,7 @@ export default function App() {
         setCloudSyncStatus('empty');
       }
       const childState = ensureChildProfiles(loadProfile());
-      setProfile(loadStudentCore(loadProfile()));
+      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
       setGamificationProfile(loadGamificationState());
       setResume(loadResume());
@@ -1565,6 +1614,7 @@ export default function App() {
       const nextAccess = error || !data
         ? { id: user.id, access_status: 'free', access_source: error ? 'fallback' : 'default' }
         : data;
+      const resolvedAccess = resolveAuthoritativeAccess(user.id, nextAccess);
       setAccessProfile(nextAccess);
       setProfile(prev => {
         const candidateName = [
@@ -1586,9 +1636,10 @@ export default function App() {
           email: user.email || prev.email || '',
           accountId: user.id,
           isDemo: false,
-          accessStatus: normalizeAccessStatus(nextAccess.access_status),
-          accessLabel: getAccessLabel(nextAccess),
-          isPremium: isPremiumAccess(nextAccess)
+          accessStatus: resolvedAccess.access_status,
+          accessLabel: resolvedAccess.accessLabel,
+          accessExpiresAt: resolvedAccess.access_expires_at,
+          isPremium: resolvedAccess.isPremium
         };
       });
       setCloudHydratedAccountId(user.id);
@@ -1608,6 +1659,61 @@ export default function App() {
       authListener.subscription.unsubscribe();
     };
   }, [supabase]);
+
+  useEffect(() => {
+    if (!supabase || !accountUser?.id) return undefined;
+    let cancelled = false;
+    let inFlight = false;
+
+    const refreshAccountAccess = async () => {
+      if (cancelled || inFlight || navigator.onLine === false) return;
+      inFlight = true;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, display_name, access_status, access_expires_at, is_admin')
+        .eq('id', accountUser.id)
+        .maybeSingle();
+      inFlight = false;
+      if (cancelled) return;
+      setAccessProfile(error || !data
+        ? { id: accountUser.id, access_status: 'free', access_source: error ? 'refresh-fallback' : 'refresh-default' }
+        : data);
+    };
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') void refreshAccountAccess();
+    };
+    const interval = window.setInterval(refreshAccountAccess, 60000);
+    window.addEventListener('focus', refreshAccountAccess);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refreshAccountAccess);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [supabase, accountUser?.id]);
+
+  useEffect(() => {
+    setProfile(current => {
+      const next = applyAuthoritativeProfileAccess(current);
+      const unchanged = current.accountId === next.accountId
+        && current.email === next.email
+        && current.accessStatus === next.accessStatus
+        && current.accessLabel === next.accessLabel
+        && current.accessExpiresAt === next.accessExpiresAt
+        && Boolean(current.isPremium) === Boolean(next.isPremium);
+      return unchanged ? current : next;
+    });
+  }, [accountUser?.id, accountUser?.email, effectiveAccess.access_status, effectiveAccess.accessLabel, effectiveAccess.access_expires_at, isPremiumUser]);
+
+  useEffect(() => {
+    const feature = PREMIUM_SCREEN_FEATURES[screen];
+    if (!feature || isPremiumUser) return;
+    setAccessNotice({ kind: 'premium', feature, used: dailyQuestionCount });
+    setAccessReturnScreen('dashboard');
+    setScreen('access');
+  }, [screen, isPremiumUser]);
 
   useEffect(() => {
     if (!supabase && profile?.name && !childProfiles.length) ensureChildProfiles(profile);
@@ -1722,6 +1828,10 @@ export default function App() {
 
   useEffect(() => {
     try {
+      // The login surface may be shown immediately after an account logout.
+      // Do not resurrect the previous account's in-memory profile after its
+      // account-scoped storage has been cleared.
+      if (!accountUser?.id && (screen === 'login' || showAccountLogin)) return;
       // Account switching restores the selected account asynchronously. Do not
       // let the previous account's render overwrite the restored snapshot.
       const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
@@ -1739,7 +1849,7 @@ export default function App() {
     } catch {
       setRecoveryMessages(prev => [...prev, 'Perubahan profil tidak dapat disimpan kerana simpanan peranti tidak tersedia.']);
     }
-  }, [profile, allSubjects, accountUser?.id, activeChildId]);
+  }, [profile, allSubjects, accountUser?.id, activeChildId, screen, showAccountLogin]);
 
   useEffect(() => {
     if (!supabase || !accountUser?.id || cloudHydratedAccountId !== accountUser.id) return undefined;
@@ -2089,7 +2199,7 @@ export default function App() {
       if (!window.confirm('Import akan menggantikan data akaun semasa. Teruskan?')) return;
       restoreAccountSnapshot(Object.fromEntries(entries));
       const repairedProfile = repairImportedLearningProfile();
-      setProfile(loadStudentCore(repairedProfile || loadProfile()));
+      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(repairedProfile || loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
       setGamificationProfile(loadGamificationState());
       setResume(loadResume());
@@ -2118,7 +2228,7 @@ export default function App() {
     }
     if (!window.confirm(`Backup lama dengan kemajuan ${backup.score} dijumpai. Gantikan data akaun semasa dengan backup ini?`)) return;
     restoreAccountSnapshot(backup.snapshot);
-    setProfile(loadStudentCore(loadProfile()));
+    setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
     setAdaptiveProfile(loadAdaptiveStudentProfile());
     setGamificationProfile(loadGamificationState());
     setResume(loadResume());
@@ -2696,6 +2806,8 @@ export default function App() {
       setShowAccountLogin(true);
       return;
     }
+    const exitingAccountId = accountUser.id;
+    captureAccountSnapshot(exitingAccountId);
     if (supabase) {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -2703,19 +2815,7 @@ export default function App() {
         return;
       }
     }
-    if (accountUser?.id) {
-      captureAccountSnapshot(accountUser.id);
-      clearAccountData();
-      try {
-        localStorage.removeItem(ACCOUNT_SCOPE_KEY);
-      } catch {
-        // Ignore storage cleanup failures.
-      }
-    }
-    setAccountUser(null);
-    setAccessProfile(null);
-    setShowAccountLogin(false);
-    setScreen('login');
+    resetSignedOutAccountState(exitingAccountId);
   }
 
   function syncSelectedSubjectState(subject) {
@@ -3384,7 +3484,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={accessProfile || effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;

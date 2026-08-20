@@ -1,12 +1,12 @@
 {
   "name": "jannati-ai-tutor-v1",
-  "version": "3.3.5",
+  "version": "3.3.6",
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "postbuild": "node scripts/validate/bundleBudgetAudit.mjs",
-    "prevalidate": "node scripts/validate/smartCheckRegression.mjs && node scripts/validate/questionPresentationRegression.mjs && node scripts/validate/resumeIsolationRegression.mjs && node scripts/validate/learningSyncRegression.mjs && node scripts/validate/adaptiveSessionRegression.mjs && node scripts/validate/questionAuditRegression.mjs && node scripts/validate/learningJourneyAlignmentAudit.mjs --gate && node scripts/validate/browserDeviceAcceptanceAudit.mjs && node scripts/validate/physicalDeviceReadinessAudit.mjs && node scripts/validate/performanceArchitectureAudit.mjs && node scripts/validate/classroomPilotAudit.mjs && node scripts/validate/releasePipelineAudit.mjs",
+    "prevalidate": "node scripts/validate/smartCheckRegression.mjs && node scripts/validate/questionPresentationRegression.mjs && node scripts/validate/resumeIsolationRegression.mjs && node scripts/validate/learningSyncRegression.mjs && node scripts/validate/accessControlAudit.mjs && node scripts/validate/adaptiveSessionRegression.mjs && node scripts/validate/questionAuditRegression.mjs && node scripts/validate/learningJourneyAlignmentAudit.mjs --gate && node scripts/validate/browserDeviceAcceptanceAudit.mjs && node scripts/validate/physicalDeviceReadinessAudit.mjs && node scripts/validate/performanceArchitectureAudit.mjs && node scripts/validate/classroomPilotAudit.mjs && node scripts/validate/releasePipelineAudit.mjs",
     "validate": "node scripts/validate/index.js",
     "validate:questions": "node scripts/validate/questionValidator.js",
     "validate:bm": "node scripts/validate/bmReleaseGate.mjs",

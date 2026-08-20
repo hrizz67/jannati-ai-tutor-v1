@@ -21,8 +21,8 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', 'Murid'))
+  insert into public.profiles (id, display_name, access_status)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', 'Murid'), 'free')
   on conflict (id) do nothing;
   return new;
 end;
@@ -42,6 +42,7 @@ create policy "Users can read their own profile"
 -- No client update policy is created intentionally. Access status and admin
 -- flags are changed manually by the owner in the SQL editor, so a browser
 -- user can never upgrade their own account.
+revoke insert, update, delete on table public.profiles from anon, authenticated;
 
 create or replace function public.touch_profile_updated_at()
 returns trigger
