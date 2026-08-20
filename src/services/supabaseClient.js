@@ -1,5 +1,6 @@
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const runtimeEnv = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
+const supabaseUrl = runtimeEnv.VITE_SUPABASE_URL;
+const supabasePublishableKey = runtimeEnv.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export const supabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey);
 let clientPromise = null;

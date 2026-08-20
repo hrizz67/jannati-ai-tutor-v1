@@ -523,10 +523,33 @@ textarea {
 
 .chat-suggestions {
   margin: 10px 0 0;
-  padding-left: 18px;
+  padding: 0;
   display: grid;
-  gap: 4px;
+  gap: 7px;
   font-size: 13px;
+  list-style: none;
+}
+
+.chat-suggestions button {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid #b9dfc8;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f5d35;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chat-suggestions button:hover,
+.chat-suggestions button:focus-visible {
+  border-color: #0f8a43;
+  background: #effaf3;
+  outline: 2px solid transparent;
 }
 
 .chat-status {
@@ -547,6 +570,25 @@ textarea {
 
 .chat-status-fallback {
   color: #8a6b12;
+}
+
+.tutor-ai-disclosure {
+  margin: 8px 16px 0;
+  padding: 8px 10px;
+  border: 1px solid #d7e8dd;
+  border-radius: 10px;
+  background: #f7fbf8;
+  color: #355846;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tutor-ai-source-label {
+  display: block;
+  margin-top: 7px;
+  color: #527260;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .quick-prompts {

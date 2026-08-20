@@ -19,6 +19,7 @@ import {
   limitTutorText,
   sanitizeTutorText
 } from './guidedLearning/index.js';
+import { understandStudentTurn } from './conversation/studentTurnEngine.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
@@ -46,6 +47,14 @@ const INTENT_STEPS = {
   revision_plan: ['Ikut topik keutamaan hari ini.', 'Buat ulang kaji ringkas dahulu.'],
   uasa_summary: ['Semak skor dan topik yang perlu dikuatkan.', 'Rancang ulang kaji sebelum simulasi seterusnya.'],
   example_request: ['Baca contoh mudah.', 'Bandingkan dengan soalan yang sedang kamu jawab.'],
+  knowledge_question: ['Kenal pasti maksud konsep.', 'Lihat satu contoh mudah.', 'Terangkan semula dengan ayat sendiri.'],
+  comparison_question: ['Kenal pasti maksud kedua-dua konsep.', 'Cari satu perbezaan utama.', 'Uji perbezaan itu dengan contoh.'],
+  why_question: ['Kenal pasti sebab utama.', 'Hubungkan sebab dengan petunjuk dalam soalan.', 'Semak kefahaman dengan satu contoh.'],
+  how_question: ['Kenal pasti apa yang hendak dicari.', 'Buat satu langkah pada satu masa.', 'Semak semula hasil setiap langkah.'],
+  misunderstanding: ['Kembali kepada idea paling asas.', 'Gunakan contoh yang lebih mudah.', 'Cuba terangkan semula dengan ayat sendiri.'],
+  alternative_explanation: ['Lihat konsep melalui contoh lain.', 'Bandingkan contoh dengan soalan semasa.', 'Cuba langkah pertama sendiri.'],
+  understanding_confirmation: ['Terangkan semula idea utama.', 'Cuba satu soalan ringkas untuk mengukuhkan kefahaman.'],
+  clarification_needed: ['Pilih bahagian yang hendak dipelajari.', 'Nyatakan sama ada kamu mahu maksud, langkah atau contoh.'],
   general: ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.']
 };
 
@@ -208,13 +217,57 @@ function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}
 
 function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   const text = String(prompt || '').toLocaleLowerCase('ms-MY');
+  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:kata nama am).*(?:kata nama khas)|(?:kata nama am).*(?:dan|dengan|berbanding).*(?:kata nama khas)/.test(text)) {
+    return 'Kata nama am ialah nama umum, seperti guru, bandar dan kucing. Kata nama khas pula ialah nama khusus, seperti Cikgu Aina, Melaka dan Si Comel. Perbezaan utamanya ialah kata nama khas merujuk sesuatu yang tertentu dan biasanya bermula dengan huruf besar.';
+  }
+  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:tambah).*(?:tolak)|(?:tambah).*(?:dan|dengan|berbanding).*(?:tolak)/.test(text)) {
+    return 'Tambah menggabungkan beberapa nilai untuk mendapatkan jumlah keseluruhan. Tolak pula mengeluarkan atau membandingkan nilai untuk mencari baki atau beza.';
+  }
+  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:darab).*(?:bahagi)|(?:darab).*(?:dan|dengan|berbanding).*(?:bahagi)/.test(text)) {
+    return 'Darab membina jumlah daripada kumpulan yang sama banyak. Bahagi pula memisahkan jumlah kepada kumpulan yang sama banyak atau mencari bilangan dalam setiap kumpulan.';
+  }
   if (/kata nama am/.test(text)) return 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat. Contohnya guru, kucing, buku dan sekolah.';
   if (/kata nama khas/.test(text)) return 'Kata nama khas ialah nama khusus bagi orang, tempat atau benda. Biasanya huruf pertama ditulis dengan huruf besar.';
-  if (/bahagi|hasil bahagi/.test(text) && subject?.id === 'math') return 'Bahagi bermaksud membahagi sesuatu sama rata kepada beberapa kumpulan. Semak jumlah dan bilangan kumpulan sebelum mengira.';
-  if (/tambah|penambahan/.test(text) && subject?.id === 'math') return 'Tambah bermaksud menggabungkan dua atau lebih jumlah untuk mendapatkan jumlah keseluruhan.';
-  if (/tolak|penolakan/.test(text) && subject?.id === 'math') return 'Tolak bermaksud mencari beza atau baki selepas sebahagian jumlah dikeluarkan.';
-  if (/darab|pendaraban/.test(text) && subject?.id === 'math') return 'Darab ialah penambahan berulang bagi kumpulan yang sama banyak.';
+  if (/kata kerja/.test(text)) return 'Kata kerja ialah perkataan yang menunjukkan perbuatan atau keadaan. Contohnya makan, berlari, tidur dan duduk.';
+  if (/kata adjektif|kata sifat/.test(text)) return 'Kata adjektif menerangkan sifat atau keadaan orang, haiwan, benda atau tempat. Contohnya cantik, tinggi, rajin dan sejuk.';
+  if (/bahagi|hasil bahagi/.test(text)) return 'Bahagi bermaksud memisahkan sesuatu sama rata kepada beberapa kumpulan. Contohnya, 12 ÷ 3 bermaksud 12 objek dibahagi kepada 3 kumpulan, jadi setiap kumpulan mendapat 4 objek.';
+  if (/tambah|penambahan/.test(text)) return 'Tambah bermaksud menggabungkan dua atau lebih nilai untuk mendapatkan jumlah keseluruhan. Contohnya, 3 + 2 = 5.';
+  if (/tolak|penolakan/.test(text)) return 'Tolak bermaksud mencari baki atau beza selepas sebahagian nilai dikeluarkan. Contohnya, 7 − 3 = 4.';
+  if (/darab|pendaraban/.test(text)) return 'Darab ialah penambahan berulang bagi kumpulan yang sama banyak. Contohnya, 3 × 4 bermaksud tambah 4 sebanyak 3 kali: 4 + 4 + 4 = 12.';
   return '';
+}
+
+function findRelevantSubjectTopic(prompt = '', subject = {}) {
+  const promptText = normalizeForDialogue(prompt).replace(/_/g, ' ');
+  if (!promptText || !Array.isArray(subject?.topics) || !subject.topics.length) return null;
+  const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how']);
+  const promptTokens = promptText.split(/\s+/).filter(token => token.length >= 3 && !ignored.has(token));
+  let bestTopic = null;
+  let bestScore = 0;
+
+  for (const candidate of subject.topics) {
+    const title = normalizeForDialogue(candidate?.title || candidate?.name || candidate?.id || '').replace(/_/g, ' ');
+    const searchable = normalizeForDialogue([
+      candidate?.id,
+      candidate?.title,
+      candidate?.name,
+      candidate?.note,
+      candidate?.description,
+      ...(Array.isArray(candidate?.learningObjectives) ? candidate.learningObjectives : [])
+    ].filter(Boolean).join(' ')).replace(/_/g, ' ');
+    if (!searchable) continue;
+    let score = title && promptText.includes(title) ? 8 : 0;
+    for (const token of promptTokens) {
+      if (title.split(/\s+/).includes(token)) score += 3;
+      else if (searchable.includes(token)) score += 1;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestTopic = candidate;
+    }
+  }
+
+  return bestScore > 0 ? getTopicContext(bestTopic, bestTopic?.id) : null;
 }
 
 function buildSuggestionList(intent, context = {}) {
@@ -729,6 +782,131 @@ function buildContextualSections({
   };
 }
 
+function buildConversationalTeachingReply({
+  studentTurn = null,
+  standaloneAnswer = '',
+  contextBundle = null,
+  topic = null,
+  questionText = ''
+} = {}) {
+  if (!studentTurn) return null;
+  const sections = contextBundle?.sections || {};
+  const contextTopicId = normalizeText(contextBundle?.contextUsed?.topicId || '', '');
+  const isCurrentContextTopic = Boolean(topic?.id && (!contextTopicId || topic.id === contextTopicId));
+  const steps = isCurrentContextTopic ? normalizeList(sections.steps).slice(0, 3) : [];
+  const topicLabel = normalizeText(topic?.title || (isCurrentContextTopic ? sections.topic : ''), 'topik ini');
+  const topicNote = normalizeText(topic?.note || '', '');
+  const explanation = normalizeText(topicNote || (isCurrentContextTopic ? sections.whyCorrect || sections.learningObjective : ''), '');
+  const example = normalizeText(isCurrentContextTopic ? sections.example || '' : '', '');
+  const firstStep = steps[0] || 'kenal pasti kata kunci atau maklumat penting';
+  const learningAnchor = standaloneAnswer || topicNote || explanation;
+  const commonReplies = ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham'];
+  const sentence = (value, prefix = '') => {
+    const safeValue = normalizeText(value, '').replace(/[.!?؟]+$/u, '');
+    return safeValue ? `${prefix}${safeValue}.` : '';
+  };
+  const withReplies = (text, quickReplies = commonReplies, grounded = true) => ({
+    text: sanitizeTutorText(text),
+    quickReplies: normalizeList(quickReplies).slice(0, 3),
+    grounded
+  });
+
+  switch (studentTurn.intent) {
+    case 'clarification_needed':
+      return withReplies(
+        studentTurn.clarifyingQuestion || 'Bahagian mana yang kamu mahu saya terangkan: maksud, langkah, atau contoh?',
+        studentTurn.quickReplies,
+        false
+      );
+    case 'understanding_confirmation':
+      return withReplies(
+        `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
+        studentTurn.quickReplies
+      );
+    case 'misunderstanding':
+      return withReplies(
+        [
+          'Tak mengapa. Kita cuba cara yang lebih mudah.',
+          learningAnchor || `Kita kembali kepada idea paling asas bagi ${topicLabel}.`,
+          sentence(example, 'Contoh mudah: '),
+          `${sentence(firstStep, 'Mula dengan satu perkara sahaja: ')} Bahagian mana masih mengelirukan?`
+        ].filter(Boolean).join(' '),
+        studentTurn.quickReplies
+      );
+    case 'alternative_explanation':
+      return withReplies(
+        [
+          'Baik, kita lihat dengan cara lain.',
+          learningAnchor || `Bayangkan ${topicLabel} sebagai satu tugas yang dibuat langkah demi langkah.`,
+          sentence(example, 'Contoh mudah: '),
+          sentence(firstStep, 'Sekarang cuba langkah pertama: ')
+        ].filter(Boolean).join(' '),
+        ['Bimbing langkah demi langkah', 'Beri contoh lain', 'Saya sudah faham']
+      );
+    case 'comparison_question':
+      return withReplies(
+        standaloneAnswer || `Saya boleh bantu membandingkan konsep dalam ${topicLabel}. Nyatakan dua perkara yang kamu mahu bezakan.`,
+        standaloneAnswer ? commonReplies : ['Bandingkan maksud', 'Bandingkan contoh', 'Bandingkan cara guna'],
+        Boolean(standaloneAnswer)
+      );
+    case 'knowledge_question':
+      if (!learningAnchor) {
+        return withReplies(
+          'Saya belum pasti konsep yang kamu maksud dalam pelajaran semasa. Nyatakan nama subjek atau topik supaya saya boleh mengajar dengan tepat.',
+          ['Nyatakan subjek', 'Nyatakan nama topik', 'Kembali kepada soalan semasa'],
+          false
+        );
+      }
+      return withReplies(
+        [
+          learningAnchor || `Soalan kamu berkaitan ${topicLabel}.`,
+          !standaloneAnswer ? sentence(example, 'Contoh mudah: ') : '',
+          'Bahagian ini sudah jelas, atau kamu mahu saya tunjukkan satu contoh lagi?'
+        ].filter(Boolean).join(' '),
+        commonReplies,
+        Boolean(learningAnchor)
+      );
+    case 'why_question':
+      return withReplies(
+        [
+          studentTurn.referencesPreviousTurn ? 'Baik, mari kita lihat sebabnya.' : `Mari kita fahami sebab untuk ${topicLabel}.`,
+          learningAnchor || `Sebabnya bergantung pada petunjuk dalam ${questionText || 'soalan ini'}.`,
+          `Cuba beritahu saya: petunjuk utama yang kamu nampak ialah apa?`
+        ].filter(Boolean).join(' '),
+        ['Beri contoh mudah', 'Terangkan sebab dengan cara lain', 'Petunjuk utama ialah...'],
+        Boolean(learningAnchor || questionText)
+      );
+    case 'how_question':
+      if (!learningAnchor && !steps.length) {
+        return withReplies(
+          'Saya boleh bimbing langkah demi langkah. Apakah kemahiran atau soalan yang kamu mahu pelajari?',
+          ['Terangkan soalan semasa', 'Beri contoh mudah', 'Nyatakan nama topik'],
+          false
+        );
+      }
+      return withReplies(
+        [
+          learningAnchor ? `${learningAnchor}` : `Mari belajar cara membuat ${topicLabel}.`,
+          ...(standaloneAnswer ? [] : steps.map((step, index) => sentence(step, `Langkah ${index + 1}: `))),
+          `Cuba buat langkah pertama dahulu. Apa yang kamu dapat?`
+        ].filter(Boolean).join(' '),
+        ['Bimbing langkah pertama', 'Beri contoh mudah', 'Saya mahu cuba sendiri']
+      );
+    case 'example_request':
+      return withReplies(
+        [
+          example ? sentence(example, 'Contoh mudah: ') : `Mari gunakan satu contoh mudah bagi ${topicLabel}.`,
+          learningAnchor && learningAnchor !== example ? learningAnchor : '',
+          'Apakah persamaan antara contoh ini dengan soalan kamu?'
+        ].filter(Boolean).join(' '),
+        ['Beri contoh lain', 'Bimbing saya membandingkan', 'Saya sudah faham'],
+        Boolean(example || learningAnchor)
+      );
+    default:
+      return null;
+  }
+}
+
 export async function getTutorResponse(options = {}) {
   const {
     student = null,
@@ -742,6 +920,7 @@ export async function getTutorResponse(options = {}) {
     instruction = '',
     options: questionOptions = [],
     expectedAnswer = '',
+    acceptedAnswers: explicitAcceptedAnswers = [],
     learnerAnswer = '',
     studentAnswer = '',
     correctAnswer = '',
@@ -771,14 +950,35 @@ export async function getTutorResponse(options = {}) {
   const topicContext = getTopicContext(topic || {}, topicId);
   const resolvedQuestion = question || {};
   const studentName = getStudentDisplayName(studentProfile, 'Murid');
-  let resolvedIntent = inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const resolvedQuestionText = getQuestionText(resolvedQuestion, questionText);
   const resolvedInstruction = getInstruction(resolvedQuestion, instruction);
   const resolvedOptions = getOptions(resolvedQuestion, questionOptions);
-  const promptAnswer = extractPromptAnswer(prompt);
-  const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
-  const acceptedAnswers = getAcceptedAnswers(resolvedQuestion);
+  const acceptedAnswers = getAcceptedAnswers({
+    ...resolvedQuestion,
+    acceptedAnswers: [
+      ...getAcceptedAnswers(resolvedQuestion),
+      ...(Array.isArray(explicitAcceptedAnswers) ? explicitAcceptedAnswers : [])
+    ]
+  });
   const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
+  const studentTurn = understandStudentTurn({
+    prompt,
+    intent,
+    history,
+    expectedAnswer: expected,
+    acceptedAnswers,
+    hasExerciseContext: Boolean(resolvedQuestionText || expected),
+    hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id)
+  });
+  let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
+  const relevantSubjectTopic = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
+    .includes(resolvedIntent)
+      ? findRelevantSubjectTopic(prompt, subjectContext)
+      : null;
+  const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || ['example_request', 'why_question'].includes(resolvedIntent);
+  const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
+  const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
+  const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
   const answerCheckQuestion = {
     ...resolvedQuestion,
     answer: expected || resolvedQuestion.answer,
@@ -791,7 +991,7 @@ export async function getTutorResponse(options = {}) {
     : typeof isCorrect === 'boolean'
       ? isCorrect
       : isAcceptedQuestionAnswer(answerText, answerCheckQuestion);
-  if (promptAnswer && (!intent || intent === 'general')) {
+  if (promptAnswer && (!intent || intent === 'general' || intent === 'auto')) {
     resolvedIntent = resolvedCorrect ? 'correct_answer_reinforcement' : 'wrong_answer_coaching';
   }
   const hasQuestionContext = Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id);
@@ -916,11 +1116,20 @@ export async function getTutorResponse(options = {}) {
     guided,
     history
   });
-  const standaloneAnswer = resolvedIntent === 'general'
+  const standaloneAnswer = ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
     ? buildStandaloneTutorAnswer(prompt, subjectContext)
     : '';
+  const conversationalReply = buildConversationalTeachingReply({
+    studentTurn: { ...studentTurn, intent: resolvedIntent },
+    standaloneAnswer,
+    contextBundle,
+    topic: conversationalTopic,
+    questionText: resolvedQuestionText
+  });
 
-  const suggestions = standaloneAnswer ? [] : buildSuggestionList(resolvedIntent, {
+  const suggestions = conversationalReply?.quickReplies?.length
+    ? conversationalReply.quickReplies
+    : standaloneAnswer ? [] : buildSuggestionList(resolvedIntent, {
     subject: subjectContext,
     topic: topicContext,
     question: resolvedQuestion,
@@ -943,8 +1152,8 @@ export async function getTutorResponse(options = {}) {
   );
 
   return {
-    text: standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
-    shortText: standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
+    text: conversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
+    shortText: conversationalReply?.text || standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
     intent: resolvedIntent,
     confidence: clampPercent(confidence),
     suggestions,
@@ -978,10 +1187,18 @@ export async function getTutorResponse(options = {}) {
     supportStage: guided.stage,
     misconception: guided.misconception,
     guidingQuestion: guided.guidingQuestion,
-    quickReplies: guided.quickReplies,
+    quickReplies: conversationalReply?.quickReplies?.length
+      ? conversationalReply.quickReplies
+      : guided.quickReplies?.length ? guided.quickReplies : suggestions,
     nextAction: guided.nextAction,
     praise: guided.praise,
-    learningExperience: guided
+    learningExperience: guided,
+    studentTurn,
+    conversationStage: studentTurn.messageType,
+    referencesPreviousTurn: Boolean(studentTurn.referencesPreviousTurn),
+    needsClarification: Boolean(studentTurn.needsClarification),
+    grounded: conversationalReply ? Boolean(conversationalReply.grounded) : Boolean(contextBundle?.contextUsed?.hasCoachData),
+    needsGenerativeTutor: Boolean(conversationalReply && !conversationalReply.grounded)
   };
 }
 
