@@ -56,7 +56,9 @@ const INTENT_STEPS = {
   alternative_explanation: ['Lihat konsep melalui contoh lain.', 'Bandingkan contoh dengan soalan semasa.', 'Cuba langkah pertama sendiri.'],
   understanding_confirmation: ['Terangkan semula idea utama.', 'Cuba satu soalan ringkas untuk mengukuhkan kefahaman.'],
   clarification_needed: ['Pilih bahagian yang hendak dipelajari.', 'Nyatakan sama ada kamu mahu maksud, langkah atau contoh.'],
-  general: ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.']
+  tutor_identity: ['Pilih perkara yang hendak dipelajari.', 'Terangkan apa yang kamu sudah tahu.'],
+  learner_state: ['Pilih satu langkah kecil.', 'Belajar mengikut kemampuan kamu hari ini.'],
+  general: ['Beritahu perkara yang kamu mahu faham.', 'Pilih sama ada mahu penerangan, contoh atau latihan.']
 };
 
 function normalizeText(value, fallback = '') {
@@ -312,7 +314,7 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   return '';
 }
 
-function findRelevantSubjectTopic(prompt = '', subject = {}) {
+function rankRelevantSubjectTopic(prompt = '', subject = {}) {
   const promptText = normalizeForDialogue(prompt).replace(/_/g, ' ');
   if (!promptText || !Array.isArray(subject?.topics) || !subject.topics.length) return null;
   const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how']);
@@ -342,7 +344,29 @@ function findRelevantSubjectTopic(prompt = '', subject = {}) {
     }
   }
 
-  return bestScore > 0 ? getTopicContext(bestTopic, bestTopic?.id) : null;
+  return bestScore > 0 ? { topic: getTopicContext(bestTopic, bestTopic?.id), score: bestScore } : null;
+}
+
+function findRelevantSubjectTopic(prompt = '', subject = {}) {
+  return rankRelevantSubjectTopic(prompt, subject)?.topic || null;
+}
+
+function findRelevantLearningContext(prompt = '', availableSubjects = [], preferredSubject = {}) {
+  const candidates = [preferredSubject, ...(Array.isArray(availableSubjects) ? availableSubjects : [])];
+  const seen = new Set();
+  let best = null;
+  for (const candidate of candidates) {
+    const subject = getSubjectContext(candidate, candidate?.id);
+    const identity = subject.id || subject.title;
+    if (!identity || seen.has(identity)) continue;
+    seen.add(identity);
+    const ranked = rankRelevantSubjectTopic(prompt, subject);
+    if (!ranked) continue;
+    const preferredBonus = subject.id && subject.id === preferredSubject?.id ? 0.1 : 0;
+    const score = ranked.score + preferredBonus;
+    if (!best || score > best.score) best = { subject, topic: ranked.topic, score };
+  }
+  return best;
 }
 
 function buildSuggestionList(intent, context = {}) {
@@ -911,7 +935,27 @@ function buildConversationalTeachingReply({
           Boolean(subject?.id)
         );
       }
-      return null;
+      return withReplies(
+        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Saya mahu pastikan saya faham dengan betul. Kamu mahu saya menerangkan satu topik, mencadangkan pelajaran, atau membantu latihan?`,
+        ['Terangkan satu topik', 'Cadangkan apa untuk belajar', 'Bantu latihan saya'],
+        false
+      );
+    case 'tutor_identity':
+      return withReplies(
+        `Saya Janna, Tutor AI kamu. Saya boleh berbual tentang pembelajaran, menerangkan topik Tahun 2, memberi contoh dan membimbing latihan langkah demi langkah. Apa yang kamu mahu belajar sekarang?`,
+        studentTurn.quickReplies,
+        true
+      );
+    case 'learner_state': {
+      const stateReply = studentTurn.learnerState === 'tired'
+        ? 'Terima kasih kerana beritahu saya. Kalau kamu penat, kita boleh buat satu langkah kecil sahaja atau berehat dahulu.'
+        : studentTurn.learnerState === 'bored'
+          ? 'Saya faham. Jom tukar cara belajar supaya lebih menarik—kita boleh guna contoh ringkas atau cabaran pendek.'
+          : studentTurn.learnerState === 'worried'
+            ? 'Tak mengapa, kamu tidak perlu jawab semuanya sekali gus. Kita buat perlahan-lahan dan saya akan bimbing satu langkah pada satu masa.'
+            : 'Bagus, semangat itu membantu. Jom gunakan tenaga itu untuk satu sesi belajar yang ringkas dan jelas.';
+      return withReplies(stateReply, studentTurn.quickReplies, true);
+    }
     case 'clarification_needed':
       return withReplies(
         studentTurn.clarifyingQuestion || 'Bahagian mana yang kamu mahu saya terangkan: maksud, langkah, atau contoh?',
@@ -1042,7 +1086,8 @@ export async function getTutorResponse(options = {}) {
     readiness = null,
     learningObservation = null,
     predictionProfile = null,
-    gamificationProfile = null
+    gamificationProfile = null,
+    availableSubjects = []
   } = options;
 
   const studentProfile = student || profile || adaptiveProfile || {};
@@ -1071,11 +1116,13 @@ export async function getTutorResponse(options = {}) {
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id)
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
-  const relevantSubjectTopic = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
+  const relevantLearningContext = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
     .includes(resolvedIntent)
-      ? findRelevantSubjectTopic(prompt, subjectContext)
+      ? findRelevantLearningContext(prompt, availableSubjects, subjectContext)
       : null;
-  const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || ['example_request', 'why_question'].includes(resolvedIntent);
+  const relevantSubjectTopic = relevantLearningContext?.topic || null;
+  const conversationalSubject = relevantLearningContext?.subject || subjectContext;
+  const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request';
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
@@ -1217,14 +1264,14 @@ export async function getTutorResponse(options = {}) {
     history
   });
   const standaloneAnswer = ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
-    ? buildStandaloneTutorAnswer(prompt, subjectContext)
+    ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
     : '';
   const conversationalReply = buildConversationalTeachingReply({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     standaloneAnswer,
     contextBundle,
     studentName,
-    subject: subjectContext,
+    subject: conversationalSubject,
     topic: conversationalTopic,
     questionText: resolvedQuestionText,
     weakTopics: weakList,
@@ -1241,13 +1288,14 @@ export async function getTutorResponse(options = {}) {
   });
 
   const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
-  const usesGroundedConversationReply = Boolean(conversationalReply?.text && conversationalReply.grounded);
+  const usesConversationReply = Boolean(conversationalReply?.text);
+  const usesGroundedConversationReply = Boolean(usesConversationReply && conversationalReply.grounded);
   const responseSource = resolvedIntent === 'learning_recommendation' && usesGroundedConversationReply
     ? 'adaptive-teacher'
-    : usesGroundedConversationReply
+    : usesConversationReply
       ? 'conversation-engine'
       : source;
-  const responseFallbackUsed = usesGroundedConversationReply ? false : fallbackUsed;
+  const responseFallbackUsed = usesConversationReply ? false : fallbackUsed;
   const confidence = responseFallbackUsed
     ? 45
     : hasQuestionContext
@@ -1273,8 +1321,8 @@ export async function getTutorResponse(options = {}) {
     fallbackUsed: Boolean(responseFallbackUsed),
     error: null,
     studentName,
-    subject: subjectContext.title,
-    topic: fallbackTopicLabel,
+    subject: conversationalSubject.title,
+    topic: conversationalTopic?.title || fallbackTopicLabel,
     questionId: normalizeText(resolvedQuestion?.id || '', ''),
     questionText: resolvedQuestionText,
     instruction: resolvedInstruction,

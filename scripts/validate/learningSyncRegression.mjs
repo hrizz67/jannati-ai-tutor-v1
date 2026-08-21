@@ -71,6 +71,32 @@ assert.equal(
   'Profil tempatan kosong yang baru diwujudkan selepas delete tidak boleh memadam pembelajaran cloud.'
 );
 
+const originalChild = { id: 'child-original', name: 'Fayyadh', year: 'Tahun 2' };
+const temporaryChild = { id: 'child-temporary', name: 'Anak Baharu', year: 'Tahun 2' };
+const staleOriginalLocal = snapshot(originalChild.id, 500, 'Fayyadh-local-lama', 5);
+const currentOriginalCloud = snapshot(originalChild.id, 400, 'Fayyadh-cloud-semasa', 100);
+const deleteTemporaryPayload = mergeCloudLearningPayload({
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id, { [temporaryChild.id]: 600 }),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: staleOriginalLocal
+}, {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild, temporaryChild], temporaryChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: currentOriginalCloud,
+  [`${CHILD_SNAPSHOT_PREFIX}${temporaryChild.id}`]: snapshot(temporaryChild.id, 450, temporaryChild.name, 0)
+}, {
+  dirtyChildIds: [temporaryChild.id],
+  localActiveChildId: originalChild.id
+});
+assert.equal(
+  deleteTemporaryPayload[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`],
+  currentOriginalCloud,
+  'Memadam profil baharu tidak boleh menandakan profil asal dirty atau menggantikan data cloud semasanya.'
+);
+assert.equal(
+  deleteTemporaryPayload[`${CHILD_SNAPSHOT_PREFIX}${temporaryChild.id}`],
+  undefined,
+  'Snapshot profil baharu yang dipadam mesti dikeluarkan tanpa menyentuh profil asal.'
+);
+
 const localWinsWhenDirty = mergeCloudLearningPayload(localPayload, cloudPayload, {
   dirtyChildIds: ['child-a'],
   localActiveChildId: 'child-a'
@@ -262,9 +288,17 @@ assert.match(dashboardSource, /Cloud tidak aktif/, 'The dashboard must disclose 
 assert.match(dashboardSource, /Log masuk untuk Sync/, 'The dashboard must give local-only users a clear cloud sign-in action.');
 assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an explicit exit action for a local Free profile.');
 assert.match(appSource, /reloadCloudLearningState\(restoredChildId\)/, 'A cloud pull must refresh active profile state in React.');
-assert.match(appSource, /applyMergedCloudMetadata\(payload, activeChildId\)/, 'A completed upload must not restore an older in-flight payload over newer active learning state.');
+assert.match(appSource, /applyMergedCloudMetadata\(payload, activeChildId, dirtyChildIds\)/, 'A completed upload must know which active child was genuinely changed.');
+assert.match(appSource, /activeChildWasChanged[\s\S]{0,500}restoreChildSnapshot\(mergedActiveSnapshot\)/, 'An untouched active profile must restore the merged cloud snapshot instead of capturing an empty local surface.');
 assert.match(appSource, /localStorage\.removeItem\(`\$\{CHILD_ORIGINAL_SNAPSHOT_PREFIX\}\$\{target\.id\}`\)/, 'Deleting a profile must remove its original backup.');
 assert.match(appSource, /function backupChildBeforeDeletion[\s\S]{0,500}reason: 'manual-delete'/, 'Manual child deletion must create a recoverable hidden backup first.');
+const deleteChildSource = appSource.slice(
+  appSource.indexOf('function handleDeleteChild'),
+  appSource.indexOf('function resetSignedOutAccountState')
+);
+assert.match(deleteChildSource, /markLocalLearningMutation\(target\.id\)/, 'Deleting a child must mark only the deleted child and profile metadata as changed.');
+assert.match(deleteChildSource, /queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Deletion sync must not mark the restored original profile dirty.');
+assert.doesNotMatch(deleteChildSource, /captureChildSnapshot\(nextChild\.id\)/, 'Restoring the original profile after deletion must not stamp a stale local snapshot as newer learning.');
 assert.match(appSource, /matchingProfile && accountUser\?\.id[\s\S]{0,350}setPendingProfileReconciliation\(accountUser\.id, true\)[\s\S]{0,250}queueCloudLearningSave/, 'Same-identity child deletion must reconcile profiles instead of erasing learning.');
 assert.match(appSource, /!key\.startsWith\(CHILD_MERGED_BACKUP_PREFIX\)/, 'A merged-profile recovery backup must never be copied recursively into a child snapshot.');
 assert.match(appSource, /const duplicateProfile = existingProfiles\.find[\s\S]{0,450}Profil \$\{duplicateProfile\.name\}[\s\S]{0,150}return true;/, 'Creating the same child name and year must reuse the existing profile.');
