@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.5.2
+Version: 3.5.3
 Status: stable
-Build date: 2026-08-21T15:18:03.208Z
+Build date: 2026-08-21T16:14:03.337Z
 
 | Area | Status |
 | --- | --- |
@@ -18,9 +18,9 @@ Build date: 2026-08-21T15:18:03.208Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Learning sync and resume isolation | PASS |
-| Free and Premium storage isolation | PASS |
-| Duplicate-profile deletion recovery | PASS |
+| Tutor conversation continuity | PASS |
+| Cross-subject curriculum grounding | PASS |
+| Child deletion and learning isolation | PASS |
 | Overall Status | PASS |
 
 ## Validation
