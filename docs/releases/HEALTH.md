@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.5.1
+Version: 3.5.2
 Status: stable
-Build date: 2026-08-20T18:07:29.603Z
+Build date: 2026-08-21T15:18:03.208Z
 
 | Area | Status |
 | --- | --- |
@@ -18,10 +18,9 @@ Build date: 2026-08-20T18:07:29.603Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Tutor conversation regression | PASS |
-| Tutor answer-leak protection | PASS |
-| Learning sync and profile isolation | PASS |
-| Tutor AI active-profile greeting | PASS |
+| Learning sync and resume isolation | PASS |
+| Free and Premium storage isolation | PASS |
+| Duplicate-profile deletion recovery | PASS |
 | Overall Status | PASS |
 
 ## Validation
