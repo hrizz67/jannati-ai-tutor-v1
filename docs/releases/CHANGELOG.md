@@ -1,16 +1,21 @@
 # Changelog
 
-## 3.5.1 - 2026-08-20
+## 3.5.2 - 2026-08-21
 
 ### Fixed
 
-- Tutor AI tidak lagi menyapa profil anak bernama sebagai “Murid” apabila profil adaptif tidak membawa nama.
-- Nama profil aktif kini diteruskan kepada enjin Tutor AI melalui salinan konteks tanpa mengubah data profil atau rekod pembelajaran.
-- Kapitalisasi respons cadangan pembelajaran diperbetulkan untuk keadaan nama profil tidak tersedia.
+- Mengasingkan storan profil Free daripada snapshot milik akaun Premium semasa pertukaran sesi.
+- Menghentikan aliran login akaun daripada mencipta profil Free sebelum profil dan data cloud selesai dimuatkan.
+- Mengutamakan snapshot semasa yang lebih baharu untuk resume tanpa membenarkan backup lama ber-XP tinggi menggantikan kedudukan pembelajaran terkini.
+- Melindungi data cloud yang bermakna daripada snapshot tempatan kosong selepas pemadaman atau pertukaran profil.
+- Menyimpan senarai profil anak yang benar-benar berubah bagi setiap akaun supaya status sync tertangguh tidak menandakan profil lama sebagai data semasa.
+- Menambah resume profil Free dan tindakan keluar yang menyimpan kemajuan pada peranti.
+- Membuat backup tersembunyi sebelum pemadaman serta menyatukan profil pendua yang mempunyai nama dan tahun sama.
 
 ### Tests
 
-- Tambah regresi untuk sapaan nama profil aktif dan cadangan belajar bagi murid yang masih mempunyai rekod pembelajaran terhad.
+- Tambah regresi untuk pengasingan Free–Premium, pemilihan snapshot semasa, perlindungan data cloud selepas delete, dirty child IDs dan tindakan `Keluar Free`.
+- Learning sync, resume isolation, access control, 4530 soalan, build produksi dan bundle budget semuanya lulus.
 
 ### Release controls
 

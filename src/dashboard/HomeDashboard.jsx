@@ -166,6 +166,7 @@ export default function HomeDashboard(props) {
     onCompleteDaily,
     onToggleFavourite,
     onLogout,
+    onExitLocalProfile,
     hasAccountSession,
     childProfiles,
     activeChildId,
@@ -399,7 +400,12 @@ export default function HomeDashboard(props) {
               </span>
               <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout}>{cloudSyncPresentation.label}</button>
               <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
-              <button type="button" className="secondary header-account-action" onClick={onLogout}>{hasAccountSession ? 'Log keluar' : 'Log masuk untuk Sync'}</button>
+              {hasAccountSession
+                ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
+                : <>
+                  <button type="button" className="secondary header-account-action" onClick={onLogout}>Log masuk untuk Sync</button>
+                  <button type="button" className="secondary header-account-action local-exit-action" onClick={onExitLocalProfile}>Keluar Free</button>
+                </>}
             </div>
           </div>
         </header>
