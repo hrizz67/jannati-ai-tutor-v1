@@ -93,10 +93,12 @@ const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jan
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
 const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
+const GUEST_SNAPSHOT_KEY = 'jannati_guest_snapshot_v1';
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
 const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
 const CLOUD_PENDING_PREFIX = 'jannati_cloud_sync_pending:';
+const CLOUD_DIRTY_CHILDREN_PREFIX = 'jannati_cloud_dirty_children:';
 const PROFILE_RECONCILIATION_PREFIX = 'jannati_profile_reconciliation_pending:';
 const SYNC_DEVICE_KEY = 'jannati_sync_device_id';
 const ACCOUNT_MIGRATION_KEY = 'jannati_account_storage_migrated_v1';
@@ -144,8 +146,10 @@ function isAccountDataKey(key = '') {
   return String(key).startsWith('jannati')
     && key !== ACCOUNT_SCOPE_KEY
     && key !== ACCOUNT_MIGRATION_KEY
+    && key !== GUEST_SNAPSHOT_KEY
     && key !== SYNC_DEVICE_KEY
     && !key.startsWith(CLOUD_PENDING_PREFIX)
+    && !key.startsWith(CLOUD_DIRTY_CHILDREN_PREFIX)
     && !key.startsWith(PROFILE_RECONCILIATION_PREFIX)
     && !key.startsWith(ACCOUNT_SNAPSHOT_PREFIX);
 }
@@ -191,6 +195,32 @@ function setPendingCloudMutation(accountId, pending) {
     else localStorage.removeItem(key);
   } catch {
     // The in-memory pending flag still protects the active session.
+  }
+}
+
+function getDirtyChildrenKey(accountId) {
+  return `${CLOUD_DIRTY_CHILDREN_PREFIX}${String(accountId || '').trim()}`;
+}
+
+function readPendingDirtyChildIds(accountId) {
+  if (!accountId) return [];
+  try {
+    const parsed = JSON.parse(localStorage.getItem(getDirtyChildrenKey(accountId)) || '[]');
+    return Array.isArray(parsed) ? [...new Set(parsed.map(String).filter(Boolean))] : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePendingDirtyChildIds(accountId, childIds = []) {
+  if (!accountId) return;
+  try {
+    const key = getDirtyChildrenKey(accountId);
+    const normalized = [...new Set([...childIds].map(String).filter(Boolean))];
+    if (normalized.length) localStorage.setItem(key, JSON.stringify(normalized));
+    else localStorage.removeItem(key);
+  } catch {
+    // The in-memory dirty set remains authoritative for this session.
   }
 }
 
@@ -367,12 +397,37 @@ function resolveChildSnapshot(childId) {
   if (!childId) return null;
   const regularSnapshot = readChildSnapshot(childId);
   const originalSnapshot = readOriginalChildSnapshot(childId);
-  // A regular snapshot can be newer but incomplete when mobile storage or a
-  // cloud write was interrupted. Prefer the snapshot with the most learning
-  // evidence so an empty/partial snapshot cannot hide the original progress.
-  return [regularSnapshot, originalSnapshot]
-    .filter(Boolean)
-    .sort((left, right) => snapshotEvidenceScore(right) - snapshotEvidenceScore(left))[0] || null;
+  if (!regularSnapshot) return originalSnapshot;
+  if (!originalSnapshot) return regularSnapshot;
+  const regularScore = snapshotEvidenceScore(regularSnapshot);
+  const originalScore = snapshotEvidenceScore(originalSnapshot);
+  if (regularScore <= 0) return originalScore > 0 ? originalSnapshot : regularSnapshot;
+  if (originalScore <= 0) return regularSnapshot;
+  const regularCapturedAt = Number(regularSnapshot.__childSnapshotCapturedAt) || 0;
+  const originalCapturedAt = Number(originalSnapshot.__childSnapshotCapturedAt) || 0;
+  // The regular snapshot represents the learner's current session. Prefer it
+  // whenever it is newer and still contains meaningful evidence. The original
+  // backup is only a disaster-recovery fallback for a severely truncated copy.
+  if (regularCapturedAt >= originalCapturedAt || regularScore >= originalScore * 0.35) return regularSnapshot;
+  return originalSnapshot;
+}
+
+function backupChildBeforeDeletion(profile = {}) {
+  if (!profile?.id) return false;
+  try {
+    const backupKey = `${CHILD_MERGED_BACKUP_PREFIX}deleted-${profile.id}-${Date.now()}`;
+    localStorage.setItem(backupKey, JSON.stringify({
+      version: 1,
+      reason: 'manual-delete',
+      deletedAt: new Date().toISOString(),
+      profile,
+      snapshot: readChildSnapshot(profile.id),
+      originalSnapshot: readOriginalChildSnapshot(profile.id)
+    }));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function captureOriginalChildSnapshot(childId) {
@@ -505,6 +560,47 @@ function buildCloudLearningPayload({ captureActiveChild = true } = {}) {
     // Keep the legacy payload usable if child metadata cannot be serialized.
   }
   return snapshot;
+}
+
+function readGuestSnapshot() {
+  try {
+    const raw = localStorage.getItem(GUEST_SNAPSHOT_KEY);
+    const snapshot = raw ? JSON.parse(raw) : null;
+    return snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot) ? snapshot : null;
+  } catch {
+    return null;
+  }
+}
+
+function captureGuestSnapshot() {
+  try {
+    const activeChildId = readActiveChildId();
+    if (activeChildId) captureChildSnapshot(activeChildId, { force: true });
+    const snapshot = buildCloudLearningPayload({ captureActiveChild: false });
+    if (snapshot[PROFILE_KEY] || snapshot[CHILD_PROFILES_KEY]) {
+      localStorage.setItem(GUEST_SNAPSHOT_KEY, JSON.stringify(snapshot));
+    }
+    return snapshot;
+  } catch {
+    return null;
+  }
+}
+
+function getGuestProfileSummary() {
+  const snapshot = readGuestSnapshot();
+  if (!snapshot) return null;
+  try {
+    const profiles = JSON.parse(snapshot[CHILD_PROFILES_KEY] || '[]');
+    const activeChildId = String(snapshot[ACTIVE_CHILD_KEY] || '').trim();
+    const activeProfile = Array.isArray(profiles)
+      ? profiles.find(item => item?.id === activeChildId) || profiles[0]
+      : null;
+    if (activeProfile?.name) return { name: activeProfile.name, year: activeProfile.year || 'Tahun 2' };
+    const storedProfile = JSON.parse(snapshot[PROFILE_KEY] || '{}');
+    return storedProfile?.name ? { name: storedProfile.name, year: storedProfile.year || 'Tahun 2' } : null;
+  } catch {
+    return null;
+  }
 }
 
 function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
@@ -681,40 +777,11 @@ function activateAccountStorage(accountId) {
     const currentId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
     if (currentId === nextId) return;
     if (currentId) captureAccountSnapshot(currentId);
+    else captureGuestSnapshot();
 
-    const anonymousPayload = currentId ? null : buildCloudLearningPayload();
-    const anonymousDirtyChildIds = currentId
-      ? []
-      : readChildProfiles()
-        .map(child => child.id)
-        .filter(childId => snapshotEvidenceScore(readChildSnapshot(childId) || {}) > 0);
     const existingSnapshot = readAccountSnapshot(nextId);
-    if (existingSnapshot && anonymousDirtyChildIds.length) {
-      // A learner may continue locally after signing out, then return to an
-      // existing account. Merge that work into the account instead of letting
-      // the older account snapshot silently replace it at login.
-      const mergedSnapshot = mergeCloudLearningPayload(anonymousPayload, existingSnapshot, {
-        dirtyChildIds: anonymousDirtyChildIds,
-        localActiveChildId: readActiveChildId(),
-        deviceId: getSyncDeviceId(),
-        reconcileChildIdentity: true
-      });
-      restoreAccountSnapshot(mergedSnapshot);
-      captureAccountSnapshot(nextId);
-      setPendingCloudMutation(nextId, true);
-      setPendingProfileReconciliation(nextId, true);
-    } else if (existingSnapshot) {
-      restoreAccountSnapshot(existingSnapshot);
-    } else if (localStorage.getItem(ACCOUNT_MIGRATION_KEY) === 'done') {
-      clearAccountData();
-    } else {
-      // One-time migration: associate the existing anonymous/device data with
-      // the first authenticated account without copying it to later accounts.
-      captureAccountSnapshot(nextId);
-      setPendingCloudMutation(nextId, true);
-      if (readChildProfiles().length) setPendingProfileReconciliation(nextId, true);
-      localStorage.setItem(ACCOUNT_MIGRATION_KEY, 'done');
-    }
+    if (existingSnapshot) restoreAccountSnapshot(existingSnapshot);
+    else clearAccountData();
     localStorage.setItem(ACCOUNT_SCOPE_KEY, nextId);
   } catch {
     // Account data remains available in the current browser session.
@@ -1308,7 +1375,10 @@ export default function App() {
     cloudMutationAtRef.current = Date.now();
     if (childId) dirtyChildIdsRef.current.add(childId);
     const accountId = accountUser?.id || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
-    if (accountId) setPendingCloudMutation(accountId, true);
+    if (accountId) {
+      writePendingDirtyChildIds(accountId, dirtyChildIdsRef.current);
+      setPendingCloudMutation(accountId, true);
+    }
   }
 
   function queueCloudLearningSave({ markMutation = true } = {}) {
@@ -1330,9 +1400,8 @@ export default function App() {
         const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
         if (activeAccountId !== accountUser.id || cloudHydratedAccountId !== accountUser.id) return false;
         const activeChildId = readActiveChildId();
-        if (activeChildId) dirtyChildIdsRef.current.add(activeChildId);
-        captureChildSnapshot(activeChildId, { force: true });
         const dirtyChildIds = [...dirtyChildIdsRef.current];
+        if (activeChildId && dirtyChildIds.includes(activeChildId)) captureChildSnapshot(activeChildId, { force: true });
         cloudWritePendingRef.current = true;
         setCloudSyncStatus('syncing');
         const cloudResult = await loadCloudLearningDataResult(supabase);
@@ -1343,7 +1412,7 @@ export default function App() {
           setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
           return false;
         }
-        const payload = mergeCloudLearningPayload(buildCloudLearningPayload(), cloudResult.data, {
+        const payload = mergeCloudLearningPayload(buildCloudLearningPayload({ captureActiveChild: false }), cloudResult.data, {
           dirtyChildIds,
           localActiveChildId: activeChildId,
           deviceId: getSyncDeviceId(),
@@ -1363,6 +1432,7 @@ export default function App() {
           setPendingCloudMutation(accountUser.id, false);
           setPendingProfileReconciliation(accountUser.id, false);
           dirtyChildIds.forEach(childId => dirtyChildIdsRef.current.delete(childId));
+          writePendingDirtyChildIds(accountUser.id, dirtyChildIdsRef.current);
           captureAccountSnapshot(accountUser.id);
         } else {
           pendingOfflineCloudSaveRef.current = true;
@@ -1547,6 +1617,19 @@ export default function App() {
     if (!window.confirm(`Padam profil ${target.name}? Data profil ini juga akan dibuang daripada peranti ini.`)) return false;
 
     const remainingProfiles = availableProfiles.filter(item => item.id !== target.id);
+    backupChildBeforeDeletion(target);
+    const matchingProfile = remainingProfiles.find(item => (
+      getChildProfileIdentity(item)
+      && getChildProfileIdentity(item) === getChildProfileIdentity(target)
+    ));
+    if (matchingProfile && accountUser?.id) {
+      markLocalLearningMutation(target.id);
+      setPendingProfileReconciliation(accountUser.id, true);
+      setPendingCloudMutation(accountUser.id, true);
+      void queueCloudLearningSave({ markMutation: false });
+      setRecoveryMessages(prev => [...prev, `Profil pendua ${target.name} sedang digabungkan dengan selamat. Data pembelajaran akan dikekalkan.`]);
+      return true;
+    }
     const currentChildId = activeChildId || readActiveChildId();
     markLocalLearningMutation();
     markChildDeleted(target.id);
@@ -1595,6 +1678,7 @@ export default function App() {
     clearAccountData();
     try {
       localStorage.removeItem(ACCOUNT_SCOPE_KEY);
+      localStorage.setItem(ONBOARDING_KEY, 'done');
     } catch {
       // Ignore storage cleanup failures.
     }
@@ -1644,6 +1728,7 @@ export default function App() {
       setAccessProfile(current => String(current?.id || '') === String(user.id) ? current : null);
       setCloudHydratedAccountId('');
       activateAccountStorage(user.id);
+      dirtyChildIdsRef.current = new Set(readPendingDirtyChildIds(user.id));
       const [{ data, error }, cloudResult] = await Promise.all([
         supabase
           .from('profiles')
@@ -1678,12 +1763,27 @@ export default function App() {
         setPendingCloudMutation(user.id, true);
         setCloudSyncStatus('empty');
       }
-      const childState = ensureChildProfiles(loadProfile());
+      const accountDisplayName = [
+        user.user_metadata?.display_name,
+        data?.display_name,
+        user.email?.split('@')[0]
+      ]
+        .map(value => String(value || '').trim())
+        .find(value => value && !isPlaceholderStudentName(value)) || 'Murid';
+      const storedAccountProfile = loadProfile();
+      const childState = ensureChildProfiles({
+        ...storedAccountProfile,
+        name: isPlaceholderStudentName(storedAccountProfile?.name) || !storedAccountProfile?.name
+          ? accountDisplayName
+          : storedAccountProfile.name
+      });
       setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
       setGamificationProfile(loadGamificationState());
       setResume(loadResume());
+      localStorage.setItem(ONBOARDING_KEY, 'done');
       setShowOnboarding(false);
+      setShowAccountLogin(false);
       setScreen('dashboard');
       const nextAccess = error || !data
         ? { id: user.id, access_status: 'free', access_source: error ? 'fallback' : 'default' }
@@ -1919,6 +2019,8 @@ export default function App() {
       if (scopedChildId) captureChildSnapshot(scopedChildId);
       if (accountUser?.id && activeAccountId === accountUser.id) {
         captureAccountSnapshot(accountUser.id);
+      } else if (!activeAccountId && screen !== 'login' && !showAccountLogin) {
+        captureGuestSnapshot();
       }
     } catch {
       setRecoveryMessages(prev => [...prev, 'Perubahan profil tidak dapat disimpan kerana simpanan peranti tidak tersedia.']);
@@ -2079,6 +2181,21 @@ export default function App() {
     }
   }
 
+  function resumeGuestProfile() {
+    if (accountUser?.id || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim()) return false;
+    const snapshot = readGuestSnapshot();
+    if (!snapshot) return false;
+    restoreAccountSnapshot(snapshot);
+    repairImportedLearningProfile();
+    localStorage.setItem(ONBOARDING_KEY, 'done');
+    const childState = ensureChildProfiles(loadProfile());
+    reloadCloudLearningState(childState.activeId);
+    setShowOnboarding(false);
+    setShowAccountLogin(false);
+    setScreen('dashboard');
+    return true;
+  }
+
   async function startProfile(name, avatar) {
     const nextName = String(name || '').trim() || 'Anak';
     setShowOnboarding(false);
@@ -2099,15 +2216,25 @@ export default function App() {
       setScreen('dashboard');
       return;
     }
+    const guestSummary = getGuestProfileSummary();
+    if (guestSummary && getChildProfileIdentity(guestSummary) === getChildProfileIdentity({ name: nextName, year: 'Tahun 2' })) {
+      resumeGuestProfile();
+      return;
+    }
+    clearAccountData();
     const freeProfile = { ...defaultProfile, name: nextName, avatar, year: 'Tahun 2' };
     localStorage.setItem(PROFILE_KEY, JSON.stringify(freeProfile));
-    setProfile(freeProfile);
+    resetAdaptiveStudentProfile();
+    const nextGamification = resetGamificationProfile();
+    setGamificationProfile(nextGamification);
+    resetSmartQuestionState();
     const freeChild = ensureChildProfiles(freeProfile);
     writeChildProfiles(freeChild.profiles.map(child => child.id === freeChild.activeId ? { ...child, name: nextName, avatar, updatedAt: new Date().toISOString() } : child));
-    captureChildSnapshot(freeChild.activeId);
+    setProfile(freeProfile);
+    captureChildSnapshot(freeChild.activeId, { force: true });
+    captureGuestSnapshot();
+    localStorage.setItem(ONBOARDING_KEY, 'done');
     void persistStudentName(nextName);
-    setGamificationProfile(resetGamificationProfile());
-    resetSmartQuestionState();
     refreshAdaptiveProfile();
     setScreen('dashboard');
   }
@@ -2877,6 +3004,7 @@ export default function App() {
     if (!accountUser?.id) {
       const currentChildId = activeChildId || readActiveChildId();
       if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
+      captureGuestSnapshot();
       setShowAccountLogin(true);
       return;
     }
@@ -2890,6 +3018,25 @@ export default function App() {
       }
     }
     resetSignedOutAccountState(exitingAccountId);
+  }
+
+  function exitLocalProfile() {
+    if (accountUser?.id) return;
+    const currentChildId = activeChildId || readActiveChildId();
+    if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
+    captureGuestSnapshot();
+    clearAccountData();
+    localStorage.setItem(ONBOARDING_KEY, 'done');
+    setProfile({ ...defaultProfile });
+    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setGamificationProfile(loadGamificationState());
+    setResume(null);
+    setChildProfiles([]);
+    setActiveChildId('');
+    childSnapshotCacheRef.current.clear();
+    setShowOnboarding(false);
+    setShowAccountLogin(false);
+    setScreen('login');
   }
 
   function syncSelectedSubjectState(subject) {
@@ -3527,9 +3674,9 @@ export default function App() {
 
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
-  if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} onSupabaseReady={setSupabase} /></BetaChrome>;
+  if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} onSupabaseReady={setSupabase} guestProfile={getGuestProfileSummary()} onResumeGuest={resumeGuestProfile} /></BetaChrome>;
 
-  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} onSupabaseReady={setSupabase} /></BetaChrome>;
+  if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} onSupabaseReady={setSupabase} guestProfile={getGuestProfileSummary()} onResumeGuest={resumeGuestProfile} /></BetaChrome>;
 
   if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} /></BetaChrome>;
 
@@ -3558,7 +3705,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -3792,7 +3939,7 @@ function BetaFeedbackButton({ suppressed = false }) {
   </>;
 }
 
-function Login({ onStart, onBack, onSupabaseReady }) {
+function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }) {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('janna');
   const [email, setEmail] = useState('');
@@ -3832,8 +3979,7 @@ function Login({ onStart, onBack, onSupabaseReady }) {
         return;
       }
       if (result.data.session?.user) {
-        const user = result.data.session.user;
-        onStart(user.user_metadata?.display_name || name.trim() || user.email?.split('@')[0] || 'Murid', avatar);
+        setAccountMessage('Log masuk berjaya. Memuatkan profil dan data pembelajaran akaun...');
       } else {
         setAccountMessage('Akaun berjaya dicipta. Sahkan e-mel jika diminta, kemudian log masuk.');
         setAccountMode('signin');
@@ -3845,7 +3991,7 @@ function Login({ onStart, onBack, onSupabaseReady }) {
     }
   }
 
-  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1><p>Masukkan nama murid untuk mula belajar.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar Free</button>{supabaseConfigured && <><div className="login-divider"><span>atau guna akaun</span></div><form onSubmit={handleAccountSubmit} className="account-login-form"><label htmlFor="account-email">E-mel</label><input id="account-email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="nama@contoh.com" required /><label htmlFor="account-password">Kata laluan</label><input id="account-password" type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Minimum 6 aksara" minLength={6} required />{accountMessage && <p className="autosave-note" role="status">{accountMessage}</p>}<button type="submit" className="secondary full" disabled={accountBusy}>{accountBusy ? 'Memproses...' : accountMode === 'signin' ? 'Log masuk' : 'Cipta akaun'}</button></form><button type="button" className="text-button" onClick={() => { setAccountMode(mode => mode === 'signin' ? 'signup' : 'signin'); setAccountMessage(''); }}>{accountMode === 'signin' ? 'Belum ada akaun? Cipta akaun' : 'Sudah ada akaun? Log masuk'}</button></>}{onBack && <button type="button" className="text-button login-back-button" onClick={onBack}>Kembali</button>}</section></main>;
+  return <main className="app login-page"><section className="card"><p className="eyebrow">Beta Tertutup</p><h1>Selamat datang</h1>{guestProfile?.name && <button type="button" className="secondary full resume-free-profile" onClick={onResumeGuest}>Sambung {guestProfile.name} (Free)</button>}<p>Masukkan nama murid untuk mula dengan profil Free baharu.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar Free</button>{supabaseConfigured && <><div className="login-divider"><span>atau guna akaun</span></div><form onSubmit={handleAccountSubmit} className="account-login-form"><label htmlFor="account-email">E-mel</label><input id="account-email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="nama@contoh.com" required /><label htmlFor="account-password">Kata laluan</label><input id="account-password" type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Minimum 6 aksara" minLength={6} required />{accountMessage && <p className="autosave-note" role="status">{accountMessage}</p>}<button type="submit" className="secondary full" disabled={accountBusy}>{accountBusy ? 'Memproses...' : accountMode === 'signin' ? 'Log masuk' : 'Cipta akaun'}</button></form><button type="button" className="text-button" onClick={() => { setAccountMode(mode => mode === 'signin' ? 'signup' : 'signin'); setAccountMessage(''); }}>{accountMode === 'signin' ? 'Belum ada akaun? Cipta akaun' : 'Sudah ada akaun? Log masuk'}</button></>}{onBack && <button type="button" className="text-button login-back-button" onClick={onBack}>Kembali</button>}</section></main>;
 }
 
 function LoadingSkeleton() {

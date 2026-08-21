@@ -166,8 +166,15 @@ function chooseRicherSnapshot(firstRaw, secondRaw) {
   if (typeof secondRaw !== 'string') return firstRaw;
   const firstScore = getLearningSnapshotEvidenceScore(firstRaw);
   const secondScore = getLearningSnapshotEvidenceScore(secondRaw);
-  if (firstScore !== secondScore) return firstScore > secondScore ? firstRaw : secondRaw;
-  return getLearningSnapshotTimestamp(firstRaw) >= getLearningSnapshotTimestamp(secondRaw) ? firstRaw : secondRaw;
+  if (firstScore <= 0) return secondScore > 0 ? secondRaw : firstRaw;
+  if (secondScore <= 0) return firstRaw;
+  const firstTimestamp = getLearningSnapshotTimestamp(firstRaw);
+  const secondTimestamp = getLearningSnapshotTimestamp(secondRaw);
+  // The first value is the current child snapshot and the second is its
+  // original recovery backup. A larger old backup must not replace a newer
+  // resume position unless the current snapshot is severely truncated.
+  if (firstTimestamp >= secondTimestamp || firstScore >= secondScore * 0.35) return firstRaw;
+  return secondRaw;
 }
 
 function rewriteSnapshotChildId(rawSnapshot, childId) {
@@ -469,12 +476,18 @@ function mergeChildProfiles(localProfiles = [], cloudProfiles = [], deletedChild
 }
 
 function chooseSnapshot(localRaw, cloudRaw, preferLocal) {
-  if (preferLocal && typeof localRaw === 'string') return localRaw;
   if (typeof localRaw !== 'string') return cloudRaw;
   if (typeof cloudRaw !== 'string') return localRaw;
+  const localScore = getLearningSnapshotEvidenceScore(localRaw);
+  const cloudScore = getLearningSnapshotEvidenceScore(cloudRaw);
+  // A newly-created empty local surface must never erase meaningful cloud
+  // learning, including immediately after a duplicate child is deleted.
+  if (localScore <= 0 && cloudScore > 0) return cloudRaw;
+  if (preferLocal) return localRaw;
+  if (cloudScore <= 0) return localRaw;
   const localTimestamp = getLearningSnapshotTimestamp(localRaw);
   const cloudTimestamp = getLearningSnapshotTimestamp(cloudRaw);
-  if (localTimestamp > cloudTimestamp) return localRaw;
+  if (localTimestamp > cloudTimestamp && localScore >= cloudScore * 0.35) return localRaw;
   return cloudRaw;
 }
 
