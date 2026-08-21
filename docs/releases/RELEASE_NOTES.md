@@ -1,17 +1,15 @@
-# Jannati AI Tutor 3.5.2 Release Notes
+# Jannati AI Tutor 3.5.3 Release Notes
 
 Status: stable
-Tag: v3.5.2
-Build date: 2026-08-21T15:18:03.208Z
+Tag: v3.5.3
+Build date: 2026-08-21T16:14:03.337Z
 
-## Highlights
+## Sorotan Release
 
-- Profil Free pada peranti kini diasingkan sepenuhnya daripada profil dan data pembelajaran akaun Premium.
-- Login akaun menunggu proses pemuatan profil dan data cloud selesai sebelum memaparkan Papan Utama, sekali gus menghalang penciptaan profil Free secara tidak sengaja.
-- Resume pembelajaran mengutamakan snapshot semasa yang bermakna, manakala backup lama hanya digunakan apabila data semasa kosong atau rosak teruk.
-- Snapshot tempatan kosong tidak lagi boleh menimpa data pembelajaran cloud yang masih mempunyai bukti kemajuan.
-- Profil Free boleh disambung semula selepas browser ditutup dan mempunyai tindakan `Keluar Free` yang jelas.
-- Pemadaman profil pendua membuat backup pemulihan dan mencetuskan penyatuan identiti tanpa mengosongkan profil Premium yang sah.
+- Tutor AI kini berfungsi sebagai satu perbualan berterusan untuk setiap profil anak, sama ada dibuka melalui menu Tutor AI atau Tanya Tutor AI.
+- Janna memahami sapaan, pertanyaan identiti, keadaan seperti penat atau risau, serta pertanyaan umum tanpa bergantung pada soalan latihan yang sudah tidak aktif.
+- Soalan pembelajaran umum boleh menggunakan nota kurikulum paling berkaitan daripada semua subjek Tahun 2 yang tersedia.
+- Memadam profil anak baharu tidak lagi menandakan atau mengosongkan data pembelajaran profil asal; sync cloud mengekalkan rekod yang paling semasa.
 
 ## Release Readiness
 
@@ -45,4 +43,3 @@ Build date: 2026-08-21T15:18:03.208Z
 
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
-- Akaun yang kehilangan data sebelum v3.5.2 masih bergantung pada snapshot pemulihan yang kekal pada peranti atau cloud.

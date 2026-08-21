@@ -1,21 +1,18 @@
 # Changelog
 
-## 3.5.2 - 2026-08-21
+## 3.5.3 - 2026-08-21
 
-### Fixed
+### Tutor AI
 
-- Mengasingkan storan profil Free daripada snapshot milik akaun Premium semasa pertukaran sesi.
-- Menghentikan aliran login akaun daripada mencipta profil Free sebelum profil dan data cloud selesai dimuatkan.
-- Mengutamakan snapshot semasa yang lebih baharu untuk resume tanpa membenarkan backup lama ber-XP tinggi menggantikan kedudukan pembelajaran terkini.
-- Melindungi data cloud yang bermakna daripada snapshot tempatan kosong selepas pemadaman atau pertukaran profil.
-- Menyimpan senarai profil anak yang benar-benar berubah bagi setiap akaun supaya status sync tertangguh tidak menandakan profil lama sebagai data semasa.
-- Menambah resume profil Free dan tindakan keluar yang menyimpan kemajuan pada peranti.
-- Membuat backup tersembunyi sebelum pemadaman serta menyatukan profil pendua yang mempunyai nama dan tahun sama.
+- Tutor AI dan pintasan Tanya Tutor AI kini berkongsi perbualan yang sama mengikut profil anak.
+- Pertanyaan umum, sapaan, identiti tutor, dan keadaan emosi murid dijawab secara lebih semula jadi tanpa dipaksa kembali kepada soalan latihan lama.
+- Konteks soalan hanya digunakan ketika kuiz aktif, manakala pertanyaan pembelajaran umum boleh mencari nota kurikulum berkaitan merentas subjek Tahun 2.
 
-### Tests
+### Profil anak dan data pembelajaran
 
-- Tambah regresi untuk pengasingan Free–Premium, pemilihan snapshot semasa, perlindungan data cloud selepas delete, dirty child IDs dan tindakan `Keluar Free`.
-- Learning sync, resume isolation, access control, 4530 soalan, build produksi dan bundle budget semuanya lulus.
+- Pemadaman profil anak kini hanya menandakan profil sasaran sebagai berubah dan tidak lagi menimpa data pembelajaran profil asal yang lebih baharu di cloud.
+- Pemulihan profil aktif menggunakan snapshot gabungan yang betul selepas sync atau pemadaman profil.
+- Regresi baharu melindungi kesinambungan perbualan Tutor AI, pengasingan profil, dan pemadaman anak tanpa kehilangan kemajuan.
 
 ### Release controls
 

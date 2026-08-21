@@ -7,6 +7,7 @@ const root = process.cwd();
 const turnEnginePath = resolve(root, 'src/ai/conversation/studentTurnEngine.js');
 const tutorEnginePath = resolve(root, 'src/ai/tutorResponseEngine.js');
 const modalPath = resolve(root, 'src/components/ai/TutorAIModal.jsx');
+const appPath = resolve(root, 'src/App.jsx');
 
 const { understandStudentTurn } = await import(pathToFileURL(turnEnginePath).href);
 const { getTutorResponse } = await import(pathToFileURL(tutorEnginePath).href);
@@ -58,6 +59,9 @@ assert.equal(understand('Saya nak belajar kata nama am', { hasExerciseContext: f
 assert.equal(understand('buku').intent, 'direct_answer', 'Jawapan ringkas yang sepadan mesti dianggap cubaan jawapan.');
 assert.equal(understand('pensel').intent, 'direct_answer', 'Cubaan jawapan ringkas yang salah masih mesti disemak.');
 assert.equal(understand('tolong').intent, 'clarification_needed', 'Permintaan kabur mesti menghasilkan soalan penjelasan.');
+assert.equal(understand('Apa khabar?').messageType, 'social', 'Sapaan semula jadi mesti dianggap sebagai perbualan sosial.');
+assert.equal(understand('Siapa awak?').intent, 'tutor_identity', 'Murid mesti boleh bertanya identiti Tutor AI.');
+assert.equal(understand('Saya penat hari ini').intent, 'learner_state', 'Tutor mesti memahami keadaan emosi dan tenaga murid.');
 
 async function ask(prompt, overrides = {}) {
   return getTutorResponse({
@@ -95,6 +99,34 @@ const greeting = await ask('Hai');
 assert.equal(greeting.fallbackUsed, false, 'Sapaan biasa mesti menerima balasan perbualan, bukan keadaan fallback.');
 assert.match(greeting.text, /mencadangkan pelajaran|menerangkan sesuatu topik/i, 'Sapaan mesti diteruskan dengan pilihan pembelajaran yang berguna.');
 
+const generalWithoutQuestion = await getTutorResponse({
+  student: { id: 'student-1', name: 'Alya' },
+  subject: { ...subject, topics: [topic] },
+  topic: null,
+  question: null,
+  prompt: 'Saya tidak pasti hendak mula',
+  intent: 'general',
+  history: []
+});
+assert.equal(generalWithoutQuestion.intent, 'general');
+assert.equal(generalWithoutQuestion.fallbackUsed, false, 'Pertanyaan umum tanpa soalan mesti dijawab sebagai perbualan, bukan fallback.');
+assert.match(generalWithoutQuestion.text, /baik, saya dengar|mahu pastikan saya faham/i, 'Tutor mesti membalas seperti guru yang mendengar murid.');
+assert.doesNotMatch(generalWithoutQuestion.text, /lihat soalan ini|klik petunjuk|semak jawapan/i, 'Perbualan umum tidak boleh dipaksa kembali kepada soalan latihan.');
+assert.ok(generalWithoutQuestion.quickReplies.some(item => /topik|belajar/i.test(item)), 'Perbualan umum mesti menawarkan langkah susulan yang berguna.');
+
+const learnerState = await getTutorResponse({
+  student: { id: 'student-1', name: 'Alya' },
+  subject: { ...subject, topics: [topic] },
+  topic: null,
+  question: null,
+  prompt: 'Saya penat hari ini',
+  intent: 'general',
+  history: []
+});
+assert.equal(learnerState.intent, 'learner_state');
+assert.equal(learnerState.fallbackUsed, false);
+assert.match(learnerState.text, /penat|langkah kecil|berehat/i, 'Tutor mesti memberi respons empati yang sesuai dengan keadaan murid.');
+
 const crossTopic = await ask('Boleh ajar saya darab?');
 assert.equal(crossTopic.intent, 'how_question');
 assert.match(crossTopic.text, /darab/i);
@@ -119,6 +151,27 @@ const scienceTopicLookup = await getTutorResponse({
 assert.equal(scienceTopicLookup.intent, 'knowledge_question');
 assert.match(scienceTopicLookup.text, /bunyi terhasil daripada getaran/i, 'Tutor mesti mencari nota topik berkaitan dalam subjek semasa.');
 assert.doesNotMatch(scienceTopicLookup.text, /haiwan memerlukan makanan/i, 'Nota topik lama tidak boleh mencampuri pertanyaan konsep baharu.');
+
+const crossSubjectLookup = await getTutorResponse({
+  student: { id: 'student-1', name: 'Alya' },
+  subject: { ...subject, topics: [topic] },
+  topic: null,
+  question: null,
+  availableSubjects: [
+    { ...subject, topics: [topic] },
+    {
+      id: 'sains',
+      title: 'Sains',
+      topics: [{ id: 'bunyi', title: 'Bunyi', note: 'Bunyi terhasil daripada getaran.' }]
+    }
+  ],
+  prompt: 'Apa itu getaran?',
+  intent: 'general',
+  history: []
+});
+assert.equal(crossSubjectLookup.intent, 'knowledge_question');
+assert.equal(crossSubjectLookup.subject, 'Sains', 'Tutor mesti mencari konteks subjek lain apabila pertanyaan tidak berkaitan subjek yang sedang dipilih.');
+assert.match(crossSubjectLookup.text, /bunyi terhasil daripada getaran/i, 'Pertanyaan umum mesti menggunakan nota kurikulum yang paling berkaitan merentas subjek.');
 
 const unknownConcept = await ask('Apa itu fotosintesis?');
 assert.equal(unknownConcept.intent, 'knowledge_question');
@@ -178,6 +231,7 @@ const sparseLearningRecommendation = await getTutorResponse({
 assert.match(sparseLearningRecommendation.text, /^Fayyadh, saya belum mempunyai cukup rekod/i, 'Tutor mesti menggunakan nama profil anak aktif walaupun rekod pembelajaran masih terhad.');
 
 const modalText = readFileSync(modalPath, 'utf8');
+const appText = readFileSync(appPath, 'utf8');
 assert.match(modalText, /onSuggestion=\{suggestion => void sendMessage\(suggestion, 'general'\)\}/, 'Balasan pantas mesti boleh dihantar sebagai mesej pelajar.');
 assert.match(modalText, /<button type="button" onClick=\{\(\) => onSuggestion\?\.\(item\)\}>/, 'Cadangan Tutor AI mesti berupa butang interaktif.');
 assert.doesNotMatch(modalText, /function extractDirectAnswer|function directAnswersMatch/, 'UI tidak boleh mempunyai enjin semakan jawapan pendua.');
@@ -187,5 +241,14 @@ assert.match(modalText, /className="tutor-ai-tools"/, 'Alat bantuan mesti dipapa
 assert.doesNotMatch(modalText, /<details[^>]+className="(?:tutor-ai-actions|quick-prompts-analytics)"/, 'Panel besar sebelum perbualan tidak boleh dikekalkan.');
 assert.match(modalText, /getStudentDisplayName\(\[profile, adaptiveProfile\], ''\)/, 'Nama Tutor AI mesti mengutamakan profil anak aktif sebelum profil adaptif.');
 assert.match(modalText, /student: tutorStudentProfile/, 'Enjin Tutor AI mesti menerima nama profil anak aktif tanpa memutasi data pembelajaran.');
+assert.match(modalText, /setMessages\(current => current\.length \? current :/, 'Perbualan Tutor AI mesti kekal apabila modal ditutup dan dibuka semula.');
+assert.match(modalText, /history: messages/, 'Mesej semasa mesti dihantar sebagai sejarah perbualan yang sama, bukan dianggap sebagai soalan lama.');
+assert.match(modalText, /availableSubjects/, 'Tutor AI mesti menerima konteks semua subjek untuk pertanyaan pembelajaran umum.');
+assert.match(appText, /const tutorHasExerciseContext = screen === 'quiz'/, 'Konteks soalan hanya boleh diaktifkan dari skrin kuiz.');
+assert.match(appText, /const tutorQuestion = tutorHasExerciseContext \? currentQuestion\(\) : null/, 'Soalan latihan lama tidak boleh dihantar dari Papan Utama.');
+assert.match(appText, /const tutorConversationRef = useRef\(new Map\(\)\)/, 'Tutor AI dan Tanya Tutor AI mesti berkongsi satu sejarah perbualan dalam memori aplikasi.');
+assert.match(appText, /const chatWidget = chatOpen && chatSubject \?/, 'Modal Tutor AI mesti kekal lazy dan hanya dimuatkan apabila dibuka.');
+assert.match(appText, /conversationKey=\{tutorConversationKey\}[\s\S]{0,250}initialMessages=\{tutorConversationRef\.current\.get/, 'Sejarah Tutor AI mesti dipulihkan mengikut profil anak aktif.');
+assert.match(appText, /tutorConversationRef\.current\.clear\(\)/, 'Sejarah Tutor AI mesti dibersihkan apabila sesi akaun atau profil tempatan ditamatkan.');
 
 console.log('Tutor conversation regression: PASS');

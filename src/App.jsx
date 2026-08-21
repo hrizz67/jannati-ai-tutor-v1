@@ -635,8 +635,10 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   }
 }
 
-function applyMergedCloudMetadata(payload = {}, activeChildId = '') {
+function applyMergedCloudMetadata(payload = {}, activeChildId = '', dirtyChildIds = []) {
   try {
+    const dirtyChildren = new Set((dirtyChildIds || []).filter(Boolean).map(String));
+    const activeChildWasChanged = dirtyChildren.has(String(activeChildId || ''));
     const metadata = JSON.parse(payload[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
       ? metadata.deletedChildren
@@ -672,12 +674,17 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '') {
       const childId = key.slice(prefix.length);
       if (deletedChildren[childId]) {
         localStorage.removeItem(key);
-      } else if (childId !== activeChildId && typeof raw === 'string') {
+      } else if ((childId !== activeChildId || !activeChildWasChanged) && typeof raw === 'string') {
         localStorage.setItem(key, raw);
       }
     });
     if (requestedActiveProfile) {
-      captureChildSnapshot(activeChildId, { force: true });
+      if (activeChildWasChanged) {
+        captureChildSnapshot(activeChildId, { force: true });
+      } else {
+        const mergedActiveSnapshot = resolveChildSnapshot(activeChildId);
+        if (mergedActiveSnapshot) restoreChildSnapshot(mergedActiveSnapshot);
+      }
     } else if (resolvedActiveChildId) {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`);
@@ -1272,6 +1279,7 @@ export default function App() {
   const [teacherData, setTeacherData] = useState(null);
   const [coachKnowledgeData, setCoachKnowledgeData] = useState(null);
   const coachRequestRef = useRef({ requestId: 0, open: false, mode: '', snapshot: null });
+  const tutorConversationRef = useRef(new Map());
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
@@ -1421,8 +1429,8 @@ export default function App() {
         const ok = await saveCloudLearningData(supabase, payload);
         cloudWritePendingRef.current = false;
         if (ok) {
-          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId);
-          if (resolvedActiveChildId && resolvedActiveChildId !== activeChildId) {
+          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, dirtyChildIds);
+          if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !dirtyChildIds.includes(activeChildId))) {
             reloadCloudLearningState(resolvedActiveChildId);
           }
           setChildProfiles(readChildProfiles());
@@ -1617,6 +1625,8 @@ export default function App() {
     if (!window.confirm(`Padam profil ${target.name}? Data profil ini juga akan dibuang daripada peranti ini.`)) return false;
 
     const remainingProfiles = availableProfiles.filter(item => item.id !== target.id);
+    const currentChildId = activeChildId || readActiveChildId();
+    if (target.id === currentChildId) captureChildSnapshot(target.id, { force: true });
     backupChildBeforeDeletion(target);
     const matchingProfile = remainingProfiles.find(item => (
       getChildProfileIdentity(item)
@@ -1630,19 +1640,22 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, `Profil pendua ${target.name} sedang digabungkan dengan selamat. Data pembelajaran akan dikekalkan.`]);
       return true;
     }
-    const currentChildId = activeChildId || readActiveChildId();
-    markLocalLearningMutation();
+    const nextChild = target.id === currentChildId ? remainingProfiles[0] : null;
+    const fallbackSnapshot = nextChild ? resolveChildSnapshot(nextChild.id) : null;
+    // Deleting one child changes only the profile list and tombstone. The
+    // remaining child must not be marked dirty because an older local copy
+    // could then overwrite its newer cloud learning record.
+    markLocalLearningMutation(target.id);
     markChildDeleted(target.id);
     writeChildProfiles(remainingProfiles);
     localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${target.id}`);
     localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${target.id}`);
     childSnapshotCacheRef.current.delete(target.id);
+    tutorConversationRef.current.delete(target.id);
 
     if (target.id === currentChildId) {
-      const nextChild = remainingProfiles[0];
-      const snapshot = resolveChildSnapshot(nextChild.id);
-      if (snapshot) {
-        restoreChildSnapshot(snapshot);
+      if (fallbackSnapshot) {
+        restoreChildSnapshot(fallbackSnapshot);
       } else {
         clearChildScopedData();
         localStorage.setItem(PROFILE_KEY, JSON.stringify(applyAuthoritativeProfileAccess({
@@ -1659,12 +1672,11 @@ export default function App() {
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
       setActiveChildId(nextChild.id);
       reloadActiveChildState(nextChild);
-      captureChildSnapshot(nextChild.id);
     }
 
     setChildProfiles(remainingProfiles);
     captureAccountSnapshot(accountUser?.id);
-    void queueCloudLearningSave();
+    void queueCloudLearningSave({ markMutation: false });
     setRecoveryMessages(prev => [...prev, `Profil ${target.name} telah dipadam.`]);
     return true;
   }
@@ -1697,6 +1709,7 @@ export default function App() {
     setChildProfiles([]);
     setActiveChildId('');
     childSnapshotCacheRef.current.clear();
+    tutorConversationRef.current.clear();
     dirtyChildIdsRef.current.clear();
     pendingOfflineCloudSaveRef.current = false;
     setShowAccountLogin(false);
@@ -3034,6 +3047,7 @@ export default function App() {
     setChildProfiles([]);
     setActiveChildId('');
     childSnapshotCacheRef.current.clear();
+    tutorConversationRef.current.clear();
     setShowOnboarding(false);
     setShowAccountLogin(false);
     setScreen('login');
@@ -3594,37 +3608,46 @@ export default function App() {
 
   const tutorWeakTopics = rankWeakTopics(adaptiveProfile, { limit: 5, includeLowConfidence: true });
   const tutorStrongTopics = rankStrongTopics(adaptiveProfile, { limit: 5 });
-  const tutorQuestion = currentQuestion();
+  const tutorHasExerciseContext = screen === 'quiz';
+  const tutorQuestion = tutorHasExerciseContext ? currentQuestion() : null;
   const tutorSubjectId = tutorQuestion?.subjectId || activeTopic?.subjectId || '';
   const chatSubject = activeSubject?.id === 'adaptive'
     ? allSubjects.find(item => item.id === tutorSubjectId) || selectedSubject || activeSubject
     : activeSubject || selectedSubject;
-  const chatTopic = activeTopic?.id?.startsWith('adaptive_')
-    ? chatSubject?.topics?.find(item => item.id === (tutorQuestion?.topicId || tutorQuestion?.metadata?.topicId)) || activeTopic
-    : activeTopic;
+  const tutorHasTopicContext = ['quiz', 'learning', 'finish'].includes(screen);
+  const chatTopic = !tutorHasTopicContext
+    ? null
+    : activeTopic?.id?.startsWith('adaptive_')
+      ? chatSubject?.topics?.find(item => item.id === (tutorQuestion?.topicId || tutorQuestion?.metadata?.topicId)) || activeTopic
+      : activeTopic;
   const coachSnapshot = coachRequestRef.current.snapshot;
   const coachSubject = allSubjects.find(item => item.id === coachSnapshot?.subjectId) || activeSubject;
+  const tutorConversationKey = activeChildId || profile?.name || 'learner';
   const chatWidget = chatOpen && chatSubject ? (
     <React.Suspense fallback={<TutorAIModalLoading onCancel={() => setChatOpen(false)} />}>
       <TutorAIModal
       open={chatOpen}
+      conversationKey={tutorConversationKey}
+      initialMessages={tutorConversationRef.current.get(tutorConversationKey) || []}
+      onMessagesChange={(key, nextMessages) => tutorConversationRef.current.set(key, nextMessages)}
       profile={profile}
       adaptiveProfile={adaptiveProfile}
       selectedSubject={chatSubject}
       selectedTopic={chatTopic}
+      availableSubjects={allSubjects}
       question={tutorQuestion}
-      answer={answer}
-      feedback={feedback}
+      answer={tutorHasExerciseContext ? answer : ''}
+      feedback={tutorHasExerciseContext ? feedback : null}
       questionText={tutorQuestion?.q || tutorQuestion?.question || tutorQuestion?.stem || tutorQuestion?.text || ''}
       instruction={tutorQuestion?.instruction || tutorQuestion?.direction || tutorQuestion?.prompt || ''}
       options={Array.isArray(tutorQuestion?.options) ? tutorQuestion.options : Array.isArray(tutorQuestion?.choices) ? tutorQuestion.choices : []}
        expectedAnswer={tutorQuestion?.answer || tutorQuestion?.correctAnswer || ''}
        acceptedAnswers={getAcceptedAnswers(tutorQuestion)}
-      learnerAnswer={answer}
-      explanationMode={feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')}
+      learnerAnswer={tutorHasExerciseContext ? answer : ''}
+      explanationMode={tutorHasExerciseContext ? (feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')) : ''}
       currentLearningObjective={chatTopic?.learningObjective || chatTopic?.objective || tutorQuestion?.learningObjective || tutorQuestion?.objective || ''}
       attemptCount={tutorQuestion ? ((session.answers || []).filter(item => item.questionId === tutorQuestion?.id).length + 1) : 0}
-      hintsUsed={feedback?.status === 'hint' ? 1 : 0}
+      hintsUsed={tutorHasExerciseContext && feedback?.status === 'hint' ? 1 : 0}
       learningObservation={learningObservation}
       predictionProfile={predictionProfile}
       readiness={readiness}

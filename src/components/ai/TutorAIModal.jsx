@@ -155,10 +155,14 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
 
 export default function TutorAIModal({
   open,
+  conversationKey = '',
+  initialMessages = [],
+  onMessagesChange = null,
   profile,
   adaptiveProfile,
   selectedSubject,
   selectedTopic,
+  availableSubjects = [],
   question,
   answer,
   feedback,
@@ -186,7 +190,7 @@ export default function TutorAIModal({
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
   const requestIdRef = useRef(0);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => Array.isArray(initialMessages) ? initialMessages : []);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -232,12 +236,10 @@ export default function TutorAIModal({
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
   const voiceLang = activeSubject?.id === 'english' ? 'en-US' : activeSubject?.id === 'arab' ? 'ar-SA' : 'ms-MY';
 
-  const sessionKey = useMemo(() => [
-    studentProfile?.studentId || studentProfile?.name || '',
-    activeSubject?.id || '',
-    activeTopic?.id || '',
-    currentQuestion?.id || ''
-  ].join('::'), [studentProfile?.studentId, studentProfile?.name, activeSubject?.id, activeTopic?.id, currentQuestion?.id]);
+  const sessionKey = useMemo(
+    () => normalizeText(conversationKey || studentProfile?.studentId || studentProfile?.name || 'learner', 'learner'),
+    [conversationKey, studentProfile?.studentId, studentProfile?.name]
+  );
 
   useModalRuntime({
     open,
@@ -247,10 +249,23 @@ export default function TutorAIModal({
   });
 
   useEffect(() => {
+    setMessages(Array.isArray(initialMessages) ? initialMessages : []);
+    setInput('');
+    setLoading(false);
+    setStatus('idle');
+    setError('');
+    setActiveToolPanel('');
+  }, [sessionKey]);
+
+  useEffect(() => {
+    onMessagesChange?.(sessionKey, messages);
+  }, [messages, sessionKey, onMessagesChange]);
+
+  useEffect(() => {
     if (!open) return undefined;
     const started = ++requestIdRef.current;
     if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:open');
-    setMessages([{
+    setMessages(current => current.length ? current : [{
       role: 'ai',
       text: buildNaturalGreeting({
         studentName,
@@ -282,6 +297,7 @@ export default function TutorAIModal({
 
   useEffect(() => {
     if (!open || !(typeof import.meta !== 'undefined' && import.meta.env?.DEV)) return;
+    if (!hasExerciseContext) return;
     const missing = [];
     if (!normalizedQuestionText) missing.push('questionText');
     if (!normalizedInstruction) missing.push('instruction');
@@ -313,6 +329,7 @@ export default function TutorAIModal({
         student: tutorStudentProfile,
         subject: activeSubject,
         topic: activeTopic,
+        availableSubjects,
         question: currentQuestion,
         questionText: normalizedQuestionText,
         instruction: normalizedInstruction,
@@ -332,7 +349,7 @@ export default function TutorAIModal({
         prompt: text,
         intent,
         locale: 'ms-MY',
-        history: nextHistory,
+        history: messages,
         adaptiveProfile,
         studyPlan,
         readiness,
@@ -546,8 +563,8 @@ export default function TutorAIModal({
                 void sendMessage();
               }
             }}
-            placeholder="Tanya Guru AI..."
-            aria-label="Tanya Guru AI"
+            placeholder="Tanya Janna..."
+            aria-label="Tanya Tutor AI"
           />
           <button
             type="button"
