@@ -296,16 +296,17 @@ function mergeLearningSnapshots(canonicalRaw, duplicateRaw, childId) {
     if (key.startsWith('__')) return;
     merged[key] = mergeStoredLearningValue(merged[key], value, key);
   });
+  const accountId = canonical.__childSnapshotAccountId || duplicate.__childSnapshotAccountId || '';
+  const deviceId = canonical.__childSnapshotDeviceId || duplicate.__childSnapshotDeviceId || '';
   return JSON.stringify({
     ...merged,
     __childSnapshotChildId: childId,
-    __childSnapshotAccountId: canonical.__childSnapshotAccountId || duplicate.__childSnapshotAccountId || null,
     __childSnapshotCapturedAt: Math.max(
       parseTimestamp(canonical.__childSnapshotCapturedAt),
-      parseTimestamp(duplicate.__childSnapshotCapturedAt),
-      Date.now()
-    ),
-    __childSnapshotDeviceId: canonical.__childSnapshotDeviceId || duplicate.__childSnapshotDeviceId || null
+      parseTimestamp(duplicate.__childSnapshotCapturedAt)
+    ) || Date.now(),
+    ...(accountId ? { __childSnapshotAccountId: accountId } : {}),
+    ...(deviceId ? { __childSnapshotDeviceId: deviceId } : {})
   });
 }
 
@@ -516,6 +517,117 @@ export function recoverOrphanedCloudOutbox(localPayload = {}, cloudPayload = {},
   };
 }
 
+function isRootLearningProjectionKey(key = '') {
+  return String(key).startsWith('jannati')
+    && key !== CHILD_PROFILES_KEY
+    && key !== ACTIVE_CHILD_KEY
+    && key !== DELETED_CHILDREN_KEY
+    && key !== CLOUD_CHILD_STATE_KEY
+    && key !== CLOUD_SYNC_META_KEY
+    && !key.startsWith(CHILD_SNAPSHOT_PREFIX)
+    && !key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)
+    && !key.startsWith(CHILD_MERGED_BACKUP_PREFIX);
+}
+
+function rootProjectionMatchesChild(payload = {}, childId = '') {
+  const metadata = parseObject(payload[CLOUD_CHILD_STATE_KEY]);
+  const childProfile = listProfiles(metadata, normalizeDeletedChildren(metadata.deletedChildren))
+    .find(profile => profile.id === childId);
+  const rootProfile = parseObject(payload.jannati_v151_profile);
+  const childIdentity = getChildProfileIdentity(childProfile);
+  const rootIdentity = getChildProfileIdentity(rootProfile);
+  return !childIdentity || !rootIdentity || childIdentity === rootIdentity;
+}
+
+/**
+ * Keep the account-level learning surface and its active child snapshot as one
+ * monotonic projection. Older clients stored both copies independently, so a
+ * newer revision could still contain lower XP in one copy and overwrite the
+ * richer copy during hydration.
+ */
+export function normalizeActiveLearningProjection(payload = {}, activeChildId = '', options = {}) {
+  const childId = String(activeChildId || '').trim();
+  const next = isObject(payload) ? { ...payload } : {};
+  if (!childId) return next;
+
+  const snapshotKey = `${CHILD_SNAPSHOT_PREFIX}${childId}`;
+  const originalSnapshotKey = `${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`;
+  const combinedRaw = mergeLearningSnapshots(next[snapshotKey], next[originalSnapshotKey], childId);
+  const combined = parseObject(combinedRaw);
+  let hasLearningData = Object.keys(combined).some(key => !key.startsWith('__'));
+
+  if (options.mergeRoot !== false && rootProjectionMatchesChild(next, childId)) {
+    Object.entries(next).forEach(([key, value]) => {
+      if (!isRootLearningProjectionKey(key) || typeof value !== 'string') return;
+      combined[key] = mergeStoredLearningValue(combined[key], value, key);
+      hasLearningData = true;
+    });
+  }
+  if (!hasLearningData) return next;
+
+  const accountId = combined.__childSnapshotAccountId || '';
+  const deviceId = combined.__childSnapshotDeviceId || '';
+  const normalizedSnapshot = {
+    ...combined,
+    __childSnapshotChildId: childId,
+    __childSnapshotCapturedAt: parseTimestamp(combined.__childSnapshotCapturedAt) || Date.now(),
+    ...(accountId ? { __childSnapshotAccountId: accountId } : {}),
+    ...(deviceId ? { __childSnapshotDeviceId: deviceId } : {})
+  };
+  const normalizedRaw = JSON.stringify(normalizedSnapshot);
+  next[snapshotKey] = normalizedRaw;
+
+  // Root learning keys are only a view of the selected child. Remove the old
+  // projection first so data from another active child cannot leak through.
+  Object.keys(next).forEach(key => {
+    if (isRootLearningProjectionKey(key)) delete next[key];
+  });
+  Object.entries(normalizedSnapshot).forEach(([key, value]) => {
+    if (!key.startsWith('__') && typeof value === 'string') next[key] = value;
+  });
+  return next;
+}
+
+export function recoverMonotonicCloudGap(localPayload = {}, cloudPayload = {}, options = {}) {
+  const base = {
+    dirtyChildIds: [],
+    recovered: false,
+    reconcileChildIdentity: false
+  };
+  const local = isObject(localPayload) ? localPayload : {};
+  const cloud = isObject(cloudPayload) ? cloudPayload : {};
+  const localMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
+  const cloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
+  const localProfiles = listProfiles(localMeta, normalizeDeletedChildren(localMeta.deletedChildren));
+  const cloudProfiles = listProfiles(cloudMeta, normalizeDeletedChildren(cloudMeta.deletedChildren));
+  const localActiveChildId = String(options.localActiveChildId || localMeta.activeChildId || '').trim();
+  const localProfile = localProfiles.find(profile => profile.id === localActiveChildId);
+  if (!localProfile) return base;
+
+  let cloudProfile = cloudProfiles.find(profile => profile.id === localProfile.id) || null;
+  if (!cloudProfile) {
+    const identity = getChildProfileIdentity(localProfile);
+    const identityMatches = identity
+      ? cloudProfiles.filter(profile => getChildProfileIdentity(profile) === identity)
+      : [];
+    if (identityMatches.length === 1) cloudProfile = identityMatches[0];
+  }
+  if (!cloudProfile) return base;
+
+  const normalizedLocal = normalizeActiveLearningProjection(local, localProfile.id);
+  const normalizedCloud = normalizeActiveLearningProjection(cloud, cloudProfile.id);
+  const localRaw = normalizedLocal[`${CHILD_SNAPSHOT_PREFIX}${localProfile.id}`];
+  const cloudRaw = normalizedCloud[`${CHILD_SNAPSHOT_PREFIX}${cloudProfile.id}`];
+  const mergedRaw = mergeLearningSnapshots(cloudRaw, rewriteSnapshotChildId(localRaw, cloudProfile.id), cloudProfile.id);
+  if (getLearningSnapshotEvidenceScore(mergedRaw) <= getLearningSnapshotEvidenceScore(cloudRaw)) return base;
+
+  return {
+    dirtyChildIds: [localProfile.id],
+    recovered: true,
+    reconcileChildIdentity: localProfile.id !== cloudProfile.id
+  };
+}
+
 function mergeChildProfiles(localProfiles = [], cloudProfiles = [], deletedChildren = {}) {
   const merged = new Map();
   for (const profile of Array.isArray(cloudProfiles) ? cloudProfiles : []) {
@@ -548,6 +660,16 @@ function chooseSnapshot(localRaw, cloudRaw, preferLocal) {
 export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, options = {}) {
   let local = isObject(localPayload) ? localPayload : {};
   let cloud = isObject(cloudPayload) ? cloudPayload : {};
+  const initialLocalMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
+  const initialCloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
+  local = normalizeActiveLearningProjection(
+    local,
+    options.localActiveChildId || initialLocalMeta.activeChildId || listProfiles(initialLocalMeta)[0]?.id
+  );
+  cloud = normalizeActiveLearningProjection(
+    cloud,
+    initialCloudMeta.activeChildId || listProfiles(initialCloudMeta)[0]?.id
+  );
   let dirtyChildIds = new Set((options.dirtyChildIds || []).filter(Boolean).map(String));
   let localActiveChildId = options.localActiveChildId;
   if (options.reconcileChildIdentity) {
@@ -593,20 +715,13 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   merged[ACTIVE_CHILD_KEY] = activeChildId;
   merged[DELETED_CHILDREN_KEY] = JSON.stringify(deletedChildren);
 
-  const activeSnapshot = chooseRicherSnapshot(
-    merged[`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`],
-    merged[`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`]
-  );
-  Object.entries(parseObject(activeSnapshot)).forEach(([key, value]) => {
-    if (!key.startsWith('__') && typeof value === 'string') merged[key] = value;
-  });
   merged[CLOUD_SYNC_META_KEY] = JSON.stringify({
     version: CLOUD_SYNC_VERSION,
     activeChildId,
     deviceId: String(options.deviceId || '').trim() || null,
     updatedAt: new Date().toISOString()
   });
-  return merged;
+  return normalizeActiveLearningProjection(merged, activeChildId, { mergeRoot: false });
 }
 
 function normalizeEnvelope(value = {}) {

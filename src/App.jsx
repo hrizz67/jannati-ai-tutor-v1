@@ -76,6 +76,8 @@ import {
   getChildProfileIdentity,
   hasRecoverableChildProfileDuplicates,
   loadCloudLearningDataResult,
+  normalizeActiveLearningProjection,
+  recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox,
   syncRevisionedCloudLearning
 } from './services/learningSync.js';
@@ -637,7 +639,6 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   repairChildSnapshotStorage();
   const localActiveChildId = readActiveChildId();
   const accountScopeId = getActiveStorageScopeId();
-  if (!restoreAccountSnapshot(cloudData, accountScopeId)) return '';
   try {
     const metadata = JSON.parse(cloudData[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
@@ -646,6 +647,14 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     const cloudProfiles = Array.isArray(metadata.profiles)
       ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id])
       : [];
+    const preferred = cloudProfiles.find(item => item.id === preferredChildId);
+    const localActive = cloudProfiles.find(item => item.id === localActiveChildId);
+    const cloudActive = cloudProfiles.find(item => item.id === metadata.activeChildId);
+    const active = preferred || localActive || cloudActive || cloudProfiles[0] || null;
+    const normalizedCloudData = active
+      ? normalizeActiveLearningProjection(cloudData, active.id)
+      : cloudData;
+    if (!restoreAccountSnapshot(normalizedCloudData, accountScopeId)) return '';
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
     Object.keys(deletedChildren).forEach(childId => {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`);
@@ -653,10 +662,7 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     });
     if (!cloudProfiles.length) return '';
     writeChildProfiles(cloudProfiles);
-    const preferred = cloudProfiles.find(item => item.id === preferredChildId);
-    const localActive = cloudProfiles.find(item => item.id === localActiveChildId);
-    const cloudActive = cloudProfiles.find(item => item.id === metadata.activeChildId);
-    const active = preferred || localActive || cloudActive || cloudProfiles[0];
+    if (!active) return '';
     localStorage.setItem(ACTIVE_CHILD_KEY, active.id);
     const childSnapshot = readChildSnapshot(active.id);
     if (childSnapshot) restoreChildSnapshot(childSnapshot, active.id, accountScopeId);
@@ -1848,6 +1854,28 @@ export default function App() {
       if (
         !cloudResult.error
         && Number(cloudResult.protocolVersion) >= CLOUD_SYNC_PROTOCOL_VERSION
+        && Object.keys(cloudLearningData).length
+        && dirtyChildIdsRef.current.size === 0
+        && !hasPendingCloudMutation(user.id)
+        && !hasPendingProfileReconciliation(user.id)
+      ) {
+        const localLearningData = buildCloudLearningPayload();
+        const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudLearningData, {
+          localActiveChildId: readActiveChildId()
+        });
+        if (recoveredGap.recovered) {
+          recoveredGap.dirtyChildIds.forEach(childId => {
+            dirtyChildIdsRef.current.add(childId);
+            childMutationVersionRef.current.set(childId, 1);
+          });
+          writePendingDirtyChildIds(user.id, dirtyChildIdsRef.current);
+          setPendingCloudMutation(user.id, true);
+          if (recoveredGap.reconcileChildIdentity) setPendingProfileReconciliation(user.id, true);
+        }
+      }
+      if (
+        !cloudResult.error
+        && Number(cloudResult.protocolVersion) >= CLOUD_SYNC_PROTOCOL_VERSION
         && hasPendingCloudMutation(user.id)
         && dirtyChildIdsRef.current.size === 0
         && !hasPendingProfileReconciliation(user.id)
@@ -2210,6 +2238,24 @@ export default function App() {
       if (!cancelled && !cloudResult.error && cloudResult.data && Object.keys(cloudResult.data).length) {
         const cloudSignature = getCloudResultSignature(cloudResult);
         if (cloudSignature !== lastCloudSignatureRef.current) {
+          const localLearningData = buildCloudLearningPayload();
+          const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudResult.data, {
+            localActiveChildId: readActiveChildId()
+          });
+          if (recoveredGap.recovered) {
+            recoveredGap.dirtyChildIds.forEach(childId => {
+              dirtyChildIdsRef.current.add(childId);
+              childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
+            });
+            writePendingDirtyChildIds(accountUser.id, dirtyChildIdsRef.current);
+            setPendingCloudMutation(accountUser.id, true);
+            pendingOfflineCloudSaveRef.current = true;
+            if (recoveredGap.reconcileChildIdentity) setPendingProfileReconciliation(accountUser.id, true);
+            setCloudSyncStatus('syncing');
+            void queueCloudLearningSave({ markMutation: false });
+            inFlight = false;
+            return;
+          }
           skipNextCloudSaveRef.current = true;
           const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, readActiveChildId());
           repairImportedLearningProfile();
