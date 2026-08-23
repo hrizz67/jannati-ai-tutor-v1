@@ -10,6 +10,8 @@ import {
   hasRecoverableActiveProfileDuplicate,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload,
+  normalizeActiveLearningProjection,
+  recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox,
   saveRevisionedCloudLearningData,
   syncRevisionedCloudLearning
@@ -247,6 +249,58 @@ const desktopXp140Payload = {
   [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
   [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 800, 'Fayyadh', 140)
 };
+
+const splitProjectionPayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 900, 'Fayyadh', 40),
+  jannati_v151_profile: JSON.stringify({ name: 'Fayyadh', xp: 140, streak: 1 }),
+  'jannati.gamification.profile': JSON.stringify({ xp: 140, currentStreak: 1 })
+};
+const normalizedProjection = normalizeActiveLearningProjection(splitProjectionPayload, originalChild.id);
+assert.equal(JSON.parse(normalizedProjection.jannati_v151_profile).xp, 140, 'A richer root XP must repair the active child snapshot before hydration.');
+assert.equal(
+  JSON.parse(JSON.parse(normalizedProjection[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  140,
+  'The root projection and active child snapshot must converge on the monotonic XP maximum.'
+);
+
+const crossChildProjection = normalizeActiveLearningProjection({
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    originalChild,
+    { id: 'child-other', name: 'Aisyah', year: 'Tahun 2' }
+  ], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 900, 'Fayyadh', 40),
+  jannati_v151_profile: JSON.stringify({ name: 'Aisyah', year: 'Tahun 2', xp: 999 })
+}, originalChild.id);
+assert.equal(
+  JSON.parse(JSON.parse(crossChildProjection[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  40,
+  'A root projection identified as another child must never be merged into the active learner snapshot.'
+);
+
+const cloudXp40Payload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 1000, 'Fayyadh', 40),
+  jannati_v151_profile: JSON.stringify({ name: 'Fayyadh', xp: 40, streak: 1 })
+};
+const recoverDesktopXp = recoverMonotonicCloudGap(desktopXp140Payload, cloudXp40Payload, {
+  localActiveChildId: originalChild.id
+});
+assert.equal(recoverDesktopXp.recovered, true, 'Desktop XP 140 must be recovered before cloud XP 40 is allowed to hydrate over it.');
+assert.deepEqual(recoverDesktopXp.dirtyChildIds, [originalChild.id]);
+
+const mergedXpConflict = mergeCloudLearningPayload(cloudXp40Payload, splitProjectionPayload, {
+  dirtyChildIds: [originalChild.id],
+  localActiveChildId: originalChild.id,
+  mergeDirtySnapshots: true
+});
+assert.equal(JSON.parse(mergedXpConflict.jannati_v151_profile).xp, 140, 'A lower dirty device XP must never reduce the cloud account projection.');
+assert.equal(
+  JSON.parse(JSON.parse(mergedXpConflict[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  140,
+  'A lower dirty device XP must never reduce the canonical child snapshot.'
+);
+
 const staleMobilePending = recoverOrphanedCloudOutbox(mobileZeroPayload, desktopXp140Payload, {
   pending: true,
   dirtyChildIds: [],
@@ -423,6 +477,9 @@ assert.match(appSource, /submittedMutationVersions[\s\S]{0,2500}childMutationVer
 assert.match(appSource, /cloudResult\.error[\s\S]{0,250}pendingOfflineCloudSaveRef\.current = hasPendingLocalData[\s\S]{0,150}if \(!hasPendingLocalData\) skipNextCloudSaveRef\.current = true/, 'A failed initial cloud pull must not turn unchanged device data into an upload.');
 assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.current\.add\(childState\.activeId\)[\s\S]{0,500}skipNextCloudSaveRef\.current = true/, 'Account hydration must suppress generic autosave and explicitly bootstrap only a genuinely empty v3 cloud.');
 assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
+assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,700}dirtyChildIdsRef\.current\.add\(childId\)/, 'Initial hydration must recover richer same-child learning before applying a lower cloud projection.');
+assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
+assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must normalize the account projection and active child snapshot before storage replacement.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
 assert.match(appSource, /autoSave\(questionIndex, nextSession\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must explicitly schedule an account cloud save.');
 const accountActivationSource = appSource.slice(
