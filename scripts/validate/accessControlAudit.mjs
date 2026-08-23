@@ -84,12 +84,16 @@ const accessMigrationName = migrationNames
   .find(name => name.endsWith('_access_isolation_hardening.sql'));
 const integrityMigrationName = migrationNames
   .find(name => name.endsWith('_learning_data_integrity_v3.sql'));
+const integrityFunctionFixMigrationName = migrationNames
+  .find(name => name.endsWith('_learning_data_v3_function_fix.sql'));
 assert.ok(baselineMigrationName, 'A production schema baseline migration must exist.');
 assert.ok(accessMigrationName, 'Access-isolation database migration must exist.');
 assert.ok(integrityMigrationName, 'Data-integrity database migration must exist.');
+assert.ok(integrityFunctionFixMigrationName, 'The v3 RPC ambiguity hotfix migration must exist.');
 const baselineMigration = fs.readFileSync(new URL(baselineMigrationName, migrationDirectory), 'utf8');
 const accessMigration = fs.readFileSync(new URL(accessMigrationName, migrationDirectory), 'utf8');
 const integrityMigration = fs.readFileSync(new URL(integrityMigrationName, migrationDirectory), 'utf8');
+const integrityFunctionFixMigration = fs.readFileSync(new URL(integrityFunctionFixMigrationName, migrationDirectory), 'utf8');
 const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/public/tables/profiles.sql', import.meta.url), 'utf8');
 const declarativeIntegrityFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/learning_data_v3.sql', import.meta.url), 'utf8');
 const integrityTableNames = ['learning_data_backups', 'learning_sync_operations', 'learner_profiles', 'learning_states', 'learning_events'];
@@ -117,6 +121,12 @@ assert.match(accessMigration, /revoke all on function public\.save_learning_data
 assert.match(accessMigration, /grant execute on function public\.save_learning_data\(jsonb\) to authenticated;/, 'Authenticated learning sync must remain available.');
 assert.match(integrityMigration, /revoke all on function public\.save_learning_data\(jsonb\) from public, anon, authenticated;/, 'The v3 migration must retire the legacy authenticated blind-write endpoint.');
 assert.match(integrityMigration, /security definer[\s\S]{0,120}set search_path = ''/, 'Revisioned RPC functions must pin an empty search path.');
+for (const functionSql of [integrityFunctionFixMigration, declarativeIntegrityFunctions]) {
+  assert.doesNotMatch(functionSql, /on conflict \((operation_id|event_id)\)/, 'RPC SQL must not use ambiguous parameter/column conflict targets.');
+  assert.match(functionSql, /where operation_log\.operation_id = \$3/, 'The operation lookup must reference the RPC argument unambiguously.');
+  assert.match(functionSql, /on conflict on constraint learning_sync_operations_pkey do nothing/, 'Sync-operation idempotency must target the named primary-key constraint.');
+  assert.match(functionSql, /on conflict on constraint learning_events_pkey do nothing/, 'Learning-event idempotency must target the named primary-key constraint.');
+}
 for (const tableName of integrityTableNames) {
   const tableSchema = fs.readFileSync(new URL(`../../supabase/schemas/public/tables/${tableName}.sql`, import.meta.url), 'utf8');
   assert.match(tableSchema, new RegExp(`alter table "public"\\."${tableName}" enable row level security`), `${tableName} must enable RLS.`);
