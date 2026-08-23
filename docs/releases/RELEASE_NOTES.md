@@ -1,15 +1,17 @@
-# Jannati AI Tutor 3.5.3 Release Notes
+# Jannati AI Tutor 3.6.0 Release Notes
 
 Status: stable
-Tag: v3.5.3
-Build date: 2026-08-21T16:14:03.337Z
+Tag: v3.6.0
+Build date: 2026-08-23T09:44:11.779Z
 
 ## Sorotan Release
 
-- Tutor AI kini berfungsi sebagai satu perbualan berterusan untuk setiap profil anak, sama ada dibuka melalui menu Tutor AI atau Tanya Tutor AI.
-- Janna memahami sapaan, pertanyaan identiti, keadaan seperti penat atau risau, serta pertanyaan umum tanpa bergantung pada soalan latihan yang sudah tidak aktif.
-- Soalan pembelajaran umum boleh menggunakan nota kurikulum paling berkaitan daripada semua subjek Tahun 2 yang tersedia.
-- Memadam profil anak baharu tidak lagi menandakan atau mengosongkan data pembelajaran profil asal; sync cloud mengekalkan rekod yang paling semasa.
+- Data pembelajaran kini disimpan dengan revision/CAS, operation ID idempoten dan backup sebelum tulis bagi menghalang kehilangan kemajuan atau overwrite antara desktop dan mobile.
+- Data Free dan Premium diasingkan menggunakan ID akaun yang disahkan; pertukaran akaun tidak lagi membawa profil anak atau entitlement daripada akaun sebelumnya.
+- Pemadaman profil anak dihadkan kepada profil sasaran dan tidak boleh mengosongkan data profil asal. Rekod penting diarkibkan dan snapshot pemulihan dikekalkan.
+- Supabase Realtime menyampaikan perubahan merentas peranti, dengan polling, fokus aplikasi dan reconnect sebagai mekanisme pemulihan.
+- Hanya satu status sync interaktif digunakan dalam UI bagi mengelakkan dua aliran sync yang bersaing.
+- Migrasi integriti v3 dan hotfix RPC telah digunakan pada produksi; senarai migrasi local/remote sepadan dan remote schema lint tidak menemui ralat.
 
 ## Release Readiness
 

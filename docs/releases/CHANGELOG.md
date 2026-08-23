@@ -1,18 +1,25 @@
 # Changelog
 
-## 3.5.3 - 2026-08-21
+## 3.6.0 - 2026-08-23
 
-### Tutor AI
+### Integriti data pembelajaran
 
-- Tutor AI dan pintasan Tanya Tutor AI kini berkongsi perbualan yang sama mengikut profil anak.
-- Pertanyaan umum, sapaan, identiti tutor, dan keadaan emosi murid dijawab secara lebih semula jadi tanpa dipaksa kembali kepada soalan latihan lama.
-- Konteks soalan hanya digunakan ketika kuiz aktif, manakala pertanyaan pembelajaran umum boleh mencari nota kurikulum berkaitan merentas subjek Tahun 2.
+- Cloud sync kini menggunakan revision/CAS dan operation ID idempoten supaya dua peranti tidak boleh menimpa kemajuan satu sama lain secara senyap.
+- Semua snapshot, operasi sync, backup, profil pelajar dan event pembelajaran diasingkan mengikut ID akaun yang disahkan.
+- Logout, pertukaran akaun dan pemadaman profil anak tidak lagi menggunakan state akaun lain atau mengosongkan profil asal.
+- Snapshot sebelum migrasi dan sebelum setiap penulisan cloud disimpan untuk pemulihan terkawal.
 
-### Profil anak dan data pembelajaran
+### Sync desktop dan mobile
 
-- Pemadaman profil anak kini hanya menandakan profil sasaran sebagai berubah dan tidak lagi menimpa data pembelajaran profil asal yang lebih baharu di cloud.
-- Pemulihan profil aktif menggunakan snapshot gabungan yang betul selepas sync atau pemadaman profil.
-- Regresi baharu melindungi kesinambungan perbualan Tutor AI, pengasingan profil, dan pemadaman anak tanpa kehilangan kemajuan.
+- Perubahan cloud diterima melalui Supabase Realtime dengan polling, fokus tetingkap dan sambungan semula sebagai fallback.
+- Konflik revision mengambil data server terkini, menggabungkan perubahan profil anak yang sah dan mencuba semula tanpa blind overwrite.
+- UI kini memaparkan satu status sync utama; permukaan latihan hanya menunjukkan status baca sahaja dan tidak memulakan aliran sync kedua.
+
+### Supabase
+
+- Skema v3 menambah jadual operasi sync, backup, profil pelajar, state pembelajaran dan event dengan RLS berasaskan akaun.
+- RPC v3 menggunakan rujukan parameter yang tidak kabur dan named constraints; remote database lint selesai tanpa schema error.
+- Migrasi local dan produksi disahkan sepadan hingga `20260823094500`.
 
 ### Release controls
 
