@@ -1,19 +1,18 @@
 # Changelog
 
-## 3.6.2 - 2026-08-23
+## 3.6.3 - 2026-08-23
 
-### Sync XP desktop dan mobile
+### Pemulihan XP rentas peranti
 
-- Peranti yang telah membaca revision server yang betul tetapi masih memaparkan state tempatan lama kini menghidrat snapshot gabungan selepas cloud read atau save berjaya.
-- Pending marker yatim tanpa child-level outbox dibersihkan apabila cloud mempunyai bukti pembelajaran yang lebih kaya.
-- Outbox tempatan yang masih mempunyai XP, sejarah atau kemajuan bermakna dipulihkan dan digabung dengan operasi revision/CAS sedia ada.
-- Hanya profil dengan mutasi lebih baharu dikekalkan secara tempatan semasa save sedang berjalan; profil lain menerima snapshot server yang telah diakui.
+- Projection pembelajaran peringkat akaun dan snapshot profil anak aktif kini dinormalisasi kepada kemajuan monotonic yang sama sebelum cloud merge atau hydration.
+- XP dan bukti pembelajaran yang lebih tinggi pada desktop tidak lagi boleh diturunkan oleh snapshot mobile yang lebih baharu tetapi kurang lengkap.
+- Semasa login atau polling, peranti yang masih mempunyai bukti pembelajaran lebih kaya akan memulihkan outbox profil yang tepat dan membaiki cloud melalui revision/CAS.
 
-### Perlindungan data
+### Pengasingan profil
 
-- Regresi khusus melindungi kes desktop XP 140 dan mobile XP 0 pada revision cloud yang sama.
-- Pemulihan outbox yang menggunakan ID profil berbeza akan menjalankan reconciliation nama/tahun dan tidak mencipta profil anak pendua.
-- Tiada migrasi pangkalan data, pemadaman profil atau penulisan semula kandungan pembelajaran dilakukan.
+- Pemulihan hanya berlaku untuk ID profil anak yang sama atau padanan identiti nama/tahun yang unik.
+- Projection akar yang dikenal pasti milik anak lain tidak akan digabungkan ke snapshot pelajar aktif.
+- Tiada migrasi Supabase, pemadaman profil atau perubahan kandungan pembelajaran diperlukan.
 
 ### Release controls
 
@@ -29,6 +28,6 @@
 
 ### Follow-up work
 
-- Confirm the previously affected physical mobile device converges after loading v3.6.2.
+- Confirm the affected desktop XP 140 snapshot advances the cloud revision, then verify the physical mobile device converges to the same XP and revision.
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.

@@ -1,16 +1,16 @@
-# Jannati AI Tutor 3.6.2 Release Notes
+# Jannati AI Tutor 3.6.3 Release Notes
 
 Status: stable
-Tag: v3.6.2
-Build date: 2026-08-23T14:12:44.966Z
+Tag: v3.6.3
+Build date: 2026-08-23T14:48:48.038Z
 
 ## Sorotan Release
 
-- Mobile yang sudah membaca revision cloud terkini tetapi masih memaparkan XP 0 kini menghidrat semula snapshot pembelajaran gabungan daripada server.
-- Penanda sync pending lama tanpa senarai profil berubah tidak lagi boleh menyekat cloud pull selama-lamanya.
-- Jika data pembelajaran tempatan masih bermakna, outbox yang terputus dipulihkan dan digabung secara konservatif tanpa mengosongkan XP atau sejarah server.
-- Snapshot yang telah diakui server dimuat semula pada peranti, kecuali terdapat perubahan tempatan lebih baharu yang masih belum dihantar.
-- Pengasingan akaun dan profil anak kekal aktif; pembaikan tidak memerlukan migrasi Supabase atau perubahan kandungan pembelajaran.
+- XP dan kemajuan kini digabung secara monotonic; peranti dengan snapshot lebih rendah tidak boleh mengurangkan rekod pelajar yang lebih kaya.
+- Desktop yang masih menyimpan XP 140 boleh mengesan cloud XP 40 semasa login atau polling dan menghantar pembaikan melalui sync revision/CAS.
+- Snapshot akaun dan profil anak aktif dinormalisasi sebelum dipulihkan supaya kedua-dua desktop dan mobile membaca sumber pembelajaran yang sama.
+- Pemeriksaan identiti profil menghalang data akar milik anak lain daripada masuk ke snapshot pelajar aktif.
+- Ujian regresi khusus meliputi XP 140 lawan XP 40, pengasingan anak, resume, konflik serentak dan pemulihan outbox.
 
 ## Release Readiness
 
@@ -42,6 +42,6 @@ Build date: 2026-08-23T14:12:44.966Z
 
 ## Known Follow-ups
 
+- Complete the controlled XP 140 desktop-first recovery check on the previously affected Premium account after deployment.
 - Large JavaScript chunks remain a performance improvement target.
-- Confirm post-deployment convergence on the previously affected physical mobile device after it loads v3.6.2.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
