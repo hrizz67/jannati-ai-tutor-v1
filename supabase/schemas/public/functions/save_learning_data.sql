@@ -23,6 +23,6 @@ begin
 end;
 $function$;
 
-grant execute on function "public"."save_learning_data"(jsonb) to "authenticated", "postgres", "service_role";
+grant execute on function "public"."save_learning_data"(jsonb) to "postgres", "service_role";
 
-revoke all on function "public"."save_learning_data"(jsonb) from public;
+revoke all on function "public"."save_learning_data"(jsonb) from public, anon, authenticated;

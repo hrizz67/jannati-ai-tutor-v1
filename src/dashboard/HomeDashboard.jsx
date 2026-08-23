@@ -97,7 +97,7 @@ function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild
       <select aria-label="Pilih profil anak" value={activeChildId || activeChild?.id || ''} onChange={event => onSelectChild?.(event.target.value)}>
         {profiles.map(child => <option key={child.id} value={child.id}>{child.name} · {child.year || 'Tahun 2'}</option>)}
       </select>
-      {profiles.length > 1 ? <button type="button" className="secondary child-profile-delete" onClick={() => onDeleteChild?.(activeChild?.id)}>Padam profil {activeChild?.name || 'anak ini'}</button> : null}
+      {profiles.length > 1 ? <button type="button" className="secondary child-profile-delete" disabled aria-disabled="true" title="Pemadaman dihentikan sementara sehingga arkib server dan fungsi undo tersedia.">Profil dilindungi · tidak boleh dipadam</button> : null}
       {isAdding ? (
         <form className="child-profile-form" onSubmit={submit}>
           <label>Nama anak<input value={name} onChange={event => setName(event.target.value)} placeholder="Contoh: Aina" autoFocus /></label>
@@ -110,16 +110,18 @@ function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild
 }
 
 function getCloudSyncPresentation(hasAccountSession, status) {
-  if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.' };
+  if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.', retryable: true };
   return {
-    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan sedang dihantar ke cloud.' },
-    saved: { label: 'Cloud disimpan', tone: 'saved', detail: 'Data peranti ini sudah dihantar ke cloud.' },
-    loaded: { label: 'Cloud dikemas kini', tone: 'saved', detail: 'Perubahan daripada peranti lain sudah dimuatkan.' },
-    empty: { label: 'Cloud baharu', tone: 'syncing', detail: 'Data pertama sedang disediakan untuk akaun ini.' },
-    offline: { label: 'Menunggu internet', tone: 'offline', detail: 'Data kekal pada peranti dan akan dicuba semula.' },
-    error: { label: 'Sync gagal', tone: 'error', detail: 'Tekan untuk cuba sync semula.' },
-    idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync cloud aktif untuk akaun ini.' }
-  }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync cloud aktif untuk akaun ini.' };
+    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan sedang dihantar menggunakan revision server.', retryable: false },
+    saved: { label: 'Telah sync', tone: 'saved', detail: 'Server telah mengakui revision terkini peranti ini.', retryable: false },
+    loaded: { label: 'Cloud terkini', tone: 'saved', detail: 'Peranti ini menggunakan revision cloud terkini.', retryable: false },
+    empty: { label: 'Cloud baharu', tone: 'syncing', detail: 'Data pertama sedang disediakan untuk akaun ini.', retryable: false },
+    offline: { label: 'Menunggu internet', tone: 'offline', detail: 'Data kekal dalam outbox peranti. Tekan untuk cuba semula.', retryable: true },
+    error: { label: 'Sync gagal', tone: 'error', detail: 'Tekan untuk cuba menghantar perubahan tertangguh sahaja.', retryable: true },
+    conflict: { label: 'Menyelaras konflik', tone: 'syncing', detail: 'Server mengesan revision baharu dan sedang menyelaraskan semula.', retryable: true },
+    'upgrade-required': { label: 'Sync dilindungi', tone: 'offline', detail: 'Migration Data Integrity v3 perlu dipasang. Perubahan tidak akan dihantar melalui RPC lama.', retryable: false },
+    idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false }
+  }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false };
 }
 
 export default function HomeDashboard(props) {
@@ -180,6 +182,7 @@ export default function HomeDashboard(props) {
   const isPremiumAccount = Boolean(hasAccountSession && accessProfile?.isPremium);
   const accessLabel = accessProfile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Versi Free');
   const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus);
+  const cloudSyncActionEnabled = !hasAccountSession || cloudSyncPresentation.retryable;
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
@@ -398,7 +401,7 @@ export default function HomeDashboard(props) {
               <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
                 <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
               </span>
-              <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout}>{cloudSyncPresentation.label}</button>
+              <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout} disabled={!cloudSyncActionEnabled}>{cloudSyncPresentation.label}</button>
               <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
               {hasAccountSession
                 ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>

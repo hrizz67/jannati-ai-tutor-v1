@@ -41,4 +41,6 @@ $$;
 revoke all on function public.get_learning_data() from public, anon, authenticated;
 revoke all on function public.save_learning_data(jsonb) from public, anon, authenticated;
 grant execute on function public.get_learning_data() to authenticated;
-grant execute on function public.save_learning_data(jsonb) to authenticated;
+-- Legacy last-writer-wins writes are intentionally unavailable to browsers.
+-- Apply migrations/20260823090000_learning_data_integrity_v3.sql and use
+-- save_learning_data_v3 with an expected revision instead.
