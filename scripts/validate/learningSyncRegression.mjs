@@ -289,6 +289,32 @@ const recoverDesktopXp = recoverMonotonicCloudGap(desktopXp140Payload, cloudXp40
 assert.equal(recoverDesktopXp.recovered, true, 'Desktop XP 140 must be recovered before cloud XP 40 is allowed to hydrate over it.');
 assert.deepEqual(recoverDesktopXp.dirtyChildIds, [originalChild.id]);
 
+const repairSplitCloudProjection = recoverMonotonicCloudGap(splitProjectionPayload, splitProjectionPayload, {
+  localActiveChildId: originalChild.id
+});
+assert.equal(
+  repairSplitCloudProjection.recovered,
+  true,
+  'Cloud root XP 140 with an active child snapshot XP 40 must schedule one repair write even after read-time normalization.'
+);
+const repairedSplitCloudPayload = mergeCloudLearningPayload(splitProjectionPayload, splitProjectionPayload, {
+  dirtyChildIds: repairSplitCloudProjection.dirtyChildIds,
+  localActiveChildId: originalChild.id,
+  mergeDirtySnapshots: true
+});
+assert.equal(
+  JSON.parse(JSON.parse(repairedSplitCloudPayload[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  140,
+  'The repair write must persist XP 140 into the canonical active child snapshot.'
+);
+assert.equal(
+  recoverMonotonicCloudGap(repairedSplitCloudPayload, repairedSplitCloudPayload, {
+    localActiveChildId: originalChild.id
+  }).recovered,
+  false,
+  'A converged cloud projection must not create an endless revision loop.'
+);
+
 const mergedXpConflict = mergeCloudLearningPayload(cloudXp40Payload, splitProjectionPayload, {
   dirtyChildIds: [originalChild.id],
   localActiveChildId: originalChild.id,

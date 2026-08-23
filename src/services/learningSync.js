@@ -617,9 +617,14 @@ export function recoverMonotonicCloudGap(localPayload = {}, cloudPayload = {}, o
   const normalizedLocal = normalizeActiveLearningProjection(local, localProfile.id);
   const normalizedCloud = normalizeActiveLearningProjection(cloud, cloudProfile.id);
   const localRaw = normalizedLocal[`${CHILD_SNAPSHOT_PREFIX}${localProfile.id}`];
+  const storedCloudRaw = cloud[`${CHILD_SNAPSHOT_PREFIX}${cloudProfile.id}`];
   const cloudRaw = normalizedCloud[`${CHILD_SNAPSHOT_PREFIX}${cloudProfile.id}`];
   const mergedRaw = mergeLearningSnapshots(cloudRaw, rewriteSnapshotChildId(localRaw, cloudProfile.id), cloudProfile.id);
-  if (getLearningSnapshotEvidenceScore(mergedRaw) <= getLearningSnapshotEvidenceScore(cloudRaw)) return base;
+  const cloudProjectionNeedsRepair = getLearningSnapshotEvidenceScore(cloudRaw)
+    > getLearningSnapshotEvidenceScore(storedCloudRaw);
+  const localAddsLearning = getLearningSnapshotEvidenceScore(mergedRaw)
+    > getLearningSnapshotEvidenceScore(cloudRaw);
+  if (!cloudProjectionNeedsRepair && !localAddsLearning) return base;
 
   return {
     dirtyChildIds: [localProfile.id],
