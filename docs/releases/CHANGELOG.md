@@ -1,25 +1,17 @@
 # Changelog
 
-## 3.6.0 - 2026-08-23
+## 3.6.1 - 2026-08-23
 
-### Integriti data pembelajaran
+### Resume dan navigasi pembelajaran
 
-- Cloud sync kini menggunakan revision/CAS dan operation ID idempoten supaya dua peranti tidak boleh menimpa kemajuan satu sama lain secara senyap.
-- Semua snapshot, operasi sync, backup, profil pelajar dan event pembelajaran diasingkan mengikut ID akaun yang disahkan.
-- Logout, pertukaran akaun dan pemadaman profil anak tidak lagi menggunakan state akaun lain atau mengosongkan profil asal.
-- Snapshot sebelum migrasi dan sebelum setiap penulisan cloud disimpan untuk pemulihan terkawal.
+- Dashboard kini menggunakan satu kad resume sahaja dan tindakan `Sambung` menerima state resume yang betul, bukan objek klik React.
+- Nota dan Buku Teks menyediakan tindakan `Papan Utama` dan `Sambung Latihan` yang kekal mudah dicapai pada desktop serta mudah alih.
+- Kandungan Nota, Buku Teks dan data pembelajaran tidak dimigrasi atau ditulis semula oleh perubahan UI ini.
 
-### Sync desktop dan mobile
+### Kebolehlihatan sync
 
-- Perubahan cloud diterima melalui Supabase Realtime dengan polling, fokus tetingkap dan sambungan semula sebagai fallback.
-- Konflik revision mengambil data server terkini, menggabungkan perubahan profil anak yang sah dan mencuba semula tanpa blind overwrite.
-- UI kini memaparkan satu status sync utama; permukaan latihan hanya menunjukkan status baca sahaja dan tidak memulakan aliran sync kedua.
-
-### Supabase
-
-- Skema v3 menambah jadual operasi sync, backup, profil pelajar, state pembelajaran dan event dengan RLS berasaskan akaun.
-- RPC v3 menggunakan rujukan parameter yang tidak kabur dan named constraints; remote database lint selesai tanpa schema error.
-- Migrasi local dan produksi disahkan sepadan hingga `20260823094500`.
+- Status cloud kini memaparkan revision server dan masa kemas kini server untuk membantu membandingkan state antara desktop dengan mobile.
+- Regresi sync memastikan ralat RPC/rangkaian tidak dilaporkan sebagai migrasi lama dan perlindungan CAS, idempoten serta pengasingan akaun kekal aktif.
 
 ### Release controls
 
@@ -35,5 +27,6 @@
 
 ### Follow-up work
 
+- Complete an authenticated Free and Premium desktop-to-mobile acceptance run after deployment and confirm both devices converge on the same server revision.
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
