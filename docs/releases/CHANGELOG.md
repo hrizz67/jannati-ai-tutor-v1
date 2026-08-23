@@ -1,18 +1,18 @@
 # Changelog
 
-## 3.6.3 - 2026-08-23
+## 3.6.4 - 2026-08-23
 
-### Pemulihan XP rentas peranti
+### Cloud projection repair write
 
-- Projection pembelajaran peringkat akaun dan snapshot profil anak aktif kini dinormalisasi kepada kemajuan monotonic yang sama sebelum cloud merge atau hydration.
-- XP dan bukti pembelajaran yang lebih tinggi pada desktop tidak lagi boleh diturunkan oleh snapshot mobile yang lebih baharu tetapi kurang lengkap.
-- Semasa login atau polling, peranti yang masih mempunyai bukti pembelajaran lebih kaya akan memulihkan outbox profil yang tepat dan membaiki cloud melalui revision/CAS.
+- Cloud yang mempunyai projection akaun XP 140 tetapi snapshot anak aktif XP 40 kini dikenal pasti sebagai belum sepadan walaupun bacaan tempatan sudah dinormalisasi.
+- Desktop yang memegang pembelajaran kaya akan menjadualkan satu revisioned repair write supaya snapshot anak canonical turut menyimpan XP 140.
+- Selepas kedua-dua salinan cloud sepadan, pengesan berhenti dan tidak menghasilkan revision loop.
 
-### Pengasingan profil
+### Perlindungan data
 
-- Pemulihan hanya berlaku untuk ID profil anak yang sama atau padanan identiti nama/tahun yang unik.
-- Projection akar yang dikenal pasti milik anak lain tidak akan digabungkan ke snapshot pelajar aktif.
-- Tiada migrasi Supabase, pemadaman profil atau perubahan kandungan pembelajaran diperlukan.
+- Repair write masih melalui optimistic revision/CAS dan pengasingan profil anak sedia ada.
+- Regresi meliputi state sebenar v3.6.3: desktop XP 140, cloud r80 dan mobile XP 40.
+- Tiada migrasi Supabase, perubahan kandungan pembelajaran atau pemadaman profil diperlukan.
 
 ### Release controls
 
@@ -28,6 +28,6 @@
 
 ### Follow-up work
 
-- Confirm the affected desktop XP 140 snapshot advances the cloud revision, then verify the physical mobile device converges to the same XP and revision.
+- Confirm desktop advances cloud beyond r80, then verify mobile converges to XP 140 on the same or newer revision.
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.

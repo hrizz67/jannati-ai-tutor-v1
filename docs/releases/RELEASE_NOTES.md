@@ -1,16 +1,16 @@
-# Jannati AI Tutor 3.6.3 Release Notes
+# Jannati AI Tutor 3.6.4 Release Notes
 
 Status: stable
-Tag: v3.6.3
-Build date: 2026-08-23T14:48:48.038Z
+Tag: v3.6.4
+Build date: 2026-08-23T15:04:25.984Z
 
 ## Sorotan Release
 
-- XP dan kemajuan kini digabung secara monotonic; peranti dengan snapshot lebih rendah tidak boleh mengurangkan rekod pelajar yang lebih kaya.
-- Desktop yang masih menyimpan XP 140 boleh mengesan cloud XP 40 semasa login atau polling dan menghantar pembaikan melalui sync revision/CAS.
-- Snapshot akaun dan profil anak aktif dinormalisasi sebelum dipulihkan supaya kedua-dua desktop dan mobile membaca sumber pembelajaran yang sama.
-- Pemeriksaan identiti profil menghalang data akar milik anak lain daripada masuk ke snapshot pelajar aktif.
-- Ujian regresi khusus meliputi XP 140 lawan XP 40, pengasingan anak, resume, konflik serentak dan pemulihan outbox.
+- Keadaan cloud dalaman `root XP 140 + snapshot anak XP 40` kini mencetuskan satu repair write yang selamat.
+- Desktop tidak sekadar memaparkan XP 140 selepas normalisasi; ia juga menyimpan nilai itu ke snapshot anak canonical untuk mobile.
+- Revision server dijangka meningkat daripada r80 selepas desktop memuatkan v3.6.4.
+- Pengesan berhenti selepas convergence supaya tiada sync atau revision loop.
+- Pengasingan akaun/profil, resume dan optimistic concurrency kekal dilindungi oleh regresi automatik.
 
 ## Release Readiness
 
@@ -42,6 +42,6 @@ Build date: 2026-08-23T14:48:48.038Z
 
 ## Known Follow-ups
 
-- Complete the controlled XP 140 desktop-first recovery check on the previously affected Premium account after deployment.
+- Complete the controlled desktop-first r80 recovery check before refreshing the affected mobile device.
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
