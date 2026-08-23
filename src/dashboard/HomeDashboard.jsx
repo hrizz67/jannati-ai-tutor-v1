@@ -109,9 +109,9 @@ function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild
   );
 }
 
-function getCloudSyncPresentation(hasAccountSession, status) {
+function getCloudSyncPresentation(hasAccountSession, status, revision = 0, serverUpdatedAt = '') {
   if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.', retryable: true };
-  return {
+  const presentation = {
     syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan sedang dihantar menggunakan revision server.', retryable: false },
     saved: { label: 'Telah sync', tone: 'saved', detail: 'Server telah mengakui revision terkini peranti ini.', retryable: false },
     loaded: { label: 'Cloud terkini', tone: 'saved', detail: 'Peranti ini menggunakan revision cloud terkini.', retryable: false },
@@ -122,6 +122,15 @@ function getCloudSyncPresentation(hasAccountSession, status) {
     'upgrade-required': { label: 'Sync dilindungi', tone: 'offline', detail: 'Migration Data Integrity v3 perlu dipasang. Perubahan tidak akan dihantar melalui RPC lama.', retryable: false },
     idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false }
   }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false };
+  const safeRevision = Math.max(0, Number(revision) || 0);
+  const updatedLabel = serverUpdatedAt && !Number.isNaN(Date.parse(serverUpdatedAt))
+    ? new Date(serverUpdatedAt).toLocaleString('ms-MY')
+    : '';
+  if (safeRevision > 0) {
+    presentation.label = `${presentation.label} · r${safeRevision}`;
+    presentation.detail = `${presentation.detail} Revision server: ${safeRevision}${updatedLabel ? ` · ${updatedLabel}` : ''}.`;
+  }
+  return presentation;
 }
 
 export default function HomeDashboard(props) {
@@ -162,6 +171,8 @@ export default function HomeDashboard(props) {
     onRecoverLearningData,
     onSyncLearningData,
     cloudSyncStatus,
+    cloudSyncRevision,
+    cloudSyncUpdatedAt,
     onLoadLearningData,
     onResume,
     onRestartResume,
@@ -181,7 +192,7 @@ export default function HomeDashboard(props) {
   const studentName = getStudentDisplayName([profile, adaptiveProfile], 'Murid');
   const isPremiumAccount = Boolean(hasAccountSession && accessProfile?.isPremium);
   const accessLabel = accessProfile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Versi Free');
-  const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus);
+  const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus, cloudSyncRevision, cloudSyncUpdatedAt);
   const cloudSyncActionEnabled = !hasAccountSession || cloudSyncPresentation.retryable;
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);
@@ -359,9 +370,6 @@ export default function HomeDashboard(props) {
     onSyncLearningData,
     cloudSyncStatus,
     onLoadLearningData,
-    resume,
-    onResume,
-    onRestartResume,
     dashboardCharacter,
     welcomeTopic,
     selectedSubject,
@@ -478,7 +486,8 @@ export default function HomeDashboard(props) {
           </details>
         </Suspense>
 
-        <section className="quick-actions" aria-label="Aktiviti pembelajaran"><button type="button" onClick={resume ? onResume : () => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>{resume ? 'Sambung Latihan' : 'Sambung Belajar'}</span></button><button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button><button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button><button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button><button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button></section>
+        <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
+        <section className="quick-actions" aria-label="Aktiviti pembelajaran">{!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}<button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button><button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button><button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button><button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button></section>
         <section className="card adaptive-practice-card">
           <h2>Latihan AI</h2>
           <p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p>
@@ -501,7 +510,6 @@ export default function HomeDashboard(props) {
             ))}
           </div>
         </section>
-        <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
         <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>{canonicalAnalytics.hasEvidence ? <div className="mastery-summary-grid"><div><b>{canonicalAnalytics.masteryPercent}%</b><span>Skor Penguasaan</span></div><div><b>{canonicalAnalytics.masteredTopics.length}</b><span>Dikuasai</span></div><div><b>{canonicalAnalytics.learningTopics.length}</b><span>Sedang Belajar</span></div><div><b>{canonicalAnalytics.weakTopics.length}</b><span>Perlu Latihan</span></div></div> : <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
         <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + PBD</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
         <section className="card smart-lesson-card">
