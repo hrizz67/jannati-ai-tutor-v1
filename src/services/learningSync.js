@@ -468,6 +468,54 @@ export function hasRecoverableActiveProfileDuplicate(payload = {}) {
   return hasRecoverableChildProfileDuplicates(payload);
 }
 
+export function recoverOrphanedCloudOutbox(localPayload = {}, cloudPayload = {}, options = {}) {
+  const pending = Boolean(options.pending);
+  const dirtyChildIds = [...new Set((options.dirtyChildIds || []).map(String).filter(Boolean))];
+  const base = {
+    dirtyChildIds,
+    recovered: false,
+    clearPending: false,
+    reconcileChildIdentity: false
+  };
+  if (!pending || dirtyChildIds.length) return base;
+
+  const local = isObject(localPayload) ? localPayload : {};
+  const cloud = isObject(cloudPayload) ? cloudPayload : {};
+  const localMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
+  const cloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
+  const localDeletedChildren = normalizeDeletedChildren(localMeta.deletedChildren);
+  const cloudDeletedChildren = normalizeDeletedChildren(cloudMeta.deletedChildren);
+  const localProfiles = listProfiles(localMeta, localDeletedChildren);
+  const cloudProfiles = listProfiles(cloudMeta, cloudDeletedChildren);
+  const requestedChildId = String(options.localActiveChildId || localMeta.activeChildId || '').trim();
+  const activeProfile = localProfiles.find(profile => profile.id === requestedChildId) || localProfiles[0] || null;
+
+  // A pending marker without a child-level outbox can be left behind by an
+  // interrupted older client. It must not block a meaningful cloud snapshot
+  // forever, but a recoverable local learner still deserves one conservative
+  // merge attempt before the marker is cleared.
+  if (!activeProfile) return { ...base, clearPending: true };
+  const activeChildId = activeProfile.id;
+  const localSnapshot = chooseRicherSnapshot(
+    local[`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`],
+    local[`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`]
+  );
+  const localEvidence = getLearningSnapshotEvidenceScore(localSnapshot);
+  const cloudHasData = Object.keys(cloud).length > 0;
+  if (cloudHasData && localEvidence <= 0) return { ...base, clearPending: true };
+
+  const localIdentity = getChildProfileIdentity(activeProfile);
+  const matchingCloudProfile = localIdentity
+    ? cloudProfiles.find(profile => getChildProfileIdentity(profile) === localIdentity)
+    : null;
+  return {
+    dirtyChildIds: [activeChildId],
+    recovered: true,
+    clearPending: false,
+    reconcileChildIdentity: Boolean(matchingCloudProfile && matchingCloudProfile.id !== activeChildId)
+  };
+}
+
 function mergeChildProfiles(localProfiles = [], cloudProfiles = [], deletedChildren = {}) {
   const merged = new Map();
   for (const profile of Array.isArray(cloudProfiles) ? cloudProfiles : []) {

@@ -76,6 +76,7 @@ import {
   getChildProfileIdentity,
   hasRecoverableChildProfileDuplicates,
   loadCloudLearningDataResult,
+  recoverOrphanedCloudOutbox,
   syncRevisionedCloudLearning
 } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
@@ -665,10 +666,10 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   }
 }
 
-function applyMergedCloudMetadata(payload = {}, activeChildId = '', dirtyChildIds = []) {
+function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLocalChildIds = []) {
   try {
-    const dirtyChildren = new Set((dirtyChildIds || []).filter(Boolean).map(String));
-    const activeChildWasChanged = dirtyChildren.has(String(activeChildId || ''));
+    const preservedChildren = new Set((preserveLocalChildIds || []).filter(Boolean).map(String));
+    const activeChildHasNewerMutation = preservedChildren.has(String(activeChildId || ''));
     const metadata = JSON.parse(payload[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
       ? metadata.deletedChildren
@@ -704,12 +705,12 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', dirtyChildId
       const childId = key.slice(prefix.length);
       if (deletedChildren[childId]) {
         localStorage.removeItem(key);
-      } else if ((childId !== activeChildId || !activeChildWasChanged) && typeof raw === 'string') {
+      } else if ((childId !== activeChildId || !activeChildHasNewerMutation) && typeof raw === 'string') {
         localStorage.setItem(key, raw);
       }
     });
     if (requestedActiveProfile) {
-      if (activeChildWasChanged) {
+      if (activeChildHasNewerMutation) {
         captureChildSnapshot(activeChildId, { force: true });
       } else {
         const mergedActiveSnapshot = resolveChildSnapshot(activeChildId);
@@ -1490,8 +1491,11 @@ export default function App() {
             revision: Number(syncResult.revision) || 0,
             serverUpdatedAt: String(syncResult.serverUpdatedAt || '')
           });
-          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, dirtyChildIds);
-          if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !dirtyChildIds.includes(activeChildId))) {
+          const preserveLocalChildIds = dirtyChildIds.filter(childId => (
+            (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
+          ));
+          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
+          if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
             skipNextCloudSaveRef.current = true;
             reloadCloudLearningState(resolvedActiveChildId);
           }
@@ -1835,11 +1839,40 @@ export default function App() {
           serverUpdatedAt: String(cloudResult.serverUpdatedAt || '')
         });
       }
-      if (!cloudResult.error && hasRecoverableChildProfileDuplicates(cloudLearningData)) {
+      const cloudHasProfileDuplicates = !cloudResult.error
+        && hasRecoverableChildProfileDuplicates(cloudLearningData);
+      if (cloudHasProfileDuplicates) {
         setPendingProfileReconciliation(user.id, true);
         setPendingCloudMutation(user.id, true);
       }
-      const hasPendingLocalData = hasPendingCloudMutation(user.id);
+      if (
+        !cloudResult.error
+        && Number(cloudResult.protocolVersion) >= CLOUD_SYNC_PROTOCOL_VERSION
+        && hasPendingCloudMutation(user.id)
+        && dirtyChildIdsRef.current.size === 0
+        && !hasPendingProfileReconciliation(user.id)
+      ) {
+        const localLearningData = buildCloudLearningPayload();
+        const recoveredOutbox = recoverOrphanedCloudOutbox(localLearningData, cloudLearningData, {
+          pending: true,
+          dirtyChildIds: [],
+          localActiveChildId: readActiveChildId()
+        });
+        if (recoveredOutbox.recovered) {
+          recoveredOutbox.dirtyChildIds.forEach(childId => {
+            dirtyChildIdsRef.current.add(childId);
+            childMutationVersionRef.current.set(childId, 1);
+          });
+          writePendingDirtyChildIds(user.id, dirtyChildIdsRef.current);
+          if (recoveredOutbox.reconcileChildIdentity) setPendingProfileReconciliation(user.id, true);
+        } else if (recoveredOutbox.clearPending) {
+          setPendingCloudMutation(user.id, false);
+          writePendingDirtyChildIds(user.id, []);
+        }
+      }
+      const hasPendingLocalData = dirtyChildIdsRef.current.size > 0
+        || hasPendingCloudMutation(user.id)
+        || hasPendingProfileReconciliation(user.id);
       const cloudProtocolRequiresUpgrade = !cloudResult.error
         && Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION;
       const shouldBootstrapCloud = !cloudResult.error
