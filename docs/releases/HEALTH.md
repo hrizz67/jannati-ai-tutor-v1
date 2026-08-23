@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.6.3
+Version: 3.6.4
 Status: stable
-Build date: 2026-08-23T14:48:48.038Z
+Build date: 2026-08-23T15:04:25.984Z
 
 | Area | Status |
 | --- | --- |
@@ -18,9 +18,9 @@ Build date: 2026-08-23T14:48:48.038Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Monotonic XP and learning projection | PASS |
-| Desktop XP 140/mobile XP 40 recovery regression | PASS |
-| Cross-child projection isolation | PASS |
+| Split cloud projection detection | PASS |
+| One-time revisioned repair write | PASS |
+| Repair loop prevention | PASS |
 | Overall Status | PASS |
 
 ## Validation
