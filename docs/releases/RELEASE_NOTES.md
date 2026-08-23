@@ -1,17 +1,16 @@
-# Jannati AI Tutor 3.6.0 Release Notes
+# Jannati AI Tutor 3.6.1 Release Notes
 
 Status: stable
-Tag: v3.6.0
-Build date: 2026-08-23T09:44:11.779Z
+Tag: v3.6.1
+Build date: 2026-08-23T13:31:55.258Z
 
 ## Sorotan Release
 
-- Data pembelajaran kini disimpan dengan revision/CAS, operation ID idempoten dan backup sebelum tulis bagi menghalang kehilangan kemajuan atau overwrite antara desktop dan mobile.
-- Data Free dan Premium diasingkan menggunakan ID akaun yang disahkan; pertukaran akaun tidak lagi membawa profil anak atau entitlement daripada akaun sebelumnya.
-- Pemadaman profil anak dihadkan kepada profil sasaran dan tidak boleh mengosongkan data profil asal. Rekod penting diarkibkan dan snapshot pemulihan dikekalkan.
-- Supabase Realtime menyampaikan perubahan merentas peranti, dengan polling, fokus aplikasi dan reconnect sebagai mekanisme pemulihan.
-- Hanya satu status sync interaktif digunakan dalam UI bagi mengelakkan dua aliran sync yang bersaing.
-- Migrasi integriti v3 dan hotfix RPC telah digunakan pada produksi; senarai migrasi local/remote sepadan dan remote schema lint tidak menemui ralat.
+- Dashboard kini memaparkan satu sahaja kad `Sambung Latihan`; tindakan sambung membuka semula sesi dan soalan aktif tanpa menerima objek klik sebagai data resume.
+- Halaman Nota dan Buku Teks mempunyai tindakan jelas untuk kembali ke Papan Utama atau menyambung latihan aktif, termasuk pada paparan mudah alih.
+- Kandungan Nota, Buku Teks dan rekod pembelajaran tidak diubah oleh pembaikan navigasi ini.
+- Status cloud memaparkan revision server terkini supaya perubahan desktop dan mobile boleh dibandingkan menggunakan sumber kebenaran yang sama.
+- Ujian regresi melindungi pengasingan akaun/profil, kesinambungan resume dan pengendalian ralat sync tanpa salah melabelkannya sebagai isu migrasi.
 
 ## Release Readiness
 
@@ -44,4 +43,5 @@ Build date: 2026-08-23T09:44:11.779Z
 ## Known Follow-ups
 
 - Large JavaScript chunks remain a performance improvement target.
+- Authenticated Free and Premium accounts still require a real desktop-to-mobile Supabase acceptance run after production deployment.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.

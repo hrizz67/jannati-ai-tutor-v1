@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.6.0
+Version: 3.6.1
 Status: stable
-Build date: 2026-08-23T09:44:11.779Z
+Build date: 2026-08-23T13:31:55.258Z
 
 | Area | Status |
 | --- | --- |
@@ -18,10 +18,9 @@ Build date: 2026-08-23T09:44:11.779Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Revisioned cloud sync | PASS |
-| Account and child-profile isolation | PASS |
-| Backup and deletion containment | PASS |
-| Supabase remote schema lint | PASS |
+| Single resume action and learning navigation | PASS |
+| Cloud server revision visibility | PASS |
+| Account and child-profile isolation regression | PASS |
 | Overall Status | PASS |
 
 ## Validation
