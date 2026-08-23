@@ -3,7 +3,8 @@ export const CHILD_ORIGINAL_SNAPSHOT_PREFIX = 'jannati_child_original_snapshot:'
 export const CHILD_MERGED_BACKUP_PREFIX = 'jannati_merged_child_backup:';
 export const CLOUD_CHILD_STATE_KEY = 'jannati_cloud_child_state';
 export const CLOUD_SYNC_META_KEY = 'jannati_cloud_sync_meta';
-export const CLOUD_SYNC_VERSION = 2;
+export const CLOUD_SYNC_VERSION = 3;
+export const CLOUD_SYNC_PROTOCOL_VERSION = 3;
 
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
@@ -298,6 +299,7 @@ function mergeLearningSnapshots(canonicalRaw, duplicateRaw, childId) {
   return JSON.stringify({
     ...merged,
     __childSnapshotChildId: childId,
+    __childSnapshotAccountId: canonical.__childSnapshotAccountId || duplicate.__childSnapshotAccountId || null,
     __childSnapshotCapturedAt: Math.max(
       parseTimestamp(canonical.__childSnapshotCapturedAt),
       parseTimestamp(duplicate.__childSnapshotCapturedAt),
@@ -305,6 +307,10 @@ function mergeLearningSnapshots(canonicalRaw, duplicateRaw, childId) {
     ),
     __childSnapshotDeviceId: canonical.__childSnapshotDeviceId || duplicate.__childSnapshotDeviceId || null
   });
+}
+
+export function mergeConcurrentLearningSnapshots(cloudRaw, localRaw, childId) {
+  return mergeLearningSnapshots(cloudRaw, localRaw, childId);
 }
 
 function remapPayloadProfiles(payload = {}, metadata = {}, aliases = new Map(), canonicalProfiles = new Map()) {
@@ -522,7 +528,9 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
       delete merged[key];
       return;
     }
-    const selected = chooseSnapshot(local[key], cloud[key], dirtyChildIds.has(childId));
+    const selected = dirtyChildIds.has(childId) && options.mergeDirtySnapshots
+      ? mergeConcurrentLearningSnapshots(cloud[key], local[key], childId)
+      : chooseSnapshot(local[key], cloud[key], dirtyChildIds.has(childId));
     if (typeof selected === 'string') merged[key] = selected;
     else delete merged[key];
   });
@@ -553,14 +561,57 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   return merged;
 }
 
-export async function loadCloudLearningDataResult(client) {
-  if (!client) return { data: null, error: new Error('cloud_client_unavailable') };
+function normalizeEnvelope(value = {}) {
+  const envelope = isObject(value) ? value : {};
+  return {
+    data: isObject(envelope.payload) ? envelope.payload : {},
+    revision: Number.isFinite(Number(envelope.revision)) ? Number(envelope.revision) : 0,
+    protocolVersion: Number(envelope.protocolVersion) || 0,
+    serverUpdatedAt: String(envelope.serverUpdatedAt || ''),
+    error: null
+  };
+}
+
+function isMissingRevisionedRpc(error) {
+  const code = String(error?.code || '');
+  const message = String(error?.message || error || '');
+  return code === 'PGRST202' || code === '42883' || /get_learning_data_v3|schema cache|does not exist/i.test(message);
+}
+
+function createOperationId() {
   try {
-    const { data, error } = await client.rpc('get_learning_data');
-    if (error) return { data: null, error };
-    return { data: isObject(data) ? data : {}, error: null };
+    return crypto.randomUUID();
+  } catch {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, token => {
+      const value = Math.floor(Math.random() * 16);
+      return (token === 'x' ? value : (value & 0x3) | 0x8).toString(16);
+    });
+  }
+}
+
+export async function loadCloudLearningDataResult(client) {
+  if (!client) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: new Error('cloud_client_unavailable') };
+  try {
+    const revisioned = await client.rpc('get_learning_data_v3');
+    if (!revisioned?.error) return normalizeEnvelope(revisioned?.data);
+    if (!isMissingRevisionedRpc(revisioned.error)) {
+      return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: revisioned.error };
+    }
+
+    // Read-only compatibility allows a coordinated rollout without risking a
+    // blind legacy write. The client keeps mutations pending until migration
+    // v3 is available on the linked Supabase project.
+    const legacy = await client.rpc('get_learning_data');
+    if (legacy?.error) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: legacy.error };
+    return {
+      data: isObject(legacy?.data) ? legacy.data : {},
+      revision: 0,
+      protocolVersion: 2,
+      serverUpdatedAt: '',
+      error: null
+    };
   } catch (error) {
-    return { data: null, error };
+    return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error };
   }
 }
 
@@ -569,16 +620,95 @@ export async function loadCloudLearningData(client) {
   return result.error ? null : result.data;
 }
 
-export async function saveCloudLearningData(client, payload = {}) {
-  if (!client || !payload || typeof payload !== 'object') return false;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      const { error } = await client.rpc('save_learning_data', { payload });
-      if (!error) return true;
-    } catch {
-      // Retry once for a transient mobile/network failure.
-    }
-    await new Promise(resolve => setTimeout(resolve, 350));
+export async function saveRevisionedCloudLearningData(client, {
+  payload = {},
+  expectedRevision = 0,
+  operationId = createOperationId(),
+  deviceId = '',
+  dirtyChildIds = []
+} = {}) {
+  if (!client || !isObject(payload)) {
+    return { ok: false, conflict: false, error: new Error('invalid_revisioned_sync_request') };
   }
+  try {
+    const { data, error } = await client.rpc('save_learning_data_v3', {
+      payload,
+      expected_revision: Number(expectedRevision) || 0,
+      operation_id: operationId,
+      device_id: String(deviceId || ''),
+      dirty_child_ids: [...new Set((dirtyChildIds || []).map(String).filter(Boolean))]
+    });
+    if (error) return { ok: false, conflict: false, error };
+    const result = isObject(data) ? data : {};
+    return {
+      ok: Boolean(result.ok),
+      conflict: Boolean(result.conflict),
+      duplicate: Boolean(result.duplicate),
+      payload: isObject(result.payload) ? result.payload : {},
+      revision: Number(result.revision) || 0,
+      serverUpdatedAt: String(result.serverUpdatedAt || ''),
+      operationId,
+      error: null
+    };
+  } catch (error) {
+    return { ok: false, conflict: false, operationId, error };
+  }
+}
+
+export async function syncRevisionedCloudLearning(client, localPayload = {}, options = {}) {
+  const maxAttempts = Math.max(1, Math.min(5, Number(options.maxAttempts) || 4));
+  let envelope = options.cloudEnvelope || await loadCloudLearningDataResult(client);
+  if (envelope.error) return { ok: false, conflict: false, error: envelope.error };
+  if (envelope.protocolVersion < CLOUD_SYNC_PROTOCOL_VERSION) {
+    return {
+      ok: false,
+      conflict: false,
+      protocolVersion: envelope.protocolVersion,
+      error: new Error('cloud_sync_migration_required')
+    };
+  }
+
+  let conflictCount = 0;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const payload = mergeCloudLearningPayload(localPayload, envelope.data, {
+      ...options,
+      mergeDirtySnapshots: true
+    });
+    const result = await saveRevisionedCloudLearningData(client, {
+      payload,
+      expectedRevision: envelope.revision,
+      operationId: createOperationId(),
+      deviceId: options.deviceId,
+      dirtyChildIds: options.dirtyChildIds
+    });
+    if (result.ok) {
+      return {
+        ...result,
+        payload: result.payload,
+        protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
+        conflictCount
+      };
+    }
+    if (!result.conflict) return { ...result, conflictCount };
+    conflictCount += 1;
+    envelope = {
+      data: result.payload,
+      revision: result.revision,
+      protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
+      serverUpdatedAt: result.serverUpdatedAt,
+      error: null
+    };
+  }
+  return {
+    ok: false,
+    conflict: true,
+    conflictCount,
+    error: new Error('cloud_sync_conflict_retry_exhausted')
+  };
+}
+
+// Kept only for legacy imports. Application writes must use the revisioned
+// coordinator above so an older device can never blindly replace cloud data.
+export async function saveCloudLearningData() {
   return false;
 }

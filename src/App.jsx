@@ -71,12 +71,12 @@ import {
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
+  CLOUD_SYNC_PROTOCOL_VERSION,
   CLOUD_SYNC_META_KEY,
   getChildProfileIdentity,
   hasRecoverableChildProfileDuplicates,
   loadCloudLearningDataResult,
-  mergeCloudLearningPayload,
-  saveCloudLearningData
+  syncRevisionedCloudLearning
 } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
@@ -198,6 +198,14 @@ function setPendingCloudMutation(accountId, pending) {
   }
 }
 
+function getCloudResultSignature(result = {}) {
+  return JSON.stringify({
+    protocolVersion: Number(result.protocolVersion) || 0,
+    revision: Number(result.revision) || 0,
+    payload: result.data && typeof result.data === 'object' ? result.data : {}
+  });
+}
+
 function getDirtyChildrenKey(accountId) {
   return `${CLOUD_DIRTY_CHILDREN_PREFIX}${String(accountId || '').trim()}`;
 }
@@ -257,14 +265,6 @@ function readDeletedChildren() {
   }
 }
 
-function markChildDeleted(childId) {
-  if (!childId) return;
-  localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify({
-    ...readDeletedChildren(),
-    [childId]: Date.now()
-  }));
-}
-
 function readChildProfiles() {
   try {
     const parsed = JSON.parse(localStorage.getItem(CHILD_PROFILES_KEY) || '[]');
@@ -279,6 +279,14 @@ function readActiveChildId() {
     return String(localStorage.getItem(ACTIVE_CHILD_KEY) || '').trim();
   } catch {
     return '';
+  }
+}
+
+function getActiveStorageScopeId() {
+  try {
+    return String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim() || 'guest';
+  } catch {
+    return 'guest';
   }
 }
 
@@ -364,6 +372,7 @@ function captureChildSnapshot(childId, { force = false } = {}) {
     const nextSnapshot = {
       ...readChildScopedData(),
       __childSnapshotChildId: childId,
+      __childSnapshotAccountId: getActiveStorageScopeId(),
       __childSnapshotCapturedAt: Date.now(),
       __childSnapshotDeviceId: getSyncDeviceId()
     };
@@ -378,7 +387,12 @@ function captureChildSnapshot(childId, { force = false } = {}) {
 function readChildSnapshot(childId) {
   try {
     const parsed = JSON.parse(localStorage.getItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`) || 'null');
-    return parsed && typeof parsed === 'object' ? parsed : null;
+    if (!parsed || typeof parsed !== 'object') return null;
+    const snapshotChildId = String(parsed.__childSnapshotChildId || '').trim();
+    const snapshotAccountId = String(parsed.__childSnapshotAccountId || '').trim();
+    if (snapshotChildId && snapshotChildId !== String(childId)) return null;
+    if (snapshotAccountId && snapshotAccountId !== getActiveStorageScopeId()) return null;
+    return parsed;
   } catch {
     return null;
   }
@@ -387,7 +401,12 @@ function readChildSnapshot(childId) {
 function readOriginalChildSnapshot(childId) {
   try {
     const parsed = JSON.parse(localStorage.getItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`) || 'null');
-    return parsed && typeof parsed === 'object' ? parsed : null;
+    if (!parsed || typeof parsed !== 'object') return null;
+    const snapshotChildId = String(parsed.__childSnapshotChildId || '').trim();
+    const snapshotAccountId = String(parsed.__childSnapshotAccountId || '').trim();
+    if (snapshotChildId && snapshotChildId !== String(childId)) return null;
+    if (snapshotAccountId && snapshotAccountId !== getActiveStorageScopeId()) return null;
+    return parsed;
   } catch {
     return null;
   }
@@ -436,6 +455,7 @@ function captureOriginalChildSnapshot(childId) {
     const nextSnapshot = {
       ...readChildScopedData(),
       __childSnapshotChildId: childId,
+      __childSnapshotAccountId: getActiveStorageScopeId(),
       __childSnapshotCapturedAt: Date.now(),
       __childSnapshotDeviceId: getSyncDeviceId()
     };
@@ -447,22 +467,38 @@ function captureOriginalChildSnapshot(childId) {
   }
 }
 
-function restoreChildSnapshot(snapshot = {}) {
+function restoreChildSnapshot(snapshot = {}, expectedChildId = '', expectedAccountId = getActiveStorageScopeId()) {
+  const snapshotChildId = String(snapshot?.__childSnapshotChildId || '').trim();
+  const snapshotAccountId = String(snapshot?.__childSnapshotAccountId || '').trim();
+  if (snapshotChildId && expectedChildId && snapshotChildId !== String(expectedChildId)) return false;
+  if (snapshotAccountId && expectedAccountId && snapshotAccountId !== String(expectedAccountId)) return false;
+  const previousSnapshot = readChildScopedData();
   clearChildScopedData();
   try {
     Object.entries(snapshot).forEach(([key, value]) => {
       if (isChildScopedDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
     });
   } catch {
-    // Keep the child usable even if part of the snapshot cannot be restored.
+    clearChildScopedData();
+    try {
+      Object.entries(previousSnapshot).forEach(([key, value]) => {
+        if (isChildScopedDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+      });
+    } catch {
+      // The account/child snapshots remain available for explicit recovery.
+    }
+    return false;
   }
+  return true;
 }
 
 function readAccountSnapshot(accountId) {
   try {
     const raw = localStorage.getItem(`${ACCOUNT_SNAPSHOT_PREFIX}${accountId}`);
     const snapshot = raw ? JSON.parse(raw) : null;
-    return snapshot && typeof snapshot === 'object' ? snapshot : null;
+    if (!snapshot || typeof snapshot !== 'object') return null;
+    const snapshotAccountId = String(snapshot.__accountSnapshotAccountId || '').trim();
+    return snapshotAccountId && snapshotAccountId !== String(accountId) ? null : snapshot;
   } catch {
     return null;
   }
@@ -499,26 +535,19 @@ function snapshotEvidenceScore(snapshot = {}) {
 }
 
 function findBestStoredAccountBackup(currentAccountId = '') {
-  const backups = [];
-  try {
-    for (let index = 0; index < localStorage.length; index += 1) {
-      const key = localStorage.key(index);
-      if (!key?.startsWith(ACCOUNT_SNAPSHOT_PREFIX)) continue;
-      const accountId = key.slice(ACCOUNT_SNAPSHOT_PREFIX.length);
-      if (accountId === currentAccountId) continue;
-      const snapshot = readAccountSnapshot(accountId);
-      if (snapshot) backups.push({ accountId, snapshot, score: snapshotEvidenceScore(snapshot) });
-    }
-  } catch {
-    return null;
-  }
-  return backups.sort((left, right) => right.score - left.score)[0] || null;
+  const accountId = String(currentAccountId || '').trim();
+  if (!accountId) return null;
+  const snapshot = readAccountSnapshot(accountId);
+  return snapshot ? { accountId, snapshot, score: snapshotEvidenceScore(snapshot) } : null;
 }
 
 function captureAccountSnapshot(accountId) {
   if (!accountId) return;
   try {
-    const snapshot = readLocalAccountData();
+    const snapshot = {
+      ...readLocalAccountData(),
+      __accountSnapshotAccountId: String(accountId)
+    };
     localStorage.setItem(`${ACCOUNT_SNAPSHOT_PREFIX}${accountId}`, JSON.stringify(snapshot));
   } catch {
     // Account switching must remain usable when storage is unavailable.
@@ -545,13 +574,13 @@ function buildCloudLearningPayload({ captureActiveChild = true } = {}) {
   const snapshot = readLocalAccountData();
   try {
     snapshot[CLOUD_CHILD_STATE_KEY] = JSON.stringify({
-      version: 2,
+      version: CLOUD_SYNC_PROTOCOL_VERSION,
       profiles: readChildProfiles(),
       activeChildId,
       deletedChildren: readDeletedChildren()
     });
     snapshot[CLOUD_SYNC_META_KEY] = JSON.stringify({
-      version: 2,
+      version: CLOUD_SYNC_PROTOCOL_VERSION,
       activeChildId,
       deviceId: getSyncDeviceId(),
       updatedAt: new Date().toISOString()
@@ -606,7 +635,8 @@ function getGuestProfileSummary() {
 function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
   repairChildSnapshotStorage();
   const localActiveChildId = readActiveChildId();
-  restoreAccountSnapshot(cloudData);
+  const accountScopeId = getActiveStorageScopeId();
+  if (!restoreAccountSnapshot(cloudData, accountScopeId)) return '';
   try {
     const metadata = JSON.parse(cloudData[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
@@ -628,7 +658,7 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     const active = preferred || localActive || cloudActive || cloudProfiles[0];
     localStorage.setItem(ACTIVE_CHILD_KEY, active.id);
     const childSnapshot = readChildSnapshot(active.id);
-    if (childSnapshot) restoreChildSnapshot(childSnapshot);
+    if (childSnapshot) restoreChildSnapshot(childSnapshot, active.id, accountScopeId);
     return active.id;
   } catch {
     return '';
@@ -683,14 +713,14 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', dirtyChildId
         captureChildSnapshot(activeChildId, { force: true });
       } else {
         const mergedActiveSnapshot = resolveChildSnapshot(activeChildId);
-        if (mergedActiveSnapshot) restoreChildSnapshot(mergedActiveSnapshot);
+        if (mergedActiveSnapshot) restoreChildSnapshot(mergedActiveSnapshot, activeChildId);
       }
     } else if (resolvedActiveChildId) {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`);
       localStorage.setItem(ACTIVE_CHILD_KEY, resolvedActiveChildId);
       const reconciledSnapshot = resolveChildSnapshot(resolvedActiveChildId);
-      if (reconciledSnapshot) restoreChildSnapshot(reconciledSnapshot);
+      if (reconciledSnapshot) restoreChildSnapshot(reconciledSnapshot, resolvedActiveChildId);
     }
     return resolvedActiveChildId;
   } catch {
@@ -712,15 +742,27 @@ function clearAccountData() {
   }
 }
 
-function restoreAccountSnapshot(snapshot = {}) {
+function restoreAccountSnapshot(snapshot = {}, expectedAccountId = '') {
+  const snapshotAccountId = String(snapshot?.__accountSnapshotAccountId || '').trim();
+  if (snapshotAccountId && expectedAccountId && snapshotAccountId !== String(expectedAccountId)) return false;
+  const previousSnapshot = readLocalAccountData();
   clearAccountData();
   try {
     Object.entries(snapshot).forEach(([key, value]) => {
       if (isAccountDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
     });
   } catch {
-    // Keep the account usable even if part of the snapshot cannot be restored.
+    clearAccountData();
+    try {
+      Object.entries(previousSnapshot).forEach(([key, value]) => {
+        if (isAccountDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+      });
+    } catch {
+      // The account-scoped snapshot remains available for explicit recovery.
+    }
+    return false;
   }
+  return true;
 }
 
 function repairImportedLearningProfile() {
@@ -787,8 +829,8 @@ function activateAccountStorage(accountId) {
     else captureGuestSnapshot();
 
     const existingSnapshot = readAccountSnapshot(nextId);
-    if (existingSnapshot) restoreAccountSnapshot(existingSnapshot);
-    else clearAccountData();
+    if (existingSnapshot && !restoreAccountSnapshot(existingSnapshot, nextId)) clearAccountData();
+    else if (!existingSnapshot) clearAccountData();
     localStorage.setItem(ACCOUNT_SCOPE_KEY, nextId);
   } catch {
     // Account data remains available in the current browser session.
@@ -1258,6 +1300,7 @@ export default function App() {
   const cloudSaveTimerRef = useRef(null);
   const pendingOfflineCloudSaveRef = useRef(false);
   const dirtyChildIdsRef = useRef(new Set());
+  const childMutationVersionRef = useRef(new Map());
   const lastCloudSignatureRef = useRef('');
   const [accessNotice, setAccessNotice] = useState(null);
   const [accessReturnScreen, setAccessReturnScreen] = useState('dashboard');
@@ -1381,7 +1424,10 @@ export default function App() {
 
   function markLocalLearningMutation(childId = readActiveChildId()) {
     cloudMutationAtRef.current = Date.now();
-    if (childId) dirtyChildIdsRef.current.add(childId);
+    if (childId) {
+      dirtyChildIdsRef.current.add(childId);
+      childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
+    }
     const accountId = accountUser?.id || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
     if (accountId) {
       writePendingDirtyChildIds(accountId, dirtyChildIdsRef.current);
@@ -1405,48 +1451,79 @@ export default function App() {
     cloudWriteQueueRef.current = cloudWriteQueueRef.current
       .catch(() => false)
       .then(async () => {
+        const operationAccountId = accountUser.id;
         const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
-        if (activeAccountId !== accountUser.id || cloudHydratedAccountId !== accountUser.id) return false;
+        if (activeAccountId !== operationAccountId || cloudHydratedAccountId !== operationAccountId) return false;
         const activeChildId = readActiveChildId();
         const dirtyChildIds = [...dirtyChildIdsRef.current];
+        const reconcileChildIdentity = hasPendingProfileReconciliation(operationAccountId);
+        if (!dirtyChildIds.length && !reconcileChildIdentity) {
+          const pendingWithoutOutbox = hasPendingCloudMutation(operationAccountId);
+          if (pendingWithoutOutbox) setCloudSyncStatus('error');
+          return !pendingWithoutOutbox;
+        }
+        const submittedMutationVersions = new Map(dirtyChildIds.map(childId => [
+          childId,
+          childMutationVersionRef.current.get(childId) || 0
+        ]));
         if (activeChildId && dirtyChildIds.includes(activeChildId)) captureChildSnapshot(activeChildId, { force: true });
         cloudWritePendingRef.current = true;
         setCloudSyncStatus('syncing');
-        const cloudResult = await loadCloudLearningDataResult(supabase);
-        if (cloudResult.error) {
-          cloudWritePendingRef.current = false;
-          pendingOfflineCloudSaveRef.current = true;
-          setPendingCloudMutation(accountUser.id, true);
-          setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
-          return false;
-        }
-        const payload = mergeCloudLearningPayload(buildCloudLearningPayload({ captureActiveChild: false }), cloudResult.data, {
+        const localPayload = buildCloudLearningPayload({ captureActiveChild: false });
+        const syncResult = await syncRevisionedCloudLearning(supabase, localPayload, {
           dirtyChildIds,
           localActiveChildId: activeChildId,
           deviceId: getSyncDeviceId(),
-          reconcileChildIdentity: hasPendingProfileReconciliation(accountUser.id)
+          reconcileChildIdentity
         });
-        const ok = await saveCloudLearningData(supabase, payload);
+        const currentAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+        if (currentAccountId !== operationAccountId) {
+          cloudWritePendingRef.current = false;
+          return false;
+        }
+        const ok = Boolean(syncResult.ok);
+        const payload = syncResult.payload || {};
         cloudWritePendingRef.current = false;
         if (ok) {
           const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, dirtyChildIds);
           if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !dirtyChildIds.includes(activeChildId))) {
+            skipNextCloudSaveRef.current = true;
             reloadCloudLearningState(resolvedActiveChildId);
           }
           setChildProfiles(readChildProfiles());
           setActiveChildId(readActiveChildId());
-          lastCloudSignatureRef.current = JSON.stringify(payload);
-          pendingOfflineCloudSaveRef.current = false;
-          setPendingCloudMutation(accountUser.id, false);
+          lastCloudSignatureRef.current = getCloudResultSignature({
+            data: payload,
+            revision: syncResult.revision,
+            protocolVersion: syncResult.protocolVersion
+          });
           setPendingProfileReconciliation(accountUser.id, false);
-          dirtyChildIds.forEach(childId => dirtyChildIdsRef.current.delete(childId));
-          writePendingDirtyChildIds(accountUser.id, dirtyChildIdsRef.current);
+          dirtyChildIds.forEach(childId => {
+            if ((childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)) return;
+            dirtyChildIdsRef.current.delete(childId);
+            childMutationVersionRef.current.delete(childId);
+          });
+          const remainingDirtyChildIds = [...dirtyChildIdsRef.current];
+          writePendingDirtyChildIds(accountUser.id, remainingDirtyChildIds);
+          const stillPending = remainingDirtyChildIds.length > 0;
+          pendingOfflineCloudSaveRef.current = stillPending;
+          setPendingCloudMutation(accountUser.id, stillPending);
           captureAccountSnapshot(accountUser.id);
+          if (stillPending) void queueCloudLearningSave({ markMutation: false });
         } else {
           pendingOfflineCloudSaveRef.current = true;
           setPendingCloudMutation(accountUser.id, true);
         }
-        setCloudSyncStatus(ok ? 'saved' : 'error');
+        const syncErrorCode = String(syncResult.error?.message || '');
+        setCloudSyncStatus(ok
+          ? 'saved'
+          : syncErrorCode === 'cloud_sync_migration_required'
+            ? 'upgrade-required'
+            : syncResult.conflict
+              ? 'conflict'
+              : navigator.onLine === false
+                ? 'offline'
+                : 'error');
         return ok;
       });
     return cloudWriteQueueRef.current;
@@ -1477,9 +1554,45 @@ export default function App() {
     return () => window.removeEventListener('online', retryPendingCloudSave);
   }, [accountUser?.id, cloudHydratedAccountId]);
 
+  useEffect(() => {
+    if (!accountUser?.id) return undefined;
+    const accountId = accountUser.id;
+    const persistBeforePageExit = () => {
+      if (String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim() !== accountId) return;
+      const childId = readActiveChildId();
+      if (childId) captureChildSnapshot(childId, { force: true });
+      captureAccountSnapshot(accountId);
+      if (dirtyChildIdsRef.current.size > 0) {
+        writePendingDirtyChildIds(accountId, dirtyChildIdsRef.current);
+        setPendingCloudMutation(accountId, true);
+      }
+    };
+    const receiveSameOriginOutbox = event => {
+      if (![getDirtyChildrenKey(accountId), getCloudPendingKey(accountId)].includes(event.key)) return;
+      const pendingChildIds = readPendingDirtyChildIds(accountId);
+      pendingChildIds.forEach(childId => {
+        dirtyChildIdsRef.current.add(childId);
+        if (!childMutationVersionRef.current.has(childId)) childMutationVersionRef.current.set(childId, 1);
+      });
+      if (hasPendingCloudMutation(accountId)) void queueCloudLearningSave({ markMutation: false });
+    };
+    window.addEventListener('pagehide', persistBeforePageExit);
+    window.addEventListener('storage', receiveSameOriginOutbox);
+    return () => {
+      window.removeEventListener('pagehide', persistBeforePageExit);
+      window.removeEventListener('storage', receiveSameOriginOutbox);
+    };
+  }, [accountUser?.id, cloudHydratedAccountId]);
+
   function cacheCurrentChildSnapshot(childId) {
     if (!childId) return;
-    const snapshot = readChildScopedData();
+    const snapshot = {
+      ...readChildScopedData(),
+      __childSnapshotChildId: childId,
+      __childSnapshotAccountId: getActiveStorageScopeId(),
+      __childSnapshotCapturedAt: Date.now(),
+      __childSnapshotDeviceId: getSyncDeviceId()
+    };
     if (snapshotEvidenceScore(snapshot) > 0) childSnapshotCacheRef.current.set(childId, snapshot);
   }
 
@@ -1520,12 +1633,14 @@ export default function App() {
     const target = availableProfiles.find(item => item.id === childId);
     const currentChildId = activeChildId || readActiveChildId();
     if (!target || target.id === currentChildId) return;
-    markLocalLearningMutation();
     captureChildSnapshot(currentChildId);
     cacheCurrentChildSnapshot(currentChildId);
     const snapshot = resolveCachedChildSnapshot(target.id);
     if (snapshot) {
-      restoreChildSnapshot(snapshot);
+      if (!restoreChildSnapshot(snapshot, target.id)) {
+        setRecoveryMessages(prev => [...prev, `Profil ${target.name} tidak ditukar kerana snapshot tidak sepadan atau storan peranti gagal dipulihkan.`]);
+        return;
+      }
     } else {
       clearChildScopedData();
       const freshProfile = { ...defaultProfile, name: target.name, year: target.year || 'Tahun 2', avatar: target.avatar || 'janna' };
@@ -1539,10 +1654,10 @@ export default function App() {
     repairImportedLearningProfile();
     localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
     setActiveChildId(target.id);
+    if (accountUser?.id) skipNextCloudSaveRef.current = true;
     reloadActiveChildState(target);
     captureChildSnapshot(target.id);
     captureAccountSnapshot(accountUser?.id);
-    void queueCloudLearningSave();
     setScreen('dashboard');
   }
 
@@ -1562,8 +1677,13 @@ export default function App() {
         setRecoveryMessages(prev => [...prev, `Profil ${duplicateProfile.name} untuk ${duplicateProfile.year} sudah wujud dan telah digunakan semula.`]);
         return true;
       }
-      markLocalLearningMutation();
-      const currentLearningSnapshot = readChildScopedData();
+      const currentLearningSnapshot = {
+        ...readChildScopedData(),
+        __childSnapshotChildId: currentChildId,
+        __childSnapshotAccountId: getActiveStorageScopeId(),
+        __childSnapshotCapturedAt: Date.now(),
+        __childSnapshotDeviceId: getSyncDeviceId()
+      };
       const currentSnapshotScore = snapshotEvidenceScore(currentLearningSnapshot);
       if (currentChildId && snapshotEvidenceScore(currentLearningSnapshot) > 0) {
         childSnapshotCacheRef.current.set(currentChildId, currentLearningSnapshot);
@@ -1605,10 +1725,12 @@ export default function App() {
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
       setChildProfiles(nextProfiles);
       setActiveChildId(nextChild.id);
+      if (accountUser?.id) skipNextCloudSaveRef.current = true;
       reloadActiveChildState(nextChild);
       try { captureChildSnapshot(nextChild.id); } catch (snapshotError) { console.warn('New child snapshot skipped:', snapshotError); }
       try { captureAccountSnapshot(accountUser?.id); } catch (accountSnapshotError) { console.warn('Account snapshot skipped:', accountSnapshotError); }
-      void queueCloudLearningSave();
+      markLocalLearningMutation(nextChild.id);
+      void queueCloudLearningSave({ markMutation: false });
       setScreen('dashboard');
       return true;
     } catch (error) {
@@ -1622,63 +1744,9 @@ export default function App() {
     const availableProfiles = readChildProfiles();
     const target = availableProfiles.find(item => item.id === childId);
     if (!target || availableProfiles.length <= 1) return false;
-    if (!window.confirm(`Padam profil ${target.name}? Data profil ini juga akan dibuang daripada peranti ini.`)) return false;
-
-    const remainingProfiles = availableProfiles.filter(item => item.id !== target.id);
-    const currentChildId = activeChildId || readActiveChildId();
-    if (target.id === currentChildId) captureChildSnapshot(target.id, { force: true });
     backupChildBeforeDeletion(target);
-    const matchingProfile = remainingProfiles.find(item => (
-      getChildProfileIdentity(item)
-      && getChildProfileIdentity(item) === getChildProfileIdentity(target)
-    ));
-    if (matchingProfile && accountUser?.id) {
-      markLocalLearningMutation(target.id);
-      setPendingProfileReconciliation(accountUser.id, true);
-      setPendingCloudMutation(accountUser.id, true);
-      void queueCloudLearningSave({ markMutation: false });
-      setRecoveryMessages(prev => [...prev, `Profil pendua ${target.name} sedang digabungkan dengan selamat. Data pembelajaran akan dikekalkan.`]);
-      return true;
-    }
-    const nextChild = target.id === currentChildId ? remainingProfiles[0] : null;
-    const fallbackSnapshot = nextChild ? resolveChildSnapshot(nextChild.id) : null;
-    // Deleting one child changes only the profile list and tombstone. The
-    // remaining child must not be marked dirty because an older local copy
-    // could then overwrite its newer cloud learning record.
-    markLocalLearningMutation(target.id);
-    markChildDeleted(target.id);
-    writeChildProfiles(remainingProfiles);
-    localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${target.id}`);
-    localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${target.id}`);
-    childSnapshotCacheRef.current.delete(target.id);
-    tutorConversationRef.current.delete(target.id);
-
-    if (target.id === currentChildId) {
-      if (fallbackSnapshot) {
-        restoreChildSnapshot(fallbackSnapshot);
-      } else {
-        clearChildScopedData();
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(applyAuthoritativeProfileAccess({
-          ...defaultProfile,
-          name: nextChild.name,
-          year: nextChild.year || 'Tahun 2',
-          avatar: nextChild.avatar || 'janna'
-        })));
-        resetAdaptiveStudentProfile();
-        setGamificationProfile(resetGamificationProfile());
-        resetSmartQuestionState();
-        setResume(null);
-      }
-      localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
-      setActiveChildId(nextChild.id);
-      reloadActiveChildState(nextChild);
-    }
-
-    setChildProfiles(remainingProfiles);
-    captureAccountSnapshot(accountUser?.id);
-    void queueCloudLearningSave({ markMutation: false });
-    setRecoveryMessages(prev => [...prev, `Profil ${target.name} telah dipadam.`]);
-    return true;
+    setRecoveryMessages(prev => [...prev, `Pemadaman profil ${target.name} dinyahaktifkan sementara. Data pembelajaran kekal selamat sehingga fungsi arkib server tersedia.`]);
+    return false;
   }
 
   function resetSignedOutAccountState(scopedAccountId = '') {
@@ -1711,6 +1779,7 @@ export default function App() {
     childSnapshotCacheRef.current.clear();
     tutorConversationRef.current.clear();
     dirtyChildIdsRef.current.clear();
+    childMutationVersionRef.current.clear();
     pendingOfflineCloudSaveRef.current = false;
     setShowAccountLogin(false);
     setScreen('login');
@@ -1742,6 +1811,7 @@ export default function App() {
       setCloudHydratedAccountId('');
       activateAccountStorage(user.id);
       dirtyChildIdsRef.current = new Set(readPendingDirtyChildIds(user.id));
+      childMutationVersionRef.current = new Map([...dirtyChildIdsRef.current].map(childId => [childId, 1]));
       const [{ data, error }, cloudResult] = await Promise.all([
         supabase
           .from('profiles')
@@ -1758,23 +1828,31 @@ export default function App() {
         setPendingCloudMutation(user.id, true);
       }
       const hasPendingLocalData = hasPendingCloudMutation(user.id);
-      lastCloudSignatureRef.current = cloudResult.error ? '' : JSON.stringify(cloudLearningData);
+      const cloudProtocolRequiresUpgrade = !cloudResult.error
+        && Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION;
+      const shouldBootstrapCloud = !cloudResult.error
+        && !Object.keys(cloudLearningData).length
+        && !hasPendingLocalData
+        && !cloudProtocolRequiresUpgrade;
+      lastCloudSignatureRef.current = cloudResult.error ? '' : getCloudResultSignature(cloudResult);
       if (!cloudResult.error && Object.keys(cloudLearningData).length && !hasPendingLocalData) {
         skipNextCloudSaveRef.current = true;
         restoreCloudLearningSnapshot(cloudLearningData, readActiveChildId());
         repairImportedLearningProfile();
-        setCloudSyncStatus('loaded');
+        setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'loaded');
       } else if (cloudResult.error) {
         pendingOfflineCloudSaveRef.current = hasPendingLocalData;
         if (!hasPendingLocalData) skipNextCloudSaveRef.current = true;
         setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
       } else if (hasPendingLocalData) {
         pendingOfflineCloudSaveRef.current = true;
-        setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'syncing');
+        setCloudSyncStatus(cloudProtocolRequiresUpgrade
+          ? 'upgrade-required'
+          : navigator.onLine === false ? 'offline' : 'syncing');
       } else {
         pendingOfflineCloudSaveRef.current = true;
         setPendingCloudMutation(user.id, true);
-        setCloudSyncStatus('empty');
+        setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'empty');
       }
       const accountDisplayName = [
         user.user_metadata?.display_name,
@@ -1790,6 +1868,13 @@ export default function App() {
           ? accountDisplayName
           : storedAccountProfile.name
       });
+      if (shouldBootstrapCloud && childState.activeId) {
+        dirtyChildIdsRef.current.add(childState.activeId);
+        childMutationVersionRef.current.set(childState.activeId, 1);
+        writePendingDirtyChildIds(user.id, dirtyChildIdsRef.current);
+        setPendingCloudMutation(user.id, true);
+      }
+      skipNextCloudSaveRef.current = true;
       setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
       setGamificationProfile(loadGamificationState());
@@ -2044,6 +2129,9 @@ export default function App() {
     if (!supabase || !accountUser?.id || cloudHydratedAccountId !== accountUser.id) return undefined;
     if (skipNextCloudSaveRef.current) {
       skipNextCloudSaveRef.current = false;
+      if (hasPendingCloudMutation(accountUser.id) && dirtyChildIdsRef.current.size > 0) {
+        void queueCloudLearningSave({ markMutation: false });
+      }
       return undefined;
     }
     scheduleCloudLearningSave();
@@ -2069,7 +2157,7 @@ export default function App() {
       if (!cancelled && cloudResult.error) {
         setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
       } else if (!cancelled && cloudResult.data && Object.keys(cloudResult.data).length) {
-        const cloudSignature = JSON.stringify(cloudResult.data);
+        const cloudSignature = getCloudResultSignature(cloudResult);
         if (cloudSignature !== lastCloudSignatureRef.current) {
           skipNextCloudSaveRef.current = true;
           const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, readActiveChildId());
@@ -2077,14 +2165,27 @@ export default function App() {
           reloadCloudLearningState(restoredChildId);
           captureAccountSnapshot(accountUser.id);
           lastCloudSignatureRef.current = cloudSignature;
-          setCloudSyncStatus('loaded');
+          setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
         }
+      } else if (!cancelled && Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
+        setCloudSyncStatus('upgrade-required');
       }
       inFlight = false;
     };
 
     const timer = window.setTimeout(pullLatestCloudData, 1500);
     const interval = window.setInterval(pullLatestCloudData, 5000);
+    const realtimeChannel = typeof supabase.channel === 'function'
+      ? supabase
+        .channel(`learning-revision:${accountUser.id}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${accountUser.id}`
+        }, () => { void pullLatestCloudData(); })
+        .subscribe()
+      : null;
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') pullLatestCloudData();
     };
@@ -2094,6 +2195,7 @@ export default function App() {
       cancelled = true;
       window.clearTimeout(timer);
       window.clearInterval(interval);
+      if (realtimeChannel && typeof supabase.removeChannel === 'function') void supabase.removeChannel(realtimeChannel);
       window.removeEventListener('focus', pullLatestCloudData);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
@@ -2198,7 +2300,10 @@ export default function App() {
     if (accountUser?.id || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim()) return false;
     const snapshot = readGuestSnapshot();
     if (!snapshot) return false;
-    restoreAccountSnapshot(snapshot);
+    if (!restoreAccountSnapshot(snapshot, 'guest')) {
+      setRecoveryMessages(prev => [...prev, 'Profil Free tidak dipulihkan kerana snapshot tidak sepadan atau storan peranti tidak mencukupi.']);
+      return false;
+    }
     repairImportedLearningProfile();
     localStorage.setItem(ONBOARDING_KEY, 'done');
     const childState = ensureChildProfiles(loadProfile());
@@ -2275,6 +2380,10 @@ export default function App() {
   }
 
   function resetProfile() {
+    if (accountUser?.id) {
+      setRecoveryMessages(prev => [...prev, 'Reset akaun dinyahaktifkan untuk melindungi data cloud. Gunakan fungsi pemulihan atau arkib profil yang selamat.']);
+      return;
+    }
     if (confirm('Reset semua data beta pada peranti ini? Tindakan ini tidak boleh dibatalkan.')) {
       try {
         localStorage.removeItem(PROFILE_KEY);
@@ -2398,6 +2507,10 @@ export default function App() {
     const file = event?.target?.files?.[0];
     if (event?.target) event.target.value = '';
     if (!file) return;
+    if (accountUser?.id) {
+      setRecoveryMessages(prev => [...prev, 'Import terus ke akaun dinyahaktifkan sementara supaya fail lama tidak menimpa data cloud. Import masih boleh digunakan dalam profil Free pada peranti.']);
+      return;
+    }
     try {
       const parsed = JSON.parse(await file.text());
       const importedData = parsed?.learningData || parsed?.data;
@@ -2411,7 +2524,10 @@ export default function App() {
         return;
       }
       if (!window.confirm('Import akan menggantikan data akaun semasa. Teruskan?')) return;
-      restoreAccountSnapshot(Object.fromEntries(entries));
+      if (!restoreAccountSnapshot(Object.fromEntries(entries), 'guest')) {
+        setRecoveryMessages(prev => [...prev, 'Import dihentikan dan data sebelumnya dipulihkan kerana storan peranti tidak mencukupi.']);
+        return;
+      }
       const repairedProfile = repairImportedLearningProfile();
       setProfile(applyAuthoritativeProfileAccess(loadStudentCore(repairedProfile || loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -2421,14 +2537,16 @@ export default function App() {
         captureChildSnapshot(activeChildId);
         // An explicit import is the user's chosen source of truth for the
         // active child, so refresh the original-child recovery point too.
-        localStorage.setItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`, JSON.stringify(readChildScopedData()));
+        localStorage.setItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${activeChildId}`, JSON.stringify({
+          ...readChildScopedData(),
+          __childSnapshotChildId: activeChildId,
+          __childSnapshotAccountId: 'guest',
+          __childSnapshotCapturedAt: Date.now(),
+          __childSnapshotDeviceId: getSyncDeviceId()
+        }));
       }
-      if (accountUser?.id) {
-        captureAccountSnapshot(accountUser.id);
-        markLocalLearningMutation();
-        await queueCloudLearningSave({ markMutation: false });
-      }
-      setRecoveryMessages(prev => [...prev, 'Data pembelajaran berjaya diimport ke akaun semasa.']);
+      captureGuestSnapshot();
+      setRecoveryMessages(prev => [...prev, 'Data pembelajaran berjaya diimport ke profil Free pada peranti ini.']);
     } catch {
       setRecoveryMessages(prev => [...prev, 'Import gagal. Pastikan fail JSON tidak rosak.']);
     }
@@ -2437,11 +2555,14 @@ export default function App() {
   async function recoverStoredLearningData() {
     const backup = findBestStoredAccountBackup(accountUser?.id || '');
     if (!backup || backup.score <= 0) {
-      setRecoveryMessages(prev => [...prev, 'Tiada backup pembelajaran lama yang mempunyai kemajuan untuk dipulihkan.']);
+      setRecoveryMessages(prev => [...prev, 'Tiada backup untuk akaun semasa yang mempunyai kemajuan untuk dipulihkan.']);
       return;
     }
-    if (!window.confirm(`Backup lama dengan kemajuan ${backup.score} dijumpai. Gantikan data akaun semasa dengan backup ini?`)) return;
-    restoreAccountSnapshot(backup.snapshot);
+    if (!window.confirm(`Backup akaun semasa dengan kemajuan ${backup.score} dijumpai. Pulihkan backup ini?`)) return;
+    if (!restoreAccountSnapshot(backup.snapshot, accountUser?.id || '')) {
+      setRecoveryMessages(prev => [...prev, 'Backup ditolak kerana penanda akaunnya tidak sepadan dengan akaun semasa.']);
+      return;
+    }
     setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
     setAdaptiveProfile(loadAdaptiveStudentProfile());
     setGamificationProfile(loadGamificationState());
@@ -2451,7 +2572,7 @@ export default function App() {
       markLocalLearningMutation();
       await queueCloudLearningSave({ markMutation: false });
     }
-    setRecoveryMessages(prev => [...prev, 'Backup pembelajaran lama berjaya dipulihkan ke akaun ini.']);
+    setRecoveryMessages(prev => [...prev, 'Backup akaun semasa berjaya dipulihkan.']);
   }
 
   async function syncLearningDataNow() {
@@ -2466,11 +2587,41 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Peranti sedang luar talian. Data kekal pada peranti dan akan disegerakkan apabila sambungan kembali.']);
       return;
     }
-    if (!window.confirm('Sync data peranti ini ke cloud sekarang?')) return;
+    const hasPendingChanges = hasPendingCloudMutation(accountUser.id)
+      || dirtyChildIdsRef.current.size > 0
+      || pendingOfflineCloudSaveRef.current;
     setCloudSyncStatus('syncing');
-    const ok = await queueCloudLearningSave();
-    setCloudSyncStatus(ok ? 'saved' : 'error');
-    setRecoveryMessages(prev => [...prev, ok ? 'Sync cloud berjaya.' : 'Sync cloud gagal. Semak fungsi RPC Supabase dan sambungan internet.']);
+    if (hasPendingChanges) {
+      const ok = await queueCloudLearningSave({ markMutation: false });
+      setRecoveryMessages(prev => [...prev, ok
+        ? 'Perubahan tertangguh berjaya disegerakkan.'
+        : 'Sync selamat belum selesai. Data kekal pada peranti dan akan dicuba semula.']);
+      return;
+    }
+
+    // A manual check must never turn a stale device into the source of truth.
+    // With no pending outbox, it is strictly a pull from the server.
+    const cloudResult = await loadCloudLearningDataResult(supabase);
+    if (cloudResult.error) {
+      setCloudSyncStatus('error');
+      setRecoveryMessages(prev => [...prev, 'Status cloud tidak dapat disemak. Tiada data peranti dihantar.']);
+      return;
+    }
+    if (Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
+      setCloudSyncStatus('upgrade-required');
+      setRecoveryMessages(prev => [...prev, 'Migration Data Integrity v3 perlu dipasang sebelum cloud boleh menerima perubahan baharu.']);
+      return;
+    }
+    if (cloudResult.data && Object.keys(cloudResult.data).length) {
+      skipNextCloudSaveRef.current = true;
+      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildId);
+      repairImportedLearningProfile();
+      reloadCloudLearningState(restoredChildId);
+      captureAccountSnapshot(accountUser.id);
+    }
+    lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
+    setCloudSyncStatus('loaded');
+    setRecoveryMessages(prev => [...prev, 'Peranti ini sudah menggunakan revision cloud terkini.']);
   }
 
   async function loadLearningDataNow() {
@@ -2482,6 +2633,10 @@ export default function App() {
     if (navigator.onLine === false) {
       setCloudSyncStatus('offline');
       setRecoveryMessages(prev => [...prev, 'Peranti sedang luar talian. Data cloud belum boleh dimuatkan.']);
+      return;
+    }
+    if (hasPendingCloudMutation(accountUser.id) || dirtyChildIdsRef.current.size > 0 || pendingOfflineCloudSaveRef.current) {
+      setRecoveryMessages(prev => [...prev, 'Data cloud tidak dimuat kerana peranti ini masih mempunyai perubahan yang belum diakui server.']);
       return;
     }
     if (!window.confirm('Muat data cloud dan gantikan data pada peranti ini?')) return;
@@ -2505,9 +2660,10 @@ export default function App() {
     pendingOfflineCloudSaveRef.current = false;
     setPendingCloudMutation(accountUser.id, false);
     dirtyChildIdsRef.current.clear();
-    lastCloudSignatureRef.current = JSON.stringify(cloudData);
+    childMutationVersionRef.current.clear();
+    lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
     captureAccountSnapshot(accountUser.id);
-    setCloudSyncStatus('loaded');
+    setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
     setRecoveryMessages(prev => [...prev, 'Data cloud berjaya dimuat ke peranti ini.']);
   }
 
@@ -3022,7 +3178,24 @@ export default function App() {
       return;
     }
     const exitingAccountId = accountUser.id;
+    const currentChildId = activeChildId || readActiveChildId();
+    if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
     captureAccountSnapshot(exitingAccountId);
+    if (cloudSaveTimerRef.current) {
+      window.clearTimeout(cloudSaveTimerRef.current);
+      cloudSaveTimerRef.current = null;
+    }
+    const hasUnacknowledgedChanges = hasPendingCloudMutation(exitingAccountId)
+      || dirtyChildIdsRef.current.size > 0
+      || pendingOfflineCloudSaveRef.current;
+    if (hasUnacknowledgedChanges) {
+      const synced = await queueCloudLearningSave({ markMutation: false });
+      if (!synced && !window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?')) {
+        setRecoveryMessages(prev => [...prev, 'Log keluar dibatalkan supaya sync boleh dicuba semula.']);
+        return;
+      }
+    }
+    accountSyncSequenceRef.current += 1;
     if (supabase) {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -4158,7 +4331,9 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       saved: isEnglishSubject ? 'Answer saved to cloud.' : 'Jawapan disimpan ke cloud.',
       loaded: isEnglishSubject ? 'Cloud data updated.' : 'Data cloud dikemas kini.',
       offline: isEnglishSubject ? 'Saved on device; waiting for internet.' : 'Disimpan pada peranti; menunggu internet.',
-      error: isEnglishSubject ? 'Saved on device, but cloud sync failed.' : 'Disimpan pada peranti, tetapi sync cloud gagal.'
+      error: isEnglishSubject ? 'Saved on device, but cloud sync failed.' : 'Disimpan pada peranti, tetapi sync cloud gagal.',
+      conflict: isEnglishSubject ? 'Another device updated this account. Retrying safely.' : 'Peranti lain mengemas kini akaun ini. Sync selamat sedang dicuba semula.',
+      'upgrade-required': isEnglishSubject ? 'Cloud safety upgrade is required; this answer remains on this device.' : 'Naik taraf keselamatan cloud diperlukan; jawapan kekal pada peranti ini.'
     })[cloudSyncStatus] || (isEnglishSubject ? 'Cloud sync is active.' : 'Sync cloud aktif untuk akaun ini.');
 
   return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1><input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder="Tulis jawapan di sini" autoFocus /><div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;

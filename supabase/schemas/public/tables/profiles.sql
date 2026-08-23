@@ -7,6 +7,8 @@ create table "public"."profiles" (
   "created_at"        timestamp with time zone not null default now(),
   "updated_at"        timestamp with time zone not null default now(),
   "learning_data"     jsonb                    not null default '{}'::jsonb,
+  "learning_revision" bigint                   not null default 0,
+  "learning_sync_version" integer              not null default 3,
   constraint "profiles_access_status_check" check ((access_status = ANY (ARRAY['free'::text, 'pending'::text, 'premium'::text, 'expired'::text, 'blocked'::text]))),
   constraint "profiles_id_fkey" foreign key (id) references auth.users(id) on delete cascade,
   constraint "profiles_pkey" primary key (id)

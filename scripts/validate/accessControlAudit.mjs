@@ -82,11 +82,17 @@ const baselineMigrationName = migrationNames
   .find(name => name.endsWith('_remote_schema_baseline.sql'));
 const accessMigrationName = migrationNames
   .find(name => name.endsWith('_access_isolation_hardening.sql'));
+const integrityMigrationName = migrationNames
+  .find(name => name.endsWith('_learning_data_integrity_v3.sql'));
 assert.ok(baselineMigrationName, 'A production schema baseline migration must exist.');
 assert.ok(accessMigrationName, 'Access-isolation database migration must exist.');
+assert.ok(integrityMigrationName, 'Data-integrity database migration must exist.');
 const baselineMigration = fs.readFileSync(new URL(baselineMigrationName, migrationDirectory), 'utf8');
 const accessMigration = fs.readFileSync(new URL(accessMigrationName, migrationDirectory), 'utf8');
+const integrityMigration = fs.readFileSync(new URL(integrityMigrationName, migrationDirectory), 'utf8');
 const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/public/tables/profiles.sql', import.meta.url), 'utf8');
+const declarativeIntegrityFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/learning_data_v3.sql', import.meta.url), 'utf8');
+const integrityTableNames = ['learning_data_backups', 'learning_sync_operations', 'learner_profiles', 'learning_states', 'learning_events'];
 for (const token of ['openTutorAi', 'openPremiumScreen', 'FREE_DAILY_QUESTION_LIMIT', 'onOpenUasa={() => openPremiumScreen']) {
   assert.ok(app.includes(token), `Missing access gate token: ${token}`);
 }
@@ -109,10 +115,20 @@ assert.match(accessMigration, /revoke all on table public\.profiles from anon, a
 assert.match(accessMigration, /grant select on table public\.profiles to authenticated;/, 'Authenticated users still need RLS-scoped profile reads.');
 assert.match(accessMigration, /revoke all on function public\.save_learning_data\(jsonb\) from public, anon, authenticated;/, 'Migration must remove anonymous learning-data RPC access.');
 assert.match(accessMigration, /grant execute on function public\.save_learning_data\(jsonb\) to authenticated;/, 'Authenticated learning sync must remain available.');
+assert.match(integrityMigration, /revoke all on function public\.save_learning_data\(jsonb\) from public, anon, authenticated;/, 'The v3 migration must retire the legacy authenticated blind-write endpoint.');
+assert.match(integrityMigration, /security definer[\s\S]{0,120}set search_path = ''/, 'Revisioned RPC functions must pin an empty search path.');
+for (const tableName of integrityTableNames) {
+  const tableSchema = fs.readFileSync(new URL(`../../supabase/schemas/public/tables/${tableName}.sql`, import.meta.url), 'utf8');
+  assert.match(tableSchema, new RegExp(`alter table "public"\\."${tableName}" enable row level security`), `${tableName} must enable RLS.`);
+  assert.match(tableSchema, /\(select auth\.uid\(\)\) = account_id/, `${tableName} reads must be scoped to the authenticated account.`);
+  assert.doesNotMatch(tableSchema, /grant (insert|update|delete|all)[\s\S]{0,120}to "authenticated"/, `${tableName} must not expose direct browser writes.`);
+}
 assert.match(accessMigration, /alter default privileges for role postgres in schema public[\s\S]*revoke all on tables from anon, authenticated;/, 'Future tables must fail closed for browser roles.');
 assert.match(baselineMigration, /create table if not exists public\.profiles/, 'Baseline must recreate the profile schema without production data.');
 assert.match(baselineMigration, /learning_data jsonb not null default '\{\}'::jsonb/, 'Baseline must recreate Cloud learning storage.');
 assert.doesNotMatch(declarativeProfiles, /grant[\s\S]{0,200}on table "public"\."profiles" to "anon"/, 'Declarative production schema must not grant profile-table access to anonymous users.');
 assert.match(declarativeProfiles, /grant select on table "public"\."profiles" to "authenticated";/, 'Declarative schema must preserve RLS-scoped authenticated reads.');
+assert.match(declarativeIntegrityFunctions, /set search_path to ''/, 'Declarative revisioned RPCs must pin an empty search path.');
+assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v3[\s\S]{0,120}to authenticated;/, 'Authenticated users need only the revisioned learning write RPC.');
 
 console.log('Access-control audit: PASS');
