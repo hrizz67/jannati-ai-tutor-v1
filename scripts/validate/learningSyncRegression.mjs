@@ -10,6 +10,7 @@ import {
   hasRecoverableActiveProfileDuplicate,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload,
+  recoverOrphanedCloudOutbox,
   saveRevisionedCloudLearningData,
   syncRevisionedCloudLearning
 } from '../../src/services/learningSync.js';
@@ -238,6 +239,43 @@ const differentYearMerge = mergeCloudLearningPayload(differentYearPayload, premi
 });
 assert.equal(JSON.parse(differentYearMerge[CLOUD_CHILD_STATE_KEY]).profiles.length, 2, 'Same-name children in different years must remain isolated.');
 
+const mobileZeroPayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 900, 'Fayyadh', 0)
+};
+const desktopXp140Payload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 800, 'Fayyadh', 140)
+};
+const staleMobilePending = recoverOrphanedCloudOutbox(mobileZeroPayload, desktopXp140Payload, {
+  pending: true,
+  dirtyChildIds: [],
+  localActiveChildId: originalChild.id
+});
+assert.equal(staleMobilePending.clearPending, true, 'An empty mobile outbox must stop blocking the richer XP 140 cloud snapshot.');
+assert.deepEqual(staleMobilePending.dirtyChildIds, []);
+
+const interruptedDesktopPending = recoverOrphanedCloudOutbox(desktopXp140Payload, mobileZeroPayload, {
+  pending: true,
+  dirtyChildIds: [],
+  localActiveChildId: originalChild.id
+});
+assert.equal(interruptedDesktopPending.recovered, true, 'Meaningful XP must recover a missing child-level outbox after an interrupted save.');
+assert.deepEqual(interruptedDesktopPending.dirtyChildIds, [originalChild.id]);
+
+const localAliasPending = recoverOrphanedCloudOutbox({
+  [CLOUD_CHILD_STATE_KEY]: childState([
+    { id: anonymousId, name: 'Fayyadh', year: 'Tahun 2' }
+  ], anonymousId),
+  [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: snapshot(anonymousId, 900, 'Fayyadh', 30)
+}, desktopXp140Payload, {
+  pending: true,
+  dirtyChildIds: [],
+  localActiveChildId: anonymousId
+});
+assert.equal(localAliasPending.recovered, true);
+assert.equal(localAliasPending.reconcileChildIdentity, true, 'Recovered outbox must reconcile the same learner instead of creating another Fayyadh profile.');
+
 const deleted = mergeCloudLearningPayload(localPayload, {
   ...cloudPayload,
   [CLOUD_CHILD_STATE_KEY]: childState(profiles, 'child-b', { 'child-a': 300 })
@@ -384,7 +422,7 @@ assert.match(appSource, /hasPendingCloudMutation\(accountUser\.id\)/, 'Unsent le
 assert.match(appSource, /submittedMutationVersions[\s\S]{0,2500}childMutationVersionRef\.current\.get\(childId\)[\s\S]{0,350}dirtyChildIdsRef\.current\.delete\(childId\)/, 'A newer mutation for the same child must remain pending when an older in-flight save completes.');
 assert.match(appSource, /cloudResult\.error[\s\S]{0,250}pendingOfflineCloudSaveRef\.current = hasPendingLocalData[\s\S]{0,150}if \(!hasPendingLocalData\) skipNextCloudSaveRef\.current = true/, 'A failed initial cloud pull must not turn unchanged device data into an upload.');
 assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.current\.add\(childState\.activeId\)[\s\S]{0,500}skipNextCloudSaveRef\.current = true/, 'Account hydration must suppress generic autosave and explicitly bootstrap only a genuinely empty v3 cloud.');
-assert.match(appSource, /if \(!dirtyChildIds\.length && !reconcileChildIdentity\)[\s\S]{0,250}return !pendingWithoutOutbox/, 'A stale pending flag without child-level outbox evidence must fail closed instead of uploading the active surface.');
+assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
 assert.match(appSource, /autoSave\(questionIndex, nextSession\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must explicitly schedule an account cloud save.');
 const accountActivationSource = appSource.slice(
@@ -418,14 +456,14 @@ assert.match(appSource, /setCloudSyncInfo\(\{[\s\S]{0,120}revision: Number\(sync
 assert.match(appSource, /!cloudResult\.error && Number\(cloudResult\.protocolVersion\) < CLOUD_SYNC_PROTOCOL_VERSION/, 'A network or RPC error must not be mislabeled as a migration problem.');
 assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
 assert.match(appSource, /reloadCloudLearningState\(restoredChildId\)/, 'A cloud pull must refresh active profile state in React.');
-assert.match(appSource, /applyMergedCloudMetadata\(payload, activeChildId, dirtyChildIds\)/, 'A completed upload must know which active child was genuinely changed.');
+assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId\)/, 'A server-acknowledged merge must hydrate the active device unless a newer local mutation is still pending.');
 const selectChildSource = appSource.slice(
   appSource.indexOf('function handleSelectChild'),
   appSource.indexOf('function handleCreateChild')
 );
 assert.match(selectChildSource, /skipNextCloudSaveRef\.current = true[\s\S]{0,120}reloadActiveChildState\(target\)/, 'Selecting a child must suppress the generic state autosave.');
 assert.doesNotMatch(selectChildSource, /markLocalLearningMutation|queueCloudLearningSave/, 'Selecting a child is device-local and must not create a cloud mutation.');
-assert.match(appSource, /activeChildWasChanged[\s\S]{0,500}restoreChildSnapshot\(mergedActiveSnapshot, activeChildId\)/, 'An untouched active profile must restore only its correctly scoped merged snapshot.');
+assert.match(appSource, /activeChildHasNewerMutation[\s\S]{0,500}restoreChildSnapshot\(mergedActiveSnapshot, activeChildId\)/, 'An acknowledged active profile must restore its correctly scoped merged snapshot unless a newer mutation exists.');
 assert.match(appSource, /function backupChildBeforeDeletion[\s\S]{0,500}reason: 'manual-delete'/, 'Manual child deletion must create a recoverable hidden backup first.');
 const deleteChildSource = appSource.slice(
   appSource.indexOf('function handleDeleteChild'),
