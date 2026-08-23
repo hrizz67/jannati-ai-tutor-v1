@@ -414,6 +414,9 @@ assert.match(appSource, /Disimpan pada peranti ini sahaja\. Log masuk akaun yang
 assert.match(dashboardSource, /Cloud tidak aktif/, 'The dashboard must disclose when cloud sync is inactive.');
 assert.match(dashboardSource, /Log masuk untuk Sync/, 'The dashboard must give local-only users a clear cloud sign-in action.');
 assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an explicit exit action for a local Free profile.');
+assert.match(appSource, /setCloudSyncInfo\(\{[\s\S]{0,120}revision: Number\(syncResult\.revision\)/, 'An acknowledged upload must expose its exact server revision.');
+assert.match(appSource, /!cloudResult\.error && Number\(cloudResult\.protocolVersion\) < CLOUD_SYNC_PROTOCOL_VERSION/, 'A network or RPC error must not be mislabeled as a migration problem.');
+assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
 assert.match(appSource, /reloadCloudLearningState\(restoredChildId\)/, 'A cloud pull must refresh active profile state in React.');
 assert.match(appSource, /applyMergedCloudMetadata\(payload, activeChildId, dirtyChildIds\)/, 'A completed upload must know which active child was genuinely changed.');
 const selectChildSource = appSource.slice(

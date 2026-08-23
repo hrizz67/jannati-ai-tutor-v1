@@ -85,6 +85,9 @@ assert.doesNotThrow(() => clearResume(undefined, restrictedStorage), 'Pembersiha
 
 const app = fs.readFileSync('src/App.jsx', 'utf8');
 const resumeCard = fs.readFileSync('src/components/ResumePracticeCard.jsx', 'utf8');
+const homeDashboard = fs.readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
+const analyticsDashboard = fs.readFileSync('src/dashboard/AnalyticsDashboard.jsx', 'utf8');
+const learningDashboard = fs.readFileSync('src/dashboard/LearningDashboard.jsx', 'utf8');
 assert.match(app, /resume\?\.mode === 'uasa' && resume\?\.subjectId === selectedSubject\?\.id/);
 assert.match(app, /storedSubjectResume\?\.mode === 'uasa'/);
 assert.match(app, /options\.restoreFromResume\s*\?\s*\{\s*questions:\s*sourceQuestions/, 'Resume mesti mengekalkan susunan soalan asal sesi.');
@@ -93,5 +96,10 @@ for (const mode of ['reading', 'listening', 'speaking', 'writing']) {
   assert.ok(app.includes(`clearResumeData(setResume, { mode: '${mode}' })`), `${mode} mesti memadam slotnya sahaja.`);
 }
 assert.ok(resumeCard.includes('onResume?.(resume)'), 'Butang Sambung mesti menghantar rekod resume, bukan objek acara klik.');
+assert.equal((homeDashboard.match(/<ResumePracticeCard/g) || []).length, 1, 'Dashboard mesti mempunyai satu kad resume utama sahaja.');
+assert.doesNotMatch(homeDashboard, /onClick=\{resume \? onResume/, 'Butang pantas tidak boleh menghantar objek acara klik sebagai resume.');
+assert.doesNotMatch(analyticsDashboard, /ResumePracticeCard/, 'Panel analitik tidak boleh menduplikasi kad resume utama.');
+assert.match(learningDashboard, /onClick=\{\(\) => onResume\?\.\(resume\)\}/, 'Nota dan Buku Teks mesti menyediakan tindakan kembali ke latihan aktif.');
+assert.match(app, /<LearningDashboard[\s\S]{0,500}resume=\{resume\}[\s\S]{0,500}onResume=\{startResume\}/, 'Pusat Belajar mesti menerima resume aktif dan pengendali sambung yang sama.');
 
 console.log('Resume isolation regression: PASS');

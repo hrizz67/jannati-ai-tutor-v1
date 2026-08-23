@@ -2,12 +2,11 @@ import React from 'react';
 import { EmptyState, SettingsPanel, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
 import IconGlyph from '../components/IconGlyph.jsx';
 import GameBadge from '../components/GameBadge.jsx';
-import ResumePracticeCard from '../components/ResumePracticeCard.jsx';
 import checkBadge from '../assets/icons/3d/check-badge.webp';
 import giftBadge from '../assets/icons/3d/gift-badge.webp';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 import MetricCard from '../components/MetricCard.jsx';
-import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatResumeTitle, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 import { summarizeCommunicationHistory } from '../utils/communicationResult.js';
@@ -85,9 +84,6 @@ export default function AnalyticsDashboard({
   onLoadLearningData,
   cloudSyncStatus,
   onToggleFavourite,
-  resume = null,
-  onResume,
-  onRestartResume,
   dashboardCharacter,
   welcomeTopic,
   canonicalAnalytics: canonicalAnalyticsProp = null,
@@ -119,7 +115,6 @@ export default function AnalyticsDashboard({
     recommendationKey: smartLesson?.recommendationKey,
     defaultLabel: 'Mula Latihan'
   });
-  const resumeTitle = resume ? formatResumeTitle(resume) : '';
 
   return (
     <>
@@ -319,7 +314,6 @@ export default function AnalyticsDashboard({
         <button type="button" onClick={onOpenUasa}>Mula Pentaksiran</button>
       </section>
 
-      <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} onResume={onResume} onRestartResume={onRestartResume} />
     </>
   );
 }
