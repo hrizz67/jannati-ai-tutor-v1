@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.5.3
+Version: 3.6.0
 Status: stable
-Build date: 2026-08-21T16:14:03.337Z
+Build date: 2026-08-23T09:44:11.779Z
 
 | Area | Status |
 | --- | --- |
@@ -18,9 +18,10 @@ Build date: 2026-08-21T16:14:03.337Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Tutor conversation continuity | PASS |
-| Cross-subject curriculum grounding | PASS |
-| Child deletion and learning isolation | PASS |
+| Revisioned cloud sync | PASS |
+| Account and child-profile isolation | PASS |
+| Backup and deletion containment | PASS |
+| Supabase remote schema lint | PASS |
 | Overall Status | PASS |
 
 ## Validation
