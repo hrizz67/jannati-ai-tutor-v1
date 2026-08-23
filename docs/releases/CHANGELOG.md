@@ -1,17 +1,19 @@
 # Changelog
 
-## 3.6.1 - 2026-08-23
+## 3.6.2 - 2026-08-23
 
-### Resume dan navigasi pembelajaran
+### Sync XP desktop dan mobile
 
-- Dashboard kini menggunakan satu kad resume sahaja dan tindakan `Sambung` menerima state resume yang betul, bukan objek klik React.
-- Nota dan Buku Teks menyediakan tindakan `Papan Utama` dan `Sambung Latihan` yang kekal mudah dicapai pada desktop serta mudah alih.
-- Kandungan Nota, Buku Teks dan data pembelajaran tidak dimigrasi atau ditulis semula oleh perubahan UI ini.
+- Peranti yang telah membaca revision server yang betul tetapi masih memaparkan state tempatan lama kini menghidrat snapshot gabungan selepas cloud read atau save berjaya.
+- Pending marker yatim tanpa child-level outbox dibersihkan apabila cloud mempunyai bukti pembelajaran yang lebih kaya.
+- Outbox tempatan yang masih mempunyai XP, sejarah atau kemajuan bermakna dipulihkan dan digabung dengan operasi revision/CAS sedia ada.
+- Hanya profil dengan mutasi lebih baharu dikekalkan secara tempatan semasa save sedang berjalan; profil lain menerima snapshot server yang telah diakui.
 
-### Kebolehlihatan sync
+### Perlindungan data
 
-- Status cloud kini memaparkan revision server dan masa kemas kini server untuk membantu membandingkan state antara desktop dengan mobile.
-- Regresi sync memastikan ralat RPC/rangkaian tidak dilaporkan sebagai migrasi lama dan perlindungan CAS, idempoten serta pengasingan akaun kekal aktif.
+- Regresi khusus melindungi kes desktop XP 140 dan mobile XP 0 pada revision cloud yang sama.
+- Pemulihan outbox yang menggunakan ID profil berbeza akan menjalankan reconciliation nama/tahun dan tidak mencipta profil anak pendua.
+- Tiada migrasi pangkalan data, pemadaman profil atau penulisan semula kandungan pembelajaran dilakukan.
 
 ### Release controls
 
@@ -27,6 +29,6 @@
 
 ### Follow-up work
 
-- Complete an authenticated Free and Premium desktop-to-mobile acceptance run after deployment and confirm both devices converge on the same server revision.
+- Confirm the previously affected physical mobile device converges after loading v3.6.2.
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.

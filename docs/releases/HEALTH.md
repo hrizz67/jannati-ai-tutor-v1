@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.6.1
+Version: 3.6.2
 Status: stable
-Build date: 2026-08-23T13:31:55.258Z
+Build date: 2026-08-23T14:12:44.966Z
 
 | Area | Status |
 | --- | --- |
@@ -18,9 +18,9 @@ Build date: 2026-08-23T13:31:55.258Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Single resume action and learning navigation | PASS |
-| Cloud server revision visibility | PASS |
-| Account and child-profile isolation regression | PASS |
+| Orphaned sync outbox recovery | PASS |
+| Server-acknowledged snapshot hydration | PASS |
+| XP 140/0 cross-device regression | PASS |
 | Overall Status | PASS |
 
 ## Validation

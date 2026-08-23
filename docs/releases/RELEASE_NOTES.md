@@ -1,16 +1,16 @@
-# Jannati AI Tutor 3.6.1 Release Notes
+# Jannati AI Tutor 3.6.2 Release Notes
 
 Status: stable
-Tag: v3.6.1
-Build date: 2026-08-23T13:31:55.258Z
+Tag: v3.6.2
+Build date: 2026-08-23T14:12:44.966Z
 
 ## Sorotan Release
 
-- Dashboard kini memaparkan satu sahaja kad `Sambung Latihan`; tindakan sambung membuka semula sesi dan soalan aktif tanpa menerima objek klik sebagai data resume.
-- Halaman Nota dan Buku Teks mempunyai tindakan jelas untuk kembali ke Papan Utama atau menyambung latihan aktif, termasuk pada paparan mudah alih.
-- Kandungan Nota, Buku Teks dan rekod pembelajaran tidak diubah oleh pembaikan navigasi ini.
-- Status cloud memaparkan revision server terkini supaya perubahan desktop dan mobile boleh dibandingkan menggunakan sumber kebenaran yang sama.
-- Ujian regresi melindungi pengasingan akaun/profil, kesinambungan resume dan pengendalian ralat sync tanpa salah melabelkannya sebagai isu migrasi.
+- Mobile yang sudah membaca revision cloud terkini tetapi masih memaparkan XP 0 kini menghidrat semula snapshot pembelajaran gabungan daripada server.
+- Penanda sync pending lama tanpa senarai profil berubah tidak lagi boleh menyekat cloud pull selama-lamanya.
+- Jika data pembelajaran tempatan masih bermakna, outbox yang terputus dipulihkan dan digabung secara konservatif tanpa mengosongkan XP atau sejarah server.
+- Snapshot yang telah diakui server dimuat semula pada peranti, kecuali terdapat perubahan tempatan lebih baharu yang masih belum dihantar.
+- Pengasingan akaun dan profil anak kekal aktif; pembaikan tidak memerlukan migrasi Supabase atau perubahan kandungan pembelajaran.
 
 ## Release Readiness
 
@@ -43,5 +43,5 @@ Build date: 2026-08-23T13:31:55.258Z
 ## Known Follow-ups
 
 - Large JavaScript chunks remain a performance improvement target.
-- Authenticated Free and Premium accounts still require a real desktop-to-mobile Supabase acceptance run after production deployment.
+- Confirm post-deployment convergence on the previously affected physical mobile device after it loads v3.6.2.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
