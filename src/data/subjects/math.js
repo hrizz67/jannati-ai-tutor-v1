@@ -8,6 +8,7 @@ import { enrichMathMasaTopic } from '../mathMasaQuestions.js';
 import { enrichMathPanjangTopic } from '../mathPanjangQuestions.js';
 import { enrichMathJisimIsiPaduTopic } from '../mathJisimIsiPaduQuestions.js';
 import { enrichMathBentukTopic } from '../mathBentukQuestions.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
 
 export const rawMathSubject = {
   "id": "math",
@@ -11293,6 +11294,6 @@ export const rawMathSubject = {
   ]
 };
 
-export const mathSubject = enrichMathBentukTopic(enrichMathJisimIsiPaduTopic(enrichMathPanjangTopic(enrichMathMasaTopic(enrichMathWangTopic(enrichMathBahagiTopic(enrichMathDarabTopic(enrichMathTolakTopic(enrichMathTambahTopic(enrichMathNomborTopic(rawMathSubject))))))))));
+export const mathSubject = attachInteractiveQuestionExamplesToSubject(enrichMathBentukTopic(enrichMathJisimIsiPaduTopic(enrichMathPanjangTopic(enrichMathMasaTopic(enrichMathWangTopic(enrichMathBahagiTopic(enrichMathDarabTopic(enrichMathTolakTopic(enrichMathTambahTopic(enrichMathNomborTopic(rawMathSubject)))))))))));
 
 export default mathSubject;

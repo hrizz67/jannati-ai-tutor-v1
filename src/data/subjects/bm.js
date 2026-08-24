@@ -2,6 +2,7 @@ import { normalizeBMSubject } from '../../utils/bmSentenceQuality.js';
 import { enrichBinaAyatTopic } from '../bmBinaAyatQuestions.js';
 import { alignYearTwoAssessment } from '../bmPentaksiranSumatifQuestions.js';
 import { enrichSimpulanBahasaTopic } from '../bmSimpulanBahasaQuestions.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
 
 const BM_COMPREHENSION_CONTEXTS = Object.freeze([
   {
@@ -13547,7 +13548,7 @@ const rawBMSSubject = {
   ]
 };
 
-export const bmSubject = normalizeBMSubject(
+export const bmSubject = attachInteractiveQuestionExamplesToSubject(normalizeBMSubject(
   alignYearTwoAssessment(
     enrichSimpulanBahasaTopic(
       enrichBinaAyatTopic(
@@ -13555,6 +13556,6 @@ export const bmSubject = normalizeBMSubject(
       )
     )
   )
-);
+));
 
 export default bmSubject;

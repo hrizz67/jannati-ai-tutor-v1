@@ -28,6 +28,8 @@ const result = recordQuestionResult(baseProfile, {
   correct: true,
   difficulty: 'medium',
   timeSpent: 12,
+  questionType: 'fillBlank',
+  skillId: 'ayat.melengkapkan_ayat',
   answeredAt: '2026-08-14T00:00:00.000Z'
 });
 
@@ -40,5 +42,7 @@ assert.equal(result.profile.learningHistory[0].masteryAfter, result.summary.topi
 assert.equal(result.profile.learningHistory[0].confidenceAfter, result.summary.topicConfidence, 'History and summary must use the same post-answer confidence.');
 assert.ok(Number.isFinite(result.profile.learningHistory[0].masteryAfter), 'Post-answer mastery must be numeric.');
 assert.ok(Number.isFinite(result.profile.learningHistory[0].confidenceAfter), 'Post-answer confidence must be numeric.');
+assert.equal(result.profile.learningHistory[0].questionType, 'fillBlank', 'Question type must reach adaptive learning history.');
+assert.equal(result.profile.learningHistory[0].skillId, 'ayat.melengkapkan_ayat', 'Skill identity must reach adaptive learning history.');
 
 console.log('Adaptive session regression tests passed.');

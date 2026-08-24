@@ -22,6 +22,10 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+function normalizeLearningSignal(value, fallback = '') {
+  return String(value || fallback).trim().slice(0, 120);
+}
+
 function localDayKey(value = new Date()) {
   const date = value instanceof Date ? value : new Date(value);
   const offsetMinutes = -date.getTimezoneOffset();
@@ -143,6 +147,8 @@ function syncMemoryAfterAnswer(profile, result, summary = {}) {
       questionId: result.questionId || null,
       subjectId: result.subjectId || null,
       topicId: result.topicId || null,
+      questionType: result.questionType || 'textEntry',
+      skillId: result.skillId || result.topicId || null,
       correct: Boolean(result.correct),
       difficulty: result.difficulty || null,
       xpEarned: summary.xpEarned || 0,
@@ -155,6 +161,8 @@ function syncMemoryAfterAnswer(profile, result, summary = {}) {
         questionId: result.questionId || null,
         subjectId: result.subjectId || null,
         topicId: result.topicId || null,
+        questionType: result.questionType || 'textEntry',
+        skillId: result.skillId || result.topicId || null,
         correct: Boolean(result.correct),
         difficulty: result.difficulty || null,
         timeSpent: Number.isFinite(result.timeSpent) ? result.timeSpent : 0,
@@ -283,8 +291,12 @@ export function recordQuestionResult(profile, result = {}) {
     sessionId,
     usedHint = false,
     usedExplain = false,
-    misconceptionType = ''
+    misconceptionType = '',
+    questionType = 'textEntry',
+    skillId = ''
   } = result || {};
+  const safeQuestionType = normalizeLearningSignal(questionType, 'textEntry');
+  const safeSkillId = normalizeLearningSignal(skillId, topicId || '');
 
   if (!questionId || !subjectId || !topicId) {
     return {
@@ -367,6 +379,8 @@ export function recordQuestionResult(profile, result = {}) {
       usedHint: Boolean(usedHint),
       usedExplain: Boolean(usedExplain),
       misconceptionType: safeCorrect ? '' : String(misconceptionType || 'UNCLASSIFIED'),
+      questionType: safeQuestionType,
+      skillId: safeSkillId || null,
       masteryBefore,
       masteryAfter: Number.isFinite(topicMastery.mastery) ? topicMastery.mastery : null,
       confidenceBefore,
@@ -404,7 +418,9 @@ export function recordQuestionResult(profile, result = {}) {
     attemptNumber,
     usedHint: Boolean(usedHint),
     usedExplain: Boolean(usedExplain),
-    misconceptionType: safeCorrect ? '' : String(misconceptionType || 'UNCLASSIFIED')
+    misconceptionType: safeCorrect ? '' : String(misconceptionType || 'UNCLASSIFIED'),
+    questionType: safeQuestionType,
+    skillId: safeSkillId || null
   }, {
     xpEarned
   });

@@ -1,4 +1,5 @@
 import { normalizeSainsSubject } from '../../utils/sainsContentQuality.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
 
 const rawSainsSubject = {
   "id": "sains",
@@ -7327,9 +7328,9 @@ const SAINS_QUESTION_OVERRIDES = Object.freeze({
   "SAINS-KEMAHIRAN_SAINTIFIK-050": { q: "Berkomunikasi bermaksud ________ dengan jelas.", answer: "menyampaikan maklumat" }
 });
 
-export const sainsSubject = normalizeSainsSubject(rawSainsSubject, {
+export const sainsSubject = attachInteractiveQuestionExamplesToSubject(normalizeSainsSubject(rawSainsSubject, {
   topicEnrichments: SAINS_TOPIC_ENRICHMENTS,
   questionOverrides: SAINS_QUESTION_OVERRIDES
-});
+}));
 
 export default sainsSubject;

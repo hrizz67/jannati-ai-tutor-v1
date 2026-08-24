@@ -26,6 +26,10 @@ export function resolveQuestionMeta(question = {}, context = {}) {
   const questionId = question.id || question.questionId || '';
   const stem = question.q || question.question || '';
   const difficulty = question.difficulty || question.qip?.metadata?.difficulty || context.difficulty || 'sederhana';
+  const intelligence = question.learningIntelligence && typeof question.learningIntelligence === 'object'
+    ? question.learningIntelligence
+    : {};
+  const questionType = question.interaction?.type || intelligence.questionType || question.questionType || 'textEntry';
   return {
     subjectId,
     subjectName: formatSubjectName(subjectId),
@@ -33,7 +37,9 @@ export function resolveQuestionMeta(question = {}, context = {}) {
     topicName: formatTopicName(topicId),
     questionId,
     stem,
-    difficulty
+    difficulty,
+    questionType,
+    skillId: intelligence.skillId || question.skill || topicId
   };
 }
 
