@@ -1,0 +1,15 @@
+{
+  "validator": "metadata",
+  "generatedAt": "2026-08-12T15:50:30.334Z",
+  "status": "pass",
+  "totals": {
+    "files": 9,
+    "subjects": 8,
+    "topics": 84,
+    "questions": 4530,
+    "infos": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "issues": []
+}

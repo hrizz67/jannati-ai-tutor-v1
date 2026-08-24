@@ -1,0 +1,17 @@
+:root {
+  --jannati-primary: #0F8A43;
+  --jannati-primary-dark: #006B32;
+  --jannati-primary-soft: #E8F8EE;
+  --jannati-gold: #F4B400;
+  --jannati-navy: #0F172A;
+  --jannati-gray: #64748B;
+  --jannati-white: #FFFFFF;
+
+  --jannati-font-heading: "Poppins", "Inter", system-ui, sans-serif;
+  --jannati-font-body: "Inter", "Poppins", system-ui, sans-serif;
+
+  --jannati-radius-sm: 10px;
+  --jannati-radius-md: 16px;
+  --jannati-radius-lg: 24px;
+  --jannati-shadow-soft: 0 12px 30px rgba(15, 138, 67, 0.12);
+}

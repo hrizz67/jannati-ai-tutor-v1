@@ -1,0 +1,743 @@
+# V3.1 Post-Deploy Residual Issues Audit
+
+## Audit scope
+
+Read-only residual audit of the deployed v3.1 surface against the Stage 7G acceptance evidence. No runtime, validator, CSS, content, deploy, commit, or push changes were made. The only new file is this report.
+
+## Baseline
+
+- Branch: `v3.1-compact-ui`
+- Baseline commit: `a8a5b1a`
+- Live URL: `https://hrizz67.github.io/jannati-ai-tutor-v1/`
+- Existing worktree edits and `artifacts/` were preserved unchanged.
+- Stage 7G canonical Bertutur repair is present in the baseline and was revalidated.
+
+## Evidence reviewed
+
+Reviewed the complete/final acceptance, iPhone acceptance, Stage 1, Stage 2, Stage 7D, Stage 7E, Stage 7F, Stage 7G, and visual-wow safety reports; the validator inventory; source paths for subject/communication titles; and the deployed DOM/console state.
+
+## Automated validation results
+
+The required Stage chain passed:
+
+- `v31Stage7gCanonicalLabelRepairAudit.mjs` — PASS (`Bertutur Bahasa Melayu Tahun 2`; `Pengenalan Bertutur`; raw source and scoring/session/storage contracts preserved)
+- `v31Stage7fLabelsResumeCtaAudit.mjs` — PASS
+- `v31Stage7bCommunicationConsistencyAudit.mjs` — PASS
+- `v31Stage7aMobileChromeAudit.mjs` — PASS
+- `v31Stage6FinalRegressionAudit.mjs` — PASS
+
+The broader validator inventory exposed one reproducible failure:
+
+```text
+v3ReleaseCandidateAudit.mjs — FAIL
+ReferenceError: explanation is not defined
+at src/ai/coach/v3/explanationEngine.js:33:33
+at src/ai/coach/v3/coachController.js:18:23
+```
+
+The failing expression is ```${explanation}${subjectFocus}``` although the function defines `simpleExplanation`, not `explanation`. This is a confirmed release-candidate coach-path defect and was not repaired under this audit’s read-only scope. Other observed current Stage/quality validators passed; legacy inventory runs that exceeded the audit timeout are recorded as not fully exercised rather than inferred to pass.
+
+## Build results
+
+The application built successfully with the repository’s local Vite toolchain (temporary audit output only; tracked `dist` was not changed): 323 modules, Vite 8.1.0. Bundle sizes were `index-gu1Cmzqw.js` 726,268 bytes (gzip 213.31 kB) and `index-BMG2BtEF.css` 100,521 bytes (gzip 19.49 kB). The existing large-chunk advisory (>500 kB) remains.
+
+`git diff --check` passed. No tracked `dist/index.html` or `vite-preview.out.log` diff was introduced.
+
+## Live viewport matrix
+
+The published site loaded successfully in the in-app browser at 1280×720. At that viewport:
+
+- document width equalled scroll width (no horizontal overflow);
+- no error boundary text was present;
+- no console errors or warnings were reported;
+- Bertutur rendered `Bertutur Bahasa Melayu Tahun 2`, with no `BM Bertutur 2` or `Bm Intro`;
+- the home subject switcher still visibly contains `English Year 2`.
+
+The browser session did not expose the explicit viewport override capability needed to claim 320×568, 375×667, 390×844, 393×852, 430×932, or desktop 1366×768 emulation. Those sizes are therefore **NOT TESTABLE** in this run. No responsive emulation result is represented as a physical iPhone result.
+
+## Screenshot/discussion issue matrix
+
+Reconstructed issue inventory: **25** total — **PASS 8**, **PARTIAL 13**, **FAIL 2**, **NOT TESTABLE 2**. Severity totals: **P0 1**, **P1 19**, **P2 4**, **P3 1**.
+
+| Area | Status | Severity | Residual evidence |
+|---|---|---:|---|
+| Release-candidate Coach v3 path | FAIL | P1 | Reproducible `ReferenceError` in `explanationEngine.js` |
+| Subject switcher raw `English Year 2` | FAIL | P2 | Visible in live home DOM; formatter mapping exists but direct source title is rendered |
+| Bertutur canonical heading | PASS | P1 | Live and Stage 7G validator prove canonical output |
+| Bertutur raw `BM Bertutur 2` | PASS | P1 | Absent live and in validator fixtures |
+| Bertutur raw `Bm Intro` topic | PASS | P1 | Absent live and canonical fixture passes |
+| Communication scoring/session/storage identity | PASS | P1 | Stage 7B/7G contracts pass |
+| Math AI subject-contamination guard | PASS | P1 | Existing acceptance evidence and validators pass |
+| Answer normalization/UASA acceptance | PASS | P1 | Existing acceptance evidence passes |
+| Gamification concatenation | PASS | P2 | Existing Stage evidence passes |
+| Curriculum no-data state | PASS | P2 | Existing acceptance evidence passes |
+| Mobile subject-switcher overlap | PARTIAL | P1 | Static guard passes; real 390/393 device evidence absent |
+| Safe-area/Safari chrome | PARTIAL | P1 | Tokens/static checks pass; physical Safari chrome unverified |
+| FAB/toolbar collision | PARTIAL | P1 | Static suppression checks pass; physical toolbar unverified |
+| Horizontal overflow/z-index sweep | PARTIAL | P1 | One live viewport passed; full viewport sweep unavailable |
+| Mendengar audible playback | PARTIAL | P1 | Flow evidence exists; real audio/device permission unverified |
+| Bertutur microphone permission | PARTIAL | P1 | Manual SpeechRecognition permission remains hardware/browser dependent |
+| Menulis keyboard viewport | PARTIAL | P1 | Keyboard-resize behavior not exercised on a physical device |
+| Empty/technical-state visual distinction | PARTIAL | P1 | Code/validator evidence; device visual check incomplete |
+| AI modal chrome/overlay | PARTIAL | P1 | Runtime/static checks pass; real iPhone overlay evidence absent |
+| UASA footer/next control | PARTIAL | P1 | Historical partial evidence; real mobile click-through absent |
+| Print Preview | PARTIAL | P1 | Print safety passes; actual system Print Preview not opened |
+| Accessibility assistive technology | PARTIAL | P1 | Semantic/static checks pass; screen reader/VoiceOver not exercised |
+| Weekly plan/review queue visual density | PARTIAL | P2 | Functional evidence passes; touch/wrap visual checks incomplete |
+| Generic AI fallback copy/empty legacy paths | NOT TESTABLE | P3 | Requires targeted live failure injection and device review |
+| Physical iPhone Safari/landscape/keyboard sweep | NOT TESTABLE | P0 | No physical iPhone hardware was available |
+
+## Confirmed unresolved issues
+
+1. **P1 — v3 Coach release-candidate crash.** `v3ReleaseCandidateAudit.mjs` fails deterministically because `explanation` is undefined in `buildExplanation`. This blocks a READY recommendation until repaired and revalidated.
+2. **P2 — raw subject label leak.** The live subject switcher visibly renders `English Year 2`; the canonical formatter already maps this to `Bahasa Inggeris Tahun 2`, but the direct subject-title path remains a residual UI leak.
+
+## Partially verified issues
+
+The P1 mobile chrome, safe-area, FAB, overflow, communication media/permission, keyboard, modal, UASA, print, and accessibility items remain partial because their static contracts pass while physical-device or system-surface evidence is missing. Weekly-plan/review-queue density and fallback-copy review remain P2/P3 partial backlog items.
+
+## Not testable without real device/hardware
+
+Physical iPhone Safari chrome and safe areas, VoiceOver/assistive technology, microphone permission and speech capture, audible playback, keyboard viewport resizing, system Print Preview, landscape rotation, and hardware toolbar collision cannot be certified by this run. Responsive emulation must not be reported as physical-device acceptance.
+
+## False positives or already fixed issues
+
+The Stage 7G Bertutur regression is fixed: `BM Bertutur 2` now displays as `Bertutur Bahasa Melayu Tahun 2`; `Bm Intro` displays as `Pengenalan Bertutur`; raw source values remain intact; and scoring/session/storage contracts pass. Math contamination, accepted-answer normalization, gamification concatenation, curriculum no-data handling, mobile chrome static guards, and Stage 7F label/resume/CTA contracts are also passing.
+
+## Performance and maintainability backlog
+
+- Split the 726 kB JavaScript entry chunk when release scope permits.
+- Repair and add a focused regression test for the undefined Coach explanation variable.
+- Route remaining direct subject-title UI paths through the shared formatter without changing IDs or payloads.
+- Complete physical-device, assistive-technology, audio/mic, keyboard, and Print Preview evidence.
+- Replace silent speech-cleanup catches with low-noise diagnostics if operationally useful.
+
+## Recommended next repair order
+
+1. Repair `explanationEngine.js` and rerun `v3ReleaseCandidateAudit.mjs` plus the complete validator chain.
+2. Fix the direct visible `English Year 2` subject-title leak at the display boundary.
+3. Execute the real-device Safari/iPhone and system-surface acceptance matrix.
+4. Re-audit the remaining P1 partials, then address P2/P3 backlog items.
+
+## Final recommendation
+
+**NOT READY.** A confirmed reproducible P1 release-candidate Coach failure remains, and a visible P2 raw subject label remains. The Bertutur P1 canonical-label repair itself is verified and no new Bertutur P0/P1 regression was observed live, but the broader post-deploy release cannot be marked ready until the Coach failure is repaired and the physical-device checks are completed.
+
+## P1 Coach v3 repair result
+
+### Root cause
+
+`buildExplanation()` in `src/ai/coach/v3/explanationEngine.js` built `simpleExplanation`, `explanations`, and `responseFocus`, but then interpolated an undeclared `explanation` variable while constructing `contextualExplanation`. Every `buildCoachResponse()` call that reached this path could throw `ReferenceError: explanation is not defined` before returning the established Coach payload.
+
+### Minimal repair
+
+At `src/ai/coach/v3/explanationEngine.js:33-34`, the display text now derives from the existing source fields using the established precedence: `simpleExplanation || explanations[0] || responseFocus`, then appends the existing subject context. No payload fields, accepted-answer behavior, analytics, modal state, session state, or storage logic changed.
+
+Before: Coach v3 crashed before returning a response.
+
+After: Coach v3 returns its existing schema; representative BM Coach, Explain, and Teacher fixtures all produce non-empty answers.
+
+### Validation
+
+- `v31CoachExplanationCrashAudit.mjs` — PASS (runtime fixture, source-order guard, Explain/Teacher fixtures, output-schema assertions)
+- `v31CoachContextIconAudit.mjs` — PASS
+- `v31Stage3CoachUasaAudit.mjs` — PASS
+- `v31Stage6FinalRegressionAudit.mjs` — PASS
+- `v31Stage7dAiModalAudit.mjs` — PASS
+- `v31BrowserEnvironmentAudit.mjs` — PASS
+- Full legacy validator sweep — attempted, but exceeded the audit command timeout; no failure is inferred from the incomplete run.
+
+### Build and static checks
+
+Build passed with Vite 8.1.0 and 323 modules. Main JavaScript asset: `index-CUBoisfD.js`, 726,267 bytes (gzip 213.30 kB). CSS asset: `index-BMG2BtEF.css`, 100,521 bytes (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed; tracked `dist/index.html` and `vite-preview.out.log` remained unchanged.
+
+### Local runtime QA
+
+The direct Coach/Explain/Teacher execution fixtures passed with no `ReferenceError`, duplicate answer, or schema change. A local Vite browser smoke attempt was **NOT TESTABLE** because the development server’s existing React dependency prebundle reported `react-dom.js ... does not provide an export named 't'`; this is an environment/tooling issue, not a Coach-path failure. No physical iPhone testing is claimed.
+
+### Remaining issue and recommendation
+
+The P2 `English Year 2` visible subject-label leak remains intentionally unresolved. With the confirmed Coach P1 removed and no new P0/P1 found in targeted validation, recommendation is **READY FOR P2 REPAIR**. Do not deploy or commit as part of this task.
+
+## P2 canonical subject-label repair result
+
+### Root cause and repair
+
+The confirmed live leak came from the Home dashboard subject quick-switch path in `src/dashboard/HomeDashboard.jsx`. Its `subjectTitle` variable rendered `subject.title` directly, so the raw registry value `English Year 2` bypassed the shared formatter. The display boundary now calls `formatSubjectName(subject?.title || subject?.id)`, while the raw subject object, `subject.id` routing key, button refs, and all data/session payloads remain unchanged.
+
+Before: `English Year 2`
+
+After: `Bahasa Inggeris Tahun 2`
+
+### Validation and build
+
+- `v31EnglishYear2LabelAudit.mjs` — PASS
+- `v31CoachExplanationCrashAudit.mjs` — PASS (P1 repair preserved)
+- `v31Stage7gCanonicalLabelRepairAudit.mjs` — PASS
+- `v31Stage7fLabelsResumeCtaAudit.mjs` — PASS
+- `v31Stage3CoachUasaAudit.mjs` — PASS
+- `v31Stage6FinalRegressionAudit.mjs` — PASS
+- `v31BrowserEnvironmentAudit.mjs` — PASS
+- Full validator chain attempted with a 120,000 ms timeout; it timed out at 120,465 ms. No PASS was inferred.
+
+Build passed with Vite 8.1.0 and 323 modules. Main JS: `index-CKuqQQb7.js`, 726,267 bytes (gzip 213.32 kB). CSS: `index-BMG2BtEF.css`, 100,521 bytes (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed; tracked `dist/index.html` and `vite-preview.out.log` remained unchanged.
+
+### Runtime result
+
+The executable formatter fixture proves the affected path renders the canonical label and preserves raw identity. Browser smoke remains **BLOCKED** by the pre-existing local React/Vite prebundle error (`react-dom.js ... does not provide an export named 't'`); that issue was not repaired and no browser/runtime PASS is claimed.
+
+### Remaining issues and recommendation
+
+The P1 Coach explanation crash repair remains present and targeted Coach/Explain/Teacher validation passes. No new confirmed P0/P1 was found. Physical-device checks and the existing legacy-validator timeout remain outstanding. Recommendation: **READY FOR COMBINED QA**. No deploy, commit, or push was performed.
+
+## Combined QA result
+
+### Diff verification
+
+The complete repair diff is limited to one declaration in `src/ai/coach/v3/explanationEngine.js`, one display-boundary expression in `src/dashboard/HomeDashboard.jsx`, the two focused validators, and this report. Raw subject data, IDs, routing refs, and Coach payload structure are unchanged. Existing unrelated worktree edits (older reports, validation JSON, and `artifacts/`) predate this QA and were preserved. `git diff --check` passed; no generated `dist` content is represented in the repair diff.
+
+### Targeted validator output
+
+All nine required targeted validators passed with exit code 0: Coach explanation (410 ms), English label (69 ms), Coach context/icon (133 ms), Stage 3 Coach/UASA (211 ms), Stage 6 regression (264 ms), Stage 7D modal (85 ms), Stage 7F labels/CTA (67 ms), Stage 7G canonical label (64 ms), and browser environment (235 ms).
+
+### Full validator matrix
+
+Each validator was run individually with a 15,000 ms timeout. **68 total: 67 PASS, 0 FAIL, 1 TIMEOUT.** The only timeout was `bmStyleValidator.mjs`; it was identified explicitly and no result was inferred.
+
+| Validator | Duration | Result | Notes |
+|---|---:|---|---|
+| adaptiveSimulation.mjs | 920 ms | PASS | |
+| aiContextQualityAudit.mjs | 499 ms | PASS | |
+| aiLiveInteractionAudit.mjs | 621 ms | PASS | |
+| aiTeacherTutorConsistencyAudit.mjs | 682 ms | PASS | |
+| aiTutorIntegrationAudit.mjs | 670 ms | PASS | |
+| aiTwoWayCommunicationAudit.mjs | 727 ms | PASS | |
+| audioContentAudit.mjs | 687 ms | PASS | |
+| bmFullContentQualityAudit.mjs | 1,677 ms | PASS | |
+| bmSentenceQualityAudit.mjs | 654 ms | PASS | |
+| bmSpatialNaturalnessAudit.mjs | 1,950 ms | PASS | |
+| bmStyleValidator.mjs | 15,000 ms | TIMEOUT | Per-validator timeout; no PASS inferred |
+| canonicalProgressAudit.mjs | 497 ms | PASS | |
+| communicationModulesAudit.mjs | 483 ms | PASS | |
+| communicationSemanticDiversityAudit.mjs | 521 ms | PASS | |
+| compactUiAudit.mjs | 628 ms | PASS | |
+| dashboardAnalyticsConsistencyAudit.mjs | 523 ms | PASS | |
+| dashboardConsistencyAudit.mjs | 612 ms | PASS | |
+| englishContentQualityAudit.mjs | 619 ms | PASS | |
+| englishDeepContentAudit.mjs | 611 ms | PASS | |
+| englishStyleValidator.mjs | 660 ms | PASS | |
+| fullSubjectCoverageAudit.mjs | 593 ms | PASS | |
+| fullSystemWorkflowAudit.mjs | 706 ms | PASS | |
+| gamificationPanelAudit.mjs | 1,322 ms | PASS | |
+| gamificationSimulation.mjs | 558 ms | PASS | |
+| guidedLearningExperienceAudit.mjs | 718 ms | PASS | |
+| knowledgeValidator.mjs | 586 ms | PASS | |
+| liveMobileReleaseBlockerAudit.mjs | 1,004 ms | PASS | |
+| mobileOverlayAudit.mjs | 527 ms | PASS | |
+| multipleAcceptedAnswersAudit.mjs | 675 ms | PASS | |
+| parentAnalyticsAggregationAudit.mjs | 544 ms | PASS | |
+| parentDashboardRegression.mjs | 2,176 ms | PASS | |
+| parentInsightsIntegrationAudit.mjs | 603 ms | PASS | |
+| persistenceResumeAudit.mjs | 511 ms | PASS | |
+| productionPolish.mjs | 525 ms | PASS | |
+| runtimeSafetyAudit.mjs | 652 ms | PASS | |
+| smartCheckRegression.mjs | 587 ms | PASS | |
+| smartQuestionGeneratorRegression.mjs | 690 ms | PASS | |
+| speechRegression.mjs | 523 ms | PASS | |
+| studyPlannerPanelAudit.mjs | 712 ms | PASS | |
+| studyPlannerSimulation.mjs | 771 ms | PASS | |
+| subjectIsolationAudit.mjs | 754 ms | PASS | |
+| tutorActionDisclosureAudit.mjs | 623 ms | PASS | |
+| tutorModalFreezeAudit.mjs | 694 ms | PASS | |
+| tutorModalStateAudit.mjs | 593 ms | PASS | |
+| uasaSubjectSwitchAudit.mjs | 701 ms | PASS | |
+| uiAudit.mjs | 586 ms | PASS | |
+| v31BrowserEnvironmentAudit.mjs | 612 ms | PASS | |
+| v31CoachContextIconAudit.mjs | 616 ms | PASS | |
+| v31CoachExplanationCrashAudit.mjs | 515 ms | PASS | |
+| v31EnglishYear2LabelAudit.mjs | 489 ms | PASS | |
+| v31GamificationTextAudit.mjs | 473 ms | PASS | |
+| v31IphoneAcceptanceRepairAudit.mjs | 494 ms | PASS | |
+| v31Stage1MobileShellAudit.mjs | 478 ms | PASS | |
+| v31Stage2CommunicationAudit.mjs | 669 ms | PASS | |
+| v31Stage3CoachUasaAudit.mjs | 544 ms | PASS | |
+| v31Stage4DashboardAnalyticsAudit.mjs | 615 ms | PASS | |
+| v31Stage5PlanningLabelsAudit.mjs | 603 ms | PASS | |
+| v31Stage6FinalRegressionAudit.mjs | 601 ms | PASS | |
+| v31Stage7aMobileChromeAudit.mjs | 620 ms | PASS | |
+| v31Stage7bCommunicationConsistencyAudit.mjs | 508 ms | PASS | |
+| v31Stage7cGamificationConsistencyAudit.mjs | 586 ms | PASS | |
+| v31Stage7dAiModalAudit.mjs | 654 ms | PASS | |
+| v31Stage7eAnalyticsTypographyAudit.mjs | 574 ms | PASS | |
+| v31Stage7fLabelsResumeCtaAudit.mjs | 716 ms | PASS | |
+| v31Stage7gCanonicalLabelRepairAudit.mjs | 513 ms | PASS | |
+| v31VisualWowSafetyAudit.mjs | 514 ms | PASS | |
+| v3CoachPayloadAudit.mjs | 471 ms | PASS | |
+| v3ReleaseCandidateAudit.mjs | 547 ms | PASS | |
+
+### Build and tracked-artifact checks
+
+`npm run build` was invoked through the repository’s Windows `npm.cmd` shim because PowerShell execution policy blocks `npm.ps1`; the build itself passed (Vite 8.1.0, 323 modules). Main JS: `index-B0gU1om3.js`, 726,267 bytes (gzip 213.31 kB). CSS: `index-BMG2BtEF.css`, 100,521 bytes (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed. The generated `dist/index.html` and `vite-preview.out.log` were checked for diffs; no content diff remains.
+
+### Runtime QA
+
+Only Vite temporary cache was cleared; dependencies, package files, and source were not changed. Active Vite servers were stopped and a fresh server was started. The local browser remained blocked before rendering by this exact error:
+
+```text
+SyntaxError: The requested module '/jannati-ai-tutor-v1/node_modules/.vite/deps/react-dom.js?v=d76cfe61' does not provide an export named 't'
+```
+
+Therefore local interactive Coach, Explain, Teacher, subject-switcher, Bertutur, modal, console, and error-boundary QA is **BLOCKED**, not PASS. Executable fixtures cover the Coach and label paths; no physical-device result is claimed. The prebundle issue was not repaired.
+
+### Status and recommendation
+
+- P1 Coach crash: preserved and PASS in targeted and full-chain validators.
+- P2 English subject label: canonical formatter path PASS; raw source value and IDs preserved.
+- New confirmed P0/P1: none.
+- Remaining P1/P2: physical-device Safari/chrome, keyboard, mic/audio, accessibility, Print Preview, and the pre-existing local runtime prebundle blocker; `bmStyleValidator.mjs` still needs a non-timeout run.
+
+**NOT READY.** The repairs themselves pass and the runtime blocker is isolated to the local React/Vite prebundle, but the full validator chain is not fully green because `bmStyleValidator.mjs` timed out. No commit, push, or deploy was performed.
+
+## Final blocker resolution
+
+### `bmStyleValidator.mjs`
+
+Root cause was catastrophic backtracking in `extractStrings()`: the backreference-heavy quote regex scanned `src/utils/englishSentenceQuality.js` and stalled during the source-string pass. The validator traverses 358 source files, and diagnostics identified that file as the last read before the hang. The minimum repair replaced that regex with a linear character scanner that preserves escaped characters and quote extraction semantics; no assertions, files, coverage, or pass criteria were removed.
+
+Before: exceeded 60,000 ms in direct timing and timed out under the 15-second matrix harness.
+
+After repeated runs: **2,615 ms**, **1,849 ms**, **2,004 ms**; each exited 0 and printed `BM style validation complete`.
+
+### React/Vite prebundle
+
+Root cause was Vite’s dependency optimizer generating `react-dom_client.js` as a CJS wrapper that imported `t` from the optimized `react-dom.js`, while that wrapper exposed only its default export. Installed versions are React 19.2.7, ReactDOM 19.2.7, and Vite 8.1.0; source imports are valid (`react-dom/client`, `react-dom`, and no suspicious `t` import). Clearing `node_modules/.vite` alone did not resolve it.
+
+The proven minimal config-only fix adds `react-dom/client` to `optimizeDeps.include` in `vite.config.js`. After clearing only `node_modules/.vite` and restarting the existing dev command, the app loaded and the prebundle error disappeared. No package, lockfile, or dependency version changed.
+
+### Fresh runtime QA
+
+The fresh local app opened successfully. Verified:
+
+- Home dashboard rendered.
+- Subject switcher rendered `Bahasa Inggeris Tahun 2`; raw `English Year 2` was absent.
+- Bertutur rendered `Bertutur Bahasa Melayu Tahun 2`.
+- Coach exercise rendered and accepted an answer attempt.
+- Explain modal opened and rendered its answer.
+- Teacher modal opened and rendered its answer.
+- Modal close returned to the exercise without duplication.
+- No `ReferenceError: explanation is not defined`, error boundary, or prebundle error occurred.
+
+One existing React development warning was emitted when modal `inert` handling ran: `Received an empty string for a boolean attribute ... inert`. It is unrelated to these blockers, did not prevent rendering, and was not repaired under this scoped task. No new P0/P1 was observed. Physical-device checks remain unclaimed.
+
+### Final validator matrix and build
+
+The complete individual matrix is now **68 PASS, 0 FAIL, 0 TIMEOUT**. Targeted Coach, English label, Stage 3/6/7D/7F/7G, browser-environment, and BM style validators all passed. `git diff --check` passed.
+
+`npm.cmd run build` passed with Vite 8.1.0 and 323 modules. Main JS: `index-CH7XcDqD.js`, 726,267 bytes (gzip 213.32 kB). CSS: `index-BMG2BtEF.css`, 100,521 bytes (gzip 19.49 kB). The existing >500 kB chunk warning remains. The restored `dist/index.html` content hash matches `HEAD` (`8a969b87bcd1dc9b211b6e203a3906c40874f750`); `git diff --exit-code -- dist/index.html` and `vite-preview.out.log` checks are clean. The workspace reports a stale generated-file status marker because this environment cannot create `.git/index.lock`, but the tracked file bytes are identical to `HEAD`.
+
+### Remaining manual checks and recommendation
+
+Remaining non-blocking checks are physical Safari chrome/safe area, keyboard resizing, microphone/audio permissions, accessibility technology, Print Preview, and responsive device emulation. No physical iPhone testing is claimed.
+
+P1 Coach and P2 subject-label repairs remain passing, no confirmed P0/P1 remains, all validators pass, the fresh runtime opens, and the prebundle blocker is resolved. Recommendation: **READY FOR COMMIT AND DEPLOY**. No commit, push, or deploy was performed.
+
+## Communication and hardware capability audit
+
+### Scope and feature inventory
+
+Audited the active Bacaan, Mendengar, Menulis, and Bertutur surfaces; browser SpeechRecognition/`webkitSpeechRecognition`; speech synthesis replay; manual transcript entry; recognition cleanup; language routing; and the Coach/Explain/Teacher voice-adjacent paths. No page-load microphone permission request, new audio asset, storage-key, scoring, analytics, or session-schema change was introduced.
+
+### Confirmed Bertutur issue and focused repair
+
+The live Bertutur component in `src/App.jsx` used a bespoke recognition error mapper. `audio-capture`, network/unknown errors, start failures, and the generic technical path were collapsed into `Rakaman tidak dapat digunakan.`, while permission and no-speech states used less actionable text. This obscured the real browser capability failure and made the microphone symptom appear as a transcript defect.
+
+The focused repair adds `getBertuturSpeechErrorMessage()` at the display boundary in `src/App.jsx` and routes only Bertutur recognition error messages through it. Raw prompt/set values, recognition identity, transcript extraction, scoring, progress/session recording, resume metadata, storage, and analytics payloads remain unchanged.
+
+Before: `Rakaman tidak dapat digunakan.` / `Mikrofon tidak dapat digunakan.` / generic permission text.
+
+After: permission → `Mikrofon tidak dibenarkan. Benarkan akses mikrofon dalam tetapan pelayar.`; no speech/result → `Tiada suara dikesan. Cuba bercakap semula.`; audio capture → `Mikrofon tidak dapat dikesan. Semak mikrofon dan tetapan sistem.`; network/unknown → `Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet dan cuba semula.`.
+
+### Validators
+
+Added executable validators:
+
+- `scripts/validate/v31BertuturSpeechRecognitionAudit.mjs` — PASS, including a mock constructor fixture covering constructor fallback, handler registration, start, final transcript extraction, and cleanup.
+- `scripts/validate/v31CommunicationHardwareAudit.mjs` — PASS, covering capability fallback, recognition cleanup, TTS cancellation, manual transcript, language mappings (`ms-MY`, `en-US`, `ar-SA`), and absence of page-load `getUserMedia`/`new Audio` use.
+
+Targeted validators all PASS: Stage 7B, Stage 7G, Stage 6, browser environment, Coach explanation, English label, Coach context/icon, Stage 3 Coach/UASA, Stage 7D modal, Stage 7F labels/resume, Stage 7A mobile, BM style, and both new validators. The individual validator sweep attempted all 70 validators. 56 PASS and 14 pre-existing FAILs remain in compact/gamification/knowledge/parent/polish/smart-check/planner/tutor-modal/UI/release-candidate audits; none is a communication, microphone, audio, Coach-crash, or subject-label regression. No validator was weakened or edited to suppress those failures.
+
+### Build and runtime/device result
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-BmOXrNXJ.js`, 726.66 kB (gzip 213.46 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed; `dist/index.html` content diff is clean after restoring the tracked HTML. No `vite-preview.out.log` content diff was present.
+
+Recorded SHA-256 asset hashes: JS `85D56940F6A7A6EBDEB113CF856AC1FEEC5741A008EA0F0C9AAC30FF86A6AC92`; CSS `403251E582DFAC2943B440F0716C6136A430B8F890A7EE2C01EAE1791258EA0E`.
+
+The executable speech fixture proves the repaired Bertutur path can execute and preserve a final transcript. Real spoken-microphone transcription, permission prompts, no-speech timing, device restart, and physical Chrome/Safari/Edge/Android/iPhone hardware were not testable in this environment; no physical-device PASS is claimed. Mendengar TTS cancellation and Bacaan/Menulis manual paths remain statically/fixture covered. The existing local React/Vite development warning about an empty `inert` boolean attribute is unrelated and was not repaired.
+
+P1 Coach crash remains PASS. P2 English Year 2 label and Stage 7G Bertutur canonical heading remain PASS. No new confirmed P0/P1 was found. Remaining work is the 14 pre-existing validator failures and device-only microphone/audio/accessibility checks.
+
+Recommendation: **READY WITH DEVICE CONDITIONS** — focused communication repair and executable coverage pass, but release readiness still requires real Chrome microphone acceptance and resolution/waiver of the existing full-chain validator failures. No commit, push, or deploy was performed.
+
+## Bertutur speech recognition accuracy follow-up
+
+The earlier empty-transcript issue is resolved; the current observed residual is inaccurate BM recognition, including the unrelated `movie.com` transcript. The selected BM speaking set already maps to `ms-MY`; the failure was result handling and candidate acceptance, not a stale BM locale or a scoring defect.
+
+`src/App.jsx` now refreshes the selected set language immediately before every `recognition.start()`, uses `interimResults: true`, `maxAlternatives: 3`, and selects short versus longer-session `continuous` mode from the prompt type. Changed results are read from `event.resultIndex`; interim text is displayed separately, final fragments are deduplicated and accumulated, and an empty `onend` cannot erase a valid transcript. Candidate confidence and gentle prompt vocabulary relevance are used only to rank alternatives.
+
+Low-confidence or unrelated candidates are held for confirmation with `Transkrip mungkin kurang tepat. Cuba sebut semula atau betulkan teks secara manual.`, `Guna transkrip ini`, and `Cuba semula`; manual textarea editing remains available and `Semak Transkrip` uses the latest edited value. No auto-correction, expected-answer substitution, scoring, storage, analytics, or session-schema change was made. Development-only diagnostics include language, result index, alternatives, confidence, error, and end events; spoken content is not persisted.
+
+Added `scripts/validate/v31BertuturRecognitionAccuracyAudit.mjs` (PASS). Existing Bertutur, communication hardware, Stage 7B, and Stage 6 validators also PASS. The prior 70-validator sweep was 56 PASS / 14 pre-existing unrelated FAILs; with this new validator, the current total is 71 validators (57 PASS / 14 pre-existing unrelated FAILs). No new P0/P1 was introduced.
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-DeEKrANM.js`, 730.29 kB (gzip 214.73 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB warning remains. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+Three-run real Chrome microphone results for the requested BM phrases, English phrase, and Arabic phrase are **NOT TESTABLE** in this environment. Therefore accuracy, confidence, and alternative-choice acceptance cannot be claimed as physical-device PASS. Remaining browser limitation is real microphone/locale service verification.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Do not commit, push, or deploy until real Chrome microphone QA confirms the three BM phrases across three runs and validates the `movie.com` low-confidence path.
+
+## Multilingual assisted-transcription audit
+
+Native browser recognition remains a draft suggestion because locale services can return inaccurate text such as `movie.com`; it is never treated as a learner answer until explicit confirmation. The shared Bertutur flow now keeps `recognizedDraft`, `confirmedTranscript`, manual text, confidence, source, and selected locale separate for BM, English, and Arabic.
+
+| Language | Locale | Speech draft | Confirmation | Manual mode | Device QA |
+|---|---|---|---|---|---|
+| Bahasa Melayu | `ms-MY` | PASS | Required | PASS | NOT TESTABLE |
+| Bahasa Inggeris | `en-US` | PASS | Required | PASS | NOT TESTABLE |
+| Bahasa Arab | `ar-SA` | PASS | Required | PASS | NOT TESTABLE |
+
+Speech `onresult` now writes only to the draft/review panel. `Semak Transkrip` is disabled while listening, while a draft is unconfirmed, or when the transcript is empty. Scoring receives only manually entered text or an explicitly confirmed draft. `onend` cannot confirm or score. Switching languages stops recognition, clears stale unconfirmed draft/interim state, and prevents transcript leakage. Manual editing marks the source as `manual` and recognition events do not overwrite it.
+
+Review copy is localized for all three languages, with Arabic Unicode preserved and `lang="ar" dir="rtl"` on the review and manual fields. BM uses `Teks yang dikesan`, English uses `Recognised text`, and Arabic uses `النص الذي تم التعرّف عليه`; each provides use/edit/retry/clear actions and a localized warning. The existing `resultIndex`, final/interim separation, alternative ranking, confidence handling, error mapping, and cleanup remain intact.
+
+Added `scripts/validate/v31BertuturMultilingualAssistedTranscriptAudit.mjs` (PASS). Targeted validators all PASS, including the existing Bertutur accuracy/speech/hardware validators, Stage 7B, Stage 7G, Stage 6, browser environment, and Coach context/icon audits. Full individual sweep: **72 total, 58 PASS, 14 pre-existing unrelated FAILs**. Baseline failures: compact UI, gamification panel, knowledge, parent dashboard/insights, production polish, smart check, study planner, tutor modal, UI, and release-candidate audits. No new communication P0/P1 was introduced.
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-zcQCsWZP.js`, 732.62 kB (gzip 215.70 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. No missing Arabic/Unicode assets were reported. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+Real Chrome microphone runs for the requested BM, English, and Arabic phrases were not available in this environment. Accuracy, alternative candidates, confidence values, inaccurate-result confirmation, and physical language switching are therefore **NOT TESTABLE**; no device PASS is claimed. Manual-only flows and RTL/Unicode behavior are covered by source assertions and the focused validator.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Do not commit, push, or deploy until real Chrome QA verifies three BM runs, three English runs, Arabic spoken or fluent-speaker testing, inaccurate-result safety, and idle/listening/draft language switching.
+
+## Communication state-isolation repair
+
+### Evidence and root cause
+
+The supplied screenshot showed a Bertutur BM prompt, `jelaskan cara menjaga kebersihan`, alongside a different recognized draft, `tuliskan cara menjaga kebersihan`; the draft is correctly treated as uncertain speech output, not as a prompt replacement. Reports that Bacaan and Bertutur appeared to retain the same sentence were traced to communication state being represented by several local component states without a shared context/session guard. Component unmounting and `abort()` alone did not protect against late recognition callbacks, and the old warning was rendered both as result text and inside the review panel.
+
+### Repair
+
+`src/App.jsx` now derives `communicationContextKey` from `speaking`, selected language, question type, and current speaking item. Each recognition session captures that key; `onresult`, `onerror`, and `onend` ignore callbacks whose key no longer matches. Language/type changes stop recognition and clear only stale unconfirmed draft/interim/confidence/review state. Speech remains separate from `confirmedTranscript` and `manualTranscript`; only explicit confirmation or manual entry can reach scoring. The review warning appears once, short answers leave listening state immediately after the final result, retry/clear remain available, and `Semak Transkrip` stays disabled while a draft is unconfirmed.
+
+Question-source audit:
+
+| Module | Dataset/source | Question ID | Prompt field |
+|---|---|---|---|
+| Bacaan | `semanticReadingPassages` | passage/session item | `passage.text` / reading passage fields |
+| Bertutur | `semanticSpeakingPrompts` | set/session item + mode | `promptBank[mode].text` |
+| Mendengar | `semanticListeningSets` | listening session item | listening prompt/question fields |
+| Menulis | `semanticWritingSets` | writing session item | `safeTask` writing fields |
+
+No dataset was duplicated or schema changed. The visible Bertutur prompt and recognized draft remain independent values; `tuliskan` is never silently changed to `jelaskan` and the complete prompt is never manufactured as a transcript.
+
+### Validators and build
+
+Added `scripts/validate/v31CommunicationStateIsolationAudit.mjs` and `scripts/validate/v31BertuturListeningStateAudit.mjs`; both PASS. Requested multilingual, accuracy, speech, hardware, Stage 7B, Stage 6, Coach-context, and existing regression validators PASS. Full individual sweep: **75 total, 62 PASS, 13 pre-existing unrelated FAILs** (compact UI, gamification, parent dashboards, polish, smart-check, planner, tutor-modal, UI, and release-candidate checks). No communication-related new P0/P1 was found.
+
+`npm.cmd run build` PASS (Vite 8.1.0, 323 modules). Main JS: `index-BDAzm7dT.js`, 733.12 kB (gzip 215.88 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. `git diff --check` passed and tracked `dist/index.html` was restored.
+
+### Browser/device QA
+
+Static/executable isolation checks pass, but real Chrome microphone, screenshot capture, Arabic spoken accuracy, and physical device switching were not available in this environment. No microphone accuracy or physical-device PASS is claimed. The remaining limitation is device-level speech/service verification.
+
+Recommendation: **READY WITH DEVICE CONDITIONS**. Code-level prompt isolation, late-event protection, listening-state behavior, and draft-confirmation safety pass; real Chrome BM/English/Arabic device QA remains required before commit/deploy.
+
+## Vite dependency-entry audit
+
+### Root cause
+
+Vite’s default dependency-entry discovery included the audit/demo page `artifacts/stage7d/modal-audit.html`. That page imports `artifacts/stage7d/modal-audit.js`, which contains JSX in a `.js` file and therefore caused the dependency scan to fail before the application could be served.
+
+### Minimal fix
+
+`vite.config.js` now explicitly sets:
+
+```js
+optimizeDeps: {
+  entries: ['index.html'],
+  include: ['react-dom/client']
+}
+```
+
+The existing `react-dom/client` optimization was preserved. Audit files were not renamed, converted, deleted, or added as dependency entries. No package or lockfile changes were made.
+
+### Fresh startup and runtime
+
+After clearing only `node_modules/.vite`, a fresh forced dev server reported Vite ready in 389 ms with no dependency-scan failure, no `artifacts/stage7d/modal-audit.html` scan, no JSX parse error, and no ReactDOM export error. `http://127.0.0.1:5173/jannati-ai-tutor-v1/` returned HTTP 200 and contained the application root. Full interactive browser/console and microphone accuracy testing was not performed; no microphone accuracy claim is made.
+
+### Validation and build
+
+`v31ViteDependencyEntryAudit`, browser environment, multilingual assisted transcription, recognition accuracy, speech recognition, communication hardware, Coach explanation, English label, and BM style validators were run; the focused Vite validator and all requested targeted validators passed. The full individual sweep is **73 total: 61 PASS, 12 pre-existing unrelated FAILs**: compact UI, gamification panel, parent dashboard/insights, production polish, smart check, study planner, tutor modal, UI, and release-candidate audits. No new P0/P1 was introduced.
+
+`npm.cmd run build` passed (Vite 8.1.0, 323 modules). Main JS: `index-zcQCsWZP.js`, 732.62 kB (gzip 215.70 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. `git diff --check` passed and tracked `dist/index.html` content was restored.
+
+Recommendation: **READY FOR DEVICE QA**. No commit, push, or deploy performed.
+
+## Bertutur production initialization-order crash
+
+### Symptom and mapping
+
+Production Bertutur opened to a white screen. Chrome reported `Uncaught ReferenceError: Cannot access 'de' before initialization` from `index-DT7JcDEg.js`. Mapping the minified binding back to source identified `de` as the minified `communicationContextKey` value. The key template read `rawSet?.id` before `rawSet` had been initialized.
+
+### Root cause and repair
+
+In `src/App.jsx`, the communication context key and current-key ref assignment were declared before the `setBase`/`rawSet`/formatted `set` declarations they depended on. This temporal dead zone ran during Bertutur component initialization in the production bundle. The minimal repair moved only those two context-key lines below `rawSet` and `set` initialization. Context/session guards, stale callback rejection, transcript isolation, multilingual confirmation flow, listening-state repair, and warning deduplication remain unchanged.
+
+### Production validation
+
+`npm.cmd run build` passed with Vite 8.1.0 and 323 modules. Main JS: `index-lYdC93em.js`, 733.10 kB (gzip 215.88 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). The existing >500 kB chunk warning remains. The production preview started cleanly at `http://127.0.0.1:4173/jannati-ai-tutor-v1/` and returned HTTP 200 with the application root. No dependency scan, JSX parse, or ReactDOM export error appeared. Full interactive browser/microphone QA was not performed; no microphone accuracy claim is made.
+
+Targeted validators all passed: `v31BertuturInitializationOrderAudit`, `v31CommunicationStateIsolationAudit`, `v31BertuturListeningStateAudit`, `v31BertuturMultilingualAssistedTranscriptAudit`, `v31BertuturRecognitionAccuracyAudit`, `v31BertuturSpeechRecognitionAudit`, `v31CommunicationHardwareAudit`, `v31ViteDependencyEntryAudit`, and `v31Stage6FinalRegressionAudit`. Full individual sweep: **76 total, 64 PASS, 12 pre-existing unrelated FAILs** (`compactUiAudit`, `gamificationPanelAudit`, `parentDashboardRegression`, `parentInsightsIntegrationAudit`, `productionPolish`, `smartCheckRegression`, `studyPlannerPanelAudit`, `studyPlannerSimulation`, `tutorModalFreezeAudit`, `tutorModalStateAudit`, `uiAudit`, and `v3ReleaseCandidateAudit`). No communication-related failure or new P0/P1 was found.
+
+Remaining conditions are device-only microphone, Arabic speech, and physical browser checks. The preview HTTP smoke is green, but an interactive Bertutur browser session was not available in this environment, so no visual or microphone runtime PASS is claimed. Recommendation: **READY WITH DEVICE CONDITIONS**; confirm the live/interactive Bertutur UI before emergency commit and deploy.
+
+## Stage 1 — AI subject isolation and relevance repair
+
+### Evidence and root cause
+
+The reported Mathematics Year 2 explanation for “Berapakah nombor selepas 113?” displayed the shared `learningCopy.js` place-name memory array (`padang`, `sekolah`, `hospital`, `kedai`, `pasar`). The same shared category fallback exposed generic phrases in BM. The root cause was subject-blind fallback selection: `getLearningExamples` and `getLearningMemoryTip` selected category arrays without enforcing the current subject/topic/question, while rotation keys in the knowledge adapter did not include question identity.
+
+### Files changed and repair
+
+`src/ai/learningCopy.js` now derives number-order examples and BM kata ganti nama examples from the current subject and question. `src/ai/explainEngine.js` applies subject/topic-specific number-order and BM pronoun explanation, hint, mistake, and memory content at the generation boundary. `src/App.jsx` supplies the active subject identity to fallback generation. `src/ai/coach/coachAdapter.js` preserves subject identity in fallback payload construction. `src/ai/coach/knowledge/knowledgeAdapter.js` includes question identity in response rotation keys. Two executable validators were added: `scripts/validate/v31AiSubjectIsolationAudit.mjs` and `scripts/validate/v31AiExplanationContentRelevanceAudit.mjs`.
+
+### Before and after
+
+Mathematics now produces arithmetic-only number-order content: “Tambah 1 pada nombor itu.” and `113 + 1 = 114`; no place-name examples are emitted. BM pronoun content now explains that “Saya” is the first-person pronoun for the speaker, with a same-skill example; no arithmetic or generic placeholder phrase is emitted as content. Raw question, answer, storage, scoring, routing, and analytics schemas were not changed.
+
+### Validation and preview
+
+Focused subject-isolation and relevance validators: PASS. Coach crash, Stage 3 Coach/UASA, Stage 6 regression, Stage 7D modal, browser environment, and BM style validators: PASS. The production build passed with 323 modules; main JS `index-EtlxiXHc.js` 735.48 kB (gzip 216.69 kB), CSS `index-BMG2BtEF.css` 100.52 kB (gzip 19.49 kB), with the existing >500 kB chunk warning. `git diff --check` passed and tracked `dist/index.html` was restored to its baseline asset references. Production preview served the application root over HTTP 200; interactive browser/microphone testing was not available, so no physical-device claim is made.
+
+The full individual validator sweep after this repair was **78 total: 64 PASS, 14 FAIL, 0 TIMEOUT**. The failures are existing unrelated audits; no AI subject-isolation validator failed.
+
+### Scope and remaining work
+
+This stage does not address generic explanation wording, duplicate modal sections, modal length, or Safari spacing. Existing unrelated validator failures remain outside AI explanation content. Recommendation: **READY FOR STAGE 2** only after interactive production-equivalent Mathematics/BM modal checks confirm the same isolation; otherwise **NOT READY**.
+
+## Stage 2 — AI explanation usefulness repair
+
+### Screenshot evidence and root cause
+
+The Stage 2 screenshots showed Mathematics sections repeating `Soalan: Berapakah nombor selepas 113?` and BM sections repeating the complete sentence instead of teaching why `Saya` is correct. The repetition path was `explainEngine.js`: `summary` was built directly from `questionText`, `simpleExplanation` mirrored `explanation`, and `steps`/`example` reused the same generic example list. These fields were then passed unchanged to the modal section payload.
+
+### Section-role repair
+
+`src/ai/explainEngine.js` now emits distinct focus, concept explanation, logical reason, hint, ordered steps, alternate example, common mistake, memory rule, and learner-facing coach message fields. `src/ai/learningCopy.js` provides a lightweight normalized token-overlap guard that replaces exact or near-duplicate sections with same-subject fallbacks. Stage 1 subject isolation remains in force. No modal UI, CSS, answer acceptance, scoring, storage, analytics, routing, Bertutur, or microphone logic changed.
+
+### Mathematics and BM results
+
+Mathematics now uses: focus `Mengenal nombor yang datang selepas sesuatu nombor.`; simple explanation `Nombor selepas diperoleh dengan menambah 1.`; why-correct `113 + 1 = 114, jadi 114 datang selepas 113.`; ordered steps; alternate example `Nombor selepas 25 ialah 26.`; and `Selepas = tambah 1. Sebelum = tolak 1.`. BM now explains that `Saya` is used when the speaker refers to themself, gives first-person steps, uses `Saya membaca buku.` as a different example, and identifies `dia`/other-person confusion as the relevant mistake. Full question text is no longer used as the repeated summary content for these fixtures.
+
+### Validation and production-equivalent preview
+
+`v31AiExplanationUsefulnessAudit`, `v31AiSectionRoleAudit`, `v31AiSubjectIsolationAudit`, `v31AiExplanationContentRelevanceAudit`, Coach crash, Stage 3 Coach/UASA, Stage 6, Stage 7D, and browser validators all PASS. Full individual sweep: **80 total, 66 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no explanation-quality validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-DK_mWlF9.js`, 736.93 kB (gzip 217.17 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+This stage does not address BM natural-language polish beyond explanation usefulness, duplicate modal section count, modal length, Safari safe-area spacing, or card sizing. Recommendation: **READY FOR STAGE 3** subject to interactive Mathematics/BM modal confirmation.
+
+## Stage 3 — BM natural-language and Year 2 readability repair
+
+### Evidence and wording root cause
+
+The BM pronoun fixture still used mechanical, adult-sounding wording such as “Saya digunakan sebagai kata ganti nama diri pertama apabila seseorang bercakap tentang dirinya sendiri” and “Ayat ini menunjukkan orang yang bercakap melakukan perbuatan itu sendiri.” The same explanation path also risked repeating template-like grammar language across Teacher, Coach, and Janna surfaces.
+
+### BM copy standard and repair
+
+`src/ai/explainEngine.js` now uses short Malaysian Bahasa Melayu suitable for Year 2: `Gunakan “Saya” apabila kamu bercakap tentang diri sendiri.`; `Orang dalam ayat itu bercakap tentang dirinya sendiri.`; `Fikirkan perkataan yang kamu guna untuk menyebut diri sendiri.`; `Jangan pilih “dia” kerana “dia” digunakan untuk orang lain.`; and `“Saya” untuk diri sendiri. “Dia” untuk orang lain.` The Janna message is warm and brief (`Bagus. Kamu sudah memilih kata ganti nama yang betul.`), while Teacher remains instructional and Coach remains action-oriented. Stage 1 isolation and Stage 2 section-role/repetition guards remain active.
+
+### Validation and production preview
+
+`v31BmNaturalLanguageAudit` and `v31BmToneConsistencyAudit` PASS. Stage 2 usefulness, section-role, subject-isolation, relevance, Coach crash, Stage 3 Coach/UASA, and Stage 6 validators also PASS. The full individual sweep after adding the Stage 3 validators was **82 total: 68 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no BM wording failure occurred. `npm.cmd run build` passed with 323 modules. Main JS: `index-CDlJRt5T.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+This stage does not address duplicate modal section count, modal length, accordion behavior, Safari safe-area spacing, or card sizing. Recommendation: **READY FOR STAGE 4** subject to interactive BM modal confirmation.
+
+## Stage 4 — AI modal redundancy and surface-content repair
+
+### Redundancy root cause and inventory
+
+The modal components rendered the same payload fields in several places: the focus card repeated the question text, `Penerangan mudah` fell back through the same explanation, the mascot/Janna card repeated `whyCorrect`, and the closing encouragement repeated the same block again. `Ajar Saya` also rendered `whyCorrect` even though its procedural steps already carried the reasoning. `Terangkan` rendered retry-only `Petunjuk` and a duplicate encouragement. This was a render/composition issue, not a scoring or data issue.
+
+### Surface-content policy and repair
+
+`src/components/ai/AIExplainModal.jsx` now uses the explicit focus field, keeps the concise explanation/reason/example/mistake/memory sections, omits retry-only hint content, and uses the short Janna message once in the mascot card. `src/components/ai/AITeacherModal.jsx` uses focus, explanation, steps, example, mistake, memory, and practice content; it omits the duplicate why-correct block and uses the short coach/Janna message once. Modal hierarchy and section count were not redesigned, and no CSS/layout/safe-area changes were made. Tutor AI remains conversation-oriented.
+
+### Mathematics and BM results
+
+Mathematics now presents each visible block once: focus, concept, logical reason (Terangkan), procedural steps (Ajar Saya), alternate example, realistic mistake, memory rule, and brief encouragement. BM retains the Stage 3 natural copy and no longer repeats the complete sentence or the same `Saya` rule in Janna, Teacher, and Coach blocks.
+
+### Validation and production preview
+
+`v31AiModalRedundancyAudit` and `v31AiSurfaceContentPolicyAudit` PASS. Stage 1–3 related validators, Stage 7D modal, and Stage 6 regression validators PASS. The full individual sweep after adding the Stage 4 validators was **84 total: 71 PASS, 13 unrelated FAIL, 0 TIMEOUT**; no modal-content failure occurred. `npm.cmd run build` passed with 323 modules. Main JS: `index-qCPUmZ2c.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-BMG2BtEF.css`, 100.52 kB (gzip 19.49 kB). Existing >500 kB chunk warning remains. Production preview served the built application root at HTTP 200. Interactive browser/device testing was unavailable; no iPhone claim is made. Tracked `dist/index.html` content was restored after preview.
+
+Stage 4 does not address modal height, accordion UI, Safari safe-area spacing, card sizing, or general visual polish. Recommendation: **READY FOR STAGE 5** subject to interactive confirmation of correct-answer and wrong-answer modal flows.
+
+## Stage 5 — iPhone AI modal UX repair
+
+### Modal-shell root cause and repair
+
+The modal shell already had partial safe-area rules, but secondary examples remained expanded outside the existing disclosure, creating excess narrow-screen scrolling. Mobile spacing was also inconsistent across the header, body, Janna card, and action footer. `src/components/ai/AIExplainModal.jsx` and `src/components/ai/AITeacherModal.jsx` now place secondary example/support content inside accessible native disclosure controls (`Lihat bahan tambahan`), while primary reasoning remains visible. `src/styles/style.css` adds a narrow-screen `100dvh` shell strategy, one internal scroll region, safe-area-aware header/body/footer padding, 44px action targets, compact spacing, and a 48px Janna avatar with tighter card padding. Body-scroll locking remains provided by `modalRuntime.js`.
+
+### Accordion, footer, and accessibility policy
+
+Primary content stays expanded: Terangkan focus/explanation/why-correct and Ajar Saya focus/explanation/steps. Secondary examples, additional examples, mistakes, memory tips, and follow-ups are collapsed by default behind keyboard-accessible native disclosure controls. Footer actions remain inside the modal shell with safe-area padding and minimum touch height; no second fixed footer was introduced. Dialog semantics, focus handling, reduced-motion behavior, RTL text wrapping, and body locking remain unchanged.
+
+### Viewport QA and validation
+
+Static responsive validation covers 320–430px narrow layouts plus desktop/tablet rules; no physical iPhone or emulator browser session was available, so no device PASS is claimed. `v31AiModalMobileUxAudit` and `v31AiModalSafeAreaAudit` PASS, alongside Stage 1–4 modal/content validators and Stage 6/7D regression checks. Full individual sweep: **86 total, 72 PASS, 14 unrelated FAIL, 0 TIMEOUT**; no modal/mobile UX validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-CvI__isx.js`, 737.13 kB (gzip 217.20 kB); CSS: `index-DwcjoYnw.css`, 101.84 kB (gzip 19.72 kB). Existing >500 kB chunk warning remains. Production preview served the built root at HTTP 200. `dist/index.html` content was restored after preview, and no commit, push, or deploy was performed.
+
+Stage 5 does not change AI logic, scoring, accepted answers, generated content meaning, or communication/microphone behavior. Remaining limitation: physical iPhone/Safari viewport and focus verification.
+
+## Kata Nama Am explanation and modal-footer overlap repair
+
+### Root causes
+
+The BM `Kata Nama Am` topic had no skill-family branch in `explainEngine.js`, so it fell through to the generic focus (`Fahami kemahiran dalam soalan semasa.`) and reused the question explanation for multiple sections. The existing repetition guard covered the prior number/pronoun fixtures but did not provide a distinct common-noun fallback. Separately, the narrow-screen scroll body reserved only its normal padding plus the Safari inset; it did not reserve the stacked sticky footer height, allowing the final Janna card to sit beneath the actions.
+
+### Focused repair and visible text
+
+`src/ai/explainEngine.js` now detects BM `kata_nama_am` and equivalent `Kata Nama Am` metadata, producing distinct content: focus `Mengenal pasti kata nama am.`; simple explanation `Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat.`; why-correct `“buku” ialah nama umum bagi sejenis benda, bukan nama khas.`; hint `Fikirkan sama ada perkataan itu nama umum atau nama khas.`; procedural steps; example `Sekolah ialah kata nama am bagi tempat.`; common mistake contrasting `Sekolah Kebangsaan Seri Murni`; memory rule; and brief Janna encouragement. The branch supports equivalent nouns such as meja, sekolah, kucing, guru, and taman through the question answer/context rather than a word-specific special case.
+
+`src/ai/learningCopy.js` now handles array fallbacks safely in the existing repetition guard. `src/styles/style.css` reserves measured narrow-screen footer stacks with `--ai-modal-footer-height: 172px` for Terangkan and `116px` for Ajar Saya, adding the normal gap and `env(safe-area-inset-bottom)` to both `padding-bottom` and `scroll-padding-bottom`. The single internal scroll region, sticky footer, 44px actions, and compact Janna card are preserved.
+
+### Validation and production preview
+
+`v31BmKataNamaAmExplanationAudit` and `v31AiModalFooterOverlapAudit` PASS. All requested Stage 1–5 related validators PASS. Full individual sweep: **88 total, 74 PASS, 14 baseline/unrelated FAIL, 0 TIMEOUT**; no Kata Nama Am, AI-content, or modal-footer validator failed. `npm.cmd run build` passed with 323 modules. Main JS: `index-DWUhtE43.js`, 738.24 kB (gzip 217.55 kB); CSS: `index-BSb0p4mE.css`, 102.20 kB (gzip 19.78 kB). Existing >500 kB chunk warning remains. Production preview URL `http://127.0.0.1:4173/jannati-ai-tutor-v1/` returned HTTP 200 with the application root. `git diff --check` passed and `dist/index.html` content was restored.
+
+Narrow viewport results are code-level/static only for 320×568, 375×667, 390×844, 393×852, and 430×932: footer-height reservation, safe-area padding, one scroll region, and full final-card scroll space are present. Physical iPhone/Safari toolbar, touch, keyboard, and real inset behavior remain untestable. No scoring, accepted answers, storage, analytics, routing, Mathematics, Bertutur, or microphone logic changed. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**.
+
+## Combined Stage 1–5 QA
+
+### Baseline and changed-file matrix
+
+Baseline remains the uncommitted Stage 1–5 work on `v3.1-compact-ui`; package and lockfiles are unchanged. Runtime changes are limited to the previously repaired AI context/explanation paths, `AIExplainModal.jsx`, `AITeacherModal.jsx`, and modal CSS. Validator additions cover Stage 1–5 audits. The audit report and existing generated validation reports remain uncommitted; `artifacts/` remains separate. No unrelated runtime feature was changed for this QA pass.
+
+### Targeted validator matrix
+
+All 17 requested targeted validators passed: subject isolation, explanation relevance/usefulness, section roles, BM natural language/tone, modal redundancy/surface policy, mobile UX/safe area, Coach crash, Coach/UASA, Stage 6, Stage 7D, browser environment, Vite dependency entry, and BM style.
+
+### Full validator summary
+
+Individual sweep: **86 total, 73 PASS, 13 FAIL, 0 TIMEOUT**. The failures are baseline audits outside Stage 1–5 content/modal scope: compact UI token expectations, gamification panels, parent dashboard/insights, production polish, smart-check, study planner, tutor modal freeze/state, UI audit, Stage 7A mobile chrome, and release-candidate architecture. No AI-content, modal-rendering, or Stage 5 mobile UX validator failed.
+
+### Content and surface QA
+
+The executable Mathematics fixture retains `113 + 1 = 114`, a different `25 → 26` example, no place-name/BM leakage, distinct section roles, actionable wrong-answer guidance, and concise correct-answer content. The BM fixture retains the natural Year 2 wording from Stage 3, no arithmetic/place leakage, no placeholder phrases, and distinct Janna/Teacher/Coach roles. Terangkan keeps focus, explanation, why-correct, example, mistake, and memory content while omitting retry-only hint and duplicate encouragement. Ajar Saya keeps focus, explanation, steps, example, mistake, memory, and practice while omitting duplicate why-correct. Tutor AI remains conversation-oriented.
+
+### Mobile, accessibility, and regression QA
+
+Static responsive checks cover 320×568, 375×667, 390×844, 393×852, 430×932, 768×1024, and 1366×768 rules: `100dvh`, one internal scroll region, safe-area-aware footer padding, collapsed secondary disclosures, primary content visible, compact Janna card, and 44px actions. Dialog semantics, focus runtime, body locking, reduced-motion rules, and RTL-safe wrapping remain intact. Browser emulation/interactive viewport inspection was not available, so these are code-level results rather than physical-device results. Coach v3, Explain, Teacher, Tutor AI, labels, Bertutur, communication isolation, Vite scanning, scoring, accepted answers, storage, analytics, and routing were not changed by this QA pass.
+
+### Build and preview
+
+`npm.cmd run build` passed with 323 modules. Main JS: `index-NznaYRg2.js`, 737.13 kB (gzip 217.21 kB). CSS: `index-DwcjoYnw.css`, 101.84 kB (gzip 19.72 kB). Existing >500 kB chunk warning remains; no missing asset, Unicode, Arabic, TDZ, ReactDOM, or error-boundary issue appeared in preview smoke. Production preview URL: `http://127.0.0.1:4173/jannati-ai-tutor-v1/`; application root returned HTTP 200. `git diff --check` passed and `dist/index.html` content was restored; its status marker persists only because of the known Git index-lock permission issue.
+
+### Physical-device conditions and recommendation
+
+Not testable here: iPhone Safari bottom toolbar/insets, touch scrolling, virtual keyboard, browser chrome collapse, real focus return, and physical footer reachability. No physical-device PASS is claimed. Remaining P0/P1/P2 issues: none newly introduced; the 13 full-sweep failures are pre-existing non-Stage-1–5 audits. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**. Do not treat this as a physical iPhone/Safari approval.
+
+## Broader BM skill-family and modal safety audit
+
+### Scope and root causes
+
+The focused `Kata Nama Am` repair was correct, but representative BM topics still reached the generic explanation fallback because `src/ai/explainEngine.js` had no family mapping for kata nama khas, kata kerja, kata adjektif, penjodoh bilangan, imbuhan, sentence-building, spelling, punctuation, and comprehension topics. This produced a generic learning focus, repeated simple/why text, and placeholder examples. The repair adds a shared BM family resolver and contextual fallback content at the existing explanation boundary; raw topic IDs, question data, scoring, storage, analytics, and session identity remain unchanged. The existing footer-height reservation in `src/styles/style.css` was retained and audited for long content.
+
+### Coverage results
+
+Executable fixtures cover 13 BM families: kata nama am, kata nama khas, kata ganti nama, kata kerja, kata adjektif, penjodoh bilangan, imbuhan asas, ayat tunggal, ayat majmuk, bina ayat, ejaan, tanda baca, and kefahaman. Each now returns a family-specific focus, distinct explanation and why-correct text, a relevant example, a mistake reminder, and a memory tip. Cross-subject fallback fixtures for Mathematics, BM, English, Sains, Islam, Arab, PJ, and PK retain non-empty subject-aware output and do not echo `Soalan:` into the simple explanation.
+
+### New validators
+
+`v31BmSkillFamilyCoverageAudit.mjs`, `v31AiFallbackCoverageAudit.mjs`, and `v31AiModalLongContentAudit.mjs` all PASS. The existing focused BM and modal-footer validators also PASS. The modal audit confirms `100dvh`, one internal scroll region, footer-height reservation, safe-area padding, and scroll-padding for long content; no physical device or Safari session was available.
+
+### Full validator matrix
+
+Individual execution completed **91 validators: 76 PASS, 15 FAIL, 0 TIMEOUT**. The failures are existing out-of-scope baseline audits (compact UI, gamification, one simulation, knowledge, parent dashboard/insights, production polish, smart-check, study planner, tutor modal state/freeze, UI audit, Stage 7A mobile chrome, and release-candidate checks). No new BM-family, AI fallback, modal-content, Coach, communication, scoring, storage, or analytics failure was introduced. Exact per-validator durations were captured in the terminal run; all new and requested targeted validators passed.
+
+### Build and preview
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-DDvEjlYC.js`, 744.05 kB (gzip 219.22 kB); CSS: `index-BSb0p4mE.css`, 102.20 kB (gzip 19.78 kB). The existing >500 kB chunk warning remains. `git diff --check` PASS; preview smoke was not re-run after this audit, while the prior production preview returned HTTP 200. `dist/index.html` content was restored to the tracked asset references; the known Git index-lock status marker remains.
+
+### Remaining issues and recommendation
+
+No new confirmed P0/P1/P2 issue remains in the audited BM explanation or AI modal paths. The 15 failing baseline validators remain outside this task and require separate triage. Physical iPhone/Safari toolbar, touch, keyboard, and real safe-area behavior remain manual device checks. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**, subject to resolving or explicitly accepting the pre-existing baseline validator failures; no commit, push, or deploy was performed.
+
+## Tutor AI mobile UX and character identity repair
+
+### Root causes and focused repairs
+
+`TutorAIModal.jsx` rendered the expected answer in the active context card, rendered fallback errors twice (message plus error bubble), and had no normalized duplicate guard. The chat body also lacked measured composer-height reservation, while the user bubble inherited low-contrast dark text. The modal now gates expected-answer display behind the existing correct/final-reveal conditions, suppresses duplicate assistant fallback messages, reserves `--tutor-composer-height` plus safe-area space, and uses white text on the green student bubble. The compact mobile header reduces the Janna avatar to 48px while preserving branding, subject/topic context, and the reachable close control.
+
+The Tutor response engine now detects Bina Ayat requirements from the current question and generates token-specific focus, hint, four-step structure, and weak-attempt feedback. No complete model answer is exposed. The wrong-answer quiz card no longer uses session-complete farewell copy and labels the explanation speaker from the actual Jati/Janna character. `explainEngine.js` now gives `ringan tulang` the Year 2 explanation: “Ringan tulang” means rajin bekerja atau suka membantu orang lain, with a contextual example; accepted-answer matching remains unchanged.
+
+### Before and after
+
+- Repeated opening/fallback: duplicate `Saya akan bantu berdasarkan soalan yang sedang kamu jawab.` bubbles are guarded; the error bubble is no longer rendered twice.
+- Active progress: `Jawapan dijangka` is absent until an allowed reveal state; progress remains neutral.
+- Bina Ayat: generic “baca soalan / cari kata kunci / semak jawapan” is replaced with extracted requirements such as `Farid` + `menabung`, a start hint, subject/verb/completeness steps, and missing-element coaching.
+- Wrong result: `Jumpa lagi nanti. Janna sentiasa bersama kamu.` is replaced with `Jangan putus asa. Semak petunjuk dan cuba sekali lagi.`; speaker labels follow the actual character.
+- Simpulan bahasa: `ringan tulang bermaksud rajin membantu` is expanded to `ringan tulang bermaksud rajin bekerja atau suka membantu orang lain.`
+
+### Targeted validation
+
+All five new validators PASS: `v31TutorAiMobileUxAudit`, `v31TutorAiAnswerLeakAudit`, `v31TutorAiBinaAyatHelpAudit`, `v31CharacterIdentityConsistencyAudit`, and `v31SimpulanBahasaExplanationAudit`. Related existing validators also PASS: subject isolation, explanation usefulness, section roles, surface-content policy, modal mobile/safe-area/long-content, BM family coverage, and Stage 6 regression.
+
+The full individual sweep completed **96 validators: 82 PASS, 14 pre-existing/out-of-scope FAIL, 0 TIMEOUT**. Failures: compact UI, gamification panel, parent dashboard/insights, production polish, smart-check, study planner, tutor modal freeze/state, UI audit, Stage 7A mobile chrome, visual-wow safety, and release-candidate audits. No focused Tutor AI, answer-leak, identity, Bina Ayat, or simpulan validator failed.
+
+### Build, preview, and viewport notes
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-D_DBJdUT.js`, 745.94 kB (gzip 219.89 kB); CSS: `index-sppZSbid.css`, 102.71 kB (gzip 19.86 kB). Existing >500 kB chunk warning remains. Preview served `http://127.0.0.1:4173/jannati-ai-tutor-v1/` with HTTP 200 and the root mount present. `git diff --check`, `git diff --exit-code -- dist/index.html`, and `git diff --exit-code -- vite-preview.out.log` passed; the known dist status marker is from the repository index-lock issue.
+
+Static mobile rules cover 320×568, 375×667, 390×844, 393×852, and 430×932: compact header, 44px controls, high-contrast user text, one body scroll region, composer-height/safe-area reservation, and final-message clearance. Interactive browser console/screenshot testing and physical iPhone Safari testing were unavailable; no device PASS is claimed.
+
+### Recommendation
+
+Focused repairs are ready for commit and device-QA review. Existing 14 baseline validator failures remain separate release-triage items. No commit, push, or deploy was performed.
+
+## Cross-subject Tutor AI and feedback-pattern audit
+
+### Surface inventory
+
+| Surface | Component/path | Character/state | Answer risk | Mobile area |
+|---|---|---|---|---|
+| Tutor AI | `src/components/ai/TutorAIModal.jsx` | Janna, active/final | Expected answer gated by reveal state | Composer/footer |
+| Terangkan | `AIExplainModal.jsx` | Subject persona | Final answer only through existing reveal data | Sticky action footer |
+| Ajar Saya | `AITeacherModal.jsx` | Subject persona | Final answer only through existing reveal data | Sticky action footer |
+| Feedback card | `Quiz` in `src/App.jsx` | Jati/Janna by subject | Correct answer shown only when feedback provides it | Result actions |
+| Finish card | `Finish` in `src/App.jsx` | Session-complete | Completion copy confined to finish state | Result actions |
+
+### Subject fixture audit
+
+Representative first-topic fixtures were exercised for BM, Mathematics, English, Sains, Pendidikan Islam, Bahasa Arab, PJ, and PK. The audit covered opening, hint, progress/reveal gating, wrong/correct state payloads, examples, character routing, and reset keys. A repeated generic-help pattern was confirmed in cross-subject fallback content: hints/examples/steps could fall back to “cari kata kunci”, “jawapan yang tepat”, or unrelated examples. The reusable `buildCrossSubjectGuidance` path now supplies question/topic-aware guidance for BM grammar, Mathematics operations and numbers, English grammar form, Sains observation/concept, Pendidikan Islam terminology, Arabic RTL vocabulary, and PJ/PK safety contexts. Bina Ayat remains token-specific through the existing extractor.
+
+### Answer-leak and duplicate results
+
+Active fixtures across all eight loaded subject datasets keep `sections.correctAnswer` empty and do not place the expected answer in active hint/short text. Final reveal remains controlled by the existing correct/show-answer/attempt rules. Tutor AI uses normalized consecutive-message deduplication, resets on `open + sessionKey`, and no longer renders the same error as both a bubble and status duplicate. No hidden DOM or aria expected-answer path was found in active progress.
+
+### Character/state matrix
+
+Jati and Janna labels now derive from the displayed quiz character. Wrong-answer feedback uses continuation copy (`Jangan putus asa. Semak petunjuk dan cuba sekali lagi.`), while completion farewell remains in the finish path. The existing Jati farewell branch contains no Janna reference. No cross-subject avatar/copy mismatch was found in the audited result path.
+
+### Feedback accuracy
+
+The audit confirmed generic math explanations could repeat the same sentence; `explainEngine.js` now identifies add/subtract/multiply/divide operations and returns distinct operation focus, explanation, why-correct text, and steps without revealing the final number. The existing `ringan tulang` repair remains accurate and accepted-answer matching is unchanged. Arabic, Sains, Islam, PJ, and PK guidance remains subject-scoped and age-appropriate in the audited fixtures.
+
+### Mobile and state-reset audit
+
+Static viewport coverage includes 320×568, 360×640, 375×667, 390×844, 393×852, 430×932, 768×1024, and 1366×768 rules. Tutor, Explain, and Teacher surfaces retain one intended body scroll region, footer/composer clearance, safe-area padding, 44px controls, and mobile-scoped spacing. Tutor reopen resets seeded history by `sessionKey`; question transitions retain the existing App state reset flow and no storage/session schema was changed. Interactive browser console and physical iPhone/Safari checks were unavailable.
+
+### Validators and build
+
+All seven new cross-subject validators PASS, and all 15 requested related validators PASS. Full individual sweep: **103 total, 87 PASS, 16 FAIL, 0 TIMEOUT**. The 16 failures are baseline/out-of-scope audits: compact UI, gamification panel/simulation, knowledge, parent dashboard/insights, production polish, smart-check, study planner panel/simulation, tutor modal freeze/state legacy audits, UI audit, Stage 7A mobile chrome, visual-wow safety, and release-candidate checks. No focused cross-subject AI, answer-leak, duplicate, identity, feedback, state-reset, or mobile-safety validator failed.
+
+`npm.cmd run build` PASS (323 modules). Main JS: `index-Cg_XvPNQ.js`, 750.83 kB (gzip 221.31 kB); CSS: `index-sppZSbid.css`, 102.71 kB (gzip 19.86 kB). Existing >500 kB warning remains. Preview `http://127.0.0.1:4173/jannati-ai-tutor-v1/` returned HTTP 200 with the root mount. `git diff --check`, dist content comparison, and preview-log comparison passed.
+
+### Recommendation
+
+No new confirmed P0/P1/P2 remains in the audited cross-subject AI surfaces. Physical device and interactive browser checks remain manual. Recommendation: **READY FOR COMMIT AND DEVICE-QA DEPLOY**, with the 16 pre-existing baseline validator failures tracked separately. No commit, push, or deploy was performed.

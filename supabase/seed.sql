@@ -1,0 +1,1 @@
+-- Intentionally empty. Never copy production users or learning data into seeds.

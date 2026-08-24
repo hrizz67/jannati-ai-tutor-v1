@@ -1,27 +1,29 @@
+import { normalizeTopicContent } from '../contentSchema.js';
+
 export const subjectList = [
   {
     "id": "bm",
     "title": "Bahasa Melayu Tahun 2",
     "short": "BM",
-    "icon": "📚",
+    "icon": "\u{1F4DA}",
     "color": "green",
-    "topicCount": 10,
-    "questionCount": 500
+    "topicCount": 14,
+    "questionCount": 930
   },
   {
     "id": "math",
     "title": "Matematik Tahun 2",
     "short": "Math",
-    "icon": "📐",
+    "icon": "\u{1F4D0}",
     "color": "blue",
     "topicCount": 10,
-    "questionCount": 500
+    "questionCount": 600
   },
   {
     "id": "english",
     "title": "English Year 2",
     "short": "English",
-    "icon": "🔤",
+    "icon": "\u{1F524}",
     "color": "purple",
     "topicCount": 10,
     "questionCount": 500
@@ -30,7 +32,7 @@ export const subjectList = [
     "id": "sains",
     "title": "Sains Tahun 2",
     "short": "Sains",
-    "icon": "🔬",
+    "icon": "\u{1F52C}",
     "color": "orange",
     "topicCount": 10,
     "questionCount": 500
@@ -39,7 +41,7 @@ export const subjectList = [
     "id": "arab",
     "title": "Bahasa Arab Tahun 2",
     "short": "Arab",
-    "icon": "🇸🇦",
+    "icon": "\u{1F1F8}\u{1F1E6}",
     "color": "teal",
     "topicCount": 10,
     "questionCount": 500
@@ -48,7 +50,7 @@ export const subjectList = [
     "id": "islam",
     "title": "Pendidikan Islam Tahun 2",
     "short": "Islam",
-    "icon": "☪️",
+    "icon": "\u{262A}\u{FE0F}",
     "color": "green",
     "topicCount": 10,
     "questionCount": 500
@@ -57,7 +59,7 @@ export const subjectList = [
     "id": "pj",
     "title": "Pendidikan Jasmani Tahun 2",
     "short": "PJ",
-    "icon": "🏃",
+    "icon": "\u{1F3C3}",
     "color": "orange",
     "topicCount": 10,
     "questionCount": 500
@@ -66,7 +68,7 @@ export const subjectList = [
     "id": "pk",
     "title": "Pendidikan Kesihatan Tahun 2",
     "short": "PK",
-    "icon": "❤️",
+    "icon": "\u{2764}\u{FE0F}",
     "color": "red",
     "topicCount": 10,
     "questionCount": 500
@@ -74,26 +76,65 @@ export const subjectList = [
 ];
 
 export async function loadSubjectData(subjectId) {
+  let subjectModule;
   switch (subjectId) {
     case 'bm':
-      return (await import('./bm.js')).default;
+      subjectModule = await import('./bm.js');
+      break;
     case 'math':
-      return (await import('./math.js')).default;
+      subjectModule = await import('./math.js');
+      break;
     case 'english':
-      return (await import('./english.js')).default;
+      subjectModule = await import('./english.js');
+      break;
     case 'sains':
-      return (await import('./sains.js')).default;
+      subjectModule = await import('./sains.js');
+      break;
     case 'arab':
-      return (await import('./arab.js')).default;
+      subjectModule = await import('./arab.js');
+      break;
     case 'islam':
-      return (await import('./islam.js')).default;
+      subjectModule = await import('./islam.js');
+      break;
     case 'pj':
-      return (await import('./pj.js')).default;
+      subjectModule = await import('./pj.js');
+      break;
     case 'pk':
-      return (await import('./pk.js')).default;
+      subjectModule = await import('./pk.js');
+      break;
     default:
-      return (await import('./bm.js')).default;
+      subjectModule = await import('./bm.js');
+      break;
   }
+  return normalizeSubjectQuestionFields(subjectModule.default);
+}
+
+function normalizeSubjectQuestionFields(subject = {}) {
+  const isYearTwoSubject = /(?:Tahun|Year)\s*2\b/i.test(String(subject.title || ''));
+  return {
+    ...subject,
+    topics: (subject.topics || []).map(topic => {
+      const normalizedTopic = normalizeTopicContent(topic);
+      return {
+        ...normalizedTopic,
+        title: isYearTwoSubject
+          ? String(normalizedTopic.title || '').replace(/\bUASA\b/gi, 'Pentaksiran Sumatif')
+          : normalizedTopic.title,
+        questions: normalizedTopic.questions.map(question => {
+        const canonical = String(question.q ?? question.question ?? '').trim();
+        const hasUasaLabel = /\bUASA\b/i.test(String(question.uasa || ''));
+        const hasUasaAssessment = /\bUASA\b/i.test(String(question.assessment || ''));
+        return {
+          ...question,
+          q: canonical,
+          question: canonical,
+          uasa: isYearTwoSubject && hasUasaLabel ? 'PBD Sumatif' : question.uasa,
+          assessment: isYearTwoSubject && hasUasaAssessment ? 'PBD Sumatif' : question.assessment
+        };
+      })
+      };
+    })
+  };
 }
 
 export async function loadAllSubjects() {

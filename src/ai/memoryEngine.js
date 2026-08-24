@@ -1,3 +1,11 @@
+import { buildMasteryMap, summarizeMastery } from './adaptive/masteryEngine';
+import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
+import { rememberQuestionHistory } from './diversity/sessionHistoryEngine';
+import { rememberQuestionIntelligenceHistory } from './question/questionEngine.js';
+import { loadMemory as loadStudentMemory } from './memory/memoryStorage.js';
+import { applyActivityCompletion, applyQuestionCompletions, loadStudentProfile, resolveStudentId, saveStudentProfile } from './profile/index.js';
+import { recordMistakes } from './mistakes/index.js';
+
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 
@@ -15,31 +23,98 @@ function emptyMemory() {
     xp: 0,
     coins: 0,
     mastery: 0,
+    topicMastery: {},
+    masterySummary: null,
+    readingHistory: [],
+    listeningHistory: [],
+    speakingHistory: [],
+    writingHistory: [],
+    questionHistory: [],
+    qipHistory: {
+      questions: [],
+      stems: [],
+      topics: [],
+      templates: [],
+      contexts: [],
+      names: [],
+      objects: []
+    },
+    curriculumCoverage: null,
+    topicHistory: {},
+    mistakeHistory: {},
+    dailySnapshots: [],
+    recommendationScores: {},
+    learningHistory: [],
+    memoryUpdatedAt: '',
     updatedAt: ''
   };
 }
 
 export function loadAIMemory() {
   try {
+    const studentMemory = loadStudentMemory();
     const saved = localStorage.getItem(MEMORY_KEY);
-    if (saved) return { ...emptyMemory(), ...JSON.parse(saved) };
+    if (saved) {
+      return {
+        ...emptyMemory(),
+        ...JSON.parse(saved),
+        topicHistory: studentMemory.topics || {},
+        mistakeHistory: studentMemory.mistakes || {},
+        dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+        recommendationScores: studentMemory.recommendationScores || {},
+        learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+        memoryUpdatedAt: studentMemory.updatedAt || ''
+      };
+    }
 
     for (const key of LEGACY_MEMORY_KEYS) {
       const legacy = localStorage.getItem(key);
       if (legacy) {
         localStorage.setItem(MEMORY_KEY, legacy);
-        return { ...emptyMemory(), ...JSON.parse(legacy) };
+        return {
+          ...emptyMemory(),
+          ...JSON.parse(legacy),
+          topicHistory: studentMemory.topics || {},
+          mistakeHistory: studentMemory.mistakes || {},
+          dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+          recommendationScores: studentMemory.recommendationScores || {},
+          learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+          memoryUpdatedAt: studentMemory.updatedAt || ''
+        };
       }
     }
 
-    return emptyMemory();
+    return {
+      ...emptyMemory(),
+      topicHistory: studentMemory.topics || {},
+      mistakeHistory: studentMemory.mistakes || {},
+      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+      recommendationScores: studentMemory.recommendationScores || {},
+      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+      memoryUpdatedAt: studentMemory.updatedAt || ''
+    };
   } catch {
-    return emptyMemory();
+    localStorage.removeItem(MEMORY_KEY);
+    LEGACY_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
+    const studentMemory = loadStudentMemory();
+    return {
+      ...emptyMemory(),
+      topicHistory: studentMemory.topics || {},
+      mistakeHistory: studentMemory.mistakes || {},
+      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+      recommendationScores: studentMemory.recommendationScores || {},
+      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+      memoryUpdatedAt: studentMemory.updatedAt || ''
+    };
   }
 }
 
 export function saveAIMemory(memory) {
-  localStorage.setItem(MEMORY_KEY, JSON.stringify({ ...emptyMemory(), ...memory, updatedAt: new Date().toISOString() }));
+  try {
+    localStorage.setItem(MEMORY_KEY, JSON.stringify({ ...emptyMemory(), ...memory, updatedAt: new Date().toISOString() }));
+  } catch {
+    localStorage.removeItem(MEMORY_KEY);
+  }
 }
 
 function buildTopicRows(profile = {}, subjects = []) {
@@ -62,7 +137,14 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
   const attempted = rows.filter(row => row.attempts > 0);
   const weakTopics = attempted.filter(row => row.best < 80).sort((a, b) => a.best - b.best).slice(0, 12);
   const strongTopics = attempted.filter(row => row.best >= 80).sort((a, b) => b.best - a.best).slice(0, 12);
-  const mastery = rows.length ? Math.round((strongTopics.length / rows.length) * 100) : previousMemory.mastery || 0;
+  const topicMastery = {
+    ...(previousMemory.topicMastery || {}),
+    ...buildMasteryMap(profile, subjects, previousMemory)
+  };
+  const masterySummary = summarizeMastery(topicMastery);
+  const mastery = masterySummary.total ? masterySummary.masteryScore : previousMemory.mastery || 0;
+  const curriculumCoverage = buildCurriculumCoverage(profile, subjects);
+  const studentMemory = loadStudentMemory();
 
   return {
     ...previousMemory,
@@ -71,13 +153,23 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
     studyStreak: profile.streak || 0,
     xp: profile.xp || 0,
     coins: profile.coins || 0,
-    mastery
+    mastery,
+    topicMastery,
+    masterySummary,
+    curriculumCoverage,
+    topicHistory: studentMemory.topics || previousMemory.topicHistory || {},
+    mistakeHistory: studentMemory.mistakes || previousMemory.mistakeHistory || {},
+    dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : previousMemory.dailySnapshots || [],
+    recommendationScores: studentMemory.recommendationScores || previousMemory.recommendationScores || {},
+    learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : previousMemory.learningHistory || [],
+    memoryUpdatedAt: studentMemory.updatedAt || previousMemory.memoryUpdatedAt || ''
   };
 }
 
 export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent = 0, session = {}, studySeconds = 0 }) {
   const previous = loadAIMemory();
   const next = buildAIMemory(profile, [subject], previous);
+  const studentId = resolveStudentId(profile, 'default');
   const lesson = {
     subjectId: subject.id,
     subject: subject.short || subject.title,
@@ -89,11 +181,208 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
     date: new Date().toISOString()
   };
 
+  const historyMemory = rememberQuestionIntelligenceHistory(
+    rememberQuestionHistory(next, session.questions || topic.questions || []),
+    session.questions || topic.questions || []
+  );
+
   saveAIMemory({
     ...next,
+    ...historyMemory,
     lastLesson: lesson,
     studyTime: Math.max(0, previous.studyTime || 0) + Math.max(0, studySeconds || 0)
   });
+
+  const studentProfile = loadStudentProfile(studentId, profile);
+  const completionRows = Array.isArray(session.answers) ? session.answers : [];
+  const questionCompletions = completionRows.map(entry => ({
+    studentId,
+    subjectId: entry.subjectId || subject.id,
+    subjectTitle: entry.subjectTitle || subject.title,
+    subjectShort: entry.subjectShort || subject.short,
+    topicId: entry.topicId || topic.id,
+    topicTitle: entry.topicTitle || topic.title,
+    questionId: entry.questionId || null,
+    correct: entry.status === 'correct' || entry.status === 'excellent',
+    attemptNumber: entry.attemptNumber || 1,
+    responseTimeMs: entry.timeSpentMs || entry.timeSpent || entry.responseTimeMs || 0,
+    answeredAt: entry.answeredAt || lesson.date,
+    date: entry.answeredAt || lesson.date
+  }));
+  const updatedStudentProfile = applyActivityCompletion(
+    applyQuestionCompletions(studentProfile, questionCompletions),
+    {
+      studentId,
+      completedAt: lesson.date,
+      studySeconds
+    }
+  );
+  const sessionQuestions = Array.isArray(session.questions) ? session.questions : [];
+  const questionById = new Map(sessionQuestions.map(question => [question?.id, question]));
+  const mistakeInputs = completionRows
+    .filter(entry => entry && entry.status && entry.status !== 'correct' && entry.status !== 'excellent')
+    .map(entry => {
+      const matchedQuestion = questionById.get(entry.questionId) || topic.questions?.find(question => question.id === entry.questionId) || {};
+      return {
+        studentId,
+        subjectId: entry.subjectId || subject.id,
+        topicId: entry.topicId || topic.id,
+        subTopic: matchedQuestion.subTopic || matchedQuestion.subtopic || matchedQuestion.sub_topic || '',
+        subject: {
+          id: entry.subjectId || subject.id,
+          title: entry.subjectTitle || subject.title || '',
+          short: entry.subjectShort || subject.short || ''
+        },
+        topic: {
+          id: entry.topicId || topic.id,
+          title: entry.topicTitle || topic.title || '',
+          difficulty: matchedQuestion.difficulty || topic.difficulty || 'medium'
+        },
+        questionId: entry.questionId || matchedQuestion.id || null,
+        question: matchedQuestion,
+        answer: entry.answer || '',
+        correctAnswer: entry.correctAnswer || matchedQuestion.answer || '',
+        difficultyLevel: matchedQuestion.difficulty || topic.difficulty || 'medium',
+        timestamp: entry.answeredAt || lesson.date
+      };
+    });
+  const updatedMistakeProfile = recordMistakes(updatedStudentProfile, mistakeInputs);
+  saveStudentProfile(updatedMistakeProfile, studentId);
+}
+
+export function saveQuestionHistory(questions = []) {
+  const previous = loadAIMemory();
+  const rows = Array.isArray(questions) ? questions : [questions];
+  saveAIMemory(rememberQuestionIntelligenceHistory(rememberQuestionHistory(previous, rows), rows));
+}
+
+function refreshMemoryBase(profile, subjects, previous) {
+  return profile ? buildAIMemory(profile, subjects || [], previous) : previous;
+}
+
+export function saveReadingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const readingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Reading Coach',
+    score: result.score || 0,
+    correct: result.correct || 0,
+    missed: result.missed || 0,
+    incorrect: result.incorrect || 0,
+    passed: Number(result.score) >= 80,
+    totalTargetWords: Number(result.totalTargetWords) || 0,
+    matchedWordCount: Number(result.matchedWordCount) || 0,
+    missedWordCount: Number(result.missedWordCount) || 0,
+    extraWordCount: Number(result.extraWordCount) || 0,
+    completedPassages: Number(result.completedPassages) || 0,
+    averageScore: Number(result.averageScore) || 0,
+    bestScore: Number(result.bestScore) || 0,
+    scoreHistory: Array.isArray(result.scoreHistory) ? result.scoreHistory : [],
+    passedCount: Number(result.passedCount) || 0,
+    finalItemScore: Number(result.finalItemScore) || Number(result.score) || 0,
+    targetText: result.targetText || '',
+    transcript: result.transcript || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    readingHistory: [readingResult, ...(base.readingHistory || [])].slice(0, 20)
+  });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: readingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
+}
+
+export function saveListeningMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const listeningResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Listening Lab',
+    mode: result.mode || 'choose',
+    score: result.score || 0,
+    correct: result.correct || 0,
+    total: result.total || 0,
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    listeningHistory: [listeningResult, ...(base.listeningHistory || [])].slice(0, 20)
+  });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: listeningResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
+}
+
+export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const speakingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Speaking Coach',
+    mode: result.mode || 'intro',
+    score: result.score || 0,
+    matchedKeywords: result.matchedKeywords || 0,
+    totalKeywords: result.totalKeywords || 0,
+    transcript: result.transcript || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    speakingHistory: [speakingResult, ...(base.speakingHistory || [])].slice(0, 20)
+  });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: speakingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
+}
+
+export function saveWritingMemory(result = {}, profile = null, subjects = []) {
+  const previous = loadAIMemory();
+  const base = refreshMemoryBase(profile, subjects, previous);
+  const writingResult = {
+    language: result.language || 'bm',
+    title: result.title || 'Writing Coach',
+    mode: result.mode || 'short',
+    score: result.score || 0,
+    matchedKeywords: result.matchedKeywords || 0,
+    totalKeywords: result.totalKeywords || 0,
+    spellingIssues: result.spellingIssues || 0,
+    grammarHints: result.grammarHints || [],
+    answer: result.answer || '',
+    date: result.date || new Date().toISOString()
+  };
+
+  saveAIMemory({
+    ...base,
+    writingHistory: [writingResult, ...(base.writingHistory || [])].slice(0, 20)
+  });
+
+  const studentId = resolveStudentId(profile || {}, 'default');
+  const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
+    studentId,
+    completedAt: writingResult.date,
+    studySeconds: Math.max(0, Number(result.studySeconds || result.durationSeconds || 0))
+  });
+  saveStudentProfile(nextProfile, studentId);
 }
 
 export function formatStudyTime(seconds = 0) {

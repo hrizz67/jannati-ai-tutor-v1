@@ -1,0 +1,697 @@
+{
+  "generatedAt": "2026-08-11T12:54:39.660Z",
+  "subjects": [
+    {
+      "id": "bm",
+      "title": "Bahasa Melayu Tahun 2",
+      "totalQuestions": 760,
+      "uniqueStems": 760,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 760,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "kata_nama_am",
+          "title": "Kata Nama Am",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_nama_khas",
+          "title": "Kata Nama Khas",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_ganti_nama",
+          "title": "Kata Ganti Nama",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_kerja",
+          "title": "Kata Kerja",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_adjektif",
+          "title": "Kata Adjektif",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_sendi",
+          "title": "Kata Sendi Nama",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kata_hubung",
+          "title": "Kata Hubung",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "penjodoh_bilangan",
+          "title": "Penjodoh Bilangan",
+          "totalQuestions": 90,
+          "uniqueStems": 90,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "pemahaman_penulisan",
+          "title": "Pemahaman dan Penulisan",
+          "totalQuestions": 110,
+          "uniqueStems": 110,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "ayat",
+          "title": "Ayat Tanya, Seruan dan Perintah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "tatabahasa",
+          "title": "Tatabahasa",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bina_ayat",
+          "title": "Bina Ayat",
+          "totalQuestions": 40,
+          "uniqueStems": 40,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "simpulan_bahasa",
+          "title": "Simpulan Bahasa",
+          "totalQuestions": 35,
+          "uniqueStems": 35,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "uasa_kbat",
+          "title": "UASA/KBAT",
+          "totalQuestions": 35,
+          "uniqueStems": 35,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "math",
+      "title": "Matematik Tahun 2",
+      "totalQuestions": 800,
+      "uniqueStems": 800,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 800,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "nombor",
+          "title": "Nombor Hingga 1000",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "tambah",
+          "title": "Tambah",
+          "totalQuestions": 126,
+          "uniqueStems": 126,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "tolak",
+          "title": "Tolak",
+          "totalQuestions": 126,
+          "uniqueStems": 126,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "darab",
+          "title": "Darab",
+          "totalQuestions": 124,
+          "uniqueStems": 124,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bahagi",
+          "title": "Bahagi",
+          "totalQuestions": 124,
+          "uniqueStems": 124,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "wang",
+          "title": "Wang",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "masa",
+          "title": "Masa dan Waktu",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "panjang",
+          "title": "Panjang",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "jisim_isi_padu",
+          "title": "Jisim dan Isi Padu",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bentuk",
+          "title": "Bentuk 2D dan 3D",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "english",
+      "title": "English Year 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "nouns",
+          "title": "Nouns",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "verbs",
+          "title": "Verbs",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "adjectives",
+          "title": "Adjectives",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "colours",
+          "title": "Colours",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "numbers",
+          "title": "Numbers",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "animals",
+          "title": "Animals",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "food",
+          "title": "Food",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "prepositions",
+          "title": "Prepositions",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "sentences",
+          "title": "Simple Sentences",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "reading",
+          "title": "Reading Comprehension",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "sains",
+      "title": "Sains Tahun 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "haiwan",
+          "title": "Haiwan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "tumbuhan",
+          "title": "Tumbuhan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "manusia",
+          "title": "Manusia",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "air",
+          "title": "Air",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "cahaya",
+          "title": "Cahaya",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bunyi",
+          "title": "Bunyi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bumi",
+          "title": "Bumi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bahan",
+          "title": "Bahan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "teknologi",
+          "title": "Teknologi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kemahiran_saintifik",
+          "title": "Kemahiran Saintifik",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "arab",
+      "title": "Bahasa Arab Tahun 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "huruf_hijaiyah",
+          "title": "Huruf Hijaiyah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "mufradat",
+          "title": "Mufradat",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "nombor_arab",
+          "title": "Nombor Arab",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "warna_arab",
+          "title": "Warna",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "keluarga",
+          "title": "Ahli Keluarga",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "haiwan_arab",
+          "title": "Haiwan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "anggota_badan",
+          "title": "Anggota Badan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "ayat_mudah_arab",
+          "title": "Ayat Mudah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "hiwar",
+          "title": "Hiwar",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kefahaman_arab",
+          "title": "Kefahaman Arab",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "islam",
+      "title": "Pendidikan Islam Tahun 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "aqidah",
+          "title": "Aqidah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "ibadah",
+          "title": "Ibadah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "sirah",
+          "title": "Sirah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "jawi",
+          "title": "Jawi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "akhlak",
+          "title": "Akhlak",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "quran",
+          "title": "Al-Quran",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "hadis",
+          "title": "Hadis",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "adab",
+          "title": "Adab",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "hafazan",
+          "title": "Hafazan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "jawi_perkataan",
+          "title": "Perkataan Jawi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "pj",
+      "title": "Pendidikan Jasmani Tahun 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "pergerakan_asas",
+          "title": "Pergerakan Asas",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "lokomotor",
+          "title": "Lokomotor",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "bukan_lokomotor",
+          "title": "Bukan Lokomotor",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "manipulasi_alatan",
+          "title": "Manipulasi Alatan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "koordinasi",
+          "title": "Koordinasi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kecergasan_fizikal",
+          "title": "Kecergasan Fizikal",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "keselamatan_aktiviti",
+          "title": "Keselamatan Semasa Aktiviti",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "permainan_mudah",
+          "title": "Permainan Mudah",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "rekreasi",
+          "title": "Rekreasi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "gaya_hidup_aktif",
+          "title": "Gaya Hidup Aktif",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    },
+    {
+      "id": "pk",
+      "title": "Pendidikan Kesihatan Tahun 2",
+      "totalQuestions": 500,
+      "uniqueStems": 500,
+      "duplicateStemCount": 0,
+      "uniqueTemplates": 500,
+      "templateReuseCount": 0,
+      "topics": [
+        {
+          "id": "kebersihan_diri",
+          "title": "Kebersihan Diri",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "pemakanan_sihat",
+          "title": "Pemakanan Sihat",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "keselamatan_diri",
+          "title": "Keselamatan Diri",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kesihatan_mental_emosi",
+          "title": "Kesihatan Mental dan Emosi",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "keselamatan_jalan_raya",
+          "title": "Keselamatan Jalan Raya",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "pencegahan_penyakit",
+          "title": "Pencegahan Penyakit",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "pertolongan_cemas_asas",
+          "title": "Pertolongan Cemas Asas",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "kesihatan_persekitaran",
+          "title": "Kesihatan Persekitaran",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "gaya_hidup_sihat",
+          "title": "Gaya Hidup Sihat",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        },
+        {
+          "id": "uasa_kesihatan",
+          "title": "UASA Kesihatan",
+          "totalQuestions": 50,
+          "uniqueStems": 50,
+          "duplicateStemCount": 0
+        }
+      ],
+      "topTemplateReuses": [],
+      "topDuplicateStems": []
+    }
+  ]
+}

@@ -1,4 +1,7 @@
-export const sainsSubject = {
+import { normalizeSainsSubject } from '../../utils/sainsContentQuality.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+
+const rawSainsSubject = {
   "id": "sains",
   "title": "Sains Tahun 2",
   "short": "Sains",
@@ -1405,17 +1408,17 @@ export const sainsSubject = {
         },
         {
           "id": "SAINS-TUMBUHAN-050",
-          "q": "Perbuatan memotong daun kering berkaitan dengan ________ tumbuhan.",
-          "answer": "kemas",
+          "q": "Memotong daun kering membantu menjaga ________ tumbuhan.",
+          "answer": "kebersihan",
           "accepted": [
-            "kemas"
+            "kebersihan"
           ],
           "hint": "Fikirkan tujuan penjagaan tumbuhan.",
-          "explanation": "Daun kering dibuang supaya pokok lebih kemas.",
+          "explanation": "Daun kering dibuang supaya tumbuhan lebih bersih dan kemas.",
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Perbuatan memotong daun kering berkaitan dengan ________ tumbuhan."
+          "question": "Memotong daun kering membantu menjaga ________ tumbuhan."
         }
       ]
     },
@@ -1986,7 +1989,7 @@ export const sainsSubject = {
         },
         {
           "id": "SAINS-MANUSIA-041",
-          "q": "Untuk keselamatan, pisau perlu diingat kerana ________.",
+          "q": "Pisau dapur itu ________.",
           "answer": "tajam",
           "accepted": [
             "tajam"
@@ -1996,11 +1999,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, pisau perlu diingat kerana ________."
+          "question": "Pisau dapur itu ________."
         },
         {
           "id": "SAINS-MANUSIA-042",
-          "q": "Untuk keselamatan, ubat perlu diingat kerana ________.",
+          "q": "Untuk keselamatan, ubat perlu diambil dengan bantuan ________.",
           "answer": "orang dewasa",
           "accepted": [
             "orang dewasa"
@@ -2010,11 +2013,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, ubat perlu diingat kerana ________."
+          "question": "Untuk keselamatan, ubat perlu diambil dengan bantuan ________."
         },
         {
           "id": "SAINS-MANUSIA-043",
-          "q": "Untuk keselamatan, jalan raya perlu diingat kerana ________.",
+          "q": "Kita perlu ________ ketika berada di jalan raya.",
           "answer": "berhati-hati",
           "accepted": [
             "berhati-hati"
@@ -2024,11 +2027,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, jalan raya perlu diingat kerana ________."
+          "question": "Kita perlu ________ ketika berada di jalan raya."
         },
         {
           "id": "SAINS-MANUSIA-044",
-          "q": "Untuk keselamatan, soket elektrik perlu diingat kerana ________.",
+          "q": "Jangan sentuh soket elektrik dengan ________.",
           "answer": "tangan basah",
           "accepted": [
             "tangan basah"
@@ -2038,11 +2041,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, soket elektrik perlu diingat kerana ________."
+          "question": "Jangan sentuh soket elektrik dengan ________."
         },
         {
           "id": "SAINS-MANUSIA-045",
-          "q": "Untuk keselamatan, air panas perlu diingat kerana ________.",
+          "q": "Air panas boleh menyebabkan kulit ________.",
           "answer": "melecur",
           "accepted": [
             "melecur"
@@ -2052,11 +2055,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, air panas perlu diingat kerana ________."
+          "question": "Air panas boleh menyebabkan kulit ________."
         },
         {
           "id": "SAINS-MANUSIA-046",
-          "q": "Untuk keselamatan, lantai basah perlu diingat kerana ________.",
+          "q": "Lantai basah boleh menjadi ________.",
           "answer": "licin",
           "accepted": [
             "licin"
@@ -2066,11 +2069,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, lantai basah perlu diingat kerana ________."
+          "question": "Lantai basah boleh menjadi ________."
         },
         {
           "id": "SAINS-MANUSIA-047",
-          "q": "Untuk keselamatan, topi keledar perlu diingat kerana ________.",
+          "q": "Topi keledar melindungi ________.",
           "answer": "kepala",
           "accepted": [
             "kepala"
@@ -2080,11 +2083,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, topi keledar perlu diingat kerana ________."
+          "question": "Topi keledar melindungi ________."
         },
         {
           "id": "SAINS-MANUSIA-048",
-          "q": "Untuk keselamatan, tali kasut perlu diingat kerana ________.",
+          "q": "Tali kasut perlu ________ supaya tidak tersandung.",
           "answer": "diikat",
           "accepted": [
             "diikat"
@@ -2094,11 +2097,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, tali kasut perlu diingat kerana ________."
+          "question": "Tali kasut perlu ________ supaya tidak tersandung."
         },
         {
           "id": "SAINS-MANUSIA-049",
-          "q": "Untuk keselamatan, makanan basi perlu diingat kerana ________.",
+          "q": "Makanan basi boleh menyebabkan ________.",
           "answer": "sakit perut",
           "accepted": [
             "sakit perut"
@@ -2108,11 +2111,11 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, makanan basi perlu diingat kerana ________."
+          "question": "Makanan basi boleh menyebabkan ________."
         },
         {
           "id": "SAINS-MANUSIA-050",
-          "q": "Untuk keselamatan, bermain api perlu diingat kerana ________.",
+          "q": "Bermain api boleh menyebabkan ________.",
           "answer": "kebakaran",
           "accepted": [
             "kebakaran"
@@ -2122,7 +2125,7 @@ export const sainsSubject = {
           "difficulty": "sukar",
           "uasa": "Sains",
           "dskp": "KSSR",
-          "question": "Untuk keselamatan, bermain api perlu diingat kerana ________."
+          "question": "Bermain api boleh menyebabkan ________."
         }
       ]
     },
@@ -6019,12 +6022,12 @@ export const sainsSubject = {
         {
           "id": "SAINS-TEKNOLOGI-026",
           "q": "Ketika menggunakan wayar rosak, kita perlu ________.",
-          "answer": "orang dewasa",
+          "answer": "beritahu orang dewasa",
           "accepted": [
-            "orang dewasa"
+            "beritahu orang dewasa"
           ],
           "hint": "Fikirkan keselamatan menggunakan alat.",
-          "explanation": "Wayar rosak perlu diperiksa oleh orang dewasa.",
+          "explanation": "Kita perlu memberitahu orang dewasa supaya wayar rosak diperiksa dengan selamat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6380,8 +6383,8 @@ export const sainsSubject = {
           "accepted": [
             "melihat"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Mata digunakan untuk memerhati warna, bentuk dan saiz.",
+          "hint": "Lihat dengan mata untuk perhatikan warna dan bentuk.",
+          "explanation": "Mata digunakan untuk melihat warna dan bentuk.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6394,8 +6397,8 @@ export const sainsSubject = {
           "accepted": [
             "menghidu"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Hidung digunakan untuk memerhati bau.",
+          "hint": "Gunakan hidung untuk menghidu bau.",
+          "explanation": "Hidung digunakan untuk menghidu bau.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6408,8 +6411,8 @@ export const sainsSubject = {
           "accepted": [
             "mendengar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Telinga digunakan untuk memerhati bunyi.",
+          "hint": "Gunakan telinga untuk mendengar bunyi.",
+          "explanation": "Telinga digunakan untuk mendengar bunyi.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6422,8 +6425,8 @@ export const sainsSubject = {
           "accepted": [
             "merasa"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Lidah digunakan untuk memerhati rasa.",
+          "hint": "Gunakan lidah untuk merasa rasa.",
+          "explanation": "Lidah digunakan untuk merasa rasa.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6436,8 +6439,8 @@ export const sainsSubject = {
           "accepted": [
             "menyentuh"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Kulit digunakan untuk memerhati kasar, licin, panas atau sejuk.",
+          "hint": "Gunakan kulit untuk sentuh dan rasa permukaan.",
+          "explanation": "Kulit digunakan untuk menyentuh dan merasai kasar, licin, panas atau sejuk.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6450,8 +6453,8 @@ export const sainsSubject = {
           "accepted": [
             "hijau"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Daun boleh diperhatikan melalui warna.",
+          "hint": "Perhatikan warna daun.",
+          "explanation": "Daun biasanya berwarna hijau.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6464,8 +6467,8 @@ export const sainsSubject = {
           "accepted": [
             "kuat"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Kekuatan bunyi boleh diperhatikan dengan telinga.",
+          "hint": "Dengar kuat atau perlahan bunyi loceng.",
+          "explanation": "Loceng yang nyaring menghasilkan bunyi kuat.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6478,8 +6481,8 @@ export const sainsSubject = {
           "accepted": [
             "harum"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Bau boleh diperhatikan dengan hidung.",
+          "hint": "Hidu bau bunga.",
+          "explanation": "Bunga yang harum berbau menyenangkan.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6492,8 +6495,8 @@ export const sainsSubject = {
           "accepted": [
             "kasar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Permukaan boleh diperhatikan dengan sentuhan.",
+          "hint": "Sentuh permukaan batu.",
+          "explanation": "Batu biasanya terasa kasar.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6506,8 +6509,8 @@ export const sainsSubject = {
           "accepted": [
             "besar"
           ],
-          "hint": "Fikirkan kemahiran memerhati.",
-          "explanation": "Saiz ialah ciri yang boleh diperhatikan.",
+          "hint": "Perhatikan saiz objek.",
+          "explanation": "Objek yang tidak kecil boleh disebut besar.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6520,8 +6523,8 @@ export const sainsSubject = {
           "accepted": [
             "kucing"
           ],
-          "hint": "Fikirkan ciri yang sama.",
-          "explanation": "Kucing mempunyai empat kaki.",
+          "hint": "Pilih haiwan berkaki empat.",
+          "explanation": "Kucing ialah haiwan berkaki empat.",
           "difficulty": "mudah",
           "uasa": "Sains",
           "dskp": "KSSR",
@@ -6534,7 +6537,7 @@ export const sainsSubject = {
           "accepted": [
             "ikan"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih haiwan yang hidup di air.",
           "explanation": "Ikan hidup di dalam air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6548,7 +6551,7 @@ export const sainsSubject = {
           "accepted": [
             "bola merah"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek berwarna merah.",
           "explanation": "Bola merah dikelaskan mengikut warna.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6562,7 +6565,7 @@ export const sainsSubject = {
           "accepted": [
             "kaca"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih bahan lutsinar.",
           "explanation": "Kaca jernih membenarkan cahaya menembusi.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6576,7 +6579,7 @@ export const sainsSubject = {
           "accepted": [
             "kain"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih bahan yang lembut.",
           "explanation": "Kain terasa lembut.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6590,7 +6593,7 @@ export const sainsSubject = {
           "accepted": [
             "gabus"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek yang terapung.",
           "explanation": "Gabus boleh terapung di atas air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6604,7 +6607,7 @@ export const sainsSubject = {
           "accepted": [
             "batu"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih objek yang tenggelam.",
           "explanation": "Batu biasanya tenggelam di dalam air.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6618,7 +6621,7 @@ export const sainsSubject = {
           "accepted": [
             "bunga raya"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih tumbuhan berbunga.",
           "explanation": "Bunga raya mempunyai bunga.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6632,7 +6635,7 @@ export const sainsSubject = {
           "accepted": [
             "pensel"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih alat menulis.",
           "explanation": "Pensel digunakan untuk menulis.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6646,7 +6649,7 @@ export const sainsSubject = {
           "accepted": [
             "lampu"
           ],
-          "hint": "Fikirkan ciri yang sama.",
+          "hint": "Pilih sumber cahaya.",
           "explanation": "Lampu menghasilkan cahaya.",
           "difficulty": "mudah",
           "uasa": "Sains",
@@ -6660,7 +6663,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk panjang.",
           "explanation": "Pembaris digunakan untuk mengukur panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6674,7 +6677,7 @@ export const sainsSubject = {
           "accepted": [
             "jisim"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan penimbang untuk jisim.",
           "explanation": "Penimbang digunakan untuk mengukur jisim.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6688,7 +6691,7 @@ export const sainsSubject = {
           "accepted": [
             "masa"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk masa.",
           "explanation": "Jam digunakan untuk mengukur masa.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6702,7 +6705,7 @@ export const sainsSubject = {
           "accepted": [
             "suhu"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk suhu.",
           "explanation": "Termometer digunakan untuk mengukur suhu.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6716,7 +6719,7 @@ export const sainsSubject = {
           "accepted": [
             "isipadu air"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk isipadu air.",
           "explanation": "Silinder penyukat boleh mengukur isipadu cecair.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6730,7 +6733,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan pita ukur untuk panjang.",
           "explanation": "Pita ukur digunakan untuk mengukur panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6744,7 +6747,7 @@ export const sainsSubject = {
           "accepted": [
             "isipadu"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk isipadu.",
           "explanation": "Cawan penyukat membantu menyukat cecair.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6758,7 +6761,7 @@ export const sainsSubject = {
           "accepted": [
             "masa"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Pilih alat yang sesuai untuk masa aktiviti.",
           "explanation": "Jam randik digunakan untuk mengukur masa aktiviti.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6772,7 +6775,7 @@ export const sainsSubject = {
           "accepted": [
             "jisim"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Bandingkan jisim dengan neraca.",
           "explanation": "Neraca digunakan untuk membandingkan jisim.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6786,7 +6789,7 @@ export const sainsSubject = {
           "accepted": [
             "panjang"
           ],
-          "hint": "Padankan alat dengan perkara yang diukur.",
+          "hint": "Gunakan sentimeter untuk panjang.",
           "explanation": "Sentimeter ialah unit untuk panjang.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6800,7 +6803,7 @@ export const sainsSubject = {
           "accepted": [
             "mencatat data"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat data dalam jadual.",
           "explanation": "Jadual membantu menyusun data.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6814,7 +6817,7 @@ export const sainsSubject = {
           "accepted": [
             "pemerhatian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan gambar sebagai rekod.",
           "explanation": "Gambar boleh merekod pemerhatian.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6828,7 +6831,7 @@ export const sainsSubject = {
           "accepted": [
             "bilangan"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan tanda palang untuk kira.",
           "explanation": "Tanda palang boleh digunakan untuk mengira bilangan.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6842,7 +6845,7 @@ export const sainsSubject = {
           "accepted": [
             "membandingkan"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Bandingkan data dengan graf gambar.",
           "explanation": "Graf gambar memudahkan perbandingan.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6856,7 +6859,7 @@ export const sainsSubject = {
           "accepted": [
             "maklumat"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat maklumat penting.",
           "explanation": "Nota ringkas mencatat maklumat penting.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6870,7 +6873,7 @@ export const sainsSubject = {
           "accepted": [
             "pemerhatian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Tulis tarikh pemerhatian.",
           "explanation": "Tarikh menunjukkan bila pemerhatian dibuat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6884,7 +6887,7 @@ export const sainsSubject = {
           "accepted": [
             "bahagian"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Gunakan label pada bahagian.",
           "explanation": "Label membantu mengenal bahagian objek.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6898,7 +6901,7 @@ export const sainsSubject = {
           "accepted": [
             "bentuk"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Lukis bentuk objek dengan jelas.",
           "explanation": "Lukisan boleh menunjukkan bentuk objek.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6912,7 +6915,7 @@ export const sainsSubject = {
           "accepted": [
             "dicatat"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Catat keputusan ujian.",
           "explanation": "Keputusan penyiasatan perlu dicatat.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6926,7 +6929,7 @@ export const sainsSubject = {
           "accepted": [
             "dibaca"
           ],
-          "hint": "Fikirkan cara merekod maklumat.",
+          "hint": "Susun data supaya mudah dibaca.",
           "explanation": "Data yang teratur mudah dibaca.",
           "difficulty": "sederhana",
           "uasa": "Sains",
@@ -6940,7 +6943,7 @@ export const sainsSubject = {
           "accepted": [
             "penyiasatan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Fikirkan soalan dalam penyiasatan.",
           "explanation": "Penyiasatan bermula dengan soalan yang jelas.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6954,7 +6957,7 @@ export const sainsSubject = {
           "accepted": [
             "sebelum ujian"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Buat ramalan sebelum ujian.",
           "explanation": "Ramalan dibuat sebelum menjalankan ujian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6968,7 +6971,7 @@ export const sainsSubject = {
           "accepted": [
             "selepas ujian"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Perhatikan hasil ujian.",
           "explanation": "Pemerhatian dibuat semasa atau selepas ujian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6982,7 +6985,7 @@ export const sainsSubject = {
           "accepted": [
             "satu perkara diubah"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Uji satu perkara pada satu masa.",
           "explanation": "Ujian lebih adil apabila satu perkara diubah pada satu masa.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -6996,7 +6999,7 @@ export const sainsSubject = {
           "accepted": [
             "ikut arahan guru"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Ikut arahan guru.",
           "explanation": "Arahan guru membantu aktiviti dijalankan dengan selamat.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7010,7 +7013,7 @@ export const sainsSubject = {
           "accepted": [
             "persamaan dan perbezaan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Cari persamaan dan perbezaan.",
           "explanation": "Membandingkan mencari persamaan dan perbezaan.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7024,7 +7027,7 @@ export const sainsSubject = {
           "accepted": [
             "ciri yang sama"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Cari ciri yang sama.",
           "explanation": "Mengelas ialah mengumpulkan objek mengikut ciri.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7038,7 +7041,7 @@ export const sainsSubject = {
           "accepted": [
             "jangkaan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Buat jangkaan awal.",
           "explanation": "Meramal ialah membuat jangkaan berdasarkan pemerhatian.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7052,7 +7055,7 @@ export const sainsSubject = {
           "accepted": [
             "keputusan"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Nyatakan keputusan penyiasatan.",
           "explanation": "Kesimpulan dibuat berdasarkan keputusan.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7066,7 +7069,7 @@ export const sainsSubject = {
           "accepted": [
             "menyampaikan maklumat"
           ],
-          "hint": "Fikirkan langkah penyiasatan saintifik.",
+          "hint": "Sampaikan maklumat dengan jelas.",
           "explanation": "Berkomunikasi ialah menyampaikan maklumat dengan jelas.",
           "difficulty": "sukar",
           "uasa": "Sains",
@@ -7077,5 +7080,257 @@ export const sainsSubject = {
     }
   ]
 };
+
+const SAINS_TOPIC_ENRICHMENTS = Object.freeze({
+  haiwan: {
+    note: "Murid mengenal pasti keperluan asas, cara bergerak, litupan badan, peringkat muda dan cara pembiakan haiwan.",
+    learningObjectives: ["Mengenal pasti ciri dan keperluan haiwan.", "Mengelaskan haiwan berdasarkan pergerakan dan pembiakan."]
+  },
+  tumbuhan: {
+    note: "Murid menerangkan fungsi bahagian tumbuhan, keperluan pertumbuhan, kitar hidup dan cara penjagaan yang betul.",
+    learningObjectives: ["Menghubungkan bahagian tumbuhan dengan fungsinya.", "Meramal kesan penjagaan terhadap pertumbuhan tumbuhan."]
+  },
+  manusia: {
+    note: "Murid menghubungkan organ deria dan anggota badan dengan fungsinya serta mengamalkan kesihatan dan keselamatan diri.",
+    learningObjectives: ["Menerangkan fungsi organ deria.", "Mengaplikasikan amalan kesihatan dan keselamatan."]
+  },
+  air: {
+    note: "Murid mengenal sifat, perubahan, sumber dan kegunaan air serta mengamalkan penjimatan dan keselamatan air.",
+    learningObjectives: ["Menerangkan sifat dan perubahan air.", "Memilih amalan penggunaan air yang selamat dan berhemah."]
+  },
+  cahaya: {
+    note: "Murid mengenal sumber cahaya, pembentukan bayang-bayang, ketelusan bahan dan amalan keselamatan cahaya.",
+    learningObjectives: ["Mengelaskan sumber cahaya dan bahan.", "Menerangkan pembentukan bayang-bayang dan menjaga keselamatan mata."]
+  },
+  bunyi: {
+    note: "Murid menerangkan bahawa bunyi terhasil daripada getaran serta membandingkan kekuatan bunyi dan menjaga pendengaran.",
+    learningObjectives: ["Menghubungkan getaran dengan penghasilan bunyi.", "Mengamalkan cara melindungi pendengaran."]
+  },
+  bumi: {
+    note: "Murid mengenal bentuk muka Bumi, cuaca, bahan semula jadi dan tindakan menjaga alam sekitar.",
+    learningObjectives: ["Mengenal ciri permukaan Bumi dan cuaca.", "Mengaplikasikan amalan penjagaan alam sekitar."]
+  },
+  bahan: {
+    note: "Murid mengelaskan bahan mengikut sifat, memilih bahan yang sesuai dan memerhati perubahan apabila dikenakan tindakan.",
+    learningObjectives: ["Membandingkan sifat bahan.", "Menilai kesesuaian bahan berdasarkan kegunaan."]
+  },
+  teknologi: {
+    note: "Murid menerangkan fungsi alat dan mesin ringkas serta menilai reka bentuk dan cara penggunaan yang selamat.",
+    learningObjectives: ["Menghubungkan alat dengan fungsinya.", "Memilih ciri reka bentuk dan amalan keselamatan yang sesuai."]
+  },
+  kemahiran_saintifik: {
+    note: "Murid memerhati, mengelas, mengukur, merekod, meramal, membuat kesimpulan dan berkomunikasi secara selamat.",
+    learningObjectives: ["Menggunakan kemahiran proses sains dalam penyiasatan mudah.", "Merekod dan menyampaikan dapatan berdasarkan bukti."]
+  }
+});
+
+const SAINS_QUESTION_OVERRIDES = Object.freeze({
+  "SAINS-HAIWAN-001": { q: "Kucing mendapat tenaga daripada ________.", answer: "makanan" },
+  "SAINS-HAIWAN-002": { q: "Ikan hidup di dalam ________.", answer: "air" },
+  "SAINS-HAIWAN-003": { q: "Burung bernafas menggunakan ________.", answer: "udara" },
+  "SAINS-HAIWAN-004": { q: "Sarang menjadi ________ bagi arnab daripada cuaca dan bahaya.", answer: "tempat perlindungan" },
+  "SAINS-HAIWAN-005": { q: "Ayam memperoleh tenaga dengan memakan ________.", answer: "makanan" },
+  "SAINS-HAIWAN-006": { q: "Berudu hidup dan membesar di dalam ________.", answer: "air", explanation: "Berudu hidup di dalam air sebelum berubah menjadi katak dewasa." },
+  "SAINS-HAIWAN-007": { q: "Kambing bernafas menggunakan ________.", answer: "udara" },
+  "SAINS-HAIWAN-008": { q: "Sarang ialah ________ bagi semut.", answer: "tempat perlindungan" },
+  "SAINS-HAIWAN-009": { q: "Nektar bunga menjadi ________ bagi rama-rama.", answer: "makanan" },
+  "SAINS-HAIWAN-010": { q: "Penyu laut hidup di dalam ________.", answer: "air" },
+  "SAINS-HAIWAN-043": { q: "Ikan emas membiak dengan cara ________.", answer: "bertelur", explanation: "Ikan emas membiak dengan menghasilkan telur." },
+  "SAINS-HAIWAN-050": { q: "Ular sawa membiak dengan cara ________.", answer: "bertelur", explanation: "Ular sawa membiak dengan bertelur." },
+
+  "SAINS-TUMBUHAN-006": {
+    q: "Biji benih berfungsi untuk menghasilkan ________.",
+    answer: "tumbuhan baharu",
+    explanation: "Biji benih boleh bercambah dan tumbuh menjadi tumbuhan baharu."
+  },
+  "SAINS-TUMBUHAN-007": { q: "Akar membantu tumbuhan berdiri tegak dengan cara ________.", answer: "mencengkam tanah" },
+  "SAINS-TUMBUHAN-008": { q: "Batang mengangkut ________ dari akar ke bahagian lain tumbuhan.", answer: "air" },
+  "SAINS-TUMBUHAN-009": { q: "Bahagian tumbuhan yang membuat makanan ialah ________.", answer: "daun", explanation: "Daun membuat makanan dengan bantuan cahaya." },
+  "SAINS-TUMBUHAN-010": { q: "Bunga boleh berkembang menjadi ________.", answer: "buah" },
+  "SAINS-TUMBUHAN-012": { q: "Tumbuhan hijau memerlukan ________ untuk membuat makanan.", answer: "cahaya matahari" },
+  "SAINS-TUMBUHAN-013": { q: "Tumbuhan memerlukan ________ untuk bernafas.", answer: "udara" },
+  "SAINS-TUMBUHAN-014": { q: "Tumbuhan yang tumbuh terlalu rapat bersaing untuk mendapatkan ________.", answer: "ruang" },
+  "SAINS-TUMBUHAN-015": { q: "Akar menyerap ________ daripada tanah untuk membantu pertumbuhan.", answer: "nutrien" },
+  "SAINS-TUMBUHAN-016": { q: "Kebanyakan tumbuhan darat tumbuh di dalam ________.", answer: "tanah" },
+  "SAINS-TUMBUHAN-017": { q: "Akar menyerap ________ untuk kegunaan tumbuhan.", answer: "air" },
+  "SAINS-TUMBUHAN-018": { q: "Daun menggunakan ________ untuk membuat makanan.", answer: "cahaya" },
+  "SAINS-TUMBUHAN-019": { q: "Tumbuhan mendapatkan ________ daripada persekitarannya untuk hidup.", answer: "udara" },
+  "SAINS-TUMBUHAN-020": { q: "Tumbuhan tumbuh lebih baik apabila mendapat ________ yang baik.", answer: "penjagaan" },
+  "SAINS-TUMBUHAN-023": { q: "Pokok dewasa boleh menghasilkan ________.", answer: "bunga" },
+  "SAINS-TUMBUHAN-025": { q: "Di dalam buah terdapat ________.", answer: "biji benih", explanation: "Buah mengandungi dan melindungi biji benih." },
+  "SAINS-TUMBUHAN-031": { q: "Pokok padi menghasilkan ________ yang boleh ditanam semula.", answer: "biji benih" },
+  "SAINS-TUMBUHAN-032": { q: "Pokok mangga menghasilkan ________.", answer: "buah" },
+  "SAINS-TUMBUHAN-033": { q: "Bunga raya ialah contoh tumbuhan yang mempunyai ________.", answer: "bunga" },
+  "SAINS-TUMBUHAN-034": { q: "Rumput mempunyai banyak ________ yang sempit.", answer: "daun" },
+  "SAINS-TUMBUHAN-035": { q: "Akar pokok kelapa berfungsi untuk ________ daripada tanah.", answer: "menyerap air", explanation: "Akar pokok kelapa menyerap air daripada tanah." },
+  "SAINS-TUMBUHAN-036": { q: "Pokok pisang menghasilkan ________.", answer: "buah" },
+  "SAINS-TUMBUHAN-037": { q: "Bahagian jagung yang boleh ditanam semula ialah ________.", answer: "biji", explanation: "Biji jagung boleh bercambah menjadi pokok jagung baharu." },
+  "SAINS-TUMBUHAN-038": { q: "Teratai tumbuh di dalam ________.", answer: "air" },
+  "SAINS-TUMBUHAN-039": { q: "Kaktus menyimpan ________ di dalam batangnya.", answer: "air" },
+  "SAINS-TUMBUHAN-040": { q: "Kangkung sesuai tumbuh di kawasan yang banyak ________.", answer: "air" },
+  "SAINS-TUMBUHAN-041": { q: "Menyiram membekalkan ________ kepada tumbuhan.", answer: "air" },
+  "SAINS-TUMBUHAN-042": { q: "Meletakkan tumbuhan di tempat cerah membekalkan ________.", answer: "cahaya" },
+  "SAINS-TUMBUHAN-043": { q: "Membaja membekalkan ________ kepada tumbuhan.", answer: "nutrien" },
+  "SAINS-TUMBUHAN-044": { q: "Mencabut rumpai memberi lebih banyak ________ kepada tumbuhan.", answer: "ruang" },
+  "SAINS-TUMBUHAN-045": { q: "Menggembur tanah menambah ruang ________ di sekeliling akar.", answer: "udara" },
+  "SAINS-TUMBUHAN-046": { q: "Menyiram terlalu banyak boleh ________ tumbuhan.", answer: "merosakkan akar", explanation: "Air yang berlebihan boleh memenuhi ruang udara dalam tanah dan merosakkan akar." },
+  "SAINS-TUMBUHAN-047": { q: "Tumbuhan yang tidak disiram boleh menjadi ________.", answer: "layu" },
+  "SAINS-TUMBUHAN-048": { q: "Tumbuhan di tempat gelap mendapat ________.", answer: "kurang cahaya" },
+  "SAINS-TUMBUHAN-049": { q: "Tumbuhan yang dijaga dengan baik boleh tumbuh ________.", answer: "subur" },
+  "SAINS-TUMBUHAN-050": { q: "Tindakan terbaik terhadap daun tumbuhan yang kering ialah ________.", answer: "memotong dan membuangnya", accepted: ["memotong dan membuangnya", "memotong daun kering", "membuang daun kering"], explanation: "Daun yang kering dipotong dan dibuang untuk menjaga kebersihan tumbuhan." },
+
+  "SAINS-MANUSIA-004": { q: "Lidah membantu kita mengesan ________ makanan.", answer: "rasa", explanation: "Lidah ialah organ deria yang mengesan rasa makanan." },
+  "SAINS-MANUSIA-005": { q: "Kulit membantu kita mengesan ________ pada badan.", answer: "sentuhan", explanation: "Kulit mengesan sentuhan, tekanan, panas dan sejuk." },
+  "SAINS-MANUSIA-006": { q: "Mata membantu kita mengenal ________ objek.", answer: "warna" },
+  "SAINS-MANUSIA-007": { q: "Telinga membantu kita mengesan ________.", answer: "bunyi" },
+  "SAINS-MANUSIA-008": { q: "Hidung membantu kita mengenal ________.", answer: "bau" },
+  "SAINS-MANUSIA-009": { q: "Lidah membantu kita mengenal ________ makanan.", answer: "rasa" },
+  "SAINS-MANUSIA-010": { q: "Kulit boleh mengesan keadaan ________ dan sejuk.", answer: "panas" },
+  "SAINS-MANUSIA-040": { q: "Minum air secukupnya membantu menjaga ________ badan.", answer: "kesihatan", explanation: "Air yang mencukupi membantu badan berfungsi dengan baik." },
+  "SAINS-MANUSIA-050": { q: "Tindakan paling selamat apabila ternampak kanak-kanak bermain api ialah ________.", answer: "memberitahu orang dewasa", accepted: ["memberitahu orang dewasa", "beritahu orang dewasa", "memanggil orang dewasa"], hint: "Jangan menghampiri atau bermain dengan api.", explanation: "Kita perlu menjauhi api dan segera memberitahu orang dewasa." },
+
+  "SAINS-AIR-009": { q: "Air yang jernih membolehkan kita melihat ________ di dalamnya.", answer: "objek", hint: "Jernih menerangkan kebolehan melihat menembusi air.", explanation: "Air jernih membolehkan objek di dalamnya dilihat, tetapi air jernih belum tentu selamat diminum." },
+  "SAINS-AIR-017": { q: "Jika ternampak api, kita perlu menjauh dan memanggil ________.", answer: "orang dewasa", accepted: ["orang dewasa", "guru", "ibu bapa"], hint: "Utamakan keselamatan dan jangan cuba memadamkan api sendiri.", explanation: "Kanak-kanak perlu menjauhi api dan segera mendapatkan bantuan orang dewasa." },
+  "SAINS-AIR-021": { q: "Hujan ialah sumber air ________.", answer: "semula jadi", explanation: "Hujan ialah salah satu sumber air semula jadi." },
+  "SAINS-AIR-022": { q: "Air sungai biasanya ________ dari tempat tinggi ke tempat rendah.", answer: "mengalir", explanation: "Air sungai mengalir mengikut cerun tanah." },
+  "SAINS-AIR-023": { q: "Tasik ialah kawasan air yang dikelilingi ________.", answer: "daratan", explanation: "Tasik ialah badan air yang dikelilingi daratan." },
+  "SAINS-AIR-024": { q: "Air laut mempunyai rasa ________.", answer: "masin" },
+  "SAINS-AIR-025": { q: "Air telaga diperoleh dari ________.", answer: "bawah tanah" },
+  "SAINS-AIR-026": { q: "Paip digunakan untuk menyalurkan ________.", answer: "air", explanation: "Paip menyalurkan air ke tempat yang diperlukan." },
+  "SAINS-AIR-027": { q: "Kolam ialah tempat yang mengandungi ________.", answer: "air" },
+  "SAINS-AIR-028": { q: "Air mineral yang selamat boleh digunakan untuk ________.", answer: "minum", accepted: ["minum", "diminum"] },
+  "SAINS-AIR-029": { q: "Mata air ialah sumber air ________.", answer: "semula jadi" },
+  "SAINS-AIR-030": { q: "Empangan dibina untuk ________.", answer: "menakung air" },
+  "SAINS-AIR-036": { q: "Mencuci kereta dengan baldi dapat ________ air.", answer: "menjimatkan", explanation: "Baldi membantu mengawal jumlah air yang digunakan." },
+  "SAINS-AIR-044": { q: "Banjir ialah keadaan yang ________.", answer: "berbahaya", explanation: "Banjir berbahaya kerana air boleh mengalir deras dan dalam." },
+  "SAINS-AIR-047": { q: "Air minuman yang telah dirawat selamat untuk ________.", answer: "diminum", accepted: ["diminum", "minum"], explanation: "Rawatan air membantu menyingkirkan kotoran dan kuman supaya air selamat diminum." },
+
+  "SAINS-CAHAYA-021": { q: "Objek legap menghasilkan bayang-bayang apabila ________ cahaya.", answer: "menghalang" },
+  "SAINS-CAHAYA-022": { q: "Bayang-bayang terbentuk apabila cahaya ________ oleh objek legap.", answer: "dihalang" },
+  "SAINS-CAHAYA-023": { q: "Lampu suluh ialah contoh ________.", answer: "sumber cahaya" },
+  "SAINS-CAHAYA-024": { q: "Kawasan tanpa cahaya kelihatan ________.", answer: "gelap" },
+  "SAINS-CAHAYA-025": { q: "Objek lutsinar membenarkan ________ melaluinya.", answer: "cahaya" },
+  "SAINS-CAHAYA-026": { q: "Objek lut cahaya membenarkan ________ melaluinya.", answer: "sebahagian cahaya" },
+  "SAINS-CAHAYA-027": { q: "Objek legap ________ cahaya daripada melaluinya.", answer: "menghalang", explanation: "Objek legap tidak membenarkan cahaya melaluinya." },
+  "SAINS-CAHAYA-028": { q: "Cahaya bergerak dalam garis ________.", answer: "lurus" },
+  "SAINS-CAHAYA-029": { q: "Bayang-bayang menjadi lebih jelas apabila menggunakan ________.", answer: "cahaya terang" },
+  "SAINS-CAHAYA-030": { q: "Kedudukan bayang-bayang berubah apabila kedudukan ________ berubah.", answer: "cahaya" },
+  "SAINS-CAHAYA-039": { q: "Cermin ________ cahaya yang mengenainya.", answer: "memantulkan", explanation: "Cermin memantulkan cahaya." },
+  "SAINS-CAHAYA-041": { q: "Melihat Matahari secara terus boleh mencederakan ________.", answer: "mata", hint: "Jangan melihat Matahari secara terus.", explanation: "Cahaya Matahari yang sangat terang boleh mencederakan mata." },
+  "SAINS-CAHAYA-042": { q: "Lampu yang terlalu terang boleh menyebabkan ________.", answer: "silau" },
+  "SAINS-CAHAYA-043": { q: "Membaca di tempat gelap boleh menyebabkan ________.", answer: "mata letih" },
+  "SAINS-CAHAYA-044": { q: "Memadamkan lampu apabila tidak digunakan dapat ________.", answer: "menjimatkan elektrik" },
+  "SAINS-CAHAYA-045": { q: "Lampu malam membantu kita ________ dalam gelap.", answer: "melihat" },
+  "SAINS-CAHAYA-046": { q: "Kita perlu ________ apabila menggunakan lilin dengan pengawasan orang dewasa.", answer: "berhati-hati" },
+  "SAINS-CAHAYA-047": { q: "Lampu jalan membantu meningkatkan ________ pengguna jalan raya.", answer: "keselamatan" },
+  "SAINS-CAHAYA-048": { q: "Lampu basikal membantu pengguna jalan raya melihat ________.", answer: "penunggang basikal", explanation: "Lampu basikal menjadikan penunggang lebih mudah dilihat." },
+  "SAINS-CAHAYA-049": { q: "Melihat skrin terlalu lama boleh menyebabkan ________.", answer: "mata letih" },
+  "SAINS-CAHAYA-050": { q: "Tindakan paling selamat apabila lampu rosak ialah ________.", answer: "melaporkannya kepada orang dewasa", accepted: ["melaporkannya kepada orang dewasa", "memberitahu orang dewasa", "lapor kepada orang dewasa"], hint: "Jangan membaiki alat elektrik sendiri.", explanation: "Lampu rosak perlu dilaporkan kepada orang dewasa dan tidak dibaiki sendiri." },
+
+  "SAINS-BUNYI-007": { q: "Menekan hon kereta menghasilkan bunyi ________.", answer: "hon" },
+  "SAINS-BUNYI-008": { q: "Jam loceng menghasilkan bunyi ________.", answer: "deringan", accepted: ["deringan", "dering"] },
+  "SAINS-BUNYI-012": { q: "Tali gitar ________ apabila dipetik.", answer: "bergetar", explanation: "Tali gitar bergetar dan menghasilkan bunyi apabila dipetik." },
+  "SAINS-BUNYI-016": { q: "Permukaan meja ________ apabila ditepuk.", answer: "bergetar", explanation: "Tepukan menyebabkan permukaan meja bergetar dan menghasilkan bunyi." },
+  "SAINS-BUNYI-017": { q: "Loceng kecemasan menghasilkan bunyi ________.", answer: "amaran" },
+  "SAINS-BUNYI-020": { q: "Menutup telinga mengurangkan ________ yang didengar.", answer: "bunyi" },
+  "SAINS-BUNYI-031": { q: "Telinga ialah organ deria untuk ________.", answer: "mendengar" },
+  "SAINS-BUNYI-032": { q: "Bunyi yang terlalu kuat boleh mencederakan ________.", answer: "telinga" },
+  "SAINS-BUNYI-033": { q: "Bunyi amaran memberitahu kita tentang ________.", answer: "bahaya" },
+  "SAINS-BUNYI-034": { q: "Muzik perlahan biasanya lebih ________ didengar.", answer: "selesa" },
+  "SAINS-BUNYI-035": { q: "Tindakan terbaik apabila bunyi fon telinga terlalu kuat ialah ________.", answer: "memperlahankan bunyi", accepted: ["memperlahankan bunyi", "merendahkan bunyi", "mengurangkan kelantangan"], explanation: "Mengurangkan kelantangan membantu melindungi pendengaran." },
+  "SAINS-BUNYI-036": { q: "Menjauhkan diri daripada bunyi kuat dapat ________.", answer: "melindungi telinga" },
+  "SAINS-BUNYI-037": { q: "Menutup telinga ketika bunyi terlalu kuat membantu ________.", answer: "melindungi pendengaran", explanation: "Menutup telinga boleh mengurangkan bunyi kuat yang sampai ke telinga." },
+  "SAINS-BUNYI-038": { q: "Kita menggunakan ________ untuk mendengar arahan guru.", answer: "telinga" },
+  "SAINS-BUNYI-039": { q: "Bunyi siren ambulans mengingatkan pengguna jalan raya supaya ________.", answer: "memberi laluan" },
+  "SAINS-BUNYI-040": { q: "Bunyi loceng sekolah menandakan perubahan ________.", answer: "waktu", accepted: ["waktu", "masa"], explanation: "Loceng sekolah menandakan waktu sesuatu aktiviti bermula atau tamat." },
+  "SAINS-BUNYI-044": { q: "Bunyi suara guru sampai ke telinga melalui ________.", answer: "udara", explanation: "Di dalam kelas, bunyi suara bergerak melalui udara ke telinga." },
+
+  "SAINS-BUMI-001": { q: "Bentuk muka Bumi yang sangat tinggi ialah ________.", answer: "gunung" },
+  "SAINS-BUMI-002": { q: "Air sungai biasanya ________.", answer: "mengalir" },
+  "SAINS-BUMI-003": { q: "Laut meliputi kawasan yang ________.", answer: "luas" },
+  "SAINS-BUMI-004": { q: "Pantai biasanya mempunyai ________.", answer: "pasir" },
+  "SAINS-BUMI-005": { q: "Bukit biasanya lebih ________ daripada gunung.", answer: "rendah", accepted: ["rendah", "lebih rendah daripada gunung"], explanation: "Bukit biasanya lebih rendah daripada gunung." },
+  "SAINS-BUMI-006": { q: "Tasik ialah kawasan yang mengandungi ________.", answer: "air" },
+  "SAINS-BUMI-007": { q: "Kawasan yang dipenuhi banyak pokok disebut ________.", answer: "hutan" },
+  "SAINS-BUMI-008": { q: "Pulau ialah daratan yang dikelilingi ________.", answer: "air" },
+  "SAINS-BUMI-009": { q: "Gua ialah ruang semula jadi di dalam ________.", answer: "batu" },
+  "SAINS-BUMI-010": { q: "Permukaan tanah pamah biasanya ________.", answer: "rata" },
+  "SAINS-BUMI-013": { q: "Cuaca berangin berlaku apabila ________ bertiup.", answer: "angin" },
+  "SAINS-BUMI-015": { q: "Pelangi boleh kelihatan selepas hujan apabila terdapat ________.", answer: "cahaya Matahari", explanation: "Titisan air membiaskan cahaya Matahari lalu menghasilkan pelangi." },
+  "SAINS-BUMI-016": { q: "Ribut petir ialah cuaca yang ________.", answer: "berbahaya" },
+  "SAINS-BUMI-021": { q: "Tanah boleh digunakan untuk ________.", answer: "menanam pokok" },
+  "SAINS-BUMI-022": { q: "Banyak kawasan pantai dilitupi ________.", answer: "pasir" },
+  "SAINS-BUMI-023": { q: "Batu biasanya bersifat ________.", answer: "keras" },
+  "SAINS-BUMI-024": { q: "Air boleh ditemui di dalam ________.", answer: "sungai" },
+  "SAINS-BUMI-025": { q: "Manusia memerlukan udara untuk ________.", answer: "bernafas" },
+  "SAINS-BUMI-026": { q: "Tanah liat yang basah terasa ________.", answer: "licin" },
+  "SAINS-BUMI-027": { q: "Kerikil ialah ________.", answer: "batu kecil" },
+  "SAINS-BUMI-028": { q: "Humus membantu menjadikan tanah ________.", answer: "subur" },
+  "SAINS-BUMI-029": { q: "Pasir mempunyai tekstur ________.", answer: "berbutir" },
+  "SAINS-BUMI-030": { q: "Batu yang besar biasanya lebih ________.", answer: "berat" },
+
+  "SAINS-BAHAN-001": { q: "Kayu sukar ditekan kerana bersifat ________.", answer: "keras" },
+  "SAINS-BAHAN-002": { q: "Permukaan kain terasa ________ apabila disentuh.", answer: "lembut" },
+  "SAINS-BAHAN-003": { q: "Getah boleh kembali kepada bentuk asal kerana bersifat ________.", answer: "kenyal" },
+  "SAINS-BAHAN-004": { q: "Kaca jernih membenarkan cahaya melaluinya kerana bersifat ________.", answer: "lutsinar" },
+  "SAINS-BAHAN-005": { q: "Logam sesuai untuk menampung beban kerana biasanya ________.", answer: "kuat" },
+  "SAINS-BAHAN-006": { q: "Bekas plastik mudah dibawa kerana biasanya ________.", answer: "ringan" },
+  "SAINS-BAHAN-007": { q: "Kertas boleh dikoyakkan dengan tangan kerana ________.", answer: "mudah koyak" },
+  "SAINS-BAHAN-008": { q: "Span sesuai mengelap air kerana boleh ________.", answer: "menyerap air" },
+  "SAINS-BAHAN-009": { q: "Kapas selesa disentuh kerana bersifat ________.", answer: "lembut" },
+  "SAINS-BAHAN-010": { q: "Tanah liat yang basah sesuai dibuat model kerana ________.", answer: "boleh dibentuk" },
+  "SAINS-BAHAN-019": { q: "Cawan lutsinar boleh diperbuat daripada ________.", answer: "kaca" },
+  "SAINS-BAHAN-022": { q: "Bahan lutsinar membenarkan ________.", answer: "cahaya menembusinya", explanation: "Bahan lutsinar membenarkan cahaya menembusinya dan objek di belakang dapat dilihat dengan jelas." },
+  "SAINS-BAHAN-024": { q: "Bahan magnetik boleh ________ oleh magnet.", answer: "ditarik", explanation: "Bahan magnetik boleh ditarik oleh magnet." },
+  "SAINS-BAHAN-025": { q: "Objek yang terapung berada di ________ air.", answer: "permukaan", explanation: "Terapung bermaksud objek kekal di permukaan air; keadaan ini bukan ditentukan oleh berat sahaja." },
+  "SAINS-BAHAN-026": { q: "Objek yang tenggelam bergerak ke ________ bekas berisi air.", answer: "dasar", explanation: "Tenggelam bermaksud objek bergerak ke dasar air; keadaan ini bukan ditentukan oleh berat sahaja." },
+  "SAINS-BAHAN-040": { q: "Bekas makanan perlu diperbuat daripada bahan yang ________ digunakan.", answer: "selamat" },
+  "SAINS-BAHAN-042": { q: "Ais akan ________ apabila dipanaskan.", answer: "mencair" },
+  "SAINS-BAHAN-047": { q: "Kayu yang dipotong menjadi lebih ________.", answer: "pendek", hint: "Perhatikan perubahan saiz apabila kayu dipotong.", explanation: "Memotong kayu menjadikan bahagiannya lebih pendek." },
+  "SAINS-BAHAN-044": { q: "Kaca yang terjatuh boleh ________.", answer: "pecah" },
+
+  "SAINS-TEKNOLOGI-012": { q: "Kereta membantu manusia ________ dari satu tempat ke tempat lain.", answer: "bergerak", explanation: "Kereta ialah alat pengangkutan yang membantu manusia bergerak." },
+  "SAINS-TEKNOLOGI-022": { q: "Jika terdapat masalah pada soket elektrik, kita perlu memberitahu ________.", answer: "orang dewasa", hint: "Jangan sentuh atau baiki soket sendiri.", explanation: "Masalah pada soket elektrik perlu diurus oleh orang dewasa yang tahu cara selamat." },
+  "SAINS-TEKNOLOGI-023": { q: "Selepas menggunakan telefon beberapa ketika, kita perlu ________.", answer: "merehatkan mata", explanation: "Berehat daripada skrin membantu mengurangkan keletihan mata." },
+  "SAINS-TEKNOLOGI-024": { q: "Jangan ________ kipas yang sedang berputar.", answer: "menyentuh" },
+  "SAINS-TEKNOLOGI-025": { q: "Kita perlu ________ dapur yang panas.", answer: "menjauhi" },
+  "SAINS-TEKNOLOGI-026": { q: "Jika nampak wayar rosak, kita perlu ________.", answer: "memberitahu orang dewasa", accepted: ["memberitahu orang dewasa", "beritahu orang dewasa"] },
+  "SAINS-TEKNOLOGI-027": { q: "Ketika menggunakan komputer, kita perlu duduk dengan ________.", answer: "postur yang betul", explanation: "Postur yang betul membantu menjaga badan." },
+  "SAINS-TEKNOLOGI-028": { q: "Tindakan terbaik apabila alat elektrik rosak ialah ________.", answer: "melaporkannya kepada orang dewasa", accepted: ["melaporkannya kepada orang dewasa", "memberitahu orang dewasa", "lapor kepada orang dewasa"], explanation: "Alat elektrik yang rosak perlu dilaporkan dan tidak dibaiki sendiri oleh kanak-kanak." },
+  "SAINS-TEKNOLOGI-029": { q: "Alat tajam perlu ________ selepas digunakan.", answer: "disimpan di tempat selamat" },
+  "SAINS-TEKNOLOGI-030": { q: "Alat elektrik perlu ________ selepas digunakan.", answer: "dimatikan" },
+  "SAINS-TEKNOLOGI-034": { q: "Skru membantu ________ dua bahagian bahan.", answer: "mencantum", explanation: "Skru digunakan untuk mencantum dan mengetatkan bahagian bahan." },
+  "SAINS-TEKNOLOGI-042": { q: "Jambatan kertas perlu cukup kuat untuk ________.", answer: "menampung beban" },
+  "SAINS-TEKNOLOGI-043": { q: "Bot kertas yang baik perlu boleh ________.", answer: "terapung" },
+  "SAINS-TEKNOLOGI-044": { q: "Payung mini perlu menggunakan bahan yang ________.", answer: "kalis air" },
+  "SAINS-TEKNOLOGI-045": { q: "Kereta mainan perlu mempunyai ________ untuk bergerak.", answer: "roda" },
+  "SAINS-TEKNOLOGI-046": { q: "Bekas pensel perlu mempunyai ruang untuk ________ alat tulis.", answer: "menyimpan" },
+  "SAINS-TEKNOLOGI-047": { q: "Menara blok lebih stabil jika mempunyai ________.", answer: "tapak luas" },
+  "SAINS-TEKNOLOGI-048": { q: "Kapal terbang kertas memerlukan bentuk sayap yang membantunya ________.", answer: "meluncur" },
+  "SAINS-TEKNOLOGI-049": { q: "Penanda buku direka untuk ________.", answer: "menanda halaman" },
+  "SAINS-TEKNOLOGI-050": { q: "Penyapu direka untuk ________ lantai.", answer: "membersihkan" },
+
+  "SAINS-KEMAHIRAN_SAINTIFIK-004": { q: "Lidah digunakan untuk mengesan ________.", answer: "rasa" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-005": { q: "Kulit digunakan untuk mengesan ________ permukaan benda.", answer: "tekstur", explanation: "Kulit membantu mengesan tekstur seperti kasar dan licin serta keadaan panas atau sejuk." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-007": { q: "Bunyi loceng yang nyaring mempunyai nada ________.", answer: "tinggi", hint: "Nyaring menerangkan nada, bukan kekuatan bunyi.", explanation: "Bunyi nyaring mempunyai nada tinggi dan tidak semestinya kuat." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-010": { q: "Bola lebih besar daripada guli. Saiz bola ialah ________.", answer: "besar", explanation: "Pemerhatian menunjukkan bola lebih besar daripada guli." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-021": { q: "Alat yang sesuai untuk mengukur panjang buku ialah ________.", answer: "pembaris", explanation: "Pembaris sesuai digunakan untuk mengukur panjang buku." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-025": { q: "Silinder penyukat digunakan untuk mengukur ________.", answer: "isipadu cecair", accepted: ["isipadu cecair", "isipadu air"] },
+  "SAINS-KEMAHIRAN_SAINTIFIK-041": { q: "Sebelum penyiasatan, kita menentukan ________ yang ingin dijawab.", answer: "soalan" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-042": { q: "Ramalan dibuat ________ ujian dijalankan.", answer: "sebelum" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-043": { q: "Pemerhatian dibuat ________ penyiasatan dijalankan.", answer: "semasa", explanation: "Pemerhatian boleh dibuat sebelum, semasa dan selepas penyiasatan mengikut perkara yang dikaji." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-044": { q: "Dalam ujian yang adil, hanya ________ diubah pada satu masa.", answer: "satu perkara" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-045": { q: "Aktiviti sains dijalankan dengan selamat apabila kita mengikut ________ guru.", answer: "arahan" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-046": { q: "Membandingkan melibatkan pencarian ________.", answer: "persamaan dan perbezaan" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-047": { q: "Mengelas dilakukan berdasarkan ________.", answer: "ciri yang sama" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-048": { q: "Meramal ialah membuat ________ berdasarkan pemerhatian.", answer: "jangkaan" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-049": { q: "Kesimpulan penyiasatan dibuat berdasarkan ________.", answer: "keputusan" },
+  "SAINS-KEMAHIRAN_SAINTIFIK-050": { q: "Berkomunikasi bermaksud ________ dengan jelas.", answer: "menyampaikan maklumat" }
+});
+
+export const sainsSubject = attachInteractiveQuestionExamplesToSubject(normalizeSainsSubject(rawSainsSubject, {
+  topicEnrichments: SAINS_TOPIC_ENRICHMENTS,
+  questionOverrides: SAINS_QUESTION_OVERRIDES
+}));
 
 export default sainsSubject;

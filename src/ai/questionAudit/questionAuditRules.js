@@ -1,0 +1,287 @@
+﻿function normalizeText(value = '') {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[.,!?;:]+$/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+function countWords(value = '') {
+  return normalizeText(value).split(' ').filter(Boolean).length;
+}
+
+function getQuestionText(question = {}) {
+  return String(question.q || question.question || question.stem || '').trim();
+}
+
+function listAnswers(question = {}) {
+  const answers = [];
+  if (question.answer !== undefined && question.answer !== null) {
+    const answer = String(question.answer).trim();
+    if (answer) answers.push(answer);
+  }
+  for (const value of Array.isArray(question.accepted) ? question.accepted : []) {
+    const answer = String(value ?? '').trim();
+    if (answer) answers.push(answer);
+  }
+  for (const value of Array.isArray(question.acceptedAnswers) ? question.acceptedAnswers : []) {
+    const answer = String(value ?? '').trim();
+    if (answer) answers.push(answer);
+  }
+  return [...new Set(answers)];
+}
+
+function hasContext(text = '') {
+  const value = String(text || '').trim();
+  if (!value) return false;
+  if (/[.!?]/.test(value)) return true;
+  if (value.includes(':')) return true;
+  if (/\b(berikut|di bawah|dalam ayat|dalam gambar|situasi|petikan|dialog|cerita|peta|jadual|graf|contoh)\b/i.test(value)) return true;
+  return countWords(value) >= 8;
+}
+
+function hasInstruction(text = '') {
+  return /\b(pilih|nyatakan|cari|apakah|berapakah|siapakah|tandakan|bulatkan|isi|lengkapkan|padankan|senaraikan|jelaskan|bandingkan|ramalkan|kenal pasti|terangkan|kira|hitung|tulis|susun|bina|gunakan|adakah|mengapakah)\b/i.test(String(text || ''));
+}
+
+function detectLanguage(text = '', subjectId = '') {
+  const subject = String(subjectId || '').toLowerCase();
+  if (subject === 'arab') return 'arabic';
+  if (subject === 'english') return 'english';
+  if (subject === 'sains') return 'science';
+  if (subject === 'math') return 'math';
+  return 'bm';
+}
+
+function splitAlternatives(answer = '') {
+  return String(answer || '')
+    .split(/[\/|;]/)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function answerMatchesOption(answer = '', option = '', questionText = '') {
+  const normalizedAnswer = normalizeText(answer);
+  const normalizedOption = normalizeText(option);
+  if (!normalizedAnswer || !normalizedOption) return false;
+  if (normalizedAnswer === normalizedOption) return true;
+
+  // Some objective items ask pupils to choose an option and explain why.
+  // In those cases the canonical answer may extend the selected option with
+  // a short reason while the option itself remains the correct choice.
+  const asksForReason = /\b(jelaskan|berikan sebab|nyatakan sebab|mengapa|mengapakah|alasan)\b/i.test(questionText);
+  if (!asksForReason) return false;
+  return [' kerana ', ' sebab ', ' iaitu ']
+    .some(connector => normalizedAnswer.startsWith(`${normalizedOption}${connector}`));
+}
+
+const BM_AWKWARD = [
+  /\bdi atas taman\b/i,
+  /\bdi atas sekolah\b/i,
+  /\bdi atas kelas\b/i,
+  /\bdi atas pasar\b/i,
+  /\bdi atas jalan\b/i,
+  /\badalah ialah\b/i,
+  /\bialah adalah\b/i,
+  /\bkerana sebab\b/i
+];
+
+const ENGLISH_TENSE_HINT = /\b(go|goes|went|play|plays|played|eat|eats|ate|drink|drinks|drank)\b/i;
+const ARABIC_RE = /[\u0600-\u06FF]/;
+const SCIENCE_RISK = [
+  /\bsemua haiwan boleh terbang\b/i,
+  /\bsemua tumbuhan perlu banyak air\b/i,
+  /\bmatahari berpusing mengelilingi bumi\b/i,
+  /\bbunyi boleh bergerak tanpa medium\b/i
+];
+const MATH_UNIT_HINT = /\b(RM|sen|cm|m|kg|g|mL|L|jam|minit|saat)\b/i;
+
+function isMathExpression(text = '') {
+  const value = String(text || '');
+  return /[0-9]/.test(value) && /[+\-×x÷=*/]/.test(value);
+}
+
+function detectQuestionCompleteness(question = {}) {
+  const text = getQuestionText(question);
+  const issues = [];
+  const words = countWords(text);
+  if (!text) return ['empty_question_text'];
+  if (words < 2 && !isMathExpression(text)) issues.push('incomplete_sentence');
+  const conciseCompleteMathPrompt = /^(?:apakah|berapakah)\s+nombor\s+(?:selepas|sebelum)\s+\d+/i.test(text)
+    || (isMathExpression(text) && /^(?:apakah|berapakah|hitung|kira|cari|selesaikan|nyatakan)\b/i.test(text));
+  if (/^(pilih|nyatakan|cari|isi|lengkapkan|padankan|kenal pasti|apakah|berapakah|siapakah)\b/i.test(text) && words <= 4 && !conciseCompleteMathPrompt) {
+    issues.push('missing_instruction');
+  }
+  if (hasInstruction(text) && !hasContext(text) && !isMathExpression(text) && words <= 6) {
+    issues.push('missing_context');
+  }
+  if (/\.\.\.$/.test(text) || /,$/.test(text)) {
+    issues.push('unfinished_phrase');
+  }
+  return [...new Set(issues)];
+}
+
+function detectAnswerQuality(question = {}) {
+  const text = getQuestionText(question);
+  const answer = String(question.answer ?? '').trim();
+  const answers = listAnswers(question);
+  const options = Array.isArray(question.options) ? question.options : Array.isArray(question.choices) ? question.choices : [];
+  const issues = [];
+  if (!answer && answers.length === 0 && !Number.isInteger(question.answerIndex) && !Number.isInteger(question.answer_index) && !Number.isInteger(question.correctIndex)) {
+    issues.push('no_correct_answer');
+  }
+  // `accepted` and `acceptedAnswers` deliberately store equivalent typed or
+  // spoken forms for the same learning target. Their presence is not evidence
+  // that the question has competing correct concepts.
+  if (Array.isArray(options) && options.length) {
+    const answerIndexes = [question.answerIndex, question.answer_index, question.correctIndex]
+      .filter(Number.isInteger);
+    const hasValidAnswerIndex = answerIndexes.some(index => index >= 0 && index < options.length);
+    const canonicalAnswers = answer ? [answer] : answers;
+    const hasMatchingCanonicalAnswer = canonicalAnswers.some(candidate =>
+      options.some(option => answerMatchesOption(candidate, option, text))
+    );
+    const hasInvalidAnswerIndex = answerIndexes.length > 0 && !hasValidAnswerIndex;
+    if (hasInvalidAnswerIndex || (canonicalAnswers.length > 0 && !hasMatchingCanonicalAnswer)) {
+      issues.push('answer_not_matching_options');
+    }
+  }
+  if (!text && answer) issues.push('answer_without_question');
+  return [...new Set(issues)];
+}
+
+function detectLanguageQuality(question = {}, subjectId = '') {
+  const text = getQuestionText(question);
+  const language = detectLanguage(text, subjectId);
+  const issues = [];
+
+  if (language === 'bm') {
+    BM_AWKWARD.forEach(pattern => { if (pattern.test(text)) issues.push('awkward_malay_structure'); });
+    if (countWords(text) > 28) issues.push('too_long');
+    if (/\b(AI|engine|confidence|adaptive)\b/i.test(text)) issues.push('non_year2_wording');
+  } else if (language === 'english') {
+    const isReadingStimulus = /^read\s*:/i.test(text) || /\bpassage\b/i.test(text);
+    if (countWords(text) > (isReadingStimulus ? 45 : 24)) issues.push('too_long');
+    if (/\b(goed|eated|buyed|drinked)\b/i.test(text)) issues.push('incorrect_tense');
+    if (/\b(he|she|it)\s+(go|play|drink|eat)\b/i.test(text)) issues.push('grammar_error');
+  } else if (language === 'arabic') {
+    const hasArabic = ARABIC_RE.test(text) || ARABIC_RE.test(String(question.answer || '')) || ARABIC_RE.test(listAnswers(question).join(' '));
+    const expectsArabicText = question.requiresArabicText === true || question.arabicTextRequired === true;
+    if (expectsArabicText && hasArabic && !ARABIC_RE.test(text)) issues.push('missing_arabic_text');
+    if (hasArabic && !question.pronunciationGuide && !question.pronunciationTips && !question.readingSteps) issues.push('pronunciation_hint_missing');
+    if (hasArabic && String(question.translation || question.translationHint || '').trim() === '') issues.push('translation_mismatch');
+  } else if (language === 'science') {
+    if (SCIENCE_RISK.some(pattern => pattern.test(text))) issues.push('inaccurate_concept');
+  } else if (language === 'math') {
+    const hasNumbers = /\b\d+\b/.test(text);
+    const hasOperator = /[+\-×x÷=*/]/.test(text);
+    const hasOperationCue = /\b(tambah|tolak|darab|bahagi|jumlah|baki|beza|hasil|jawapan|nilai|gabung(?:kan)?)\b/i.test(text)
+      || ['addition', 'subtraction', 'multiplication', 'division', 'money', 'time', 'length', 'measurement', 'geometry'].includes(String(question.metadata?.operation || '').toLowerCase());
+    const mentionsUnit = MATH_UNIT_HINT.test(text) || MATH_UNIT_HINT.test(String(question.answer || ''));
+    const isNumberSenseTask = String(question.metadata?.category || '').toLowerCase() === 'nombor'
+      || /^MATH-NOMBOR/i.test(String(question.id || ''));
+    if (hasNumbers && !hasOperator && !hasOperationCue && !isNumberSenseTask && !/\b(berapakah|berapa)\b/i.test(text)) {
+      issues.push('ambiguous_operation');
+    }
+    if (hasNumbers && !mentionsUnit && /\b(RM|sen|cm|m|kg|g|mL|L|jam|minit|saat)\b/i.test(String(question.topicId || '')) === false) {
+      // Ignore plain arithmetic questions; only flag unit issues when the question is clearly unit-based.
+      if (/\b(wang|masa|panjang|jisim|isi padu)\b/i.test(text)) {
+        issues.push('missing_unit');
+      }
+    }
+    if (!hasNumbers && !hasContext(text) && /\b(kira|hitung|jumlah|baki|darab|bahagi|tambah|tolak)\b/i.test(text)) {
+      issues.push('too_easy_or_ambiguous');
+    }
+    if (countWords(text) > 30) issues.push('too_long');
+  }
+
+  return [...new Set(issues)];
+}
+
+function detectDifficultyQuality(question = {}, subjectId = '') {
+  const text = getQuestionText(question);
+  const issues = [];
+  const words = countWords(text);
+  if (subjectId === 'math') {
+    if (/\b(berikan sebab|bandingkan|mengapa|terangkan)\b/i.test(text) && !hasContext(text)) issues.push('kbat_without_enough_information');
+  } else if (subjectId === 'bm' || subjectId === 'english' || subjectId === 'sains') {
+    if (words < 2 && !isMathExpression(text)) issues.push('too_easy');
+    if (words > 30) issues.push('too_difficult');
+  }
+  if (/\b(kbat|kb at|KBAT)\b/i.test(text) && !hasContext(text) && words <= 8) {
+    issues.push('kbat_without_enough_information');
+  }
+  return [...new Set(issues)];
+}
+
+function detectRepetitionQuality(question = {}, state = {}) {
+  const text = normalizeText(getQuestionText(question));
+  const answerPattern = normalizeText(listAnswers(question).join('|'));
+  const template = normalizeText(question.qip?.metadata?.templateId || question.templateId || question.questionStyle || '');
+  const answerTemplatePattern = template && answerPattern ? `${template}::${answerPattern}` : '';
+  const issues = [];
+  if (!text) return issues;
+  const recentTexts = Array.isArray(state.recentTexts) ? state.recentTexts : [];
+  const recentTemplates = Array.isArray(state.recentTemplates) ? state.recentTemplates : [];
+  const recentAnswerTemplates = Array.isArray(state.recentAnswerTemplates) ? state.recentAnswerTemplates : [];
+  if (recentTexts.includes(text)) issues.push('identical_question_text');
+  if (answerTemplatePattern && recentAnswerTemplates.includes(answerTemplatePattern)) issues.push('same_answer_pattern_repeated');
+  if (template && recentTemplates.filter(item => item === template).length >= 3) issues.push('same_wording_template_too_frequent');
+  return [...new Set(issues)];
+}
+
+function classifySeverity(issues = []) {
+  const set = new Set(issues);
+  if (set.has('empty_question_text') || set.has('no_correct_answer')) return 'Critical';
+  if (set.has('answer_not_matching_options') || set.has('duplicate_answer_options') || set.has('inaccurate_concept') || set.has('missing_arabic_text')) return 'High';
+  if (set.has('multiple_possible_answers') || set.has('grammar_error') || set.has('incorrect_tense') || set.has('ambiguous_operation') || set.has('kbat_without_enough_information') || set.has('missing_instruction')) return 'Medium';
+  if (issues.length > 0) return 'Low';
+  return 'Low';
+}
+
+function qualityScoreFromIssues(issues = []) {
+  let score = 100;
+  for (const issue of issues) {
+    if (issue === 'empty_question_text' || issue === 'no_correct_answer') score -= 40;
+    else if (issue === 'answer_not_matching_options' || issue === 'duplicate_answer_options' || issue === 'inaccurate_concept' || issue === 'missing_arabic_text') score -= 20;
+    else if (issue === 'multiple_possible_answers' || issue === 'grammar_error' || issue === 'incorrect_tense' || issue === 'ambiguous_operation' || issue === 'kbat_without_enough_information' || issue === 'missing_instruction') score -= 10;
+    else score -= 3;
+  }
+  return Math.max(0, score);
+}
+
+export {
+  classifySeverity,
+  countWords,
+  detectAnswerQuality,
+  detectDifficultyQuality,
+  detectLanguageQuality,
+  detectQuestionCompleteness,
+  detectRepetitionQuality,
+  getQuestionText,
+  hasContext,
+  hasInstruction,
+  isMathExpression,
+  listAnswers,
+  normalizeText,
+  qualityScoreFromIssues,
+  splitAlternatives
+};
+
+export default {
+  classifySeverity,
+  countWords,
+  detectAnswerQuality,
+  detectDifficultyQuality,
+  detectLanguageQuality,
+  detectQuestionCompleteness,
+  detectRepetitionQuality,
+  getQuestionText,
+  hasContext,
+  hasInstruction,
+  isMathExpression,
+  listAnswers,
+  normalizeText,
+  qualityScoreFromIssues,
+  splitAlternatives
+};

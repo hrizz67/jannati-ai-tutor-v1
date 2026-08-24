@@ -1,0 +1,557 @@
+{
+  "version": "2.0.0-phase1",
+  "status": "expanded_topic_mapping_unverified",
+  "note": "Phase 1 expands explicit topic-level SK/SP mapping across all eight subjects using the repository curriculum matrix. Core subjects are marked verified where the mapping already exists; remaining subjects are flagged review_required for later official verification.",
+  "subjects": {
+    "bm": {
+      "status": "mapped_verified",
+      "topics": {
+        "kata_nama_am": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.1",
+          "strand": "Tatabahasa - Kata Nama Am",
+          "verified": true
+        },
+        "kata_nama_khas": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.2",
+          "strand": "Tatabahasa - Kata Nama Khas",
+          "verified": true
+        },
+        "kata_ganti_nama": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.3",
+          "strand": "Tatabahasa - Kata Ganti Nama",
+          "verified": true
+        },
+        "kata_kerja": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.4",
+          "strand": "Tatabahasa - Kata Kerja",
+          "verified": true
+        },
+        "kata_adjektif": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.5",
+          "strand": "Tatabahasa - Kata Adjektif",
+          "verified": true
+        },
+        "kata_sendi": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.6",
+          "strand": "Tatabahasa - Kata Sendi Nama",
+          "verified": true
+        },
+        "kata_hubung": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.7",
+          "strand": "Tatabahasa - Kata Hubung",
+          "verified": true
+        },
+        "penjodoh_bilangan": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.8",
+          "strand": "Tatabahasa - Penjodoh Bilangan",
+          "verified": true
+        },
+        "ayat": {
+          "SK": "BM.SK.5.3",
+          "SP": "BM.SP.5.3.1",
+          "strand": "Sintaksis - Jenis Ayat",
+          "verified": true
+        },
+        "pemahaman_penulisan": {
+          "SK": "BM.SK.2.1",
+          "SP": "BM.SP.2.1.1",
+          "strand": "Pemahaman dan Penulisan",
+          "verified": true
+        },
+        "tatabahasa": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.9",
+          "strand": "Tatabahasa",
+          "verified": true
+        },
+        "imbuhan": {
+          "SK": "BM.SK.5.1",
+          "SP": "BM.SP.5.1.10",
+          "strand": "Tatabahasa - Imbuhan",
+          "verified": true
+        },
+        "bina_ayat": {
+          "SK": "BM.SK.5.3",
+          "SP": "BM.SP.5.3.2",
+          "strand": "Sintaksis - Bina Ayat",
+          "verified": true
+        },
+        "simpulan_bahasa": {
+          "SK": "BM.SK.5.4",
+          "SP": "BM.SP.5.4.1",
+          "strand": "Simpulan Bahasa",
+          "verified": true
+        },
+        "uasa_kbat": {
+          "SK": "BM.SK.2.1",
+          "SP": "BM.SP.2.1.2",
+          "strand": "Pentaksiran Sumatif/KBAT",
+          "verified": true
+        }
+      }
+    },
+    "math": {
+      "status": "mapped_verified",
+      "topics": {
+        "nombor": {
+          "SK": "MATH.SK.1.1",
+          "SP": "MATH.SP.1.1.1",
+          "strand": "Nombor Hingga 1000",
+          "verified": true
+        },
+        "tambah": {
+          "SK": "MATH.SK.2.1",
+          "SP": "MATH.SP.2.1.1",
+          "strand": "Operasi Tambah",
+          "verified": true
+        },
+        "tolak": {
+          "SK": "MATH.SK.2.2",
+          "SP": "MATH.SP.2.2.1",
+          "strand": "Operasi Tolak",
+          "verified": true
+        },
+        "darab": {
+          "SK": "MATH.SK.2.3",
+          "SP": "MATH.SP.2.3.1",
+          "strand": "Operasi Darab",
+          "verified": true
+        },
+        "bahagi": {
+          "SK": "MATH.SK.2.4",
+          "SP": "MATH.SP.2.4.1",
+          "strand": "Operasi Bahagi",
+          "verified": true
+        },
+        "wang": {
+          "SK": "MATH.SK.3.1",
+          "SP": "MATH.SP.3.1.1",
+          "strand": "Wang",
+          "verified": true
+        },
+        "masa": {
+          "SK": "MATH.SK.4.1",
+          "SP": "MATH.SP.4.1.1",
+          "strand": "Masa dan Waktu",
+          "verified": true
+        },
+        "panjang": {
+          "SK": "MATH.SK.5.1",
+          "SP": "MATH.SP.5.1.1",
+          "strand": "Ukuran Panjang",
+          "verified": true
+        },
+        "jisim_isi_padu": {
+          "SK": "MATH.SK.5.2",
+          "SP": "MATH.SP.5.2.1",
+          "strand": "Jisim dan Isi Padu",
+          "verified": true
+        },
+        "bentuk": {
+          "SK": "MATH.SK.6.1",
+          "SP": "MATH.SP.6.1.1",
+          "strand": "Ruang - Bentuk 2D dan 3D",
+          "verified": true
+        }
+      }
+    },
+    "english": {
+      "status": "mapped_verified",
+      "topics": {
+        "nouns": {
+          "SK": "ENG.SK.1.1",
+          "SP": "ENG.SP.1.1.1",
+          "strand": "Language Awareness - Nouns",
+          "verified": true
+        },
+        "verbs": {
+          "SK": "ENG.SK.1.1",
+          "SP": "ENG.SP.1.1.2",
+          "strand": "Language Awareness - Verbs",
+          "verified": true
+        },
+        "adjectives": {
+          "SK": "ENG.SK.1.1",
+          "SP": "ENG.SP.1.1.3",
+          "strand": "Language Awareness - Adjectives",
+          "verified": true
+        },
+        "colours": {
+          "SK": "ENG.SK.2.1",
+          "SP": "ENG.SP.2.1.1",
+          "strand": "Vocabulary - Colours",
+          "verified": true
+        },
+        "numbers": {
+          "SK": "ENG.SK.2.1",
+          "SP": "ENG.SP.2.1.2",
+          "strand": "Vocabulary - Numbers",
+          "verified": true
+        },
+        "animals": {
+          "SK": "ENG.SK.2.1",
+          "SP": "ENG.SP.2.1.3",
+          "strand": "Vocabulary - Animals",
+          "verified": true
+        },
+        "food": {
+          "SK": "ENG.SK.2.1",
+          "SP": "ENG.SP.2.1.4",
+          "strand": "Vocabulary - Food",
+          "verified": true
+        },
+        "prepositions": {
+          "SK": "ENG.SK.1.1",
+          "SP": "ENG.SP.1.1.4",
+          "strand": "Language Awareness - Prepositions",
+          "verified": true
+        },
+        "sentences": {
+          "SK": "ENG.SK.1.2",
+          "SP": "ENG.SP.1.2.1",
+          "strand": "Simple Sentence Construction",
+          "verified": true
+        },
+        "reading": {
+          "SK": "ENG.SK.2.2",
+          "SP": "ENG.SP.2.2.1",
+          "strand": "Reading Comprehension",
+          "verified": true
+        }
+      }
+    },
+    "sains": {
+      "status": "mapped_verified",
+      "topics": {
+        "haiwan": {
+          "SK": "SAINS.SK.1.1",
+          "SP": "SAINS.SP.1.1.1",
+          "strand": "Sains Hayat - Haiwan",
+          "verified": true
+        },
+        "tumbuhan": {
+          "SK": "SAINS.SK.1.2",
+          "SP": "SAINS.SP.1.2.1",
+          "strand": "Sains Hayat - Tumbuhan",
+          "verified": true
+        },
+        "manusia": {
+          "SK": "SAINS.SK.1.3",
+          "SP": "SAINS.SP.1.3.1",
+          "strand": "Sains Hayat - Manusia",
+          "verified": true
+        },
+        "air": {
+          "SK": "SAINS.SK.2.1",
+          "SP": "SAINS.SP.2.1.1",
+          "strand": "Sains Fizikal - Air",
+          "verified": true
+        },
+        "cahaya": {
+          "SK": "SAINS.SK.2.2",
+          "SP": "SAINS.SP.2.2.1",
+          "strand": "Sains Fizikal - Cahaya",
+          "verified": true
+        },
+        "bunyi": {
+          "SK": "SAINS.SK.2.3",
+          "SP": "SAINS.SP.2.3.1",
+          "strand": "Sains Fizikal - Bunyi",
+          "verified": true
+        },
+        "bumi": {
+          "SK": "SAINS.SK.3.1",
+          "SP": "SAINS.SP.3.1.1",
+          "strand": "Bumi dan Angkasa",
+          "verified": true
+        },
+        "bahan": {
+          "SK": "SAINS.SK.2.4",
+          "SP": "SAINS.SP.2.4.1",
+          "strand": "Sains Bahan",
+          "verified": true
+        },
+        "teknologi": {
+          "SK": "SAINS.SK.4.1",
+          "SP": "SAINS.SP.4.1.1",
+          "strand": "Teknologi dan Kehidupan Lestari",
+          "verified": true
+        },
+        "kemahiran_saintifik": {
+          "SK": "SAINS.SK.5.1",
+          "SP": "SAINS.SP.5.1.1",
+          "strand": "Kemahiran Saintifik",
+          "verified": true
+        }
+      }
+    },
+    "arab": {
+      "status": "mapped_review_required",
+      "topics": {
+        "huruf_hijaiyah": {
+          "SK": "SK Huruf Hijaiyah",
+          "SP": "SP Mengenal, membaca dan membezakan huruf hijaiyah",
+          "strand": "Huruf Hijaiyah",
+          "verified": false
+        },
+        "mufradat": {
+          "SK": "SK Mufradat",
+          "SP": "SP Memahami kosa kata harian mudah",
+          "strand": "Mufradat",
+          "verified": false
+        },
+        "nombor_arab": {
+          "SK": "SK Nombor Arab",
+          "SP": "SP Membaca dan memahami nombor Arab asas",
+          "strand": "Nombor Arab",
+          "verified": false
+        },
+        "warna_arab": {
+          "SK": "SK Warna",
+          "SP": "SP Mengenal dan menggunakan perkataan warna",
+          "strand": "Warna",
+          "verified": false
+        },
+        "keluarga": {
+          "SK": "SK Ahli Keluarga",
+          "SP": "SP Mengenal kosa kata ahli keluarga",
+          "strand": "Ahli Keluarga",
+          "verified": false
+        },
+        "haiwan_arab": {
+          "SK": "SK Haiwan",
+          "SP": "SP Mengenal kosa kata haiwan biasa",
+          "strand": "Haiwan",
+          "verified": false
+        },
+        "anggota_badan": {
+          "SK": "SK Anggota Badan",
+          "SP": "SP Mengenal kosa kata anggota badan",
+          "strand": "Anggota Badan",
+          "verified": false
+        },
+        "ayat_mudah_arab": {
+          "SK": "SK Ayat Mudah",
+          "SP": "SP Memahami dan melengkapkan ayat mudah",
+          "strand": "Ayat Mudah",
+          "verified": false
+        },
+        "hiwar": {
+          "SK": "SK Hiwar",
+          "SP": "SP Memahami dialog ringkas dan ungkapan harian",
+          "strand": "Hiwar",
+          "verified": false
+        },
+        "kefahaman_arab": {
+          "SK": "SK Kefahaman",
+          "SP": "SP Memahami teks/ayat Arab ringkas",
+          "strand": "Kefahaman",
+          "verified": false
+        }
+      }
+    },
+    "islam": {
+      "status": "mapped_review_required",
+      "topics": {
+        "aqidah": {
+          "SK": "SK Aqidah",
+          "SP": "SP Keimanan kepada Allah, malaikat, rasul, kitab dan rukun iman asas",
+          "strand": "Aqidah",
+          "verified": false
+        },
+        "ibadah": {
+          "SK": "SK Ibadah",
+          "SP": "SP Wuduk, solat, doa, puasa dan amalan ibadah harian",
+          "strand": "Ibadah",
+          "verified": false
+        },
+        "sirah": {
+          "SK": "SK Sirah",
+          "SP": "SP Riwayat dan teladan Nabi Muhammad SAW",
+          "strand": "Sirah",
+          "verified": false
+        },
+        "jawi": {
+          "SK": "SK Jawi",
+          "SP": "SP Mengenal huruf/suku kata/perkataan Jawi mudah",
+          "strand": "Jawi",
+          "verified": false
+        },
+        "akhlak": {
+          "SK": "SK Akhlak Islamiah",
+          "SP": "SP Mengamalkan sifat mahmudah dalam kehidupan harian",
+          "strand": "Akhlak Islamiah",
+          "verified": false
+        },
+        "quran": {
+          "SK": "SK Al-Quran",
+          "SP": "SP Membaca, memahami maksud mudah dan adab terhadap Al-Quran",
+          "strand": "Al-Quran",
+          "verified": false
+        },
+        "hadis": {
+          "SK": "SK Hadis",
+          "SP": "SP Memahami hadis mudah dan pengajarannya",
+          "strand": "Hadis",
+          "verified": false
+        },
+        "adab": {
+          "SK": "SK Adab",
+          "SP": "SP Adab dengan ibu bapa, guru, rakan, makanan, masjid dan mushaf",
+          "strand": "Adab",
+          "verified": false
+        },
+        "hafazan": {
+          "SK": "SK Al-Quran/Hafazan",
+          "SP": "SP Menghafaz surah pendek dan doa harian",
+          "strand": "Hafazan",
+          "verified": false
+        },
+        "jawi_perkataan": {
+          "SK": "SK Jawi",
+          "SP": "SP Membaca perkataan Jawi mudah",
+          "strand": "Perkataan Jawi",
+          "verified": false
+        }
+      }
+    },
+    "pj": {
+      "status": "mapped_review_required",
+      "topics": {
+        "pergerakan_asas": {
+          "SK": "SK Pergerakan Asas",
+          "SP": "SP Melakukan pergerakan asas dengan kawalan badan",
+          "strand": "Pergerakan Asas",
+          "verified": false
+        },
+        "lokomotor": {
+          "SK": "SK Lokomotor",
+          "SP": "SP Berjalan, berlari, melompat dan bergerak mengikut arah",
+          "strand": "Lokomotor",
+          "verified": false
+        },
+        "bukan_lokomotor": {
+          "SK": "SK Bukan Lokomotor",
+          "SP": "SP Imbangan, pusingan, regangan dan lenturan",
+          "strand": "Bukan Lokomotor",
+          "verified": false
+        },
+        "manipulasi_alatan": {
+          "SK": "SK Manipulasi Alatan",
+          "SP": "SP Membaling, menangkap, menendang, menggolek dan memukul alatan",
+          "strand": "Manipulasi Alatan",
+          "verified": false
+        },
+        "koordinasi": {
+          "SK": "SK Koordinasi",
+          "SP": "SP Menyelaraskan mata, tangan, kaki dan badan",
+          "strand": "Koordinasi",
+          "verified": false
+        },
+        "kecergasan_fizikal": {
+          "SK": "SK Kecergasan Fizikal",
+          "SP": "SP Daya tahan, kekuatan, kelenturan dan aktiviti cergas",
+          "strand": "Kecergasan Fizikal",
+          "verified": false
+        },
+        "keselamatan_aktiviti": {
+          "SK": "SK Keselamatan",
+          "SP": "SP Amalan selamat sebelum, semasa dan selepas aktiviti",
+          "strand": "Keselamatan Semasa Aktiviti",
+          "verified": false
+        },
+        "permainan_mudah": {
+          "SK": "SK Permainan Mudah",
+          "SP": "SP Mengaplikasi peraturan dan kerjasama dalam permainan kecil",
+          "strand": "Permainan Mudah",
+          "verified": false
+        },
+        "rekreasi": {
+          "SK": "SK Rekreasi",
+          "SP": "SP Aktiviti santai, meneroka dan bekerjasama secara selamat",
+          "strand": "Rekreasi",
+          "verified": false
+        },
+        "gaya_hidup_aktif": {
+          "SK": "SK Gaya Hidup Aktif",
+          "SP": "SP Amalan harian untuk kekal aktif dan sihat",
+          "strand": "Gaya Hidup Aktif",
+          "verified": false
+        }
+      }
+    },
+    "pk": {
+      "status": "mapped_review_required",
+      "topics": {
+        "kebersihan_diri": {
+          "SK": "SK Kebersihan Diri",
+          "SP": "SP Menjaga tubuh, pakaian dan amalan bersih",
+          "strand": "Kebersihan Diri",
+          "verified": false
+        },
+        "pemakanan_sihat": {
+          "SK": "SK Pemakanan Sihat",
+          "SP": "SP Memilih makanan seimbang dan minuman sihat",
+          "strand": "Pemakanan Sihat",
+          "verified": false
+        },
+        "keselamatan_diri": {
+          "SK": "SK Keselamatan Diri",
+          "SP": "SP Mengenal sentuhan selamat, orang dipercayai dan tindakan perlindungan diri",
+          "strand": "Keselamatan Diri",
+          "verified": false
+        },
+        "kesihatan_mental_emosi": {
+          "SK": "SK Kesihatan Mental dan Emosi",
+          "SP": "SP Mengenal emosi, mengurus marah/sedih dan meminta bantuan",
+          "strand": "Kesihatan Mental dan Emosi",
+          "verified": false
+        },
+        "keselamatan_jalan_raya": {
+          "SK": "SK Keselamatan Jalan Raya",
+          "SP": "SP Melintas, memakai tali pinggang/topi keledar dan mematuhi isyarat",
+          "strand": "Keselamatan Jalan Raya",
+          "verified": false
+        },
+        "pencegahan_penyakit": {
+          "SK": "SK Pencegahan Penyakit",
+          "SP": "SP Cuci tangan, etika batuk, vaksin dan elak jangkitan",
+          "strand": "Pencegahan Penyakit",
+          "verified": false
+        },
+        "pertolongan_cemas_asas": {
+          "SK": "SK Pertolongan Cemas Asas",
+          "SP": "SP Tindakan awal untuk luka, jatuh dan kecemasan ringan",
+          "strand": "Pertolongan Cemas Asas",
+          "verified": false
+        },
+        "kesihatan_persekitaran": {
+          "SK": "SK Kesihatan Persekitaran",
+          "SP": "SP Kebersihan rumah, kelas, tandas dan kawasan sekolah",
+          "strand": "Kesihatan Persekitaran",
+          "verified": false
+        },
+        "gaya_hidup_sihat": {
+          "SK": "SK Gaya Hidup Sihat",
+          "SP": "SP Tidur, rehat, aktiviti fizikal dan had skrin",
+          "strand": "Gaya Hidup Sihat",
+          "verified": false
+        },
+        "uasa_kesihatan": {
+          "SK": "SK Integrasi Pendidikan Kesihatan",
+          "SP": "SP Aplikasi pengetahuan kesihatan dalam situasi harian/PBD",
+          "strand": "Pentaksiran Sumatif Kesihatan",
+          "verified": false
+        }
+      }
+    }
+  }
+}

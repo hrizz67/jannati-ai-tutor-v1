@@ -1,3 +1,6 @@
+import { buildJawiQuestionMeta, buildLetterQuestion } from "../../ai/coach/knowledge/subjects/islam/jawi/questionBank.js";
+import { normalizeIslamSubject } from "../../utils/islamContentQuality.js";
+
 const difficultyFor = (index) => {
   if (index <= 20) return "mudah";
   if (index <= 40) return "sederhana";
@@ -12,17 +15,19 @@ const makeQuestions = (topicCode, items) =>
     accepted: item.accepted || [item.answer],
     hint: item.hint,
     explanation: item.explanation,
-    difficulty: difficultyFor(index + 1),
+    difficulty: item.difficulty || difficultyFor(index + 1),
     uasa: "UASA",
     dskp: "KSSR PI",
+    ...item,
   }));
 
-const fill = (q, answer, hint, explanation, accepted) => ({
+const fill = (q, answer, hint, explanation, accepted, extra = {}) => ({
   q,
   answer,
   hint,
   explanation,
   accepted,
+  ...extra,
 });
 
 const aqidahItems = [
@@ -43,12 +48,12 @@ const aqidahItems = [
   ["Allah Maha Mendengar bermaksud Allah mendengar setiap ________.", "suara", "Fikirkan maksud Allah Maha Mendengar.", "Allah mendengar setiap doa dan suara hamba-Nya."],
   ["Kita bersyukur kerana semua nikmat datang daripada ________.", "Allah", "Fikirkan pemberi nikmat.", "Semua nikmat datang daripada Allah."],
   ["Orang Islam percaya hanya Allah yang layak ________.", "disembah", "Fikirkan maksud tauhid.", "Tauhid mengajar kita bahawa hanya Allah yang layak disembah."],
-  ["Kalima syahadah bermula dengan lafaz ________.", "Asyhadu", "Ingat permulaan syahadah.", "Syahadah bermula dengan lafaz Asyhadu."],
-  ["Kita yakin Allah sentiasa ________ kita.", "menjaga", "Fikirkan kasih sayang Allah kepada hamba-Nya.", "Allah sentiasa menjaga dan memelihara hamba-Nya."],
+  ["Kalimah syahadah bermula dengan lafaz ________.", "Asyhadu", "Ingat permulaan syahadah.", "Syahadah bermula dengan lafaz Asyhadu."],
+  ["Kita yakin Allah sentiasa ________ keadaan kita.", "mengetahui", "Fikirkan sifat ilmu Allah.", "Allah Maha Mengetahui setiap keadaan hamba-Nya."],
   ["Beriman kepada rasul termasuk dalam Rukun ________.", "Iman", "Fikirkan enam perkara Rukun Iman.", "Beriman kepada rasul ialah salah satu Rukun Iman."],
   ["Beriman kepada kitab bermaksud percaya kepada kitab yang diturunkan oleh ________.", "Allah", "Fikirkan asal kitab suci.", "Kitab-kitab suci diturunkan oleh Allah."],
   ["Allah tidak memerlukan bantuan sesiapa kerana Allah Maha ________.", "Berkuasa", "Fikirkan sifat kekuasaan Allah.", "Allah Maha Berkuasa atas segala sesuatu."],
-  ["Kita tidak boleh meminta doa kepada selain ________.", "Allah", "Fikirkan adab berdoa.", "Doa ialah ibadah kepada Allah."],
+  ["Kita tidak boleh berdoa atau memohon perkara ghaib kepada selain ________.", "Allah", "Fikirkan kepada siapa ibadah doa ditujukan.", "Doa sebagai ibadah dan permohonan perkara ghaib ditujukan hanya kepada Allah."],
   ["Percaya kepada malaikat mengajar kita supaya sentiasa berbuat ________.", "baik", "Fikirkan malaikat mencatat amalan.", "Malaikat mencatat amalan baik dan buruk manusia."],
   ["Malaikat Raqib mencatat amalan ________.", "baik", "Ingat tugas Malaikat Raqib.", "Malaikat Raqib mencatat amalan baik."],
   ["Malaikat Atid mencatat amalan ________.", "buruk", "Ingat tugas Malaikat Atid.", "Malaikat Atid mencatat amalan buruk."],
@@ -81,7 +86,7 @@ const aqidahItems = [
 const ibadahItems = [
   ["Solat fardu sehari semalam ada ________ waktu.", "lima", "Kira waktu solat fardu.", "Solat fardu ada lima waktu sehari semalam."],
   ["Sebelum solat, kita perlu mengambil ________.", "wuduk", "Fikirkan syarat sebelum solat.", "Wuduk dilakukan sebelum solat."],
-  ["Kita berwuduk menggunakan air yang ________.", "bersih", "Fikirkan jenis air untuk wuduk.", "Wuduk dilakukan dengan air yang bersih dan suci."],
+  ["Kita berwuduk menggunakan air ________ yang suci lagi menyucikan.", "mutlak", "Ingat jenis air yang sah digunakan untuk bersuci.", "Air mutlak ialah air yang suci lagi menyucikan dan boleh digunakan untuk berwuduk."],
   ["Niat solat dilakukan di dalam ________.", "hati", "Fikirkan tempat niat.", "Niat ialah lintasan di dalam hati."],
   ["Solat Subuh mempunyai ________ rakaat.", "dua", "Ingat bilangan rakaat Subuh.", "Solat Subuh mempunyai dua rakaat."],
   ["Solat Zohor mempunyai ________ rakaat.", "empat", "Ingat bilangan rakaat Zohor.", "Solat Zohor mempunyai empat rakaat."],
@@ -91,10 +96,10 @@ const ibadahItems = [
   ["Arah kiblat umat Islam ialah ________.", "Kaabah", "Fikirkan arah ketika solat.", "Umat Islam menghadap Kaabah ketika solat."],
   ["Takbiratul ihram dimulakan dengan lafaz Allahu ________.", "Akbar", "Ingat lafaz takbir.", "Lafaz takbir ialah Allahu Akbar."],
   ["Rukuk dilakukan dengan membongkokkan ________.", "badan", "Fikirkan pergerakan rukuk.", "Rukuk ialah perbuatan membongkokkan badan dalam solat."],
-  ["Sujud dilakukan dengan meletakkan dahi ke ________.", "lantai", "Fikirkan kedudukan sujud.", "Sujud dilakukan dengan meletakkan dahi ke tempat sujud."],
+  ["Sujud dilakukan dengan meletakkan dahi pada ________ sujud.", "tempat", "Fikirkan kedudukan dahi ketika sujud.", "Ketika sujud, dahi diletakkan pada tempat sujud."],
   ["Solat diakhiri dengan memberi ________.", "salam", "Fikirkan akhir solat.", "Solat diakhiri dengan salam."],
   ["Azan dilaungkan untuk memberitahu masuk waktu ________.", "solat", "Fikirkan tujuan azan.", "Azan menandakan masuk waktu solat."],
-  ["Iqamah dibaca sebelum memulakan solat ________.", "berjemaah", "Fikirkan solat bersama-sama.", "Iqamah dibaca sebelum solat berjemaah dimulakan."],
+  ["Iqamah dilaungkan selepas azan dan sebelum solat ________ dimulakan.", "fardu", "Bezakan fungsi azan dengan iqamah.", "Iqamah menandakan solat fardu akan dimulakan."],
   ["Puasa wajib dilakukan pada bulan ________.", "Ramadan", "Fikirkan bulan puasa.", "Umat Islam berpuasa wajib pada bulan Ramadan."],
   ["Puasa bermaksud menahan diri daripada makan dan ________.", "minum", "Fikirkan perkara yang membatalkan puasa.", "Puasa ialah menahan diri daripada makan, minum dan perkara yang membatalkan puasa."],
   ["Kita berbuka puasa apabila masuk waktu ________.", "Maghrib", "Fikirkan waktu berbuka.", "Waktu berbuka puasa ialah selepas masuk waktu Maghrib."],
@@ -104,17 +109,17 @@ const ibadahItems = [
   ["Mengucap dua kalimah syahadah ialah Rukun Islam yang ________.", "pertama", "Ingat susunan Rukun Islam.", "Syahadah ialah Rukun Islam yang pertama."],
   ["Solat ialah Rukun Islam yang ________.", "kedua", "Ingat susunan Rukun Islam.", "Solat ialah Rukun Islam yang kedua."],
   ["Puasa Ramadan ialah Rukun Islam yang ________.", "ketiga", "Ingat susunan Rukun Islam.", "Puasa Ramadan ialah Rukun Islam yang ketiga."],
-  ["Doa dibaca dengan tangan ________.", "diangkat", "Fikirkan adab berdoa.", "Antara adab berdoa ialah mengangkat tangan."],
+  ["Antara adab berdoa ialah ________ tangan.", "mengangkat", "Fikirkan perbuatan tangan ketika berdoa.", "Mengangkat tangan ialah antara adab berdoa, bukan syarat sah doa."],
   ["Selepas solat, kita digalakkan berzikir dan ________.", "berdoa", "Fikirkan amalan selepas solat.", "Berzikir dan berdoa digalakkan selepas solat."],
   ["Tempat solat mestilah ________.", "bersih", "Fikirkan syarat tempat solat.", "Tempat solat perlu bersih daripada najis."],
   ["Pakaian solat mestilah menutup ________.", "aurat", "Fikirkan syarat berpakaian ketika solat.", "Pakaian solat mesti menutup aurat."],
-  ["Jika tiada air untuk wuduk, kita boleh bertayamum dengan ________.", "debu", "Fikirkan cara bersuci apabila tiada air.", "Tayamum dilakukan menggunakan debu tanah yang bersih."],
+  ["Jika tiada air atau tidak dapat menggunakannya, kita boleh bertayamum dengan debu yang ________.", "suci", "Fikirkan bahan yang sah digunakan untuk tayamum.", "Tayamum dilakukan menggunakan debu tanah yang suci."],
   ["Membaca basmalah sebelum makan ialah amalan ________.", "baik", "Fikirkan ibadah harian.", "Membaca basmalah ialah amalan baik sebelum makan."],
   ["Kita solat kerana taat kepada ________.", "Allah", "Fikirkan tujuan solat.", "Solat dilakukan kerana taat kepada Allah."],
   ["Orang yang sakit masih perlu solat mengikut ________.", "kemampuan", "Fikirkan kemudahan dalam Islam.", "Islam memberi kemudahan solat mengikut kemampuan."],
   ["Solat berjemaah dipimpin oleh ________.", "imam", "Fikirkan orang di hadapan ketika solat berjemaah.", "Imam memimpin solat berjemaah."],
   ["Makmum mengikuti pergerakan ________.", "imam", "Fikirkan orang yang diikuti dalam solat berjemaah.", "Makmum mengikuti imam dalam solat berjemaah."],
-  ["Wuduk dimulakan dengan membasuh ________.", "tangan", "Fikirkan langkah awal wuduk yang biasa dipelajari.", "Antara langkah awal wuduk ialah membasuh tangan."],
+  ["Sebelum membasuh muka ketika berwuduk, kita disunatkan membasuh ________.", "tangan", "Bezakan amalan sunat dengan rukun wuduk.", "Membasuh kedua-dua tangan sebelum muka ialah sunat wuduk; rukun wuduk bermula dengan niat dan membasuh muka."],
   ["Anggota wuduk termasuk muka, tangan, kepala dan ________.", "kaki", "Fikirkan anggota wuduk.", "Kaki termasuk anggota wuduk."],
   ["Kita perlu menjaga solat pada ________.", "waktunya", "Fikirkan adab menunaikan solat.", "Solat perlu ditunaikan pada waktunya."],
   ["Solat mengajar kita menjadi orang yang ________.", "disiplin", "Fikirkan kesan solat tepat waktu.", "Solat mendidik kita supaya berdisiplin."],
@@ -128,7 +133,7 @@ const ibadahItems = [
   ["Membaca Al-Quran ialah satu ________.", "ibadah", "Fikirkan amalan yang mendapat pahala.", "Membaca Al-Quran ialah ibadah."],
   ["Bersedekah ialah amalan yang ________.", "mulia", "Fikirkan amalan membantu orang lain.", "Bersedekah ialah amalan mulia."],
   ["Kita menunaikan ibadah mengikut ajaran Nabi ________ SAW.", "Muhammad", "Fikirkan contoh terbaik umat Islam.", "Nabi Muhammad SAW menjadi contoh dalam ibadah."],
-  ["Ibadah yang diterima perlu dilakukan kerana ________.", "Allah", "Fikirkan tujuan ikhlas.", "Ibadah dilakukan kerana Allah."],
+  ["Ibadah hendaklah dilakukan dengan ikhlas kerana ________.", "Allah", "Fikirkan tujuan ibadah.", "Ikhlas bermaksud melakukan ibadah kerana Allah, bukan untuk mendapat pujian manusia."],
 ];
 
 const sirahItems = [
@@ -210,10 +215,32 @@ const jawiLetters = [
 ];
 
 const jawiQuestions = [
-  ...jawiLetters.slice(0, 35).map(([letter, name]) =>
-    fill(`Nama huruf Jawi ${letter} ialah ________.`, name, "Perhatikan bentuk huruf Jawi.", `Huruf ${letter} dinamakan ${name}.`)
-  ),
-  ...jawiLetters.slice(35).map(([q, answer, hint, explanation]) => fill(q, answer, hint, explanation)),
+  ...jawiLetters.slice(0, 35).map(([letter, name], index) => ({
+    ...buildJawiQuestionMeta(buildLetterQuestion(letter, name)),
+    difficulty: index < 20 ? 'mudah' : index < 30 ? 'sederhana' : 'sukar',
+    cognitiveLevel: index < 20 ? 'mengingat' : index < 30 ? 'memahami' : 'mengaplikasi',
+    questionType: 'short_answer'
+  })),
+  ...jawiLetters.slice(35).map(([q, answer, hint, explanation], index) => ({
+    ...buildJawiQuestionMeta({
+      question: q,
+      answer,
+      acceptedAnswers: [answer],
+      hint,
+      pronunciationHint: answer === "kanan" ? "ka-nan" : `${answer}`,
+      explanation,
+      commonMistake: answer === "kanan"
+        ? "Jangan baca Jawi dari kiri ke kanan."
+        : "Jangan tertukar bentuk huruf Jawi.",
+      memoryTip: answer === "kanan"
+        ? "Ingat: Jawi bergerak dari kanan ke kiri."
+        : `Ingat bentuk huruf ${answer}.`,
+      difficulty: index < 8 ? 'sederhana' : 'sukar',
+      helper: answer === "kanan" ? "direction" : undefined,
+    }),
+    cognitiveLevel: index < 8 ? 'memahami' : 'mengaplikasi',
+    questionType: 'fill_blank'
+  })),
 ];
 
 const akhlakItems = [
@@ -231,10 +258,10 @@ const akhlakItems = [
   ["Bercakap dengan ibu bapa perlu menggunakan bahasa yang ________.", "sopan", "Fikirkan adab bercakap.", "Bahasa sopan menunjukkan akhlak mulia."],
   ["Tidak berebut ketika beratur menunjukkan sikap ________.", "disiplin", "Fikirkan peraturan beratur.", "Beratur dengan baik menunjukkan disiplin."],
   ["Membuang sampah ke dalam tong menunjukkan sikap menjaga ________.", "kebersihan", "Fikirkan tanggungjawab terhadap persekitaran.", "Menjaga kebersihan ialah akhlak baik."],
-  ["Orang yang suka membantu disebut ________.", "penyayang", "Fikirkan sifat suka menolong.", "Sikap penyayang membuat kita suka membantu."],
+  ["Orang yang peka dan suka membantu orang lain bersikap ________.", "prihatin", "Fikirkan sifat orang yang mengambil berat.", "Prihatin bermaksud mengambil berat dan bersedia membantu orang lain."],
   ["Kita tidak boleh mengambil barang orang tanpa ________.", "izin", "Fikirkan hak milik orang lain.", "Mengambil barang orang perlu mendapat izin."],
   ["Memulangkan barang yang dipinjam ialah tanda ________.", "amanah", "Fikirkan tanggungjawab meminjam.", "Amanah termasuk memulangkan barang yang dipinjam."],
-  ["Menepati janji ialah sifat orang yang ________.", "jujur", "Fikirkan kepentingan janji.", "Orang jujur berusaha menepati janji."],
+  ["Menepati janji menunjukkan sifat ________.", "amanah", "Fikirkan tanggungjawab terhadap janji.", "Orang yang amanah berusaha menunaikan janji."],
   ["Kita hendaklah bercakap benar walaupun ________.", "susah", "Fikirkan kepentingan benar.", "Bercakap benar perlu diamalkan dalam semua keadaan."],
   ["Sombong ialah akhlak yang perlu ________.", "dijauhi", "Fikirkan sifat yang tidak disukai.", "Sombong ialah sifat buruk dan perlu dijauhi."],
   ["Rendah hati ialah lawan kepada ________.", "sombong", "Fikirkan sifat berlawanan.", "Rendah hati ialah sifat baik, lawan kepada sombong."],
@@ -243,7 +270,7 @@ const akhlakItems = [
   ["Meminta izin sebelum masuk bilik orang ialah akhlak yang ________.", "sopan", "Fikirkan adab menjaga privasi.", "Meminta izin menunjukkan adab sopan."],
   ["Memberi salam kepada Muslim ialah amalan yang ________.", "baik", "Fikirkan ucapan sesama Muslim.", "Memberi salam mengeratkan silaturahim."],
   ["Kita perlu bersyukur apabila mendapat ________.", "nikmat", "Fikirkan pemberian Allah.", "Bersyukur dilakukan apabila mendapat nikmat."],
-  ["Jika berjaya, kita tidak boleh ________ diri.", "membangga", "Fikirkan sikap rendah hati.", "Kita tidak patut membangga diri."],
+  ["Jika berjaya, kita tidak boleh ________ diri.", "membanggakan", "Fikirkan sikap rendah hati.", "Kita tidak patut membanggakan diri atau bersikap sombong."],
   ["Jika kalah dalam permainan, kita perlu bersikap ________.", "sabar", "Fikirkan akhlak ketika kalah.", "Sabar membantu kita menerima keputusan dengan baik."],
   ["Menolong orang tua melintas jalan ialah perbuatan ________.", "mulia", "Fikirkan akhlak membantu orang.", "Menolong orang tua ialah perbuatan mulia."],
   ["Kita hendaklah berbuat baik kepada semua ________.", "orang", "Fikirkan akhlak sesama manusia.", "Islam mengajar kita berbuat baik kepada semua orang."],
@@ -259,7 +286,7 @@ const akhlakItems = [
   ["Kita perlu memilih kawan yang berakhlak ________.", "baik", "Fikirkan pengaruh kawan.", "Kawan yang baik membantu kita menjadi baik."],
   ["Suka memberi bantuan tanpa mengharap balasan menunjukkan sifat ________.", "ikhlas", "Fikirkan niat membantu.", "Ikhlas bermaksud melakukan kebaikan kerana Allah."],
   ["Tidak memotong percakapan orang menunjukkan adab ________.", "mendengar", "Fikirkan adab ketika orang bercakap.", "Adab mendengar termasuk tidak memotong percakapan."],
-  ["Kita perlu menjaga rahsia kawan yang ________.", "baik", "Fikirkan amanah menjaga rahsia.", "Rahsia yang baik perlu dijaga sebagai amanah."],
+  ["Kita perlu menjaga rahsia yang ________ kepada kita.", "diamanahkan", "Fikirkan tanggungjawab apabila seseorang mempercayai kita.", "Rahsia yang diamanahkan perlu dijaga selagi tidak melibatkan bahaya atau kezaliman."],
   ["Jika menemui wang tercicir, kita serahkan kepada ________.", "guru", "Fikirkan sikap amanah di sekolah.", "Wang tercicir di sekolah boleh diserahkan kepada guru."],
   ["Mengucapkan tahniah kepada kawan menunjukkan sikap ________.", "baik hati", "Fikirkan kegembiraan kawan.", "Tahniah menunjukkan kita berkongsi kegembiraan."],
   ["Akhlak mulia menjadikan hidup lebih ________.", "harmoni", "Fikirkan kesan akhlak baik.", "Akhlak mulia menjadikan hubungan lebih harmoni."],
@@ -276,9 +303,9 @@ const quranItems = [
   ["Surah pertama dalam Al-Quran ialah al-______.", "Fatihah", "Fikirkan surah pembukaan.", "Surah al-Fatihah ialah surah pertama dalam Al-Quran."],
   ["Al-Quran perlu dibaca dengan ________.", "tartil", "Fikirkan cara bacaan yang baik.", "Al-Quran dibaca dengan tartil, iaitu bacaan yang baik dan teratur."],
   ["Sebelum membaca Al-Quran, kita digalakkan mengambil ________.", "wuduk", "Fikirkan adab membaca Al-Quran.", "Berwuduk ialah adab sebelum membaca Al-Quran."],
-  ["Sebelum membaca Al-Quran, kita membaca ________.", "basmalah", "Fikirkan bacaan pembuka.", "Basmalah dibaca sebelum membaca Al-Quran."],
+  ["Sebelum membaca Al-Quran, kita memohon perlindungan Allah dengan membaca ________.", "isti'azah", "Ingat bacaan A'uzu billahi minasy-syaitanir rajim.", "Isti'azah dibaca sebelum membaca Al-Quran; basmalah dibaca pada awal kebanyakan surah."],
   ["Kita hendaklah meletakkan Al-Quran di tempat yang ________.", "bersih", "Fikirkan adab menjaga mushaf.", "Al-Quran perlu diletakkan di tempat bersih dan sesuai."],
-  ["Mendengar bacaan Al-Quran perlu dilakukan dengan ________.", "senyap", "Fikirkan adab mendengar bacaan.", "Kita hendaklah diam dan mendengar dengan baik."],
+  ["Ketika Al-Quran dibacakan, kita hendaklah diam dan mendengar dengan ________.", "teliti", "Fokus pada adab mendengar bacaan.", "Kita hendaklah diam serta mendengar bacaan Al-Quran dengan teliti."],
   ["Al-Quran menjadi ________ hidup umat Islam.", "panduan", "Fikirkan fungsi Al-Quran.", "Al-Quran ialah panduan hidup umat Islam."],
   ["Huruf dalam Al-Quran disebut huruf ________.", "hijaiyah", "Fikirkan huruf Arab.", "Al-Quran ditulis dengan huruf hijaiyah."],
   ["Tanda baris atas disebut ________.", "fathah", "Fikirkan tanda bunyi a.", "Fathah ialah tanda baris atas."],
@@ -292,10 +319,10 @@ const quranItems = [
   ["Al-Quran diturunkan dalam bahasa ________.", "Arab", "Fikirkan bahasa Al-Quran.", "Al-Quran diturunkan dalam bahasa Arab."],
   ["Membaca Al-Quran mendapat ________.", "pahala", "Fikirkan ganjaran membaca Al-Quran.", "Membaca Al-Quran ialah ibadah dan mendapat pahala."],
   ["Kita membaca isti'azah dengan menyebut A'uzu billahi minasy-syaitanir ________.", "rajim", "Fikirkan bacaan sebelum Al-Quran.", "Isti'azah memohon perlindungan daripada syaitan yang direjam."],
-  ["Kalimat بِسْمِ اللهِ disebut ________.", "Bismillah", "Fikirkan bacaan basmalah.", "بِسْمِ اللهِ dibaca Bismillah."],
+  ["Ungkapan بِسْمِ اللهِ disebut ________.", "basmalah", "Fikirkan nama ungkapan Bismillah.", "Ungkapan بِسْمِ اللهِ dikenali sebagai basmalah dan dibaca Bismillah."],
   ["Kalimat الرَّحْمٰنِ bermaksud Maha ________.", "Pemurah", "Fikirkan maksud ar-Rahman.", "Ar-Rahman bermaksud Allah Maha Pemurah."],
   ["Kalimat الرَّحِيمِ bermaksud Maha ________.", "Penyayang", "Fikirkan maksud ar-Rahim.", "Ar-Rahim bermaksud Allah Maha Penyayang."],
-  ["Surah al-Fatihah dibaca dalam setiap ________.", "solat", "Fikirkan bacaan penting dalam solat.", "Surah al-Fatihah dibaca dalam solat."],
+  ["Surah al-Fatihah dibaca pada setiap ________ solat.", "rakaat", "Fikirkan bacaan wajib dalam setiap rakaat.", "Surah al-Fatihah dibaca pada setiap rakaat solat."],
   ["Ayat Al-Quran perlu disebut dengan makhraj yang ________.", "betul", "Fikirkan cara menyebut huruf.", "Makhraj huruf perlu disebut dengan betul."],
   ["Kita tidak boleh bermain-main ketika membaca ________.", "Al-Quran", "Fikirkan adab membaca.", "Membaca Al-Quran perlu dilakukan dengan adab."],
   ["Mushaf Al-Quran perlu dijaga dengan ________.", "baik", "Fikirkan adab menjaga Al-Quran.", "Mushaf Al-Quran perlu dijaga dengan baik."],
@@ -307,26 +334,26 @@ const quranItems = [
   ["Orang yang menghafaz Al-Quran disebut ________.", "hafiz", "Fikirkan gelaran penghafaz.", "Hafiz ialah orang yang menghafaz Al-Quran."],
   ["Jika tidak tahu membaca ayat, kita perlu bertanya kepada ________.", "guru", "Fikirkan cara belajar Al-Quran.", "Belajar Al-Quran perlu dibimbing guru."],
   ["Al-Quran mengandungi firman ________.", "Allah", "Fikirkan kandungan Al-Quran.", "Al-Quran ialah firman Allah."],
-  ["Kita hendaklah membaca Al-Quran dengan suara yang ________.", "sopan", "Fikirkan adab bacaan.", "Membaca Al-Quran perlu dilakukan dengan sopan."],
-  ["Sebelum menyentuh mushaf, tangan hendaklah ________.", "bersih", "Fikirkan adab menyentuh mushaf.", "Tangan yang bersih menunjukkan adab terhadap mushaf."],
+  ["Kita hendaklah membaca Al-Quran dengan suara yang ________ dan tertib.", "jelas", "Fikirkan bacaan yang boleh disemak oleh guru.", "Bacaan yang jelas dan tertib membantu makhraj serta tajwid disemak dengan tepat."],
+  ["Sebelum menyentuh mushaf Al-Quran, kita hendaklah ________.", "berwuduk", "Ingat tuntutan bersuci ketika menyentuh mushaf.", "Dalam panduan mazhab Syafii yang diajar di sekolah, murid hendaklah berwuduk sebelum menyentuh mushaf Al-Quran."],
   ["Al-Quran mengajar manusia menyembah ________.", "Allah", "Fikirkan ajaran tauhid.", "Al-Quran mengajar manusia menyembah Allah."],
   ["Surah an-Nas ialah surah terakhir dalam ________.", "Al-Quran", "Fikirkan susunan surah.", "Surah an-Nas ialah surah terakhir dalam Al-Quran."],
   ["Surah al-Falaq terletak sebelum Surah an-______.", "Nas", "Fikirkan susunan surah pendek.", "Surah al-Falaq terletak sebelum Surah an-Nas."],
   ["Surah al-Ikhlas bermula dengan قُلْ هُوَ اللهُ ________.", "أَحَدٌ", "Ingat permulaan Surah al-Ikhlas.", "Ayat pertama Surah al-Ikhlas berakhir dengan أَحَدٌ."],
   ["Surah al-Kauthar bermula dengan إِنَّا أَعْطَيْنَاكَ ________.", "الْكَوْثَرَ", "Ingat ayat pertama Surah al-Kauthar.", "Ayat pertama Surah al-Kauthar berakhir dengan الْكَوْثَرَ."],
-  ["Al-Quran perlu dibaca di tempat yang ________.", "sesuai", "Fikirkan adab membaca.", "Tempat yang sesuai membantu kita membaca dengan tenang."],
+  ["Al-Quran hendaklah dibaca di tempat yang bersih dan ________.", "sesuai", "Pilih tempat yang menjaga kehormatan bacaan.", "Tempat yang bersih dan sesuai membantu kita membaca dengan tenang serta beradab."],
   ["Ayat Al-Quran tidak boleh dipersendakan kerana ia kalam ________.", "Allah", "Fikirkan kemuliaan Al-Quran.", "Al-Quran ialah kalam Allah dan wajib dimuliakan."],
   ["Belajar membaca Al-Quran memerlukan latihan yang ________.", "berterusan", "Fikirkan cara menjadi lancar.", "Latihan berterusan membantu bacaan menjadi lebih baik."],
-  ["Huruf hijaiyah pertama ialah ________.", "ا", "Fikirkan huruf pertama.", "Huruf hijaiyah pertama ialah alif, ا."],
-  ["Huruf hijaiyah terakhir yang biasa dipelajari ialah ________.", "ي", "Fikirkan huruf ya.", "Huruf ya, ي, ialah huruf terakhir dalam susunan hijaiyah biasa."],
+  ["Dalam bacaan Al-Quran, huruf hijaiyah yang pertama ialah ________.", "ا", "Fikirkan huruf pertama.", "Huruf hijaiyah pertama ialah alif, ا."],
+  ["Dalam susunan hijaiyah bacaan Al-Quran, huruf terakhir yang biasa dipelajari ialah ________.", "ي", "Fikirkan huruf ya.", "Huruf ya, ي, ialah huruf terakhir dalam susunan hijaiyah biasa."],
   ["Al-Quran diturunkan sebagai petunjuk kepada ________.", "manusia", "Fikirkan tujuan Al-Quran.", "Al-Quran menjadi petunjuk kepada manusia."],
 ];
 
 const hadisItems = [
   ["Hadis ialah perkataan, perbuatan dan pengakuan Nabi ________ SAW.", "Muhammad", "Fikirkan sumber hadis.", "Hadis berkaitan dengan Nabi Muhammad SAW."],
   ["Hadis mengajar kita mengikuti ________ Rasulullah SAW.", "sunnah", "Fikirkan amalan Rasulullah SAW.", "Hadis membimbing kita mengikuti sunnah Rasulullah SAW."],
-  ["Hadis tentang kebersihan mengajar kita menjaga ________.", "kebersihan", "Fikirkan amalan bersih.", "Islam mengajar umatnya menjaga kebersihan."],
-  ["Kebersihan ialah sebahagian daripada ________.", "iman", "Fikirkan hadis masyhur tentang bersih.", "Hadis mengajar kebersihan sebahagian daripada iman."],
+  ["Hadis tentang bersuci mengajar kita menjaga ________ diri dan tempat.", "kebersihan", "Fikirkan kesan amalan bersuci.", "Bersuci mendidik umat Islam menjaga kebersihan diri dan tempat."],
+  ["Hadis menyatakan bahawa bersuci ialah separuh daripada ________.", "iman", "Ingat maksud hadis 'bersuci itu separuh daripada iman'.", "Hadis sahih menerangkan bahawa bersuci ialah separuh daripada iman."],
   ["Orang Islam perlu bercakap perkara yang ________.", "baik", "Fikirkan adab bercakap.", "Hadis mengajar kita bercakap baik atau diam."],
   ["Jika tidak dapat berkata baik, kita lebih baik ________.", "diam", "Fikirkan pilihan apabila marah.", "Diam lebih baik daripada berkata buruk."],
   ["Senyum kepada saudara ialah satu ________.", "sedekah", "Fikirkan hadis tentang senyuman.", "Senyuman kepada saudara Muslim ialah sedekah."],
@@ -339,7 +366,7 @@ const hadisItems = [
   ["Hadis mengajar kita supaya berbuat baik kepada ________.", "ibu bapa", "Fikirkan orang yang wajib dihormati.", "Ibu bapa perlu dihormati dan ditaati dalam perkara baik."],
   ["Menuntut ilmu ialah amalan yang ________.", "mulia", "Fikirkan kepentingan ilmu.", "Hadis menggalakkan umat Islam menuntut ilmu."],
   ["Orang yang kuat ialah orang yang dapat menahan ________.", "marah", "Fikirkan hadis tentang kekuatan diri.", "Kekuatan sebenar termasuk menahan marah."],
-  ["Kita perlu menyampaikan amanah dengan ________.", "jujur", "Fikirkan maksud amanah.", "Amanah perlu ditunaikan dengan jujur."],
+  ["Kita perlu menunaikan amanah dengan ________.", "bertanggungjawab", "Fikirkan cara melaksanakan amanah.", "Amanah ditunaikan dengan jujur dan bertanggungjawab."],
   ["Hadis mengajar kita tidak menyakiti ________.", "jiran", "Fikirkan adab berjiran.", "Jiran perlu dilayan dengan baik."],
   ["Memberi hadiah boleh menambahkan kasih ________.", "sayang", "Fikirkan hikmah memberi hadiah.", "Hadiah dapat menambahkan kasih sayang."],
   ["Sifat malu yang baik adalah sebahagian daripada ________.", "iman", "Fikirkan hadis tentang malu.", "Malu melakukan kejahatan ialah tanda iman."],
@@ -352,7 +379,7 @@ const hadisItems = [
   ["Jiran ialah orang yang tinggal ________ rumah kita.", "berdekatan", "Fikirkan maksud jiran.", "Jiran tinggal berdekatan dengan rumah kita."],
   ["Apabila bersin, kita mengucapkan ________.", "Alhamdulillah", "Fikirkan adab bersin.", "Alhamdulillah diucapkan selepas bersin."],
   ["Apabila mendengar orang bersin memuji Allah, kita mendoakannya dengan ________.", "Yarhamukallah", "Fikirkan adab menjawab bersin.", "Yarhamukallah ialah doa untuk orang yang bersin."],
-  ["Hadis mengajar kita menjaga hubungan ________.", "silaturahim", "Fikirkan hubungan keluarga dan masyarakat.", "Silaturahim perlu dijaga."],
+  ["Hadis mengajar kita mengeratkan ________ dengan keluarga dan saudara.", "silaturahim", "Fikirkan hubungan kekeluargaan.", "Silaturahim bermaksud hubungan kasih sayang yang perlu dipelihara."],
   ["Orang yang baik ialah orang yang bermanfaat kepada ________.", "orang lain", "Fikirkan hadis tentang manfaat.", "Kebaikan memberi manfaat kepada orang lain."],
   ["Berwajah manis ketika bertemu kawan ialah akhlak ________.", "baik", "Fikirkan senyuman dan keramahan.", "Wajah manis menunjukkan akhlak baik."],
   ["Nabi Muhammad SAW mengajar umatnya supaya tidak ________.", "berbohong", "Fikirkan sifat jujur.", "Berbohong dilarang dalam Islam."],
@@ -366,8 +393,8 @@ const hadisItems = [
   ["Sunnah ialah cara hidup Nabi ________ SAW.", "Muhammad", "Fikirkan maksud sunnah.", "Sunnah ialah cara hidup Nabi Muhammad SAW."],
   ["Hadis perlu dihormati kerana berkaitan dengan Rasulullah ________.", "SAW", "Fikirkan adab menyebut nama Nabi.", "Kita menyebut SAW selepas nama Nabi Muhammad."],
   ["Membantu ibu di rumah ialah amalan yang mendapat ________.", "pahala", "Fikirkan amalan baik di rumah.", "Membantu ibu ialah kebaikan yang mendapat pahala."],
-  ["Bercakap kasar tidak menepati ajaran ________.", "hadis", "Fikirkan panduan akhlak.", "Hadis mengajar kita bercakap baik."],
-  ["Menjaga kebersihan diri termasuk amalan ________.", "Islam", "Fikirkan ajaran kebersihan.", "Islam sangat menitikberatkan kebersihan."],
+  ["Bercakap kasar tidak menepati ajaran Islam dan ________ Nabi.", "sunnah", "Fikirkan contoh percakapan Rasulullah SAW.", "Sunnah Nabi mengajar umat Islam bercakap dengan baik dan tidak menyakiti orang lain."],
+  ["Menjaga kebersihan diri ialah amalan yang ________ dalam Islam.", "dituntut", "Fikirkan kedudukan kebersihan dalam kehidupan Muslim.", "Islam sangat menuntut umatnya menjaga kebersihan diri."],
   ["Kita perlu membaca hadis dengan rasa ________.", "hormat", "Fikirkan adab terhadap ilmu agama.", "Hadis perlu dipelajari dengan hormat."],
   ["Hadis sahih ialah hadis yang boleh dijadikan ________.", "panduan", "Fikirkan fungsi hadis sahih.", "Hadis sahih boleh dijadikan panduan amalan."],
   ["Mengikut sunnah Nabi mendekatkan diri kepada ________.", "Allah", "Fikirkan tujuan mengikuti sunnah.", "Mengikut sunnah ialah tanda cinta kepada Allah dan Rasul."],
@@ -420,7 +447,7 @@ const adabItems = [
   ["Tuan rumah melayan tetamu dengan ________.", "baik", "Fikirkan adab menerima tetamu.", "Tetamu perlu dilayan dengan baik."],
   ["Adab menggunakan telefon ialah bercakap dengan ________.", "sopan", "Fikirkan adab komunikasi.", "Telefon perlu digunakan dengan bahasa sopan."],
   ["Kita tidak boleh menyebarkan berita yang belum ________.", "pasti", "Fikirkan adab menerima berita.", "Berita perlu dipastikan sebelum disebarkan."],
-  ["Ketika berdoa, kita menadah ________.", "tangan", "Fikirkan adab berdoa.", "Menadah tangan ialah antara adab berdoa."],
+  ["Antara adab berdoa ialah menadah ________.", "tangan", "Fikirkan adab yang dilakukan ketika berdoa.", "Menadah tangan ialah antara adab berdoa, bukan syarat sah doa."],
   ["Ketika berdoa, suara kita hendaklah ________.", "perlahan", "Fikirkan adab berdoa.", "Berdoa dengan suara perlahan lebih sopan."],
   ["Adab terhadap ibu bapa ialah mentaati mereka dalam perkara ________.", "baik", "Fikirkan batas taat.", "Kita mentaati ibu bapa dalam perkara baik."],
   ["Adab terhadap guru ialah mengucapkan ________ ketika bertemu.", "salam", "Fikirkan adab bertemu guru.", "Memberi salam kepada guru ialah adab baik."],
@@ -449,12 +476,12 @@ const hafazanItems = [
   ["فَصَلِّ لِرَبِّكَ ________.", "وَانْحَرْ", "Lengkapkan ayat Surah al-Kauthar.", "Ayat ini menyuruh solat dan berkorban kerana Allah."],
   ["إِنَّ شَانِئَكَ هُوَ ________.", "الْأَبْتَرُ", "Lengkapkan akhir Surah al-Kauthar.", "Ayat ini ialah ayat terakhir Surah al-Kauthar."],
   ["Doa sebelum makan bermula dengan اللَّهُمَّ ________.", "بَارِكْ", "Ingat doa sebelum makan.", "Doa sebelum makan memohon keberkatan rezeki."],
-  ["Doa sebelum makan memohon keberkatan pada rezeki yang Allah ________.", "kurniakan", "Fikirkan maksud doa makan.", "Doa makan mengingatkan kita bahawa rezeki daripada Allah."],
+  ["Lengkapkan doa sebelum makan: اللَّهُمَّ بَارِكْ لَنَا فِيمَا ________.", "رَزَقْتَنَا", "Ingat sambungan doa memohon keberkatan rezeki.", "Frasa فِيمَا رَزَقْتَنَا bermaksud pada rezeki yang telah Engkau kurniakan kepada kami."],
   ["Doa selepas makan dimulakan dengan الْحَمْدُ ________.", "لِلَّهِ", "Ingat ucapan syukur selepas makan.", "Doa selepas makan memuji Allah."],
   ["Doa sebelum tidur bermula dengan بِاسْمِكَ اللَّهُمَّ ________.", "أَحْيَا", "Ingat doa sebelum tidur.", "Doa sebelum tidur bermaksud dengan nama Allah aku hidup dan mati."],
   ["Doa bangun tidur bermula dengan الْحَمْدُ لِلَّهِ الَّذِي ________.", "أَحْيَانَا", "Ingat doa bangun tidur.", "Doa bangun tidur memuji Allah yang menghidupkan kita semula."],
-  ["Doa masuk tandas dibaca sebelum masuk ________.", "tandas", "Fikirkan doa harian.", "Doa masuk tandas dibaca sebelum masuk tandas."],
-  ["Doa keluar tandas dibaca selepas keluar ________.", "tandas", "Fikirkan doa harian.", "Doa keluar tandas dibaca selepas keluar tandas."],
+  ["Lengkapkan doa masuk tandas: اللَّهُمَّ إِنِّي ________ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ.", "أَعُوذُ", "Ingat lafaz memohon perlindungan kepada Allah.", "أَعُوذُ بِكَ bermaksud aku berlindung dengan-Mu."],
+  ["Doa ringkas selepas keluar tandas ialah ________.", "غُفْرَانَكَ", "Ingat lafaz memohon keampunan Allah.", "غُفْرَانَكَ bermaksud aku memohon keampunan-Mu."],
   ["Lafaz salam ialah السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ________.", "اللهِ", "Lengkapkan lafaz salam.", "Salam mendoakan kesejahteraan dan rahmat Allah."],
   ["Jawapan salam bermula dengan وَعَلَيْكُمُ ________.", "السَّلَامُ", "Ingat cara menjawab salam.", "Salam dijawab dengan وَعَلَيْكُمُ السَّلَامُ."],
   ["Ucapan syukur yang dihafaz ialah ________.", "Alhamdulillah", "Fikirkan ucapan selepas mendapat nikmat.", "Alhamdulillah ialah ucapan memuji Allah."],
@@ -491,16 +518,16 @@ const jawiWords = [
   ["نيت", "niat"], ["وضوء", "wuduk"], ["قبلة", "kiblat"], ["ايمان", "iman"], ["ايمان دان اسلام", "iman dan Islam"],
   ["کاسيه", "kasih"], ["سايڠ", "sayang"], ["موليا", "mulia"], ["جوجور", "jujur"], ["امانه", "amanah"],
   ["برسيه", "bersih"], ["حلال", "halal"], ["حرام", "haram"], ["ڤهالا", "pahala"], ["دوسا", "dosa"],
-  ["چيقڬو", "cikgu"], ["موريد", "murid"], ["کلس", "kelas"], ["اير", "air"], ["هاري", "hari"],
+  ["چيقݢو", "cikgu"], ["موريد", "murid"], ["کلس", "kelas"], ["اير", "air"], ["هاري", "hari"],
 ];
 
 const jawiPerkataanQuestions = jawiWords.map(([jawi, rumi], index) =>
-  index === 33
-    ? fill(`Dalam tulisan Jawi, ${jawi} sepadan dengan bacaan Rumi ________.`, rumi, "Perhatikan semula huruf Jawi dan sebutannya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
-    : fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi, jawi])
+  index >= 33
+    ? fill(`Tulisan Jawi bagi perkataan Rumi "${rumi}" ialah ________.`, jawi, "Tulis perkataan dari kanan ke kiri dan semak setiap huruf.", `Perkataan ${rumi} ditulis ${jawi} dalam Jawi.`, [jawi])
+    : fill(`Perkataan Jawi ${jawi} dibaca sebagai ________.`, rumi, "Perhatikan huruf Jawi dan bunyinya.", `${jawi} dibaca sebagai ${rumi}.`, [rumi])
 );
 
-export const islamSubject = {
+const rawIslamSubject = {
   id: "islam",
   title: "Pendidikan Islam Tahun 2",
   short: "Islam",
@@ -569,5 +596,190 @@ export const islamSubject = {
     },
   ],
 };
+
+const ISLAM_TOPIC_ENRICHMENTS = Object.freeze({
+  aqidah: {
+    note: "Murid memahami asas keimanan, tauhid, Rukun Iman serta kesannya terhadap keyakinan dan amalan harian.",
+    learningObjectives: [
+      "Menyatakan asas tauhid dan enam Rukun Iman dengan betul.",
+      "Menerangkan hubungan sifat Allah dengan sikap seorang Muslim.",
+      "Mengamalkan keyakinan, syukur, reda dan usaha tanpa menyekutukan Allah."
+    ]
+  },
+  ibadah: {
+    note: "Murid mengenal Rukun Islam serta melaksanakan asas bersuci, solat, puasa dan ibadah harian dengan tertib.",
+    learningObjectives: [
+      "Menyatakan Rukun Islam, waktu solat dan bilangan rakaat.",
+      "Membezakan rukun, sunat dan adab dalam wuduk, solat serta doa.",
+      "Memilih tindakan ibadah yang sah, ikhlas dan sesuai dengan kemampuan."
+    ]
+  },
+  sirah: {
+    note: "Murid mengenal riwayat asas Nabi Muhammad SAW dan menghubungkan peristiwa sirah dengan teladan akhlak.",
+    learningObjectives: [
+      "Menyatakan tokoh, tempat dan peristiwa penting dalam sirah Rasulullah SAW.",
+      "Menerangkan sifat amanah, sabar, pemaaf dan kasih sayang baginda.",
+      "Menilai perbuatan harian berdasarkan teladan Rasulullah SAW."
+    ]
+  },
+  jawi: {
+    note: "Murid mengenal nama, bentuk, titik dan arah tulisan huruf Jawi termasuk huruf tambahan Bahasa Melayu.",
+    learningObjectives: [
+      "Menamakan huruf Jawi dan huruf tambahan dengan tepat.",
+      "Membezakan huruf berdasarkan bentuk serta kedudukan titik.",
+      "Menulis huruf Jawi yang disebut dari kanan ke kiri."
+    ]
+  },
+  akhlak: {
+    note: "Murid memahami dan mengamalkan akhlak mulia terhadap Allah, diri, keluarga, rakan, masyarakat dan alam.",
+    learningObjectives: [
+      "Mengenal sifat jujur, amanah, sabar, prihatin dan rendah hati.",
+      "Menerangkan kesan akhlak baik dan buruk terhadap orang lain.",
+      "Menilai tindakan harian dan memilih akhlak yang adil serta bertanggungjawab."
+    ]
+  },
+  quran: {
+    note: "Murid memahami kedudukan Al-Quran, adab terhadap mushaf, asas bacaan dan pengajaran surah-surah pendek.",
+    learningObjectives: [
+      "Menyatakan fakta asas Al-Quran, surah dan tanda bacaan.",
+      "Menerangkan adab membaca, mendengar dan menyentuh mushaf.",
+      "Memilih tindakan yang menjaga kehormatan Al-Quran dan ketepatan bacaan."
+    ]
+  },
+  hadis: {
+    note: "Murid memahami maksud hadis dan sunnah serta mengamalkan panduan sahih tentang bersuci, pertuturan dan kasih sayang.",
+    learningObjectives: [
+      "Menyatakan maksud hadis dan sunnah secara asas.",
+      "Menerangkan pengajaran hadis berkaitan bersuci, amanah, jiran dan adab.",
+      "Menilai perbuatan harian berdasarkan ajaran Islam dan sunnah Rasulullah SAW."
+    ]
+  },
+  adab: {
+    note: "Murid mengamalkan adab harian di rumah, sekolah, masjid, tempat awam dan ketika berkomunikasi.",
+    learningObjectives: [
+      "Menyatakan adab asas bagi aktiviti harian.",
+      "Menerangkan sebab adab menjaga hak, keselamatan dan perasaan orang lain.",
+      "Memilih tindakan yang sopan, selamat dan bertanggungjawab dalam pelbagai situasi."
+    ]
+  },
+  hafazan: {
+    note: "Murid melengkapkan hafazan surah pendek, doa harian dan zikir dengan lafaz, makhraj serta bimbingan yang tepat.",
+    learningObjectives: [
+      "Melengkapkan ayat pilihan daripada surah-surah pendek dengan tepat.",
+      "Melengkapkan doa harian, salam dan zikir ringkas.",
+      "Mengamalkan teknik hafazan, tasmi' dan semakan bacaan bersama guru."
+    ]
+  },
+  jawi_perkataan: {
+    note: "Murid membaca dan menulis perkataan Jawi mudah menggunakan ejaan, bentuk huruf dan arah tulisan yang betul.",
+    learningObjectives: [
+      "Membaca perkataan Jawi mudah dalam tulisan Rumi.",
+      "Memadankan perkataan Jawi dengan maksud atau sebutannya.",
+      "Menulis perkataan Rumi terpilih dalam tulisan Jawi."
+    ]
+  }
+});
+
+const ISLAM_QUESTION_OVERRIDES = Object.freeze({
+  "ISLAM-AQIDAH-038": {
+    q: "Sara menerima keputusan yang tidak diingini lalu berkata, ‘Saya reda, tetapi saya tetap akan berusaha.’ Adakah sikap Sara tepat? Jelaskan.",
+    answer: "Ya, reda kepada ketentuan Allah perlu disertai usaha yang baik.",
+    accepted: ["Ya, reda kepada ketentuan Allah perlu disertai usaha yang baik.", "ya, reda dan terus berusaha", "ya kerana reda mesti disertai usaha"],
+    hint: "Bezakan reda daripada sikap berputus asa.",
+    explanation: "Beriman kepada qada dan qadar mengajar kita reda kepada ketentuan Allah sambil terus berusaha dan tidak berputus asa.",
+    questionType: "structured",
+    cognitiveLevel: "menganalisis",
+    marks: 2
+  },
+  "ISLAM-IBADAH-003": { accepted: ["mutlak", "air mutlak"] },
+  "ISLAM-IBADAH-036": {
+    q: "Amin menyangka membasuh tangan sebelum muka ialah rukun wuduk. Betulkan kefahaman Amin.",
+    answer: "Membasuh tangan sebelum muka ialah sunat; rukun wuduk bermula dengan niat dan membasuh muka.",
+    accepted: ["Membasuh tangan sebelum muka ialah sunat; rukun wuduk bermula dengan niat dan membasuh muka.", "membasuh tangan dahulu ialah sunat", "sunat, bukan rukun wuduk"],
+    hint: "Bezakan langkah sunat pada awal wuduk daripada rukun wuduk.",
+    explanation: "Membasuh kedua-dua tangan pada awal wuduk ialah sunat. Antara rukun awal wuduk ialah niat dan membasuh muka.",
+    questionType: "structured",
+    cognitiveLevel: "menganalisis",
+    marks: 2
+  },
+  "ISLAM-IBADAH-050": {
+    q: "Amir beribadah supaya dipuji oleh rakannya. Adakah niat Amir tepat? Jelaskan.",
+    answer: "Tidak, ibadah mesti dilakukan dengan ikhlas kerana Allah.",
+    accepted: ["Tidak, ibadah mesti dilakukan dengan ikhlas kerana Allah.", "tidak kerana ibadah perlu ikhlas", "tidak, ibadah kerana Allah"],
+    hint: "Fikirkan maksud ikhlas dalam ibadah.",
+    explanation: "Ibadah hendaklah dilakukan dengan ikhlas kerana Allah, bukan untuk mendapatkan pujian manusia.",
+    questionType: "structured",
+    cognitiveLevel: "menilai",
+    marks: 2
+  },
+  "ISLAM-SIRAH-034": { accepted: ["Saadiah", "al-Sa'diyah", "Sa'diyah", "Saadiah as-Sa'diyah"] },
+  "ISLAM-SIRAH-048": {
+    q: "Seorang peniaga menyembunyikan kerosakan barang jualannya. Adakah perbuatannya mencontohi kejujuran Rasulullah SAW? Jelaskan.",
+    answer: "Tidak, Rasulullah SAW berniaga dengan jujur dan amanah.",
+    accepted: ["Tidak, Rasulullah SAW berniaga dengan jujur dan amanah.", "tidak kerana Rasulullah jujur", "tidak, peniaga mesti jujur"],
+    hint: "Bandingkan tindakan peniaga dengan sifat Al-Amin.",
+    explanation: "Rasulullah SAW terkenal jujur dan amanah ketika berniaga; kerosakan barang tidak boleh disembunyikan.",
+    questionType: "structured",
+    cognitiveLevel: "menilai",
+    marks: 2
+  },
+  "ISLAM-JAWI-004": { accepted: ["sa", "tha"] },
+  "ISLAM-JAWI-016": { accepted: ["tho", "to", "ta"] },
+  "ISLAM-JAWI-017": { accepted: ["zho", "zo", "za"] },
+  "ISLAM-AKHLAK-015": { accepted: ["prihatin", "penyayang", "suka menolong"] },
+  "ISLAM-AKHLAK-018": { accepted: ["amanah", "jujur"] },
+  "ISLAM-AKHLAK-048": {
+    q: "Rina membantu kawan rapat sahaja tetapi mengabaikan murid lain yang turut memerlukan bantuan. Adakah Rina bersikap adil? Jelaskan.",
+    answer: "Tidak, bersikap adil bermaksud membantu tanpa pilih kasih.",
+    accepted: ["Tidak, bersikap adil bermaksud membantu tanpa pilih kasih.", "tidak kerana dia pilih kasih", "tidak, perlu berlaku adil"],
+    hint: "Nilai sama ada Rina melayan semua orang dengan wajar.",
+    explanation: "Adil bermaksud memberikan layanan yang wajar tanpa pilih kasih kepada kawan rapat sahaja.",
+    questionType: "structured",
+    cognitiveLevel: "menilai",
+    marks: 2
+  },
+  "ISLAM-QURAN-007": { accepted: ["isti'azah", "istiazah", "taawuz", "ta'awuz"] },
+  "ISLAM-QURAN-023": { accepted: ["basmalah", "Bismillah"] },
+  "ISLAM-QURAN-035": { accepted: ["hafiz", "hafizah", "penghafaz Al-Quran"] },
+  "ISLAM-QURAN-039": { accepted: ["berwuduk", "berwuduk dan suci daripada hadas", "suci daripada hadas"] },
+  "ISLAM-QURAN-046": {
+    q: "Seorang murid bergurau dengan menggunakan ayat Al-Quran. Adakah tindakan itu beradab? Jelaskan.",
+    answer: "Tidak, ayat Al-Quran ialah kalam Allah yang wajib dihormati.",
+    accepted: ["Tidak, ayat Al-Quran ialah kalam Allah yang wajib dihormati.", "tidak kerana Al-Quran wajib dihormati", "tidak beradab"],
+    hint: "Fikirkan kedudukan Al-Quran sebagai kalam Allah.",
+    explanation: "Ayat Al-Quran tidak boleh dipersendakan atau dijadikan bahan gurauan kerana merupakan kalam Allah.",
+    questionType: "structured",
+    cognitiveLevel: "menilai",
+    marks: 2
+  },
+  "ISLAM-HADIS-004": { accepted: ["iman", "keimanan"] },
+  "ISLAM-HADIS-044": {
+    q: "Zaki bercakap kasar sehingga menyakiti rakannya. Adakah perbuatannya menepati sunnah Nabi? Jelaskan.",
+    answer: "Tidak, sunnah Nabi mengajar kita bercakap baik dan tidak menyakiti orang lain.",
+    accepted: ["Tidak, sunnah Nabi mengajar kita bercakap baik dan tidak menyakiti orang lain.", "tidak kerana kita perlu bercakap baik", "tidak, percakapan kasar menyakiti orang"],
+    hint: "Ingat panduan berkata baik atau diam.",
+    explanation: "Rasulullah SAW mengajar umatnya berkata baik; percakapan kasar yang menyakiti orang lain perlu dijauhi.",
+    questionType: "structured",
+    cognitiveLevel: "menilai",
+    marks: 2
+  },
+  "ISLAM-ADAB-044": {
+    q: "Aina menerima mesej yang belum dipastikan kebenarannya. Apakah tindakan yang paling beradab sebelum berkongsi mesej itu?",
+    answer: "Semak kebenaran mesej dan jangan menyebarkannya sebelum pasti.",
+    accepted: ["Semak kebenaran mesej dan jangan menyebarkannya sebelum pasti.", "semak dahulu", "jangan sebarkan sebelum pasti"],
+    hint: "Berita perlu dipastikan sebelum disebarkan.",
+    explanation: "Tindakan beradab ialah menyemak kebenaran maklumat dan tidak menyebarkan berita yang belum pasti.",
+    questionType: "structured",
+    cognitiveLevel: "mengaplikasi",
+    marks: 2
+  },
+  "ISLAM-HAFAZAN-026": { accepted: ["غُفْرَانَكَ", "Ghufranaka", "ghufranak"] },
+  "ISLAM-JAWI_PERKATAAN-046": { accepted: ["چيقݢو", "چيقڬو"] }
+});
+
+export const islamSubject = normalizeIslamSubject(rawIslamSubject, {
+  topicEnrichments: ISLAM_TOPIC_ENRICHMENTS,
+  questionOverrides: ISLAM_QUESTION_OVERRIDES
+});
 
 export default islamSubject;

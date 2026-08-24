@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const app = fs.readFileSync('src/App.jsx', 'utf8');
+const content = fs.readFileSync('src/data/communicationContent.js', 'utf8');
+
+assert.match(app, /function BacaanCoach/);
+assert.match(app, /function BertuturCoach/);
+assert.match(app, /semanticReadingPassages/);
+assert.match(app, /semanticSpeakingPrompts/);
+assert.match(app, /const communicationContextKey = `speaking:\$\{setId\}:\$\{mode\}:\$\{rawSet\?\.id \|\| sessionIndex\}`/);
+assert.match(app, /recognitionContextKeyRef/);
+assert.match(app, /recognitionContextKeyRef\.current !== recognitionContextKey/);
+assert.match(app, /stopRecognitionSilently\(\)/);
+assert.match(app, /setRecognizedDraft\('\'\)/);
+assert.match(app, /setInterimTranscript\('\'\)/);
+assert.match(app, /setSpeechCandidate\(null\)/);
+assert.match(app, /setTranscriptSource\('\'\)/);
+assert.match(app, /const \[recognizedDraft, setRecognizedDraft\]/);
+assert.match(app, /const \[confirmedTranscript, setConfirmedTranscript\]/);
+assert.match(app, /const \[manualTranscript, setManualTranscript\]/);
+assert.match(app, /setTranscriptSource\('speech-confirmed'\)/);
+assert.match(app, /setTranscriptSource\('manual'\)/);
+assert.match(app, /if \(!safeTranscript\)/);
+assert.match(app, /Boolean\(speechCandidate\)/);
+assert.match(app, /speechCandidate\?\.text/);
+assert.match(content, /semanticListeningSets/);
+assert.match(content, /semanticSpeakingPrompts/);
+assert.match(content, /semanticWritingSets/);
+assert.match(app, /recognition\.lang = latestSpeechLang/);
+console.log('v31CommunicationStateIsolationAudit: PASS');

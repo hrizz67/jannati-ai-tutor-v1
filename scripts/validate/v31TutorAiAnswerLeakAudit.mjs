@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const jsx = fs.readFileSync('src/components/ai/TutorAIModal.jsx', 'utf8');
+assert.match(jsx, /revealExpectedAnswer/);
+assert.match(jsx, /normalizedExpectedAnswer && revealExpectedAnswer/);
+assert.doesNotMatch(jsx, /aria-label=["']Jawapan dijangka/);
+assert.match(jsx, /Lihat kemajuan saya/);
+assert.doesNotMatch(jsx, /Lihat kemajuan saya[\s\S]{0,500}expectedAnswer/);
+assert.match(jsx, /normalizeForDuplicate/);
+console.log('PASS v31TutorAiAnswerLeakAudit');

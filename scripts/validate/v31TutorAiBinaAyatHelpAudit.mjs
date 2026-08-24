@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { getTutorResponse } from '../../src/ai/tutorResponseEngine.js';
+const questionText = 'KBAT: Untuk berjimat, bina ayat dengan kata "menabung" dan nama "Farid".';
+const result = await getTutorResponse({ subject: { id: 'bm', title: 'Bahasa Melayu' }, topic: { id: 'bina_ayat', title: 'Bina Ayat' }, question: { q: questionText, answer: 'Farid menabung wang untuk membeli basikal.' }, questionText, learnerAnswer: 'Farid menabung', intent: 'hint' });
+assert.match(result.sections.hint, /Farid/);
+assert.match(result.sections.hint, /menabung/);
+assert.ok(result.sections.steps.some(step => /lengkap|noktah/i.test(step)));
+assert.match(result.sections.commonMistake, /objek|tempat|tujuan/i);
+assert.doesNotMatch(result.shortText, /wang untuk membeli basikal/i);
+console.log('PASS v31TutorAiBinaAyatHelpAudit');

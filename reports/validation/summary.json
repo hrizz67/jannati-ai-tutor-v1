@@ -1,0 +1,52 @@
+{
+  "validator": "master",
+  "generatedAt": "2026-08-12T15:50:30.389Z",
+  "status": "pass",
+  "totals": {
+    "infos": 22910,
+    "errors": 0,
+    "warnings": 0
+  },
+  "validators": [
+    {
+      "validator": "questions",
+      "status": "pass",
+      "infos": 0,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/question-report.json"
+    },
+    {
+      "validator": "curriculum",
+      "status": "pass",
+      "infos": 22910,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/curriculum-report.json"
+    },
+    {
+      "validator": "metadata",
+      "status": "pass",
+      "infos": 0,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/metadata-report.json"
+    },
+    {
+      "validator": "storage",
+      "status": "pass",
+      "infos": 0,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/storage-report.json"
+    },
+    {
+      "validator": "content-quality",
+      "status": "pass",
+      "infos": 0,
+      "errors": 0,
+      "warnings": 0,
+      "reportFile": "reports/validation/content-quality-report.json"
+    }
+  ]
+}

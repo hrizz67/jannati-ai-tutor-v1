@@ -1,0 +1,253 @@
+import { extractNumbers } from './duplicateDetector.js';
+
+const YEAR_2_DEFAULTS = {
+  min: 1,
+  max: 99,
+  addMax: 100,
+  subtractMin: 0
+};
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function hashText(text = '') {
+  return [...String(text)].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+}
+
+function isStructuredNumberTopic(question = {}) {
+  const topic = String(question.topicId || question.qde?.selectedTopicId || '').toLowerCase();
+  const text = `${question.q || ''} ${question.hint || ''} ${question.explanation || ''}`.toLowerCase();
+  if (topic.includes('nombor') || topic.includes('sequence') || topic.includes('pattern')) return true;
+  return /nombor selepas|nombor sebelum|nilai digit|paling kecil|paling besar|nilai tempat|ratus|puluh|sa\b/.test(text);
+}
+
+function choosePair(seed, usedNumberSequences = new Set(), config = {}) {
+  const limits = { ...YEAR_2_DEFAULTS, ...config };
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    const a = clamp(((seed * 17 + attempt * 23) % limits.max) + limits.min, limits.min, limits.max);
+    const b = clamp(((seed * 31 + attempt * 19) % limits.max) + limits.min, limits.min, limits.max);
+    const signature = `${a}|${b}`;
+    if (!usedNumberSequences.has(signature) && Math.abs(a - b) > 2) return [a, b];
+  }
+  return [
+    clamp((seed % limits.max) + limits.min, limits.min, limits.max),
+    clamp(((seed + 37) % limits.max) + limits.min, limits.min, limits.max)
+  ];
+}
+
+function operationFor(question = {}, seed = 0) {
+  const text = `${question.q || ''} ${question.hint || ''} ${question.explanation || ''}`;
+  const topicText = `${question.topicId || ''} ${question.topicTitle || ''}`;
+  if (/darab|multiply|kali/i.test(topicText)) return 'multiply';
+  if (/[x×]/.test(text) || /darab|kali|setiap|kumpulan/i.test(text)) return 'multiply';
+  if (/[÷]/.test(text) || /bahagi/i.test(text)) return 'divide';
+  if (/[+]/.test(text) || /tambah|lagi|membeli/i.test(text)) return 'add';
+  if (/(^|\s)−(?=\s|\d)|\d\s*-(?=\s*\d)/.test(text) || /tolak|baki|beza/i.test(text)) return 'subtract';
+  return seed % 2 === 0 ? 'unknown' : 'unknown';
+}
+
+function renderTemplate(template, values) {
+  return template.replace(/\{A\}/g, values.A).replace(/\{B\}/g, values.B);
+}
+
+function buildExplanation(operation, numbers, expectedAnswer) {
+  const [a, b] = numbers;
+  if (!Number.isFinite(a) || !Number.isFinite(b) || expectedAnswer === null || expectedAnswer === undefined) {
+    return '';
+  }
+  if (operation === 'subtract') return `${a} - ${b} = ${expectedAnswer}.`;
+  if (operation === 'add') return `${a} + ${b} = ${expectedAnswer}.`;
+  if (operation === 'multiply') return `${a} x ${b} = ${expectedAnswer}.`;
+  if (operation === 'divide') return `${a} ÷ ${b} = ${expectedAnswer}.`;
+  return '';
+}
+
+function computeAnswer(operation, a, b) {
+  if (operation === 'subtract') return a - b;
+  if (operation === 'add') return a + b;
+  if (operation === 'multiply') return a * b;
+  if (operation === 'divide') return b !== 0 ? a / b : null;
+  return null;
+}
+
+function computeRenderedIntegrity(text, operation) {
+  const numbers = extractNumbers(text).slice(0, 2);
+  if (numbers.length < 2) return { ok: false, numbers, expected: null };
+  const expected = computeAnswer(operation, numbers[0], numbers[1]);
+  if (expected === null) return { ok: false, numbers, expected: null };
+  return { ok: true, numbers, expected };
+}
+
+function applyPlaceValueVariation(question = {}, context = {}) {
+  const topicId = String(question.topicId || context.topic?.id || '').toLowerCase();
+  const sourceText = String(question.q || '');
+  if (topicId !== 'nombor') return question;
+  const match = sourceText.match(/nilai digit (sa|puluh|ratus) dalam nombor (\d{3})/i);
+  if (!match) return question;
+  const places = ['sa', 'puluh', 'ratus'];
+  // Do not derive the place from the legacy question ID. The source bank was
+  // originally authored mostly with "puluh" questions, so ID-based rotation
+  // creates a hidden bias. Rotate by session and by the place-value question
+  // position instead, giving each session a predictable sa/puluh/ratus mix.
+  const cursor = Number.isFinite(context.placeValueCursor) ? context.placeValueCursor : 0;
+  const sessionSeed = Number(context.sessionSeed) || 0;
+  const place = places[(sessionSeed + cursor) % places.length];
+  context.placeValueCursor = cursor + 1;
+  const seed = hashText(`${question.id || sourceText}:${sessionSeed}:${cursor}`);
+  const number = 100 + (seed % 900);
+  const digits = String(number).split('').map(Number);
+  const digit = place === 'ratus' ? digits[0] : place === 'puluh' ? digits[1] : digits[2];
+  const answer = place === 'ratus' ? digit * 100 : place === 'puluh' ? digit * 10 : digit;
+  const nextText = sourceText.replace(/nilai digit (sa|puluh|ratus)/i, `nilai digit ${place}`).replace(/nombor \d{3}/i, `nombor ${number}`);
+  const explanation = `Digit ${place} dalam nombor ${number} ialah ${digit}, jadi nilainya ${answer}.`;
+  return { ...question, q: nextText, question: nextText, answer: String(answer), accepted: [String(answer)], explanation, qde: { ...(question.qde || {}), numberVariation: true, placeValueVariation: true, placeValue: place, numbers: [number], integrity: { ok: true, expectedAnswer: answer } } };
+}
+
+function operationPair(seed, operation, usedNumberSequences = new Set(), range = {}) {
+  const limits = { ...YEAR_2_DEFAULTS, ...range };
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    let [a, b] = choosePair(seed + attempt * 41, usedNumberSequences, limits);
+    if (operation === 'subtract' && b > a) [a, b] = [b, a];
+    if (operation === 'add' && a + b > limits.addMax) b = Math.max(1, limits.addMax - a);
+    if (operation === 'subtract' && a - b < limits.subtractMin) b = Math.max(0, a - limits.subtractMin);
+    const signature = `${a}|${b}`;
+    if (!usedNumberSequences.has(signature)) return [a, b];
+  }
+  return choosePair(seed + 997, usedNumberSequences, limits);
+}
+
+export const VIRTUAL_QUESTION_TEMPLATES = [
+  {
+    id: 'year2-add-apples',
+    subjectId: 'math',
+    difficulty: 'mudah',
+    template: 'Ali ada {A} biji epal. Dia membeli {B} lagi. Jumlah epal ialah?',
+    operation: 'add',
+    range: { min: 1, max: 60, addMax: 100 }
+  },
+  {
+    id: 'year2-subtract-marbles',
+    subjectId: 'math',
+    difficulty: 'sederhana',
+    template: 'Siti ada {A} biji guli. Dia beri {B} kepada kawan. Baki guli ialah?',
+    operation: 'subtract',
+    range: { min: 1, max: 99, subtractMin: 0 }
+  }
+];
+
+export function applyNumberVariation(question = {}, context = {}) {
+  const subjectId = context.subject?.id || question.subjectId;
+  if (question.numberVariationPolicy === 'authored_locked'
+    || question.metadata?.numberVariationPolicy === 'authored_locked') return question;
+  const placeValueVaried = applyPlaceValueVariation(question, context);
+  if (placeValueVaried !== question) return placeValueVaried;
+  const sourceText = question.q || '';
+  const existingNumbers = extractNumbers(sourceText);
+  if (subjectId !== 'math' || existingNumbers.length < 2) return question;
+  if (isStructuredNumberTopic(question) && !question.numberProfile && !question.profileId && !question.profile) return question;
+
+  const seed = hashText(`${question.id || sourceText}:${context.index || 0}:${context.sessionSeed || 0}`);
+  const operation = operationFor(question, seed);
+  if (!['add', 'subtract'].includes(operation)) return question;
+  let values = null;
+  let nextText = sourceText;
+  let expectedAnswer = null;
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const [a, b] = operationPair(seed + attempt * 101, operation, context.usedNumberSequences, context.range);
+    const candidateValues = [a, b];
+    let candidateText = sourceText;
+    existingNumbers.slice(0, 2).forEach((number, numberIndex) => {
+      candidateText = candidateText.replace(String(number), String(candidateValues[numberIndex]));
+    });
+
+    const integrity = computeRenderedIntegrity(candidateText, operation);
+    if (!integrity.ok) continue;
+
+    values = integrity.numbers;
+    nextText = candidateText;
+    expectedAnswer = integrity.expected;
+    break;
+  }
+
+  if (!values || expectedAnswer === null) {
+    return {
+      ...question,
+      qip: {
+        ...(question.qip || {}),
+        integrity: {
+          ok: false,
+          reason: 'Number variation integrity failed'
+        }
+      }
+    };
+  }
+
+  return {
+    ...question,
+    q: nextText,
+    question: nextText,
+    answer: String(expectedAnswer),
+    accepted: [String(expectedAnswer)],
+    acceptedAnswers: [String(expectedAnswer)],
+    explanation: buildExplanation(operation, values, expectedAnswer) || question.explanation,
+    qde: {
+      ...(question.qde || {}),
+      numberVariation: true,
+      numbers: values,
+      operation,
+      originalNumbers: existingNumbers,
+      integrity: {
+        ok: true,
+        expectedAnswer: expectedAnswer
+      }
+    }
+  };
+}
+
+export function buildVirtualQuestion(template, context = {}) {
+  const seed = hashText(`${template.id}:${context.index || 0}:${context.sessionSeed || 0}`);
+  let text = '';
+  let values = null;
+  let expectedAnswer = null;
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const [a, b] = operationPair(seed + attempt * 131, template.operation, context.usedNumberSequences, template.range);
+    const candidateText = renderTemplate(template.template, { A: a, B: b });
+    const integrity = computeRenderedIntegrity(candidateText, template.operation);
+    if (!integrity.ok) continue;
+    text = candidateText;
+    values = integrity.numbers;
+    expectedAnswer = integrity.expected;
+    break;
+  }
+
+  if (!values || expectedAnswer === null) {
+    throw new Error(`Unable to build virtual question with valid integrity for template ${template.id}`);
+  }
+
+  const [a, b] = values;
+  return {
+    id: `${template.id}_${a}_${b}`,
+    q: text,
+    question: text,
+    answer: String(expectedAnswer),
+    accepted: [String(expectedAnswer)],
+    acceptedAnswers: [String(expectedAnswer)],
+    hint: template.operation === 'subtract' ? 'Tolak nombor kedua daripada nombor pertama.' : 'Tambah kedua-dua nombor.',
+    explanation: template.operation === 'subtract' ? `${a} - ${b} = ${expectedAnswer}` : `${a} + ${b} = ${expectedAnswer}`,
+    difficulty: template.difficulty || 'mudah',
+    qde: {
+      virtual: true,
+      templateId: template.id,
+      templateUsed: template.template,
+      numbers: [a, b],
+      operation: template.operation,
+      integrity: {
+        ok: true,
+        expectedAnswer
+      }
+    }
+  };
+}

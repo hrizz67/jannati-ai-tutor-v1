@@ -1,20 +1,64 @@
-name: Deploy Jannati AI Tutor
+name: Deploy tagged release
+
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
+
 permissions:
   contents: write
+
+concurrency:
+  group: github-pages-production
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  validate-build-deploy:
+    name: Validate, build, deploy, and smoke test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout tagged source
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
-      - run: npm install
-      - run: npm run build
-      - uses: peaceiris/actions-gh-pages@v3
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify production environment
+        shell: bash
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "Required Supabase deployment secrets are missing."
+            exit 1
+          fi
+
+      - name: Verify tag and release artifacts
+        run: npm run release:check -- --tag "${GITHUB_REF_NAME}" --artifacts
+
+      - name: Run validation suite
+        run: npm run validate
+
+      - name: Build production application
+        run: npm run build
+
+      - name: Verify production build assets
+        run: npm run release:build-check
+
+      - name: Publish GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+      - name: Smoke-test production deployment
+        run: npm run release:smoke -- --url "https://hrizz67.github.io/jannati-ai-tutor-v1/"

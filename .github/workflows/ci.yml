@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-validate:
+    name: Validate and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci-placeholder
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify release metadata
+        id: release-metadata
+        run: npm run release:check
+
+      - name: Run validation suite
+        id: validation
+        run: npm run validate
+
+      - name: Build production application
+        id: build
+        run: npm run build
+
+      - name: Verify production build assets
+        id: build-assets
+        run: npm run release:build-check
+
+      - name: Upload QA reports
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: qa-reports-${{ github.sha }}
+          path: |
+            reports/audit/**
+            reports/validation/**
+            docs/releases/**
+          if-no-files-found: ignore
+
+      - name: Generate workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Jannati AI Tutor CI Summary"
+            echo ""
+            echo "| Gate | Result |"
+            echo "| --- | --- |"
+            echo "| Release metadata | ${{ steps.release-metadata.outcome }} |"
+            echo "| Validation suite | ${{ steps.validation.outcome }} |"
+            echo "| Production build | ${{ steps.build.outcome }} |"
+            echo "| Build assets | ${{ steps.build-assets.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
