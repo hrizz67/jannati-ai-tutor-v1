@@ -1,3 +1,5 @@
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+
 const SUBJECT = "Pendidikan Jasmani Tahun 2";
 const DSKP = "KSSR Semakan Pendidikan Jasmani Tahun 2";
 
@@ -349,7 +351,7 @@ const uasaCampuran = [
   explanation: `${item.explanation} Ini membantu murid menjawab soalan situasi PJ dengan lebih yakin.`,
 }));
 
-export const pjSubject = {
+export const pjSubject = attachInteractiveQuestionExamplesToSubject({
   id: "pj",
   title: SUBJECT,
   short: "PJ",
@@ -367,6 +369,6 @@ export const pjSubject = {
     makeTopic({ id: "rekreasi", code: "REKREASI", title: "Rekreasi", note: "Aktiviti masa lapang yang aktif dan selamat", items: rekreasiPairs }),
     makeTopic({ id: "gaya_hidup_aktif", code: "GAYA_HIDUP_AKTIF", title: "Gaya Hidup Aktif", note: "Amalan sihat di sekolah dan di rumah", items: gayaHidupPairs.concat(sukanSekolahPairs, uasaCampuran) }),
   ],
-};
+});
 
 export default pjSubject;

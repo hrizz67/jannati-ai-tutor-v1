@@ -199,7 +199,10 @@ export default function HomeDashboard(props) {
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
   const topics = selectedSubject?.topics || [];
-  const interactiveActivitySource = topics.find(topic => (
+  const reviewedInteractiveActivitySource = topics.find(topic => (
+    (topic.questions || []).some(question => question.interaction && isInteractiveQuestion(question))
+  ));
+  const interactiveActivitySource = reviewedInteractiveActivitySource || topics.find(topic => (
     (topic.questions || []).some(isInteractiveQuestion)
   )) || null;
   const interactiveActivityTopic = interactiveActivitySource ? {

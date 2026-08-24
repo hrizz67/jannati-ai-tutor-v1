@@ -98,7 +98,143 @@ const REVIEWED_FILL_BLANK_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => [id, buildReviewedFillBlankExample(spec)])
 );
 
+const REVIEWED_CHOICE_DOMAINS = Object.freeze({
+  pjBodyControl: {
+    type: 'imageChoice',
+    instruction: 'Pilih anggota badan yang paling banyak digunakan.',
+    curriculum: 'Mengenal pasti anggota badan utama untuk pergerakan lokomotor dan kawalan imbangan.',
+    assessment: 'Empat anggota badan dipaparkan dan satu sahaja paling berkaitan dengan pergerakan yang diberi.',
+    textbook: 'Simbol anggota badan dan label ringkas menghubungkan pergerakan dengan fungsi tubuh.',
+    skillId: 'lokomotor.anggota_badan_utama',
+    responseMode: 'visual_selection',
+    conceptTags: ['lokomotor', 'anggota_badan', 'imbangan'],
+    misconceptionTags: ['keliru_anggota_utama', 'meneka_tanpa_membayangkan_pergerakan'],
+    hintSteps: ['Bayangkan kamu melakukan pergerakan itu.', 'Fikir bahagian badan yang menampung berat dan menolak badan.', 'Pilih anggota di bahagian bawah badan yang menyentuh lantai ketika melompat.']
+  },
+  pjEquipment: {
+    type: 'imageChoice',
+    instruction: 'Pilih alatan yang sesuai dan selamat.',
+    curriculum: 'Memilih alatan ringan yang sesuai untuk kemahiran manipulasi Tahun 2.',
+    assessment: 'Pilihan ringkas membezakan alatan sasaran daripada alatan yang tidak sesuai untuk kemahiran tersebut.',
+    textbook: 'Simbol dan label alatan membantu murid menghubungkan tindakan dengan penggunaan alatan yang selamat.',
+    skillId: 'manipulasi_alatan.pemilihan_selamat',
+    responseMode: 'visual_selection',
+    conceptTags: ['manipulasi_alatan', 'pemilihan_alatan', 'keselamatan'],
+    misconceptionTags: ['memilih_alatan_tidak_sesuai', 'mengabaikan_ciri_pergerakan'],
+    hintSteps: ['Bayangkan cara alatan itu perlu bergerak.', 'Singkirkan alatan yang tidak boleh digunakan untuk tindakan tersebut.', 'Pilih alatan ringan yang paling sesuai dan selamat.']
+  },
+  pjSportsmanship: {
+    type: 'choice',
+    instruction: 'Pilih tindakan yang menunjukkan semangat kesukanan.',
+    curriculum: 'Mengamalkan penerimaan keputusan dan tingkah laku positif dalam permainan mudah.',
+    assessment: 'Satu tindakan berhemah dibezakan daripada tiga reaksi negatif selepas kekalahan.',
+    textbook: 'Situasi permainan diikuti tindakan ringkas yang boleh diamalkan dalam kehidupan sebenar.',
+    skillId: 'permainan_mudah.semangat_kesukanan',
+    responseMode: 'choice_selection',
+    conceptTags: ['semangat_kesukanan', 'kawalan_diri', 'hormat'],
+    misconceptionTags: ['menyalahkan_rakan', 'bertindak_agresif_apabila_kalah'],
+    hintSteps: ['Fikir perasaan semua ahli pasukan.', 'Singkirkan tindakan yang menyakiti atau menyalahkan orang lain.', 'Pilih tindakan yang menerima keputusan dengan tenang.']
+  },
+  pkLifestyle: {
+    type: 'choice',
+    instruction: 'Pilih amalan gaya hidup yang paling sesuai.',
+    curriculum: 'Mengaplikasikan amalan rehat, aktiviti, kebersihan dan tanggungjawab yang sihat dalam rutin harian.',
+    assessment: 'Situasi baharu digunakan supaya murid memilih amalan berdasarkan tujuan, bukan menyalin kata daripada soalan.',
+    textbook: 'Ayat situasi pendek dan pilihan tindakan ringkas mengurangkan beban bacaan tanpa mengubah hasil pembelajaran.',
+    skillId: 'gaya_hidup_sihat.amalan_harian',
+    responseMode: 'choice_selection',
+    conceptTags: ['gaya_hidup_sihat', 'rutin_harian', 'penjagaan_diri'],
+    misconceptionTags: ['memilih_tabiat_tidak_sihat', 'tidak_memadankan_amalan_dengan_tujuan'],
+    hintSteps: ['Kenal pasti tujuan kesihatan dalam situasi itu.', 'Bandingkan kesan setiap pilihan terhadap diri dan orang di sekeliling.', 'Pilih amalan yang selamat, seimbang dan boleh dibuat setiap hari.']
+  },
+  pkSafety: {
+    type: 'choice',
+    instruction: 'Pilih tindakan yang paling selamat.',
+    curriculum: 'Membuat keputusan selamat dan mendapatkan bantuan orang dewasa yang dipercayai.',
+    assessment: 'Satu tindakan perlindungan diri dibezakan daripada tindakan berisiko atau meninggalkan kawasan tanpa bantuan.',
+    textbook: 'Situasi sekolah yang mudah membantu murid menghubungkan peraturan dengan tindakan sebenar.',
+    skillId: 'keselamatan_diri.keputusan_selamat',
+    responseMode: 'choice_selection',
+    conceptTags: ['keselamatan_diri', 'orang_dewasa_dipercayai', 'membuat_keputusan'],
+    misconceptionTags: ['bertindak_sendirian', 'mengambil_risiko_untuk_keluar'],
+    hintSteps: ['Jangan lakukan perkara yang boleh mencederakan diri.', 'Cari orang dewasa yang bertugas di sekolah.', 'Pilih tindakan menunggu bantuan di tempat yang selamat.']
+  },
+  pkEmotion: {
+    type: 'imageChoice',
+    instruction: 'Pilih emosi yang paling sesuai dengan situasi.',
+    curriculum: 'Mengenal pasti emosi berdasarkan petunjuk situasi, tingkah laku dan reaksi tubuh.',
+    assessment: 'Stem tidak menyebut nama emosi jawapan; murid membuat inferens daripada petunjuk yang diberi.',
+    textbook: 'Simbol wajah dan label emosi menyokong pengenalan perasaan secara jelas dan aksesibel.',
+    skillId: 'kesihatan_mental_emosi.mengenal_emosi',
+    responseMode: 'visual_selection',
+    conceptTags: ['emosi', 'petunjuk_situasi', 'kesedaran_diri'],
+    misconceptionTags: ['keliru_emosi_hampir', 'mengabaikan_petunjuk_tingkah_laku'],
+    hintSteps: ['Perhatikan apa yang berlaku kepada watak.', 'Cari petunjuk pada wajah, tubuh atau fikirannya.', 'Pilih nama emosi yang paling tepat, bukan sekadar emosi yang mungkin berlaku.']
+  }
+});
+
+const REVIEWED_CHOICE_BATCH_2 = Object.freeze({
+  'PJ-LOKOMOTOR-039': { domain: 'pjBodyControl', prompt: 'Anggota badan manakah menampung berat dan menolak tubuh ke atas ketika melompat?', options: [['kaki', 'Kaki', '🦶'], ['tangan', 'Tangan', '✋'], ['kepala', 'Kepala', '🙂'], ['telinga', 'Telinga', '👂']] },
+  'PJ-MANIPULASI_ALATAN-002': { domain: 'pjEquipment', prompt: 'Apakah alatan yang selamat untuk latihan membaling ke sasaran?', options: [['bola', 'Bola lembut', '⚽'], ['gelung', 'Gelung', '⭕'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-007': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai untuk latihan menangkap dengan dua tangan?', options: [['bola', 'Bola lembut', '⚽'], ['gelung', 'Gelung', '⭕'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-012': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai ditendang ke arah kon?', options: [['gelung', 'Gelung', '⭕'], ['bola', 'Bola', '⚽'], ['tali', 'Tali', '➰']] },
+  'PJ-MANIPULASI_ALATAN-017': { domain: 'pjEquipment', prompt: 'Apakah alatan bulat yang sesuai digolek kepada rakan?', options: [['bola', 'Bola', '⚽'], ['skital', 'Skital', '🔺'], ['tali', 'Tali', '➰']] },
+  'PJ-MANIPULASI_ALATAN-022': { domain: 'pjEquipment', prompt: 'Apakah alatan yang boleh dilantun perlahan dengan tangan?', options: [['pundi kacang', 'Pundi kacang', '🫘'], ['bola', 'Bola', '🏀'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-027': { domain: 'pjEquipment', prompt: 'Apakah alatan ringan yang selamat dipukul dengan tapak tangan?', options: [['skital', 'Skital', '🔺'], ['belon', 'Belon', '🎈'], ['pundi kacang', 'Pundi kacang', '🫘']] },
+  'PJ-MANIPULASI_ALATAN-032': { domain: 'pjEquipment', prompt: 'Apakah alatan kecil berisi kacang yang sesuai disambut dengan dua tangan?', options: [['bola', 'Bola', '⚽'], ['pundi kacang', 'Pundi kacang', '🫘'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-037': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai dilambung perlahan ke atas dan disambut semula?', options: [['bola', 'Bola kecil', '⚾'], ['skital', 'Skital', '🔺'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-042': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai dihantar kepada rakan dalam permainan berpasangan?', options: [['tali', 'Tali', '➰'], ['bola', 'Bola', '⚽'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-047': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai disepak perlahan ke sasaran?', options: [['gelung', 'Gelung', '⭕'], ['tali', 'Tali', '➰'], ['bola', 'Bola', '⚽']] },
+  'PJ-PERMAINAN_MUDAH-049': { domain: 'pjSportsmanship', prompt: 'Pasukan kamu kalah dalam permainan ambil dan hantar. Apakah tindakan yang baik?', options: [['menyalahkan rakan', 'Menyalahkan rakan'], ['terima keputusan dengan baik', 'Menerima keputusan dengan baik'], ['membuang alat', 'Membuang alatan'], ['menolak rakan', 'Menolak rakan']] },
+  'PK-GAYA_HIDUP_SIHAT-002': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang membantu badan cukup rehat sebelum hari persekolahan?', options: [['tidur terlalu lewat', 'Tidur terlalu lewat'], ['tidur awal pada malam persekolahan', 'Tidur awal pada malam persekolahan'], ['bermain permainan video hingga lewat', 'Bermain permainan video hingga lewat']] },
+  'PK-GAYA_HIDUP_SIHAT-007': { domain: 'pkLifestyle', prompt: 'Apakah cara yang sesuai untuk murid aktif di luar rumah?', options: [['bermain di jalan raya', 'Bermain di jalan raya'], ['bermain di luar rumah pada waktu sesuai', 'Bermain pada waktu yang sesuai'], ['bermain ketika cuaca terlalu panas', 'Bermain ketika cuaca terlalu panas']] },
+  'PK-GAYA_HIDUP_SIHAT-012': { domain: 'pkLifestyle', prompt: 'Mata Aiman penat selepas menggunakan tablet. Apakah amalan yang patut dilakukan setiap hari?', options: [['menambah masa skrin', 'Menambah masa skrin'], ['menonton tanpa rehat', 'Menonton tanpa rehat'], ['mengurangkan masa skrin', 'Mengurangkan masa skrin']] },
+  'PK-GAYA_HIDUP_SIHAT-017': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang membantu badan kekal cukup air setiap hari?', options: [['minum air kosong setiap hari', 'Minum air kosong setiap hari'], ['minum minuman bergas sahaja', 'Minum minuman bergas sahaja'], ['menunggu sehingga terlalu dahaga', 'Menunggu sehingga terlalu dahaga']] },
+  'PK-GAYA_HIDUP_SIHAT-022': { domain: 'pkLifestyle', prompt: 'Keluarga Hana mahu aktif bersama pada hujung minggu. Apakah amalan yang sesuai?', options: [['tidur sepanjang petang', 'Tidur sepanjang petang'], ['bersenam bersama keluarga', 'Bersenam bersama keluarga'], ['duduk menonton sepanjang hari', 'Duduk menonton sepanjang hari']] },
+  'PK-GAYA_HIDUP_SIHAT-024': { domain: 'pkLifestyle', prompt: 'Siapakah yang paling sesuai membimbing dan menggalakkan aktiviti sihat di rumah?', options: [['orang tidak dikenali', 'Orang tidak dikenali'], ['penjual mainan', 'Penjual mainan'], ['keluarga', 'Keluarga']] },
+  'PK-GAYA_HIDUP_SIHAT-027': { domain: 'pkLifestyle', prompt: 'Apakah amalan pemakanan yang membekalkan pelbagai nutrien kepada badan?', options: [['makan makanan seimbang', 'Makan makanan seimbang'], ['makan jajan setiap masa', 'Makan jajan setiap masa'], ['melangkau sarapan setiap hari', 'Melangkau sarapan setiap hari']] },
+  'PK-GAYA_HIDUP_SIHAT-032': { domain: 'pkLifestyle', prompt: 'Habuk mula terkumpul di tempat tidur. Apakah amalan yang patut dilakukan?', options: [['menyimpan sampah di bawah katil', 'Menyimpan sampah di bawah katil'], ['menjaga kebersihan bilik tidur', 'Menjaga kebersihan bilik tidur'], ['membiarkan habuk terkumpul', 'Membiarkan habuk terkumpul']] },
+  'PK-GAYA_HIDUP_SIHAT-037': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang mengurangkan risiko kecederaan ketika bermain?', options: [['bermain dengan selamat', 'Bermain dengan selamat'], ['menolak rakan ketika berlari', 'Menolak rakan ketika berlari'], ['berlari di lantai yang licin', 'Berlari di lantai yang licin']] },
+  'PK-GAYA_HIDUP_SIHAT-042': { domain: 'pkLifestyle', prompt: 'Farid mula berasa marah. Apakah amalan yang paling baik?', options: [['menjerit kepada rakan', 'Menjerit kepada rakan'], ['mengurus marah dengan tenang', 'Mengurus marah dengan tenang'], ['memukul barang berhampiran', 'Memukul barang berhampiran']] },
+  'PK-GAYA_HIDUP_SIHAT-047': { domain: 'pkLifestyle', prompt: 'Apakah tanggungjawab yang sesuai dilakukan oleh murid di rumah?', options: [['membuat kerja yang terlalu berat', 'Membuat kerja yang terlalu berat'], ['membantu kerja ringan di rumah', 'Membantu kerja ringan di rumah'], ['membiarkan semua kerja kepada orang lain', 'Membiarkan semua kerja kepada orang lain']] },
+  'PK-KESELAMATAN_DIRI-031': { domain: 'pkSafety', prompt: 'Pintu pagar sekolah sudah ditutup ketika kamu mahu keluar. Apakah tindakan paling selamat?', options: [['memanjat pagar', 'Memanjat pagar'], ['tunggu guru atau pengawal', 'Menunggu guru atau pengawal'], ['keluar melalui tempat tersembunyi', 'Keluar melalui tempat tersembunyi']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-002': { domain: 'pkEmotion', prompt: 'Amir sangat berharap pasukannya menang, tetapi pasukannya kalah. Apakah emosi yang paling sesuai?', options: [['kecewa', 'Kecewa', '😞'], ['marah', 'Marah', '😠'], ['gembira', 'Gembira', '😀'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-007': { domain: 'pkEmotion', prompt: 'Mainan Aina diambil tanpa izin. Dia berasa tidak puas hati dan mukanya tegang. Apakah emosinya?', options: [['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-012': { domain: 'pkEmotion', prompt: 'Hakim membuat persembahan buat kali pertama. Tangannya menggigil dan dia mahu berundur. Apakah emosinya?', options: [['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-017': { domain: 'pkEmotion', prompt: 'Siti ditegur guru. Wajahnya muram dan dia hampir menangis. Apakah emosinya?', options: [['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['gembira', 'Gembira', '😀'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-022': { domain: 'pkEmotion', prompt: 'Mira menerima pujian atas hasil kerjanya lalu tersenyum lebar. Apakah emosinya?', options: [['takut', 'Takut', '😨'], ['sedih', 'Sedih', '😢'], ['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-027': { domain: 'pkEmotion', prompt: 'Esok ada ujian dan Adam asyik memikirkannya. Apakah emosi yang paling sesuai?', options: [['marah', 'Marah', '😠'], ['risau', 'Risau', '😟'], ['gembira', 'Gembira', '😀'], ['sedih', 'Sedih', '😢']] }
+});
+
+function buildReviewedChoiceExample(spec = {}) {
+  const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
+  return {
+    interaction: {
+      version: 1,
+      type: domain.type,
+      instruction: domain.instruction,
+      prompt: spec.prompt,
+      options: spec.options.map(([value, label, symbol], index) => ({
+        id: `option-${index + 1}`,
+        label,
+        value,
+        ...(symbol ? { visual: { kind: 'object', symbol, label } } : {})
+      }))
+    },
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_CHOICE_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_CHOICE_BATCH_2).map(([id, spec]) => [id, buildReviewedChoiceExample(spec)])
+);
+
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
+  ...REVIEWED_CHOICE_EXAMPLES,
   ...REVIEWED_FILL_BLANK_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
@@ -368,7 +504,21 @@ const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   })
 );
 
+const REVIEWED_CHOICE_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_CHOICE_BATCH_2).map(([id, spec]) => {
+    const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: domain.skillId,
+      responseMode: domain.responseMode,
+      conceptTags: domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
 const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
+  ...REVIEWED_CHOICE_INTELLIGENCE,
   ...REVIEWED_FILL_BLANK_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
@@ -510,6 +660,10 @@ export function attachInteractiveQuestionExample(question = {}) {
   return example ? {
     ...question,
     ...example,
+    ...(example.interaction?.prompt ? {
+      q: example.interaction.prompt,
+      presentationOriginalQuestion: question.q || question.question || question.stem || ''
+    } : {}),
     learningIntelligence: {
       ...learningIntelligence,
       adaptiveSignals: {

@@ -47,7 +47,7 @@ const analytics = calculateQuestionAnalytics(reviewedQuestions);
 const balance = summarizeBalance(reviewedQuestions);
 assert.ok(analytics.interactionTypeDiversity > 0, 'Question analytics must report interaction-type diversity.');
 assert.ok(analytics.responseModeDiversity > 0, 'Question analytics must report response-mode diversity.');
-assert.equal(Object.keys(balance.interactionTypes).length, 11, 'Analytics must retain all eleven reviewed interaction types.');
+assert.equal(Object.keys(balance.interactionTypes).length, 12, 'Analytics must retain all twelve reviewed interaction types.');
 
 const intelligenceSummary = summarizeQuestionIntelligence(reviewedQuestions);
 assert.equal(intelligenceSummary.masteryEligible, reviewedQuestions.length);

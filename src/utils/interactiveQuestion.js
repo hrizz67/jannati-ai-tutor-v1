@@ -164,7 +164,8 @@ export function isInteractiveQuestion(question = {}) {
 
 export function prioritizeInteractiveQuestions(questions = []) {
   const ordered = Array.isArray(questions) ? [...questions] : [];
-  const interactiveIndex = ordered.findIndex(isInteractiveQuestion);
+  const reviewedIndex = ordered.findIndex(question => question?.interaction && isInteractiveQuestion(question));
+  const interactiveIndex = reviewedIndex >= 0 ? reviewedIndex : ordered.findIndex(isInteractiveQuestion);
   if (interactiveIndex <= 0) return ordered;
   const [interactiveQuestion] = ordered.splice(interactiveIndex, 1);
   return [interactiveQuestion, ...ordered];

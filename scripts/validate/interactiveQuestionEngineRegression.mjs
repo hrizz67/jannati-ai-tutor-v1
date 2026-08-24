@@ -49,12 +49,20 @@ const reviewedFillBlankBatchIds = new Set([
   ...Array.from({ length: 10 }, (_, index) => `ARAB-MUFRADAT-${String(index + 1).padStart(3, '0')}`),
   ...[1, 2, 3, 4, 6, 7, 8, 10, 11, 12].map(index => `ISLAM-AQIDAH-${String(index).padStart(3, '0')}`)
 ]);
+const reviewedChoiceBatchIds = new Set([
+  'PJ-LOKOMOTOR-039',
+  ...[2, 7, 12, 17, 22, 27, 32, 37, 42, 47].map(index => `PJ-MANIPULASI_ALATAN-${String(index).padStart(3, '0')}`),
+  'PJ-PERMAINAN_MUDAH-049',
+  ...[2, 7, 12, 17, 22, 24, 27, 32, 37, 42, 47].map(index => `PK-GAYA_HIDUP_SIHAT-${String(index).padStart(3, '0')}`),
+  'PK-KESELAMATAN_DIRI-031',
+  ...[2, 7, 12, 17, 22, 27].map(index => `PK-KESIHATAN_MENTAL_EMOSI-${String(index).padStart(3, '0')}`)
+]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + reviewedChoiceBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
-assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set(expectedTypes.values()), 'All Phase 1 and Phase 2 renderer types must remain represented.');
+assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
 
 for (const [id, type] of expectedTypes) {
   const question = byId.get(id);
@@ -75,6 +83,17 @@ for (const id of reviewedFillBlankBatchIds) {
   assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
 }
 
+for (const id of reviewedChoiceBatchIds) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing reviewed choice batch question ${id}.`);
+  assert.ok(['choice', 'imageChoice'].includes(question.interaction.type), `${id} must use a reviewed choice renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid choice schema.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must have exactly one accepted option.`);
+  assert.ok(question.interaction.prompt && question.presentationOriginalQuestion, `${id} must retain both its reviewed presentation stem and original source stem.`);
+  assert.notEqual(question.q, question.presentationOriginalQuestion, `${id} must present the reviewed non-repetitive stem.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
+}
+
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
 assert.equal(smartCheck('3', imageChoice).status, 'correct', 'Image choice must submit an accepted canonical answer.');
 assert.notEqual(smartCheck('4', imageChoice).status, 'correct', 'Image choice distractor must remain incorrect.');
@@ -89,6 +108,8 @@ const reorderedKataNamaAm = prioritizeInteractiveQuestions([
   kataNamaAmTopic.questions[0]
 ]);
 assert.equal(reorderedKataNamaAm[0]?.id, 'BM-KATA_NAMA_AM-001', 'A new topic session must surface an interactive question first.');
+const lokomotorTopic = subjects.find(subject => subject.id === 'pj')?.topics.find(topic => topic.id === 'lokomotor');
+assert.equal(prioritizeInteractiveQuestions(lokomotorTopic.questions)[0]?.id, 'PJ-LOKOMOTOR-039', 'A teacher-reviewed interaction must take priority over an automatically derived choice in the same topic.');
 
 const dragDrop = byId.get('MATH-BENTUK-PILOT-021');
 const dragResponse = serializeDragDropResponse(dragDrop.interaction, {
@@ -161,6 +182,7 @@ assert.ok(appSource.includes("supportsInteractiveQuestion } from './utils/accept
 assert.ok(fs.readFileSync(path.join(root, 'src/utils/acceptedAnswers.js'), 'utf8').includes('if (!config) return hasSingleAcceptedOption(question)'), 'Runtime must only derive an interaction when exactly one option is accepted.');
 assert.ok(appSource.includes('const smartSession = options.preserveQuestions'), 'A reviewed interactive activity must retain its prioritized question order.');
 assert.ok(dashboardSource.includes('prioritizeInteractiveQuestions(interactiveActivitySource.questions)'), 'The dashboard must prioritize the reviewed interaction for an explicit practice entry point.');
+assert.ok(dashboardSource.includes('const interactiveActivitySource = reviewedInteractiveActivitySource ||'), 'The dashboard must prefer a teacher-reviewed interactive topic before the automatic-choice fallback.');
 assert.ok(dashboardSource.includes('(topic.questions || []).some(isInteractiveQuestion)'), 'The dashboard must discover both reviewed and safely derived interactions.');
 assert.ok(dashboardSource.includes('Aktiviti Interaktif'), 'The dashboard must expose an explicit interactive-practice action.');
 assert.ok((appSource.match(/interactiveQuestion \? <React\.Suspense/g) || []).length >= 2, 'Quiz and Pentaksiran must both retain an interactive/legacy branch.');
