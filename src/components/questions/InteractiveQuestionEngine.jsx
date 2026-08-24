@@ -491,7 +491,7 @@ export default function InteractiveQuestionEngine({ question, value, onChange, f
   if (!config) return null;
 
   let content = null;
-  if (config.type === 'imageChoice') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} />;
+  if (config.type === 'choice' || config.type === 'imageChoice') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} />;
   if (config.type === 'dragDrop') content = <DragDropQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
   if (config.type === 'matching') content = <MatchingQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
   if (config.type === 'ordering') content = <OrderingQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;

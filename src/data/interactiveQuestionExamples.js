@@ -1,4 +1,21 @@
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
+  'BM-KATA_NAMA_AM-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Tekan gambar benda yang disebut dalam ayat.',
+      options: [
+        { id: 'book', label: 'buku', value: 'buku', visual: { kind: 'object', symbol: '📖', label: 'Buku' } },
+        { id: 'student', label: 'Siti', value: 'Siti', visual: { kind: 'object', symbol: '👧', label: 'Murid bernama Siti' } },
+        { id: 'living-room', label: 'ruang tamu', value: 'ruang tamu', visual: { kind: 'object', symbol: '🏠', label: 'Ruang tamu' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi benda dalam ayat mudah Tahun 2.',
+      assessment: 'Satu benda, seorang manusia dan satu tempat membezakan kategori kata nama tanpa jawapan bertindih.',
+      textbook: 'Simbol visual disertai label teks supaya hubungan benda dan perkataan kekal jelas serta aksesibel.'
+    }
+  },
   'MATH-BENTUK-PILOT-001': {
     interaction: {
       version: 1,
@@ -238,6 +255,17 @@ function reviewedLearningIntelligence({ skillId, responseMode, conceptTags, misc
 }
 
 const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
+  'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
+    skillId: 'kata_nama_am.mengenal_benda',
+    responseMode: 'visual_selection',
+    conceptTags: ['kata_nama_am', 'benda', 'pengelasan_perkataan'],
+    misconceptionTags: ['keliru_benda_dengan_orang', 'keliru_benda_dengan_tempat'],
+    hintSteps: [
+      'Cari perkataan yang menamakan sesuatu yang boleh dibaca atau dipegang.',
+      'Bezakan nama benda daripada nama orang dan nama tempat.',
+      'Tekan gambar benda yang dibaca oleh Siti.'
+    ]
+  }),
   'MATH-BENTUK-PILOT-001': reviewedLearningIntelligence({
     skillId: 'bentuk.sisi_segi_tiga',
     responseMode: 'visual_selection',

@@ -6,6 +6,7 @@ import { loadAllSubjects } from '../../src/data/subjects/index.js';
 import { smartCheck } from '../../src/utils/smartCheck.js';
 import {
   getInteractiveQuestionConfig,
+  prioritizeInteractiveQuestions,
   serializeDragDropResponse,
   serializeMatchingResponse,
   serializeMoneyResponse,
@@ -18,9 +19,12 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dirname, '../..');
 const subjects = await loadAllSubjects();
 const questions = subjects.flatMap(subject => subject.topics.flatMap(topic => topic.questions));
-const interactiveQuestions = questions.filter(question => getInteractiveQuestionConfig(question));
-const byId = new Map(interactiveQuestions.map(question => [question.id, question]));
+const authoredInteractiveQuestions = questions.filter(question => question.interaction);
+const renderableInteractiveQuestions = questions.filter(question => getInteractiveQuestionConfig(question));
+const derivedChoiceQuestions = questions.filter(question => !question.interaction && getInteractiveQuestionConfig(question)?.type === 'choice');
+const byId = new Map(authoredInteractiveQuestions.map(question => [question.id, question]));
 const expectedTypes = new Map([
+  ['BM-KATA_NAMA_AM-001', 'imageChoice'],
   ['MATH-BENTUK-PILOT-001', 'imageChoice'],
   ['MATH-BENTUK-PILOT-021', 'dragDrop'],
   ['MATH-BENTUK-PILOT-035', 'matching'],
@@ -35,8 +39,10 @@ const expectedTypes = new Map([
 ]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
-assert.equal(interactiveQuestions.length, expectedTypes.size, 'Phases 1 and 2 must expose exactly eleven reviewed examples.');
-assert.deepEqual(new Set(interactiveQuestions.map(question => question.interaction.type)), new Set(expectedTypes.values()), 'All eleven Phase 1 and Phase 2 renderer types must be represented.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
+assert.equal(renderableInteractiveQuestions.length, expectedTypes.size + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
+assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set(expectedTypes.values()), 'All Phase 1 and Phase 2 renderer types must remain represented.');
 
 for (const [id, type] of expectedTypes) {
   const question = byId.get(id);
@@ -51,6 +57,17 @@ for (const [id, type] of expectedTypes) {
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
 assert.equal(smartCheck('3', imageChoice).status, 'correct', 'Image choice must submit an accepted canonical answer.');
 assert.notEqual(smartCheck('4', imageChoice).status, 'correct', 'Image choice distractor must remain incorrect.');
+
+const discoverableBmQuestion = byId.get('BM-KATA_NAMA_AM-001');
+assert.equal(smartCheck('buku', discoverableBmQuestion).status, 'correct', 'The dashboard pilot must submit the existing canonical BM answer.');
+assert.notEqual(smartCheck('Siti', discoverableBmQuestion).status, 'correct', 'The visual person distractor must remain incorrect.');
+const kataNamaAmTopic = subjects.find(subject => subject.id === 'bm')?.topics.find(topic => topic.id === 'kata_nama_am');
+const reorderedKataNamaAm = prioritizeInteractiveQuestions([
+  kataNamaAmTopic.questions[1],
+  kataNamaAmTopic.questions[2],
+  kataNamaAmTopic.questions[0]
+]);
+assert.equal(reorderedKataNamaAm[0]?.id, 'BM-KATA_NAMA_AM-001', 'A new topic session must surface an interactive question first.');
 
 const dragDrop = byId.get('MATH-BENTUK-PILOT-021');
 const dragResponse = serializeDragDropResponse(dragDrop.interaction, {
@@ -109,13 +126,22 @@ assert.equal(smartCheck('11 cm', measurement).status, 'correct', 'Ruler measurem
 assert.notEqual(smartCheck('14 cm', measurement).status, 'correct', 'Reading only the ruler endpoint must remain incorrect.');
 
 assert.ok(validateInteractiveQuestionConfig({ version: 2, type: 'imageChoice', instruction: 'x', options: [] }).length, 'Unsupported or malformed configs must be rejected.');
-assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'BM-KATA_NAMA_AM-001')), null, 'Legacy questions must remain on the compatibility fallback.');
+assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'BM-KATA_NAMA_AM-002')), null, 'Legacy questions must remain on the compatibility fallback.');
+const derivedObjective = questions.find(question => question.id === 'PJ-PERGERAKAN_ASAS-001');
+assert.equal(getInteractiveQuestionConfig(derivedObjective)?.type, 'choice', 'A safe legacy objective question must render as a tappable choice.');
+assert.equal(smartCheck('berjalan', derivedObjective).status, 'correct', 'Derived choice interaction must retain the canonical answer path.');
 
 const appSource = fs.readFileSync(path.join(root, 'src/App.jsx'), 'utf8');
+const dashboardSource = fs.readFileSync(path.join(root, 'src/dashboard/HomeDashboard.jsx'), 'utf8');
 const engineSource = fs.readFileSync(path.join(root, 'src/components/questions/InteractiveQuestionEngine.jsx'), 'utf8');
 const styleSource = fs.readFileSync(path.join(root, 'src/styles/style.css'), 'utf8');
 assert.ok(appSource.includes('InteractiveQuestionEngine'), 'Quiz surfaces must integrate the interactive engine.');
 assert.ok(appSource.includes('function supportsInteractiveQuestion'), 'Malformed or unsupported interaction data must fall back before rendering.');
+assert.ok(appSource.includes('if (!config) return hasSingleAcceptedOption(question)'), 'Runtime must only enable a derived choice when exactly one option is accepted.');
+assert.ok(appSource.includes('const smartSession = options.preserveQuestions'), 'A reviewed interactive activity must retain its prioritized question order.');
+assert.ok(dashboardSource.includes('prioritizeInteractiveQuestions(interactiveActivitySource.questions)'), 'The dashboard must prioritize the reviewed interaction for an explicit practice entry point.');
+assert.ok(dashboardSource.includes('(topic.questions || []).some(isInteractiveQuestion)'), 'The dashboard must discover both reviewed and safely derived interactions.');
+assert.ok(dashboardSource.includes('Aktiviti Interaktif'), 'The dashboard must expose an explicit interactive-practice action.');
 assert.ok((appSource.match(/interactiveQuestion \? <React\.Suspense/g) || []).length >= 2, 'Quiz and Pentaksiran must both retain an interactive/legacy branch.');
 assert.ok(appSource.includes(': <input value={answer}'), 'Legacy text-input fallback must remain available.');
 assert.ok(engineSource.includes('role="radiogroup"') && engineSource.includes('aria-pressed') && engineSource.includes('aria-live="polite"'), 'Renderer must expose keyboard and assistive-technology states.');
@@ -123,13 +149,16 @@ assert.ok(engineSource.includes('role="checkbox"') && engineSource.includes('hot
 assert.ok(engineSource.includes('onDragStart') && engineSource.includes('onClick'), 'Drag interactions must also offer tap/click controls.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
+assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');
 assert.ok(!engineSource.includes('dangerouslySetInnerHTML'), 'Question visuals must not inject unsafe HTML.');
 
 console.log(JSON.stringify({
   status: 'PASS',
   audit: 'Interactive Question Engine Phases 1 and 2',
   questionBankCount: questions.length,
-  examples: interactiveQuestions.map(question => ({ id: question.id, type: question.interaction.type })),
+  reviewedExamples: authoredInteractiveQuestions.map(question => ({ id: question.id, type: question.interaction.type })),
+  derivedChoiceQuestions: derivedChoiceQuestions.length,
+  runtimeInteractiveTotal: renderableInteractiveQuestions.length,
   legacyFallback: true,
   quizAndAssessmentIntegrated: true,
   inputModes: ['touch', 'mouse', 'keyboard']

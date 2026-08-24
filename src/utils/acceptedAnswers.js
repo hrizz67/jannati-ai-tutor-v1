@@ -9,6 +9,16 @@ export function normalizeAcceptedAnswer(value) {
     .trim();
 }
 
+export function hasSingleAcceptedOption(question = {}) {
+  const options = Array.isArray(question.options) ? question.options : [];
+  if (options.length < 2 || options.length > 6) return false;
+  const values = options.map(option => String(option?.value ?? option?.label ?? option ?? '').trim());
+  const normalizedValues = values.map(normalizeAcceptedAnswer);
+  return normalizedValues.every(Boolean)
+    && new Set(normalizedValues).size === values.length
+    && values.filter(value => isAcceptedQuestionAnswer(value, question)).length === 1;
+}
+
 export function getAcceptedAnswers(question = {}) {
   const values = [
     question?.answer,

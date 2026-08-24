@@ -34,6 +34,7 @@ import {
 } from '../utils/displayFormatter';
 import { getAnalyticsNoData, getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
+import { isInteractiveQuestion, prioritizeInteractiveQuestions } from '../utils/interactiveQuestion.js';
 import tutorAiBadge from '../assets/icons/3d/tutor-ai-badge.webp';
 import uasaBadge from '../assets/icons/3d/uasa-badge.webp';
 import ibuBapaBadge from '../assets/icons/3d/ibu-bapa-badge.webp';
@@ -198,6 +199,13 @@ export default function HomeDashboard(props) {
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
   const topics = selectedSubject?.topics || [];
+  const interactiveActivitySource = topics.find(topic => (
+    (topic.questions || []).some(isInteractiveQuestion)
+  )) || null;
+  const interactiveActivityTopic = interactiveActivitySource ? {
+    ...interactiveActivitySource,
+    questions: prioritizeInteractiveQuestions(interactiveActivitySource.questions)
+  } : null;
   const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp]);
   const adaptiveSubjects = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : [selectedSubject].filter(Boolean)), [allSubjects, selectedSubject]);
   const visibleSubjects = useMemo(() => (Array.isArray(subjectList) && subjectList.length ? subjectList : adaptiveSubjects), [subjectList, adaptiveSubjects]);
@@ -487,7 +495,14 @@ export default function HomeDashboard(props) {
         </Suspense>
 
         <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
-        <section className="quick-actions" aria-label="Aktiviti pembelajaran">{!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}<button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button><button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button><button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button><button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button></section>
+        <section className="quick-actions" aria-label="Aktiviti pembelajaran">
+          {!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}
+          {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { restoreFromResume: true, preserveQuestions: true, displayTitle: `Aktiviti Interaktif: ${interactiveActivityTopic.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Aktiviti Interaktif</span></button> : null}
+          <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button>
+          <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button>
+          <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button>
+          <button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button>
+        </section>
         <section className="card adaptive-practice-card">
           <h2>Latihan AI</h2>
           <p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p>

@@ -51,7 +51,7 @@ import { clearResume, loadResume, normalizeResumeData, saveResume } from './util
 import { splitQuestionPresentationLines } from './utils/questionPresentation.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
-import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
+import { getAcceptedAnswers, getQuestionAnswerDisplay, hasSingleAcceptedOption, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
   buildCommunicationSessionSummary,
@@ -91,14 +91,14 @@ const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
 // is corrected. Resume sessions are rehydrated from the current question bank
 // so an old saved question can never keep stale answer text on screen.
 const QUESTION_BANK_VERSION = 3;
-const INTERACTIVE_RENDERER_TYPES = new Set(['imageChoice', 'dragDrop', 'matching', 'ordering', 'visualMath', 'fillBlank', 'multiSelect', 'hotspot', 'clock', 'money', 'measurement']);
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 
 function supportsInteractiveQuestion(question = {}) {
   const config = question?.interaction;
-  if (Number(config?.version) !== 1 || !INTERACTIVE_RENDERER_TYPES.has(config?.type)) return false;
+  if (!config) return hasSingleAcceptedOption(question);
+  if (Number(config?.version) !== 1) return false;
   if (['imageChoice', 'visualMath', 'clock', 'measurement'].includes(config.type)) return Array.isArray(config.options) && config.options.length >= 2;
   if (config.type === 'fillBlank') return Array.isArray(config.options) && config.options.length >= 2 && config.sentenceParts?.length === 2;
   if (config.type === 'multiSelect') return Array.isArray(config.options) && config.options.length >= 3 && Array.isArray(config.correctOptionIds);
@@ -106,8 +106,9 @@ function supportsInteractiveQuestion(question = {}) {
   if (config.type === 'money') return Array.isArray(config.denominations) && config.denominations.length >= 2 && Number(config.targetSen) > 0;
   if (config.type === 'dragDrop') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.zones) && config.zones.length >= 2;
   if (config.type === 'matching') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.targets) && config.targets.length >= 2;
-  return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.correctOrder);
+  return config.type === 'ordering' && Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.correctOrder);
 }
+
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
 const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
@@ -1408,7 +1409,7 @@ export default function App() {
     return false;
   }
 
-  function reloadActiveChildState(child) {
+  function reloadActiveChildState(child, preserveQuizUi) {
     const storedProfile = loadStudentCore(loadProfile());
     const nextProfile = applyAuthoritativeProfileAccess(child
       ? {
@@ -1424,18 +1425,20 @@ export default function App() {
     setAdaptiveProfile(loadAdaptiveStudentProfile());
     setGamificationProfile(loadGamificationState());
     setResume(loadResume());
-    setFeedback(null);
-    setAnswer('');
+    if (!preserveQuizUi) {
+      setFeedback(null);
+      setAnswer('');
+    }
   }
 
-  function reloadCloudLearningState(preferredChildId = '') {
+  function reloadCloudLearningState(preferredChildId = '', preserveQuizUi) {
     const profiles = readChildProfiles();
     const resolvedChildId = [preferredChildId, readActiveChildId(), profiles[0]?.id]
       .find(id => id && profiles.some(item => item.id === id)) || '';
     const activeChild = profiles.find(item => item.id === resolvedChildId) || profiles[0] || null;
     setChildProfiles(profiles);
     setActiveChildId(resolvedChildId);
-    if (activeChild) reloadActiveChildState(activeChild);
+    if (activeChild) reloadActiveChildState(activeChild, preserveQuizUi);
     else {
       setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -1518,7 +1521,7 @@ export default function App() {
           const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
           if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
             skipNextCloudSaveRef.current = true;
-            reloadCloudLearningState(resolvedActiveChildId);
+            reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
           }
           setChildProfiles(readChildProfiles());
           setActiveChildId(readActiveChildId());
@@ -2272,9 +2275,10 @@ export default function App() {
             return;
           }
           skipNextCloudSaveRef.current = true;
-          const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, readActiveChildId());
+          const activeChildBeforeCloudRestore = readActiveChildId();
+          const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
           repairImportedLearningProfile();
-          reloadCloudLearningState(restoredChildId);
+          reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
           captureAccountSnapshot(accountUser.id);
           lastCloudSignatureRef.current = cloudSignature;
           setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
@@ -2726,9 +2730,10 @@ export default function App() {
     }
     if (cloudResult.data && Object.keys(cloudResult.data).length) {
       skipNextCloudSaveRef.current = true;
-      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildId);
+      const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
+      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
       repairImportedLearningProfile();
-      reloadCloudLearningState(restoredChildId);
+      reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
       captureAccountSnapshot(accountUser.id);
     }
     lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
@@ -2770,9 +2775,10 @@ export default function App() {
       return;
     }
     skipNextCloudSaveRef.current = true;
-    const restoredChildId = restoreCloudLearningSnapshot(cloudData, activeChildId);
+    const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
+    const restoredChildId = restoreCloudLearningSnapshot(cloudData, activeChildBeforeCloudRestore);
     repairImportedLearningProfile();
-    reloadCloudLearningState(restoredChildId);
+    reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
     pendingOfflineCloudSaveRef.current = false;
     setPendingCloudMutation(accountUser.id, false);
     dirtyChildIdsRef.current.clear();
@@ -2811,7 +2817,7 @@ export default function App() {
       }
     }
     const sourceQuestions = options.questions || topic.questions;
-    const smartSession = options.restoreFromResume
+    const smartSession = options.preserveQuestions
       ? { questions: sourceQuestions, variationSeed: null, revisionQueue: [] }
       : buildSmartQuestionSession(sourceQuestions, {
       mode: resumeMode,
@@ -4022,7 +4028,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;

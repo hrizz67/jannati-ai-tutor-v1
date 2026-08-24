@@ -1,4 +1,7 @@
+import { hasSingleAcceptedOption } from './acceptedAnswers.js';
+
 export const INTERACTIVE_QUESTION_TYPES = Object.freeze([
+  'choice',
   'imageChoice',
   'dragDrop',
   'matching',
@@ -24,7 +27,7 @@ export function validateInteractiveQuestionConfig(config = {}) {
   if (!INTERACTIVE_QUESTION_TYPES.includes(config.type)) issues.push('unsupported_type');
   if (!String(config.instruction || '').trim()) issues.push('missing_instruction');
 
-  if (['imageChoice', 'visualMath', 'fillBlank', 'multiSelect', 'clock', 'measurement'].includes(config.type)) {
+  if (['choice', 'imageChoice', 'visualMath', 'fillBlank', 'multiSelect', 'clock', 'measurement'].includes(config.type)) {
     if (!hasUniqueIds(config.options) || config.options.length < 2) issues.push('invalid_options');
     if ((config.options || []).some(option => !String(option?.label || '').trim() || !String(option?.value ?? '').trim())) {
       issues.push('invalid_option_content');
@@ -110,11 +113,61 @@ export function validateInteractiveQuestionConfig(config = {}) {
 
 export function getInteractiveQuestionConfig(question = {}) {
   const config = question?.interaction;
-  return config && validateInteractiveQuestionConfig(config).length === 0 ? config : null;
+  if (config && validateInteractiveQuestionConfig(config).length === 0) return config;
+  return deriveChoiceInteraction(question);
+}
+
+function normalizeChoiceValue(value) {
+  return String(value ?? '')
+    .trim()
+    .toLocaleLowerCase('ms-MY')
+    .replace(/\s+/g, ' ');
+}
+
+function normalizeChoiceOption(option, index) {
+  if (option && typeof option === 'object' && !Array.isArray(option)) {
+    const label = String(option.label ?? option.text ?? option.value ?? '').trim();
+    const value = String(option.value ?? label).trim();
+    return {
+      id: String(option.id || `choice-${index + 1}`),
+      label,
+      value,
+      ...(option.visual ? { visual: option.visual } : {})
+    };
+  }
+  const value = String(option ?? '').trim();
+  return { id: `choice-${index + 1}`, label: value, value };
+}
+
+export function deriveChoiceInteraction(question = {}) {
+  if (question?.interaction || !Array.isArray(question?.options)) return null;
+  if (question.options.length < 2 || question.options.length > 6) return null;
+
+  const options = question.options.map(normalizeChoiceOption);
+  const optionValues = options.map(option => normalizeChoiceValue(option.value));
+  if (optionValues.some(value => !value) || new Set(optionValues).size !== optionValues.length) return null;
+
+  if (!hasSingleAcceptedOption(question)) return null;
+
+  const config = {
+    version: 1,
+    type: 'choice',
+    instruction: String(question.interactionInstruction || 'Pilih satu jawapan yang betul.'),
+    options
+  };
+  return validateInteractiveQuestionConfig(config).length === 0 ? config : null;
 }
 
 export function isInteractiveQuestion(question = {}) {
   return Boolean(getInteractiveQuestionConfig(question));
+}
+
+export function prioritizeInteractiveQuestions(questions = []) {
+  const ordered = Array.isArray(questions) ? [...questions] : [];
+  const interactiveIndex = ordered.findIndex(isInteractiveQuestion);
+  if (interactiveIndex <= 0) return ordered;
+  const [interactiveQuestion] = ordered.splice(interactiveIndex, 1);
+  return [interactiveQuestion, ...ordered];
 }
 
 export function serializeDragDropResponse(config, assignments = {}) {
