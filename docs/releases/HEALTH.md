@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.6.4
+Version: 3.7.0
 Status: stable
-Build date: 2026-08-23T15:04:25.984Z
+Build date: 2026-08-24T12:11:07.640Z
 
 | Area | Status |
 | --- | --- |
@@ -18,9 +18,12 @@ Build date: 2026-08-23T15:04:25.984Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Split cloud projection detection | PASS |
-| One-time revisioned repair write | PASS |
-| Repair loop prevention | PASS |
+| Interactive question types | 11 PASS |
+| Quiz and assessment integration | PASS |
+| Legacy question fallback | PASS |
+| Adaptive question signals | PASS |
+| AI variant human-review gate | PASS |
+| Mobile and keyboard acceptance | PASS |
 | Overall Status | PASS |
 
 ## Validation

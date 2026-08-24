@@ -1,16 +1,17 @@
-# Jannati AI Tutor 3.6.4 Release Notes
+# Jannati AI Tutor 3.7.0 Release Notes
 
 Status: stable
-Tag: v3.6.4
-Build date: 2026-08-23T15:04:25.984Z
+Tag: v3.7.0
+Build date: 2026-08-24T12:11:07.640Z
 
 ## Sorotan Release
 
-- Keadaan cloud dalaman `root XP 140 + snapshot anak XP 40` kini mencetuskan satu repair write yang selamat.
-- Desktop tidak sekadar memaparkan XP 140 selepas normalisasi; ia juga menyimpan nilai itu ke snapshot anak canonical untuk mobile.
-- Revision server dijangka meningkat daripada r80 selepas desktop memuatkan v3.6.4.
-- Pengesan berhenti selepas convergence supaya tiada sync atau revision loop.
-- Pengasingan akaun/profil, resume dan optimistic concurrency kekal dilindungi oleh regresi automatik.
+- Enjin soalan interaktif reusable kini menyokong 11 jenis aktiviti: image choice, drag and drop, matching, ordering, visual math, fill blank, multi-select, hotspot, clock, money dan measurement.
+- Sebelas soalan Tahun 2 yang telah disemak secara pedagogi digunakan dalam Bahasa Melayu, Matematik dan Sains tanpa menambah atau membuang soalan daripada bank asal.
+- Aliran Quiz dan Pentaksiran menggunakan renderer interaktif yang sama, manakala semua soalan lama terus menggunakan input teks sedia ada sebagai fallback.
+- Interaksi menyokong sentuhan, tetikus dan papan kekunci, bersama sasaran sentuh minimum, status pembaca skrin dan susun atur mudah alih.
+- Metadata Fasa 3 menghubungkan jenis soalan dan kemahiran kepada sejarah pembelajaran adaptif, serta menyediakan petunjuk berperingkat dan analitik interaksi.
+- Variasi soalan AI tidak dijana secara automatik; jawapan, accepted answers dan konfigurasi interaksi kekal dikunci sehingga semakan penggubal diluluskan.
 
 ## Release Readiness
 
@@ -42,6 +43,7 @@ Build date: 2026-08-23T15:04:25.984Z
 
 ## Known Follow-ups
 
-- Complete the controlled desktop-first r80 recovery check before refreshing the affected mobile device.
+- Jalankan penerimaan peranti fizikal terkawal untuk kesemua 11 jenis interaksi sebelum memperluasnya kepada lebih banyak soalan.
+- Aktifkan variasi soalan AI hanya selepas proses semakan penggubal, invariant jawapan dan regresi kandungan diluluskan.
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.

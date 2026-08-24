@@ -1,18 +1,20 @@
 # Changelog
 
-## 3.6.4 - 2026-08-23
+## 3.7.0 - 2026-08-24
 
-### Cloud projection repair write
+### Enjin soalan interaktif
 
-- Cloud yang mempunyai projection akaun XP 140 tetapi snapshot anak aktif XP 40 kini dikenal pasti sebagai belum sepadan walaupun bacaan tempatan sudah dinormalisasi.
-- Desktop yang memegang pembelajaran kaya akan menjadualkan satu revisioned repair write supaya snapshot anak canonical turut menyimpan XP 140.
-- Selepas kedua-dua salinan cloud sepadan, pengesan berhenti dan tidak menghasilkan revision loop.
+- Menambah renderer data-driven untuk 11 jenis interaksi merangkumi pemilihan visual, seret dan lepas, padanan, susunan, visual matematik, isi tempat kosong, pelbagai pilihan, hotspot, jam, wang dan ukuran.
+- Mengintegrasikan 11 contoh soalan Tahun 2 yang disemak dalam Bahasa Melayu, Matematik dan Sains pada aliran Quiz serta Pentaksiran.
+- Mengekalkan fallback input teks bagi semua soalan lama dan mengekalkan jumlah bank pada 4530 soalan.
+- Menambah sokongan sentuhan, tetikus, papan kekunci, pembaca skrin, reduced motion dan susun atur mudah alih.
 
-### Perlindungan data
+### Kesiapsiagaan Fasa 3
 
-- Repair write masih melalui optimistic revision/CAS dan pengasingan profil anak sedia ada.
-- Regresi meliputi state sebenar v3.6.3: desktop XP 140, cloud r80 dan mobile XP 40.
-- Tiada migrasi Supabase, perubahan kandungan pembelajaran atau pemadaman profil diperlukan.
+- Pemilih adaptif dan sejarah pembelajaran kini boleh merekod jenis soalan serta kemahiran khusus tanpa mengubah formula XP atau mastery.
+- Analitik soalan melaporkan kepelbagaian jenis interaksi dan mod respons tanpa mengubah skor kepelbagaian sedia ada.
+- Petunjuk pedagogi berperingkat dan polisi variasi reusable tersedia untuk peluasan terkawal.
+- Penjanaan variasi AI kekal `review_required`; medan jawapan dan interaksi tidak boleh berubah sebelum semakan manusia.
 
 ### Release controls
 
@@ -28,6 +30,7 @@
 
 ### Follow-up work
 
-- Confirm desktop advances cloud beyond r80, then verify mobile converges to XP 140 on the same or newer revision.
+- Complete controlled real-device acceptance for all eleven interaction types.
+- Approve question-variant policies only after content and answer-invariant review.
 - Continue reducing large production chunks through route and subject-level code splitting.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
