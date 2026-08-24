@@ -1,4 +1,105 @@
+const REVIEWED_FILL_BLANK_DOMAINS = Object.freeze({
+  englishVerb: {
+    instruction: 'Choose the verb that completes the sentence.',
+    curriculum: 'Choose a familiar Year 2 action word that completes a simple sentence.',
+    assessment: 'Three verbs are shown and exactly one fits the sentence meaning and grammar.',
+    textbook: 'The completed sentence connects an action word with a familiar person, object or setting.',
+    skillId: 'verbs.context_completion',
+    conceptTags: ['verbs', 'sentence_completion', 'context_clues'],
+    misconceptionTags: ['chooses_unrelated_action', 'ignores_sentence_context'],
+    hintSteps: [
+      'Look at the whole sentence and notice who or what performs the action.',
+      'Say each choice in the blank and listen for the sentence that makes sense.',
+      'Choose the action that best matches the object or setting after the blank.'
+    ]
+  },
+  arabVocabulary: {
+    instruction: 'Pilih maksud perkataan Arab yang betul.',
+    curriculum: 'Memadankan kosa kata Arab Tahun 2 dengan maksud Bahasa Melayu yang tepat.',
+    assessment: 'Tiga maksud daripada kategori benda harian digunakan dan hanya satu sepadan dengan perkataan Arab.',
+    textbook: 'Perkataan Arab dikekalkan bersama baris, kemudian dipadankan dengan kosa kata harian yang telah dipelajari.',
+    skillId: 'mufradat.makna_perkataan',
+    conceptTags: ['mufradat', 'makna_perkataan', 'benda_harian'],
+    misconceptionTags: ['keliru_kosa_kata_hampir', 'meneka_tanpa_membaca_perkataan'],
+    hintSteps: [
+      'Baca perkataan Arab itu perlahan-lahan dari kanan ke kiri.',
+      'Ingat semula benda atau gambar yang pernah dipadankan dengan perkataan itu.',
+      'Bandingkan ketiga-tiga maksud dan pilih satu padanan yang tepat.'
+    ]
+  },
+  islamAqidah: {
+    instruction: 'Pilih perkataan yang melengkapkan fakta akidah.',
+    curriculum: 'Mengingat dan melengkapkan fakta asas akidah Pendidikan Islam Tahun 2.',
+    assessment: 'Satu fakta asas diuji dengan satu jawapan tepat dan dua distraktor dalam domain yang sama.',
+    textbook: 'Ayat lengkap menghubungkan istilah akidah dengan fakta yang perlu difahami dan diamalkan.',
+    skillId: 'aqidah.fakta_asas',
+    conceptTags: ['aqidah', 'fakta_asas', 'iman'],
+    misconceptionTags: ['keliru_rukun_iman_dan_islam', 'keliru_pencipta_dan_ciptaan'],
+    hintSteps: [
+      'Baca keseluruhan fakta dan kenal pasti perkara akidah yang ditanya.',
+      'Singkirkan pilihan yang bercanggah dengan maksud ayat.',
+      'Pilih perkataan yang menghasilkan satu fakta akidah yang lengkap dan benar.'
+    ]
+  }
+});
+
+const REVIEWED_FILL_BLANK_BATCH_1 = Object.freeze({
+  'ENG-VERBS-001': { domain: 'englishVerb', sentenceParts: ['The boys ', ' football after school.'], options: ['sing', 'play', 'drink'] },
+  'ENG-VERBS-002': { domain: 'englishVerb', sentenceParts: ['Aina can ', ' a song.'], options: ['draw', 'drink', 'sing'] },
+  'ENG-VERBS-003': { domain: 'englishVerb', sentenceParts: ['I ', ' my teeth every morning.'], options: ['brush', 'fly', 'read'] },
+  'ENG-VERBS-004': { domain: 'englishVerb', sentenceParts: ['The baby can ', ' on the mat.'], options: ['fly', 'crawl', 'drink'] },
+  'ENG-VERBS-005': { domain: 'englishVerb', sentenceParts: ['We ', ' water after running.'], options: ['draw', 'sing', 'drink'] },
+  'ENG-VERBS-006': { domain: 'englishVerb', sentenceParts: ['Mira will ', ' a picture.'], options: ['draw', 'wash', 'open'] },
+  'ENG-VERBS-007': { domain: 'englishVerb', sentenceParts: ['The bird can ', ' in the sky.'], options: ['crawl', 'drink', 'fly'] },
+  'ENG-VERBS-008': { domain: 'englishVerb', sentenceParts: ['Please ', ' the door.'], options: ['open', 'sing', 'fly'] },
+  'ENG-VERBS-009': { domain: 'englishVerb', sentenceParts: ['Father will ', ' the car.'], options: ['read', 'wash', 'draw'] },
+  'ENG-VERBS-010': { domain: 'englishVerb', sentenceParts: ['The pupils ', ' a story in class.'], options: ['drink', 'fly', 'read'] },
+  'ARAB-MUFRADAT-001': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab كِتَابٌ bermaksud ', '.'], options: ['pen', 'buku', 'beg'] },
+  'ARAB-MUFRADAT-002': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab قَلَمٌ bermaksud ', '.'], options: ['pen', 'beg', 'buku'] },
+  'ARAB-MUFRADAT-003': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab حَقِيبَةٌ bermaksud ', '.'], options: ['sekolah', 'beg', 'pintu'] },
+  'ARAB-MUFRADAT-004': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مِسْطَرَةٌ bermaksud ', '.'], options: ['pemadam', 'meja', 'pembaris'] },
+  'ARAB-MUFRADAT-005': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مِمْحَاةٌ bermaksud ', '.'], options: ['pemadam', 'pembaris', 'tingkap'] },
+  'ARAB-MUFRADAT-006': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مَدْرَسَةٌ bermaksud ', '.'], options: ['kelas', 'sekolah', 'rumah'] },
+  'ARAB-MUFRADAT-007': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab فَصْلٌ bermaksud ', '.'], options: ['sekolah', 'kerusi', 'kelas'] },
+  'ARAB-MUFRADAT-008': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab بَابٌ bermaksud ', '.'], options: ['pintu', 'meja', 'tingkap'] },
+  'ARAB-MUFRADAT-009': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab نَافِذَةٌ bermaksud ', '.'], options: ['pintu', 'tingkap', 'papan tulis'] },
+  'ARAB-MUFRADAT-010': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab كُرْسِيٌّ bermaksud ', '.'], options: ['meja', 'pintu', 'kerusi'] },
+  'ISLAM-AQIDAH-001': { domain: 'islamAqidah', sentenceParts: ['Allah Maha ', '.'], options: ['Banyak', 'Esa', 'Dua'] },
+  'ISLAM-AQIDAH-002': { domain: 'islamAqidah', sentenceParts: ['Kita wajib beriman kepada ', '.'], options: ['malaikat', 'manusia', 'Allah'] },
+  'ISLAM-AQIDAH-003': { domain: 'islamAqidah', sentenceParts: ['Rukun Iman ada ', ' perkara.'], options: ['enam', 'lima', 'tujuh'] },
+  'ISLAM-AQIDAH-004': { domain: 'islamAqidah', sentenceParts: ['Rukun Islam ada ', ' perkara.'], options: ['empat', 'lima', 'enam'] },
+  'ISLAM-AQIDAH-006': { domain: 'islamAqidah', sentenceParts: ['Nabi Muhammad SAW ialah pesuruh ', '.'], options: ['manusia', 'Allah', 'malaikat'] },
+  'ISLAM-AQIDAH-007': { domain: 'islamAqidah', sentenceParts: ['Al-Quran ialah kitab ', '.'], options: ['malaikat', 'manusia', 'Allah'] },
+  'ISLAM-AQIDAH-008': { domain: 'islamAqidah', sentenceParts: ['Malaikat ialah makhluk ciptaan ', '.'], options: ['Allah', 'manusia', 'malaikat'] },
+  'ISLAM-AQIDAH-010': { domain: 'islamAqidah', sentenceParts: ['Qada dan qadar ialah ketentuan ', '.'], options: ['manusia', 'malaikat', 'Allah'] },
+  'ISLAM-AQIDAH-011': { domain: 'islamAqidah', sentenceParts: ['Lawan bagi iman ialah ', '.'], options: ['syukur', 'kufur', 'amanah'] },
+  'ISLAM-AQIDAH-012': { domain: 'islamAqidah', sentenceParts: ['Perbuatan menyekutukan Allah dinamakan ', '.'], options: ['syirik', 'ikhlas', 'amanah'] }
+});
+
+function buildReviewedFillBlankExample(spec = {}) {
+  const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
+  return {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: domain.instruction,
+      sentenceParts: spec.sentenceParts,
+      options: spec.options.map((value, index) => ({ id: `option-${index + 1}`, label: value, value }))
+    },
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_FILL_BLANK_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => [id, buildReviewedFillBlankExample(spec)])
+);
+
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
+  ...REVIEWED_FILL_BLANK_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -254,7 +355,21 @@ function reviewedLearningIntelligence({ skillId, responseMode, conceptTags, misc
   });
 }
 
+const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
+    const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: domain.skillId,
+      responseMode: 'completion',
+      conceptTags: domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
 const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
+  ...REVIEWED_FILL_BLANK_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',

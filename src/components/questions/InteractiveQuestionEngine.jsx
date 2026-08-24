@@ -489,6 +489,7 @@ function MoneyQuestion({ config, value, onChange, feedback }) {
 export default function InteractiveQuestionEngine({ question, value, onChange, feedback }) {
   const config = getInteractiveQuestionConfig(question);
   if (!config) return null;
+  const isEnglish = String(question?.id || '').startsWith('ENG-');
 
   let content = null;
   if (config.type === 'choice' || config.type === 'imageChoice') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} />;
@@ -503,9 +504,9 @@ export default function InteractiveQuestionEngine({ question, value, onChange, f
   if (config.type === 'money') content = <MoneyQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
   if (config.type === 'measurement') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} visualMath />;
 
-  return <section className={`interactive-question-engine type-${config.type}`} aria-label="Aktiviti soalan interaktif">
-    <div className="interactive-instruction"><JannaAvatar size={46} /><p><small>Janna membimbing</small>{config.instruction}</p></div>
+  return <section className={`interactive-question-engine type-${config.type}`} aria-label={isEnglish ? 'Interactive question activity' : 'Aktiviti soalan interaktif'}>
+    <div className="interactive-instruction"><JannaAvatar size={46} /><p><small>{isEnglish ? 'Janna guides you' : 'Janna membimbing'}</small>{config.instruction}</p></div>
     {content}
-    <p className="interactive-help">Boleh guna sentuhan, tetikus atau papan kekunci.</p>
+    <p className="interactive-help">{isEnglish ? 'Use touch, mouse or keyboard.' : 'Boleh guna sentuhan, tetikus atau papan kekunci.'}</p>
   </section>;
 }

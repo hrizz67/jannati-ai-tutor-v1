@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadAllSubjects } from '../../src/data/subjects/index.js';
+import { supportsInteractiveQuestion } from '../../src/utils/acceptedAnswers.js';
 import { smartCheck } from '../../src/utils/smartCheck.js';
 import {
   getInteractiveQuestionConfig,
@@ -38,10 +39,21 @@ const expectedTypes = new Map([
   ['MATH-PANJANG-PILOT-018', 'measurement']
 ]);
 
+assert.deepEqual(
+  questions.filter(supportsInteractiveQuestion).map(question => question.id),
+  renderableInteractiveQuestions.map(question => question.id),
+  'The lightweight quiz gate and canonical interactive engine must support the same question bank entries.'
+);
+const reviewedFillBlankBatchIds = new Set([
+  ...Array.from({ length: 10 }, (_, index) => `ENG-VERBS-${String(index + 1).padStart(3, '0')}`),
+  ...Array.from({ length: 10 }, (_, index) => `ARAB-MUFRADAT-${String(index + 1).padStart(3, '0')}`),
+  ...[1, 2, 3, 4, 6, 7, 8, 10, 11, 12].map(index => `ISLAM-AQIDAH-${String(index).padStart(3, '0')}`)
+]);
+
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
-assert.equal(renderableInteractiveQuestions.length, expectedTypes.size + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
+assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set(expectedTypes.values()), 'All Phase 1 and Phase 2 renderer types must remain represented.');
 
 for (const [id, type] of expectedTypes) {
@@ -52,6 +64,15 @@ for (const [id, type] of expectedTypes) {
   assert.ok(question.qualityReview?.curriculum, `${id} requires a curriculum review note.`);
   assert.ok(question.qualityReview?.assessment, `${id} requires an assessment review note.`);
   assert.ok(question.qualityReview?.textbook, `${id} requires a textbook review note.`);
+}
+
+for (const id of reviewedFillBlankBatchIds) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing reviewed fill-blank batch question ${id}.`);
+  assert.equal(question.interaction.type, 'fillBlank', `${id} must use the reviewed fill-blank renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid fill-blank schema.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must have exactly one accepted option.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
 }
 
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
@@ -136,8 +157,8 @@ const dashboardSource = fs.readFileSync(path.join(root, 'src/dashboard/HomeDashb
 const engineSource = fs.readFileSync(path.join(root, 'src/components/questions/InteractiveQuestionEngine.jsx'), 'utf8');
 const styleSource = fs.readFileSync(path.join(root, 'src/styles/style.css'), 'utf8');
 assert.ok(appSource.includes('InteractiveQuestionEngine'), 'Quiz surfaces must integrate the interactive engine.');
-assert.ok(appSource.includes('function supportsInteractiveQuestion'), 'Malformed or unsupported interaction data must fall back before rendering.');
-assert.ok(appSource.includes('if (!config) return hasSingleAcceptedOption(question)'), 'Runtime must only enable a derived choice when exactly one option is accepted.');
+assert.ok(appSource.includes("supportsInteractiveQuestion } from './utils/acceptedAnswers.js'"), 'Quiz surfaces must use the lightweight interaction support gate without eagerly loading the renderer utilities.');
+assert.ok(fs.readFileSync(path.join(root, 'src/utils/acceptedAnswers.js'), 'utf8').includes('if (!config) return hasSingleAcceptedOption(question)'), 'Runtime must only derive an interaction when exactly one option is accepted.');
 assert.ok(appSource.includes('const smartSession = options.preserveQuestions'), 'A reviewed interactive activity must retain its prioritized question order.');
 assert.ok(dashboardSource.includes('prioritizeInteractiveQuestions(interactiveActivitySource.questions)'), 'The dashboard must prioritize the reviewed interaction for an explicit practice entry point.');
 assert.ok(dashboardSource.includes('(topic.questions || []).some(isInteractiveQuestion)'), 'The dashboard must discover both reviewed and safely derived interactions.');

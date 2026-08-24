@@ -51,7 +51,7 @@ import { clearResume, loadResume, normalizeResumeData, saveResume } from './util
 import { splitQuestionPresentationLines } from './utils/questionPresentation.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
-import { getAcceptedAnswers, getQuestionAnswerDisplay, hasSingleAcceptedOption, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
+import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
   buildCommunicationSessionSummary,
@@ -94,20 +94,6 @@ const QUESTION_BANK_VERSION = 3;
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
-
-function supportsInteractiveQuestion(question = {}) {
-  const config = question?.interaction;
-  if (!config) return hasSingleAcceptedOption(question);
-  if (Number(config?.version) !== 1) return false;
-  if (['imageChoice', 'visualMath', 'clock', 'measurement'].includes(config.type)) return Array.isArray(config.options) && config.options.length >= 2;
-  if (config.type === 'fillBlank') return Array.isArray(config.options) && config.options.length >= 2 && config.sentenceParts?.length === 2;
-  if (config.type === 'multiSelect') return Array.isArray(config.options) && config.options.length >= 3 && Array.isArray(config.correctOptionIds);
-  if (config.type === 'hotspot') return Array.isArray(config.hotspots) && config.hotspots.length >= 2 && Boolean(config.correctHotspotId);
-  if (config.type === 'money') return Array.isArray(config.denominations) && config.denominations.length >= 2 && Number(config.targetSen) > 0;
-  if (config.type === 'dragDrop') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.zones) && config.zones.length >= 2;
-  if (config.type === 'matching') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.targets) && config.targets.length >= 2;
-  return config.type === 'ordering' && Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.correctOrder);
-}
 
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';

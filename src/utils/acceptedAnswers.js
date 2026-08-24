@@ -19,6 +19,39 @@ export function hasSingleAcceptedOption(question = {}) {
     && values.filter(value => isAcceptedQuestionAnswer(value, question)).length === 1;
 }
 
+// Keep this lightweight gate in the already-loaded answer utility so the
+// full interactive renderer and serializers can remain lazy-loaded.
+export function supportsInteractiveQuestion(question = {}) {
+  const config = question?.interaction;
+  if (!config) return hasSingleAcceptedOption(question);
+  if (Number(config.version) !== 1) return false;
+  if (['choice', 'imageChoice', 'visualMath', 'clock', 'measurement'].includes(config.type)) {
+    return Array.isArray(config.options) && config.options.length >= 2;
+  }
+  if (config.type === 'fillBlank') {
+    return Array.isArray(config.options) && config.options.length >= 2 && config.sentenceParts?.length === 2;
+  }
+  if (config.type === 'multiSelect') {
+    return Array.isArray(config.options) && config.options.length >= 3 && Array.isArray(config.correctOptionIds);
+  }
+  if (config.type === 'hotspot') {
+    return Array.isArray(config.hotspots) && config.hotspots.length >= 2 && Boolean(config.correctHotspotId);
+  }
+  if (config.type === 'money') {
+    return Array.isArray(config.denominations) && config.denominations.length >= 2 && Number(config.targetSen) > 0;
+  }
+  if (config.type === 'dragDrop') {
+    return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.zones) && config.zones.length >= 2;
+  }
+  if (config.type === 'matching') {
+    return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.targets) && config.targets.length >= 2;
+  }
+  return config.type === 'ordering'
+    && Array.isArray(config.items)
+    && config.items.length >= 2
+    && Array.isArray(config.correctOrder);
+}
+
 export function getAcceptedAnswers(question = {}) {
   const values = [
     question?.answer,
@@ -468,4 +501,4 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
   });
 }
 
-export default { getAcceptedAnswers, getQuestionAnswerDisplay, isAcceptedQuestionAnswer, normalizeAcceptedAnswer };
+export default { getAcceptedAnswers, getQuestionAnswerDisplay, isAcceptedQuestionAnswer, normalizeAcceptedAnswer, supportsInteractiveQuestion };
