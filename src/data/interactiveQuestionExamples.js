@@ -170,6 +170,42 @@ const REVIEWED_CHOICE_DOMAINS = Object.freeze({
     conceptTags: ['emosi', 'petunjuk_situasi', 'kesedaran_diri'],
     misconceptionTags: ['keliru_emosi_hampir', 'mengabaikan_petunjuk_tingkah_laku'],
     hintSteps: ['Perhatikan apa yang berlaku kepada watak.', 'Cari petunjuk pada wajah, tubuh atau fikirannya.', 'Pilih nama emosi yang paling tepat, bukan sekadar emosi yang mungkin berlaku.']
+  },
+  bmLanguage: {
+    type: 'choice',
+    instruction: 'Pilih jawapan yang melengkapkan maksud ayat.',
+    curriculum: 'Mengaplikasikan tatabahasa, kosa kata, jenis ayat dan tanda baca Bahasa Melayu Tahun 2 dalam konteks mudah.',
+    assessment: 'Tiga pilihan dalam kategori yang sama digunakan; hanya satu menepati bentuk dan maksud ayat.',
+    textbook: 'Ayat rangsangan dipendekkan tanpa membuang konteks penting supaya murid menilai bahasa, bukan beban bacaan.',
+    skillId: 'bahasa_melayu.aplikasi_bahasa',
+    responseMode: 'choice_selection',
+    conceptTags: ['bahasa_melayu', 'tatabahasa', 'konteks_ayat'],
+    misconceptionTags: ['memilih_berdasarkan_kata_kunci', 'mengabaikan_maksud_keseluruhan_ayat'],
+    hintSteps: ['Baca ayat penuh sekali lagi.', 'Kenal pasti perkara bahasa yang sedang diuji.', 'Cuba setiap pilihan dan pilih satu yang menghasilkan maksud paling tepat.']
+  },
+  mathCore: {
+    type: 'choice',
+    instruction: 'Selesaikan dan pilih jawapan yang tepat.',
+    curriculum: 'Mengaplikasikan nombor, operasi, wang, masa, ukuran dan bentuk Matematik Tahun 2.',
+    assessment: 'Satu jawapan tepat dan dua distraktor diagnostik digunakan untuk mengesan kesilapan nilai tempat, operasi atau unit.',
+    textbook: 'Nombor, simbol dan unit dipaparkan secara ringkas supaya langkah pengiraan serta konsep kekal jelas.',
+    skillId: 'matematik.aplikasi_konsep_asas',
+    responseMode: 'choice_selection',
+    conceptTags: ['matematik', 'penyelesaian_masalah', 'ketepatan'],
+    misconceptionTags: ['tersalah_operasi_atau_nilai_tempat', 'memilih_unit_tidak_sesuai'],
+    hintSteps: ['Kenal pasti nombor, operasi atau unit yang diberi.', 'Selesaikan satu langkah pada satu masa.', 'Semak jawapan dengan anggaran atau fakta asas sebelum memilih.']
+  },
+  scienceConcept: {
+    type: 'imageChoice',
+    instruction: 'Pilih gambar dan label yang sepadan dengan fakta sains.',
+    curriculum: 'Menghubungkan objek, deria, bahan dan fenomena harian dengan konsep Sains Tahun 2 yang tepat.',
+    assessment: 'Tiga pilihan visual membezakan konsep sasaran daripada salah faham lazim dalam topik yang sama.',
+    textbook: 'Simbol visual sentiasa disertai label supaya fakta sains boleh dibaca, dilihat dan dibandingkan dengan jelas.',
+    skillId: 'sains.hubungan_objek_dan_fakta',
+    responseMode: 'visual_selection',
+    conceptTags: ['sains', 'pemerhatian', 'hubungan_fungsi'],
+    misconceptionTags: ['keliru_fungsi_atau_sifat', 'memilih_berdasarkan_gambar_sahaja'],
+    hintSteps: ['Perhatikan objek atau situasi dalam soalan.', 'Fikir fungsi, sifat atau perubahan yang berlaku.', 'Bandingkan label pada setiap gambar sebelum memilih.']
   }
 });
 
@@ -206,6 +242,44 @@ const REVIEWED_CHOICE_BATCH_2 = Object.freeze({
   'PK-KESIHATAN_MENTAL_EMOSI-027': { domain: 'pkEmotion', prompt: 'Esok ada ujian dan Adam asyik memikirkannya. Apakah emosi yang paling sesuai?', options: [['marah', 'Marah', '😠'], ['risau', 'Risau', '😟'], ['gembira', 'Gembira', '😀'], ['sedih', 'Sedih', '😢']] }
 });
 
+const REVIEWED_CHOICE_BATCH_3 = Object.freeze({
+  'BM-KATA_NAMA_KHAS-003': { domain: 'bmLanguage', skillId: 'kata_nama_khas.mengenal_tempat', concept: 'kata_nama_khas', prompt: 'Semasa cuti, keluarga Aina melawat Zoo Negara. Yang manakah kata nama khas bagi tempat?', options: [['Zoo Negara', 'Zoo Negara'], ['keluarga', 'Keluarga'], ['haiwan', 'Haiwan']] },
+  'BM-KATA_GANTI_NAMA-001': { domain: 'bmLanguage', skillId: 'kata_ganti_nama.diri_pertama', concept: 'kata_ganti_nama', prompt: 'Aina bercakap tentang dirinya: “____ sedang menyiapkan kerja sekolah.”', options: [['Saya', 'Saya'], ['Kamu', 'Kamu'], ['Mereka', 'Mereka']] },
+  'BM-KATA_KERJA-002': { domain: 'bmLanguage', skillId: 'kata_kerja.mengenal_perbuatan', concept: 'kata_kerja', prompt: 'Ibu memasak lauk di dapur. Perkataan manakah menunjukkan perbuatan?', options: [['memasak', 'Memasak'], ['ibu', 'Ibu'], ['dapur', 'Dapur']] },
+  'BM-KATA_ADJEKTIF-003': { domain: 'bmLanguage', skillId: 'kata_adjektif.mengenal_keadaan', concept: 'kata_adjektif', prompt: 'Air teh itu masih panas. Perkataan manakah menerangkan keadaan air teh?', options: [['teh', 'Teh'], ['panas', 'Panas'], ['kantin', 'Kantin']] },
+  'BM-KATA_HUBUNG-002': { domain: 'bmLanguage', skillId: 'kata_hubung.hubungan_pertentangan', concept: 'kata_hubung', prompt: 'Amir hendak bermain bola, ____ hujan mula turun.', options: [['sambil', 'Sambil'], ['tetapi', 'Tetapi'], ['supaya', 'Supaya']] },
+  'BM-PENJODOH_BILANGAN-004': { domain: 'bmLanguage', skillId: 'penjodoh_bilangan.benda_nipis', concept: 'penjodoh_bilangan', prompt: 'Pilih penjodoh bilangan yang sesuai: se____ baju sekolah.', options: [['batang', 'Batang'], ['helai', 'Helai'], ['ekor', 'Ekor']] },
+  'BM-AYAT-002': { domain: 'bmLanguage', skillId: 'jenis_ayat.mengenal_seruan', concept: 'ayat_seruan', prompt: '“Wah, cantiknya lukisan kamu!” ialah jenis ayat apa?', options: [['Ayat tanya', 'Ayat tanya'], ['Ayat perintah', 'Ayat perintah'], ['Ayat seruan', 'Ayat seruan']] },
+  'BM-TATABAHASA-003': { domain: 'bmLanguage', skillId: 'kata_sendi.arah_ke', concept: 'kata_sendi', prompt: 'Murid-murid berjalan ____ perpustakaan selepas loceng berbunyi.', options: [['di', 'Di'], ['dari', 'Dari'], ['ke', 'Ke']] },
+  'BM-SIMPULAN_BAHASA-002': { domain: 'bmLanguage', skillId: 'simpulan_bahasa.memahami_kaki_ayam', concept: 'simpulan_bahasa', prompt: 'Amir bermain di halaman dengan “kaki ayam”. Apakah maksud simpulan bahasa itu?', options: [['berjalan perlahan', 'Berjalan perlahan'], ['tidak memakai kasut', 'Tidak memakai kasut'], ['suka makan ayam', 'Suka makan ayam']] },
+  'BM-PENTAKSIRAN-SUMATIF-004': { domain: 'bmLanguage', skillId: 'tanda_baca.ayat_tanya', concept: 'tanda_soal', prompt: 'Tanda baca manakah melengkapkan ayat “Di manakah buku saya___”', options: [['.', 'Noktah (.)'], ['?', 'Tanda soal (?)'], ['!', 'Tanda seru (!)']] },
+  'MATH-NOMBOR-PILOT-003': { domain: 'mathCore', skillId: 'nombor.nilai_tempat_ratus', concept: 'nilai_tempat', prompt: 'Apakah digit pada tempat ratus dalam nombor 582?', options: [['8', '8'], ['5', '5'], ['2', '2']] },
+  'MATH-TAMBAH-PILOT-001': { domain: 'mathCore', skillId: 'tambah.dua_digit_tanpa_mengumpul_semula', concept: 'tambah', prompt: 'Berapakah jumlah 23 + 14?', options: [['27', '27'], ['47', '47'], ['37', '37']] },
+  'MATH-TOLAK-PILOT-001': { domain: 'mathCore', skillId: 'tolak.dua_digit_tanpa_mengumpul_semula', concept: 'tolak', prompt: 'Hitung 47 − 12.', options: [['35', '35'], ['45', '45'], ['59', '59']] },
+  'MATH-DARAB-PILOT-001': { domain: 'mathCore', skillId: 'darab.fakta_asas_dua', concept: 'darab', prompt: 'Dua kumpulan mempunyai 3 objek setiap satu. Berapakah 2 × 3?', options: [['5', '5'], ['6', '6'], ['8', '8']] },
+  'MATH-BAHAGI-PILOT-002': { domain: 'mathCore', skillId: 'bahagi.kongsi_sama_rata', concept: 'bahagi', prompt: '15 objek dikongsi sama rata kepada 3 kumpulan. Berapakah setiap kumpulan?', options: [['3', '3'], ['5', '5'], ['12', '12']] },
+  'MATH-WANG-PILOT-005': { domain: 'mathCore', skillId: 'wang.menjumlah_syiling', concept: 'wang', prompt: 'Dua syiling 20 sen dan satu syiling 10 sen berjumlah berapa?', options: [['40 sen', '40 sen'], ['60 sen', '60 sen'], ['50 sen', '50 sen']] },
+  'MATH-MASA-PILOT-004': { domain: 'mathCore', skillId: 'masa.hubungan_jam_minit', concept: 'masa', prompt: 'Lengkapkan hubungan: 1 jam = ____ minit.', options: [['30', '30 minit'], ['60', '60 minit'], ['100', '100 minit']] },
+  'MATH-PANJANG-PILOT-001': { domain: 'mathCore', skillId: 'panjang.memilih_unit_sentimeter', concept: 'panjang', prompt: 'Unit manakah paling sesuai untuk mengukur panjang sebatang pensel?', options: [['sentimeter', 'Sentimeter (cm)'], ['meter', 'Meter (m)'], ['kilogram', 'Kilogram (kg)']] },
+  'MATH-JISIM-ISI-PADU-PILOT-001': { domain: 'mathCore', skillId: 'jisim.memilih_unit_gram', concept: 'jisim', prompt: 'Unit manakah paling sesuai untuk mengukur jisim sebiji pemadam?', options: [['liter', 'Liter (L)'], ['gram', 'Gram (g)'], ['meter', 'Meter (m)']] },
+  'MATH-BENTUK-PILOT-002': { domain: 'mathCore', skillId: 'bentuk.ciri_segi_empat_sama', concept: 'bentuk_2d', prompt: 'Apakah ciri sisi bagi segi empat sama?', options: [['dua sisi sama panjang', 'Dua sisi sama panjang'], ['semua sisi berlainan panjang', 'Semua sisi berlainan panjang'], ['semua sisi sama panjang', 'Semua sisi sama panjang']] },
+  'SAINS-HAIWAN-002': { domain: 'scienceConcept', skillId: 'haiwan.habitat_ikan', concept: 'habitat', prompt: 'Habitat yang sesuai untuk ikan ialah ________.', options: [['darat', 'Darat', '🌱'], ['air', 'Air', '🌊'], ['sarang', 'Sarang', '🪹']] },
+  'SAINS-TUMBUHAN-002': { domain: 'scienceConcept', skillId: 'tumbuhan.fungsi_batang', concept: 'bahagian_tumbuhan', prompt: 'Fungsi utama batang ialah ________.', options: [['menyerap air', 'Menyerap air', '💧'], ['membuat makanan', 'Membuat makanan', '🍃'], ['menyokong tumbuhan', 'Menyokong tumbuhan', '🌿']] },
+  'SAINS-MANUSIA-001': { domain: 'scienceConcept', skillId: 'manusia.deria_penglihatan', concept: 'organ_deria', prompt: 'Mata ialah organ deria yang digunakan untuk ________.', options: [['mendengar', 'Mendengar', '👂'], ['melihat', 'Melihat', '👀'], ['menghidu', 'Menghidu', '👃']] },
+  'SAINS-AIR-006': { domain: 'scienceConcept', skillId: 'air.pembekuan', concept: 'perubahan_air', prompt: 'Apabila dibekukan, air berubah menjadi ________.', options: [['wap', 'Wap', '☁️'], ['ais', 'Ais', '🧊'], ['hujan', 'Hujan', '🌧️']] },
+  'SAINS-CAHAYA-001': { domain: 'scienceConcept', skillId: 'cahaya.sumber_semula_jadi', concept: 'sumber_cahaya', prompt: 'Matahari dikelaskan sebagai sumber cahaya ________.', options: [['buatan manusia', 'Buatan manusia', '💡'], ['pantulan', 'Pantulan', '🪞'], ['semula jadi', 'Semula jadi', '☀️']] },
+  'SAINS-BUNYI-001': { domain: 'scienceConcept', skillId: 'bunyi.sumber_bunyi', concept: 'bunyi', prompt: 'Apabila dibunyikan, loceng menghasilkan ________.', options: [['cahaya', 'Cahaya', '💡'], ['bunyi', 'Bunyi', '🔔'], ['air', 'Air', '💧']] },
+  'SAINS-BUMI-001': { domain: 'scienceConcept', skillId: 'bumi.bentuk_muka_tinggi', concept: 'bentuk_muka_bumi', prompt: 'Bentuk muka Bumi yang sangat tinggi dipanggil ________.', options: [['pantai', 'Pantai', '🏖️'], ['gunung', 'Gunung', '🏔️'], ['tasik', 'Tasik', '🏞️']] },
+  'SAINS-BAHAN-003': { domain: 'scienceConcept', skillId: 'bahan.sifat_getah', concept: 'sifat_bahan', prompt: 'Getah kembali kepada bentuk asal kerana bersifat ________.', options: [['keras', 'Keras', '🪨'], ['rapuh', 'Rapuh', '🧱'], ['kenyal', 'Kenyal', '↔️']] },
+  'SAINS-TEKNOLOGI-002': { domain: 'scienceConcept', skillId: 'teknologi.fungsi_pembaris', concept: 'fungsi_alat', prompt: 'Kegunaan utama pembaris ialah untuk ________.', options: [['memotong', 'Memotong', '✂️'], ['mengukur panjang', 'Mengukur panjang', '📏'], ['memadam', 'Memadam', '🧽']] },
+  'SAINS-KEMAHIRAN_SAINTIFIK-002': { domain: 'scienceConcept', skillId: 'kemahiran_saintifik.deria_bau', concept: 'pemerhatian_deria', prompt: 'Kita menggunakan hidung untuk ________ bau.', options: [['melihat', 'Melihat', '👀'], ['mendengar', 'Mendengar', '👂'], ['menghidu', 'Menghidu', '👃']] }
+});
+
+const REVIEWED_CHOICE_BATCHES = Object.freeze({
+  ...REVIEWED_CHOICE_BATCH_2,
+  ...REVIEWED_CHOICE_BATCH_3
+});
+
 function buildReviewedChoiceExample(spec = {}) {
   const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
   return {
@@ -230,7 +304,7 @@ function buildReviewedChoiceExample(spec = {}) {
 }
 
 const REVIEWED_CHOICE_EXAMPLES = Object.fromEntries(
-  Object.entries(REVIEWED_CHOICE_BATCH_2).map(([id, spec]) => [id, buildReviewedChoiceExample(spec)])
+  Object.entries(REVIEWED_CHOICE_BATCHES).map(([id, spec]) => [id, buildReviewedChoiceExample(spec)])
 );
 
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
@@ -505,12 +579,12 @@ const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
 );
 
 const REVIEWED_CHOICE_INTELLIGENCE = Object.fromEntries(
-  Object.entries(REVIEWED_CHOICE_BATCH_2).map(([id, spec]) => {
+  Object.entries(REVIEWED_CHOICE_BATCHES).map(([id, spec]) => {
     const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
     return [id, reviewedLearningIntelligence({
-      skillId: domain.skillId,
+      skillId: spec.skillId || domain.skillId,
       responseMode: domain.responseMode,
-      conceptTags: domain.conceptTags,
+      conceptTags: spec.concept ? [...domain.conceptTags, spec.concept] : domain.conceptTags,
       misconceptionTags: domain.misconceptionTags,
       hintSteps: domain.hintSteps
     })];

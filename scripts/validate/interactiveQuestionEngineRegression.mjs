@@ -57,9 +57,43 @@ const reviewedChoiceBatchIds = new Set([
   'PK-KESELAMATAN_DIRI-031',
   ...[2, 7, 12, 17, 22, 27].map(index => `PK-KESIHATAN_MENTAL_EMOSI-${String(index).padStart(3, '0')}`)
 ]);
+const reviewedChoiceBatch3Ids = new Set([
+  'BM-KATA_NAMA_KHAS-003',
+  'BM-KATA_GANTI_NAMA-001',
+  'BM-KATA_KERJA-002',
+  'BM-KATA_ADJEKTIF-003',
+  'BM-KATA_HUBUNG-002',
+  'BM-PENJODOH_BILANGAN-004',
+  'BM-AYAT-002',
+  'BM-TATABAHASA-003',
+  'BM-SIMPULAN_BAHASA-002',
+  'BM-PENTAKSIRAN-SUMATIF-004',
+  'MATH-NOMBOR-PILOT-003',
+  'MATH-TAMBAH-PILOT-001',
+  'MATH-TOLAK-PILOT-001',
+  'MATH-DARAB-PILOT-001',
+  'MATH-BAHAGI-PILOT-002',
+  'MATH-WANG-PILOT-005',
+  'MATH-MASA-PILOT-004',
+  'MATH-PANJANG-PILOT-001',
+  'MATH-JISIM-ISI-PADU-PILOT-001',
+  'MATH-BENTUK-PILOT-002',
+  'SAINS-HAIWAN-002',
+  'SAINS-TUMBUHAN-002',
+  'SAINS-MANUSIA-001',
+  'SAINS-AIR-006',
+  'SAINS-CAHAYA-001',
+  'SAINS-BUNYI-001',
+  'SAINS-BUMI-001',
+  'SAINS-BAHAN-003',
+  'SAINS-TEKNOLOGI-002',
+  'SAINS-KEMAHIRAN_SAINTIFIK-002'
+]);
+const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + reviewedChoiceBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewed questions each for BM, Mathematics and Science.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -83,7 +117,7 @@ for (const id of reviewedFillBlankBatchIds) {
   assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
 }
 
-for (const id of reviewedChoiceBatchIds) {
+for (const id of allReviewedChoiceBatchIds) {
   const question = byId.get(id);
   assert.ok(question, `Missing reviewed choice batch question ${id}.`);
   assert.ok(['choice', 'imageChoice'].includes(question.interaction.type), `${id} must use a reviewed choice renderer.`);
@@ -110,6 +144,8 @@ const reorderedKataNamaAm = prioritizeInteractiveQuestions([
 assert.equal(reorderedKataNamaAm[0]?.id, 'BM-KATA_NAMA_AM-001', 'A new topic session must surface an interactive question first.');
 const lokomotorTopic = subjects.find(subject => subject.id === 'pj')?.topics.find(topic => topic.id === 'lokomotor');
 assert.equal(prioritizeInteractiveQuestions(lokomotorTopic.questions)[0]?.id, 'PJ-LOKOMOTOR-039', 'A teacher-reviewed interaction must take priority over an automatically derived choice in the same topic.');
+const haiwanTopic = subjects.find(subject => subject.id === 'sains')?.topics.find(topic => topic.id === 'haiwan');
+assert.equal(prioritizeInteractiveQuestions(haiwanTopic.questions)[0]?.id, 'SAINS-HAIWAN-002', 'A new Science activity must surface its reviewed visual question before standard questions.');
 
 const dragDrop = byId.get('MATH-BENTUK-PILOT-021');
 const dragResponse = serializeDragDropResponse(dragDrop.interaction, {
