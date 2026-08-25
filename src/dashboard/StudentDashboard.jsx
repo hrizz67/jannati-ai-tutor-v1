@@ -150,7 +150,7 @@ export default function StudentDashboard({
         </button>
       </section>
 
-      <section className="card">
+      <section className="card streak-summary-card">
         <h2>Streak Pembelajaran</h2>
         <div className="mastery-summary-grid">
           <div><b>{formatStreakLabel(summaryStreak)}</b><span>Streak Semasa</span></div>
