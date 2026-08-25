@@ -36,8 +36,7 @@ function generateChangelog(versionData = readJson(path.join(RELEASE_DIR, 'VERSIO
     '### Follow-up work',
     '',
     '- Continue reducing large production chunks through route and subject-level code splitting.',
-    '- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.',
-    ''
+    '- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.'
   ];
 
   writeTextWithRetry(CHANGELOG_PATH, `${lines.join('\n')}\n`);

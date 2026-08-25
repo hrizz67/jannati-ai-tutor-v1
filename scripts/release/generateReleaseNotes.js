@@ -54,8 +54,7 @@ function generateReleaseNotes(versionData = readJson(path.join(RELEASE_DIR, 'VER
     '## Known Follow-ups',
     '',
     '- Large JavaScript chunks remain a performance improvement target.',
-    '- Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.',
-    ''
+    '- Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.'
   ];
 
   writeTextWithRetry(RELEASE_NOTES_PATH, `${lines.join('\n')}\n`);

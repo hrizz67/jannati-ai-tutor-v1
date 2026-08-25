@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.9.0
+Version: 3.9.1
 Status: stable
-Build date: 2026-08-25T06:11:00.011Z
+Build date: 2026-08-25T07:48:51.306Z
 
 | Area | Status |
 | --- | --- |
@@ -18,18 +18,11 @@ Build date: 2026-08-25T06:11:00.011Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Profile-scoped material progress | PASS |
-| Separate Nota/Buku Teks status | PASS |
-| Concurrent device merge | PASS |
-| Resume isolation | PASS |
-| Janna material context | PASS |
-| Original content and XP unchanged | PASS |
-| Entry bundle 349.81 / 350 kB | PASS |
 | Overall Status | PASS |
 
 ## Validation
 
-- Info: 14660
+- Info: 22910
 - Warnings: 0
 - Errors: 0
 
