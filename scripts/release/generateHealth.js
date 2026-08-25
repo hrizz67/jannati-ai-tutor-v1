@@ -59,8 +59,7 @@ function generateHealth(versionData) {
     '',
     `- Topics: ${coverage.topics || 0}`,
     `- Unique SK/SP pairs: ${coverage.uniqueSkSpPairs || 0}`,
-    `- UASA-tagged questions: ${coverage.uasaTagged || 0}`,
-    ''
+    `- UASA-tagged questions: ${coverage.uasaTagged || 0}`
   ];
 
   writeTextWithRetry(HEALTH_PATH, `${lines.join('\n')}\n`);
