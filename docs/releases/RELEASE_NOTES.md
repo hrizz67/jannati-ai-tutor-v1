@@ -1,22 +1,24 @@
-# Jannati AI Tutor 3.7.0 Release Notes
+# Jannati AI Tutor 3.8.0 Release Notes
 
 Status: stable
-Tag: v3.7.0
-Build date: 2026-08-24T12:11:07.640Z
+Tag: v3.8.0
+Build date: 2026-08-25T00:15:47.043Z
 
 ## Sorotan Release
 
-- Enjin soalan interaktif reusable kini menyokong 11 jenis aktiviti: image choice, drag and drop, matching, ordering, visual math, fill blank, multi-select, hotspot, clock, money dan measurement.
-- Sebelas soalan Tahun 2 yang telah disemak secara pedagogi digunakan dalam Bahasa Melayu, Matematik dan Sains tanpa menambah atau membuang soalan daripada bank asal.
-- Aliran Quiz dan Pentaksiran menggunakan renderer interaktif yang sama, manakala semua soalan lama terus menggunakan input teks sedia ada sebagai fallback.
-- Interaksi menyokong sentuhan, tetikus dan papan kekunci, bersama sasaran sentuh minimum, status pembaca skrin dan susun atur mudah alih.
-- Metadata Fasa 3 menghubungkan jenis soalan dan kemahiran kepada sejarah pembelajaran adaptif, serta menyediakan petunjuk berperingkat dan analitik interaksi.
-- Variasi soalan AI tidak dijana secara automatik; jawapan, accepted answers dan konfigurasi interaksi kekal dikunci sehingga semakan penggubal diluluskan.
+- Sebanyak 122 soalan kini mempunyai interaksi yang ditulis dan disemak guru, meningkat daripada 11 dalam v3.7.0.
+- Sebanyak 978 soalan objektif selamat menerima kad pilihan automatik; jumlah interaksi runtime kini 1,100 daripada 4,530 soalan.
+- Dua puluh aktiviti kaya baharu merangkumi susun ayat, susun nombor dan operasi, masa, wang, ukuran, bentuk serta pilihan berbilang.
+- Liputan semakan merangkumi kesemua lapan subjek Tahun 2, dengan petunjuk pedagogi dan metadata kemahiran yang kekal serasi dengan pembelajaran adaptif.
+- Jawapan interaktif serta maklum balas semakan kini kekal selepas keluar dan sambung latihan, manakala kawalan penghantaran semula menghalang XP berganda.
+- Jawapan rasmi, accepted answers, jumlah soalan dan formula mastery asal tidak diubah.
 
 ## Release Readiness
 
 - Package, lockfile, release tag, and generated metadata are version-aligned.
 - Question-bank regression and release-pipeline audits run before the main validator suite.
+- Interactive-engine, suitability, resume-isolation and account-scoped learning-sync regressions pass.
+- Desktop and mobile browser acceptance confirms rich-question priority, restored answer state and no horizontal overflow.
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
@@ -24,6 +26,8 @@ Build date: 2026-08-24T12:11:07.640Z
 
 - All eight Year 2 subjects are included in the release validation scope.
 - Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
+- Teacher-authored interaction count: 122; safe derived interaction count: 978; runtime total: 1100.
+- Automatic conversion is restricted to objective questions with complete, unambiguous options.
 
 ## Validation Summary
 
@@ -43,7 +47,6 @@ Build date: 2026-08-24T12:11:07.640Z
 
 ## Known Follow-ups
 
-- Jalankan penerimaan peranti fizikal terkawal untuk kesemua 11 jenis interaksi sebelum memperluasnya kepada lebih banyak soalan.
-- Aktifkan variasi soalan AI hanya selepas proses semakan penggubal, invariant jawapan dan regresi kandungan diluluskan.
+- Questions requiring a judgment-based renderer remain standard until a teacher review is completed.
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.

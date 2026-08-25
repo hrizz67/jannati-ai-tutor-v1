@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.7.0
+Version: 3.8.0
 Status: stable
-Build date: 2026-08-24T12:11:07.640Z
+Build date: 2026-08-25T00:15:47.043Z
 
 | Area | Status |
 | --- | --- |
@@ -18,12 +18,13 @@ Build date: 2026-08-24T12:11:07.640Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Interactive question types | 11 PASS |
-| Quiz and assessment integration | PASS |
-| Legacy question fallback | PASS |
-| Adaptive question signals | PASS |
-| AI variant human-review gate | PASS |
-| Mobile and keyboard acceptance | PASS |
+| Reviewed interactive questions | 122 PASS |
+| Safe automatic choices | 978 PASS |
+| Runtime interactive questions | 1100 PASS |
+| Original answers unchanged | PASS |
+| Draft and checked-answer resume | PASS |
+| Duplicate XP prevention | PASS |
+| Account-scoped learning sync regression | PASS |
 | Overall Status | PASS |
 
 ## Validation
