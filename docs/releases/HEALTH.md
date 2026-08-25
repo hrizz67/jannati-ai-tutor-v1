@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.8.0
+Version: 3.9.0
 Status: stable
-Build date: 2026-08-25T00:15:47.043Z
+Build date: 2026-08-25T06:11:00.011Z
 
 | Area | Status |
 | --- | --- |
@@ -18,13 +18,13 @@ Build date: 2026-08-25T00:15:47.043Z
 | Validator: metadata | PASS |
 | Validator: storage | PASS |
 | Validator: content-quality | PASS |
-| Reviewed interactive questions | 122 PASS |
-| Safe automatic choices | 978 PASS |
-| Runtime interactive questions | 1100 PASS |
-| Original answers unchanged | PASS |
-| Draft and checked-answer resume | PASS |
-| Duplicate XP prevention | PASS |
-| Account-scoped learning sync regression | PASS |
+| Profile-scoped material progress | PASS |
+| Separate Nota/Buku Teks status | PASS |
+| Concurrent device merge | PASS |
+| Resume isolation | PASS |
+| Janna material context | PASS |
+| Original content and XP unchanged | PASS |
+| Entry bundle 349.81 / 350 kB | PASS |
 | Overall Status | PASS |
 
 ## Validation

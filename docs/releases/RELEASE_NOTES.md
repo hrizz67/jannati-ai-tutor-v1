@@ -1,24 +1,24 @@
-# Jannati AI Tutor 3.8.0 Release Notes
+# Jannati AI Tutor 3.9.0 Release Notes
 
 Status: stable
-Tag: v3.8.0
-Build date: 2026-08-25T00:15:47.043Z
+Tag: v3.9.0
+Build date: 2026-08-25T06:11:00.011Z
 
 ## Sorotan Release
 
-- Sebanyak 122 soalan kini mempunyai interaksi yang ditulis dan disemak guru, meningkat daripada 11 dalam v3.7.0.
-- Sebanyak 978 soalan objektif selamat menerima kad pilihan automatik; jumlah interaksi runtime kini 1,100 daripada 4,530 soalan.
-- Dua puluh aktiviti kaya baharu merangkumi susun ayat, susun nombor dan operasi, masa, wang, ukuran, bentuk serta pilihan berbilang.
-- Liputan semakan merangkumi kesemua lapan subjek Tahun 2, dengan petunjuk pedagogi dan metadata kemahiran yang kekal serasi dengan pembelajaran adaptif.
-- Jawapan interaktif serta maklum balas semakan kini kekal selepas keluar dan sambung latihan, manakala kawalan penghantaran semula menghalang XP berganda.
-- Jawapan rasmi, accepted answers, jumlah soalan dan formula mastery asal tidak diubah.
+- Nota dan Buku Teks kini mempunyai status kemajuan berasingan bagi setiap topik.
+- Status bahan disimpan di dalam profil anak aktif dan disertakan dalam snapshot cloud, bukannya storan global yang boleh bercampur antara profil.
+- Penggabungan serentak mengekalkan tanda Nota daripada satu peranti dan tanda Buku Teks daripada peranti lain untuk anak yang sama.
+- Ringkasan `Nota dibaca` dan `Buku disemak` dipaparkan bagi subjek semasa tanpa memberikan XP hanya kerana bahan ditanda.
+- `Buka Nota` dari Ulang Kaji kini menukar tab sebenar, sementara `Tanya Janna` menerima subjek dan topik bahan yang sedang dilihat.
+- Kandungan pembelajaran, jawapan rasmi, jumlah soalan, XP dan formula mastery tidak diubah.
 
 ## Release Readiness
 
 - Package, lockfile, release tag, and generated metadata are version-aligned.
 - Question-bank regression and release-pipeline audits run before the main validator suite.
-- Interactive-engine, suitability, resume-isolation and account-scoped learning-sync regressions pass.
-- Desktop and mobile browser acceptance confirms rich-question priority, restored answer state and no horizontal overflow.
+- Profile-scoped learning-material, concurrent-sync and resume-isolation regressions pass.
+- Production bundle budget passes at 349.81 kB of the 350 kB entry limit.
 - Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
 - Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
@@ -26,8 +26,7 @@ Build date: 2026-08-25T00:15:47.043Z
 
 - All eight Year 2 subjects are included in the release validation scope.
 - Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
-- Teacher-authored interaction count: 122; safe derived interaction count: 978; runtime total: 1100.
-- Automatic conversion is restricted to objective questions with complete, unambiguous options.
+- Nota and textbook completion are treated as learning continuity evidence, not assessment mastery or XP.
 
 ## Validation Summary
 
@@ -47,6 +46,6 @@ Build date: 2026-08-25T00:15:47.043Z
 
 ## Known Follow-ups
 
-- Questions requiring a judgment-based renderer remain standard until a teacher review is completed.
 - Large JavaScript chunks remain a performance improvement target.
+- Cross-device material progress should be confirmed with a real premium Supabase account after deployment.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
