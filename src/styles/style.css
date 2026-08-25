@@ -5408,6 +5408,7 @@ input:focus {
 .learning-hub-subjects{padding-bottom:12px;border-bottom:1px solid #dceee2}
 .learning-hub-subjects button{background:#fff;color:#173329;border:1px solid #d5e9dc;border-radius:999px}
 .learning-hub-subjects button.active{background:#e8f8ee;color:#087a3b;border-color:#69c98c;box-shadow:0 4px 12px rgba(15,138,67,.1)}
+.learning-hub-progress-summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.learning-hub-progress-summary span{padding:7px 10px;border:1px solid #cdebd7;border-radius:999px;background:#fff;color:#465c50;font-size:13px}.learning-hub-progress-summary b{color:#087a3b}.learning-hub-progress-summary small{flex:1 1 260px;color:#61776b;font-size:12px}
 .learning-hub-subject-badge{width:32px;height:32px;border-radius:10px}
 .learning-hub-note-badge{width:28px;height:28px;border-radius:9px;vertical-align:middle}
 .learning-hub-content{display:grid;grid-template-columns:minmax(190px,.8fr) minmax(0,1.5fr);gap:14px;margin-top:14px}

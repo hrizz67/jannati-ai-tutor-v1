@@ -11,6 +11,7 @@ import tutorAiBadge from '../assets/icons/3d/tutor-ai-badge.webp';
 import targetBadge from '../assets/icons/3d/target-badge.webp';
 import { formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 import { getLearningContent } from '../data/learningContent.js';
+import { isLearningMaterialComplete, markLearningMaterialComplete, normalizeLearningMaterialsProgress } from '../utils/learningMaterialsProgress.js';
 
 function IconGlyph({ name, ...props }) {
   const badge = name === 'check' ? checkBadge : name === 'bot' ? tutorAiBadge : name === 'chevronRight' ? targetBadge : name === 'play' || name === 'spark' ? ganjaranBadge : bukuTeksBadge;
@@ -27,19 +28,20 @@ function topicSummary(topic, subjectId) {
   return getLearningContent(subjectId, topic).keyPoints[0] || topic?.note || 'Baca penerangan ringkas sebelum mencuba latihan.';
 }
 
-export default function LearningHub({ selectedSubject, allSubjects = [], profile = {}, onStartTopic, onOpenAi, activeMode, onModeChange }) {
+export default function LearningHub({ selectedSubject, allSubjects = [], profile = {}, onStartTopic, onMarkMaterial, onOpenAi, activeMode, onModeChange }) {
   const [mode, setMode] = useState('nota');
   const [subjectId, setSubjectId] = useState(selectedSubject?.id || allSubjects[0]?.id || '');
   const [topicId, setTopicId] = useState('');
-  const [readTopics, setReadTopics] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('jannati_learning_notes_v1') || '{}'); } catch { return {}; }
-  });
   const subject = allSubjects.find(item => item.id === subjectId) || selectedSubject;
   const topics = subject?.topics || [];
   const activeTopic = topics.find(item => item.id === topicId) || topics[0];
   const activeContent = getLearningContent(subject?.id, activeTopic);
   const visibleMode = activeMode || mode;
   const isTextbookMode = visibleMode === 'buku';
+  const materialProgress = useMemo(() => normalizeLearningMaterialsProgress(profile.learningMaterials), [profile.learningMaterials]);
+  const noteCount = useMemo(() => topics.filter(item => isLearningMaterialComplete(materialProgress, 'nota', subject?.id, item.id)).length, [materialProgress, subject?.id, topics]);
+  const textbookCount = useMemo(() => topics.filter(item => isLearningMaterialComplete(materialProgress, 'buku', subject?.id, item.id)).length, [materialProgress, subject?.id, topics]);
+  const activeMaterialComplete = isLearningMaterialComplete(materialProgress, isTextbookMode ? 'buku' : 'nota', subject?.id, activeTopic?.id);
   const startTopicForCurrentSubject = item => item && onStartTopic?.(item, subject);
 
   function selectMode(nextMode) {
@@ -49,8 +51,8 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
   const recentTopics = useMemo(() => (profile.history || []).filter(item => item.topic).slice(0, 3), [profile.history]);
   const reviewTopics = useMemo(() => topics.filter(item => {
     const best = profile.progress?.[`${subject?.id}_${item.id}`]?.best || 0;
-    return best < 80 || !readTopics[`${subject?.id}_${item.id}`];
-  }).slice(0, 4), [topics, profile.progress, readTopics, subject?.id]);
+    return best < 80 || !isLearningMaterialComplete(materialProgress, 'nota', subject?.id, item.id);
+  }).slice(0, 4), [topics, profile.progress, materialProgress, subject?.id]);
 
   function chooseSubject(nextId) {
     setSubjectId(nextId);
@@ -59,10 +61,11 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
 
   function markRead(item) {
     if (!item?.id || !subject?.id) return;
-    const key = `${subject.id}_${item.id}`;
-    const next = { ...readTopics, [key]: true };
-    setReadTopics(next);
-    try { localStorage.setItem('jannati_learning_notes_v1', JSON.stringify(next)); } catch { /* storage is optional */ }
+    onMarkMaterial?.(markLearningMaterialComplete(materialProgress, {
+      mode: isTextbookMode ? 'buku' : 'nota',
+      subjectId: subject.id,
+      topicId: item.id
+    }));
   }
 
   return <section id="learning-hub-section" className="card learning-hub-card" aria-labelledby="learning-hub-title">
@@ -78,9 +81,10 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
     <div className="learning-hub-subjects" aria-label="Pilih subjek untuk belajar">
       {allSubjects.map(item => <button key={item.id} type="button" className={item.id === subject?.id ? 'active' : ''} aria-pressed={item.id === subject?.id} onClick={() => chooseSubject(item.id)}><SubjectBadge className="learning-hub-subject-badge" subjectId={item.id} />{formatSubjectName(item.title || item.id)}</button>)}
     </div>
+    <div className="learning-hub-progress-summary" aria-label="Kemajuan bahan untuk subjek dipilih"><span>Nota dibaca <b>{noteCount}/{topics.length}</b></span><span>Buku disemak <b>{textbookCount}/{topics.length}</b></span><small>Disimpan mengikut profil anak dan diselaraskan bersama data pembelajaran.</small></div>
     {visibleMode === 'ulang' ? <div className="learning-hub-review-panel">
       <div className="learning-hub-review"><div className="learning-hub-review-icon"><GameBadge className="learning-hub-action-badge" src={ganjaranBadge} /></div><div><h3>Ulang kaji ikut kemajuan</h3><p>{recentTopics.length ? 'Semak semula topik yang sedang dipelajari dan topik yang belum kukuh.' : 'Baca satu nota dahulu, kemudian cuba latihan untuk membina rekod kemajuan.'}</p></div></div>
-       <div className="learning-hub-review-grid">{reviewTopics.length ? reviewTopics.map(item => <article className="learning-hub-review-card" key={item.id}><span className="eyebrow">{readTopics[`${subject?.id}_${item.id}`] ? 'Nota dibaca' : 'Perlu semak'}</span><h3>{formatTopicName(item.title)}</h3><p>{topicSummary(item, subject?.id)}</p><div className="actions"><button type="button" onClick={() => { setTopicId(item.id); setMode('nota'); }} className="secondary">Buka Nota</button><button type="button" onClick={() => startTopicForCurrentSubject(item)}>Latih</button></div></article>) : <div className="learning-hub-empty"><GameBadge className="learning-hub-action-badge" src={checkBadge} /><b>Semua topik nampak stabil.</b><p>Teruskan belajar topik baharu untuk kekalkan momentum.</p></div>}</div>
+       <div className="learning-hub-review-grid">{reviewTopics.length ? reviewTopics.map(item => <article className="learning-hub-review-card" key={item.id}><span className="eyebrow">{isLearningMaterialComplete(materialProgress, 'nota', subject?.id, item.id) ? 'Nota dibaca' : 'Perlu semak'}</span><h3>{formatTopicName(item.title)}</h3><p>{topicSummary(item, subject?.id)}</p><div className="actions"><button type="button" onClick={() => { setTopicId(item.id); selectMode('nota'); }} className="secondary">Buka Nota</button><button type="button" onClick={() => startTopicForCurrentSubject(item)}>Latih</button></div></article>) : <div className="learning-hub-empty"><GameBadge className="learning-hub-action-badge" src={checkBadge} /><b>Semua topik nampak stabil.</b><p>Teruskan belajar topik baharu untuk kekalkan momentum.</p></div>}</div>
     </div> : <div className="learning-hub-content">
       <div className="learning-hub-topic-list">
         <div className="learning-hub-list-label">Topik {formatSubjectName(subject?.title || subject?.id)}</div>
@@ -117,7 +121,7 @@ export default function LearningHub({ selectedSubject, allSubjects = [], profile
           <div className="learning-hub-method"><span className="learning-hub-method-icon"><IconGlyph name="spark" motion="pulse" /></span><div><b>Kaedah Janna</b><span>Kenal pasti → Faham maksud → Cuba satu soalan</span></div></div>
           {activeTopic?.questions?.[0] && <div className="learning-hub-example"><b>Contoh</b><span>{activeTopic.questions[0].q}</span><small>{activeContent.review}</small></div>}
         </>}
-         <div className="actions"><button type="button" onClick={() => startTopicForCurrentSubject(activeTopic)} disabled={!activeTopic}><IconGlyph name="play" /> Latih topik ini</button><button type="button" className="secondary" onClick={() => markRead(activeTopic)} disabled={!activeTopic || readTopics[`${subject?.id}_${activeTopic?.id}`]}><IconGlyph name="check" /> {readTopics[`${subject?.id}_${activeTopic?.id}`] ? (isTextbookMode ? 'Sudah disemak' : 'Sudah dibaca') : (isTextbookMode ? 'Tanda sudah semak' : 'Tanda sudah baca')}</button>{onOpenAi && <button type="button" className="secondary" onClick={onOpenAi}><IconGlyph name="bot" /> Tanya Janna</button>}</div>
+         <div className="actions"><button type="button" onClick={() => startTopicForCurrentSubject(activeTopic)} disabled={!activeTopic}><IconGlyph name="play" /> Latih topik ini</button><button type="button" className="secondary" onClick={() => markRead(activeTopic)} disabled={!activeTopic || activeMaterialComplete}><IconGlyph name="check" /> {activeMaterialComplete ? (isTextbookMode ? 'Sudah disemak' : 'Sudah dibaca') : (isTextbookMode ? 'Tanda sudah semak' : 'Tanda sudah baca')}</button>{onOpenAi && <button type="button" className="secondary" onClick={() => onOpenAi({ subject, topic: activeTopic })}><IconGlyph name="bot" /> Tanya Janna</button>}</div>
       </article>
     </div>}
   </section>;

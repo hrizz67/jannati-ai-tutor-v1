@@ -57,7 +57,8 @@ function buildDefaultProfile() {
     bookmarks: [],
     favourites: [],
     recommendations: {},
-    uasaHistory: []
+    uasaHistory: [],
+    learningMaterials: { version: 1, notes: {}, textbooks: {}, updatedAt: '' }
   };
 }
 
@@ -75,7 +76,10 @@ function migrateProfileShape(raw = {}, fallback = buildDefaultProfile()) {
     bookmarks: Array.isArray(merged.bookmarks) ? merged.bookmarks : [],
     favourites: Array.isArray(merged.favourites) ? merged.favourites : [],
     recommendations: merged.recommendations && typeof merged.recommendations === 'object' ? merged.recommendations : {},
-    uasaHistory: Array.isArray(merged.uasaHistory) ? merged.uasaHistory : []
+    uasaHistory: Array.isArray(merged.uasaHistory) ? merged.uasaHistory : [],
+    learningMaterials: merged.learningMaterials && typeof merged.learningMaterials === 'object'
+      ? merged.learningMaterials
+      : { version: 1, notes: {}, textbooks: {}, updatedAt: '' }
   };
 }
 
@@ -83,6 +87,8 @@ function profileEvidenceScore(profile = {}) {
   const progressCount = Object.keys(profile.progress || {}).length;
   const historyCount = Array.isArray(profile.history) ? profile.history.length : 0;
   const uasaCount = Array.isArray(profile.uasaHistory) ? profile.uasaHistory.length : 0;
+  const learningMaterials = profile.learningMaterials && typeof profile.learningMaterials === 'object' ? profile.learningMaterials : {};
+  const materialCount = Object.keys(learningMaterials.notes || {}).length + Object.keys(learningMaterials.textbooks || {}).length;
   return (
     (Number(profile.xp) || 0) * 10
     + (Number(profile.coins) || 0)
@@ -90,6 +96,7 @@ function profileEvidenceScore(profile = {}) {
     + progressCount * 5
     + historyCount * 5
     + uasaCount * 5
+    + materialCount * 3
     + (profile.name ? 1 : 0)
   );
 }
