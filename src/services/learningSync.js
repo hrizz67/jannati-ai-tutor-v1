@@ -57,6 +57,9 @@ function scoreLearningValue(value, depth = 0) {
     return value.length * 3 + value.slice(0, 100).reduce((sum, item) => sum + scoreLearningValue(item, depth + 1), 0);
   }
   if (!isObject(value)) return 0;
+  const learningMaterials = isObject(value.learningMaterials) ? value.learningMaterials : {};
+  const completedMaterials = Object.keys(isObject(learningMaterials.notes) ? learningMaterials.notes : {}).length
+    + Object.keys(isObject(learningMaterials.textbooks) ? learningMaterials.textbooks : {}).length;
   const directScore = (Number(value.xp) || 0) * 10
     + (Number(value.streak) || 0) * 10
     + (Number(value.studyStreak) || 0) * 10
@@ -64,9 +67,10 @@ function scoreLearningValue(value, depth = 0) {
     + (Number(value.correctQuestions) || 0) * 2
     + Object.keys(isObject(value.progress) ? value.progress : {}).length * 5
     + (Array.isArray(value.history) ? value.history.length * 5 : 0)
-    + (Array.isArray(value.events) ? value.events.length * 3 : 0);
+    + (Array.isArray(value.events) ? value.events.length * 3 : 0)
+    + completedMaterials * 3;
   return directScore + Object.entries(value).reduce((sum, [key, nested]) => {
-    if (['xp', 'streak', 'studyStreak', 'totalQuestions', 'correctQuestions', 'progress', 'history', 'events'].includes(key)) return sum;
+    if (['xp', 'streak', 'studyStreak', 'totalQuestions', 'correctQuestions', 'progress', 'history', 'events', 'learningMaterials'].includes(key)) return sum;
     return sum + scoreLearningValue(nested, depth + 1);
   }, 0);
 }

@@ -75,6 +75,7 @@ import {
   CLOUD_SYNC_PROTOCOL_VERSION,
   CLOUD_SYNC_META_KEY,
   getChildProfileIdentity,
+  getLearningSnapshotEvidenceScore,
   hasRecoverableChildProfileDuplicates,
   loadCloudLearningDataResult,
   normalizeActiveLearningProjection,
@@ -94,7 +95,6 @@ const QUESTION_BANK_VERSION = 3;
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
-
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
 const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
@@ -510,33 +510,7 @@ function readAccountSnapshot(accountId) {
 }
 
 function snapshotEvidenceScore(snapshot = {}) {
-  function scoreValue(value, depth = 0) {
-    if (!value || depth > 5) return 0;
-    if (Array.isArray(value)) {
-      return value.length * 3 + value.slice(0, 100).reduce((sum, item) => sum + scoreValue(item, depth + 1), 0);
-    }
-    if (typeof value !== 'object') return 0;
-    const directScore = (Number(value.xp) || 0) * 10
-      + (Number(value.streak) || 0) * 10
-      + (Number(value.studyStreak) || 0) * 10
-      + (Number(value.totalQuestions) || 0)
-      + (Number(value.correctQuestions) || 0) * 2
-      + Object.keys(value.progress || {}).length * 5
-      + (Array.isArray(value.history) ? value.history.length * 5 : 0)
-      + (Array.isArray(value.events) ? value.events.length * 3 : 0);
-    return directScore + Object.entries(value).reduce((sum, [key, nested]) => {
-      if (['xp', 'streak', 'studyStreak', 'totalQuestions', 'correctQuestions', 'progress', 'history', 'events'].includes(key)) return sum;
-      return sum + scoreValue(nested, depth + 1);
-    }, 0);
-  }
-
-  return Object.values(snapshot).reduce((score, raw) => {
-    try {
-      return score + scoreValue(JSON.parse(raw));
-    } catch {
-      return score;
-    }
-  }, 0);
+  return getLearningSnapshotEvidenceScore(snapshot);
 }
 
 function findBestStoredAccountBackup(currentAccountId = '') {
@@ -951,7 +925,8 @@ const defaultProfile = {
   bookmarks: [],
   favourites: [],
   recommendations: {},
-  uasaHistory: []
+  uasaHistory: [],
+  learningMaterials: { version: 1, notes: {}, textbooks: {}, updatedAt: '' }
 };
 
 function createDemoProfile() {
@@ -3301,6 +3276,11 @@ export default function App() {
     });
   }
 
+  function markLearningMaterial(learningMaterials) {
+    if (!learningMaterials || typeof learningMaterials !== 'object') return;
+    setProfile(prev => ({ ...prev, learningMaterials }));
+  }
+
   function handleSelectSubject(subjectId) {
     if (!subjectId) return;
     setSelectedSubjectId(subjectId);
@@ -3995,8 +3975,16 @@ export default function App() {
     forecast: masteryForecast
   };
 
-  function openTutorAi() {
+  function openTutorAi(learningContext = null) {
     if (requirePremium('tutorAi')) {
+      const learningSubject = learningContext?.subject?.id ? learningContext.subject : null;
+      const learningTopic = learningContext?.topic?.id ? learningContext.topic : null;
+      if (learningSubject) {
+        flushSync(() => {
+          setActiveSubject(learningSubject);
+          if (learningTopic) setActiveTopic({ ...learningTopic, subjectId: learningSubject.id });
+        });
+      }
       if (screen === 'quiz') markQuestionSupport('usedExplain');
       setChatOpen(true);
     }
@@ -4047,7 +4035,7 @@ export default function App() {
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume?.mode === 'uasa' && resume?.subjectId === selectedSubject?.id ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id })} onBack={returnToDashboard} onSave={saveUasaResult} /></BetaChrome>;
 
-  if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onMarkMaterial={markLearningMaterial} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
