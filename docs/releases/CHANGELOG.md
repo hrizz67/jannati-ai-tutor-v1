@@ -1,28 +1,31 @@
 # Changelog
 
-## 3.8.0 - 2026-08-25
+## 3.9.0 - 2026-08-25
 
-### Liputan pembelajaran interaktif
+### Nota dan Buku Teks
 
-- Memperluas soalan interaktif semakan guru daripada 11 kepada 122 tanpa menambah, membuang atau mengubah jawapan asal dalam bank 4,530 soalan.
-- Menukar 978 soalan objektif yang memenuhi syarat keselamatan kepada kad pilihan boleh sentuh, menjadikan 1,100 soalan interaktif tersedia semasa runtime.
-- Menambah liputan Bahasa Melayu, Matematik, Sains, Bahasa Inggeris, Bahasa Arab, Pendidikan Islam, Pendidikan Jasmani dan Pendidikan Kesihatan.
-- Menambah 20 aktiviti kaya yang disemak untuk susunan ayat, susunan nombor, operasi, masa, ukuran, bentuk dan pilihan berbilang.
-- Mengutamakan aktiviti kaya yang disemak supaya murid akaun Free turut menemuinya sebelum had latihan harian.
+- Menambah penanda kemajuan berasingan untuk `Nota dibaca` dan `Buku disemak` bagi setiap topik.
+- Menyimpan kemajuan bahan dalam profil anak aktif supaya akaun dan profil lain tidak berkongsi status bacaan.
+- Memasukkan kemajuan bahan sebagai bukti pembelajaran dalam proses pemilihan, pemulihan dan penggabungan snapshot cloud.
+- Mengekalkan kandungan Nota, Buku Teks, bank soalan, jawapan rasmi, XP dan formula mastery tanpa perubahan.
 
-### Kesinambungan latihan
+### Navigasi dan Tutor AI
 
-- Draf jawapan interaktif kini disimpan apabila murid menyusun atau memilih jawapan.
-- Soalan, jawapan dan maklum balas yang telah disemak dipulihkan apabila murid kembali melalui fungsi sambung latihan.
-- Butang semakan dikunci bagi jawapan yang telah direkodkan untuk mengelakkan penghantaran dan pemberian XP berganda selepas resume.
-- Retry membersihkan jawapan tersimpan bagi soalan semasa tanpa menjejaskan sesi atau profil lain.
+- Menambah ringkasan kemajuan Nota dan Buku Teks bagi subjek yang sedang dipilih.
+- Membetulkan `Buka Nota` daripada Ulang Kaji supaya tab kawalan induk turut berubah dan murid tidak tersangkut pada paparan lama.
+- Menghantar konteks subjek dan topik semasa kepada Janna apabila murid memilih `Tanya Janna` dari bahan pembelajaran.
+
+### Integriti data
+
+- Menggunakan satu pengiraan bukti pembelajaran bersama untuk UI, backup tempatan dan enjin cloud sync.
+- Menambah regresi bagi pengasingan profil anak, penggabungan kemajuan serentak antara peranti, pengasingan Nota/Buku Teks dan keselamatan resume.
 
 ### Quality snapshot
 
 - 8 subjects, 84 topics, and 4530 questions validated.
 - Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
-- Interactive suitability audit confirms 122 reviewed interactions, 978 safe automatic choices, and no original-answer changes.
-- Resume isolation and account-scoped learning-sync regressions pass.
+- Learning-material, account-scoped sync and resume-isolation regressions pass.
+- Production entry bundle is 349.81 kB against a 350 kB budget.
 - Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
 ### Release controls
@@ -34,5 +37,5 @@
 ### Follow-up work
 
 - Continue reducing large production chunks through route and subject-level code splitting.
-- Continue teacher review for questions classified as requiring manual interactive conversion.
+- Verify cross-device material progress using a real premium Supabase account after deployment.
 - Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
