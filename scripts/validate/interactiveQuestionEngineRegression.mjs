@@ -89,11 +89,34 @@ const reviewedChoiceBatch3Ids = new Set([
   'SAINS-TEKNOLOGI-002',
   'SAINS-KEMAHIRAN_SAINTIFIK-002'
 ]);
+const reviewedRichBatch4Ids = new Set([
+  'BM-BINA_AYAT-022',
+  'BM-BINA_AYAT-023',
+  'BM-TATABAHASA-049',
+  'BM-PENTAKSIRAN-SUMATIF-018',
+  'MATH-NOMBOR-PILOT-015',
+  'MATH-NOMBOR-PILOT-016',
+  'MATH-NOMBOR-PILOT-028',
+  'MATH-NOMBOR-PILOT-042',
+  'MATH-TAMBAH-PILOT-047',
+  'MATH-TOLAK-PILOT-047',
+  'MATH-DARAB-PILOT-047',
+  'MATH-BAHAGI-PILOT-040',
+  'MATH-WANG-PILOT-041',
+  'MATH-MASA-PILOT-018',
+  'MATH-MASA-PILOT-041',
+  'MATH-PANJANG-PILOT-040',
+  'MATH-JISIM-ISI-PADU-PILOT-040',
+  'MATH-JISIM-ISI-PADU-PILOT-048',
+  'MATH-BENTUK-PILOT-049',
+  'MATH-NOMBOR-PILOT-050'
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
 assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewed questions each for BM, Mathematics and Science.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty deliberately reviewed rich interactions.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -128,6 +151,23 @@ for (const id of allReviewedChoiceBatchIds) {
   assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
 }
 
+for (const id of reviewedRichBatch4Ids) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing reviewed rich-interaction batch question ${id}.`);
+  assert.ok(['ordering', 'multiSelect'].includes(question.interaction.type), `${id} must use an ordering or multiple-selection renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid rich-interaction schema.`);
+  const correctResponse = question.interaction.type === 'ordering'
+    ? serializeOrderingResponse(question.interaction, question.interaction.correctOrder)
+    : serializeMultiSelectResponse(question.interaction, question.interaction.correctOptionIds);
+  assert.equal(smartCheck(correctResponse, question).status, 'correct', `${id} must serialize its authored solution to an accepted answer.`);
+  const incompleteOrReversedResponse = question.interaction.type === 'ordering'
+    ? serializeOrderingResponse(question.interaction, [...question.interaction.correctOrder].reverse())
+    : serializeMultiSelectResponse(question.interaction, question.interaction.correctOptionIds.slice(0, -1));
+  assert.notEqual(smartCheck(incompleteOrReversedResponse, question).status, 'correct', `${id} must reject an incomplete or reversed response.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires reviewed learning-intelligence hints.`);
+}
+
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
 assert.equal(smartCheck('3', imageChoice).status, 'correct', 'Image choice must submit an accepted canonical answer.');
 assert.notEqual(smartCheck('4', imageChoice).status, 'correct', 'Image choice distractor must remain incorrect.');
@@ -146,6 +186,8 @@ const lokomotorTopic = subjects.find(subject => subject.id === 'pj')?.topics.fin
 assert.equal(prioritizeInteractiveQuestions(lokomotorTopic.questions)[0]?.id, 'PJ-LOKOMOTOR-039', 'A teacher-reviewed interaction must take priority over an automatically derived choice in the same topic.');
 const haiwanTopic = subjects.find(subject => subject.id === 'sains')?.topics.find(topic => topic.id === 'haiwan');
 assert.equal(prioritizeInteractiveQuestions(haiwanTopic.questions)[0]?.id, 'SAINS-HAIWAN-002', 'A new Science activity must surface its reviewed visual question before standard questions.');
+const nomborTopic = subjects.find(subject => subject.id === 'math')?.topics.find(topic => topic.id === 'nombor');
+assert.equal(prioritizeInteractiveQuestions(nomborTopic.questions)[0]?.id, 'MATH-NOMBOR-PILOT-015', 'A rich reviewed interaction must surface before a basic reviewed choice so Free learners can reach it.');
 
 const dragDrop = byId.get('MATH-BENTUK-PILOT-021');
 const dragResponse = serializeDragDropResponse(dragDrop.interaction, {
@@ -170,6 +212,13 @@ const ordering = byId.get('BM-BINA_AYAT-021');
 const orderingResponse = serializeOrderingResponse(ordering.interaction, ['subject', 'verb', 'object']);
 assert.equal(orderingResponse, 'Aina membaca buku cerita.');
 assert.equal(smartCheck(orderingResponse, ordering).status, 'correct', 'Ordering response must use the legacy accepted-answer path.');
+const operationOrdering = byId.get('MATH-TAMBAH-PILOT-047');
+assert.equal(operationOrdering.interaction.items[0].label, '125 + 250', 'Operation cards must not reveal their calculated results.');
+assert.equal(
+  serializeOrderingResponse(operationOrdering.interaction, operationOrdering.interaction.correctOrder),
+  '204 + 163 = 367, 125 + 250 = 375, 316 + 72 = 388',
+  'Ordering serialization must support a hidden response label that remains compatible with the canonical answer.'
+);
 
 const visualMath = byId.get('MATH-NOMBOR-PILOT-024');
 assert.equal(smartCheck('638', visualMath).status, 'correct', 'Visual mathematics must submit an accepted canonical answer.');

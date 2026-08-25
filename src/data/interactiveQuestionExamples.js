@@ -307,9 +307,174 @@ const REVIEWED_CHOICE_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CHOICE_BATCHES).map(([id, spec]) => [id, buildReviewedChoiceExample(spec)])
 );
 
+const REVIEWED_RICH_DOMAINS = Object.freeze({
+  bmSentenceOrdering: {
+    type: 'ordering',
+    instruction: 'Susun kad untuk membina ayat yang lengkap dan gramatis.',
+    responsePreviewLabel: 'Ayat kamu',
+    responseSeparator: ' ',
+    responseSuffix: '.',
+    curriculum: 'Membina ayat penyata Bahasa Melayu Tahun 2 dengan susunan subjek dan predikat yang gramatis.',
+    assessment: 'Semua frasa sumber dikekalkan dan hanya satu susunan menghasilkan ayat lengkap yang diterima oleh skema asal.',
+    textbook: 'Kad frasa memperlihatkan struktur ayat secara konkrit sebelum murid membaca semula ayat lengkap.',
+    skillId: 'bina_ayat.susunan_subjek_predikat',
+    responseMode: 'sequencing',
+    conceptTags: ['ayat_penyata', 'susunan_ayat', 'subjek_dan_predikat'],
+    misconceptionTags: ['susunan_frasa_tidak_gramatis', 'keterangan_diletakkan_tidak_tepat'],
+    hintSteps: ['Cari frasa yang menunjukkan siapa dahulu.', 'Letakkan perbuatan selepas pelaku.', 'Akhiri dengan objek atau keterangan tempat dan baca semula ayat.']
+  },
+  mathNumberOrdering: {
+    type: 'ordering',
+    instruction: 'Bandingkan nilai tempat, kemudian susun semua kad nombor mengikut arahan.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Menyusun nombor hingga 1,000 secara menaik atau menurun berdasarkan nilai tempat.',
+    assessment: 'Nombor berkongsi digit yang hampir sama supaya susunan mengukur kefahaman nilai tempat, bukan rupa digit semata-mata.',
+    textbook: 'Kad nombor membolehkan murid membanding ratus, puluh dan sa satu langkah pada satu masa.',
+    skillId: 'nombor.menyusun_nilai',
+    responseMode: 'sequencing',
+    conceptTags: ['nilai_tempat', 'tertib_nombor', 'perbandingan'],
+    misconceptionTags: ['membanding_digit_dari_kanan', 'keliru_tertib_menaik_dan_menurun'],
+    hintSteps: ['Semak sama ada soalan meminta tertib menaik atau menurun.', 'Bandingkan digit ratus dahulu, kemudian puluh dan sa.', 'Baca keseluruhan susunan sekali lagi sebelum menghantar.']
+  },
+  mathOperationOrdering: {
+    type: 'ordering',
+    instruction: 'Kira setiap operasi, kemudian susun kad mengikut nilai hasilnya.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Mengaplikasikan fakta operasi Matematik Tahun 2 untuk membanding dan menyusun hasil pengiraan.',
+    assessment: 'Setiap kad memerlukan pengiraan sebelum perbandingan; jawapan tersusun diserialkan tepat kepada skema asal.',
+    textbook: 'Operasi kekal kelihatan pada kad manakala respons tersimpan mengandungi operasi dan hasil untuk semakan yang jelas.',
+    skillId: 'operasi.menyusun_hasil',
+    responseMode: 'calculation_sequencing',
+    conceptTags: ['operasi_asas', 'perbandingan_hasil', 'tertib_nilai'],
+    misconceptionTags: ['menyusun_operan_bukan_hasil', 'kesilapan_fakta_asas'],
+    hintSteps: ['Selesaikan setiap operasi secara berasingan.', 'Catat atau ingat hasil bagi setiap kad.', 'Susun berdasarkan hasil, bukan nombor pertama pada operasi.']
+  },
+  mathTimeOrdering: {
+    type: 'ordering',
+    instruction: 'Bandingkan urutan atau tempoh masa, kemudian susun semua kad.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Menyusun hari dan tempoh masa mengikut urutan serta panjang tempoh yang betul.',
+    assessment: 'Semua pilihan menggunakan unit masa lazim dan memerlukan satu urutan lengkap tanpa item tertinggal.',
+    textbook: 'Kad masa menyokong perbandingan berperingkat dan mengekalkan unit pada setiap nilai.',
+    skillId: 'masa.menyusun_urutan_dan_tempoh',
+    responseMode: 'time_sequencing',
+    conceptTags: ['masa', 'urutan_hari', 'perbandingan_tempoh'],
+    misconceptionTags: ['keliru_urutan_hari', 'tidak_menukar_jam_kepada_minit'],
+    hintSteps: ['Kenal pasti sama ada kad menunjukkan hari atau tempoh.', 'Gunakan urutan minggu atau tukar tempoh kepada unit yang sama.', 'Susun daripada awal ke akhir atau singkat ke lama seperti diminta.']
+  },
+  mathQuantityOrdering: {
+    type: 'ordering',
+    instruction: 'Samakan unit jika perlu, kemudian susun semua kad mengikut nilai.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Membanding dan menyusun nilai wang, panjang, jisim dan isi padu dalam unit yang sesuai.',
+    assessment: 'Nilai bercampur unit memerlukan penukaran tepat sebelum susunan dan respons akhir kekal serasi dengan skema asal.',
+    textbook: 'Label asal dikekalkan pada kad, manakala bentuk unit setara digunakan untuk semakan jawapan yang konsisten.',
+    skillId: 'ukuran.menyusun_kuantiti',
+    responseMode: 'measurement_sequencing',
+    conceptTags: ['ukuran', 'penukaran_unit', 'perbandingan_kuantiti'],
+    misconceptionTags: ['membanding_angka_tanpa_unit', 'tersalah_penukaran_unit'],
+    hintSteps: ['Perhatikan unit pada setiap kad.', 'Tukar semua nilai kepada unit yang sama.', 'Bandingkan nilai setara lalu susun mengikut arahan.']
+  },
+  mathShapeOrdering: {
+    type: 'ordering',
+    instruction: 'Kira sisi lurus setiap bentuk, kemudian susun daripada paling sedikit.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Membanding bentuk 2D berdasarkan bilangan sisi lurus.',
+    assessment: 'Tiga bentuk mempunyai bilangan sisi berlainan dan hanya satu susunan menaik yang tepat.',
+    textbook: 'Nama bentuk pada kad menghubungkan ciri visual yang telah dipelajari dengan bilangan sisi.',
+    skillId: 'bentuk.menyusun_bilangan_sisi',
+    responseMode: 'property_sequencing',
+    conceptTags: ['bentuk_2d', 'bilangan_sisi', 'susunan'],
+    misconceptionTags: ['mengira_garis_lengkung_sebagai_sisi', 'keliru_sisi_dan_bucu'],
+    hintSteps: ['Bayangkan atau lukis setiap bentuk.', 'Kira hanya sisi lurus pada sempadannya.', 'Letakkan bentuk tanpa sisi lurus dahulu.']
+  },
+  mathNumberMultiSelect: {
+    type: 'multiSelect',
+    instruction: 'Pilih semua nombor yang memenuhi kedua-dua syarat. Lebih daripada satu jawapan diperlukan.',
+    curriculum: 'Menganalisis nilai tempat ratus serta jumlah digit puluh dan sa bagi nombor hingga 1,000.',
+    assessment: 'Lima nombor calon mengandungi tiga jawapan diterima dan dua distraktor diagnostik; kedua-dua syarat mesti dipenuhi.',
+    textbook: 'Nombor disemak satu demi satu menggunakan dua syarat yang dinyatakan dengan jelas.',
+    skillId: 'nombor.menapis_dua_syarat',
+    responseMode: 'multiple_selection',
+    conceptTags: ['nilai_tempat', 'jumlah_digit', 'pelbagai_jawapan'],
+    misconceptionTags: ['menyemak_satu_syarat_sahaja', 'memilih_satu_jawapan_sahaja'],
+    hintSteps: ['Semak dahulu digit pada tempat ratus.', 'Bagi nombor yang mempunyai 7 ratus, tambah digit puluh dan sa.', 'Pilih semua nombor yang lulus kedua-dua semakan.']
+  }
+});
+
+const REVIEWED_RICH_BATCH_4 = Object.freeze({
+  'BM-BINA_AYAT-022': { domain: 'bmSentenceOrdering', items: [['place', 'di kantin'], ['subject', 'Murid-murid'], ['verb', 'beratur']], correctOrder: ['subject', 'verb', 'place'] },
+  'BM-BINA_AYAT-023': { domain: 'bmSentenceOrdering', items: [['object', 'lantai'], ['subject', 'Ibu'], ['verb', 'menyapu'], ['place', 'dapur']], correctOrder: ['subject', 'verb', 'object', 'place'] },
+  'BM-TATABAHASA-049': { domain: 'bmSentenceOrdering', skillId: 'tatabahasa.membina_ayat_gramatis', items: [['place', 'di perpustakaan'], ['verb', 'membaca'], ['subject', 'Aina'], ['object', 'buku']], correctOrder: ['subject', 'verb', 'object', 'place'] },
+  'BM-PENTAKSIRAN-SUMATIF-018': { domain: 'bmSentenceOrdering', skillId: 'pentaksiran.membina_ayat_gramatis', items: [['place', 'di taman'], ['predicate', 'bermain bola'], ['subject', 'Kanak-kanak']], correctOrder: ['subject', 'predicate', 'place'] },
+  'MATH-NOMBOR-PILOT-015': { domain: 'mathNumberOrdering', items: [['318', '318'], ['381', '381'], ['183', '183']], correctOrder: ['183', '318', '381'] },
+  'MATH-NOMBOR-PILOT-016': { domain: 'mathNumberOrdering', items: [['720', '720'], ['702', '702'], ['270', '270']], correctOrder: ['720', '702', '270'] },
+  'MATH-NOMBOR-PILOT-028': { domain: 'mathNumberOrdering', items: [['405', '405'], ['450', '450'], ['540', '540'], ['504', '504']], correctOrder: ['405', '450', '504', '540'] },
+  'MATH-NOMBOR-PILOT-042': { domain: 'mathNumberOrdering', items: [['275', '275'], ['257', '257'], ['527', '527']], correctOrder: ['257', '275', '527'] },
+  'MATH-TAMBAH-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'tambah.menyusun_jumlah', concept: 'tambah', items: [['sum-375', '125 + 250', '125 + 250 = 375'], ['sum-388', '316 + 72', '316 + 72 = 388'], ['sum-367', '204 + 163', '204 + 163 = 367']], correctOrder: ['sum-367', 'sum-375', 'sum-388'] },
+  'MATH-TOLAK-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'tolak.menyusun_baki', concept: 'tolak', items: [['difference-316', '388 − 72', '388 - 72 = 316'], ['difference-125', '375 − 250', '375 - 250 = 125'], ['difference-204', '367 − 163', '367 - 163 = 204']], correctOrder: ['difference-125', 'difference-204', 'difference-316'] },
+  'MATH-DARAB-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'darab.menyusun_hasil_darab', concept: 'darab', items: [['product-25', '5 × 5', '5 x 5 = 25'], ['product-32', '4 × 8', '4 x 8 = 32'], ['product-27', '3 × 9', '3 x 9 = 27']], correctOrder: ['product-25', 'product-27', 'product-32'] },
+  'MATH-BAHAGI-PILOT-040': { domain: 'mathOperationOrdering', skillId: 'bahagi.menyusun_hasil_bahagi', concept: 'bahagi', items: [['quotient-6', '54 ÷ 9', '54 ÷ 9 = 6'], ['quotient-4', '24 ÷ 6', '24 ÷ 6 = 4'], ['quotient-5', '35 ÷ 7', '35 ÷ 7 = 5']], correctOrder: ['quotient-4', 'quotient-5', 'quotient-6'] },
+  'MATH-WANG-PILOT-041': { domain: 'mathQuantityOrdering', skillId: 'wang.menyusun_nilai', concept: 'wang', items: [['350', 'RM 3.50'], ['305', 'RM 3.05'], ['325', 'RM 3.25']], correctOrder: ['305', '325', '350'] },
+  'MATH-MASA-PILOT-018': { domain: 'mathTimeOrdering', skillId: 'masa.menyusun_hari', concept: 'urutan_hari', items: [['monday', 'Isnin'], ['wednesday', 'Rabu'], ['tuesday', 'Selasa']], correctOrder: ['monday', 'tuesday', 'wednesday'] },
+  'MATH-MASA-PILOT-041': { domain: 'mathTimeOrdering', skillId: 'masa.menyusun_tempoh', concept: 'tempoh', items: [['30m', '30 minit'], ['60m', '1 jam'], ['45m', '45 minit']], correctOrder: ['30m', '45m', '60m'] },
+  'MATH-PANJANG-PILOT-040': { domain: 'mathQuantityOrdering', skillId: 'panjang.menyusun_unit_bercampur', concept: 'panjang', items: [['90cm', '90 cm'], ['105cm', '1 m 5 cm', '105 cm'], ['80cm', '80 cm']], correctOrder: ['80cm', '90cm', '105cm'] },
+  'MATH-JISIM-ISI-PADU-PILOT-040': { domain: 'mathQuantityOrdering', skillId: 'jisim.menyusun_unit_bercampur', concept: 'jisim', items: [['900g', '900 g'], ['1050g', '1 kg 50 g', '1050 g'], ['750g', '750 g']], correctOrder: ['750g', '900g', '1050g'] },
+  'MATH-JISIM-ISI-PADU-PILOT-048': { domain: 'mathQuantityOrdering', skillId: 'isi_padu.menyusun_unit_bercampur', concept: 'isi_padu', items: [['900ml', '900 mL'], ['1100ml', '1 L 100 mL', '1100 mL'], ['750ml', '750 mL']], correctOrder: ['750ml', '900ml', '1100ml'] },
+  'MATH-BENTUK-PILOT-049': { domain: 'mathShapeOrdering', items: [['circle', 'bulatan'], ['rectangle', 'segi empat tepat'], ['triangle', 'segi tiga']], correctOrder: ['circle', 'triangle', 'rectangle'] },
+  'MATH-NOMBOR-PILOT-050': {
+    domain: 'mathNumberMultiSelect',
+    prompt: 'Pilih semua nombor yang mempunyai 7 ratus serta jumlah digit puluh dan sa sebanyak 5.',
+    options: [['714', '714'], ['724', '724'], ['732', '732'], ['650', '650'], ['750', '750']],
+    correctOptionIds: ['714', '732', '750'],
+    responseJoiner: ', '
+  }
+});
+
+function buildReviewedRichExample(spec = {}) {
+  const domain = REVIEWED_RICH_DOMAINS[spec.domain];
+  const interaction = domain.type === 'multiSelect' ? {
+    version: 1,
+    type: domain.type,
+    instruction: domain.instruction,
+    prompt: spec.prompt,
+    options: spec.options.map(([id, label]) => ({ id, label, value: id })),
+    correctOptionIds: spec.correctOptionIds,
+    responseJoiner: spec.responseJoiner
+  } : {
+    version: 1,
+    type: domain.type,
+    instruction: domain.instruction,
+    responsePreviewLabel: domain.responsePreviewLabel,
+    items: spec.items.map(([id, label, responseLabel]) => ({ id, label, ...(responseLabel ? { responseLabel } : {}) })),
+    correctOrder: spec.correctOrder,
+    responseSeparator: domain.responseSeparator,
+    responseSuffix: domain.responseSuffix || ''
+  };
+
+  return {
+    interaction,
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_RICH_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_BATCH_4).map(([id, spec]) => [id, buildReviewedRichExample(spec)])
+);
+
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CHOICE_EXAMPLES,
   ...REVIEWED_FILL_BLANK_EXAMPLES,
+  ...REVIEWED_RICH_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -591,9 +756,23 @@ const REVIEWED_CHOICE_INTELLIGENCE = Object.fromEntries(
   })
 );
 
+const REVIEWED_RICH_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_BATCH_4).map(([id, spec]) => {
+    const domain = REVIEWED_RICH_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: spec.skillId || domain.skillId,
+      responseMode: domain.responseMode,
+      conceptTags: spec.concept ? [...domain.conceptTags, spec.concept] : domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
 const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CHOICE_INTELLIGENCE,
   ...REVIEWED_FILL_BLANK_INTELLIGENCE,
+  ...REVIEWED_RICH_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',

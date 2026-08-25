@@ -507,7 +507,7 @@ assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearn
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
 assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must normalize the account projection and active child snapshot before storage replacement.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
-assert.match(appSource, /autoSave\(questionIndex, nextSession\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must explicitly schedule an account cloud save.');
+assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must persist its checked response before explicitly scheduling an account cloud save.');
 const accountActivationSource = appSource.slice(
   appSource.indexOf('function activateAccountStorage'),
   appSource.indexOf('function getEmailRedirectUrl')

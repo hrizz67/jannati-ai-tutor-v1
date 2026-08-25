@@ -162,9 +162,26 @@ export function isInteractiveQuestion(question = {}) {
   return Boolean(getInteractiveQuestionConfig(question));
 }
 
+const RICH_INTERACTIVE_PRIORITY_TYPES = new Set([
+  'dragDrop',
+  'matching',
+  'ordering',
+  'visualMath',
+  'multiSelect',
+  'hotspot',
+  'clock',
+  'money',
+  'measurement'
+]);
+
 export function prioritizeInteractiveQuestions(questions = []) {
   const ordered = Array.isArray(questions) ? [...questions] : [];
-  const reviewedIndex = ordered.findIndex(question => question?.interaction && isInteractiveQuestion(question));
+  const richReviewedIndex = ordered.findIndex(question => question?.interaction
+    && RICH_INTERACTIVE_PRIORITY_TYPES.has(question.interaction.type)
+    && isInteractiveQuestion(question));
+  const reviewedIndex = richReviewedIndex >= 0
+    ? richReviewedIndex
+    : ordered.findIndex(question => question?.interaction && isInteractiveQuestion(question));
   const interactiveIndex = reviewedIndex >= 0 ? reviewedIndex : ordered.findIndex(isInteractiveQuestion);
   if (interactiveIndex <= 0) return ordered;
   const [interactiveQuestion] = ordered.splice(interactiveIndex, 1);
@@ -193,7 +210,10 @@ export function serializeMatchingResponse(config, matches = {}) {
 export function serializeOrderingResponse(config, orderedIds = []) {
   if (!config || orderedIds.length !== (config.items || []).length) return '';
   const itemById = new Map((config.items || []).map(item => [item.id, item]));
-  const sentence = orderedIds.map(id => itemById.get(id)?.label || '').join(config.responseSeparator || ' ').trim();
+  const sentence = orderedIds
+    .map(id => itemById.get(id)?.responseLabel || itemById.get(id)?.label || '')
+    .join(config.responseSeparator || ' ')
+    .trim();
   return sentence ? `${sentence}${config.responseSuffix || ''}` : '';
 }
 

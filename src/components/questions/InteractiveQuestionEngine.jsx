@@ -243,7 +243,10 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
 
 function parseOrderingResponse(config, value) {
   const normalizedValue = String(value || '').toLowerCase();
-  const positions = config.items.map(item => ({ id: item.id, position: normalizedValue.indexOf(String(item.label).toLowerCase()) }));
+  const positions = config.items.map(item => ({
+    id: item.id,
+    position: normalizedValue.indexOf(String(item.responseLabel || item.label).toLowerCase())
+  }));
   return positions.every(item => item.position >= 0)
     ? positions.sort((left, right) => left.position - right.position).map(item => item.id)
     : config.items.map(item => item.id);
@@ -305,7 +308,7 @@ function OrderingQuestion({ config, value, onChange, feedback }) {
         </li>;
       })}
     </ol>
-    <p className="interactive-response-preview" aria-live="polite"><span>Ayat kamu:</span> {serializeOrderingResponse(config, order)}</p>
+    <p className="interactive-response-preview" aria-live="polite"><span>{config.responsePreviewLabel || 'Susunan kamu'}:</span> {serializeOrderingResponse(config, order)}</p>
   </div>;
 }
 
