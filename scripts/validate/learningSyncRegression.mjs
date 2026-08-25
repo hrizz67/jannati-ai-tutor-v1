@@ -507,7 +507,7 @@ assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearn
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
 assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must normalize the account projection and active child snapshot before storage replacement.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
-assert.match(appSource, /autoSave\(questionIndex, nextSession\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must explicitly schedule an account cloud save.');
+assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must persist its checked response before explicitly scheduling an account cloud save.');
 const accountActivationSource = appSource.slice(
   appSource.indexOf('function activateAccountStorage'),
   appSource.indexOf('function getEmailRedirectUrl')
@@ -538,8 +538,18 @@ assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an expl
 assert.match(appSource, /setCloudSyncInfo\(\{[\s\S]{0,120}revision: Number\(syncResult\.revision\)/, 'An acknowledged upload must expose its exact server revision.');
 assert.match(appSource, /!cloudResult\.error && Number\(cloudResult\.protocolVersion\) < CLOUD_SYNC_PROTOCOL_VERSION/, 'A network or RPC error must not be mislabeled as a migration problem.');
 assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
-assert.match(appSource, /reloadCloudLearningState\(restoredChildId\)/, 'A cloud pull must refresh active profile state in React.');
-assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId\)/, 'A server-acknowledged merge must hydrate the active device unless a newer local mutation is still pending.');
+assert.match(appSource, /reloadCloudLearningState\(restoredChildId, restoredChildId === activeChildBeforeCloudRestore\)/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
+assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId, resolvedActiveChildId === activeChildId\)/, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
+const reloadActiveChildSource = appSource.slice(
+  appSource.indexOf('function reloadActiveChildState'),
+  appSource.indexOf('function reloadCloudLearningState')
+);
+assert.match(reloadActiveChildSource, /function reloadActiveChildState\(child, preserveQuizUi\)[\s\S]{0,700}if \(!preserveQuizUi\) \{\s*setFeedback\(null\);\s*setAnswer\(''\);\s*\}/, 'Answer and feedback resets must be limited to explicit profile/session transitions.');
+const cloudPollingSource = appSource.slice(
+  appSource.indexOf('const pullLatestCloudData = async'),
+  appSource.indexOf('function refreshAdaptiveProfile')
+);
+assert.match(cloudPollingSource, /activeChildBeforeCloudRestore[\s\S]{0,350}reloadCloudLearningState\(restoredChildId, restoredChildId === activeChildBeforeCloudRestore\)/, 'Polling must preserve draft and feedback only when the cloud snapshot belongs to the same child.');
 const selectChildSource = appSource.slice(
   appSource.indexOf('function handleSelectChild'),
   appSource.indexOf('function handleCreateChild')

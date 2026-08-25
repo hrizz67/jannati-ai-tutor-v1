@@ -51,7 +51,7 @@ import { clearResume, loadResume, normalizeResumeData, saveResume } from './util
 import { splitQuestionPresentationLines } from './utils/questionPresentation.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
-import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer } from './utils/acceptedAnswers.js';
+import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
   buildCommunicationSessionSummary,
@@ -91,23 +91,10 @@ const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
 // is corrected. Resume sessions are rehydrated from the current question bank
 // so an old saved question can never keep stale answer text on screen.
 const QUESTION_BANK_VERSION = 3;
-const INTERACTIVE_RENDERER_TYPES = new Set(['imageChoice', 'dragDrop', 'matching', 'ordering', 'visualMath', 'fillBlank', 'multiSelect', 'hotspot', 'clock', 'money', 'measurement']);
 const FEEDBACK_KEY = 'jannati_beta_feedback';
 const ONBOARDING_KEY = 'jannati_closed_beta_onboarding_v1';
 const AI_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 
-function supportsInteractiveQuestion(question = {}) {
-  const config = question?.interaction;
-  if (Number(config?.version) !== 1 || !INTERACTIVE_RENDERER_TYPES.has(config?.type)) return false;
-  if (['imageChoice', 'visualMath', 'clock', 'measurement'].includes(config.type)) return Array.isArray(config.options) && config.options.length >= 2;
-  if (config.type === 'fillBlank') return Array.isArray(config.options) && config.options.length >= 2 && config.sentenceParts?.length === 2;
-  if (config.type === 'multiSelect') return Array.isArray(config.options) && config.options.length >= 3 && Array.isArray(config.correctOptionIds);
-  if (config.type === 'hotspot') return Array.isArray(config.hotspots) && config.hotspots.length >= 2 && Boolean(config.correctHotspotId);
-  if (config.type === 'money') return Array.isArray(config.denominations) && config.denominations.length >= 2 && Number(config.targetSen) > 0;
-  if (config.type === 'dragDrop') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.zones) && config.zones.length >= 2;
-  if (config.type === 'matching') return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.targets) && config.targets.length >= 2;
-  return Array.isArray(config.items) && config.items.length >= 2 && Array.isArray(config.correctOrder);
-}
 const LEGACY_PROFILE_KEYS = ['jannati_v150_profile', 'jannati_v140_profile'];
 const ACCOUNT_SCOPE_KEY = 'jannati_active_account_id';
 const ACCOUNT_SNAPSHOT_PREFIX = 'jannati_account_snapshot:';
@@ -1408,7 +1395,7 @@ export default function App() {
     return false;
   }
 
-  function reloadActiveChildState(child) {
+  function reloadActiveChildState(child, preserveQuizUi) {
     const storedProfile = loadStudentCore(loadProfile());
     const nextProfile = applyAuthoritativeProfileAccess(child
       ? {
@@ -1424,18 +1411,20 @@ export default function App() {
     setAdaptiveProfile(loadAdaptiveStudentProfile());
     setGamificationProfile(loadGamificationState());
     setResume(loadResume());
-    setFeedback(null);
-    setAnswer('');
+    if (!preserveQuizUi) {
+      setFeedback(null);
+      setAnswer('');
+    }
   }
 
-  function reloadCloudLearningState(preferredChildId = '') {
+  function reloadCloudLearningState(preferredChildId = '', preserveQuizUi) {
     const profiles = readChildProfiles();
     const resolvedChildId = [preferredChildId, readActiveChildId(), profiles[0]?.id]
       .find(id => id && profiles.some(item => item.id === id)) || '';
     const activeChild = profiles.find(item => item.id === resolvedChildId) || profiles[0] || null;
     setChildProfiles(profiles);
     setActiveChildId(resolvedChildId);
-    if (activeChild) reloadActiveChildState(activeChild);
+    if (activeChild) reloadActiveChildState(activeChild, preserveQuizUi);
     else {
       setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
       setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -1518,7 +1507,7 @@ export default function App() {
           const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
           if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
             skipNextCloudSaveRef.current = true;
-            reloadCloudLearningState(resolvedActiveChildId);
+            reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
           }
           setChildProfiles(readChildProfiles());
           setActiveChildId(readActiveChildId());
@@ -2272,9 +2261,10 @@ export default function App() {
             return;
           }
           skipNextCloudSaveRef.current = true;
-          const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, readActiveChildId());
+          const activeChildBeforeCloudRestore = readActiveChildId();
+          const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
           repairImportedLearningProfile();
-          reloadCloudLearningState(restoredChildId);
+          reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
           captureAccountSnapshot(accountUser.id);
           lastCloudSignatureRef.current = cloudSignature;
           setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
@@ -2726,9 +2716,10 @@ export default function App() {
     }
     if (cloudResult.data && Object.keys(cloudResult.data).length) {
       skipNextCloudSaveRef.current = true;
-      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildId);
+      const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
+      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
       repairImportedLearningProfile();
-      reloadCloudLearningState(restoredChildId);
+      reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
       captureAccountSnapshot(accountUser.id);
     }
     lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
@@ -2770,9 +2761,10 @@ export default function App() {
       return;
     }
     skipNextCloudSaveRef.current = true;
-    const restoredChildId = restoreCloudLearningSnapshot(cloudData, activeChildId);
+    const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
+    const restoredChildId = restoreCloudLearningSnapshot(cloudData, activeChildBeforeCloudRestore);
     repairImportedLearningProfile();
-    reloadCloudLearningState(restoredChildId);
+    reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
     pendingOfflineCloudSaveRef.current = false;
     setPendingCloudMutation(accountUser.id, false);
     dirtyChildIdsRef.current.clear();
@@ -2811,7 +2803,7 @@ export default function App() {
       }
     }
     const sourceQuestions = options.questions || topic.questions;
-    const smartSession = options.restoreFromResume
+    const smartSession = options.preserveQuestions
       ? { questions: sourceQuestions, variationSeed: null, revisionQueue: [] }
       : buildSmartQuestionSession(sourceQuestions, {
       mode: resumeMode,
@@ -2851,6 +2843,11 @@ export default function App() {
       });
     const questions = diversity.questions;
     const startIndex = options.questionIndex || 0;
+    const restoredQuestionState = options.restoreFromResume
+      && options.state
+      && (!options.state.questionId || options.state.questionId === questions[startIndex]?.id)
+      ? options.state
+      : null;
     const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
     startSession.adaptiveSessionId = adaptiveSessionId;
@@ -2858,8 +2855,8 @@ export default function App() {
     setActiveSubject(subject);
     setActiveTopic({ ...topic, questions, resumeMode, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
     setQuestionIndex(startIndex);
-    setAnswer('');
-    setFeedback(null);
+    setAnswer(String(restoredQuestionState?.answer || ''));
+    setFeedback(restoredQuestionState?.feedback || null);
     setExplainOpen(false);
     setExplainData(null);
     setTeacherOpen(false);
@@ -2970,6 +2967,7 @@ export default function App() {
           questions: targetResume.questions,
           questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
           session: targetResume.session,
+          state: targetResume.state,
           preserveQuestions: true,
           mode: 'adaptive-practice',
           restoreFromResume: true
@@ -2993,6 +2991,7 @@ export default function App() {
         questions,
         questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
         session: targetResume.session,
+        state: targetResume.state,
         preserveQuestions: true,
         mode: targetResume.mode || 'quiz',
         restoreFromResume: true
@@ -3210,9 +3209,15 @@ export default function App() {
     };
   }, [screen, activeSubject?.id, activeTopic?.id, questionIndex, feedback?.status]);
 
-  function autoSave(nextIndex = questionIndex, nextSession = session) {
+  function autoSave(nextIndex = questionIndex, nextSession = session, nextQuestionState = null) {
     if (!activeSubject || !activeTopic) return;
     const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
+    const savedQuestion = activeTopic.questions?.[nextIndex] || null;
+    const state = nextQuestionState || {
+      questionId: savedQuestion?.id || null,
+      answer: nextIndex === questionIndex ? String(answer || '') : '',
+      feedback: nextIndex === questionIndex ? feedback : null
+    };
     const resumeData = {
       version: 1,
       questionBankVersion: QUESTION_BANK_VERSION,
@@ -3231,6 +3236,7 @@ export default function App() {
       xp: nextSession.xp || 0,
       coins: nextSession.coins || 0,
       attemptNumber: (nextSession.answers || []).length || 0,
+      state,
       metadata: {
         displayTitle: activeTopic.title || activeSubject.title || 'Latihan',
         displayNote: activeTopic.note || activeSubject.short || '',
@@ -3250,6 +3256,18 @@ export default function App() {
       updatedAt: new Date().toISOString()
     };
     persistResumeData(resumeData, setResume);
+  }
+
+  function changeQuizAnswer(nextAnswer) {
+    const normalizedAnswer = String(nextAnswer ?? '');
+    const nextFeedback = feedback?.status === 'empty' ? null : feedback;
+    setAnswer(normalizedAnswer);
+    if (feedback?.status === 'empty') setFeedback(null);
+    autoSave(questionIndex, session, {
+      questionId: currentQuestion()?.id || null,
+      answer: normalizedAnswer,
+      feedback: nextFeedback
+    });
   }
 
   function handleQuizBack() {
@@ -3484,8 +3502,6 @@ export default function App() {
     resetQuestionSupport(question.id);
 
     setSession(nextSession);
-    autoSave(questionIndex, nextSession);
-    scheduleCloudLearningSave({ delay: 500 });
     setExplainData(explainAnswer({ question: { ...question, subjectId: activeSubject?.id }, topic: { ...activeTopic, subjectId: activeSubject?.id }, result, userAnswer: answer }));
     const feedbackExplanation = sanitizeAiText(question.explanation || question.hint);
     const specificWrongAnswerFeedback = getSpecificWrongAnswerFeedback(question, answer);
@@ -3493,7 +3509,14 @@ export default function App() {
     const feedbackMessage = result.status === 'correct' || !wrongAnswerExplanation
       ? result.message
       : `Jawapan kamu belum tepat. ${wrongAnswerExplanation}`;
-    setFeedback({ ...result, xp, coins, correctAnswer: getQuestionAnswerDisplay(question), acceptedAnswers: getAcceptedAnswers(question), message: feedbackMessage, explanation: feedbackExplanation });
+    const nextFeedback = { ...result, xp, coins, correctAnswer: getQuestionAnswerDisplay(question), acceptedAnswers: getAcceptedAnswers(question), message: feedbackMessage, explanation: feedbackExplanation };
+    setFeedback(nextFeedback);
+    autoSave(questionIndex, nextSession, {
+      questionId: question.id || null,
+      answer: String(answer || ''),
+      feedback: nextFeedback
+    });
+    scheduleCloudLearningSave({ delay: 500 });
   }
 
   function createCoachSnapshot(mode, question = currentQuestion()) {
@@ -3674,6 +3697,11 @@ export default function App() {
     setExplainData(null);
     setTeacherOpen(false);
     setTeacherData(null);
+    autoSave(questionIndex, session, {
+      questionId: currentQuestion()?.id || null,
+      answer: '',
+      feedback: null
+    });
   }
 
   function nextQuestion() {
@@ -4005,7 +4033,7 @@ export default function App() {
     const safeHint = buildChildSafeHint(question, activeSubject, [coachKnowledgeData?.hint, coachingDecision?.hint, teachingStrategy?.hint, question?.hint]);
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={setAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -4022,7 +4050,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -4371,6 +4399,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         ? (isEnglishSubject ? 'Answer first' : 'Tulis jawapan dahulu')
       : quizUi.title;
   const isEmptyFeedback = feedback?.status === 'empty';
+  const answerChecked = Boolean(feedback && !['hint', 'empty'].includes(feedback.status));
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = buildChildSafeHint(question, subject, [coachKnowledgeData?.hint, safeCoachingDecision?.hint, question?.hint]);
@@ -4458,7 +4487,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       'upgrade-required': isEnglishSubject ? 'Cloud safety upgrade is required; this answer remains on this device.' : 'Naik taraf keselamatan cloud diperlukan; jawapan kekal pada peranti ini.'
     })[cloudSyncStatus] || (isEnglishSubject ? 'Cloud sync is active.' : 'Sync cloud aktif untuk akaun ini.');
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Soalan" title="Baca soalan" className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label="Mikrofon">{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>Tanya Guru AI</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label="Baca Petunjuk" title="Baca petunjuk" className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function Finish({ profile, session, topic, nextTopic, aiSummary, personality, voiceSummaryText, gamificationProfile, onDashboard, onRetry, onNextTopic, onOpenAi }) {

@@ -1,4 +1,497 @@
+const REVIEWED_FILL_BLANK_DOMAINS = Object.freeze({
+  englishVerb: {
+    instruction: 'Choose the verb that completes the sentence.',
+    curriculum: 'Choose a familiar Year 2 action word that completes a simple sentence.',
+    assessment: 'Three verbs are shown and exactly one fits the sentence meaning and grammar.',
+    textbook: 'The completed sentence connects an action word with a familiar person, object or setting.',
+    skillId: 'verbs.context_completion',
+    conceptTags: ['verbs', 'sentence_completion', 'context_clues'],
+    misconceptionTags: ['chooses_unrelated_action', 'ignores_sentence_context'],
+    hintSteps: [
+      'Look at the whole sentence and notice who or what performs the action.',
+      'Say each choice in the blank and listen for the sentence that makes sense.',
+      'Choose the action that best matches the object or setting after the blank.'
+    ]
+  },
+  arabVocabulary: {
+    instruction: 'Pilih maksud perkataan Arab yang betul.',
+    curriculum: 'Memadankan kosa kata Arab Tahun 2 dengan maksud Bahasa Melayu yang tepat.',
+    assessment: 'Tiga maksud daripada kategori benda harian digunakan dan hanya satu sepadan dengan perkataan Arab.',
+    textbook: 'Perkataan Arab dikekalkan bersama baris, kemudian dipadankan dengan kosa kata harian yang telah dipelajari.',
+    skillId: 'mufradat.makna_perkataan',
+    conceptTags: ['mufradat', 'makna_perkataan', 'benda_harian'],
+    misconceptionTags: ['keliru_kosa_kata_hampir', 'meneka_tanpa_membaca_perkataan'],
+    hintSteps: [
+      'Baca perkataan Arab itu perlahan-lahan dari kanan ke kiri.',
+      'Ingat semula benda atau gambar yang pernah dipadankan dengan perkataan itu.',
+      'Bandingkan ketiga-tiga maksud dan pilih satu padanan yang tepat.'
+    ]
+  },
+  islamAqidah: {
+    instruction: 'Pilih perkataan yang melengkapkan fakta akidah.',
+    curriculum: 'Mengingat dan melengkapkan fakta asas akidah Pendidikan Islam Tahun 2.',
+    assessment: 'Satu fakta asas diuji dengan satu jawapan tepat dan dua distraktor dalam domain yang sama.',
+    textbook: 'Ayat lengkap menghubungkan istilah akidah dengan fakta yang perlu difahami dan diamalkan.',
+    skillId: 'aqidah.fakta_asas',
+    conceptTags: ['aqidah', 'fakta_asas', 'iman'],
+    misconceptionTags: ['keliru_rukun_iman_dan_islam', 'keliru_pencipta_dan_ciptaan'],
+    hintSteps: [
+      'Baca keseluruhan fakta dan kenal pasti perkara akidah yang ditanya.',
+      'Singkirkan pilihan yang bercanggah dengan maksud ayat.',
+      'Pilih perkataan yang menghasilkan satu fakta akidah yang lengkap dan benar.'
+    ]
+  }
+});
+
+const REVIEWED_FILL_BLANK_BATCH_1 = Object.freeze({
+  'ENG-VERBS-001': { domain: 'englishVerb', sentenceParts: ['The boys ', ' football after school.'], options: ['sing', 'play', 'drink'] },
+  'ENG-VERBS-002': { domain: 'englishVerb', sentenceParts: ['Aina can ', ' a song.'], options: ['draw', 'drink', 'sing'] },
+  'ENG-VERBS-003': { domain: 'englishVerb', sentenceParts: ['I ', ' my teeth every morning.'], options: ['brush', 'fly', 'read'] },
+  'ENG-VERBS-004': { domain: 'englishVerb', sentenceParts: ['The baby can ', ' on the mat.'], options: ['fly', 'crawl', 'drink'] },
+  'ENG-VERBS-005': { domain: 'englishVerb', sentenceParts: ['We ', ' water after running.'], options: ['draw', 'sing', 'drink'] },
+  'ENG-VERBS-006': { domain: 'englishVerb', sentenceParts: ['Mira will ', ' a picture.'], options: ['draw', 'wash', 'open'] },
+  'ENG-VERBS-007': { domain: 'englishVerb', sentenceParts: ['The bird can ', ' in the sky.'], options: ['crawl', 'drink', 'fly'] },
+  'ENG-VERBS-008': { domain: 'englishVerb', sentenceParts: ['Please ', ' the door.'], options: ['open', 'sing', 'fly'] },
+  'ENG-VERBS-009': { domain: 'englishVerb', sentenceParts: ['Father will ', ' the car.'], options: ['read', 'wash', 'draw'] },
+  'ENG-VERBS-010': { domain: 'englishVerb', sentenceParts: ['The pupils ', ' a story in class.'], options: ['drink', 'fly', 'read'] },
+  'ARAB-MUFRADAT-001': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab كِتَابٌ bermaksud ', '.'], options: ['pen', 'buku', 'beg'] },
+  'ARAB-MUFRADAT-002': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab قَلَمٌ bermaksud ', '.'], options: ['pen', 'beg', 'buku'] },
+  'ARAB-MUFRADAT-003': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab حَقِيبَةٌ bermaksud ', '.'], options: ['sekolah', 'beg', 'pintu'] },
+  'ARAB-MUFRADAT-004': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مِسْطَرَةٌ bermaksud ', '.'], options: ['pemadam', 'meja', 'pembaris'] },
+  'ARAB-MUFRADAT-005': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مِمْحَاةٌ bermaksud ', '.'], options: ['pemadam', 'pembaris', 'tingkap'] },
+  'ARAB-MUFRADAT-006': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab مَدْرَسَةٌ bermaksud ', '.'], options: ['kelas', 'sekolah', 'rumah'] },
+  'ARAB-MUFRADAT-007': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab فَصْلٌ bermaksud ', '.'], options: ['sekolah', 'kerusi', 'kelas'] },
+  'ARAB-MUFRADAT-008': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab بَابٌ bermaksud ', '.'], options: ['pintu', 'meja', 'tingkap'] },
+  'ARAB-MUFRADAT-009': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab نَافِذَةٌ bermaksud ', '.'], options: ['pintu', 'tingkap', 'papan tulis'] },
+  'ARAB-MUFRADAT-010': { domain: 'arabVocabulary', sentenceParts: ['Perkataan Arab كُرْسِيٌّ bermaksud ', '.'], options: ['meja', 'pintu', 'kerusi'] },
+  'ISLAM-AQIDAH-001': { domain: 'islamAqidah', sentenceParts: ['Allah Maha ', '.'], options: ['Banyak', 'Esa', 'Dua'] },
+  'ISLAM-AQIDAH-002': { domain: 'islamAqidah', sentenceParts: ['Kita wajib beriman kepada ', '.'], options: ['malaikat', 'manusia', 'Allah'] },
+  'ISLAM-AQIDAH-003': { domain: 'islamAqidah', sentenceParts: ['Rukun Iman ada ', ' perkara.'], options: ['enam', 'lima', 'tujuh'] },
+  'ISLAM-AQIDAH-004': { domain: 'islamAqidah', sentenceParts: ['Rukun Islam ada ', ' perkara.'], options: ['empat', 'lima', 'enam'] },
+  'ISLAM-AQIDAH-006': { domain: 'islamAqidah', sentenceParts: ['Nabi Muhammad SAW ialah pesuruh ', '.'], options: ['manusia', 'Allah', 'malaikat'] },
+  'ISLAM-AQIDAH-007': { domain: 'islamAqidah', sentenceParts: ['Al-Quran ialah kitab ', '.'], options: ['malaikat', 'manusia', 'Allah'] },
+  'ISLAM-AQIDAH-008': { domain: 'islamAqidah', sentenceParts: ['Malaikat ialah makhluk ciptaan ', '.'], options: ['Allah', 'manusia', 'malaikat'] },
+  'ISLAM-AQIDAH-010': { domain: 'islamAqidah', sentenceParts: ['Qada dan qadar ialah ketentuan ', '.'], options: ['manusia', 'malaikat', 'Allah'] },
+  'ISLAM-AQIDAH-011': { domain: 'islamAqidah', sentenceParts: ['Lawan bagi iman ialah ', '.'], options: ['syukur', 'kufur', 'amanah'] },
+  'ISLAM-AQIDAH-012': { domain: 'islamAqidah', sentenceParts: ['Perbuatan menyekutukan Allah dinamakan ', '.'], options: ['syirik', 'ikhlas', 'amanah'] }
+});
+
+function buildReviewedFillBlankExample(spec = {}) {
+  const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
+  return {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: domain.instruction,
+      sentenceParts: spec.sentenceParts,
+      options: spec.options.map((value, index) => ({ id: `option-${index + 1}`, label: value, value }))
+    },
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_FILL_BLANK_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => [id, buildReviewedFillBlankExample(spec)])
+);
+
+const REVIEWED_CHOICE_DOMAINS = Object.freeze({
+  pjBodyControl: {
+    type: 'imageChoice',
+    instruction: 'Pilih anggota badan yang paling banyak digunakan.',
+    curriculum: 'Mengenal pasti anggota badan utama untuk pergerakan lokomotor dan kawalan imbangan.',
+    assessment: 'Empat anggota badan dipaparkan dan satu sahaja paling berkaitan dengan pergerakan yang diberi.',
+    textbook: 'Simbol anggota badan dan label ringkas menghubungkan pergerakan dengan fungsi tubuh.',
+    skillId: 'lokomotor.anggota_badan_utama',
+    responseMode: 'visual_selection',
+    conceptTags: ['lokomotor', 'anggota_badan', 'imbangan'],
+    misconceptionTags: ['keliru_anggota_utama', 'meneka_tanpa_membayangkan_pergerakan'],
+    hintSteps: ['Bayangkan kamu melakukan pergerakan itu.', 'Fikir bahagian badan yang menampung berat dan menolak badan.', 'Pilih anggota di bahagian bawah badan yang menyentuh lantai ketika melompat.']
+  },
+  pjEquipment: {
+    type: 'imageChoice',
+    instruction: 'Pilih alatan yang sesuai dan selamat.',
+    curriculum: 'Memilih alatan ringan yang sesuai untuk kemahiran manipulasi Tahun 2.',
+    assessment: 'Pilihan ringkas membezakan alatan sasaran daripada alatan yang tidak sesuai untuk kemahiran tersebut.',
+    textbook: 'Simbol dan label alatan membantu murid menghubungkan tindakan dengan penggunaan alatan yang selamat.',
+    skillId: 'manipulasi_alatan.pemilihan_selamat',
+    responseMode: 'visual_selection',
+    conceptTags: ['manipulasi_alatan', 'pemilihan_alatan', 'keselamatan'],
+    misconceptionTags: ['memilih_alatan_tidak_sesuai', 'mengabaikan_ciri_pergerakan'],
+    hintSteps: ['Bayangkan cara alatan itu perlu bergerak.', 'Singkirkan alatan yang tidak boleh digunakan untuk tindakan tersebut.', 'Pilih alatan ringan yang paling sesuai dan selamat.']
+  },
+  pjSportsmanship: {
+    type: 'choice',
+    instruction: 'Pilih tindakan yang menunjukkan semangat kesukanan.',
+    curriculum: 'Mengamalkan penerimaan keputusan dan tingkah laku positif dalam permainan mudah.',
+    assessment: 'Satu tindakan berhemah dibezakan daripada tiga reaksi negatif selepas kekalahan.',
+    textbook: 'Situasi permainan diikuti tindakan ringkas yang boleh diamalkan dalam kehidupan sebenar.',
+    skillId: 'permainan_mudah.semangat_kesukanan',
+    responseMode: 'choice_selection',
+    conceptTags: ['semangat_kesukanan', 'kawalan_diri', 'hormat'],
+    misconceptionTags: ['menyalahkan_rakan', 'bertindak_agresif_apabila_kalah'],
+    hintSteps: ['Fikir perasaan semua ahli pasukan.', 'Singkirkan tindakan yang menyakiti atau menyalahkan orang lain.', 'Pilih tindakan yang menerima keputusan dengan tenang.']
+  },
+  pkLifestyle: {
+    type: 'choice',
+    instruction: 'Pilih amalan gaya hidup yang paling sesuai.',
+    curriculum: 'Mengaplikasikan amalan rehat, aktiviti, kebersihan dan tanggungjawab yang sihat dalam rutin harian.',
+    assessment: 'Situasi baharu digunakan supaya murid memilih amalan berdasarkan tujuan, bukan menyalin kata daripada soalan.',
+    textbook: 'Ayat situasi pendek dan pilihan tindakan ringkas mengurangkan beban bacaan tanpa mengubah hasil pembelajaran.',
+    skillId: 'gaya_hidup_sihat.amalan_harian',
+    responseMode: 'choice_selection',
+    conceptTags: ['gaya_hidup_sihat', 'rutin_harian', 'penjagaan_diri'],
+    misconceptionTags: ['memilih_tabiat_tidak_sihat', 'tidak_memadankan_amalan_dengan_tujuan'],
+    hintSteps: ['Kenal pasti tujuan kesihatan dalam situasi itu.', 'Bandingkan kesan setiap pilihan terhadap diri dan orang di sekeliling.', 'Pilih amalan yang selamat, seimbang dan boleh dibuat setiap hari.']
+  },
+  pkSafety: {
+    type: 'choice',
+    instruction: 'Pilih tindakan yang paling selamat.',
+    curriculum: 'Membuat keputusan selamat dan mendapatkan bantuan orang dewasa yang dipercayai.',
+    assessment: 'Satu tindakan perlindungan diri dibezakan daripada tindakan berisiko atau meninggalkan kawasan tanpa bantuan.',
+    textbook: 'Situasi sekolah yang mudah membantu murid menghubungkan peraturan dengan tindakan sebenar.',
+    skillId: 'keselamatan_diri.keputusan_selamat',
+    responseMode: 'choice_selection',
+    conceptTags: ['keselamatan_diri', 'orang_dewasa_dipercayai', 'membuat_keputusan'],
+    misconceptionTags: ['bertindak_sendirian', 'mengambil_risiko_untuk_keluar'],
+    hintSteps: ['Jangan lakukan perkara yang boleh mencederakan diri.', 'Cari orang dewasa yang bertugas di sekolah.', 'Pilih tindakan menunggu bantuan di tempat yang selamat.']
+  },
+  pkEmotion: {
+    type: 'imageChoice',
+    instruction: 'Pilih emosi yang paling sesuai dengan situasi.',
+    curriculum: 'Mengenal pasti emosi berdasarkan petunjuk situasi, tingkah laku dan reaksi tubuh.',
+    assessment: 'Stem tidak menyebut nama emosi jawapan; murid membuat inferens daripada petunjuk yang diberi.',
+    textbook: 'Simbol wajah dan label emosi menyokong pengenalan perasaan secara jelas dan aksesibel.',
+    skillId: 'kesihatan_mental_emosi.mengenal_emosi',
+    responseMode: 'visual_selection',
+    conceptTags: ['emosi', 'petunjuk_situasi', 'kesedaran_diri'],
+    misconceptionTags: ['keliru_emosi_hampir', 'mengabaikan_petunjuk_tingkah_laku'],
+    hintSteps: ['Perhatikan apa yang berlaku kepada watak.', 'Cari petunjuk pada wajah, tubuh atau fikirannya.', 'Pilih nama emosi yang paling tepat, bukan sekadar emosi yang mungkin berlaku.']
+  },
+  bmLanguage: {
+    type: 'choice',
+    instruction: 'Pilih jawapan yang melengkapkan maksud ayat.',
+    curriculum: 'Mengaplikasikan tatabahasa, kosa kata, jenis ayat dan tanda baca Bahasa Melayu Tahun 2 dalam konteks mudah.',
+    assessment: 'Tiga pilihan dalam kategori yang sama digunakan; hanya satu menepati bentuk dan maksud ayat.',
+    textbook: 'Ayat rangsangan dipendekkan tanpa membuang konteks penting supaya murid menilai bahasa, bukan beban bacaan.',
+    skillId: 'bahasa_melayu.aplikasi_bahasa',
+    responseMode: 'choice_selection',
+    conceptTags: ['bahasa_melayu', 'tatabahasa', 'konteks_ayat'],
+    misconceptionTags: ['memilih_berdasarkan_kata_kunci', 'mengabaikan_maksud_keseluruhan_ayat'],
+    hintSteps: ['Baca ayat penuh sekali lagi.', 'Kenal pasti perkara bahasa yang sedang diuji.', 'Cuba setiap pilihan dan pilih satu yang menghasilkan maksud paling tepat.']
+  },
+  mathCore: {
+    type: 'choice',
+    instruction: 'Selesaikan dan pilih jawapan yang tepat.',
+    curriculum: 'Mengaplikasikan nombor, operasi, wang, masa, ukuran dan bentuk Matematik Tahun 2.',
+    assessment: 'Satu jawapan tepat dan dua distraktor diagnostik digunakan untuk mengesan kesilapan nilai tempat, operasi atau unit.',
+    textbook: 'Nombor, simbol dan unit dipaparkan secara ringkas supaya langkah pengiraan serta konsep kekal jelas.',
+    skillId: 'matematik.aplikasi_konsep_asas',
+    responseMode: 'choice_selection',
+    conceptTags: ['matematik', 'penyelesaian_masalah', 'ketepatan'],
+    misconceptionTags: ['tersalah_operasi_atau_nilai_tempat', 'memilih_unit_tidak_sesuai'],
+    hintSteps: ['Kenal pasti nombor, operasi atau unit yang diberi.', 'Selesaikan satu langkah pada satu masa.', 'Semak jawapan dengan anggaran atau fakta asas sebelum memilih.']
+  },
+  scienceConcept: {
+    type: 'imageChoice',
+    instruction: 'Pilih gambar dan label yang sepadan dengan fakta sains.',
+    curriculum: 'Menghubungkan objek, deria, bahan dan fenomena harian dengan konsep Sains Tahun 2 yang tepat.',
+    assessment: 'Tiga pilihan visual membezakan konsep sasaran daripada salah faham lazim dalam topik yang sama.',
+    textbook: 'Simbol visual sentiasa disertai label supaya fakta sains boleh dibaca, dilihat dan dibandingkan dengan jelas.',
+    skillId: 'sains.hubungan_objek_dan_fakta',
+    responseMode: 'visual_selection',
+    conceptTags: ['sains', 'pemerhatian', 'hubungan_fungsi'],
+    misconceptionTags: ['keliru_fungsi_atau_sifat', 'memilih_berdasarkan_gambar_sahaja'],
+    hintSteps: ['Perhatikan objek atau situasi dalam soalan.', 'Fikir fungsi, sifat atau perubahan yang berlaku.', 'Bandingkan label pada setiap gambar sebelum memilih.']
+  }
+});
+
+const REVIEWED_CHOICE_BATCH_2 = Object.freeze({
+  'PJ-LOKOMOTOR-039': { domain: 'pjBodyControl', prompt: 'Anggota badan manakah menampung berat dan menolak tubuh ke atas ketika melompat?', options: [['kaki', 'Kaki', '🦶'], ['tangan', 'Tangan', '✋'], ['kepala', 'Kepala', '🙂'], ['telinga', 'Telinga', '👂']] },
+  'PJ-MANIPULASI_ALATAN-002': { domain: 'pjEquipment', prompt: 'Apakah alatan yang selamat untuk latihan membaling ke sasaran?', options: [['bola', 'Bola lembut', '⚽'], ['gelung', 'Gelung', '⭕'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-007': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai untuk latihan menangkap dengan dua tangan?', options: [['bola', 'Bola lembut', '⚽'], ['gelung', 'Gelung', '⭕'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-012': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai ditendang ke arah kon?', options: [['gelung', 'Gelung', '⭕'], ['bola', 'Bola', '⚽'], ['tali', 'Tali', '➰']] },
+  'PJ-MANIPULASI_ALATAN-017': { domain: 'pjEquipment', prompt: 'Apakah alatan bulat yang sesuai digolek kepada rakan?', options: [['bola', 'Bola', '⚽'], ['skital', 'Skital', '🔺'], ['tali', 'Tali', '➰']] },
+  'PJ-MANIPULASI_ALATAN-022': { domain: 'pjEquipment', prompt: 'Apakah alatan yang boleh dilantun perlahan dengan tangan?', options: [['pundi kacang', 'Pundi kacang', '🫘'], ['bola', 'Bola', '🏀'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-027': { domain: 'pjEquipment', prompt: 'Apakah alatan ringan yang selamat dipukul dengan tapak tangan?', options: [['skital', 'Skital', '🔺'], ['belon', 'Belon', '🎈'], ['pundi kacang', 'Pundi kacang', '🫘']] },
+  'PJ-MANIPULASI_ALATAN-032': { domain: 'pjEquipment', prompt: 'Apakah alatan kecil berisi kacang yang sesuai disambut dengan dua tangan?', options: [['bola', 'Bola', '⚽'], ['pundi kacang', 'Pundi kacang', '🫘'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-037': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai dilambung perlahan ke atas dan disambut semula?', options: [['bola', 'Bola kecil', '⚾'], ['skital', 'Skital', '🔺'], ['gelung', 'Gelung', '⭕']] },
+  'PJ-MANIPULASI_ALATAN-042': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai dihantar kepada rakan dalam permainan berpasangan?', options: [['tali', 'Tali', '➰'], ['bola', 'Bola', '⚽'], ['skital', 'Skital', '🔺']] },
+  'PJ-MANIPULASI_ALATAN-047': { domain: 'pjEquipment', prompt: 'Apakah alatan yang sesuai disepak perlahan ke sasaran?', options: [['gelung', 'Gelung', '⭕'], ['tali', 'Tali', '➰'], ['bola', 'Bola', '⚽']] },
+  'PJ-PERMAINAN_MUDAH-049': { domain: 'pjSportsmanship', prompt: 'Pasukan kamu kalah dalam permainan ambil dan hantar. Apakah tindakan yang baik?', options: [['menyalahkan rakan', 'Menyalahkan rakan'], ['terima keputusan dengan baik', 'Menerima keputusan dengan baik'], ['membuang alat', 'Membuang alatan'], ['menolak rakan', 'Menolak rakan']] },
+  'PK-GAYA_HIDUP_SIHAT-002': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang membantu badan cukup rehat sebelum hari persekolahan?', options: [['tidur terlalu lewat', 'Tidur terlalu lewat'], ['tidur awal pada malam persekolahan', 'Tidur awal pada malam persekolahan'], ['bermain permainan video hingga lewat', 'Bermain permainan video hingga lewat']] },
+  'PK-GAYA_HIDUP_SIHAT-007': { domain: 'pkLifestyle', prompt: 'Apakah cara yang sesuai untuk murid aktif di luar rumah?', options: [['bermain di jalan raya', 'Bermain di jalan raya'], ['bermain di luar rumah pada waktu sesuai', 'Bermain pada waktu yang sesuai'], ['bermain ketika cuaca terlalu panas', 'Bermain ketika cuaca terlalu panas']] },
+  'PK-GAYA_HIDUP_SIHAT-012': { domain: 'pkLifestyle', prompt: 'Mata Aiman penat selepas menggunakan tablet. Apakah amalan yang patut dilakukan setiap hari?', options: [['menambah masa skrin', 'Menambah masa skrin'], ['menonton tanpa rehat', 'Menonton tanpa rehat'], ['mengurangkan masa skrin', 'Mengurangkan masa skrin']] },
+  'PK-GAYA_HIDUP_SIHAT-017': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang membantu badan kekal cukup air setiap hari?', options: [['minum air kosong setiap hari', 'Minum air kosong setiap hari'], ['minum minuman bergas sahaja', 'Minum minuman bergas sahaja'], ['menunggu sehingga terlalu dahaga', 'Menunggu sehingga terlalu dahaga']] },
+  'PK-GAYA_HIDUP_SIHAT-022': { domain: 'pkLifestyle', prompt: 'Keluarga Hana mahu aktif bersama pada hujung minggu. Apakah amalan yang sesuai?', options: [['tidur sepanjang petang', 'Tidur sepanjang petang'], ['bersenam bersama keluarga', 'Bersenam bersama keluarga'], ['duduk menonton sepanjang hari', 'Duduk menonton sepanjang hari']] },
+  'PK-GAYA_HIDUP_SIHAT-024': { domain: 'pkLifestyle', prompt: 'Siapakah yang paling sesuai membimbing dan menggalakkan aktiviti sihat di rumah?', options: [['orang tidak dikenali', 'Orang tidak dikenali'], ['penjual mainan', 'Penjual mainan'], ['keluarga', 'Keluarga']] },
+  'PK-GAYA_HIDUP_SIHAT-027': { domain: 'pkLifestyle', prompt: 'Apakah amalan pemakanan yang membekalkan pelbagai nutrien kepada badan?', options: [['makan makanan seimbang', 'Makan makanan seimbang'], ['makan jajan setiap masa', 'Makan jajan setiap masa'], ['melangkau sarapan setiap hari', 'Melangkau sarapan setiap hari']] },
+  'PK-GAYA_HIDUP_SIHAT-032': { domain: 'pkLifestyle', prompt: 'Habuk mula terkumpul di tempat tidur. Apakah amalan yang patut dilakukan?', options: [['menyimpan sampah di bawah katil', 'Menyimpan sampah di bawah katil'], ['menjaga kebersihan bilik tidur', 'Menjaga kebersihan bilik tidur'], ['membiarkan habuk terkumpul', 'Membiarkan habuk terkumpul']] },
+  'PK-GAYA_HIDUP_SIHAT-037': { domain: 'pkLifestyle', prompt: 'Apakah amalan yang mengurangkan risiko kecederaan ketika bermain?', options: [['bermain dengan selamat', 'Bermain dengan selamat'], ['menolak rakan ketika berlari', 'Menolak rakan ketika berlari'], ['berlari di lantai yang licin', 'Berlari di lantai yang licin']] },
+  'PK-GAYA_HIDUP_SIHAT-042': { domain: 'pkLifestyle', prompt: 'Farid mula berasa marah. Apakah amalan yang paling baik?', options: [['menjerit kepada rakan', 'Menjerit kepada rakan'], ['mengurus marah dengan tenang', 'Mengurus marah dengan tenang'], ['memukul barang berhampiran', 'Memukul barang berhampiran']] },
+  'PK-GAYA_HIDUP_SIHAT-047': { domain: 'pkLifestyle', prompt: 'Apakah tanggungjawab yang sesuai dilakukan oleh murid di rumah?', options: [['membuat kerja yang terlalu berat', 'Membuat kerja yang terlalu berat'], ['membantu kerja ringan di rumah', 'Membantu kerja ringan di rumah'], ['membiarkan semua kerja kepada orang lain', 'Membiarkan semua kerja kepada orang lain']] },
+  'PK-KESELAMATAN_DIRI-031': { domain: 'pkSafety', prompt: 'Pintu pagar sekolah sudah ditutup ketika kamu mahu keluar. Apakah tindakan paling selamat?', options: [['memanjat pagar', 'Memanjat pagar'], ['tunggu guru atau pengawal', 'Menunggu guru atau pengawal'], ['keluar melalui tempat tersembunyi', 'Keluar melalui tempat tersembunyi']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-002': { domain: 'pkEmotion', prompt: 'Amir sangat berharap pasukannya menang, tetapi pasukannya kalah. Apakah emosi yang paling sesuai?', options: [['kecewa', 'Kecewa', '😞'], ['marah', 'Marah', '😠'], ['gembira', 'Gembira', '😀'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-007': { domain: 'pkEmotion', prompt: 'Mainan Aina diambil tanpa izin. Dia berasa tidak puas hati dan mukanya tegang. Apakah emosinya?', options: [['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-012': { domain: 'pkEmotion', prompt: 'Hakim membuat persembahan buat kali pertama. Tangannya menggigil dan dia mahu berundur. Apakah emosinya?', options: [['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-017': { domain: 'pkEmotion', prompt: 'Siti ditegur guru. Wajahnya muram dan dia hampir menangis. Apakah emosinya?', options: [['marah', 'Marah', '😠'], ['sedih', 'Sedih', '😢'], ['gembira', 'Gembira', '😀'], ['takut', 'Takut', '😨']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-022': { domain: 'pkEmotion', prompt: 'Mira menerima pujian atas hasil kerjanya lalu tersenyum lebar. Apakah emosinya?', options: [['takut', 'Takut', '😨'], ['sedih', 'Sedih', '😢'], ['gembira', 'Gembira', '😀'], ['marah', 'Marah', '😠']] },
+  'PK-KESIHATAN_MENTAL_EMOSI-027': { domain: 'pkEmotion', prompt: 'Esok ada ujian dan Adam asyik memikirkannya. Apakah emosi yang paling sesuai?', options: [['marah', 'Marah', '😠'], ['risau', 'Risau', '😟'], ['gembira', 'Gembira', '😀'], ['sedih', 'Sedih', '😢']] }
+});
+
+const REVIEWED_CHOICE_BATCH_3 = Object.freeze({
+  'BM-KATA_NAMA_KHAS-003': { domain: 'bmLanguage', skillId: 'kata_nama_khas.mengenal_tempat', concept: 'kata_nama_khas', prompt: 'Semasa cuti, keluarga Aina melawat Zoo Negara. Yang manakah kata nama khas bagi tempat?', options: [['Zoo Negara', 'Zoo Negara'], ['keluarga', 'Keluarga'], ['haiwan', 'Haiwan']] },
+  'BM-KATA_GANTI_NAMA-001': { domain: 'bmLanguage', skillId: 'kata_ganti_nama.diri_pertama', concept: 'kata_ganti_nama', prompt: 'Aina bercakap tentang dirinya: “____ sedang menyiapkan kerja sekolah.”', options: [['Saya', 'Saya'], ['Kamu', 'Kamu'], ['Mereka', 'Mereka']] },
+  'BM-KATA_KERJA-002': { domain: 'bmLanguage', skillId: 'kata_kerja.mengenal_perbuatan', concept: 'kata_kerja', prompt: 'Ibu memasak lauk di dapur. Perkataan manakah menunjukkan perbuatan?', options: [['memasak', 'Memasak'], ['ibu', 'Ibu'], ['dapur', 'Dapur']] },
+  'BM-KATA_ADJEKTIF-003': { domain: 'bmLanguage', skillId: 'kata_adjektif.mengenal_keadaan', concept: 'kata_adjektif', prompt: 'Air teh itu masih panas. Perkataan manakah menerangkan keadaan air teh?', options: [['teh', 'Teh'], ['panas', 'Panas'], ['kantin', 'Kantin']] },
+  'BM-KATA_HUBUNG-002': { domain: 'bmLanguage', skillId: 'kata_hubung.hubungan_pertentangan', concept: 'kata_hubung', prompt: 'Amir hendak bermain bola, ____ hujan mula turun.', options: [['sambil', 'Sambil'], ['tetapi', 'Tetapi'], ['supaya', 'Supaya']] },
+  'BM-PENJODOH_BILANGAN-004': { domain: 'bmLanguage', skillId: 'penjodoh_bilangan.benda_nipis', concept: 'penjodoh_bilangan', prompt: 'Pilih penjodoh bilangan yang sesuai: se____ baju sekolah.', options: [['batang', 'Batang'], ['helai', 'Helai'], ['ekor', 'Ekor']] },
+  'BM-AYAT-002': { domain: 'bmLanguage', skillId: 'jenis_ayat.mengenal_seruan', concept: 'ayat_seruan', prompt: '“Wah, cantiknya lukisan kamu!” ialah jenis ayat apa?', options: [['Ayat tanya', 'Ayat tanya'], ['Ayat perintah', 'Ayat perintah'], ['Ayat seruan', 'Ayat seruan']] },
+  'BM-TATABAHASA-003': { domain: 'bmLanguage', skillId: 'kata_sendi.arah_ke', concept: 'kata_sendi', prompt: 'Murid-murid berjalan ____ perpustakaan selepas loceng berbunyi.', options: [['di', 'Di'], ['dari', 'Dari'], ['ke', 'Ke']] },
+  'BM-SIMPULAN_BAHASA-002': { domain: 'bmLanguage', skillId: 'simpulan_bahasa.memahami_kaki_ayam', concept: 'simpulan_bahasa', prompt: 'Amir bermain di halaman dengan “kaki ayam”. Apakah maksud simpulan bahasa itu?', options: [['berjalan perlahan', 'Berjalan perlahan'], ['tidak memakai kasut', 'Tidak memakai kasut'], ['suka makan ayam', 'Suka makan ayam']] },
+  'BM-PENTAKSIRAN-SUMATIF-004': { domain: 'bmLanguage', skillId: 'tanda_baca.ayat_tanya', concept: 'tanda_soal', prompt: 'Tanda baca manakah melengkapkan ayat “Di manakah buku saya___”', options: [['.', 'Noktah (.)'], ['?', 'Tanda soal (?)'], ['!', 'Tanda seru (!)']] },
+  'MATH-NOMBOR-PILOT-003': { domain: 'mathCore', skillId: 'nombor.nilai_tempat_ratus', concept: 'nilai_tempat', prompt: 'Apakah digit pada tempat ratus dalam nombor 582?', options: [['8', '8'], ['5', '5'], ['2', '2']] },
+  'MATH-TAMBAH-PILOT-001': { domain: 'mathCore', skillId: 'tambah.dua_digit_tanpa_mengumpul_semula', concept: 'tambah', prompt: 'Berapakah jumlah 23 + 14?', options: [['27', '27'], ['47', '47'], ['37', '37']] },
+  'MATH-TOLAK-PILOT-001': { domain: 'mathCore', skillId: 'tolak.dua_digit_tanpa_mengumpul_semula', concept: 'tolak', prompt: 'Hitung 47 − 12.', options: [['35', '35'], ['45', '45'], ['59', '59']] },
+  'MATH-DARAB-PILOT-001': { domain: 'mathCore', skillId: 'darab.fakta_asas_dua', concept: 'darab', prompt: 'Dua kumpulan mempunyai 3 objek setiap satu. Berapakah 2 × 3?', options: [['5', '5'], ['6', '6'], ['8', '8']] },
+  'MATH-BAHAGI-PILOT-002': { domain: 'mathCore', skillId: 'bahagi.kongsi_sama_rata', concept: 'bahagi', prompt: '15 objek dikongsi sama rata kepada 3 kumpulan. Berapakah setiap kumpulan?', options: [['3', '3'], ['5', '5'], ['12', '12']] },
+  'MATH-WANG-PILOT-005': { domain: 'mathCore', skillId: 'wang.menjumlah_syiling', concept: 'wang', prompt: 'Dua syiling 20 sen dan satu syiling 10 sen berjumlah berapa?', options: [['40 sen', '40 sen'], ['60 sen', '60 sen'], ['50 sen', '50 sen']] },
+  'MATH-MASA-PILOT-004': { domain: 'mathCore', skillId: 'masa.hubungan_jam_minit', concept: 'masa', prompt: 'Lengkapkan hubungan: 1 jam = ____ minit.', options: [['30', '30 minit'], ['60', '60 minit'], ['100', '100 minit']] },
+  'MATH-PANJANG-PILOT-001': { domain: 'mathCore', skillId: 'panjang.memilih_unit_sentimeter', concept: 'panjang', prompt: 'Unit manakah paling sesuai untuk mengukur panjang sebatang pensel?', options: [['sentimeter', 'Sentimeter (cm)'], ['meter', 'Meter (m)'], ['kilogram', 'Kilogram (kg)']] },
+  'MATH-JISIM-ISI-PADU-PILOT-001': { domain: 'mathCore', skillId: 'jisim.memilih_unit_gram', concept: 'jisim', prompt: 'Unit manakah paling sesuai untuk mengukur jisim sebiji pemadam?', options: [['liter', 'Liter (L)'], ['gram', 'Gram (g)'], ['meter', 'Meter (m)']] },
+  'MATH-BENTUK-PILOT-002': { domain: 'mathCore', skillId: 'bentuk.ciri_segi_empat_sama', concept: 'bentuk_2d', prompt: 'Apakah ciri sisi bagi segi empat sama?', options: [['dua sisi sama panjang', 'Dua sisi sama panjang'], ['semua sisi berlainan panjang', 'Semua sisi berlainan panjang'], ['semua sisi sama panjang', 'Semua sisi sama panjang']] },
+  'SAINS-HAIWAN-002': { domain: 'scienceConcept', skillId: 'haiwan.habitat_ikan', concept: 'habitat', prompt: 'Habitat yang sesuai untuk ikan ialah ________.', options: [['darat', 'Darat', '🌱'], ['air', 'Air', '🌊'], ['sarang', 'Sarang', '🪹']] },
+  'SAINS-TUMBUHAN-002': { domain: 'scienceConcept', skillId: 'tumbuhan.fungsi_batang', concept: 'bahagian_tumbuhan', prompt: 'Fungsi utama batang ialah ________.', options: [['menyerap air', 'Menyerap air', '💧'], ['membuat makanan', 'Membuat makanan', '🍃'], ['menyokong tumbuhan', 'Menyokong tumbuhan', '🌿']] },
+  'SAINS-MANUSIA-001': { domain: 'scienceConcept', skillId: 'manusia.deria_penglihatan', concept: 'organ_deria', prompt: 'Mata ialah organ deria yang digunakan untuk ________.', options: [['mendengar', 'Mendengar', '👂'], ['melihat', 'Melihat', '👀'], ['menghidu', 'Menghidu', '👃']] },
+  'SAINS-AIR-006': { domain: 'scienceConcept', skillId: 'air.pembekuan', concept: 'perubahan_air', prompt: 'Apabila dibekukan, air berubah menjadi ________.', options: [['wap', 'Wap', '☁️'], ['ais', 'Ais', '🧊'], ['hujan', 'Hujan', '🌧️']] },
+  'SAINS-CAHAYA-001': { domain: 'scienceConcept', skillId: 'cahaya.sumber_semula_jadi', concept: 'sumber_cahaya', prompt: 'Matahari dikelaskan sebagai sumber cahaya ________.', options: [['buatan manusia', 'Buatan manusia', '💡'], ['pantulan', 'Pantulan', '🪞'], ['semula jadi', 'Semula jadi', '☀️']] },
+  'SAINS-BUNYI-001': { domain: 'scienceConcept', skillId: 'bunyi.sumber_bunyi', concept: 'bunyi', prompt: 'Apabila dibunyikan, loceng menghasilkan ________.', options: [['cahaya', 'Cahaya', '💡'], ['bunyi', 'Bunyi', '🔔'], ['air', 'Air', '💧']] },
+  'SAINS-BUMI-001': { domain: 'scienceConcept', skillId: 'bumi.bentuk_muka_tinggi', concept: 'bentuk_muka_bumi', prompt: 'Bentuk muka Bumi yang sangat tinggi dipanggil ________.', options: [['pantai', 'Pantai', '🏖️'], ['gunung', 'Gunung', '🏔️'], ['tasik', 'Tasik', '🏞️']] },
+  'SAINS-BAHAN-003': { domain: 'scienceConcept', skillId: 'bahan.sifat_getah', concept: 'sifat_bahan', prompt: 'Getah kembali kepada bentuk asal kerana bersifat ________.', options: [['keras', 'Keras', '🪨'], ['rapuh', 'Rapuh', '🧱'], ['kenyal', 'Kenyal', '↔️']] },
+  'SAINS-TEKNOLOGI-002': { domain: 'scienceConcept', skillId: 'teknologi.fungsi_pembaris', concept: 'fungsi_alat', prompt: 'Kegunaan utama pembaris ialah untuk ________.', options: [['memotong', 'Memotong', '✂️'], ['mengukur panjang', 'Mengukur panjang', '📏'], ['memadam', 'Memadam', '🧽']] },
+  'SAINS-KEMAHIRAN_SAINTIFIK-002': { domain: 'scienceConcept', skillId: 'kemahiran_saintifik.deria_bau', concept: 'pemerhatian_deria', prompt: 'Kita menggunakan hidung untuk ________ bau.', options: [['melihat', 'Melihat', '👀'], ['mendengar', 'Mendengar', '👂'], ['menghidu', 'Menghidu', '👃']] }
+});
+
+const REVIEWED_CHOICE_BATCHES = Object.freeze({
+  ...REVIEWED_CHOICE_BATCH_2,
+  ...REVIEWED_CHOICE_BATCH_3
+});
+
+function buildReviewedChoiceExample(spec = {}) {
+  const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
+  return {
+    interaction: {
+      version: 1,
+      type: domain.type,
+      instruction: domain.instruction,
+      prompt: spec.prompt,
+      options: spec.options.map(([value, label, symbol], index) => ({
+        id: `option-${index + 1}`,
+        label,
+        value,
+        ...(symbol ? { visual: { kind: 'object', symbol, label } } : {})
+      }))
+    },
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_CHOICE_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_CHOICE_BATCHES).map(([id, spec]) => [id, buildReviewedChoiceExample(spec)])
+);
+
+const REVIEWED_RICH_DOMAINS = Object.freeze({
+  bmSentenceOrdering: {
+    type: 'ordering',
+    instruction: 'Susun kad untuk membina ayat yang lengkap dan gramatis.',
+    responsePreviewLabel: 'Ayat kamu',
+    responseSeparator: ' ',
+    responseSuffix: '.',
+    curriculum: 'Membina ayat penyata Bahasa Melayu Tahun 2 dengan susunan subjek dan predikat yang gramatis.',
+    assessment: 'Semua frasa sumber dikekalkan dan hanya satu susunan menghasilkan ayat lengkap yang diterima oleh skema asal.',
+    textbook: 'Kad frasa memperlihatkan struktur ayat secara konkrit sebelum murid membaca semula ayat lengkap.',
+    skillId: 'bina_ayat.susunan_subjek_predikat',
+    responseMode: 'sequencing',
+    conceptTags: ['ayat_penyata', 'susunan_ayat', 'subjek_dan_predikat'],
+    misconceptionTags: ['susunan_frasa_tidak_gramatis', 'keterangan_diletakkan_tidak_tepat'],
+    hintSteps: ['Cari frasa yang menunjukkan siapa dahulu.', 'Letakkan perbuatan selepas pelaku.', 'Akhiri dengan objek atau keterangan tempat dan baca semula ayat.']
+  },
+  mathNumberOrdering: {
+    type: 'ordering',
+    instruction: 'Bandingkan nilai tempat, kemudian susun semua kad nombor mengikut arahan.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Menyusun nombor hingga 1,000 secara menaik atau menurun berdasarkan nilai tempat.',
+    assessment: 'Nombor berkongsi digit yang hampir sama supaya susunan mengukur kefahaman nilai tempat, bukan rupa digit semata-mata.',
+    textbook: 'Kad nombor membolehkan murid membanding ratus, puluh dan sa satu langkah pada satu masa.',
+    skillId: 'nombor.menyusun_nilai',
+    responseMode: 'sequencing',
+    conceptTags: ['nilai_tempat', 'tertib_nombor', 'perbandingan'],
+    misconceptionTags: ['membanding_digit_dari_kanan', 'keliru_tertib_menaik_dan_menurun'],
+    hintSteps: ['Semak sama ada soalan meminta tertib menaik atau menurun.', 'Bandingkan digit ratus dahulu, kemudian puluh dan sa.', 'Baca keseluruhan susunan sekali lagi sebelum menghantar.']
+  },
+  mathOperationOrdering: {
+    type: 'ordering',
+    instruction: 'Kira setiap operasi, kemudian susun kad mengikut nilai hasilnya.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Mengaplikasikan fakta operasi Matematik Tahun 2 untuk membanding dan menyusun hasil pengiraan.',
+    assessment: 'Setiap kad memerlukan pengiraan sebelum perbandingan; jawapan tersusun diserialkan tepat kepada skema asal.',
+    textbook: 'Operasi kekal kelihatan pada kad manakala respons tersimpan mengandungi operasi dan hasil untuk semakan yang jelas.',
+    skillId: 'operasi.menyusun_hasil',
+    responseMode: 'calculation_sequencing',
+    conceptTags: ['operasi_asas', 'perbandingan_hasil', 'tertib_nilai'],
+    misconceptionTags: ['menyusun_operan_bukan_hasil', 'kesilapan_fakta_asas'],
+    hintSteps: ['Selesaikan setiap operasi secara berasingan.', 'Catat atau ingat hasil bagi setiap kad.', 'Susun berdasarkan hasil, bukan nombor pertama pada operasi.']
+  },
+  mathTimeOrdering: {
+    type: 'ordering',
+    instruction: 'Bandingkan urutan atau tempoh masa, kemudian susun semua kad.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Menyusun hari dan tempoh masa mengikut urutan serta panjang tempoh yang betul.',
+    assessment: 'Semua pilihan menggunakan unit masa lazim dan memerlukan satu urutan lengkap tanpa item tertinggal.',
+    textbook: 'Kad masa menyokong perbandingan berperingkat dan mengekalkan unit pada setiap nilai.',
+    skillId: 'masa.menyusun_urutan_dan_tempoh',
+    responseMode: 'time_sequencing',
+    conceptTags: ['masa', 'urutan_hari', 'perbandingan_tempoh'],
+    misconceptionTags: ['keliru_urutan_hari', 'tidak_menukar_jam_kepada_minit'],
+    hintSteps: ['Kenal pasti sama ada kad menunjukkan hari atau tempoh.', 'Gunakan urutan minggu atau tukar tempoh kepada unit yang sama.', 'Susun daripada awal ke akhir atau singkat ke lama seperti diminta.']
+  },
+  mathQuantityOrdering: {
+    type: 'ordering',
+    instruction: 'Samakan unit jika perlu, kemudian susun semua kad mengikut nilai.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Membanding dan menyusun nilai wang, panjang, jisim dan isi padu dalam unit yang sesuai.',
+    assessment: 'Nilai bercampur unit memerlukan penukaran tepat sebelum susunan dan respons akhir kekal serasi dengan skema asal.',
+    textbook: 'Label asal dikekalkan pada kad, manakala bentuk unit setara digunakan untuk semakan jawapan yang konsisten.',
+    skillId: 'ukuran.menyusun_kuantiti',
+    responseMode: 'measurement_sequencing',
+    conceptTags: ['ukuran', 'penukaran_unit', 'perbandingan_kuantiti'],
+    misconceptionTags: ['membanding_angka_tanpa_unit', 'tersalah_penukaran_unit'],
+    hintSteps: ['Perhatikan unit pada setiap kad.', 'Tukar semua nilai kepada unit yang sama.', 'Bandingkan nilai setara lalu susun mengikut arahan.']
+  },
+  mathShapeOrdering: {
+    type: 'ordering',
+    instruction: 'Kira sisi lurus setiap bentuk, kemudian susun daripada paling sedikit.',
+    responsePreviewLabel: 'Susunan kamu',
+    responseSeparator: ', ',
+    curriculum: 'Membanding bentuk 2D berdasarkan bilangan sisi lurus.',
+    assessment: 'Tiga bentuk mempunyai bilangan sisi berlainan dan hanya satu susunan menaik yang tepat.',
+    textbook: 'Nama bentuk pada kad menghubungkan ciri visual yang telah dipelajari dengan bilangan sisi.',
+    skillId: 'bentuk.menyusun_bilangan_sisi',
+    responseMode: 'property_sequencing',
+    conceptTags: ['bentuk_2d', 'bilangan_sisi', 'susunan'],
+    misconceptionTags: ['mengira_garis_lengkung_sebagai_sisi', 'keliru_sisi_dan_bucu'],
+    hintSteps: ['Bayangkan atau lukis setiap bentuk.', 'Kira hanya sisi lurus pada sempadannya.', 'Letakkan bentuk tanpa sisi lurus dahulu.']
+  },
+  mathNumberMultiSelect: {
+    type: 'multiSelect',
+    instruction: 'Pilih semua nombor yang memenuhi kedua-dua syarat. Lebih daripada satu jawapan diperlukan.',
+    curriculum: 'Menganalisis nilai tempat ratus serta jumlah digit puluh dan sa bagi nombor hingga 1,000.',
+    assessment: 'Lima nombor calon mengandungi tiga jawapan diterima dan dua distraktor diagnostik; kedua-dua syarat mesti dipenuhi.',
+    textbook: 'Nombor disemak satu demi satu menggunakan dua syarat yang dinyatakan dengan jelas.',
+    skillId: 'nombor.menapis_dua_syarat',
+    responseMode: 'multiple_selection',
+    conceptTags: ['nilai_tempat', 'jumlah_digit', 'pelbagai_jawapan'],
+    misconceptionTags: ['menyemak_satu_syarat_sahaja', 'memilih_satu_jawapan_sahaja'],
+    hintSteps: ['Semak dahulu digit pada tempat ratus.', 'Bagi nombor yang mempunyai 7 ratus, tambah digit puluh dan sa.', 'Pilih semua nombor yang lulus kedua-dua semakan.']
+  }
+});
+
+const REVIEWED_RICH_BATCH_4 = Object.freeze({
+  'BM-BINA_AYAT-022': { domain: 'bmSentenceOrdering', items: [['place', 'di kantin'], ['subject', 'Murid-murid'], ['verb', 'beratur']], correctOrder: ['subject', 'verb', 'place'] },
+  'BM-BINA_AYAT-023': { domain: 'bmSentenceOrdering', items: [['object', 'lantai'], ['subject', 'Ibu'], ['verb', 'menyapu'], ['place', 'dapur']], correctOrder: ['subject', 'verb', 'object', 'place'] },
+  'BM-TATABAHASA-049': { domain: 'bmSentenceOrdering', skillId: 'tatabahasa.membina_ayat_gramatis', items: [['place', 'di perpustakaan'], ['verb', 'membaca'], ['subject', 'Aina'], ['object', 'buku']], correctOrder: ['subject', 'verb', 'object', 'place'] },
+  'BM-PENTAKSIRAN-SUMATIF-018': { domain: 'bmSentenceOrdering', skillId: 'pentaksiran.membina_ayat_gramatis', items: [['place', 'di taman'], ['predicate', 'bermain bola'], ['subject', 'Kanak-kanak']], correctOrder: ['subject', 'predicate', 'place'] },
+  'MATH-NOMBOR-PILOT-015': { domain: 'mathNumberOrdering', items: [['318', '318'], ['381', '381'], ['183', '183']], correctOrder: ['183', '318', '381'] },
+  'MATH-NOMBOR-PILOT-016': { domain: 'mathNumberOrdering', items: [['720', '720'], ['702', '702'], ['270', '270']], correctOrder: ['720', '702', '270'] },
+  'MATH-NOMBOR-PILOT-028': { domain: 'mathNumberOrdering', items: [['405', '405'], ['450', '450'], ['540', '540'], ['504', '504']], correctOrder: ['405', '450', '504', '540'] },
+  'MATH-NOMBOR-PILOT-042': { domain: 'mathNumberOrdering', items: [['275', '275'], ['257', '257'], ['527', '527']], correctOrder: ['257', '275', '527'] },
+  'MATH-TAMBAH-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'tambah.menyusun_jumlah', concept: 'tambah', items: [['sum-375', '125 + 250', '125 + 250 = 375'], ['sum-388', '316 + 72', '316 + 72 = 388'], ['sum-367', '204 + 163', '204 + 163 = 367']], correctOrder: ['sum-367', 'sum-375', 'sum-388'] },
+  'MATH-TOLAK-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'tolak.menyusun_baki', concept: 'tolak', items: [['difference-316', '388 − 72', '388 - 72 = 316'], ['difference-125', '375 − 250', '375 - 250 = 125'], ['difference-204', '367 − 163', '367 - 163 = 204']], correctOrder: ['difference-125', 'difference-204', 'difference-316'] },
+  'MATH-DARAB-PILOT-047': { domain: 'mathOperationOrdering', skillId: 'darab.menyusun_hasil_darab', concept: 'darab', items: [['product-25', '5 × 5', '5 x 5 = 25'], ['product-32', '4 × 8', '4 x 8 = 32'], ['product-27', '3 × 9', '3 x 9 = 27']], correctOrder: ['product-25', 'product-27', 'product-32'] },
+  'MATH-BAHAGI-PILOT-040': { domain: 'mathOperationOrdering', skillId: 'bahagi.menyusun_hasil_bahagi', concept: 'bahagi', items: [['quotient-6', '54 ÷ 9', '54 ÷ 9 = 6'], ['quotient-4', '24 ÷ 6', '24 ÷ 6 = 4'], ['quotient-5', '35 ÷ 7', '35 ÷ 7 = 5']], correctOrder: ['quotient-4', 'quotient-5', 'quotient-6'] },
+  'MATH-WANG-PILOT-041': { domain: 'mathQuantityOrdering', skillId: 'wang.menyusun_nilai', concept: 'wang', items: [['350', 'RM 3.50'], ['305', 'RM 3.05'], ['325', 'RM 3.25']], correctOrder: ['305', '325', '350'] },
+  'MATH-MASA-PILOT-018': { domain: 'mathTimeOrdering', skillId: 'masa.menyusun_hari', concept: 'urutan_hari', items: [['monday', 'Isnin'], ['wednesday', 'Rabu'], ['tuesday', 'Selasa']], correctOrder: ['monday', 'tuesday', 'wednesday'] },
+  'MATH-MASA-PILOT-041': { domain: 'mathTimeOrdering', skillId: 'masa.menyusun_tempoh', concept: 'tempoh', items: [['30m', '30 minit'], ['60m', '1 jam'], ['45m', '45 minit']], correctOrder: ['30m', '45m', '60m'] },
+  'MATH-PANJANG-PILOT-040': { domain: 'mathQuantityOrdering', skillId: 'panjang.menyusun_unit_bercampur', concept: 'panjang', items: [['90cm', '90 cm'], ['105cm', '1 m 5 cm', '105 cm'], ['80cm', '80 cm']], correctOrder: ['80cm', '90cm', '105cm'] },
+  'MATH-JISIM-ISI-PADU-PILOT-040': { domain: 'mathQuantityOrdering', skillId: 'jisim.menyusun_unit_bercampur', concept: 'jisim', items: [['900g', '900 g'], ['1050g', '1 kg 50 g', '1050 g'], ['750g', '750 g']], correctOrder: ['750g', '900g', '1050g'] },
+  'MATH-JISIM-ISI-PADU-PILOT-048': { domain: 'mathQuantityOrdering', skillId: 'isi_padu.menyusun_unit_bercampur', concept: 'isi_padu', items: [['900ml', '900 mL'], ['1100ml', '1 L 100 mL', '1100 mL'], ['750ml', '750 mL']], correctOrder: ['750ml', '900ml', '1100ml'] },
+  'MATH-BENTUK-PILOT-049': { domain: 'mathShapeOrdering', items: [['circle', 'bulatan'], ['rectangle', 'segi empat tepat'], ['triangle', 'segi tiga']], correctOrder: ['circle', 'triangle', 'rectangle'] },
+  'MATH-NOMBOR-PILOT-050': {
+    domain: 'mathNumberMultiSelect',
+    prompt: 'Pilih semua nombor yang mempunyai 7 ratus serta jumlah digit puluh dan sa sebanyak 5.',
+    options: [['714', '714'], ['724', '724'], ['732', '732'], ['650', '650'], ['750', '750']],
+    correctOptionIds: ['714', '732', '750'],
+    responseJoiner: ', '
+  }
+});
+
+function buildReviewedRichExample(spec = {}) {
+  const domain = REVIEWED_RICH_DOMAINS[spec.domain];
+  const interaction = domain.type === 'multiSelect' ? {
+    version: 1,
+    type: domain.type,
+    instruction: domain.instruction,
+    prompt: spec.prompt,
+    options: spec.options.map(([id, label]) => ({ id, label, value: id })),
+    correctOptionIds: spec.correctOptionIds,
+    responseJoiner: spec.responseJoiner
+  } : {
+    version: 1,
+    type: domain.type,
+    instruction: domain.instruction,
+    responsePreviewLabel: domain.responsePreviewLabel,
+    items: spec.items.map(([id, label, responseLabel]) => ({ id, label, ...(responseLabel ? { responseLabel } : {}) })),
+    correctOrder: spec.correctOrder,
+    responseSeparator: domain.responseSeparator,
+    responseSuffix: domain.responseSuffix || ''
+  };
+
+  return {
+    interaction,
+    qualityReview: {
+      curriculum: domain.curriculum,
+      assessment: domain.assessment,
+      textbook: domain.textbook
+    }
+  };
+}
+
+const REVIEWED_RICH_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_BATCH_4).map(([id, spec]) => [id, buildReviewedRichExample(spec)])
+);
+
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
+  ...REVIEWED_CHOICE_EXAMPLES,
+  ...REVIEWED_FILL_BLANK_EXAMPLES,
+  ...REVIEWED_RICH_EXAMPLES,
+  'BM-KATA_NAMA_AM-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Tekan gambar benda yang disebut dalam ayat.',
+      options: [
+        { id: 'book', label: 'buku', value: 'buku', visual: { kind: 'object', symbol: '📖', label: 'Buku' } },
+        { id: 'student', label: 'Siti', value: 'Siti', visual: { kind: 'object', symbol: '👧', label: 'Murid bernama Siti' } },
+        { id: 'living-room', label: 'ruang tamu', value: 'ruang tamu', visual: { kind: 'object', symbol: '🏠', label: 'Ruang tamu' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi benda dalam ayat mudah Tahun 2.',
+      assessment: 'Satu benda, seorang manusia dan satu tempat membezakan kategori kata nama tanpa jawapan bertindih.',
+      textbook: 'Simbol visual disertai label teks supaya hubungan benda dan perkataan kekal jelas serta aksesibel.'
+    }
+  },
   'MATH-BENTUK-PILOT-001': {
     interaction: {
       version: 1,
@@ -237,7 +730,60 @@ function reviewedLearningIntelligence({ skillId, responseMode, conceptTags, misc
   });
 }
 
+const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
+    const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: domain.skillId,
+      responseMode: 'completion',
+      conceptTags: domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
+const REVIEWED_CHOICE_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_CHOICE_BATCHES).map(([id, spec]) => {
+    const domain = REVIEWED_CHOICE_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: spec.skillId || domain.skillId,
+      responseMode: domain.responseMode,
+      conceptTags: spec.concept ? [...domain.conceptTags, spec.concept] : domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
+const REVIEWED_RICH_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_BATCH_4).map(([id, spec]) => {
+    const domain = REVIEWED_RICH_DOMAINS[spec.domain];
+    return [id, reviewedLearningIntelligence({
+      skillId: spec.skillId || domain.skillId,
+      responseMode: domain.responseMode,
+      conceptTags: spec.concept ? [...domain.conceptTags, spec.concept] : domain.conceptTags,
+      misconceptionTags: domain.misconceptionTags,
+      hintSteps: domain.hintSteps
+    })];
+  })
+);
+
 const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
+  ...REVIEWED_CHOICE_INTELLIGENCE,
+  ...REVIEWED_FILL_BLANK_INTELLIGENCE,
+  ...REVIEWED_RICH_INTELLIGENCE,
+  'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
+    skillId: 'kata_nama_am.mengenal_benda',
+    responseMode: 'visual_selection',
+    conceptTags: ['kata_nama_am', 'benda', 'pengelasan_perkataan'],
+    misconceptionTags: ['keliru_benda_dengan_orang', 'keliru_benda_dengan_tempat'],
+    hintSteps: [
+      'Cari perkataan yang menamakan sesuatu yang boleh dibaca atau dipegang.',
+      'Bezakan nama benda daripada nama orang dan nama tempat.',
+      'Tekan gambar benda yang dibaca oleh Siti.'
+    ]
+  }),
   'MATH-BENTUK-PILOT-001': reviewedLearningIntelligence({
     skillId: 'bentuk.sisi_segi_tiga',
     responseMode: 'visual_selection',
@@ -367,6 +913,10 @@ export function attachInteractiveQuestionExample(question = {}) {
   return example ? {
     ...question,
     ...example,
+    ...(example.interaction?.prompt ? {
+      q: example.interaction.prompt,
+      presentationOriginalQuestion: question.q || question.question || question.stem || ''
+    } : {}),
     learningIntelligence: {
       ...learningIntelligence,
       adaptiveSignals: {

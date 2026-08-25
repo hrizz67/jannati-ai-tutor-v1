@@ -1,5 +1,6 @@
 import { buildJawiQuestionMeta, buildLetterQuestion } from "../../ai/coach/knowledge/subjects/islam/jawi/questionBank.js";
 import { normalizeIslamSubject } from "../../utils/islamContentQuality.js";
+import { attachInteractiveQuestionExamplesToSubject } from "../interactiveQuestionExamples.js";
 
 const difficultyFor = (index) => {
   if (index <= 20) return "mudah";
@@ -777,9 +778,9 @@ const ISLAM_QUESTION_OVERRIDES = Object.freeze({
   "ISLAM-JAWI_PERKATAAN-046": { accepted: ["چيقݢو", "چيقڬو"] }
 });
 
-export const islamSubject = normalizeIslamSubject(rawIslamSubject, {
+export const islamSubject = attachInteractiveQuestionExamplesToSubject(normalizeIslamSubject(rawIslamSubject, {
   topicEnrichments: ISLAM_TOPIC_ENRICHMENTS,
   questionOverrides: ISLAM_QUESTION_OVERRIDES
-});
+}));
 
 export default islamSubject;

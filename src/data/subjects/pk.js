@@ -1,3 +1,5 @@
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+
 const SUBJECT = "Pendidikan Kesihatan Tahun 2";
 const DSKP = "KSSR Semakan Pendidikan Kesihatan Tahun 2";
 
@@ -270,7 +272,7 @@ const uasaCampuran = [
   cognitiveLevel: ["mengingat", "memahami", "mengaplikasi", "menganalisis", "menilai"][index % 5],
 }));
 
-export const pkSubject = {
+export const pkSubject = attachInteractiveQuestionExamplesToSubject({
   id: "pk",
   title: SUBJECT,
   short: "PK",
@@ -288,6 +290,6 @@ export const pkSubject = {
     makeTopic({ id: "gaya_hidup_sihat", code: "GAYA_HIDUP_SIHAT", title: "Gaya Hidup Sihat", note: "Rehat, aktiviti fizikal dan tabiat harian sihat", items: gayaHidupPairs }),
     makeTopic({ id: "uasa_kesihatan", code: "UASA_KESIHATAN", title: "Pentaksiran Sumatif Kesihatan", note: "Latihan campuran PBD Pendidikan Kesihatan", items: uasaCampuran }),
   ],
-};
+});
 
 export default pkSubject;

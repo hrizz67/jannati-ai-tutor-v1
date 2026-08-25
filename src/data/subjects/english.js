@@ -1,4 +1,5 @@
 import { normalizeEnglishSubject } from '../../utils/englishSentenceQuality.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
 
 const rawEnglishSubject = {
   "id": "english",
@@ -7142,6 +7143,6 @@ function enrichEnglishReadingQuestions(subject) {
   };
 }
 
-export const englishSubject = normalizeEnglishSubject(enrichEnglishReadingQuestions(rawEnglishSubject));
+export const englishSubject = attachInteractiveQuestionExamplesToSubject(normalizeEnglishSubject(enrichEnglishReadingQuestions(rawEnglishSubject)));
 
 export default englishSubject;

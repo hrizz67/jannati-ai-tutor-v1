@@ -1,4 +1,5 @@
 import { normalizeArabSubject } from '../../utils/arabContentQuality.js';
+import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
 
 const difficultyFor = (index) => {
   if (index <= 20) return "mudah";
@@ -789,9 +790,9 @@ const ARAB_QUESTION_OVERRIDES = Object.freeze({
   "ARAB-KEFAHAMAN_ARAB-025": { accepted: ["papan tulis", "papan putih"] }
 });
 
-export const arabSubject = normalizeArabSubject(rawArabSubject, {
+export const arabSubject = attachInteractiveQuestionExamplesToSubject(normalizeArabSubject(rawArabSubject, {
   topicEnrichments: ARAB_TOPIC_ENRICHMENTS,
   questionOverrides: ARAB_QUESTION_OVERRIDES
-});
+}));
 
 export default arabSubject;

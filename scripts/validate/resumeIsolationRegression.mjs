@@ -67,6 +67,20 @@ assert.equal(loadResume({ mode: 'reading' }, storage)?.mode, 'reading');
 assert.equal(loadResume({}, storage)?.mode, 'reading', 'Kad resume utama mesti menunjukkan sesi terkini.');
 assert.equal(Object.keys(JSON.parse(storage.getItem(RESUME_SLOTS_KEY))).length, 5, 'Semua resume perlu kekal dalam slot berasingan.');
 
+const answeredQuiz = {
+  ...quiz,
+  updatedAt: '2026-08-14T08:05:00.000Z',
+  state: {
+    questionId: 'BM-QUIZ-001',
+    answer: 'jawapan interaktif',
+    feedback: { status: 'correct', message: 'Jawapan kamu diterima.' }
+  }
+};
+saveResume(answeredQuiz, storage);
+const restoredAnsweredQuiz = loadResume({ mode: 'quiz', subjectId: 'bm', topicId: 'kata_nama_am' }, storage);
+assert.equal(restoredAnsweredQuiz?.state?.answer, 'jawapan interaktif', 'Jawapan semasa mesti kekal dalam slot resume.');
+assert.equal(restoredAnsweredQuiz?.state?.feedback?.status, 'correct', 'Status semakan mesti dipulihkan untuk menghalang penghantaran dan XP berganda.');
+
 clearResume({ mode: 'uasa', subjectId: 'bm' }, storage);
 assert.equal(loadResume({ mode: 'uasa', subjectId: 'bm' }, storage), null, 'Menamatkan UASA BM mesti memadam slot UASA BM sahaja.');
 assert.equal(loadResume({ mode: 'quiz', subjectId: 'bm', topicId: 'kata_nama_am' }, storage)?.questions?.[0]?.id, 'BM-QUIZ-001');
@@ -90,7 +104,12 @@ const analyticsDashboard = fs.readFileSync('src/dashboard/AnalyticsDashboard.jsx
 const learningDashboard = fs.readFileSync('src/dashboard/LearningDashboard.jsx', 'utf8');
 assert.match(app, /resume\?\.mode === 'uasa' && resume\?\.subjectId === selectedSubject\?\.id/);
 assert.match(app, /storedSubjectResume\?\.mode === 'uasa'/);
-assert.match(app, /options\.restoreFromResume\s*\?\s*\{\s*questions:\s*sourceQuestions/, 'Resume mesti mengekalkan susunan soalan asal sesi.');
+assert.match(app, /const smartSession = options\.preserveQuestions\s*\?\s*\{\s*questions:\s*sourceQuestions/, 'Sesi yang meminta susunan dikekalkan mesti menggunakan soalan asal.');
+assert.match(app, /questions:\s*targetResume\.questions,[\s\S]{0,250}preserveQuestions:\s*true,[\s\S]{0,120}restoreFromResume:\s*true/, 'Resume latihan adaptif mesti mengekalkan susunan soalan asal sesi.');
+assert.match(app, /questions,[\s\S]{0,250}preserveQuestions:\s*true,[\s\S]{0,120}restoreFromResume:\s*true/, 'Resume kuiz mesti mengekalkan susunan soalan asal sesi.');
+assert.match(app, /state:\s*targetResume\.state,[\s\S]{0,180}restoreFromResume:\s*true/, 'Resume kuiz mesti menghantar draf jawapan dan maklum balas untuk dipulihkan.');
+assert.ok(app.includes('onAnswerChange={changeQuizAnswer}'), 'Setiap perubahan jawapan kuiz mesti menggunakan pengendali autosimpan draf.');
+assert.match(app, /disabled=\{answerChecked\}>Semak Jawapan/, 'Jawapan yang sudah direkodkan tidak boleh dihantar semula selepas resume.');
 for (const mode of ['reading', 'listening', 'speaking', 'writing']) {
   assert.ok(app.includes(`resume?.mode === '${mode}' ? resume : null`), `${mode} mesti menerima resume modnya sahaja.`);
   assert.ok(app.includes(`clearResumeData(setResume, { mode: '${mode}' })`), `${mode} mesti memadam slotnya sahaja.`);
