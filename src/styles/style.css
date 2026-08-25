@@ -6940,3 +6940,256 @@ input:focus {
     transition-duration: .01ms !important;
   }
 }
+
+/* Compact, child-friendly session result. Keep progress totals on the dashboard. */
+.finish.reward-card {
+  max-width: 760px;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.finish-heading {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.finish-heading > * {
+  margin-block: 0;
+}
+
+.finish-heading h1 {
+  max-width: 18ch;
+}
+
+.finish-heading > p:not(.eyebrow) {
+  max-width: 56ch;
+}
+
+.finish-score-hero {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  max-width: 470px;
+  margin: 20px auto;
+  padding: 18px 22px;
+  text-align: left;
+  background: linear-gradient(135deg, #fff8d8, #f3fff6);
+  border: 1px solid rgba(244, 180, 0, .42);
+  border-radius: 24px;
+}
+
+.finish-score-icon {
+  width: 72px;
+  height: 72px;
+  padding: 5px;
+  object-fit: contain;
+}
+
+.finish-score-hero span,
+.finish-score-hero small {
+  display: block;
+  color: #52655a;
+  font-weight: 800;
+}
+
+.finish-score-hero b {
+  display: block;
+  margin: 2px 0;
+  color: #087a3b;
+  font-size: clamp(40px, 7vw, 58px);
+  line-height: 1;
+}
+
+.finish .finish-rewards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.finish .finish-rewards > div {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  padding: 12px;
+  text-align: left;
+}
+
+.finish-reward-icon {
+  grid-row: 1 / span 2;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.finish .finish-rewards b,
+.finish .finish-rewards span {
+  min-width: 0;
+  margin: 0;
+}
+
+.finish .finish-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.finish .finish-summary-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  gap: 4px 10px;
+  min-width: 0;
+  padding: 14px;
+  text-align: left;
+}
+
+.finish-summary-icon {
+  grid-row: 1 / span 2;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.finish .finish-summary-card span,
+.finish .finish-summary-card b {
+  min-width: 0;
+}
+
+.finish .finish-summary-card b {
+  margin-top: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.finish .finish-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.finish .finish-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding-inline: 12px;
+}
+
+.finish .finish-actions .icon-glyph {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 650px) {
+  .finish.reward-card {
+    padding: 16px 14px;
+  }
+
+  .finish-heading {
+    margin-top: 12px;
+  }
+
+  .finish-score-hero {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 12px;
+    margin: 16px auto;
+    padding: 14px 16px;
+  }
+
+  .finish-score-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .finish .finish-rewards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .finish .finish-rewards > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 5px;
+    text-align: center;
+  }
+
+  .finish-reward-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .finish .finish-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .finish .finish-summary-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+    padding: 12px;
+  }
+
+  .finish-summary-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .finish .finish-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Very small phones need wider text lanes than the standard mobile grid. */
+@media (max-width: 380px) {
+  .dashboard-main .smart-lesson-card .journey-steps {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dashboard-main .smart-lesson-card .journey-steps > div {
+    min-height: 0;
+    padding: 12px 14px;
+  }
+
+  .dashboard-main .smart-lesson-card .journey-steps span,
+  .dashboard-main .smart-lesson-card .journey-steps b,
+  .dashboard-main .smart-lesson-card .journey-steps small {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .dashboard-main .quick-actions button {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-height: 72px;
+    text-align: center;
+  }
+
+  .dashboard-main .quick-actions button > span:last-child {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+
+  .dashboard-main .streak-summary-card .mastery-summary-grid > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-main .streak-summary-card .mastery-summary-grid > div:last-child b {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+}
