@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.9.1 - 2026-08-25
+## 3.9.2 - 2026-08-26
 
 ### Release controls
 
@@ -11,7 +11,7 @@
 ### Quality snapshot
 
 - 8 subjects, 84 topics, and 4530 questions validated.
-- Validation result: 0 error(s), 0 warning(s), 22910 informational item(s).
+- Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
 - Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
 ### Follow-up work
