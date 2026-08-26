@@ -30,12 +30,16 @@ const questionTypeDistribution = questions.reduce((counts, question) => {
   counts[question.questionType] = (counts[question.questionType] || 0) + 1;
   return counts;
 }, {});
+const chickenEnergyQuestion = questions.find(question => question.id === 'SAINS-HAIWAN-005');
+const catEnergyQuestion = questions.find(question => question.id === 'SAINS-HAIWAN-001');
 
 assert.equal(topics.length, 10, `Expected 10 Sains topics, received ${topics.length}.`);
 assert.equal(questions.length, 500, `Expected 500 Sains questions, received ${questions.length}.`);
 assert.equal(failures.length, 0, `Sains quality audit found ${failures.length} issue(s): ${JSON.stringify(failures.slice(0, 20))}`);
 assert.equal(noteFailures.length, 0, `Sains learning notes are incomplete: ${JSON.stringify(noteFailures.map(topic => topic.id))}`);
 assert.equal(cognitiveDistribution.menilai > 0, true, 'Sains bank must include evaluation questions.');
+assert.match(chickenEnergyQuestion?.q || '', /Keperluan asas/i, 'The chicken energy item must ask for the intended category, not an arbitrary food example.');
+assert.match(catEnergyQuestion?.q || '', /Keperluan asas/i, 'The cat energy item must ask for the intended category, not an arbitrary food example.');
 
 console.log(JSON.stringify({
   status: 'PASS',

@@ -7125,11 +7125,11 @@ const SAINS_TOPIC_ENRICHMENTS = Object.freeze({
 });
 
 const SAINS_QUESTION_OVERRIDES = Object.freeze({
-  "SAINS-HAIWAN-001": { q: "Kucing mendapat tenaga daripada ________.", answer: "makanan" },
+  "SAINS-HAIWAN-001": { q: "Keperluan asas yang memberikan tenaga kepada kucing ialah ________.", answer: "makanan" },
   "SAINS-HAIWAN-002": { q: "Ikan hidup di dalam ________.", answer: "air" },
   "SAINS-HAIWAN-003": { q: "Burung bernafas menggunakan ________.", answer: "udara" },
   "SAINS-HAIWAN-004": { q: "Sarang menjadi ________ bagi arnab daripada cuaca dan bahaya.", answer: "tempat perlindungan" },
-  "SAINS-HAIWAN-005": { q: "Ayam memperoleh tenaga dengan memakan ________.", answer: "makanan" },
+  "SAINS-HAIWAN-005": { q: "Keperluan asas yang memberikan tenaga kepada ayam ialah ________.", answer: "makanan" },
   "SAINS-HAIWAN-006": { q: "Berudu hidup dan membesar di dalam ________.", answer: "air", explanation: "Berudu hidup di dalam air sebelum berubah menjadi katak dewasa." },
   "SAINS-HAIWAN-007": { q: "Kambing bernafas menggunakan ________.", answer: "udara" },
   "SAINS-HAIWAN-008": { q: "Sarang ialah ________ bagi semut.", answer: "tempat perlindungan" },

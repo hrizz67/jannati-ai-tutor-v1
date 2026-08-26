@@ -915,6 +915,7 @@ export function attachInteractiveQuestionExample(question = {}) {
     ...example,
     ...(example.interaction?.prompt ? {
       q: example.interaction.prompt,
+      question: example.interaction.prompt,
       presentationOriginalQuestion: question.q || question.question || question.stem || ''
     } : {}),
     learningIntelligence: {

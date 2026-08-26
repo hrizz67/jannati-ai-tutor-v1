@@ -148,6 +148,7 @@ for (const id of allReviewedChoiceBatchIds) {
   assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must have exactly one accepted option.`);
   assert.ok(question.interaction.prompt && question.presentationOriginalQuestion, `${id} must retain both its reviewed presentation stem and original source stem.`);
   assert.notEqual(question.q, question.presentationOriginalQuestion, `${id} must present the reviewed non-repetitive stem.`);
+  assert.equal(question.question, question.q, `${id} must expose one consistent reviewed stem to the quiz, Tutor AI, and saved session.`);
   assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
 }
 
