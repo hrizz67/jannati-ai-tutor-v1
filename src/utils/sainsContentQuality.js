@@ -2,6 +2,7 @@ const ROBOTIC_SAINS_STEM = /(?:Dalam topik .+jawab berdasarkan petunjuk|Soalan S
 const VAGUE_RELATION_STEM = /berkaitan dengan\s+_{2,}/i;
 const UNSAFE_CHILD_ACTION = /Api kecil boleh dipadamkan dengan|Ketika menggunakan soket elektrik|Ketika menggunakan wayar rosak|Ketika menggunakan lampu rosak/i;
 const UNDERDETERMINED_STEM = /(?:memerlukan\s+_{2,}\s+untuk terus hidup|mempunyai (?:sifat|ciri)\s+_{2,})/i;
+const OPEN_ENDED_FOOD_STEM = /(?:mendapat|memperoleh).*tenaga.*(?:daripada|dengan memakan)\s+_{2,}/i;
 
 function normalizeText(value = '') {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -98,6 +99,7 @@ export function validateSainsQuestionRecord(question = {}) {
   if (VAGUE_RELATION_STEM.test(stem)) issues.push('vague_relation_stem');
   if (UNSAFE_CHILD_ACTION.test(stem)) issues.push('unsafe_child_action');
   if (UNDERDETERMINED_STEM.test(stem)) issues.push('underdetermined_stem');
+  if (OPEN_ENDED_FOOD_STEM.test(stem)) issues.push('open_ended_food_stem');
   return { valid: issues.length === 0, issues: [...new Set(issues)] };
 }
 
