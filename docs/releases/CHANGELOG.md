@@ -1,6 +1,12 @@
 # Changelog
 
-## 3.9.2 - 2026-08-26
+## 3.9.3 - 2026-08-26
+
+### Fixed
+
+- Clarified animal-energy questions so pupils are asked for the intended basic-needs category instead of an open-ended food example.
+- Kept reviewed interactive stems consistent across the quiz, Tutor AI context, and saved learning sessions.
+- Added regression gates for underdetermined food prompts and mismatched interactive question text.
 
 ### Release controls
 

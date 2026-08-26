@@ -1,8 +1,14 @@
-# Jannati AI Tutor 3.9.2 Release Notes
+# Jannati AI Tutor 3.9.3 Release Notes
 
 Status: stable
-Tag: v3.9.2
-Build date: 2026-08-26T11:56:51.364Z
+Tag: v3.9.3
+Build date: 2026-08-26T12:51:01.262Z
+
+## Highlights
+
+- Sains animal-energy questions now ask clearly for the intended basic need, preventing reasonable examples such as animal feed from being unfairly marked against an ambiguous prompt.
+- Reviewed interactive questions now expose one consistent stem to the quiz, Tutor AI, and saved-session data.
+- New regression checks prevent the same ambiguity and question-text mismatch from returning.
 
 ## Release Readiness
 
