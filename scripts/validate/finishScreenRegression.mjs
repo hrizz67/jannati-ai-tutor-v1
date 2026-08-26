@@ -3,7 +3,23 @@ import fs from 'node:fs';
 
 const appSource = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
 const finishSource = fs.readFileSync(new URL('../../src/components/FinishScreen.jsx', import.meta.url), 'utf8');
+const iconSource = fs.readFileSync(new URL('../../src/components/IconGlyph.jsx', import.meta.url), 'utf8');
 const cssSource = fs.readFileSync(new URL('../../src/styles/style.css', import.meta.url), 'utf8');
+
+const finishRouteStart = appSource.indexOf("if (screen === 'finish')");
+const finishRouteEnd = appSource.indexOf("if (screen === 'reading')", finishRouteStart);
+const finishRouteSource = appSource.slice(finishRouteStart, finishRouteEnd);
+const imageIconMapStart = iconSource.indexOf('const IMAGE_ICONS = {');
+const imageIconMapEnd = iconSource.indexOf('};', imageIconMapStart);
+const imageIconMapSource = iconSource.slice(imageIconMapStart, imageIconMapEnd);
+
+assert.ok(finishRouteStart >= 0 && finishRouteEnd > finishRouteStart, 'The finish route must remain discoverable.');
+assert.ok(imageIconMapStart >= 0 && imageIconMapEnd > imageIconMapStart, 'The shared image-icon map must remain discoverable.');
+assert.match(
+  finishRouteSource,
+  /<Finish[\s\S]*?onOpenAi={openTutorAi}[\s\S]*?{chatWidget}/,
+  'The finish route must render the Tutor AI portal whenever its button can open chat.'
+);
 
 assert.match(
   appSource,
@@ -31,6 +47,9 @@ for (const label of ['Bintang', 'XP sesi', 'Streak', 'Topik untuk diulang', 'Cad
 }
 for (const icon of ['star', 'gift', 'fire', 'target', 'lightbulb', 'home', 'bot']) {
   assert.match(finishSource, new RegExp(`(?:name|icon)[=:]?[{\\s'\"]+${icon}`), `Missing consistent icon: ${icon}`);
+}
+for (const icon of ['trophy', 'target', 'star', 'gift', 'fire', 'clock', 'check', 'lightbulb', 'play', 'repeat', 'home', 'bot']) {
+  assert.match(imageIconMapSource, new RegExp(`\\b${icon}:\\s*[^,]+`), `Missing rendered asset for finish icon: ${icon}`);
 }
 assert.match(finishSource, /Math\.max\(earnedStarCount\(session\.stars\), earnedStarCount\(scorePercent\)\)/, 'Visible stars must never fall below the score-derived award.');
 assert.match(finishSource, /value: `\$\{stars\}\/3`/, 'The star reward must use a child-readable numeric value.');
