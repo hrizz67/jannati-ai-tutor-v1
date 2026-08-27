@@ -219,8 +219,21 @@ export function createCanonicalGamification(input = {}) {
   const sources = [input.adaptiveProfile, input.profile, input.gamificationProfile, globalSource];
 
   const progressXp = num(progress.global?.totalXp, 0);
-  const sourceXp = firstDefined(input.globalXp, globalSource?.totalXp, globalSource?.xp, input.profile?.totalXp, input.profile?.xp, input.adaptiveProfile?.totalXp, input.adaptiveProfile?.xp);
-  const globalXp = Math.max(0, int(hasPositiveValue(sourceXp) ? sourceXp : progressXp, 0));
+  // These stores are redundant projections of one global total, not values to
+  // add together. Taking the monotonic maximum prevents a lower adaptive or
+  // gamification cache from hiding the richer cloud profile on one device.
+  const globalXp = Math.max(0, ...[
+    input.globalXp,
+    globalSource?.totalXp,
+    globalSource?.xp,
+    input.profile?.totalXp,
+    input.profile?.xp,
+    input.adaptiveProfile?.totalXp,
+    input.adaptiveProfile?.xp,
+    input.gamificationProfile?.totalXp,
+    input.gamificationProfile?.xp,
+    progressXp
+  ].map(value => int(value, 0)));
 
   const allowStoredLevel = shouldPreserveExplicitLevel(input, globalSourceKey, globalSource);
   const sourceLevel = firstDefined(input.globalLevel, globalSource?.globalLevel, globalSource?.level, input.profile?.level, input.adaptiveProfile?.level);

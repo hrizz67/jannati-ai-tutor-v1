@@ -102,6 +102,14 @@ const fixtures = {
     globalXp: 1470,
     globalSourceKey: 'gamificationProfile',
     globalSourceVersion: 'legacy-v1'
+  }),
+  I: runFixture('I', {
+    adaptiveProfile: { xp: 40, level: 1, totalQuestions: 12 },
+    profile: { xp: 950, level: 10, history: [{ id: 'cloud-session' }] },
+    gamificationProfile: { xp: 140, level: 2 }
+  }, {
+    globalXp: 950,
+    globalSourceKey: 'adaptiveProfile'
   })
 };
 
@@ -115,6 +123,7 @@ assert.equal(fixtures.F3.globalXp, 0, 'F3: negative XP must normalize to 0');
 assert.equal(fixtures.F3.currentStreak, 0, 'F3: negative streak must normalize to 0');
 assert.equal(fixtures.F3.starCount, 0, 'F3: negative rewards must normalize to 0');
 assert.notEqual(fixtures.H.globalLevel, 17, 'H: legacy source version must not preserve explicit stored level blindly.');
+assert.equal(fixtures.I.globalXp, 950, 'I: a lower adaptive cache must not hide the richer cloud profile XP.');
 
 const homeDashboard = read('src/dashboard/HomeDashboard.jsx');
 const studentDashboard = read('src/dashboard/StudentDashboard.jsx');

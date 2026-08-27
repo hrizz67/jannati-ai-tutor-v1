@@ -290,6 +290,30 @@ assert.equal(
   'The root projection and active child snapshot must converge on the monotonic XP maximum.'
 );
 
+const divergentXpStores = normalizeActiveLearningProjection({
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: JSON.stringify({
+    __childSnapshotChildId: originalChild.id,
+    __childSnapshotCapturedAt: 1200,
+    jannati_v151_profile: JSON.stringify({ name: 'Fayyadh', year: 'Tahun 2', xp: 950 }),
+    'jannati.adaptive.studentProfile': JSON.stringify({ name: 'Fayyadh', xp: 40, totalQuestions: 12 }),
+    'jannati.gamification.profile': JSON.stringify({ xp: 140, currentStreak: 1 }),
+    jannati_v151_ai_memory: JSON.stringify({ xp: 300, studyStreak: 1 }),
+    jannati_v152_student_core: JSON.stringify({
+      profile: { name: 'Fayyadh', year: 'Tahun 2', xp: 140 },
+      core: { xp: 140, level: 2 }
+    })
+  })
+}, originalChild.id);
+const harmonizedXpSnapshot = JSON.parse(divergentXpStores[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]);
+assert.equal(JSON.parse(harmonizedXpSnapshot.jannati_v151_profile).xp, 950);
+assert.equal(JSON.parse(harmonizedXpSnapshot['jannati.adaptive.studentProfile']).xp, 950, 'Adaptive XP must not keep one device below the canonical cloud profile.');
+assert.equal(JSON.parse(harmonizedXpSnapshot['jannati.gamification.profile']).xp, 950, 'Gamification XP must converge without adding duplicate rewards.');
+assert.equal(JSON.parse(harmonizedXpSnapshot.jannati_v151_ai_memory).xp, 950, 'AI memory XP must remain a projection of the same global total.');
+assert.equal(JSON.parse(harmonizedXpSnapshot.jannati_v152_student_core).profile.xp, 950);
+assert.equal(JSON.parse(harmonizedXpSnapshot.jannati_v152_student_core).core.xp, 950);
+assert.equal(JSON.parse(divergentXpStores['jannati.adaptive.studentProfile']).xp, 950, 'The hydrated root projection must expose the same XP to both devices at one revision.');
+
 const crossChildProjection = normalizeActiveLearningProjection({
   [CLOUD_CHILD_STATE_KEY]: childState([
     originalChild,
@@ -628,6 +652,8 @@ assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLea
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,700}dirtyChildIdsRef\.current\.add\(childId\)/, 'Initial hydration must recover richer same-child learning before applying a lower cloud projection.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
 assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id, \{ accountId: accountScopeId \}\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must validate ownership, then normalize the account projection and active child snapshot before storage replacement.');
+assert.match(appSource, /localStorage\.setItem\('jannati\.adaptive\.studentProfile',[\s\S]{0,100}\{ \.\.\.adaptive, xp \}/, 'Hydration repair must align adaptive XP with the richest global projection.');
+assert.match(appSource, /localStorage\.setItem\('jannati_v151_ai_memory',[\s\S]{0,100}\{ \.\.\.memory, xp \}/, 'Hydration repair must align AI-memory XP with the richest global projection.');
 assert.match(appSource, /syncRevisionedCloudLearning\(supabase, localPayload[\s\S]{0,300}accountId: operationAccountId/, 'Every cloud merge must validate snapshot ownership against the authenticated account.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,180}accountId: user\.id/, 'Initial recovery must reject snapshots from another account before comparing learning evidence.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');

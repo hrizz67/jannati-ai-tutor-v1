@@ -1,15 +1,15 @@
-# Jannati AI Tutor 3.9.5 Release Notes
+# Jannati AI Tutor 3.9.6 Release Notes
 
 Status: stable
-Tag: v3.9.5
-Build date: 2026-08-27T13:57:10.662Z
+Tag: v3.9.6
+Build date: 2026-08-27T16:08:16.464Z
 
 ## Highlights
 
-- Desktop and mobile now converge on one canonical child profile during authenticated sync, even when an older device still holds a historical child ID.
-- Concurrent learning snapshots preserve the highest XP and combine distinct progress evidence without double-counting.
-- Mobile browsers with an incomplete voice list now receive a native system-language playback attempt instead of an immediate "voice unavailable" failure.
-- Free and guest data remain isolated from Premium accounts, and unrelated installed voices are not selected silently as language replacements.
+- Desktop and mobile now derive the learner's total XP from one monotonic canonical value, even when older local caches contain different totals.
+- Cloud hydration aligns the main profile, adaptive profile, gamification profile, AI memory, and student core before the dashboard is shown.
+- Repeated sync does not add XP projections together; it keeps the highest valid total for the same child.
+- Account and child ownership boundaries remain enforced, so this repair cannot merge Free data or another child's progress into the active Premium profile.
 
 ## Release Readiness
 
