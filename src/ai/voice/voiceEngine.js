@@ -55,18 +55,6 @@ async function executeSpeech(text, options, currentSession) {
     segmentLanguage,
     selectBestVoice(voices, segmentLanguage)
   ]));
-  const missingLanguage = requiredLanguages.find(segmentLanguage => !selectedVoices[segmentLanguage]);
-  if (missingLanguage) {
-    const config = getLanguageConfig(missingLanguage);
-    const unavailable = result(VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE, {
-      language: missingLanguage,
-      message: `Voice pack ${config.locale} tidak tersedia pada peranti ini.`
-    });
-    activeStatus = { ...activeStatus, state: 'error', language: missingLanguage, code: unavailable.code };
-    options.onError?.(unavailable);
-    return unavailable;
-  }
-
   lastRequest = { text, options: { ...options, onStart: undefined, onEnd: undefined, onError: undefined } };
   activeStatus = { state: 'speaking', language, voiceName: '', voiceLanguage: '', code: '', text };
   let hasStarted = false;

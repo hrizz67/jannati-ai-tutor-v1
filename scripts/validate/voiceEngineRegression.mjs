@@ -47,6 +47,7 @@ assert.equal(selectBestVoice([voice('English', 'en-US')], 'ar'), null, 'Arabic m
 const spoken = [];
 let availableVoices = voices;
 let voicesChangedHandler = null;
+let nextSpeechError = '';
 globalThis.window = {
   setTimeout: globalThis.setTimeout,
   clearTimeout: globalThis.clearTimeout,
@@ -86,7 +87,13 @@ globalThis.window = {
       utterance.onstart?.();
       queueMicrotask(() => {
         this.speaking = false;
-        utterance.onend?.();
+        if (nextSpeechError) {
+          const error = nextSpeechError;
+          nextSpeechError = '';
+          utterance.onerror?.({ error });
+        } else {
+          utterance.onend?.();
+        }
       });
     },
     pause() {
@@ -139,8 +146,15 @@ setTimeout(() => {
 assert.equal((await delayedVoices).length, voices.length, 'voiceschanged must resolve delayed mobile voice loading.');
 
 availableVoices = [voice('English United Kingdom', 'en-GB')];
+const systemFallback = await speak('Selamat', { language: 'ms' });
+assert.equal(systemFallback.code, VOICE_RESULT_CODES.SPOKEN, 'The operating system must get a chance to auto-select ms-MY when its voice list is incomplete.');
+assert.equal(systemFallback.success, true);
+assert.equal(spoken.at(-1).voice, null, 'An unrelated installed voice must not be selected explicitly as the Malay voice.');
+assert.equal(spoken.at(-1).lang, 'ms-MY');
+
+nextSpeechError = 'language-unavailable';
 const unavailable = await speak('Selamat', { language: 'ms' });
-assert.equal(unavailable.code, VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE);
+assert.equal(unavailable.code, VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE, 'A real system language failure still needs actionable device guidance.');
 assert.equal(unavailable.success, false);
 
 availableVoices = voices;

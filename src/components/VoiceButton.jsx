@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { speak } from '../ai/voice/voiceEngine.js';
+import { speak, VOICE_RESULT_CODES } from '../ai/voice/voiceEngine.js';
 import { supportsVoice } from '../ai/voice/voiceCapability.js';
 import GameBadge from './GameBadge.jsx';
 import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
@@ -12,15 +12,25 @@ export default function VoiceButton({ text = '', label = 'Baca', className = '',
 function VoiceButtonControl({ text, label, className, title, size, lang }) {
   const [status, setStatus] = useState('');
 
+  function getFailureMessage(code) {
+    if (code === VOICE_RESULT_CODES.SPEECH_NOT_SUPPORTED) {
+      return 'Pelayar ini tidak menyokong bacaan suara. Cuba Safari atau Chrome biasa.';
+    }
+    if (code === VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE) {
+      return 'Voice bahasa ini tiada pada peranti. Pasang pek suara bahasa dalam tetapan peranti.';
+    }
+    return 'Bacaan suara gagal. Semak kelantangan dan mod senyap, kemudian cuba lagi.';
+  }
+
   async function handleSpeak() {
     setStatus('');
     try {
       const played = await speak(text, { language: lang });
       if (!played.success && played.code !== 'CANCELLED') {
-        setStatus('Voice bahasa ini tiada pada peranti.');
+        setStatus(getFailureMessage(played.code));
       }
     } catch {
-      setStatus('Voice bahasa ini tiada pada peranti.');
+      setStatus(getFailureMessage(VOICE_RESULT_CODES.SPEECH_ERROR));
     }
   }
 

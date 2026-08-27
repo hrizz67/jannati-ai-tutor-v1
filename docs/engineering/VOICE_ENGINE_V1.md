@@ -7,7 +7,8 @@ The application uses one browser voice boundary in `src/ai/voice/browserVoicePro
 - Malay: `ms-MY`, with Yasmin then Osman preferred when installed.
 - English: `en-GB`, then `en-US`, `en-AU`, and another English voice.
 - Arabic: `ar-SA`, `ar-EG`, `ar-AE`, `ar-KW`, `ar-QA`, `ar-JO`, and another Arabic voice.
-- A missing Malay or Arabic voice returns `VOICE_NOT_AVAILABLE`. It is never replaced by an English or Indonesian voice.
+- A matching installed voice is preferred. When a mobile browser exposes an empty or incomplete voice list, the engine leaves `utterance.voice` unset and supplies the requested locale so the operating system can select its native voice.
+- An English or Indonesian voice is never selected explicitly as a Malay replacement. A real `language-unavailable`, `voice-unavailable`, or `synthesis-unavailable` event returns `VOICE_NOT_AVAILABLE` with device setup guidance.
 
 Explicit lesson, question, subject, or caller language wins over automatic text detection. Mixed Malay/English and Arabic-script text is split into sequential segments so the matching installed voice reads each segment without overlap.
 

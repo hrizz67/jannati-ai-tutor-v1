@@ -30,6 +30,8 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 - Snapshot legacy tanpa medan ownership masih boleh dibaca untuk kesinambungan data lama.
 - Snapshot atau root projection yang secara jelas tidak sepadan tidak boleh dinormalisasi, digabung atau diikat semula secara senyap.
 - Data tidak sepadan dipindahkan ke `jannati_merged_child_backup:quarantine-*` supaya boleh diaudit dan dipulihkan tanpa memasuki paparan pembelajaran aktif.
+- Selepas akaun Supabase yang sama disahkan, identiti unik `nama + tahun` pada dua peranti dipetakan kepada ID anak cloud yang kanonik. Laluan ini tidak aktif untuk guest dan tidak melintasi sempadan akaun.
+- Apabila ID sejarah dipetakan semula, snapshot digabung secara monotonik: XP menggunakan nilai maksimum dan bukti topik/sejarah yang berbeza dikekalkan tanpa menggandakan rekod yang sama.
 
 ## Protokol sync v3
 
@@ -69,6 +71,7 @@ Rollout mesti diselaraskan; jangan deploy client v3 tanpa migration dan jangan t
 - Operasi sama dihantar dua kali; revision hanya bertambah sekali.
 - Mutasi baharu pada anak sama semasa request berjalan kekal pending.
 - Login Free ke Premium tidak memindahkan profil Free.
+- Peranti authenticated dengan ID sejarah berbeza untuk anak yang sama mesti bertumpu kepada satu ID cloud dan XP tertinggi.
 - Logout dengan pending gagal secara selamat atau meminta pengesahan.
 - Snapshot dengan `account_id` atau `child_id` salah ditolak.
 - Snapshot Free/guest yang dirty tidak boleh menimpa snapshot Premium semasa conflict retry.

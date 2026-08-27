@@ -150,6 +150,30 @@ const isolatedWithoutLoginReconciliation = mergeCloudLearningPayload(anonymousPa
 });
 assert.equal(JSON.parse(isolatedWithoutLoginReconciliation[CLOUD_CHILD_STATE_KEY]).profiles.length, 2, 'Normal sync must not merge profiles by display name.');
 
+const authenticatedDeviceReconciliation = mergeCloudLearningPayload(anonymousPayload, premiumPayload, {
+  accountId: 'account-aisyah',
+  dirtyChildIds: [anonymousId],
+  localActiveChildId: anonymousId,
+  mergeDirtySnapshots: true
+});
+const authenticatedDeviceState = JSON.parse(authenticatedDeviceReconciliation[CLOUD_CHILD_STATE_KEY]);
+assert.deepEqual(
+  authenticatedDeviceState.profiles.map(profile => profile.id),
+  [premiumId],
+  'Two authenticated devices must converge on the canonical cloud child ID without a separate repair marker.'
+);
+assert.equal(authenticatedDeviceState.activeChildId, premiumId, 'The canonical cloud child must become active on the stale device.');
+assert.equal(
+  JSON.parse(authenticatedDeviceReconciliation.jannati_v151_profile).xp,
+  80,
+  'A stale authenticated device must hydrate the richer cloud XP after automatic identity reconciliation.'
+);
+assert.equal(
+  authenticatedDeviceReconciliation[`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`],
+  undefined,
+  'The stale per-device child snapshot must not remain as a second active projection.'
+);
+
 const reconciledLogin = mergeCloudLearningPayload(anonymousPayload, premiumPayload, {
   dirtyChildIds: [anonymousId],
   localActiveChildId: anonymousId,
@@ -236,6 +260,7 @@ const differentYearPayload = {
   ], anonymousId)
 };
 const differentYearMerge = mergeCloudLearningPayload(differentYearPayload, premiumPayload, {
+  accountId: 'account-aisyah',
   dirtyChildIds: [anonymousId],
   localActiveChildId: anonymousId,
   reconcileChildIdentity: true

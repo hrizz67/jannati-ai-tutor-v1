@@ -1,15 +1,15 @@
-# Jannati AI Tutor 3.9.4 Release Notes
+# Jannati AI Tutor 3.9.5 Release Notes
 
 Status: stable
-Tag: v3.9.4
-Build date: 2026-08-27T11:31:03.124Z
+Tag: v3.9.5
+Build date: 2026-08-27T13:57:10.662Z
 
 ## Highlights
 
-- Learning snapshots now cross an ownership gate before merge: wrong-account and wrong-child records are quarantined instead of being projected into Fayyadh or another active profile.
-- Guest, Free, and Premium progress can no longer overwrite one another merely because cloud data is newer or a retry is pending.
-- All read-aloud actions now use one multilingual browser voice engine for BM, English, and Arabic, including mixed Arabic/Rumi text and delayed voice loading on mobile devices.
-- Malay and Arabic never fall back silently to an English or Indonesian voice; the learner receives a clear device voice-pack message instead.
+- Desktop and mobile now converge on one canonical child profile during authenticated sync, even when an older device still holds a historical child ID.
+- Concurrent learning snapshots preserve the highest XP and combine distinct progress evidence without double-counting.
+- Mobile browsers with an incomplete voice list now receive a native system-language playback attempt instead of an immediate "voice unavailable" failure.
+- Free and guest data remain isolated from Premium accounts, and unrelated installed voices are not selected silently as language replacements.
 
 ## Release Readiness
 

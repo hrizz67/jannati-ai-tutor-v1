@@ -1,17 +1,18 @@
 # Changelog
 
-## 3.9.4 - 2026-08-27
+## 3.9.5 - 2026-08-27
 
 ### Fixed
 
-- Reject and quarantine explicitly mismatched account or child learning snapshots before they can enter the active profile projection.
-- Prevent stale guest, free-account, or wrong-child data from replacing newer Premium learning progress during cloud hydration, conflict recovery, or retry.
-- Route listening playback and legacy read-aloud helpers through one speech owner so repeated actions cannot create overlapping browser speech.
+- Reconcile a stale mobile-generated child ID with the canonical cloud child automatically during every authenticated account merge.
+- Keep the richer XP and learning evidence when desktop and mobile submit the same learner under different historical child IDs.
+- Allow the operating system to select the requested `ms-MY`, `en-GB`, or `ar-SA` voice when a mobile browser exposes an empty or incomplete voice list.
 
-### Added
+### Safety
 
-- Add a multilingual BM, English, and Arabic voice engine with strict same-language voice selection, delayed mobile voice loading, mixed Arabic/Rumi sequencing, replay, pause, resume, status, and controlled result codes.
-- Add regression coverage for learning-data ownership, invalid voice fallback, language priority, mixed-language speech, delayed `voiceschanged`, and non-overlapping queued playback.
+- Automatic identity reconciliation remains disabled for guest payloads, so Free learning cannot be joined to a Premium account by display name alone.
+- Explicitly installed English or Indonesian voices are never selected as a Malay replacement; the system receives the requested Malay locale instead.
+- Voice failures now distinguish unsupported browsers, missing language packs, and general audio errors.
 
 ### Release controls
 
