@@ -1,1 +1,0 @@
-import"./rolldown-runtime-hePW80VL.js";import{i as e,t}from"./vendor-react-DmFoF-aV.js";e();var n=t();function r({src:e,alt:t=``,className:r=``}){return(0,n.jsx)(`img`,{className:`game-badge-icon ${r}`.trim(),src:e,alt:t,"aria-hidden":!t,loading:`lazy`,decoding:`async`,draggable:`false`})}var i=`/jannati-ai-tutor-v1/assets/mendengar-badge-Rtg18cb5.webp`;export{r as n,i as t};
