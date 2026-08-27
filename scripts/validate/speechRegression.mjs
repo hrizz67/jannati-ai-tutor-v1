@@ -212,12 +212,19 @@ function installSpeechStubs() {
   globalThis.window.speechSynthesis = {
     speaking: false,
     pending: false,
+    paused: false,
+    getVoices() {
+      return [{ name: 'Microsoft Yasmin', lang: 'ms-MY', localService: true }];
+    },
+    addEventListener() {},
+    removeEventListener() {},
     cancel() {
       this.speaking = false;
       this.pending = false;
     },
     speak(utterance) {
       this.speaking = true;
+      utterance.onstart?.();
       queueMicrotask(() => {
         this.speaking = false;
         utterance.onend?.();
@@ -557,7 +564,8 @@ async function main() {
 
   cancelActiveSpeechRecognition();
   stopVoice();
-  await speak('Hai');
+  const voiceResult = await speak('Hai');
+  assert.equal(voiceResult.success, true, 'Available Malay voice should return a controlled success result.');
   assert.equal(globalThis.window.speechSynthesis.speaking, false, 'Voice synthesis should settle after speaking.');
 
   resetSpeechStubs();

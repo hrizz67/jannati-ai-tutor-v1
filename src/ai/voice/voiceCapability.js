@@ -1,6 +1,6 @@
 export function supportsVoice() {
   return typeof window !== 'undefined'
-    && 'speechSynthesis' in window
+    && Boolean(window.speechSynthesis)
     && typeof window.SpeechSynthesisUtterance === 'function';
 }
 

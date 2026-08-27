@@ -1,8 +1,10 @@
+import { LANGUAGE_CONFIG } from './voiceConfig.js';
+
 export const VOICE_DEFAULTS = {
-  lang: 'ms-MY',
-  rate: 0.88,
-  pitch: 1,
-  volume: 1
+  lang: LANGUAGE_CONFIG.ms.locale,
+  rate: LANGUAGE_CONFIG.ms.rate,
+  pitch: LANGUAGE_CONFIG.ms.pitch,
+  volume: LANGUAGE_CONFIG.ms.volume
 };
 
 export default VOICE_DEFAULTS;

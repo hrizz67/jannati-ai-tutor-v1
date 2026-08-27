@@ -23,6 +23,14 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 - `learning_events`, `learner_profiles`, dan `learning_states` ialah asas model ternormalisasi; peralihan boleh dibuat berperingkat tanpa memadam blob lama.
 - `activeChildId` hanya menentukan paparan pada peranti semasa.
 
+## Sempadan ownership sebelum hydration
+
+- Setiap snapshot yang mempunyai `__childSnapshotAccountId` mesti sepadan dengan akaun Supabase yang sedang disahkan.
+- Setiap snapshot yang mempunyai `__childSnapshotChildId` mesti sepadan dengan ID pada kunci snapshot tersebut.
+- Snapshot legacy tanpa medan ownership masih boleh dibaca untuk kesinambungan data lama.
+- Snapshot atau root projection yang secara jelas tidak sepadan tidak boleh dinormalisasi, digabung atau diikat semula secara senyap.
+- Data tidak sepadan dipindahkan ke `jannati_merged_child_backup:quarantine-*` supaya boleh diaudit dan dipulihkan tanpa memasuki paparan pembelajaran aktif.
+
 ## Protokol sync v3
 
 1. Client memanggil `get_learning_data_v3` dan menerima `payload` bersama `revision`.
@@ -63,5 +71,7 @@ Rollout mesti diselaraskan; jangan deploy client v3 tanpa migration dan jangan t
 - Login Free ke Premium tidak memindahkan profil Free.
 - Logout dengan pending gagal secara selamat atau meminta pengesahan.
 - Snapshot dengan `account_id` atau `child_id` salah ditolak.
+- Snapshot Free/guest yang dirty tidak boleh menimpa snapshot Premium semasa conflict retry.
+- Root projection milik akaun lain mesti dikuarantin sebelum XP atau kemajuan digunakan untuk hydration.
 - Client v3 pada database v2 kekal read-only dan tidak memanggil legacy write.
 - Delete client kekal disabled sehingga arkib server dan undo lulus gate.

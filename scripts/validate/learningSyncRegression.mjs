@@ -13,6 +13,7 @@ import {
   normalizeActiveLearningProjection,
   recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox,
+  sanitizeLearningPayloadOwnership,
   saveRevisionedCloudLearningData,
   syncRevisionedCloudLearning
 } from '../../src/services/learningSync.js';
@@ -278,6 +279,102 @@ assert.equal(
   'A root projection identified as another child must never be merged into the active learner snapshot.'
 );
 
+const premiumAccountId = 'account-premium';
+const contaminatedGuestSnapshot = JSON.stringify({
+  __childSnapshotChildId: 'child-free',
+  __childSnapshotAccountId: 'guest',
+  __childSnapshotCapturedAt: 1200,
+  jannati_v151_profile: JSON.stringify({ name: 'Fayyadh', year: 'Tahun 2', xp: 999 })
+});
+const validPremiumSnapshot = JSON.stringify({
+  __childSnapshotChildId: originalChild.id,
+  __childSnapshotAccountId: premiumAccountId,
+  __childSnapshotCapturedAt: 1100,
+  jannati_v151_profile: JSON.stringify({
+    name: 'Fayyadh',
+    year: 'Tahun 2',
+    accountId: premiumAccountId,
+    xp: 140
+  })
+});
+const contaminatedOwnershipPayload = {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: contaminatedGuestSnapshot,
+  [`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${originalChild.id}`]: validPremiumSnapshot,
+  jannati_v151_profile: JSON.stringify({
+    name: 'Fayyadh',
+    year: 'Tahun 2',
+    accountId: 'guest',
+    xp: 999
+  })
+};
+const sanitizedOwnershipPayload = sanitizeLearningPayloadOwnership(contaminatedOwnershipPayload, {
+  accountId: premiumAccountId
+});
+assert.equal(
+  sanitizedOwnershipPayload[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`],
+  undefined,
+  'A snapshot declaring another account or child must be rejected before hydration.'
+);
+assert.ok(
+  Object.keys(sanitizedOwnershipPayload).some(key => key.startsWith(`${CHILD_MERGED_BACKUP_PREFIX}quarantine-`)),
+  'Rejected learning data must remain recoverable in an account backup instead of being discarded.'
+);
+const normalizedOwnershipPayload = normalizeActiveLearningProjection(
+  contaminatedOwnershipPayload,
+  originalChild.id,
+  { accountId: premiumAccountId }
+);
+assert.equal(
+  JSON.parse(normalizedOwnershipPayload.jannati_v151_profile).xp,
+  140,
+  'A guest/root XP value must not contaminate the authenticated Premium child projection.'
+);
+assert.equal(
+  JSON.parse(JSON.parse(normalizedOwnershipPayload[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  140,
+  'The valid Premium recovery snapshot must remain canonical after ownership quarantine.'
+);
+
+const fullyContaminatedProjection = normalizeActiveLearningProjection({
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: contaminatedGuestSnapshot,
+  jannati_v151_profile: JSON.stringify({
+    name: 'Fayyadh',
+    year: 'Tahun 2',
+    accountId: 'guest',
+    xp: 999
+  })
+}, originalChild.id, { accountId: premiumAccountId });
+assert.equal(
+  fullyContaminatedProjection.jannati_v151_profile,
+  undefined,
+  'A mismatched root projection must be quarantined when no valid Premium child snapshot exists.'
+);
+assert.equal(
+  fullyContaminatedProjection[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`],
+  undefined,
+  'A mismatched child snapshot must never be rebound silently to the authenticated account.'
+);
+
+const protectedPremiumMerge = mergeCloudLearningPayload({
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: contaminatedGuestSnapshot
+}, {
+  [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
+  [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: validPremiumSnapshot
+}, {
+  accountId: premiumAccountId,
+  dirtyChildIds: [originalChild.id],
+  localActiveChildId: originalChild.id,
+  mergeDirtySnapshots: true
+});
+assert.equal(
+  JSON.parse(JSON.parse(protectedPremiumMerge[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
+  140,
+  'A dirty guest/free snapshot must not overwrite the authenticated Premium child during a conflict retry.'
+);
+
 const cloudXp40Payload = {
   [CLOUD_CHILD_STATE_KEY]: childState([originalChild], originalChild.id),
   [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 1000, 'Fayyadh', 40),
@@ -505,7 +602,9 @@ assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.cur
 assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,700}dirtyChildIdsRef\.current\.add\(childId\)/, 'Initial hydration must recover richer same-child learning before applying a lower cloud projection.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
-assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must normalize the account projection and active child snapshot before storage replacement.');
+assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id, \{ accountId: accountScopeId \}\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must validate ownership, then normalize the account projection and active child snapshot before storage replacement.');
+assert.match(appSource, /syncRevisionedCloudLearning\(supabase, localPayload[\s\S]{0,300}accountId: operationAccountId/, 'Every cloud merge must validate snapshot ownership against the authenticated account.');
+assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,180}accountId: user\.id/, 'Initial recovery must reject snapshots from another account before comparing learning evidence.');
 assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
 assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must persist its checked response before explicitly scheduling an account cloud save.');
 const accountActivationSource = appSource.slice(

@@ -1,14 +1,15 @@
-# Jannati AI Tutor 3.9.3 Release Notes
+# Jannati AI Tutor 3.9.4 Release Notes
 
 Status: stable
-Tag: v3.9.3
-Build date: 2026-08-26T12:51:01.262Z
+Tag: v3.9.4
+Build date: 2026-08-27T11:31:03.124Z
 
 ## Highlights
 
-- Sains animal-energy questions now ask clearly for the intended basic need, preventing reasonable examples such as animal feed from being unfairly marked against an ambiguous prompt.
-- Reviewed interactive questions now expose one consistent stem to the quiz, Tutor AI, and saved-session data.
-- New regression checks prevent the same ambiguity and question-text mismatch from returning.
+- Learning snapshots now cross an ownership gate before merge: wrong-account and wrong-child records are quarantined instead of being projected into Fayyadh or another active profile.
+- Guest, Free, and Premium progress can no longer overwrite one another merely because cloud data is newer or a retry is pending.
+- All read-aloud actions now use one multilingual browser voice engine for BM, English, and Arabic, including mixed Arabic/Rumi text and delayed voice loading on mobile devices.
+- Malay and Arabic never fall back silently to an English or Indonesian voice; the learner receives a clear device voice-pack message instead.
 
 ## Release Readiness
 
