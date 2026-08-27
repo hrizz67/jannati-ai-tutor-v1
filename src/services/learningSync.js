@@ -25,6 +25,80 @@ function parseObject(value) {
   }
 }
 
+function getSnapshotOwnership(rawSnapshot) {
+  const snapshot = parseObject(rawSnapshot);
+  return {
+    snapshot,
+    childId: String(snapshot.__childSnapshotChildId || '').trim(),
+    accountId: String(snapshot.__childSnapshotAccountId || '').trim()
+  };
+}
+
+function buildQuarantineKey(sourceKey = '') {
+  return `${CHILD_MERGED_BACKUP_PREFIX}quarantine-${encodeURIComponent(sourceKey)}`;
+}
+
+/**
+ * Reject a child snapshot before any root projection or cross-device merge can
+ * consume it. Missing ownership fields remain compatible with legacy data,
+ * but an explicit mismatched account/child is never silently rewritten.
+ */
+export function sanitizeLearningPayloadOwnership(payload = {}, options = {}) {
+  const next = isObject(payload) ? { ...payload } : {};
+  const expectedAccountId = String(options.accountId || '').trim();
+
+  Object.entries(next).forEach(([key, raw]) => {
+    const childId = childIdFromSnapshotKey(key);
+    if (!childId) return;
+    const ownership = getSnapshotOwnership(raw);
+    const childMismatch = Boolean(ownership.childId && ownership.childId !== childId);
+    const accountMismatch = Boolean(
+      expectedAccountId
+      && ownership.accountId
+      && ownership.accountId !== expectedAccountId
+    );
+    if (!childMismatch && !accountMismatch) return;
+
+    const quarantineKey = buildQuarantineKey(key);
+    if (typeof next[quarantineKey] !== 'string') {
+      next[quarantineKey] = JSON.stringify({
+        version: 1,
+        reason: childMismatch ? 'child-scope-mismatch' : 'account-scope-mismatch',
+        sourceKey: key,
+        expectedChildId: childId,
+        declaredChildId: ownership.childId || null,
+        expectedAccountId: expectedAccountId || null,
+        declaredAccountId: ownership.accountId || null,
+        snapshot: typeof raw === 'string' ? raw : JSON.stringify(raw || {})
+      });
+    }
+    delete next[key];
+  });
+
+  const rootProfile = parseObject(next.jannati_v151_profile);
+  const rootAccountId = String(rootProfile.accountId || '').trim();
+  if (expectedAccountId && rootAccountId && rootAccountId !== expectedAccountId) {
+    const rootProjection = {};
+    Object.entries(next).forEach(([key, raw]) => {
+      if (!isRootLearningProjectionKey(key)) return;
+      rootProjection[key] = raw;
+      delete next[key];
+    });
+    const quarantineKey = buildQuarantineKey('root-projection');
+    if (typeof next[quarantineKey] !== 'string' && Object.keys(rootProjection).length) {
+      next[quarantineKey] = JSON.stringify({
+        version: 1,
+        reason: 'account-root-scope-mismatch',
+        expectedAccountId,
+        declaredAccountId: rootAccountId,
+        snapshot: rootProjection
+      });
+    }
+  }
+
+  return next;
+}
+
 function parseTimestamp(value) {
   if (Number.isFinite(Number(value))) return Number(value);
   const parsed = Date.parse(String(value || ''));
@@ -484,8 +558,8 @@ export function recoverOrphanedCloudOutbox(localPayload = {}, cloudPayload = {},
   };
   if (!pending || dirtyChildIds.length) return base;
 
-  const local = isObject(localPayload) ? localPayload : {};
-  const cloud = isObject(cloudPayload) ? cloudPayload : {};
+  const local = sanitizeLearningPayloadOwnership(localPayload, options);
+  const cloud = sanitizeLearningPayloadOwnership(cloudPayload, options);
   const localMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
   const cloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
   const localDeletedChildren = normalizeDeletedChildren(localMeta.deletedChildren);
@@ -533,11 +607,13 @@ function isRootLearningProjectionKey(key = '') {
     && !key.startsWith(CHILD_MERGED_BACKUP_PREFIX);
 }
 
-function rootProjectionMatchesChild(payload = {}, childId = '') {
+function rootProjectionMatchesChild(payload = {}, childId = '', expectedAccountId = '') {
   const metadata = parseObject(payload[CLOUD_CHILD_STATE_KEY]);
   const childProfile = listProfiles(metadata, normalizeDeletedChildren(metadata.deletedChildren))
     .find(profile => profile.id === childId);
   const rootProfile = parseObject(payload.jannati_v151_profile);
+  const rootAccountId = String(rootProfile.accountId || '').trim();
+  if (expectedAccountId && rootAccountId && rootAccountId !== expectedAccountId) return false;
   const childIdentity = getChildProfileIdentity(childProfile);
   const rootIdentity = getChildProfileIdentity(rootProfile);
   return !childIdentity || !rootIdentity || childIdentity === rootIdentity;
@@ -551,7 +627,7 @@ function rootProjectionMatchesChild(payload = {}, childId = '') {
  */
 export function normalizeActiveLearningProjection(payload = {}, activeChildId = '', options = {}) {
   const childId = String(activeChildId || '').trim();
-  const next = isObject(payload) ? { ...payload } : {};
+  const next = sanitizeLearningPayloadOwnership(payload, options);
   if (!childId) return next;
 
   const snapshotKey = `${CHILD_SNAPSHOT_PREFIX}${childId}`;
@@ -560,7 +636,10 @@ export function normalizeActiveLearningProjection(payload = {}, activeChildId = 
   const combined = parseObject(combinedRaw);
   let hasLearningData = Object.keys(combined).some(key => !key.startsWith('__'));
 
-  if (options.mergeRoot !== false && rootProjectionMatchesChild(next, childId)) {
+  if (
+    options.mergeRoot !== false
+    && rootProjectionMatchesChild(next, childId, String(options.accountId || '').trim())
+  ) {
     Object.entries(next).forEach(([key, value]) => {
       if (!isRootLearningProjectionKey(key) || typeof value !== 'string') return;
       combined[key] = mergeStoredLearningValue(combined[key], value, key);
@@ -598,8 +677,8 @@ export function recoverMonotonicCloudGap(localPayload = {}, cloudPayload = {}, o
     recovered: false,
     reconcileChildIdentity: false
   };
-  const local = isObject(localPayload) ? localPayload : {};
-  const cloud = isObject(cloudPayload) ? cloudPayload : {};
+  const local = sanitizeLearningPayloadOwnership(localPayload, options);
+  const cloud = sanitizeLearningPayloadOwnership(cloudPayload, options);
   const localMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
   const cloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
   const localProfiles = listProfiles(localMeta, normalizeDeletedChildren(localMeta.deletedChildren));
@@ -618,8 +697,8 @@ export function recoverMonotonicCloudGap(localPayload = {}, cloudPayload = {}, o
   }
   if (!cloudProfile) return base;
 
-  const normalizedLocal = normalizeActiveLearningProjection(local, localProfile.id);
-  const normalizedCloud = normalizeActiveLearningProjection(cloud, cloudProfile.id);
+  const normalizedLocal = normalizeActiveLearningProjection(local, localProfile.id, options);
+  const normalizedCloud = normalizeActiveLearningProjection(cloud, cloudProfile.id, options);
   const localRaw = normalizedLocal[`${CHILD_SNAPSHOT_PREFIX}${localProfile.id}`];
   const storedCloudRaw = cloud[`${CHILD_SNAPSHOT_PREFIX}${cloudProfile.id}`];
   const cloudRaw = normalizedCloud[`${CHILD_SNAPSHOT_PREFIX}${cloudProfile.id}`];
@@ -667,17 +746,19 @@ function chooseSnapshot(localRaw, cloudRaw, preferLocal) {
 }
 
 export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, options = {}) {
-  let local = isObject(localPayload) ? localPayload : {};
-  let cloud = isObject(cloudPayload) ? cloudPayload : {};
+  let local = sanitizeLearningPayloadOwnership(localPayload, options);
+  let cloud = sanitizeLearningPayloadOwnership(cloudPayload, options);
   const initialLocalMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
   const initialCloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
   local = normalizeActiveLearningProjection(
     local,
-    options.localActiveChildId || initialLocalMeta.activeChildId || listProfiles(initialLocalMeta)[0]?.id
+    options.localActiveChildId || initialLocalMeta.activeChildId || listProfiles(initialLocalMeta)[0]?.id,
+    options
   );
   cloud = normalizeActiveLearningProjection(
     cloud,
-    initialCloudMeta.activeChildId || listProfiles(initialCloudMeta)[0]?.id
+    initialCloudMeta.activeChildId || listProfiles(initialCloudMeta)[0]?.id,
+    options
   );
   let dirtyChildIds = new Set((options.dirtyChildIds || []).filter(Boolean).map(String));
   let localActiveChildId = options.localActiveChildId;
@@ -730,7 +811,10 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
     deviceId: String(options.deviceId || '').trim() || null,
     updatedAt: new Date().toISOString()
   });
-  return normalizeActiveLearningProjection(merged, activeChildId, { mergeRoot: false });
+  return normalizeActiveLearningProjection(merged, activeChildId, {
+    ...options,
+    mergeRoot: false
+  });
 }
 
 function normalizeEnvelope(value = {}) {

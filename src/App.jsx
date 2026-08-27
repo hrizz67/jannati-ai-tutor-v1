@@ -628,7 +628,7 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     const cloudActive = cloudProfiles.find(item => item.id === metadata.activeChildId);
     const active = preferred || localActive || cloudActive || cloudProfiles[0] || null;
     const normalizedCloudData = active
-      ? normalizeActiveLearningProjection(cloudData, active.id)
+      ? normalizeActiveLearningProjection(cloudData, active.id, { accountId: accountScopeId })
       : cloudData;
     if (!restoreAccountSnapshot(normalizedCloudData, accountScopeId)) return '';
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
@@ -1420,6 +1420,7 @@ export default function App() {
           dirtyChildIds,
           localActiveChildId: activeChildId,
           deviceId: getSyncDeviceId(),
+          accountId: operationAccountId,
           reconcileChildIdentity
         });
         const currentAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
@@ -1799,7 +1800,8 @@ export default function App() {
       ) {
         const localLearningData = buildCloudLearningPayload();
         const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudLearningData, {
-          localActiveChildId: readActiveChildId()
+          localActiveChildId: readActiveChildId(),
+          accountId: user.id
         });
         if (recoveredGap.recovered) {
           recoveredGap.dirtyChildIds.forEach(childId => {
@@ -1822,7 +1824,8 @@ export default function App() {
         const recoveredOutbox = recoverOrphanedCloudOutbox(localLearningData, cloudLearningData, {
           pending: true,
           dirtyChildIds: [],
-          localActiveChildId: readActiveChildId()
+          localActiveChildId: readActiveChildId(),
+          accountId: user.id
         });
         if (recoveredOutbox.recovered) {
           recoveredOutbox.dirtyChildIds.forEach(childId => {
@@ -2178,7 +2181,8 @@ export default function App() {
         if (cloudSignature !== lastCloudSignatureRef.current) {
           const localLearningData = buildCloudLearningPayload();
           const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudResult.data, {
-            localActiveChildId: readActiveChildId()
+            localActiveChildId: readActiveChildId(),
+            accountId: accountUser.id
           });
           if (recoveredGap.recovered) {
             recoveredGap.dirtyChildIds.forEach(childId => {
@@ -3980,7 +3984,7 @@ export default function App() {
     const safeHint = buildChildSafeHint(question, activeSubject, [coachKnowledgeData?.hint, coachingDecision?.hint, teachingStrategy?.hint, question?.hint]);
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '))} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '), { subjectId: activeSubject?.id })} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -6174,17 +6178,15 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }, []);
 
   function stopAudio() {
-    try {
-      window.speechSynthesis?.cancel?.();
-    } catch {}
+    stopVoice();
   }
 
   async function playAudio() {
     try {
       stopAudio();
       setAudioMessage('');
-      const played = await speak(item.prompt, { lang: item.speechLang });
-      if (!played) {
+      const played = await speak(item.prompt, { language: item.speechLang });
+      if (!played.success) {
         const languageLabel = base.language === 'BM'
           ? 'Bahasa Melayu'
           : base.language;

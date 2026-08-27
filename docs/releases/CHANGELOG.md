@@ -1,12 +1,17 @@
 # Changelog
 
-## 3.9.3 - 2026-08-26
+## 3.9.4 - 2026-08-27
 
 ### Fixed
 
-- Clarified animal-energy questions so pupils are asked for the intended basic-needs category instead of an open-ended food example.
-- Kept reviewed interactive stems consistent across the quiz, Tutor AI context, and saved learning sessions.
-- Added regression gates for underdetermined food prompts and mismatched interactive question text.
+- Reject and quarantine explicitly mismatched account or child learning snapshots before they can enter the active profile projection.
+- Prevent stale guest, free-account, or wrong-child data from replacing newer Premium learning progress during cloud hydration, conflict recovery, or retry.
+- Route listening playback and legacy read-aloud helpers through one speech owner so repeated actions cannot create overlapping browser speech.
+
+### Added
+
+- Add a multilingual BM, English, and Arabic voice engine with strict same-language voice selection, delayed mobile voice loading, mixed Arabic/Rumi sequencing, replay, pause, resume, status, and controlled result codes.
+- Add regression coverage for learning-data ownership, invalid voice fallback, language priority, mixed-language speech, delayed `voiceschanged`, and non-overlapping queued playback.
 
 ### Release controls
 

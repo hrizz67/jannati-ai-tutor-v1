@@ -4,13 +4,6 @@ import { supportsVoice } from '../ai/voice/voiceCapability.js';
 import GameBadge from './GameBadge.jsx';
 import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
 
-function resolveVoiceLanguage(language = 'ms-MY') {
-  const value = String(language || '').toLowerCase();
-  if (value.startsWith('en')) return 'en-US';
-  if (value.startsWith('ar')) return 'ar-SA';
-  return 'ms-MY';
-}
-
 export default function VoiceButton({ text = '', label = 'Baca', className = '', title = 'Baca kuat', size = 'sm', lang = 'ms-MY' }) {
   if (!supportsVoice() || !String(text || '').trim()) return null;
   return <VoiceButtonControl text={text} label={label} className={className} title={title} size={size} lang={lang} />;
@@ -21,8 +14,14 @@ function VoiceButtonControl({ text, label, className, title, size, lang }) {
 
   async function handleSpeak() {
     setStatus('');
-    const played = await speak(text, { lang: resolveVoiceLanguage(lang) });
-    if (!played) setStatus('Voice bahasa ini tiada pada peranti.');
+    try {
+      const played = await speak(text, { language: lang });
+      if (!played.success && played.code !== 'CANCELLED') {
+        setStatus('Voice bahasa ini tiada pada peranti.');
+      }
+    } catch {
+      setStatus('Voice bahasa ini tiada pada peranti.');
+    }
   }
 
   return (
