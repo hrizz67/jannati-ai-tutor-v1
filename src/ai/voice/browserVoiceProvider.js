@@ -119,15 +119,6 @@ export async function speakBrowserSegment(text, options = {}) {
   const config = getLanguageConfig(language);
   const voices = options.voices || await loadBrowserVoices(options);
   const voice = options.voice || selectBestVoice(voices, language);
-  if (!voice) {
-    return {
-      ok: false,
-      success: false,
-      code: VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE,
-      language,
-      message: `Voice pack ${config.locale} tidak tersedia pada peranti ini.`
-    };
-  }
 
   return new Promise(resolve => {
     let settled = false;
@@ -139,8 +130,11 @@ export async function speakBrowserSegment(text, options = {}) {
       resolve(result);
     };
     utterance = new window.SpeechSynthesisUtterance(String(text || ''));
-    utterance.lang = voice.lang || config.locale;
-    utterance.voice = voice;
+    // Some mobile browsers can speak a requested system language even while
+    // getVoices() returns an empty/incomplete list. Leaving `voice` unset and
+    // providing the locale lets the operating system select its native voice.
+    utterance.lang = voice?.lang || config.locale;
+    if (voice) utterance.voice = voice;
     utterance.rate = options.rate;
     utterance.pitch = options.pitch;
     utterance.volume = options.volume;
@@ -150,19 +144,27 @@ export async function speakBrowserSegment(text, options = {}) {
       success: true,
       code: VOICE_RESULT_CODES.SPOKEN,
       language,
-      voiceName: voice.name || '',
-      voiceLanguage: voice.lang || config.locale
+      voiceName: voice?.name || 'Auto peranti',
+      voiceLanguage: voice?.lang || config.locale
     });
-    utterance.onerror = event => settle({
-      ok: false,
-      success: false,
-      code: event?.error === 'canceled' || event?.error === 'interrupted'
+    utterance.onerror = event => {
+      const error = event?.error || 'speech-error';
+      const code = error === 'canceled' || error === 'interrupted'
         ? VOICE_RESULT_CODES.CANCELLED
-        : VOICE_RESULT_CODES.SPEECH_ERROR,
-      language,
-      error: event?.error || 'speech-error',
-      message: 'Bacaan suara tidak dapat dimainkan.'
-    });
+        : ['language-unavailable', 'voice-unavailable', 'synthesis-unavailable'].includes(error)
+          ? VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE
+          : VOICE_RESULT_CODES.SPEECH_ERROR;
+      settle({
+        ok: false,
+        success: false,
+        code,
+        language,
+        error,
+        message: code === VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE
+          ? `Voice pack ${config.locale} tidak tersedia pada peranti ini.`
+          : 'Bacaan suara tidak dapat dimainkan.'
+      });
+    };
 
     activeSpeech = { utterance, settle };
     try {

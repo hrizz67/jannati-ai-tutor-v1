@@ -762,7 +762,15 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   );
   let dirtyChildIds = new Set((options.dirtyChildIds || []).filter(Boolean).map(String));
   let localActiveChildId = options.localActiveChildId;
-  if (options.reconcileChildIdentity) {
+  // Every authenticated device is already isolated inside the same account
+  // storage namespace. Reconcile a unique name/year identity on every
+  // account-scoped merge so an older mobile-generated child ID cannot remain
+  // active while a desktop uses the canonical cloud child ID. Guest payloads
+  // still require an explicit login migration flag, preventing free learning
+  // from being joined to an unrelated Premium account by display name alone.
+  const reconcileAuthenticatedProfiles = Boolean(String(options.accountId || '').trim())
+    && options.reconcileAuthenticatedProfiles !== false;
+  if (options.reconcileChildIdentity || reconcileAuthenticatedProfiles) {
     const reconciled = buildProfileReconciliation(local, cloud, options);
     local = reconciled.local;
     cloud = reconciled.cloud;
