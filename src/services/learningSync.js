@@ -9,6 +9,11 @@ export const CLOUD_SYNC_PROTOCOL_VERSION = 3;
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
 const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
+const GLOBAL_XP_PROFILE_KEYS = ['jannati_v151_profile', 'jannati_v150_profile', 'jannati_v140_profile'];
+const GLOBAL_XP_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
+const STUDENT_CORE_KEY = 'jannati_v152_student_core';
+const ADAPTIVE_PROFILE_KEY = 'jannati.adaptive.studentProfile';
+const GAMIFICATION_PROFILE_KEY = 'jannati.gamification.profile';
 
 function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -23,6 +28,61 @@ function parseObject(value) {
   } catch {
     return {};
   }
+}
+
+function harmonizeSnapshotGlobalXp(snapshot = {}) {
+  const next = { ...snapshot };
+  const records = new Map();
+  const trackedKeys = [
+    ...GLOBAL_XP_PROFILE_KEYS,
+    ...GLOBAL_XP_MEMORY_KEYS,
+    STUDENT_CORE_KEY,
+    ADAPTIVE_PROFILE_KEY,
+    GAMIFICATION_PROFILE_KEY
+  ];
+  trackedKeys.forEach(key => {
+    if (typeof next[key] !== 'string') return;
+    const parsed = parseObject(next[key]);
+    if (Object.keys(parsed).length) records.set(key, parsed);
+  });
+
+  const studentCore = records.get(STUDENT_CORE_KEY) || {};
+  const candidates = [
+    ...GLOBAL_XP_PROFILE_KEYS.map(key => records.get(key)?.xp),
+    ...GLOBAL_XP_MEMORY_KEYS.map(key => records.get(key)?.xp),
+    records.get(ADAPTIVE_PROFILE_KEY)?.xp,
+    records.get(ADAPTIVE_PROFILE_KEY)?.totalXp,
+    records.get(GAMIFICATION_PROFILE_KEY)?.xp,
+    records.get(GAMIFICATION_PROFILE_KEY)?.totalXp,
+    studentCore.profile?.xp,
+    studentCore.core?.xp
+  ];
+  const globalXp = Math.max(0, ...candidates.map(value => Number(value) || 0));
+  if (globalXp <= 0) return next;
+
+  const writeRecord = (key, value) => {
+    if (records.has(key)) next[key] = JSON.stringify(value);
+  };
+  GLOBAL_XP_PROFILE_KEYS.forEach(key => {
+    const record = records.get(key);
+    if (record) writeRecord(key, { ...record, xp: globalXp });
+  });
+  GLOBAL_XP_MEMORY_KEYS.forEach(key => {
+    const record = records.get(key);
+    if (record) writeRecord(key, { ...record, xp: globalXp });
+  });
+  const adaptive = records.get(ADAPTIVE_PROFILE_KEY);
+  if (adaptive) writeRecord(ADAPTIVE_PROFILE_KEY, { ...adaptive, xp: globalXp });
+  const gamification = records.get(GAMIFICATION_PROFILE_KEY);
+  if (gamification) writeRecord(GAMIFICATION_PROFILE_KEY, { ...gamification, xp: globalXp });
+  if (records.has(STUDENT_CORE_KEY)) {
+    writeRecord(STUDENT_CORE_KEY, {
+      ...studentCore,
+      ...(isObject(studentCore.profile) ? { profile: { ...studentCore.profile, xp: globalXp } } : {}),
+      ...(isObject(studentCore.core) ? { core: { ...studentCore.core, xp: globalXp } } : {})
+    });
+  }
+  return next;
 }
 
 function getSnapshotOwnership(rawSnapshot) {
@@ -650,10 +710,11 @@ export function normalizeActiveLearningProjection(payload = {}, activeChildId = 
 
   const accountId = combined.__childSnapshotAccountId || '';
   const deviceId = combined.__childSnapshotDeviceId || '';
+  const harmonized = harmonizeSnapshotGlobalXp(combined);
   const normalizedSnapshot = {
-    ...combined,
+    ...harmonized,
     __childSnapshotChildId: childId,
-    __childSnapshotCapturedAt: parseTimestamp(combined.__childSnapshotCapturedAt) || Date.now(),
+    __childSnapshotCapturedAt: parseTimestamp(harmonized.__childSnapshotCapturedAt) || Date.now(),
     ...(accountId ? { __childSnapshotAccountId: accountId } : {}),
     ...(deviceId ? { __childSnapshotDeviceId: deviceId } : {})
   };

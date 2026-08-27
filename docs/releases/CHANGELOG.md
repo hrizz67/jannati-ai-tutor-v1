@@ -1,18 +1,18 @@
 # Changelog
 
-## 3.9.5 - 2026-08-27
+## 3.9.6 - 2026-08-27
 
 ### Fixed
 
-- Reconcile a stale mobile-generated child ID with the canonical cloud child automatically during every authenticated account merge.
-- Keep the richer XP and learning evidence when desktop and mobile submit the same learner under different historical child IDs.
-- Allow the operating system to select the requested `ms-MY`, `en-GB`, or `ar-SA` voice when a mobile browser exposes an empty or incomplete voice list.
+- Converge every redundant XP projection in a child snapshot on the highest valid global XP during cloud hydration.
+- Prevent a stale adaptive, gamification, AI-memory, or student-core cache from hiding richer learning progress on another device at the same cloud revision.
+- Repair imported cloud learning data across all XP stores before the dashboard renders the active child.
 
 ### Safety
 
-- Automatic identity reconciliation remains disabled for guest payloads, so Free learning cannot be joined to a Premium account by display name alone.
-- Explicitly installed English or Indonesian voices are never selected as a Malay replacement; the system receives the requested Malay locale instead.
-- Voice failures now distinguish unsupported browsers, missing language packs, and general audio errors.
+- XP reconciliation is monotonic and never adds duplicated projections, so repeated sync cannot multiply rewards.
+- Reconciliation remains contained within the active child snapshot and preserves existing account and child ownership checks.
+- Added regression fixtures for the real mismatch case where cloud profile XP is higher than the mobile adaptive cache.
 
 ### Release controls
 

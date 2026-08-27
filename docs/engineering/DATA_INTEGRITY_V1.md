@@ -14,6 +14,7 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 8. Snapshot daripada akaun atau anak yang tidak sepadan mesti ditolak sebelum storan aktif dikosongkan.
 9. Pemadaman profil ialah arkib server dengan revision dan laluan undo. Hard delete pada client tidak dibenarkan.
 10. Sebelum setiap penggantian snapshot server, salinan revision sebelumnya mesti disimpan.
+11. Semua storan yang memaparkan XP global bagi anak yang sama ialah projection kepada satu nilai, bukan ganjaran berasingan; ia mesti ditumpukan kepada nilai sah tertinggi tanpa penambahan.
 
 ## Sumber kebenaran
 
@@ -32,6 +33,7 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 - Data tidak sepadan dipindahkan ke `jannati_merged_child_backup:quarantine-*` supaya boleh diaudit dan dipulihkan tanpa memasuki paparan pembelajaran aktif.
 - Selepas akaun Supabase yang sama disahkan, identiti unik `nama + tahun` pada dua peranti dipetakan kepada ID anak cloud yang kanonik. Laluan ini tidak aktif untuk guest dan tidak melintasi sempadan akaun.
 - Apabila ID sejarah dipetakan semula, snapshot digabung secara monotonik: XP menggunakan nilai maksimum dan bukti topik/sejarah yang berbeza dikekalkan tanpa menggandakan rekod yang sama.
+- Sebelum hydration dipaparkan, XP dalam profil utama, profil adaptif, gamifikasi, memori AI dan student core mesti diselaraskan dalam snapshot anak yang sama. Revision cloud yang sama tidak boleh menghasilkan XP dashboard yang berbeza.
 
 ## Protokol sync v3
 
@@ -76,5 +78,6 @@ Rollout mesti diselaraskan; jangan deploy client v3 tanpa migration dan jangan t
 - Snapshot dengan `account_id` atau `child_id` salah ditolak.
 - Snapshot Free/guest yang dirty tidak boleh menimpa snapshot Premium semasa conflict retry.
 - Root projection milik akaun lain mesti dikuarantin sebelum XP atau kemajuan digunakan untuk hydration.
+- Profil utama dengan XP lebih tinggi daripada cache adaptif atau gamifikasi mesti kekal sebagai XP global kanonik pada semua peranti selepas hydration revision yang sama.
 - Client v3 pada database v2 kekal read-only dan tidak memanggil legacy write.
 - Delete client kekal disabled sehingga arkib server dan undo lulus gate.

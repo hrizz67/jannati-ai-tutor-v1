@@ -757,7 +757,16 @@ function repairImportedLearningProfile() {
     const profile = readJson(PROFILE_KEY);
     const adaptive = readJson('jannati.adaptive.studentProfile');
     const memory = readJson('jannati_v151_ai_memory');
-    const xp = Math.max(Number(profile.xp) || 0, Number(adaptive.xp) || 0, Number(memory.xp) || 0);
+    const studentCore = readJson('jannati_v152_student_core');
+    const gamification = readJson('jannati.gamification.profile');
+    const xp = Math.max(
+      Number(profile.xp) || 0,
+      Number(adaptive.xp) || 0,
+      Number(memory.xp) || 0,
+      Number(studentCore.profile?.xp) || 0,
+      Number(studentCore.core?.xp) || 0,
+      Number(gamification.xp) || 0
+    );
     const streak = Math.max(Number(profile.streak) || 0, Number(adaptive.streak) || 0, Number(memory.studyStreak) || 0);
     if (xp <= 0 && streak <= 0) return null;
 
@@ -768,11 +777,12 @@ function repairImportedLearningProfile() {
       name: profile.name || adaptive.name || 'Fayyadh'
     };
     localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
+    localStorage.setItem('jannati.adaptive.studentProfile', JSON.stringify({ ...adaptive, xp }));
+    localStorage.setItem('jannati_v151_ai_memory', JSON.stringify({ ...memory, xp }));
 
     // The export may contain a stale v152 core profile with xp: 0. Keep the
     // canonical student core aligned so the next state load cannot overwrite
     // the repaired legacy/adaptive progress.
-    const studentCore = readJson('jannati_v152_student_core');
     localStorage.setItem('jannati_v152_student_core', JSON.stringify({
       ...studentCore,
       profile: nextProfile,
@@ -785,7 +795,6 @@ function repairImportedLearningProfile() {
       updatedAt: new Date().toISOString()
     }));
 
-    const gamification = readJson('jannati.gamification.profile');
     localStorage.setItem('jannati.gamification.profile', JSON.stringify({
       version: 1,
       ...gamification,
