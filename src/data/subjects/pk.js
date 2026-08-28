@@ -1,40 +1,8 @@
 import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+import { alignQuestionDemand, deterministicOptionOrder } from '../../utils/questionDemand.js';
 
 const SUBJECT = "Pendidikan Kesihatan Tahun 2";
 const DSKP = "KSSR Semakan Pendidikan Kesihatan Tahun 2";
-
-const difficultyFor = (index) => {
-  if (index < 20) return "mudah";
-  if (index < 40) return "sederhana";
-  return "sukar";
-};
-
-const COGNITIVE_SEQUENCE_BY_TOPIC = Object.freeze({
-  KEBERSIHAN_DIRI: ["mengaplikasi", "memahami", "menganalisis", "mengaplikasi", "menilai"],
-  PEMAKANAN_SIHAT: ["memahami", "mengaplikasi", "menganalisis", "mengaplikasi", "memahami"],
-  KESELAMATAN_DIRI: ["mengaplikasi", "mengaplikasi", "mengaplikasi", "menganalisis", "menilai"],
-  KESIHATAN_MENTAL_EMOSI: ["mengaplikasi", "memahami", "mengaplikasi", "menganalisis", "menganalisis"],
-  KESELAMATAN_JALAN_RAYA: ["mengaplikasi", "menganalisis", "mengaplikasi", "mengaplikasi", "menilai"],
-  PENCEGAHAN_PENYAKIT: ["mengaplikasi", "memahami", "mengaplikasi", "menganalisis", "menilai"],
-  PERTOLONGAN_CEMAS_ASAS: ["mengaplikasi", "mengaplikasi", "menganalisis", "menganalisis", "memahami"],
-  KESIHATAN_PERSEKITARAN: ["mengaplikasi", "menganalisis", "mengaplikasi", "menilai", "menganalisis"],
-  GAYA_HIDUP_SIHAT: ["memahami", "memahami", "menganalisis", "mengaplikasi", "menganalisis"],
-});
-
-const cognitiveLevelFor = (topicCode, index) => {
-  const sequence = COGNITIVE_SEQUENCE_BY_TOPIC[topicCode];
-  if (sequence) return sequence[index % sequence.length];
-  if (index < 10) return "mengingat";
-  if (index < 20) return "memahami";
-  if (index < 35) return "mengaplikasi";
-  if (index < 45) return "menganalisis";
-  return "menilai";
-};
-
-const optionSet = (answer, options) => {
-  const unique = [answer, ...options.filter((item) => item !== answer)];
-  return [...new Set(unique)].slice(0, 4).sort();
-};
 
 const ask = (question, answer, options, hint, explanation, extras = {}) => ({
   question,
@@ -55,18 +23,22 @@ const contextualChoiceAsk = (question, answer, options, frame, hint, explanation
 
 const makeQuestion = (topicCode, topicTitle, item, index) => {
   const question = item.question;
+  const id = `PK-${topicCode}-${String(index + 1).padStart(3, "0")}`;
+  const demand = alignQuestionDemand({ ...item, id, q: question, question }, { forceCanonical: true });
   return {
-    id: `PK-${topicCode}-${String(index + 1).padStart(3, "0")}`,
+    id,
     subject: SUBJECT,
     topic: topicTitle,
-    difficulty: difficultyFor(index),
+    difficulty: demand.difficulty,
     question,
     q: question,
-    options: optionSet(item.answer, item.options),
+    options: deterministicOptionOrder(item.answer, [item.answer, ...item.options], id, 4),
     answer: item.answer,
     accepted: [...new Set([item.answer, ...(item.accepted || [])])],
     questionType: item.questionType || "objective",
-    cognitiveLevel: item.cognitiveLevel || cognitiveLevelFor(topicCode, index),
+    cognitiveLevel: demand.cognitiveLevel,
+    demandAudit: demand.demandAudit,
+    qualityReview: item.qualityReview || '',
     hint: item.hint,
     explanation: item.explanation,
     uasa: "UASA",
@@ -117,7 +89,7 @@ const pemakananPairs = [
 ].flatMap(([amalan, answer, explanation]) => [
   contextualChoiceAsk(`Apakah kebaikan ${amalan}?`, answer, [answer, "menyebabkan cepat letih", "membuat badan kotor", "mengurangkan tumpuan"], (choice) => `Kebaikan ${amalan} ialah ${choice}.`, "Fikirkan manfaat makanan kepada badan.", explanation),
   contextualChoiceAsk(`Apakah pilihan paling sihat berkaitan amalan ${amalan}?`, amalan.includes("air kosong") ? "air kosong" : amalan.includes("buah") ? "buah" : amalan.includes("sayur") ? "sayur" : "makanan seimbang", ["air kosong", "buah", "sayur", "makanan seimbang", "gula-gula", "minuman bergas"], (choice) => `Pilihan sihat berkaitan ${amalan} ialah ${choice}.`, "Pilih makanan atau minuman yang membantu badan sihat.", "Pilihan makanan sihat membantu murid membesar, belajar dan bermain dengan baik."),
-  contextualChoiceAsk(`Mengapakah murid tidak digalakkan makan makanan terlalu manis setiap hari semasa ${amalan}?`, "boleh merosakkan gigi", ["boleh merosakkan gigi", "membuat kuku bersih", "membuat mata lebih besar", "menjadikan kasut kemas"], (choice) => `Jika diambil terlalu kerap semasa ${amalan}, makanan terlalu manis ${choice}.`, "Gula yang banyak tidak baik untuk gigi.", "Makanan terlalu manis boleh merosakkan gigi dan tidak baik jika diambil berlebihan."),
+  contextualChoiceAsk(`Mengapakah murid tidak digalakkan makan makanan terlalu manis setiap hari semasa ${amalan}?`, "boleh meningkatkan risiko gigi berlubang", ["boleh meningkatkan risiko gigi berlubang", "membantu membersihkan gigi", "menjadikan gigi lebih kuat", "menggantikan keperluan memberus gigi"], (choice) => `Jika diambil terlalu kerap semasa ${amalan}, makanan terlalu manis ${choice}.`, "Fikirkan kesan gula yang banyak kepada kesihatan gigi.", "Makanan terlalu manis boleh meningkatkan risiko gigi berlubang jika diambil terlalu kerap.", { qualityReview: "Q2-distractor-repair" }),
   contextualChoiceAsk(`Apakah tindakan betul jika makanan berbau pelik ketika ${amalan}?`, "jangan makan dan beritahu guru", ["jangan makan dan beritahu guru", "makan cepat-cepat", "kongsi dengan rakan", "simpan dalam beg"], (choice) => `Jika makanan berbau pelik ketika ${amalan}, tindakan murid ialah ${choice}.`, "Makanan rosak boleh menyebabkan sakit perut.", "Murid perlu menolak makanan yang rosak dan memberitahu orang dewasa."),
   contextualChoiceAsk(`Apakah maksud pemakanan sihat dalam situasi ${amalan}?`, "memilih makanan baik untuk tubuh", ["memilih makanan baik untuk tubuh", "makan jajan sahaja", "tidak minum air", "makan tanpa basuh tangan"], (choice) => `Dalam situasi ${amalan}, pemakanan sihat bermaksud ${choice}.`, "Pemakanan sihat membantu badan.", "Pemakanan sihat bermaksud memilih makanan bersih, seimbang dan sesuai untuk tubuh."),
 ]);
@@ -214,7 +186,7 @@ const pertolonganPairs = [
   contextualChoiceAsk(`Siapakah yang perlu dipanggil apabila ${situasi}?`, "guru", orangDipercayai, (choice) => `Apabila ${situasi}, murid perlu memanggil ${choice}.`, "Di sekolah, guru boleh membantu.", "Guru atau orang dewasa perlu dipanggil supaya bantuan diberi dengan betul."),
   contextualChoiceAsk(`Mengapakah murid tidak boleh panik apabila ${situasi}?`, "supaya boleh mendapatkan bantuan", ["supaya boleh mendapatkan bantuan", "supaya rakan takut", "supaya lambat bertindak", "supaya luka kotor"], (choice) => `Murid perlu bertenang apabila ${situasi} ${choice}.`, "Tenang membantu kita fikir dengan baik.", "Bertenang membantu murid memanggil bantuan dan mengikut arahan dengan selamat."),
   contextualChoiceAsk(`Apakah perkara yang tidak patut dibuat apabila ${situasi}?`, "sembunyikan kejadian", ["sembunyikan kejadian", "beritahu guru", "duduk dengan tenang", "minta bantuan"], (choice) => `Perkara yang tidak patut dilakukan apabila ${situasi} ialah ${choice}.`, "Kecederaan perlu diketahui orang dewasa.", "Menyembunyikan kejadian boleh melambatkan bantuan dan membahayakan murid."),
-  contextualChoiceAsk(`Apakah tujuan pertolongan cemas dalam situasi ${situasi}?`, "memberi bantuan awal", ["memberi bantuan awal", "menggantikan doktor sepenuhnya", "membuat rakan malu", "meneruskan permainan"], (choice) => `Dalam situasi ${situasi}, tujuan pertolongan cemas ialah ${choice}.`, "Pertolongan cemas ialah bantuan pertama.", "Pertolongan cemas memberi bantuan awal sebelum rawatan lanjut jika diperlukan."),
+  contextualChoiceAsk(`Apakah tujuan pertolongan cemas dalam situasi ${situasi}?`, "memberi bantuan awal sebelum rawatan lanjut", ["memberi bantuan awal sebelum rawatan lanjut", "menggantikan semua rawatan doktor", "membenarkan aktiviti diteruskan dengan segera", "menentukan sendiri semua ubat yang diperlukan"], (choice) => `Dalam situasi ${situasi}, tujuan pertolongan cemas ialah ${choice}.`, "Pertolongan cemas dilakukan sebelum bantuan lanjut jika diperlukan.", "Pertolongan cemas memberi bantuan awal sebelum rawatan lanjut jika diperlukan.", { qualityReview: "Q2-distractor-repair" }),
 ]);
 
 const persekitaranPairs = [
@@ -230,7 +202,7 @@ const persekitaranPairs = [
   ["alat permainan berselerak", "susun semula alat", "Alat tersusun mengelakkan murid tersadung."],
 ].flatMap(([situasi, answer, explanation]) => [
   contextualChoiceAsk(`Apakah tindakan menjaga kesihatan persekitaran apabila ${situasi}?`, answer, [answer, "biarkan sahaja", "tambah sampah", "sembunyikan kotoran"], (choice) => `Apabila ${situasi}, tindakan menjaga kesihatan persekitaran ialah "${choice}".`, "Persekitaran bersih membantu kesihatan.", explanation),
-  contextualChoiceAsk(`Mengapakah murid perlu menjaga kebersihan persekitaran semasa ${situasi}?`, "mengelakkan kuman dan bahaya", ["mengelakkan kuman dan bahaya", "membuat kelas berbau", "menambah bilangan nyamuk", "membuat lantai licin"], (choice) => `Menjaga kebersihan persekitaran semasa ${situasi} membantu ${choice}.`, "Tempat bersih lebih selamat.", "Persekitaran bersih membantu mencegah penyakit dan kemalangan kecil."),
+  contextualChoiceAsk(`Mengapakah murid perlu menjaga kebersihan persekitaran semasa ${situasi}?`, "mengurangkan risiko kuman dan bahaya", ["mengurangkan risiko kuman dan bahaya", "mengurangkan keperluan membasuh tangan", "menggantikan semua amalan kebersihan diri", "membolehkan makanan dibiarkan terbuka"], (choice) => `Menjaga kebersihan persekitaran semasa ${situasi} membantu ${choice}.`, "Fikirkan kesan tempat yang bersih kepada kesihatan dan keselamatan.", "Persekitaran bersih membantu mengurangkan risiko penyakit dan kemalangan kecil.", { qualityReview: "Q2-distractor-repair" }),
   contextualChoiceAsk(`Siapakah yang patut bekerjasama apabila ${situasi}?`, "semua murid", ["semua murid", "seorang murid sahaja", "orang tidak dikenali", "murid yang lewat sahaja"], (choice) => `Apabila ${situasi}, pihak yang patut bekerjasama ialah ${choice}.`, "Kebersihan sekolah ialah tanggungjawab bersama.", "Semua murid perlu bekerjasama menjaga kelas dan sekolah."),
   contextualChoiceAsk(`Apakah nilai yang diamalkan apabila murid ${answer} semasa ${situasi}?`, "bertanggungjawab", nilai, (choice) => `Apabila murid melakukan tindakan "${answer}" semasa ${situasi}, nilai yang diamalkan ialah ${choice}.`, "Menjaga tempat belajar ialah tanggungjawab.", "Bertanggungjawab terhadap persekitaran menjadikan sekolah lebih selesa."),
   contextualChoiceAsk(`Apakah kesan baik jika murid bertindak betul apabila ${situasi}?`, "tempat lebih bersih dan selamat", ["tempat lebih bersih dan selamat", "lebih banyak kuman", "lebih banyak lalat", "murid mudah jatuh"], (choice) => `Kesan apabila murid bertindak betul semasa ${situasi} ialah ${choice}.`, "Fikirkan kebaikan kepada semua.", "Tempat yang bersih dan selamat membantu murid belajar dengan selesa."),
@@ -269,7 +241,6 @@ const uasaCampuran = [
   ...item,
   question: `Soalan ulang kaji UASA: ${item.question}`,
   explanation: `${item.explanation} Jawapan ini sesuai untuk soalan situasi Pendidikan Kesihatan Tahun 2.`,
-  cognitiveLevel: ["mengingat", "memahami", "mengaplikasi", "menganalisis", "menilai"][index % 5],
 }));
 
 export const pkSubject = attachInteractiveQuestionExamplesToSubject({

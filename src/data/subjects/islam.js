@@ -1,26 +1,27 @@
 import { buildJawiQuestionMeta, buildLetterQuestion } from "../../ai/coach/knowledge/subjects/islam/jawi/questionBank.js";
 import { normalizeIslamSubject } from "../../utils/islamContentQuality.js";
+import { alignQuestionDemand } from "../../utils/questionDemand.js";
 import { attachInteractiveQuestionExamplesToSubject } from "../interactiveQuestionExamples.js";
 
-const difficultyFor = (index) => {
-  if (index <= 20) return "mudah";
-  if (index <= 40) return "sederhana";
-  return "sukar";
-};
-
 const makeQuestions = (topicCode, items) =>
-  items.map((item, index) => ({
-    id: `ISLAM-${topicCode}-${String(index + 1).padStart(3, "0")}`,
-    q: item.q,
-    answer: item.answer,
-    accepted: item.accepted || [item.answer],
-    hint: item.hint,
-    explanation: item.explanation,
-    difficulty: item.difficulty || difficultyFor(index + 1),
-    uasa: "UASA",
-    dskp: "KSSR PI",
-    ...item,
-  }));
+  items.map((item, index) => {
+    const id = `ISLAM-${topicCode}-${String(index + 1).padStart(3, "0")}`;
+    const demand = alignQuestionDemand({ ...item, id }, { forceCanonical: true });
+    return {
+      id,
+      q: item.q,
+      answer: item.answer,
+      accepted: item.accepted || [item.answer],
+      hint: item.hint,
+      explanation: item.explanation,
+      uasa: "UASA",
+      dskp: "KSSR PI",
+      ...item,
+      difficulty: demand.difficulty,
+      demandAudit: demand.demandAudit,
+      demandReviewed: true,
+    };
+  });
 
 const fill = (q, answer, hint, explanation, accepted, extra = {}) => ({
   q,

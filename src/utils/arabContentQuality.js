@@ -203,7 +203,9 @@ function inferCognitiveLevel(record = {}, context = {}) {
   if (record.cognitiveLevel) return record.cognitiveLevel;
   const stem = normalizeText(record.q || record.question);
   if (context.topicId === 'kefahaman_arab') {
-    return Number(context.index) < 25 ? 'memahami' : 'menganalisis';
+    return /\bsalin perkataan Arab\b.*\byang bermaksud\b/iu.test(stem)
+      ? 'menganalisis'
+      : 'memahami';
   }
   if (/Bahasa Arab (?:bagi|untuk)|Apakah (?:perkataan|frasa) Arab|selepas|sebelum/iu.test(stem)) return 'mengaplikasi';
   if (/biasanya|boleh|arah|titik|baris|bermaksud|Apakah maksud/iu.test(stem)) return 'memahami';

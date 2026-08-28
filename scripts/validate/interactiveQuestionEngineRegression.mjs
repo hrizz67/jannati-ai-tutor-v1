@@ -117,7 +117,7 @@ assert.equal(questions.length, 4530, 'Interactive enrichment must not add or rem
 assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewed questions each for BM, Mathematics and Science.');
 assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty deliberately reviewed rich interactions.');
 assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size, 'Every reviewed interactive example must be attached exactly once.');
-assert.equal(derivedChoiceQuestions.length, 978, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
+assert.equal(derivedChoiceQuestions.length, 993, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
 

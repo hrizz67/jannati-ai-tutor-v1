@@ -1,29 +1,46 @@
 import { normalizeArabSubject } from '../../utils/arabContentQuality.js';
 import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+import { alignQuestionDemand } from '../../utils/questionDemand.js';
 
-const difficultyFor = (index) => {
-  if (index <= 20) return "mudah";
-  if (index <= 40) return "sederhana";
-  return "sukar";
-};
+const MODERATE_MUFRADAT_MEANINGS = new Set([
+  'pagi', 'petang', 'malam', 'hari', 'minggu',
+  'besar', 'kecil', 'baharu', 'lama', 'cantik', 'bersih', 'dekat', 'jauh', 'laju', 'perlahan',
+  'murid lelaki', 'murid perempuan', 'guru lelaki', 'guru perempuan', 'kawan lelaki', 'kawan perempuan',
+  'ini (maskulin)', 'ini (feminin)', 'apa', 'siapa'
+]);
 
 const makeQuestions = (topicCode, items) =>
-  items.map((item, index) => ({
-    id: `ARAB-${topicCode}-${String(index + 1).padStart(3, "0")}`,
-    q: item.q,
-    answer: item.answer,
-    accepted: item.accepted || [item.answer],
-    hint: item.hint,
-    explanation: item.explanation,
-    pronunciationGuide: String(item.pronunciationGuide || item.translationHint || item.explanation || item.hint || "").trim(),
-    readingSteps: String(item.readingSteps || item.explanation || item.hint || "").trim(),
-    translation: String(item.translation || item.explanation || item.hint || "").trim(),
-    translationHint: String(item.translationHint || item.explanation || item.hint || "").trim(),
-    difficulty: difficultyFor(index + 1),
-    uasa: "UASA",
-    dskp: "KSSR Arab",
-    ...item,
-  }));
+  items.map((item, index) => {
+    const id = `ARAB-${topicCode}-${String(index + 1).padStart(3, "0")}`;
+    const demand = alignQuestionDemand({ ...item, id }, { forceCanonical: true });
+    const hasModerateLexicalDemand = topicCode === 'MUFRADAT'
+      && MODERATE_MUFRADAT_MEANINGS.has(String(item.answer || '').trim().toLocaleLowerCase('ms-MY'));
+    return {
+      id,
+      q: item.q,
+      answer: item.answer,
+      accepted: item.accepted || [item.answer],
+      hint: item.hint,
+      explanation: item.explanation,
+      pronunciationGuide: String(item.pronunciationGuide || item.translationHint || item.explanation || item.hint || "").trim(),
+      readingSteps: String(item.readingSteps || item.explanation || item.hint || "").trim(),
+      translation: String(item.translation || item.explanation || item.hint || "").trim(),
+      translationHint: String(item.translationHint || item.explanation || item.hint || "").trim(),
+      uasa: "UASA",
+      dskp: "KSSR Arab",
+      ...item,
+      difficulty: hasModerateLexicalDemand ? 'sederhana' : demand.difficulty,
+      demandAudit: hasModerateLexicalDemand
+        ? {
+            ...demand.demandAudit,
+            inferredDifficulty: 'sederhana',
+            evidence: 'abstract_or_relational_vocabulary',
+            difficultyAdjusted: String(item.difficulty || '').toLocaleLowerCase('ms-MY') !== 'sederhana'
+          }
+        : demand.demandAudit,
+      demandReviewed: true,
+    };
+  });
 
 const fill = (q, answer, hint, explanation, accepted) => ({
   q,
@@ -771,6 +788,21 @@ const ARAB_TOPIC_ENRICHMENTS = Object.freeze({
 });
 
 const ARAB_QUESTION_OVERRIDES = Object.freeze({
+  "ARAB-HURUF_HIJAIYAH-031": {
+    q: "Huruf manakah yang berbentuk seperti ت tetapi mempunyai satu titik di bawah? Jawapannya ________.",
+    hint: "Bandingkan bentuk keluarga huruf ب, ت dan ث.",
+    explanation: "Huruf ب berbentuk seperti ت tetapi mempunyai satu titik di bawah."
+  },
+  "ARAB-HURUF_HIJAIYAH-032": {
+    q: "Huruf manakah yang berbentuk seperti ب tetapi mempunyai dua titik di atas? Jawapannya ________.",
+    hint: "Bandingkan bentuk keluarga huruf ب, ت dan ث.",
+    explanation: "Huruf ت berbentuk seperti ب tetapi mempunyai dua titik di atas."
+  },
+  "ARAB-HURUF_HIJAIYAH-033": {
+    q: "Huruf manakah yang berbentuk seperti ب tetapi mempunyai tiga titik di atas? Jawapannya ________.",
+    hint: "Bandingkan bentuk keluarga huruf ب, ت dan ث.",
+    explanation: "Huruf ث berbentuk seperti ب tetapi mempunyai tiga titik di atas."
+  },
   "ARAB-MUFRADAT-002": { accepted: ["pen", "pensel"] },
   "ARAB-MUFRADAT-012": { accepted: ["papan tulis", "papan putih", "papan hitam"] },
   "ARAB-MUFRADAT-047": { accepted: ["ini (maskulin)", "ini", "ini untuk lelaki", "ini untuk kata nama maskulin"] },

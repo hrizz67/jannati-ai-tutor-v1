@@ -7314,6 +7314,76 @@ const SAINS_QUESTION_OVERRIDES = Object.freeze({
   "SAINS-KEMAHIRAN_SAINTIFIK-005": { q: "Kulit digunakan untuk mengesan ________ permukaan benda.", answer: "tekstur", explanation: "Kulit membantu mengesan tekstur seperti kasar dan licin serta keadaan panas atau sejuk." },
   "SAINS-KEMAHIRAN_SAINTIFIK-007": { q: "Bunyi loceng yang nyaring mempunyai nada ________.", answer: "tinggi", hint: "Nyaring menerangkan nada, bukan kekuatan bunyi.", explanation: "Bunyi nyaring mempunyai nada tinggi dan tidak semestinya kuat." },
   "SAINS-KEMAHIRAN_SAINTIFIK-010": { q: "Bola lebih besar daripada guli. Saiz bola ialah ________.", answer: "besar", explanation: "Pemerhatian menunjukkan bola lebih besar daripada guli." },
+  "SAINS-KEMAHIRAN_SAINTIFIK-011": {
+    q: "Antara berikut, haiwan yang berkaki empat ialah ________.",
+    answer: "kucing",
+    options: ["kucing", "ikan", "ular", "cacing"],
+    hint: "Bandingkan bilangan kaki setiap haiwan.",
+    explanation: "Kucing mempunyai empat kaki, manakala ikan, ular dan cacing tidak berkaki."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-012": {
+    q: "Antara berikut, haiwan yang hidup di dalam air ialah ________.",
+    answer: "ikan",
+    options: ["ikan", "kucing", "ayam", "rama-rama"],
+    hint: "Pilih haiwan yang menggunakan air sebagai habitatnya.",
+    explanation: "Ikan hidup di dalam air. Kucing, ayam dan rama-rama hidup di darat atau di udara."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-013": {
+    q: "Antara berikut, objek yang berwarna merah ialah ________.",
+    answer: "bola merah",
+    options: ["bola merah", "buku biru", "daun hijau", "kapur putih"],
+    hint: "Perhatikan warna yang dinyatakan bagi setiap objek.",
+    explanation: "Bola merah ialah satu-satunya objek berwarna merah dalam pilihan yang diberi."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-014": {
+    q: "Antara berikut, bahan yang lutsinar ialah ________.",
+    answer: "kaca",
+    options: ["kaca", "kayu", "batu", "besi"],
+    hint: "Bahan lutsinar membenarkan cahaya melaluinya.",
+    explanation: "Kaca jernih membenarkan cahaya melaluinya, manakala kayu, batu dan besi ialah bahan legap."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-015": {
+    q: "Antara berikut, bahan yang lembut apabila disentuh ialah ________.",
+    answer: "kain",
+    options: ["kain", "batu", "kaca", "besi"],
+    hint: "Bandingkan rasa permukaan setiap bahan.",
+    explanation: "Kain biasanya lembut apabila disentuh. Batu, kaca dan besi biasanya keras."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-016": {
+    q: "Apabila dimasukkan ke dalam air, objek yang terapung ialah ________.",
+    answer: "gabus",
+    options: ["gabus", "batu", "syiling", "paku"],
+    hint: "Pilih objek yang kekal di permukaan air.",
+    explanation: "Gabus terapung di permukaan air, manakala batu, syiling dan paku tenggelam."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-017": {
+    q: "Apabila dimasukkan ke dalam air, objek yang tenggelam ialah ________.",
+    answer: "batu",
+    options: ["batu", "gabus", "bola pingpong", "daun kering"],
+    hint: "Pilih objek yang bergerak ke dasar bekas.",
+    explanation: "Batu tenggelam ke dasar air, manakala gabus, bola pingpong dan daun kering terapung."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-018": {
+    q: "Antara berikut, tumbuhan yang berbunga ialah ________.",
+    answer: "bunga raya",
+    options: ["bunga raya", "paku pakis", "lumut", "cendawan"],
+    hint: "Pilih tumbuhan yang menghasilkan bunga yang jelas.",
+    explanation: "Bunga raya ialah tumbuhan berbunga. Paku pakis dan lumut tidak berbunga, manakala cendawan bukan tumbuhan."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-019": {
+    q: "Antara berikut, alat yang digunakan untuk menulis ialah ________.",
+    answer: "pensel",
+    options: ["pensel", "pemadam", "pembaris", "buku"],
+    hint: "Pilih alat yang menghasilkan tulisan pada kertas.",
+    explanation: "Pensel digunakan untuk menulis. Pemadam memadam tulisan, pembaris mengukur dan buku menyimpan catatan."
+  },
+  "SAINS-KEMAHIRAN_SAINTIFIK-020": {
+    q: "Antara berikut, objek yang menghasilkan cahaya ialah ________.",
+    answer: "lampu",
+    options: ["lampu", "buku", "meja", "batu"],
+    hint: "Pilih objek yang mengeluarkan cahaya apabila dipasang.",
+    explanation: "Lampu menghasilkan cahaya apabila dipasang. Buku, meja dan batu tidak menghasilkan cahaya sendiri."
+  },
   "SAINS-KEMAHIRAN_SAINTIFIK-021": { q: "Alat yang sesuai untuk mengukur panjang buku ialah ________.", answer: "pembaris", explanation: "Pembaris sesuai digunakan untuk mengukur panjang buku." },
   "SAINS-KEMAHIRAN_SAINTIFIK-025": { q: "Silinder penyukat digunakan untuk mengukur ________.", answer: "isipadu cecair", accepted: ["isipadu cecair", "isipadu air"] },
   "SAINS-KEMAHIRAN_SAINTIFIK-041": { q: "Sebelum penyiasatan, kita menentukan ________ yang ingin dijawab.", answer: "soalan" },

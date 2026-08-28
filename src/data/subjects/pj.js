@@ -1,55 +1,27 @@
 import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuestionExamples.js';
+import { alignQuestionDemand, deterministicOptionOrder } from '../../utils/questionDemand.js';
 
 const SUBJECT = "Pendidikan Jasmani Tahun 2";
 const DSKP = "KSSR Semakan Pendidikan Jasmani Tahun 2";
 
-const difficultyFor = (index) => {
-  if (index < 20) return "mudah";
-  if (index < 40) return "sederhana";
-  return "sukar";
-};
-
-const COGNITIVE_SEQUENCE_BY_TOPIC = Object.freeze({
-  LOKOMOTOR: ["mengingat", "memahami", "mengaplikasi", "memahami", "mengaplikasi"],
-  BUKAN_LOKOMOTOR: ["mengingat", "memahami", "mengaplikasi", "memahami", "mengaplikasi"],
-  MANIPULASI_ALATAN: ["mengingat", "mengaplikasi", "mengaplikasi", "mengaplikasi", "menilai"],
-  KOORDINASI: ["memahami", "memahami", "mengaplikasi", "menilai", "menganalisis"],
-  KECERGASAN_FIZIKAL: ["memahami", "memahami", "menganalisis", "mengaplikasi", "mengaplikasi"],
-  KESELAMATAN_AKTIVITI: ["mengaplikasi", "menganalisis", "mengaplikasi", "menilai", "mengaplikasi"],
-  PERMAINAN_MUDAH: ["memahami", "menilai", "mengaplikasi", "menilai", "memahami"],
-  REKREASI: ["memahami", "memahami", "menilai", "mengaplikasi", "mengaplikasi"],
-  GAYA_HIDUP_AKTIF: ["memahami", "menganalisis", "mengaplikasi", "menganalisis", "mengaplikasi"],
-});
-
-const cognitiveLevelFor = (topicCode, index) => {
-  const sequence = COGNITIVE_SEQUENCE_BY_TOPIC[topicCode];
-  if (sequence) return sequence[index % sequence.length];
-  if (index < 10) return "mengingat";
-  if (index < 20) return "memahami";
-  if (index < 35) return "mengaplikasi";
-  if (index < 45) return "menganalisis";
-  return "menilai";
-};
-
-const shuffleOptions = (answer, wrongOptions) => {
-  const options = [answer, ...wrongOptions.filter((item) => item !== answer)].slice(0, 4);
-  return options.sort();
-};
-
 const makeQuestion = (topicCode, topicTitle, item, index) => {
   const question = item.question;
+  const id = `PJ-${topicCode}-${String(index + 1).padStart(3, "0")}`;
+  const demand = alignQuestionDemand({ ...item, id, q: question, question }, { forceCanonical: true });
   return {
-    id: `PJ-${topicCode}-${String(index + 1).padStart(3, "0")}`,
+    id,
     subject: SUBJECT,
     topic: topicTitle,
-    difficulty: difficultyFor(index),
+    difficulty: demand.difficulty,
     question,
     q: question,
-    options: shuffleOptions(item.answer, item.options),
+    options: deterministicOptionOrder(item.answer, [item.answer, ...item.options], id, 4),
     answer: item.answer,
     accepted: [...new Set([item.answer, ...(item.accepted || [])])],
     questionType: item.questionType || "objective",
-    cognitiveLevel: item.cognitiveLevel || cognitiveLevelFor(topicCode, index),
+    cognitiveLevel: demand.cognitiveLevel,
+    demandAudit: demand.demandAudit,
+    qualityReview: item.qualityReview || '',
     hint: item.hint,
     explanation: item.explanation,
     uasa: "UASA",
@@ -99,7 +71,7 @@ const pergerakanAsas = [
   contextualAsk("Apakah pergerakan yang sesuai untuk melalui laluan sempit tanpa berlanggar?", "Berjalan dengan terkawal sesuai untuk melalui laluan sempit.", "berjalan", ["Berlari laju sesuai untuk melalui laluan sempit.", "Melompat ke arah rakan sesuai untuk melalui laluan sempit.", "Mencongklang tanpa melihat sesuai untuk melalui laluan sempit."], "Pilih pergerakan yang paling terkawal.", "Berjalan memberi kawalan badan yang lebih baik di ruang sempit."),
   ask("Semasa bergerak dalam barisan, apakah sikap yang paling baik?", "ikut giliran", valuesOptions, "Jangan memotong barisan rakan.", "Mengikut giliran menjadikan aktiviti lebih teratur dan selamat."),
   ask("Apakah bahagian badan yang paling banyak digunakan semasa melompat?", "kaki", ["kaki", "telinga", "hidung", "leher"], "Fikirkan bahagian yang menolak badan dari lantai.", "Kaki menghasilkan tolakan utama semasa melompat."),
-  ask("Apakah tujuan membengkokkan lutut ketika mendarat?", "mengurangkan hentakan", ["mengurangkan hentakan", "melambatkan arahan", "membuat bunyi kuat", "menolak rakan"], "Lutut yang lembut membantu badan.", "Lutut yang dibengkokkan membantu menyerap hentakan dan menjaga sendi."),
+  ask("Apakah tujuan membengkokkan lutut ketika mendarat?", "mengurangkan hentakan", ["mengurangkan hentakan", "menambah daya tolakan", "memanjangkan jarak lompatan", "mempercepat pergerakan"], "Lutut yang lembut membantu badan.", "Lutut yang dibengkokkan membantu menyerap hentakan dan menjaga sendi.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah pergerakan apabila murid bergerak ke sisi seperti ketam?", "mengengsot sisi", ["mengengsot sisi", "melompat jauh", "menendang bola", "menghayun tali"], "Badan bergerak ke kiri atau kanan.", "Mengengsot sisi melatih kawalan kaki dan ruang."),
   ask("Apakah pergerakan yang sesuai sebelum mula berlari?", "bersedia", ["bersedia", "menjerit", "menolak", "duduk membelakangi guru"], "Dengar arahan guru dahulu.", "Bersedia membantu murid memulakan pergerakan dengan selamat dan teratur."),
   ask("Apakah yang perlu dilihat semasa bergerak di kawasan permainan?", "ruang di hadapan", ["ruang di hadapan", "kasut rakan sahaja", "langit", "dinding belakang"], "Mata membantu kita mengelak halangan.", "Melihat ruang di hadapan membantu murid mengelakkan perlanggaran."),
@@ -107,27 +79,27 @@ const pergerakanAsas = [
   ask("Apakah pergerakan apabila murid melangkah dengan satu kaki ke hadapan?", "melangkah", ["melangkah", "mencubit", "melutut", "meniarap"], "Satu kaki bergerak dahulu.", "Melangkah ialah asas kepada berjalan, berlari dan banyak aktiviti permainan."),
   ask("Apakah kemahiran yang dilatih apabila murid bergerak mengikut rentak tepukan?", "kawalan pergerakan", ["kawalan pergerakan", "menjerit kuat", "berebut alat", "berdiri kaku"], "Murid perlu mengawal laju dan perlahan.", "Bergerak mengikut rentak melatih murid mengawal pergerakan badan."),
   ask("Apakah tindakan yang betul selepas guru meniup wisel berhenti?", "berhenti bergerak", ["berhenti bergerak", "lari lebih laju", "menolak rakan", "sembunyi alat"], "Wisel ialah arahan keselamatan.", "Berhenti apabila diarahkan membantu guru mengawal kelas dan mencegah kemalangan."),
-  ask("Mengapakah murid perlu menjaga jarak semasa bergerak?", "mengelakkan perlanggaran", ["mengelakkan perlanggaran", "supaya boleh berebut", "supaya kasut kotor", "supaya lambat belajar"], "Jarak memberi ruang selamat.", "Jarak yang sesuai memberi ruang untuk bergerak tanpa melanggar rakan."),
+  ask("Mengapakah murid perlu menjaga jarak semasa bergerak?", "mengelakkan perlanggaran", ["mengelakkan perlanggaran", "memudahkan bergerak lebih laju", "membolehkan memotong barisan", "memendekkan masa memanaskan badan"], "Jarak memberi ruang selamat.", "Jarak yang sesuai memberi ruang untuk bergerak tanpa melanggar rakan.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah pergerakan yang sesuai untuk memanaskan badan secara ringan?", "berjalan laju", ["berjalan laju", "duduk diam", "tidur", "menolak meja"], "Pilih pergerakan yang tidak terlalu berat.", "Berjalan laju boleh menaikkan suhu badan secara perlahan sebelum aktiviti utama."),
-  ask("Pilih jawapan yang betul. Apakah maksud pergerakan asas?", "pergerakan mudah yang menjadi asas aktiviti", ["pergerakan mudah yang menjadi asas aktiviti", "aktiviti hanya untuk murid besar", "cara memakai kasut", "nama alat sukan"], "Asas bermaksud permulaan atau dasar.", "Pergerakan asas seperti berjalan, berlari dan melompat menjadi dasar kepada permainan dan sukan."),
-  ask("Apakah yang perlu dibuat jika ruang di hadapan penuh dengan rakan?", "perlahan dan cari ruang kosong", ["perlahan dan cari ruang kosong", "rempuh rakan", "pejam mata", "campak kasut"], "Utamakan keselamatan.", "Memperlahankan pergerakan dan mencari ruang kosong dapat mengelakkan kemalangan."),
+  ask("Pilih jawapan yang betul. Apakah maksud pergerakan asas?", "pergerakan mudah yang menjadi asas aktiviti", ["pergerakan mudah yang menjadi asas aktiviti", "pergerakan yang hanya digunakan ketika bertanding", "pergerakan yang tidak memerlukan kawalan badan", "pergerakan yang mesti menggunakan alatan"], "Asas bermaksud permulaan atau dasar.", "Pergerakan asas seperti berjalan, berlari dan melompat menjadi dasar kepada permainan dan sukan.", { qualityReview: "Q2-distractor-repair" }),
+  ask("Apakah yang perlu dibuat jika ruang di hadapan penuh dengan rakan?", "perlahan dan cari ruang kosong", ["perlahan dan cari ruang kosong", "terus bergerak pada kelajuan sama", "menukar arah tanpa melihat", "menunggu sambil menghalang laluan"], "Utamakan keselamatan.", "Memperlahankan pergerakan dan mencari ruang kosong dapat mengelakkan kemalangan.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah pergerakan yang paling sesuai untuk menuruni anak tangga di sekolah?", "berjalan berhati-hati", ["berjalan berhati-hati", "melompat dua anak tangga", "berlari laju", "menolak rakan"], "Tangga memerlukan kawalan.", "Berjalan berhati-hati di tangga mengurangkan risiko terjatuh."),
   ask("Semasa melompat setempat, apakah yang membantu badan seimbang?", "ayun tangan dengan terkawal", ["ayun tangan dengan terkawal", "pejam mata", "angkat kepala terlalu tinggi", "pusing tanpa melihat"], "Tangan boleh membantu imbangan.", "Ayunan tangan yang terkawal membantu murid mengekalkan imbangan ketika melompat."),
   ask("Apakah pergerakan apabila murid bergerak rendah dengan lutut dibengkokkan?", "mencangkung bergerak", ["mencangkung bergerak", "berdiri tegak", "menendang tinggi", "menepuk bahu"], "Badan berada rendah.", "Mencangkung bergerak melatih kekuatan kaki dan kawalan badan."),
   ask("Apakah yang perlu dibuat sebelum melakukan guling depan?", "guna tilam dan tunggu arahan guru", ["guna tilam dan tunggu arahan guru", "guling di simen", "tolak rakan dahulu", "buat tanpa melihat ruang"], "Guling perlu tempat yang sesuai.", "Tilam dan arahan guru membantu aktiviti guling dibuat dengan selamat."),
   ask("Apakah pergerakan yang sesuai untuk meniru haiwan arnab?", "melompat kecil", ["melompat kecil", "berjalan sisi", "mengilas perlahan", "membaling bola"], "Arnab bergerak dengan lompatan.", "Melompat kecil melatih koordinasi kaki dan imbangan."),
   ask("Apakah pergerakan yang sesuai untuk meniru pokok ditiup angin?", "mengayun badan", ["mengayun badan", "menendang bola", "berlari pecut", "menangkap pundi"], "Badan bergerak ke kiri dan kanan.", "Mengayun badan ialah pergerakan bukan lokomotor yang melatih kelenturan."),
-  ask("Mengapakah guru menyuruh murid mula dengan pergerakan mudah dahulu?", "supaya badan bersedia", ["supaya badan bersedia", "supaya kelas lambat habis", "supaya murid mengantuk", "supaya alat hilang"], "Aktiviti mudah membantu tubuh.", "Pergerakan mudah menyediakan badan sebelum aktiviti yang lebih mencabar."),
+  ask("Mengapakah guru menyuruh murid mula dengan pergerakan mudah dahulu?", "supaya badan bersedia", ["supaya badan bersedia", "supaya badan cepat letih", "supaya aktiviti utama boleh dielakkan", "supaya murid terus berehat"], "Aktiviti mudah membantu tubuh.", "Pergerakan mudah menyediakan badan sebelum aktiviti yang lebih mencabar.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah contoh gabungan pergerakan asas?", "berlari kemudian melompat", ["berlari kemudian melompat", "duduk kemudian tidur", "makan kemudian minum", "membaca kemudian menulis"], "Gabungan melibatkan dua pergerakan.", "Berlari kemudian melompat menggabungkan lokomotor dan kawalan badan."),
   ask("Apakah yang perlu dikawal ketika bergerak laju?", "arah dan kelajuan", ["arah dan kelajuan", "warna baju", "nama kumpulan", "bunyi kasut"], "Bergerak laju tetap perlu terkawal.", "Arah dan kelajuan perlu dikawal supaya murid tidak melanggar rakan atau halangan."),
   ask("Apakah pergerakan apabila kaki dibuka dan ditutup sambil melompat?", "lompat bintang", ["lompat bintang", "guling sisi", "lari zigzag", "tarik tali"], "Bentuk badan seperti bintang.", "Lompat bintang melatih koordinasi tangan dan kaki."),
   ask("Apakah sikap yang baik apabila rakan belum mahir melompat?", "beri galakan", ["beri galakan", "ketawakan rakan", "tolak rakan", "ambil giliran rakan"], "Rakan belajar dengan sokongan.", "Memberi galakan membantu rakan lebih yakin dan menjadikan kelas lebih positif."),
-  ask("Apakah kesan jika murid mendarat dengan kaki lurus dan keras?", "sendi boleh sakit", ["sendi boleh sakit", "boleh terbang lebih tinggi", "menjadi lebih rehat", "tidak perlu guru"], "Hentakan kuat tidak baik untuk badan.", "Mendarat dengan kaki terlalu lurus boleh memberi hentakan pada sendi dan menyebabkan sakit."),
+  ask("Apakah kesan jika murid mendarat dengan kaki lurus dan keras?", "sendi boleh sakit", ["sendi boleh sakit", "imbangan menjadi lebih stabil", "hentakan menjadi lebih ringan", "otot terus menjadi lebih lentur"], "Hentakan kuat tidak baik untuk badan.", "Mendarat dengan kaki terlalu lurus boleh memberi hentakan pada sendi dan menyebabkan sakit.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah pergerakan yang sesuai apabila arahan guru ialah 'bergerak bebas tetapi perlahan'?", "berjalan dalam ruang sendiri", ["berjalan dalam ruang sendiri", "berlari mengejar rakan", "melompat ke arah rakan", "menolak kon"], "Perlahan dan ruang sendiri ialah petunjuk.", "Berjalan dalam ruang sendiri menunjukkan murid boleh mengawal pergerakan dan ruang."),
-  ask("Apakah tujuan menukar arah semasa aktiviti pergerakan?", "melatih kawalan badan", ["melatih kawalan badan", "mengelirukan guru", "membuang masa", "mengotorkan gelanggang"], "Menukar arah perlu kawalan.", "Menukar arah melatih murid mengawal badan, imbangan dan tumpuan."),
+  ask("Apakah tujuan menukar arah semasa aktiviti pergerakan?", "melatih kawalan badan", ["melatih kawalan badan", "mengurangkan penggunaan imbangan", "mengelakkan murid melihat laluan", "membolehkan murid bergerak tanpa aturan"], "Menukar arah perlu kawalan.", "Menukar arah melatih murid mengawal badan, imbangan dan tumpuan.", { qualityReview: "Q2-distractor-repair" }),
   ask("Apakah tanda murid bergerak dengan selamat?", "tidak melanggar rakan", ["tidak melanggar rakan", "menjerit sepanjang masa", "menutup mata", "berebut ruang"], "Selamat bermaksud tidak membahayakan diri dan orang lain.", "Tidak melanggar rakan menunjukkan murid menjaga ruang dan bergerak secara terkawal."),
   ask("Apakah pergerakan yang sesuai untuk melalui bawah tali rendah?", "membongkok", actionOptions, "Badan perlu direndahkan.", "Membongkok membantu murid melalui halangan rendah dengan selamat."),
-  ask("Apakah yang berlaku jika murid tidak mendengar arahan semasa aktiviti pergerakan?", "aktiviti boleh menjadi tidak selamat", ["aktiviti boleh menjadi tidak selamat", "semua murid menang", "alatan menjadi ringan", "badan terus kuat"], "Arahan guru menjaga keselamatan.", "Tidak mendengar arahan boleh menyebabkan perlanggaran atau kecederaan."),
+  ask("Apakah yang berlaku jika murid tidak mendengar arahan semasa aktiviti pergerakan?", "aktiviti boleh menjadi tidak selamat", ["aktiviti boleh menjadi tidak selamat", "aktiviti menjadi lebih tersusun", "risiko perlanggaran berkurang", "murid lebih mudah mengikut giliran"], "Arahan guru menjaga keselamatan.", "Tidak mendengar arahan boleh menyebabkan perlanggaran atau kecederaan.", { qualityReview: "Q2-distractor-repair" }),
   ask("Dalam laluan zigzag, apakah kemahiran utama yang digunakan?", "menukar arah", ["menukar arah", "duduk diam", "menepuk tangan", "membaling tinggi"], "Zigzag ada banyak belokan.", "Laluan zigzag melatih murid menukar arah dengan kawalan badan."),
   ask("Apakah pergerakan terbaik untuk berhenti selepas berlari?", "perlahankan langkah", ["perlahankan langkah", "jatuhkan badan", "langgar dinding", "pejam mata"], "Berhenti secara mengejut kurang selamat.", "Memperlahankan langkah membantu badan berhenti dengan lebih selamat."),
   ask("Apakah contoh pergerakan bukan lokomotor?", "mengilas badan", ["mengilas badan", "berlari ke kon", "berjalan ke kantin", "melompat ke depan"], "Badan bergerak tetapi tidak berpindah tempat.", "Mengilas badan ialah bukan lokomotor kerana murid boleh melakukannya di tempat sendiri."),
@@ -214,7 +186,7 @@ const koordinasiPairs = [
   ["berjalan di atas garisan lurus", "imbangan dan koordinasi"],
 ].flatMap(([activity, answer]) => [
   contextualAsk(`Apakah koordinasi yang dilatih melalui aktiviti ${activity}?`, `${sentenceCase(activity)} melatih ${answer}.`, answer, [`${sentenceCase(activity)} hanya melatih pendengaran.`, `${sentenceCase(activity)} tidak memerlukan koordinasi badan.`, `${sentenceCase(activity)} hanya melatih suara.`], "Fikirkan anggota badan yang bekerja bersama.", `Aktiviti ${activity} memerlukan beberapa anggota badan bekerja bersama dengan tumpuan.`),
-  contextualAsk(`Mengapakah murid perlu melihat sasaran semasa ${activity}?`, `Melihat sasaran semasa ${activity} menjadikan pergerakan lebih tepat.`, "supaya pergerakan lebih tepat", [`Melihat sasaran semasa ${activity} membolehkan murid menjerit.`, `Melihat sasaran semasa ${activity} menyebabkan alat hilang.`, `Melihat sasaran semasa ${activity} bertujuan menakutkan rakan.`], "Mata membantu arah pergerakan.", "Melihat sasaran membantu murid mengawal arah dan ketepatan pergerakan."),
+  contextualAsk(`Mengapakah murid perlu melihat sasaran semasa ${activity}?`, `Melihat sasaran semasa ${activity} menjadikan pergerakan lebih tepat.`, "supaya pergerakan lebih tepat", [`Melihat sasaran semasa ${activity} menjadikan pergerakan lebih laju sahaja.`, `Melihat sasaran semasa ${activity} mengurangkan keperluan mengawal badan.`, `Melihat sasaran semasa ${activity} membolehkan murid mengabaikan ruang sekeliling.`], "Mata membantu arah pergerakan.", "Melihat sasaran membantu murid mengawal arah dan ketepatan pergerakan.", { qualityReview: "Q2-distractor-repair" }),
   contextualAsk(`Apakah cara baik untuk meningkatkan koordinasi dalam aktiviti ${activity}?`, `Murid boleh meningkatkan koordinasi melalui latihan ${activity} secara berulang.`, "berlatih secara berulang", [`Murid boleh meningkatkan koordinasi dengan berhenti terus daripada ${activity}.`, `Murid boleh meningkatkan koordinasi dengan bergaduh semasa ${activity}.`, `Murid boleh meningkatkan koordinasi dengan memejamkan mata sepanjang ${activity}.`], "Kemahiran bertambah dengan latihan.", "Latihan berulang secara selamat membantu koordinasi menjadi lebih baik."),
   contextualAsk(`Apakah yang perlu dibuat jika murid gagal kali pertama semasa ${activity}?`, `Murid perlu mencuba ${activity} lagi dengan tenang.`, "cuba lagi dengan tenang", [`Murid perlu marah kepada rakan selepas gagal ${activity}.`, `Murid perlu mencampakkan alat selepas gagal ${activity}.`, `Murid perlu meninggalkan kelas selepas gagal ${activity}.`], "Kesilapan ialah sebahagian daripada belajar.", "Mencuba lagi dengan tenang membina keyakinan dan kemahiran."),
   contextualAsk(`Apakah tanda koordinasi murid semakin baik semasa ${activity}?`, `Pergerakan ${activity} yang lebih terkawal menunjukkan koordinasi semakin baik.`, "pergerakan lebih terkawal", [`Semakin banyak menolak rakan semasa ${activity} menunjukkan koordinasi semakin baik.`, `Tidak mendengar arahan semasa ${activity} menunjukkan koordinasi semakin baik.`, `Alat yang selalu terjatuh semasa ${activity} menunjukkan koordinasi semakin baik.`], "Kawalan ialah tanda kemajuan.", "Pergerakan yang terkawal menunjukkan anggota badan bekerja dengan lebih baik."),
@@ -244,14 +216,14 @@ const keselamatanPairs = [
   ["tali kasut terbuka", "berhenti dan ikat tali kasut", "Tali kasut terbuka boleh menyebabkan tersadung."],
   ["rakan terjatuh semasa bermain", "berhenti dan panggil guru", "Guru perlu membantu rakan yang cedera."],
   ["bola masuk ke longkang", "minta bantuan guru", "Murid tidak patut mengambil alat di tempat berbahaya."],
-  ["cuaca terlalu panas", "minum air dan rehat di tempat teduh", "Rehat dan minum air membantu mengelakkan kepanasan."],
+  ["cuaca terlalu panas", "minum air dan rehat di tempat teduh", "Rehat dan minum air membantu mengelakkan kepanasan.", ["minum air dan rehat di tempat teduh", "teruskan aktiviti tetapi bergerak perlahan", "berdiri di bawah cahaya matahari", "tunggu sehingga aktiviti tamat untuk minum"]],
   ["alat sukan berselerak", "susun alat di tempat selamat", "Alat berselerak boleh menyebabkan murid tersadung."],
   ["murid belum faham arahan permainan", "tanya guru dahulu", "Bertanya membantu murid bermain dengan betul dan selamat."],
   ["rakan menolak semasa berbaris", "beritahu guru dengan sopan", "Menolak boleh menyebabkan kecederaan."],
   ["murid berasa pening", "berhenti dan maklumkan guru", "Pening semasa aktiviti perlu diberi perhatian segera."],
   ["gelanggang terlalu sesak", "tunggu giliran", "Menunggu giliran membantu mengelakkan perlanggaran."],
-].flatMap(([situation, answer, explanation]) => [
-  ask(`Apakah tindakan paling selamat jika ${situation}?`, answer, safetyOptions.concat(["berhenti dan ikat tali kasut", "minta bantuan guru", "minum air dan rehat di tempat teduh", "tunggu giliran"]), "Pilih tindakan yang menjaga diri dan rakan.", explanation),
+].flatMap(([situation, answer, explanation, reviewedOptions]) => [
+  ask(`Apakah tindakan paling selamat jika ${situation}?`, answer, reviewedOptions || safetyOptions.concat(["berhenti dan ikat tali kasut", "minta bantuan guru", "minum air dan rehat di tempat teduh", "tunggu giliran"]), "Pilih tindakan yang menjaga diri dan rakan.", explanation, reviewedOptions ? { qualityReview: "Q2-distractor-repair" } : {}),
   contextualAsk(`Mengapakah murid tidak boleh meneruskan aktiviti apabila ${situation}?`, `Meneruskan aktiviti apabila ${situation} boleh menyebabkan kecederaan.`, "boleh menyebabkan kecederaan", [`Meneruskan aktiviti apabila ${situation} menjamin markah penuh.`, `Meneruskan aktiviti apabila ${situation} mewujudkan permainan baharu.`, `Meneruskan aktiviti apabila ${situation} sentiasa menggembirakan guru.`], "Fikirkan risiko kepada tubuh.", `${sentenceCase(situation)} ialah keadaan yang perlu dikawal supaya murid tidak cedera.`),
   contextualAsk(`Siapakah orang yang patut dimaklumkan apabila ${situation}?`, `Murid perlu memaklumkan guru apabila ${situation}.`, "guru", [`Murid perlu memaklumkan penjaja apabila ${situation}.`, `Murid perlu memaklumkan pemandu bas apabila ${situation}.`, `Murid perlu memaklumkan orang tidak dikenali apabila ${situation}.`], "Di sekolah, guru menjaga aktiviti PJ.", "Guru boleh memberi arahan dan bantuan yang sesuai semasa aktiviti."),
   contextualAsk(`Apakah nilai yang ditunjukkan apabila murid bertindak selamat ketika ${situation}?`, `Murid menunjukkan sikap berhati-hati apabila menghadapi keadaan ${situation}.`, "berhati-hati", [`Murid menunjukkan sikap cuai apabila menghadapi keadaan ${situation}.`, `Murid menunjukkan sikap suka berebut apabila menghadapi keadaan ${situation}.`, `Murid menunjukkan sikap mementingkan diri apabila menghadapi keadaan ${situation}.`], "Keselamatan memerlukan sikap cermat.", "Berhati-hati menunjukkan murid menjaga keselamatan diri dan rakan."),
@@ -270,11 +242,11 @@ const permainanPairs = [
   ["golek bola", "menggolek bola ke arah sasaran"],
   ["ambil dan hantar", "bekerjasama menghantar alat"],
 ].flatMap(([game, skill]) => [
-  ask(`Dalam permainan ${game}, apakah kemahiran utama yang digunakan?`, skill, [skill, "menolak rakan", "menjerit kepada lawan", "keluar kawasan"], "Fikirkan aksi utama permainan.", `Permainan ${game} melatih murid menggunakan kemahiran ${skill} secara menyeronokkan.`),
+  ask(`Dalam permainan ${game}, apakah kemahiran utama yang digunakan?`, skill, [skill, "mengelak bola lembut", "memberi baton kepada rakan", "membaling tepat ke sasaran", "melompat masuk gelung", "berlari dalam kawasan yang ditetapkan", "menendang bola kepada rakan", "menghantar bola kepada rakan", "memukul bulu tangkis perlahan", "menggolek bola ke arah sasaran", "bekerjasama menghantar alat"], "Fikirkan aksi utama permainan.", `Permainan ${game} melatih murid menggunakan kemahiran ${skill} secara menyeronokkan.`, { qualityReview: "Q2-distractor-repair" }),
   contextualAsk(`Apakah sikap penting semasa bermain ${game}?`, `Murid perlu bermain ${game} secara jujur.`, "bermain secara jujur", [`Murid perlu menipu markah semasa bermain ${game}.`, `Murid perlu marah apabila kalah dalam ${game}.`, `Murid perlu mengambil giliran rakan semasa bermain ${game}.`], "Permainan perlu adil.", "Bermain secara jujur menjadikan permainan adil dan mendidik nilai murni."),
   contextualAsk(`Apakah yang perlu dibuat sebelum mula permainan ${game}?`, `Murid perlu mendengar peraturan sebelum bermain ${game}.`, "dengar peraturan", [`Murid perlu berlari dahulu sebelum mendengar peraturan ${game}.`, `Murid perlu menyembunyikan alat sebelum bermain ${game}.`, `Murid perlu menolak rakan sebelum bermain ${game}.`], "Peraturan membantu permainan selamat.", "Mendengar peraturan membantu murid faham cara bermain dan menjaga keselamatan."),
   contextualAsk(`Apakah tindakan baik jika pasukan kalah dalam ${game}?`, `Murid perlu menerima keputusan dengan baik jika kalah dalam ${game}.`, "terima keputusan dengan baik", [`Murid perlu menyalahkan rakan jika kalah dalam ${game}.`, `Murid perlu menangis dan menolak rakan jika kalah dalam ${game}.`, `Murid perlu membuang alat jika kalah dalam ${game}.`], "Kalah menang ialah adat permainan.", "Menerima keputusan dengan baik menunjukkan semangat kesukanan."),
-  contextualAsk(`Apakah manfaat permainan mudah seperti ${game}?`, `${sentenceCase(game)} membantu melatih kerjasama dan kecergasan.`, "melatih kerjasama dan kecergasan", [`${sentenceCase(game)} membuat murid malas.`, `${sentenceCase(game)} mengurangkan bilangan kawan.`, `${sentenceCase(game)} hanya membuang masa rehat.`], "Permainan PJ ada kebaikan fizikal dan sosial.", "Permainan mudah membantu murid bergerak aktif, bekerjasama dan belajar peraturan."),
+  contextualAsk(`Apakah manfaat permainan mudah seperti ${game}?`, `${sentenceCase(game)} membantu melatih kerjasama dan kecergasan.`, "melatih kerjasama dan kecergasan", [`${sentenceCase(game)} hanya melatih murid duduk dengan senyap.`, `${sentenceCase(game)} mengurangkan keperluan mematuhi peraturan.`, `${sentenceCase(game)} hanya meningkatkan kemahiran seorang pemain.`], "Permainan PJ ada kebaikan fizikal dan sosial.", "Permainan mudah membantu murid bergerak aktif, bekerjasama dan belajar peraturan.", { qualityReview: "Q2-distractor-repair" }),
 ]);
 
 const rekreasiPairs = [
@@ -292,7 +264,7 @@ const rekreasiPairs = [
   ask(`Aktiviti seperti ${activity} sesuai dikelaskan sebagai apa?`, answer, ["rekreasi aktif", "aktiviti berirama", "aktiviti berkumpulan", "rekreasi selamat", "aktiviti luar kelas", "rekreasi budaya", "gaya hidup aktif"], "Rekreasi ialah aktiviti masa lapang yang sihat.", `${activity} membantu murid bergerak aktif sambil menikmati aktiviti yang menyeronokkan.`),
   contextualAsk(`Apakah tujuan aktiviti rekreasi seperti ${activity}?`, `${sentenceCase(activity)} membantu menyihatkan badan.`, "menyihatkan badan", [`${sentenceCase(activity)} bertujuan mencari gaduh.`, `${sentenceCase(activity)} membantu murid mengelak semua pergerakan.`, `${sentenceCase(activity)} hanya membazir masa.`], "Rekreasi aktif memberi manfaat kepada tubuh.", "Aktiviti rekreasi yang selamat membantu badan sihat dan emosi lebih gembira."),
   contextualAsk(`Apakah sikap baik semasa menyertai ${activity}?`, `Murid perlu mengikut giliran semasa ${activity}.`, "ikut giliran", [`Murid perlu berebut semasa ${activity}.`, `Murid perlu memotong giliran rakan semasa ${activity}.`, `Murid perlu mengejek rakan semasa ${activity}.`], "Aktiviti berkumpulan perlu teratur.", "Mengikut giliran memberi peluang kepada semua murid untuk mencuba."),
-  contextualAsk(`Apakah yang perlu dibawa selepas aktiviti luar seperti ${activity}?`, `Murid perlu membawa botol air untuk diminum selepas ${activity}.`, "botol air", [`Murid perlu membawa mainan tajam selepas ${activity}.`, `Murid perlu membawa telefon guru selepas ${activity}.`, `Murid perlu membawa batu besar selepas ${activity}.`], "Aktiviti luar membuat badan berpeluh.", "Botol air membantu murid minum air kosong dan kekal bertenaga."),
+  contextualAsk(`Apakah yang perlu dibawa selepas aktiviti luar seperti ${activity}?`, `Murid perlu membawa botol air untuk diminum selepas ${activity}.`, "botol air", [`Murid perlu membawa minuman bergas selepas ${activity}.`, `Murid perlu membawa makanan terlalu manis selepas ${activity}.`, `Murid perlu membawa alat permainan tambahan selepas ${activity}.`], "Aktiviti luar membuat badan berpeluh.", "Botol air membantu murid minum air kosong dan kekal bertenaga.", { qualityReview: "Q2-distractor-repair" }),
   contextualAsk(`Apakah tempat yang sesuai untuk aktiviti seperti ${activity}?`, `Kawasan lapang dan selamat sesuai untuk ${activity}.`, "kawasan lapang dan selamat", [`Tepi jalan raya sesuai untuk ${activity}.`, `Lantai licin sesuai untuk ${activity}.`, `Stor gelap sesuai untuk ${activity}.`], "Pilih tempat yang kurang risiko.", "Kawasan lapang dan selamat membolehkan murid bergerak tanpa bahaya."),
 ]);
 
@@ -331,7 +303,7 @@ const sukanSekolahPairs = [
   ask(`Apakah pakaian yang sesuai untuk aktiviti ${sport} di sekolah?`, "pakaian sukan", ["pakaian sukan", "selipar", "baju hujan", "kasut bertumit"], "Pakaian perlu memudahkan pergerakan.", "Pakaian sukan dan kasut yang sesuai membantu murid bergerak dengan selamat."),
   ask(`Apakah yang perlu dilakukan jika tidak faham peraturan ${sport}?`, "bertanya kepada guru", ["bertanya kepada guru", "buat peraturan sendiri", "marah rakan", "keluar gelanggang"], "Guru boleh menerangkan semula.", "Bertanya kepada guru membantu murid bermain dengan betul dan yakin."),
   ask(`Apakah nilai murni yang diamalkan dalam ${sport}?`, "semangat kesukanan", ["semangat kesukanan", "suka mengejek", "menipu", "mementingkan diri"], "Sukan mengajar nilai baik.", "Semangat kesukanan bermaksud bermain dengan adil, menghormati rakan dan menerima keputusan."),
-  ask(`Mengapakah aktiviti ${sport} perlu dibuat mengikut tahap murid Tahun 2?`, "supaya selamat dan sesuai", ["supaya selamat dan sesuai", "supaya terlalu susah", "supaya murid takut", "supaya alat rosak"], "Aktiviti perlu ikut umur dan kemampuan.", "Aktiviti yang sesuai tahap murid membantu pembelajaran berlaku dengan selamat."),
+  ask(`Mengapakah aktiviti ${sport} perlu dibuat mengikut tahap murid Tahun 2?`, "supaya selamat dan sesuai", ["supaya selamat dan sesuai", "supaya semua murid menggunakan kemahiran dewasa", "supaya latihan menjadi semakin lama", "supaya peraturan boleh diabaikan"], "Aktiviti perlu ikut umur dan kemampuan.", "Aktiviti yang sesuai tahap murid membantu pembelajaran berlaku dengan selamat.", { qualityReview: "Q2-distractor-repair" }),
 ]);
 
 const uasaCampuran = [

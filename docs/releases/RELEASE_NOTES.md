@@ -1,15 +1,15 @@
-# Jannati AI Tutor 3.9.6 Release Notes
+# Jannati AI Tutor 3.9.7 Release Notes
 
 Status: stable
-Tag: v3.9.6
-Build date: 2026-08-27T16:08:16.464Z
+Tag: v3.9.7
+Build date: 2026-08-28T16:01:22.939Z
 
 ## Highlights
 
-- Desktop and mobile now derive the learner's total XP from one monotonic canonical value, even when older local caches contain different totals.
-- Cloud hydration aligns the main profile, adaptive profile, gamification profile, AI memory, and student core before the dashboard is shown.
-- Repeated sync does not add XP projections together; it keeps the highest valid total for the same child.
-- Account and child ownership boundaries remain enforced, so this repair cannot merge Free data or another child's progress into the active Premium profile.
+- Batch Q1 removes 128 high-confidence semantic ambiguities from English, Science, and Arabic questions.
+- Batch Q2 repairs 246 distractors, aligns difficulty and cognitive demand, and removes answer-position bias across all eight subjects.
+- Option ordering is deterministic, so answer placement does not change randomly when a question renders.
+- Two new automated audits protect semantic uniqueness and distractor/difficulty quality in every validation run.
 
 ## Release Readiness
 
@@ -22,11 +22,13 @@ Build date: 2026-08-27T16:08:16.464Z
 
 - All eight Year 2 subjects are included in the release validation scope.
 - Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
+- The 4530 existing question IDs and canonical answers are preserved.
+- Scoring, adaptive/mastery behaviour, and learner progress data are unchanged.
 
 ## Validation Summary
 
 - Status: pass
-- Info: 14660
+- Info: 14814
 - Warnings: 0
 - Errors: 0
 
@@ -37,7 +39,7 @@ Build date: 2026-08-27T16:08:16.464Z
 - Questions: 4530
 - Unique SK/SP pairs: 453
 - Curriculum coverage: 100%
-- Difficulty balance: mudah 2065, sederhana 1363, sukar 1102
+- Difficulty balance: mudah 2090, sederhana 1749, sukar 691
 
 ## Known Follow-ups
 

@@ -1,14 +1,16 @@
 {
   "name": "jannati-ai-tutor-v1",
-  "version": "3.9.6",
+  "version": "3.9.7",
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "postbuild": "node scripts/validate/bundleBudgetAudit.mjs",
-    "prevalidate": "node scripts/validate/voiceEngineRegression.mjs && node scripts/validate/tutorConversationRegression.mjs && node scripts/validate/tutorGenerativeGatewayRegression.mjs && node scripts/validate/smartCheckRegression.mjs && node scripts/validate/questionPresentationRegression.mjs && node scripts/validate/interactiveQuestionEngineRegression.mjs && node scripts/validate/interactiveQuestionIntelligenceRegression.mjs && node scripts/validate/interactiveSuitabilityAudit.mjs && node scripts/validate/resumeIsolationRegression.mjs && node scripts/validate/learningMaterialsProgressRegression.mjs && node scripts/validate/finishScreenRegression.mjs && node scripts/validate/responsiveTextRegression.mjs && node scripts/validate/learningSyncRegression.mjs && node scripts/validate/accessControlAudit.mjs && node scripts/validate/adaptiveSessionRegression.mjs && node scripts/validate/questionAuditRegression.mjs && node scripts/validate/learningJourneyAlignmentAudit.mjs --gate && node scripts/validate/browserDeviceAcceptanceAudit.mjs && node scripts/validate/physicalDeviceReadinessAudit.mjs && node scripts/validate/performanceArchitectureAudit.mjs && node scripts/validate/classroomPilotAudit.mjs && node scripts/validate/releasePipelineAudit.mjs",
+    "prevalidate": "node scripts/validate/voiceEngineRegression.mjs && node scripts/validate/tutorConversationRegression.mjs && node scripts/validate/tutorGenerativeGatewayRegression.mjs && node scripts/validate/smartCheckRegression.mjs && node scripts/validate/questionPresentationRegression.mjs && node scripts/validate/interactiveQuestionEngineRegression.mjs && node scripts/validate/interactiveQuestionIntelligenceRegression.mjs && node scripts/validate/interactiveSuitabilityAudit.mjs && node scripts/validate/resumeIsolationRegression.mjs && node scripts/validate/learningMaterialsProgressRegression.mjs && node scripts/validate/finishScreenRegression.mjs && node scripts/validate/responsiveTextRegression.mjs && node scripts/validate/learningSyncRegression.mjs && node scripts/validate/accessControlAudit.mjs && node scripts/validate/adaptiveSessionRegression.mjs && node scripts/validate/questionAuditRegression.mjs && node scripts/validate/semanticQuestionUniquenessAudit.mjs && node scripts/validate/distractorDifficultyAudit.mjs && node scripts/validate/learningJourneyAlignmentAudit.mjs --gate && node scripts/validate/browserDeviceAcceptanceAudit.mjs && node scripts/validate/physicalDeviceReadinessAudit.mjs && node scripts/validate/performanceArchitectureAudit.mjs && node scripts/validate/classroomPilotAudit.mjs && node scripts/validate/releasePipelineAudit.mjs",
     "validate": "node scripts/validate/index.js",
     "validate:questions": "node scripts/validate/questionValidator.js",
+    "validate:semantic-questions": "node scripts/validate/semanticQuestionUniquenessAudit.mjs",
+    "validate:distractor-difficulty": "node scripts/validate/distractorDifficultyAudit.mjs",
     "validate:bm": "node scripts/validate/bmReleaseGate.mjs",
     "validate:sains": "node scripts/validate/sainsContentQualityAudit.mjs",
     "validate:arab": "node scripts/validate/arabContentQualityAudit.mjs",
