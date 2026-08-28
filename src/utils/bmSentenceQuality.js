@@ -394,38 +394,27 @@ function inferBMQuestionType(record = {}, context = {}) {
   return context.defaultQuestionType || 'short_answer';
 }
 
-const BM_PROGRESSIVE_GRAMMAR_TOPICS = new Set([
-  'kata_nama_am',
-  'kata_nama_khas',
-  'kata_ganti_nama',
-  'kata_kerja',
-  'kata_adjektif',
-  'kata_sendi',
-  'kata_hubung',
-  'penjodoh_bilangan',
-  'ayat',
-  'tatabahasa'
-]);
-
 function inferBMCognitiveLevel(record = {}, context = {}) {
   if (record.cognitiveLevel) return record.cognitiveLevel;
-  if (BM_PROGRESSIVE_GRAMMAR_TOPICS.has(context.topicId) && Number.isInteger(context.index)) {
-    const phase = context.index % 50;
-    if (phase < 10) return 'mengingat';
-    if (phase < 20) return 'memahami';
-    if (phase < 35) return 'mengaplikasi';
-    if (phase < 45) return 'menganalisis';
-    return 'menilai';
-  }
   const text = String(record.q || record.question || '').trim();
-  if (/\b(cipta|hasilkan|bina ayat|tulis (?:satu )?ayat|karang)\b/i.test(text)) return 'mencipta';
+  const marks = Number(record.marks || 1);
+  const hasCreationRubric = Array.isArray(record.rubric?.criteria) && record.rubric.criteria.length >= 2;
+  if (/^(?:mencipta\s*:|cipta(?:kan)?\b|hasilkan\b|karang\b)/i.test(text)
+    || (/^(?:bina (?:satu )?ayat\b|tulis (?:satu )?ayat\b)/i.test(text) && (marks >= 3 || hasCreationRubric))) return 'mencipta';
+  if (context.topicId === 'kata_hubung' && /\bpilih ayat yang paling sesuai untuk menunjukkan\b/i.test(text)) return 'memahami';
   if (/\b(penilaian kbat|nilaikan|wajarkah|paling sesuai)\b/i.test(text) || /\b(berikan|beri) sebab\b/i.test(text)) return 'menilai';
   if (/\b(analisis kbat|analisis|bandingkan|bezakan|bukti|rumuskan)\b/i.test(text)) return 'menganalisis';
+  if (/(?:perkataan manakah (?:ialah|menunjukkan|menerangkan)|\btentukan\b|\byang manakah\b)[^?]*(?:kata nama (?:am|khas)|kata kerja|kata adjektif|perbuatan|keadaan)/i.test(text)) return 'memahami';
+  if (context.topicId === 'penjodoh_bilangan' && /^pilih (?:penjodoh bilangan|frasa)/i.test(text)) return 'memahami';
+  if (context.topicId === 'kata_ganti_nama' && /^pilih kata ganti nama yang sesuai untuk\b/i.test(text)) return 'memahami';
+  if (context.topicId === 'kata_sendi' && /^pilih kata sendi nama yang betul\b/i.test(text)) return 'mengingat';
+  if (context.topicId === 'tatabahasa' && /^(?:pilih kata yang betul|ayat yang betul ialah)\b/i.test(text)) return 'mengingat';
+  if (['kata_sendi', 'tatabahasa'].includes(context.topicId)
+    && /_{2,}/u.test(text)
+    && !/^(?:aplikasi|baca situasi|lengkapkan|dialog|pilih|gunakan|betulkan|susun)\b/i.test(text)) return 'memahami';
   if (/\b(aplikasi|gunakan|lengkapkan|susun|padankan)\b/i.test(text)) return 'mengaplikasi';
   if (/\b(mengapakah|jelaskan|terangkan|maksud|jenis|kelaskan|kategorikan)\b/i.test(text)) return 'memahami';
-  const difficulty = String(record.difficulty || '').toLowerCase();
-  if (difficulty === 'sukar') return 'mengaplikasi';
-  if (difficulty === 'sederhana') return 'memahami';
+  if (/_{2,}/u.test(text) || /\b(?:situasi|semasa|apabila|ketika)\b/i.test(text)) return 'mengaplikasi';
   return 'mengingat';
 }
 

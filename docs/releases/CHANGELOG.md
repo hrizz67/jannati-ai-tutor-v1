@@ -1,18 +1,19 @@
 # Changelog
 
-## 3.9.6 - 2026-08-27
+## 3.9.7 - 2026-08-28
 
-### Fixed
+### Question bank quality
 
-- Converge every redundant XP projection in a child snapshot on the highest valid global XP during cloud hydration.
-- Prevent a stale adaptive, gamification, AI-memory, or student-core cache from hiding richer learning progress on another device at the same cloud revision.
-- Repair imported cloud learning data across all XP stores before the dashboard renders the active child.
+- Repaired 128 high-confidence semantic ambiguities across English, Science, and Arabic while preserving canonical answers and question identifiers.
+- Repaired 246 weak distractors across 82 objective questions and removed the remaining answer-position bias patterns.
+- Aligned 1598 difficulty labels and 1503 cognitive-demand labels with the actual work required from pupils.
+- Added deterministic option ordering and dedicated semantic-uniqueness and distractor-difficulty release gates.
+- Removed three misleading KBAT labels from direct-identification Bahasa Melayu questions instead of inflating their cognitive level.
 
 ### Safety
 
-- XP reconciliation is monotonic and never adds duplicated projections, so repeated sync cannot multiply rewards.
-- Reconciliation remains contained within the active child snapshot and preserves existing account and child ownership checks.
-- Added regression fixtures for the real mismatch case where cloud profile XP is higher than the mobile adaptive cache.
+- Question count remains 4530 across 8 subjects and 84 topics.
+- Scoring, adaptive/mastery behaviour, question IDs, and learner progress data are unchanged.
 
 ### Release controls
 
@@ -23,7 +24,7 @@
 ### Quality snapshot
 
 - 8 subjects, 84 topics, and 4530 questions validated.
-- Validation result: 0 error(s), 0 warning(s), 14660 informational item(s).
+- Validation result: 0 error(s), 0 warning(s), 14814 informational item(s).
 - Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
 
 ### Follow-up work

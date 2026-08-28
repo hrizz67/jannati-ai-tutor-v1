@@ -1,3 +1,5 @@
+import { inferQuestionDemand } from './questionDemand.js';
+
 const DISTINCT_REPLACEMENTS = {
   ali: 'Adam',
   adam: 'Ali',
@@ -276,18 +278,7 @@ function inferEnglishCognitiveLevel(record = {}, context = {}) {
   if (/\bwhy\b[^?]*\?$/i.test(value)) return 'menganalisis';
   if (/\bhow many\b[^?]*\?$/i.test(value) || /\b(?:rearrange|arrange|complete|fill in)\b/i.test(value)) return 'mengaplikasi';
   if (context.topicId === 'reading') return 'memahami';
-  if (Number.isInteger(context.index)) {
-    const phase = context.index % 50;
-    if (phase < 10) return 'mengingat';
-    if (phase < 20) return 'memahami';
-    if (phase < 35) return 'mengaplikasi';
-    if (phase < 45) return 'menganalisis';
-    return 'menilai';
-  }
-  const difficulty = String(record.difficulty || '').toLowerCase();
-  if (difficulty === 'sukar') return 'mengaplikasi';
-  if (difficulty === 'sederhana') return 'memahami';
-  return 'mengingat';
+  return inferQuestionDemand(record).cognitiveLevel;
 }
 
 export function normalizeEnglishQuestionRecord(record = {}, context = {}) {

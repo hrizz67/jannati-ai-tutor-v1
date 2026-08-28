@@ -1,3 +1,5 @@
+import { alignQuestionDemand, deterministicOptionOrder } from '../utils/questionDemand.js';
+
 export const QUESTION_TYPES = Object.freeze([
   'short_answer',
   'objective',
@@ -53,28 +55,42 @@ export function normalizeTopicContent(topic = {}) {
     learningOutcome: topic.learningOutcome || topic.learning_outcome || '',
     questions: (topic.questions || []).map((question, questionIndex) => {
       const normalized = normalizeQuestionContent({ ...pilotDefaults, ...question });
-      const difficulty = String(normalized.difficulty || '').toLowerCase();
       const inferredCognitiveLevel = topic.contentStatus === 'pilot'
         ? inferPilotCognitiveLevel(topic.id, questionIndex, topic.questions?.length || 0)
         : '';
+      const aligned = alignQuestionDemand({
+        ...normalized,
+        cognitiveLevel: normalized.cognitiveLevel || inferredCognitiveLevel
+      });
+      const orderedOptions = !aligned.interaction && Array.isArray(aligned.options) && aligned.options.length >= 2
+        ? deterministicOptionOrder(aligned.answer, aligned.options, aligned.id || `${topic.id}:${questionIndex}`)
+        : aligned.options;
+      const canonicalAnswerIndex = Array.isArray(orderedOptions)
+        ? orderedOptions.findIndex(option => String(option).trim().toLocaleLowerCase('ms-MY') === String(aligned.answer ?? '').trim().toLocaleLowerCase('ms-MY'))
+        : -1;
+      const difficulty = String(aligned.difficulty || '').toLowerCase();
       const estimatedTime = normalized.estimatedTime || (
         difficulty.includes('sukar') || difficulty.includes('hard') ? 90
           : difficulty.includes('sederhana') || difficulty.includes('medium') ? 60
             : 40
       );
       return {
-        ...normalized,
-        cognitiveLevel: normalized.cognitiveLevel || inferredCognitiveLevel,
+        ...aligned,
+        options: orderedOptions,
+        ...(canonicalAnswerIndex >= 0 ? { answerIndex: canonicalAnswerIndex } : {}),
         estimatedTime,
         metadataReview: {
           questionType: question.questionType || question.type ? 'authored' : 'pilot-default',
           marks: question.marks !== undefined ? 'authored' : 'pilot-default',
           estimatedTime: question.estimatedTime !== undefined ? 'authored' : 'pilot-default',
-          cognitiveLevel: question.cognitiveLevel || question.cognitive_level
+          cognitiveLevel: aligned.demandAudit?.cognitiveAdjusted
+            ? 'canonical-demand-rule'
+            : question.cognitiveLevel || question.cognitive_level
             ? 'authored'
             : inferredCognitiveLevel
               ? 'pilot-rule'
-              : 'pending-review'
+              : 'pending-review',
+          difficulty: aligned.demandAudit?.difficultyAdjusted ? 'canonical-demand-rule' : 'authored'
         }
       };
     })

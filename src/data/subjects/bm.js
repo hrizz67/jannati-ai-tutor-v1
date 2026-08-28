@@ -976,7 +976,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_AM-043",
-          "q": "KBAT: Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?",
+          "q": "Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?",
           "answer": "kantin",
           "accepted": [
             "kantin"
@@ -987,7 +987,7 @@ const rawBMSSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?"
+          "question": "Antara kantin, Ali, Melaka dan Ahmad, yang manakah ialah kata nama am bagi tempat?"
         },
         {
           "id": "BM-KATA_NAMA_AM-044",
@@ -1880,7 +1880,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_KHAS-043",
-          "q": "KBAT: Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?",
+          "q": "Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?",
           "answer": "Zoo Negara",
           "accepted": [
             "Zoo Negara"
@@ -1890,7 +1890,7 @@ const rawBMSSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?"
+          "question": "Antara Zoo Negara, taman permainan, kantin dan perpustakaan, yang manakah ialah kata nama khas?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-044",
@@ -1964,7 +1964,7 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_NAMA_KHAS-049",
-          "q": "KBAT: Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?",
+          "q": "Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?",
           "answer": "Pulau Langkawi",
           "accepted": [
             "Pulau Langkawi"
@@ -1974,7 +1974,7 @@ const rawBMSSubject = {
           "difficulty": "sukar",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "KBAT: Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?"
+          "question": "Rombongan sekolah memilih Pulau Langkawi sebagai destinasi lawatan sambil belajar. Apakah kata nama khas bagi tempat itu?"
         },
         {
           "id": "BM-KATA_NAMA_KHAS-050",

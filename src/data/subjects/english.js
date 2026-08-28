@@ -7081,6 +7081,308 @@ const rawEnglishSubject = {
   ]
 };
 
+const ENGLISH_SEMANTIC_STEM_REPAIRS = Object.freeze({
+  "A ________ is swimming in the pond.": {
+    stem: "The animal in the pond has fins and gills. It is a ________.",
+    hint: "Look for an animal with fins and gills.",
+    explanation: "A fish has fins and gills for living and swimming in water."
+  },
+  "The ________ is on the table.": {
+    stem: "I sharpen a ________ before writing in my exercise book.",
+    hint: "Think of a writing tool that can be sharpened.",
+    explanation: "A pencil is sharpened before it is used for writing."
+  },
+  "The ________ is reading a story.": {
+    stem: "A female child is reading a story. She is a ________.",
+    hint: "The clue describes a female child.",
+    explanation: "A female child is a girl."
+  },
+  "The ________ is under the chair.": {
+    stem: "The round toy that we kick is under the chair. It is a ________.",
+    hint: "Think of a round toy used in games.",
+    explanation: "A ball is a round toy that can be kicked."
+  },
+  "The ________ helps sick people.": {
+    stem: "The ________ examines patients and gives medical treatment.",
+    hint: "Think of the medical professional who examines patients.",
+    explanation: "A doctor examines patients and gives medical treatment."
+  },
+  "The ________ is barking loudly.": {
+    stem: "The pet that says 'woof' is barking loudly. It is a ________.",
+    hint: "Which pet says 'woof' and barks?",
+    explanation: "A dog says 'woof' and barks."
+  },
+  "A ________ can fly in the sky.": {
+    stem: "The animal has feathers, a beak and wings. It is a ________.",
+    hint: "Look for an animal with feathers and a beak.",
+    explanation: "A bird has feathers, a beak and wings."
+  },
+  "A ________ can hop fast.": {
+    stem: "The animal has long ears and a short tail. It can hop fast. It is a ________.",
+    hint: "Think of the animal with long ears and a short tail.",
+    explanation: "A rabbit has long ears, a short tail and can hop."
+  },
+  "The ________ is parked outside.": {
+    stem: "The small road vehicle with four wheels is parked outside. It is a ________.",
+    hint: "Think of a small four-wheeled road vehicle.",
+    explanation: "A car is a small road vehicle with four wheels."
+  },
+  "The ________ is in my pencil case.": {
+    stem: "The straight tool I use to measure length is in my pencil case. It is a ________.",
+    hint: "Think of the tool used to measure length.",
+    explanation: "A ruler is used to measure length and draw straight lines."
+  },
+  "The ________ is on the wall.": {
+    stem: "The round object on the wall tells the time. It is a ________.",
+    hint: "Look for the object that tells the time.",
+    explanation: "A clock tells the time."
+  },
+  "Our ________ is near the park.": {
+    stem: "The place where pupils and teachers learn together is our ________.",
+    hint: "Think of the place where pupils go to learn.",
+    explanation: "A school is a place where pupils and teachers learn together."
+  },
+  "The books are on the ________.": {
+    stem: "The flat piece of furniture with legs that holds the books is a ________.",
+    hint: "Think of flat furniture used to hold books and other things.",
+    explanation: "A table is a flat piece of furniture with legs."
+  },
+  "The ________ takes us to school.": {
+    stem: "The large road vehicle that carries many pupils to school is a ________.",
+    hint: "Think of a large vehicle that carries many passengers.",
+    explanation: "A bus is a large road vehicle that carries many passengers."
+  },
+  "My ________ cooks dinner at home.": {
+    stem: "My female parent cooks dinner at home. She is my ________.",
+    hint: "The clue asks for a female parent.",
+    explanation: "A female parent is a mother."
+  },
+  "We plant flowers in the ________.": {
+    stem: "We plant flowers in the area beside our house called the ________.",
+    hint: "Think of the outdoor area where flowers are grown.",
+    explanation: "A garden is an outdoor area where flowers and other plants are grown."
+  },
+  "Please sit on the ________.": {
+    stem: "Please sit on the seat for one person that has a back. It is a ________.",
+    hint: "Think of a seat for one person with a back.",
+    explanation: "A chair is a seat for one person and usually has a back."
+  },
+  "My ________ drives the car.": {
+    stem: "My male parent drives the car. He is my ________.",
+    hint: "The clue asks for a male parent.",
+    explanation: "A male parent is a father."
+  },
+  "The bright ________ is beside the desk.": {
+    stem: "The glass opening beside the desk lets sunlight into the room. It is a ________.",
+    hint: "Think of the glass opening that lets light into a room.",
+    explanation: "A window is a glass opening that lets light into a room."
+  },
+  "The small ________ is sleeping on the mat.": {
+    stem: "The young dog is sleeping on the mat. It is a ________.",
+    hint: "What is a young dog called?",
+    explanation: "A young dog is called a puppy."
+  },
+  "The children play at the ________.": {
+    stem: "The children play in the public green area with trees and grass called the ________.",
+    hint: "Think of a public green area for play and rest.",
+    explanation: "A park is a public green area where people can play and rest."
+  },
+  "The water is in the ________.": {
+    stem: "The water is in a small drinking container with a handle. It is a ________.",
+    hint: "Think of a small drinking container with a handle.",
+    explanation: "A cup is a small drinking container that often has a handle."
+  },
+  "The happy ________ is in the photo.": {
+    stem: "The very young child smiling in the photo is a ________.",
+    hint: "Think of the word for a very young child.",
+    explanation: "A very young child is a baby."
+  },
+  "The long ________ is late.": {
+    stem: "The rail vehicle with many carriages is late. It is a ________.",
+    hint: "Think of a vehicle that travels on railway tracks.",
+    explanation: "A train is a vehicle that travels on railway tracks."
+  },
+  "The bird sits on the ________.": {
+    stem: "The bird sits in the tall plant with a trunk and branches. It is a ________.",
+    hint: "Think of a tall plant with a trunk and branches.",
+    explanation: "A tree is a tall plant with a trunk and branches."
+  },
+  "My toys are in my ________.": {
+    stem: "My toys are in the part of the house where I sleep. It is my ________.",
+    hint: "Think of the part of a house where you sleep.",
+    explanation: "A bedroom is the room where a person sleeps."
+  },
+  "My ________ is under the bed.": {
+    stem: "The item I wear on my foot is under the bed. It is my ________.",
+    hint: "Think of an item worn on the foot.",
+    explanation: "A shoe is worn on the foot."
+  },
+  "A ripe ________ is sweet.": {
+    stem: "This ripe tropical fruit has yellow flesh and one large flat seed. It is a ________.",
+    hint: "Think of a tropical fruit with one large flat seed.",
+    explanation: "A mango has sweet yellow flesh and one large flat seed."
+  },
+  "The toys are in the ________.": {
+    stem: "The toys are in a container with flat sides and a lid. It is a ________.",
+    hint: "Think of a container with flat sides and a lid.",
+    explanation: "A box is a container with flat sides and may have a lid."
+  },
+  "My ________ helps me with homework.": {
+    stem: "My female sibling helps me with homework. She is my ________.",
+    hint: "The clue asks for a female sibling.",
+    explanation: "A female sibling is a sister."
+  },
+  "A ________ gives us milk.": {
+    stem: "The farm animal that says 'moo' and gives us milk is a ________.",
+    hint: "Think of the farm animal that says 'moo'.",
+    explanation: "A cow says 'moo' and gives us milk."
+  },
+  "A ________ can swim in water.": {
+    stem: "The animal has fins and gills and swims in water. It is a ________.",
+    hint: "Look for an animal with fins and gills.",
+    explanation: "A fish has fins and gills and swims in water."
+  },
+  "A ________ has a long neck.": {
+    stem: "The tallest land animal has a very long neck. It is a ________.",
+    hint: "Think of the tallest land animal.",
+    explanation: "A giraffe is the tallest land animal and has a very long neck."
+  },
+  "A ________ can hop.": {
+    stem: "A long-eared animal with a short tail can hop. It is a ________.",
+    hint: "Think of the animal with long ears and a short tail.",
+    explanation: "A rabbit has long ears, a short tail and can hop."
+  },
+  "A ________ lays eggs.": {
+    stem: "A female chicken that lays eggs is called a ________.",
+    hint: "The clue asks for a female chicken.",
+    explanation: "A female chicken is called a hen."
+  },
+  "A ________ has stripes.": {
+    stem: "The large wild cat with orange fur and black stripes is a ________.",
+    hint: "Think of a large wild cat with black stripes.",
+    explanation: "A tiger is a large wild cat with orange fur and black stripes."
+  },
+  "A ________ can fly.": {
+    stem: "An animal with feathers, a beak and wings is a ________.",
+    hint: "Look for an animal with feathers and a beak.",
+    explanation: "A bird has feathers, a beak and wings."
+  },
+  "A ________ is a yellow fruit.": {
+    stem: "This long, curved fruit has yellow skin. It is a ________.",
+    hint: "Look for a long, curved fruit with yellow skin.",
+    explanation: "A banana is a long, curved fruit with yellow skin."
+  },
+  "We drink ________ when we are thirsty.": {
+    stem: "The clear drink with no colour that our body needs is ________.",
+    hint: "Think of a clear drink with no colour.",
+    explanation: "Water is clear, has no colour and is needed by our body."
+  },
+  "A ________ is red and sweet.": {
+    stem: "This small red fruit has tiny seeds on its skin. It is a ________.",
+    hint: "Look for a small red fruit with seeds on its skin.",
+    explanation: "A strawberry is a small red fruit with tiny seeds on its skin."
+  },
+  "I spread butter on my ________.": {
+    stem: "I spread butter on a slice of ________ before eating it.",
+    hint: "Think of a food that is cut into slices for toast.",
+    explanation: "Bread can be cut into slices and spread with butter."
+  },
+  "An ________ is a round fruit.": {
+    stem: "This round fruit has orange skin and juicy segments. It is an ________.",
+    hint: "Look for a round fruit with orange skin and segments.",
+    explanation: "An orange has orange skin and juicy segments."
+  },
+  "A ________ is a round fruit.": {
+    stem: "This round fruit has orange skin and juicy segments. It is an ________.",
+    hint: "Look for a round fruit with orange skin and segments.",
+    explanation: "An orange has orange skin and juicy segments."
+  },
+  "We eat ________ with soup.": {
+    stem: "The long, thin food made from flour that we eat with soup is ________.",
+    hint: "Think of long, thin strands made from flour.",
+    explanation: "Noodles are long, thin strands made from flour and can be eaten with soup."
+  },
+  "An ________ is cold and sweet.": {
+    stem: "This frozen creamy dessert is cold and sweet. It is an ________.",
+    hint: "Think of a frozen creamy dessert.",
+    explanation: "Ice cream is a frozen creamy dessert that is cold and sweet."
+  },
+  "A ________ is cold and sweet.": {
+    stem: "This frozen creamy dessert is cold and sweet. It is an ________.",
+    hint: "Think of a frozen creamy dessert.",
+    explanation: "Ice cream is a frozen creamy dessert that is cold and sweet."
+  },
+  "Mother cooks ________ in the pot.": {
+    stem: "Mother cooks white grains in a rice cooker. The cooked food is ________.",
+    hint: "Think of the white grains cooked in a rice cooker.",
+    explanation: "Rice is made by cooking rice grains in water."
+  },
+  "I drink ________ every morning.": {
+    stem: "The white drink from cows that I have every morning is ________.",
+    hint: "Think of the white drink that comes from cows.",
+    explanation: "Milk is a white drink that comes from cows."
+  }
+});
+
+const ENGLISH_SEMANTIC_QUESTION_OVERRIDES = Object.freeze({
+  "ENG-NOUNS-046": {
+    q: "Which word is a person's name? ________ is my friend.",
+    options: ["Aina", "school", "pencil", "cat"],
+    hint: "Choose the word that begins with a capital letter and names a person.",
+    explanation: "Aina is a person's name and begins with a capital letter."
+  },
+  "ENG-NOUNS-047": {
+    q: "Which word is a person's name? ________ wears a blue shirt.",
+    options: ["Ali", "shirt", "blue", "school"],
+    hint: "Choose the word that names a person.",
+    explanation: "Ali is a person's name."
+  },
+  "ENG-NOUNS-048": {
+    q: "Which word is a person's name? ________ goes to school by bus.",
+    options: ["Ravi", "bus", "school", "road"],
+    hint: "Choose the word that names a person.",
+    explanation: "Ravi is a person's name."
+  },
+  "ENG-NOUNS-049": {
+    q: "Which word is a person's name? ________ reads a story book.",
+    options: ["Mei", "story", "book", "reads"],
+    hint: "Choose the word that names a person.",
+    explanation: "Mei is a person's name."
+  },
+  "ENG-NOUNS-050": {
+    q: "Which word is a person's name? ________ drinks water after sport.",
+    options: ["Sara", "water", "sport", "drink"],
+    hint: "Choose the word that names a person.",
+    explanation: "Sara is a person's name."
+  }
+});
+
+function enrichEnglishSemanticQuestions(subject) {
+  return {
+    ...subject,
+    topics: subject.topics.map(topic => ({
+      ...topic,
+      questions: topic.questions.map(question => {
+        const questionOverride = ENGLISH_SEMANTIC_QUESTION_OVERRIDES[question.id] || {};
+        const currentStem = String(question.q || question.question || '');
+        const match = Object.entries(ENGLISH_SEMANTIC_STEM_REPAIRS)
+          .find(([source]) => currentStem.includes(source));
+        if (!match && !Object.keys(questionOverride).length) return question;
+        const next = { ...question, ...questionOverride };
+        if (questionOverride.q) next.question = questionOverride.q;
+        if (!match) return next;
+        const [source, repair] = match;
+        next.hint = repair.hint;
+        next.explanation = repair.explanation;
+        for (const field of ['q', 'question']) {
+          if (typeof next[field] === 'string') next[field] = next[field].replace(source, repair.stem);
+        }
+        return next;
+      })
+    }))
+  };
+}
+
 const ENGLISH_READING_PASSAGE_REPAIRS = Object.freeze({
   "Aina has a red bag. She puts a book in it.": "Aina has a red bag. She puts a book in it. She smiles because she likes her books.",
   "Ben has a cat. The cat sleeps under the chair.": "Ben has a cat at home. The cat sleeps quietly under the chair because the room is cool.",
@@ -7143,6 +7445,8 @@ function enrichEnglishReadingQuestions(subject) {
   };
 }
 
-export const englishSubject = attachInteractiveQuestionExamplesToSubject(normalizeEnglishSubject(enrichEnglishReadingQuestions(rawEnglishSubject)));
+export const englishSubject = attachInteractiveQuestionExamplesToSubject(normalizeEnglishSubject(
+  enrichEnglishSemanticQuestions(enrichEnglishReadingQuestions(rawEnglishSubject))
+));
 
 export default englishSubject;
