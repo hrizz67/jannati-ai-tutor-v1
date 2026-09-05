@@ -6483,6 +6483,12 @@ input:focus {
   font-size: 1.6rem;
 }
 
+.interactive-object-symbol.arabic-glyph {
+  font-family: "Noto Naskh Arabic", "Segoe UI", serif;
+  font-size: clamp(2.35rem, 7vw, 4rem);
+  line-height: 1;
+}
+
 .matching-button small {
   grid-column: 1 / -1;
   color: var(--green2);

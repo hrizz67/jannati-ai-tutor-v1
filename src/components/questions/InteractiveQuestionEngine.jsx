@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import JannaAvatar from '../JannaAvatar.jsx';
 import QuestionVisual from './QuestionVisual.jsx';
 import {
@@ -204,8 +204,8 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
   const targetById = useMemo(() => new Map(config.targets.map(target => [target.id, target])), [config.targets]);
   return <div className="matching-question">
     <div className="matching-columns">
-      <section aria-label="Objek untuk dipadankan">
-        <b className="interactive-column-title">1. Pilih objek</b>
+      <section aria-label={config.itemGroupLabel || 'Pilihan untuk dipadankan'}>
+        <b className="interactive-column-title">{config.itemHeading || '1. Pilih satu kad'}</b>
         <div className="matching-list">
           {config.items.map(item => <button
             className={`matching-button ${selectedItemId === item.id ? 'selected' : ''} ${matches[item.id] ? 'matched' : ''}`}
@@ -221,8 +221,8 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
           </button>)}
         </div>
       </section>
-      <section aria-label="Nama bentuk untuk dipilih">
-        <b className="interactive-column-title">2. Pilih padanan</b>
+      <section aria-label={config.targetGroupLabel || 'Padanan untuk dipilih'}>
+        <b className="interactive-column-title">{config.targetHeading || '2. Pilih padanannya'}</b>
         <div className="matching-list">
           {config.targets.map(target => {
             const used = Object.values(matches).includes(target.id);
@@ -232,7 +232,7 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
               disabled={locked || !selectedItemId}
               key={target.id}
               onClick={() => matchTarget(target.id)}
-            >{target.label}{used && <small>Sudah dipadankan</small>}</button>;
+            >{target.label}{used && <small>{config.matchedLabel || 'Sudah dipadankan'}</small>}</button>;
           })}
         </div>
       </section>
@@ -302,8 +302,8 @@ function OrderingQuestion({ config, value, onChange, feedback }) {
           <span className="ordering-position" aria-hidden="true">{index + 1}</span>
           <b>{item?.label}</b>
           <span className="ordering-controls">
-            <button type="button" className="secondary" disabled={locked || index === 0} onClick={() => move(itemId, -1)} aria-label={`Gerakkan ${item?.label} ke kiri`}>←</button>
-            <button type="button" className="secondary" disabled={locked || index === order.length - 1} onClick={() => move(itemId, 1)} aria-label={`Gerakkan ${item?.label} ke kanan`}>→</button>
+            <button type="button" className="secondary" disabled={locked || index === 0} onClick={() => move(itemId, -1)} aria-label={`Gerakkan ${item?.label} ke atas`}>↑</button>
+            <button type="button" className="secondary" disabled={locked || index === order.length - 1} onClick={() => move(itemId, 1)} aria-label={`Gerakkan ${item?.label} ke bawah`}>↓</button>
           </span>
         </li>;
       })}
@@ -490,6 +490,8 @@ function MoneyQuestion({ config, value, onChange, feedback }) {
 }
 
 export default function InteractiveQuestionEngine({ question, value, onChange, feedback }) {
+  const instructionId = useId();
+  const helpId = useId();
   const config = getInteractiveQuestionConfig(question);
   if (!config) return null;
   const isEnglish = String(question?.id || '').startsWith('ENG-');
@@ -507,9 +509,9 @@ export default function InteractiveQuestionEngine({ question, value, onChange, f
   if (config.type === 'money') content = <MoneyQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
   if (config.type === 'measurement') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} visualMath />;
 
-  return <section className={`interactive-question-engine type-${config.type}`} aria-label={isEnglish ? 'Interactive question activity' : 'Aktiviti soalan interaktif'}>
-    <div className="interactive-instruction"><JannaAvatar size={46} /><p><small>{isEnglish ? 'Janna guides you' : 'Janna membimbing'}</small>{config.instruction}</p></div>
+  return <section className={`interactive-question-engine type-${config.type}`} aria-labelledby={instructionId} aria-describedby={helpId}>
+    <div className="interactive-instruction"><JannaAvatar size={46} /><p id={instructionId}><small>{isEnglish ? 'Janna guides you' : 'Janna membimbing'}</small>{config.instruction}</p></div>
     {content}
-    <p className="interactive-help">{isEnglish ? 'Use touch, mouse or keyboard.' : 'Boleh guna sentuhan, tetikus atau papan kekunci.'}</p>
+    <p className="interactive-help" id={helpId}>{config.screenReaderInstruction || (isEnglish ? 'Use touch, mouse or keyboard.' : 'Boleh guna sentuhan, tetikus atau papan kekunci.')}</p>
   </section>;
 }

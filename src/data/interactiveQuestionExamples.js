@@ -471,10 +471,377 @@ const REVIEWED_RICH_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_RICH_BATCH_4).map(([id, spec]) => [id, buildReviewedRichExample(spec)])
 );
 
+const REVIEWED_Q4_SPECS = Object.freeze({
+  'BM-KATA_NAMA_AM-002': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih perkataan dan gambar haiwan yang disebut dalam ayat.',
+      prompt: 'Dalam ayat “Ayah membeli ikan di pasar”, perkataan manakah kata nama am bagi haiwan?',
+      options: [
+        { id: 'fish', label: 'Ikan', value: 'ikan', visual: { kind: 'object', symbol: '🐟', label: 'Seekor ikan' } },
+        { id: 'market', label: 'Pasar', value: 'pasar', visual: { kind: 'object', symbol: '🏪', label: 'Sebuah pasar' } },
+        { id: 'father', label: 'Ayah', value: 'Ayah', visual: { kind: 'object', symbol: '👨', label: 'Seorang ayah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi haiwan dalam ayat mudah Bahasa Melayu Tahun 2.',
+      assessment: 'Pilihan mewakili haiwan, tempat dan orang daripada ayat yang sama; hanya haiwan memenuhi kehendak soalan.',
+      textbook: 'Simbol disertai label teks supaya kategori kata nama dapat dibandingkan tanpa bergantung pada gambar sahaja.'
+    },
+    intelligence: {
+      skillId: 'kata_nama_am.mengenal_haiwan', responseMode: 'visual_selection',
+      conceptTags: ['kata_nama_am', 'haiwan', 'kategori_perkataan'],
+      misconceptionTags: ['keliru_haiwan_dengan_tempat', 'memilih_nama_orang'],
+      hintSteps: ['Cari nama makhluk hidup dalam ayat.', 'Bezakan haiwan daripada orang dan tempat.', 'Pilih perkataan yang menamakan haiwan yang dibeli oleh ayah.']
+    }
+  },
+  'BM-KATA_KERJA-003': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih perbuatan yang benar-benar berlaku dalam ayat.',
+      prompt: 'Selepas rehat, murid membaca buku cerita di sudut bacaan. Apakah kata kerja dalam ayat ini?',
+      options: [
+        { id: 'read', label: 'Membaca', value: 'membaca', visual: { kind: 'object', symbol: '📖', label: 'Murid sedang membaca' } },
+        { id: 'rest', label: 'Berehat', value: 'berehat', visual: { kind: 'object', symbol: '🪑', label: 'Murid sedang berehat' } },
+        { id: 'write', label: 'Menulis', value: 'menulis', visual: { kind: 'object', symbol: '✍️', label: 'Murid sedang menulis' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata kerja yang menunjukkan perbuatan dalam ayat mudah.',
+      assessment: 'Semua pilihan ialah perbuatan, tetapi hanya satu dinyatakan dalam ayat supaya murid mesti membaca konteks.',
+      textbook: 'Gambar tindakan menyokong kosa kata manakala label mengekalkan fokus pada bentuk perkataan.'
+    },
+    intelligence: {
+      skillId: 'kata_kerja.mengenal_perbuatan_dalam_ayat', responseMode: 'visual_selection',
+      conceptTags: ['kata_kerja', 'perbuatan', 'konteks_ayat'],
+      misconceptionTags: ['memilih_perbuatan_tidak_disebut', 'mengabaikan_konteks'],
+      hintSteps: ['Cari perkataan yang menerangkan apa yang murid lakukan.', 'Semak perbuatan selepas perkataan “murid”.', 'Pilih perbuatan yang melibatkan buku cerita.']
+    }
+  },
+  'BM-PENJODOH_BILANGAN-002': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih penjodoh bilangan yang melengkapkan frasa.',
+      sentenceParts: ['se', ' buku cerita bergambar yang dibawa ke perpustakaan sekolah.'],
+      options: [
+        { id: 'buah', label: 'buah', value: 'buah' },
+        { id: 'batang', label: 'batang', value: 'batang' },
+        { id: 'helai', label: 'helai', value: 'helai' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan penjodoh bilangan “buah” bagi buku dalam frasa mudah.',
+      assessment: 'Tiga penjodoh bilangan lazim digunakan dan hanya “buah” membentuk frasa yang diterima skema asal.',
+      textbook: 'Tempat kosong menunjukkan hubungan awalan “se-” dengan penjodoh bilangan tanpa mengubah ayat sumber.'
+    },
+    intelligence: {
+      skillId: 'penjodoh_bilangan.buku', responseMode: 'completion',
+      conceptTags: ['penjodoh_bilangan', 'buku', 'frasa_nama'],
+      misconceptionTags: ['keliru_batang_dengan_buah', 'memilih_berdasarkan_bentuk_nipis'],
+      hintSteps: ['Kenal pasti benda yang dibilang.', 'Ingat penjodoh bilangan umum untuk benda seperti buku.', 'Baca semula “se___ buku” dan pilih bunyi yang betul.']
+    }
+  },
+  'MATH-MASA-PILOT-007': {
+    interaction: {
+      version: 1,
+      type: 'clock',
+      instruction: 'Pilih muka jam analog yang sepadan dengan 8:00.',
+      prompt: 'Jam digital menunjukkan 8:00. Muka jam analog manakah menunjukkan waktu yang sama?',
+      options: [
+        { id: 'clock-a', label: 'Jam A', value: '8:00', visual: { kind: 'clock', hour: 8, minute: 0, label: 'Jarum minit menunjuk 12 dan jarum jam menunjuk 8' } },
+        { id: 'clock-b', label: 'Jam B', value: '6:00', visual: { kind: 'clock', hour: 6, minute: 0, label: 'Jarum minit menunjuk 12 dan jarum jam menunjuk 6' } },
+        { id: 'clock-c', label: 'Jam C', value: '9:30', visual: { kind: 'clock', hour: 9, minute: 30, label: 'Jarum minit menunjuk 6 dan jarum jam berada antara 9 dengan 10' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan notasi waktu tepat pada jam digital dengan muka jam analog.',
+      assessment: 'Distraktor menguji kekeliruan nombor jam dan kedudukan jarum minit tanpa memaparkan waktu pada label kad.',
+      textbook: 'Tiga muka jam dalaman digunakan sebagai perwakilan visual yang konsisten dan tidak mendedahkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'masa.memadankan_digital_dan_analog', responseMode: 'time_representation',
+      conceptTags: ['jam_digital', 'jam_analog', 'waktu_tepat'],
+      misconceptionTags: ['keliru_jarum_jam', 'keliru_waktu_tepat_dan_setengah'],
+      hintSteps: ['Untuk waktu tepat, cari jarum minit pada 12.', 'Kemudian cari jarum pendek yang menunjuk nombor jam.', 'Padankan nombor pada paparan digital dengan kedudukan jarum pendek.']
+    }
+  },
+  'MATH-BENTUK-PILOT-003': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan rajah, kira setiap bucu dan pilih jawapan.',
+      visual: { kind: 'shape', shape: 'rectangle', label: 'Rajah segi empat tepat' },
+      options: [
+        { id: 'three', label: '3 bucu', value: '3' },
+        { id: 'four', label: '4 bucu', value: '4' },
+        { id: 'five', label: '5 bucu', value: '5' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti bilangan bucu pada segi empat tepat.',
+      assessment: 'Rajah tidak melabel bilangan bucu; murid perlu mengira sebelum memilih satu jawapan.',
+      textbook: 'Bentuk geometri dijana oleh SVG dalaman yang jelas pada skrin kecil dan tidak bergantung pada imej luar.'
+    },
+    intelligence: {
+      skillId: 'bentuk.bucu_segi_empat_tepat', responseMode: 'visual_counting',
+      conceptTags: ['bentuk_2d', 'bucu', 'segi_empat_tepat'],
+      misconceptionTags: ['keliru_bucu_dan_sisi', 'tertinggal_satu_bucu'],
+      hintSteps: ['Bucu ialah tempat dua sisi bertemu.', 'Mulakan pada satu penjuru dan bergerak mengelilingi bentuk.', 'Kira setiap penjuru sekali sahaja.']
+    }
+  },
+  'ENG-NOUNS-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Choose the animal that completes the clue.',
+      options: [
+        { id: 'fish', label: 'fish', value: 'fish', visual: { kind: 'object', symbol: '🐟', label: 'A fish' } },
+        { id: 'bird', label: 'bird', value: 'bird', visual: { kind: 'object', symbol: '🐦', label: 'A bird' } },
+        { id: 'cat', label: 'cat', value: 'cat', visual: { kind: 'object', symbol: '🐈', label: 'A cat' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Recognise a familiar Year 2 animal noun from its habitat and body features.',
+      assessment: 'Only the fish matches the combined clues “pond”, “fins” and “gills”.',
+      textbook: 'Familiar animal symbols and written nouns let pupils compare meaning in two forms.'
+    },
+    intelligence: {
+      skillId: 'nouns.animals_from_clues', responseMode: 'visual_selection',
+      conceptTags: ['nouns', 'animals', 'context_clues'],
+      misconceptionTags: ['uses_one_clue_only', 'confuses_animal_habitats'],
+      hintSteps: ['Look for the place where the animal lives.', 'Think about which animal has fins and gills.', 'Choose the noun for an animal that swims in a pond.']
+    }
+  },
+  'ENG-ANIMALS-004': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Choose the animal with the body part in the clue.',
+      options: [
+        { id: 'elephant', label: 'elephant', value: 'elephant', visual: { kind: 'object', symbol: '🐘', label: 'An elephant' } },
+        { id: 'giraffe', label: 'giraffe', value: 'giraffe', visual: { kind: 'object', symbol: '🦒', label: 'A giraffe' } },
+        { id: 'zebra', label: 'zebra', value: 'zebra', visual: { kind: 'object', symbol: '🦓', label: 'A zebra' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Identify a familiar animal from a simple English description.',
+      assessment: 'The long trunk uniquely identifies the elephant among familiar large animals.',
+      textbook: 'Each picture has a visible noun and an accessible semantic label.'
+    },
+    intelligence: {
+      skillId: 'animals.identify_from_body_part', responseMode: 'visual_selection',
+      conceptTags: ['animals', 'body_parts', 'descriptive_clues'],
+      misconceptionTags: ['confuses_trunk_and_neck', 'chooses_by_size_only'],
+      hintSteps: ['Find the words that describe a body part.', 'A trunk is a long nose.', 'Choose the animal that uses a trunk.']
+    }
+  },
+  'ENG-SENTENCES-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the verb that makes the sentence correct.',
+      sentenceParts: ['At school, I ', ' a pupil.'],
+      options: [
+        { id: 'am', label: 'am', value: 'am' },
+        { id: 'is', label: 'is', value: 'is' },
+        { id: 'are', label: 'are', value: 'are' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Use the correct present form of “be” with the pronoun “I”.',
+      assessment: 'The options isolate the agreement contrast am/is/are with one grammatically correct response.',
+      textbook: 'The completed sentence stays visible so pupils can read the grammar in context.'
+    },
+    intelligence: {
+      skillId: 'sentences.subject_verb_agreement_i_am', responseMode: 'completion',
+      conceptTags: ['sentences', 'verb_to_be', 'subject_verb_agreement'],
+      misconceptionTags: ['uses_is_with_i', 'uses_are_with_i'],
+      hintSteps: ['Look at the subject at the start of the sentence.', 'The subject is the pronoun “I”.', 'Choose the form of “be” that is used only with this pronoun.']
+    }
+  },
+  'SAINS-HAIWAN-011': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara pergerakan ikan.',
+      options: [
+        { id: 'swim', label: 'Berenang', value: 'berenang', visual: { kind: 'object', symbol: '🐟', label: 'Ikan berenang di dalam air' } },
+        { id: 'walk', label: 'Berjalan', value: 'berjalan', visual: { kind: 'object', symbol: '🐾', label: 'Kesan tapak haiwan berjalan' } },
+        { id: 'fly', label: 'Terbang', value: 'terbang', visual: { kind: 'object', symbol: '🪽', label: 'Sayap haiwan terbang' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan ikan dengan cara pergerakan berenang.',
+      assessment: 'Tiga cara pergerakan berlainan dibandingkan dan hanya berenang sesuai untuk ikan.',
+      textbook: 'Simbol dan label menjadikan hubungan haiwan-pergerakan jelas tanpa menggunakan warna sebagai petunjuk.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_ikan', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'ikan'],
+      misconceptionTags: ['keliru_habitat_dan_pergerakan', 'menyamakan_semua_haiwan'],
+      hintSteps: ['Fikir tempat ikan hidup.', 'Perhatikan bentuk badan dan sirip ikan.', 'Pilih pergerakan yang berlaku di dalam air.']
+    }
+  },
+  'SAINS-TUMBUHAN-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih fungsi akar yang betul.',
+      options: [
+        { id: 'absorb', label: 'Menyerap air', value: 'menyerap air', visual: { kind: 'object', symbol: '💧', label: 'Air diserap dari tanah' } },
+        { id: 'food', label: 'Membuat makanan', value: 'membuat makanan', visual: { kind: 'object', symbol: '☀️', label: 'Daun menerima cahaya untuk membuat makanan' } },
+        { id: 'flower', label: 'Menghasilkan bunga', value: 'menghasilkan bunga', visual: { kind: 'object', symbol: '🌼', label: 'Sekuntum bunga' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti fungsi akar untuk menyerap air daripada tanah.',
+      assessment: 'Distraktor ialah fungsi atau hasil bahagian tumbuhan lain supaya salah faham dapat dikenal pasti.',
+      textbook: 'Visual menyokong fungsi tetapi label teks kekal sebagai sumber makna utama.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.fungsi_akar_menyerap_air', responseMode: 'visual_selection',
+      conceptTags: ['tumbuhan', 'akar', 'fungsi_bahagian'],
+      misconceptionTags: ['keliru_akar_dan_daun', 'keliru_fungsi_dan_hasil'],
+      hintSteps: ['Akar berada di dalam tanah.', 'Fikir bahan yang diperlukan tumbuhan daripada tanah.', 'Pilih fungsi yang melibatkan air.']
+    }
+  },
+  'SAINS-BAHAN-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih sifat bahan yang melengkapkan fakta.',
+      sentenceParts: ['Kayu sukar ditekan kerana bersifat ', '.'],
+      options: [
+        { id: 'hard', label: 'keras', value: 'keras' },
+        { id: 'soft', label: 'lembut', value: 'lembut' },
+        { id: 'elastic', label: 'kenyal', value: 'kenyal' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti “keras” sebagai sifat bahan yang sukar ditekan.',
+      assessment: 'Pilihan sifat berada dalam domain yang sama dan membezakan kekerasan daripada kelembutan serta kekenyalan.',
+      textbook: 'Ayat sebab-akibat kekal lengkap selepas pilihan dimasukkan ke tempat kosong.'
+    },
+    intelligence: {
+      skillId: 'bahan.sifat_keras', responseMode: 'completion',
+      conceptTags: ['bahan', 'sifat_bahan', 'kayu'],
+      misconceptionTags: ['keliru_keras_dan_kuat', 'keliru_lembut_dan_kenyal'],
+      hintSteps: ['Fokus pada frasa “sukar ditekan”.', 'Bandingkan perubahan bentuk apabila setiap bahan ditekan.', 'Pilih sifat yang menunjukkan bahan tidak mudah berubah bentuk.']
+    }
+  },
+  'ARAB-HURUF_HIJAIYAH-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih nama yang betul bagi huruf Arab dalam soalan.',
+      options: [
+        { id: 'alif', label: 'Alif', value: 'alif', visual: { kind: 'object', symbol: 'ا', label: 'Huruf Arab ا', lang: 'ar', dir: 'rtl' } },
+        { id: 'ba', label: 'Ba', value: 'ba', visual: { kind: 'object', symbol: 'ب', label: 'Huruf Arab ب', lang: 'ar', dir: 'rtl' } },
+        { id: 'ta', label: 'Ta', value: 'ta', visual: { kind: 'object', symbol: 'ت', label: 'Huruf Arab ت', lang: 'ar', dir: 'rtl' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal dan menamakan huruf hijaiyah alif.',
+      assessment: 'Tiga huruf awal hijaiyah dipaparkan dengan nama; hanya nama alif sepadan dengan simbol dalam stem.',
+      textbook: 'Aksara menggunakan arah kanan-ke-kiri, saiz besar dan label pembaca skrin tanpa imej luaran.'
+    },
+    intelligence: {
+      skillId: 'huruf_hijaiyah.mengenal_alif', responseMode: 'symbol_name_selection',
+      conceptTags: ['huruf_hijaiyah', 'alif', 'bentuk_huruf'],
+      misconceptionTags: ['keliru_alif_dan_ba', 'membaca_arah_yang_salah'],
+      hintSteps: ['Perhatikan sama ada huruf mempunyai titik.', 'Huruf sasaran ialah satu garis tegak tanpa titik.', 'Padankan bentuk itu dengan nama huruf yang betul.']
+    }
+  },
+  'ARAB-WARNA_ARAB-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih warna yang sepadan dengan perkataan Arab.',
+      options: [
+        { id: 'red', label: 'Merah', value: 'merah', visual: { kind: 'object', symbol: '🟥', label: 'Petak berwarna merah' } },
+        { id: 'blue', label: 'Biru', value: 'biru', visual: { kind: 'object', symbol: '🟦', label: 'Petak berwarna biru' } },
+        { id: 'yellow', label: 'Kuning', value: 'kuning', visual: { kind: 'object', symbol: '🟨', label: 'Petak berwarna kuning' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan kosa kata warna Arab أَحْمَرُ dengan maksud Bahasa Melayu.',
+      assessment: 'Warna, label dan simbol disediakan bersama supaya jawapan tidak bergantung pada persepsi warna sahaja.',
+      textbook: 'Kad warna menghubungkan perkataan Arab dengan makna harian yang mudah dikenal.'
+    },
+    intelligence: {
+      skillId: 'warna_arab.ahmar_merah', responseMode: 'visual_selection',
+      conceptTags: ['warna_arab', 'ahmar', 'merah'],
+      misconceptionTags: ['keliru_ahmar_dan_azraq', 'memilih_warna_tanpa_membaca_label'],
+      hintSteps: ['Baca perkataan Arab dari kanan ke kiri.', 'Ingat semula warna yang dipadankan dengan “ahmar”.', 'Semak label Bahasa Melayu di bawah setiap petak warna.']
+    }
+  },
+  'ISLAM-JAWI-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih nama huruf Jawi yang betul.',
+      options: [
+        { id: 'alif', label: 'Alif', value: 'alif', visual: { kind: 'object', symbol: 'ا', label: 'Huruf Jawi ا', lang: 'ar', dir: 'rtl' } },
+        { id: 'ba', label: 'Ba', value: 'ba', visual: { kind: 'object', symbol: 'ب', label: 'Huruf Jawi ب', lang: 'ar', dir: 'rtl' } },
+        { id: 'ta', label: 'Ta', value: 'ta', visual: { kind: 'object', symbol: 'ت', label: 'Huruf Jawi ت', lang: 'ar', dir: 'rtl' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal dan menamakan huruf Jawi alif.',
+      assessment: 'Pilihan huruf hampir membezakan alif tanpa titik daripada ba dan ta yang bertitik.',
+      textbook: 'Huruf Jawi dipaparkan besar dengan metadata bahasa Arab, arah RTL dan label teks.'
+    },
+    intelligence: {
+      skillId: 'jawi.mengenal_alif', responseMode: 'symbol_name_selection',
+      conceptTags: ['jawi', 'alif', 'bentuk_huruf'],
+      misconceptionTags: ['keliru_alif_dan_ba', 'tidak_memerhati_titik'],
+      hintSteps: ['Lihat bentuk dan bilangan titik pada huruf.', 'Huruf sasaran tidak mempunyai titik.', 'Pilih nama bagi garis tegak tanpa titik itu.']
+    }
+  },
+  'PJ-PERGERAKAN_ASAS-032': {
+    interaction: {
+      version: 1,
+      type: 'ordering',
+      instruction: 'Susun dua kad untuk membina gabungan pergerakan asas.',
+      prompt: 'Susun dua pergerakan ini mengikut urutan yang diminta: berlari kemudian melompat.',
+      responsePreviewLabel: 'Gabungan kamu',
+      responseSeparator: ' kemudian ',
+      screenReaderInstruction: 'Gunakan butang anak panah atas atau bawah untuk menukar urutan kad.',
+      items: [
+        { id: 'jump', label: 'Melompat', responseLabel: 'melompat' },
+        { id: 'run', label: 'Berlari', responseLabel: 'berlari' }
+      ],
+      correctOrder: ['run', 'jump']
+    },
+    qualityReview: {
+      curriculum: 'Menggabungkan dua pergerakan asas mengikut urutan berlari kemudian melompat.',
+      assessment: 'Kad bermula dalam urutan terbalik dan respons lengkap mesti sepadan tepat dengan jawapan asal.',
+      textbook: 'Kawalan atas/bawah menyediakan alternatif sentuhan dan papan kekunci kepada seret dan lepas.'
+    },
+    intelligence: {
+      skillId: 'pergerakan_asas.gabungan_berlari_melompat', responseMode: 'sequencing',
+      conceptTags: ['pergerakan_asas', 'gabungan_pergerakan', 'urutan'],
+      misconceptionTags: ['urutan_terbalik', 'menganggap_satu_pergerakan_mencukupi'],
+      hintSteps: ['Cari perkataan “kemudian” dalam arahan.', 'Letakkan pergerakan pertama di bahagian atas.', 'Semak bahawa melompat berlaku selepas berlari.']
+    }
+  }
+});
+
+const REVIEWED_Q4_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_Q4_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CHOICE_EXAMPLES,
   ...REVIEWED_FILL_BLANK_EXAMPLES,
   ...REVIEWED_RICH_EXAMPLES,
+  ...REVIEWED_Q4_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -661,9 +1028,9 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
       type: 'clock',
       instruction: 'Pilih muka jam yang menunjukkan pukul tiga setengah.',
       options: [
-        { id: 'three-thirty', label: '3:30', value: '3:30', visual: { kind: 'clock', hour: 3, minute: 30, label: 'Pukul tiga setengah' } },
-        { id: 'six-fifteen', label: '6:15', value: '6:15', visual: { kind: 'clock', hour: 6, minute: 15, label: 'Pukul enam suku' } },
-        { id: 'three', label: '3:00', value: '3:00', visual: { kind: 'clock', hour: 3, minute: 0, label: 'Pukul tiga tepat' } }
+        { id: 'three-thirty', label: 'Jam A', value: '3:30', visual: { kind: 'clock', hour: 3, minute: 30, label: 'Jarum minit menunjuk 6 dan jarum jam berada antara 3 dengan 4' } },
+        { id: 'six-fifteen', label: 'Jam B', value: '6:15', visual: { kind: 'clock', hour: 6, minute: 15, label: 'Jarum minit menunjuk 3 dan jarum jam melepasi 6' } },
+        { id: 'three', label: 'Jam C', value: '3:00', visual: { kind: 'clock', hour: 3, minute: 0, label: 'Jarum minit menunjuk 12 dan jarum jam menunjuk 3' } }
       ]
     },
     qualityReview: {
@@ -730,6 +1097,10 @@ function reviewedLearningIntelligence({ skillId, responseMode, conceptTags, misc
   });
 }
 
+const REVIEWED_Q4_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_Q4_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -773,6 +1144,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CHOICE_INTELLIGENCE,
   ...REVIEWED_FILL_BLANK_INTELLIGENCE,
   ...REVIEWED_RICH_INTELLIGENCE,
+  ...REVIEWED_Q4_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',

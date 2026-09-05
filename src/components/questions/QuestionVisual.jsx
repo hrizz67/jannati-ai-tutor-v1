@@ -4,6 +4,7 @@ function ShapeSvg({ shape, label }) {
   return <svg className="interactive-shape-svg" viewBox="0 0 120 90" role="img" aria-label={label || shape}>
     {shape === 'triangle' && <polygon points="60,10 108,78 12,78" />}
     {shape === 'square' && <rect x="22" y="8" width="76" height="76" rx="4" />}
+    {shape === 'rectangle' && <rect x="10" y="18" width="100" height="54" rx="4" />}
     {shape === 'circle' && <circle cx="60" cy="45" r="36" />}
     {shape === 'cube' && <g className="interactive-shape-lines"><path d="M30 25 62 10 94 28 62 44Z" /><path d="M30 25v38l32 18V44Z" /><path d="M94 28v37L62 81V44Z" /></g>}
     {shape === 'cylinder' && <g className="interactive-shape-lines"><ellipse cx="60" cy="19" rx="35" ry="12" /><path d="M25 19v50c0 7 16 13 35 13s35-6 35-13V19" /><path d="M25 68c0 7 16 13 35 13s35-6 35-13" /></g>}
@@ -87,7 +88,13 @@ export default function QuestionVisual({ visual, className = '' }) {
   if (visual.kind === 'ruler') return <RulerVisual visual={visual} />;
   if (visual.kind === 'shape') return <ShapeSvg shape={visual.shape} label={visual.label} />;
   if (visual.kind === 'object') {
-    return <span className={`interactive-object-symbol ${className}`} role="img" aria-label={visual.label || 'Objek'}>{visual.symbol || '●'}</span>;
+    return <span
+      className={`interactive-object-symbol ${visual.lang === 'ar' ? 'arabic-glyph' : ''} ${className}`}
+      role="img"
+      aria-label={visual.label || 'Objek'}
+      lang={visual.lang}
+      dir={visual.dir}
+    >{visual.symbol || '●'}</span>;
   }
   return null;
 }

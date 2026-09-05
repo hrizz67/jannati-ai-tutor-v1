@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "questionId": "MATH-MASA-PILOT-021",
+      "rule": "RICH_INTERACTION_KEEP_STANDARD",
+      "reason": "Respons berstruktur ini sengaja dikekalkan sebagai jawapan standard supaya konstruk penerangan murid tidak berubah menjadi tugas memilih atau menyeret.",
+      "reviewedAt": "2026-09-05"
+    },
+    {
+      "questionId": "ISLAM-JAWI-004",
+      "rule": "JAWI_ACCEPTED_TRANSLITERATIONS",
+      "reason": "Sa dan tha ialah variasi transliterasi yang sengaja diterima untuk huruf ث; satu jawapan kanonik masih digunakan dan semua variasi disemak oleh validator kandungan Islam.",
+      "reviewedAt": "2026-09-05"
+    },
+    {
+      "questionId": "ISLAM-JAWI-016",
+      "rule": "JAWI_ACCEPTED_TRANSLITERATIONS",
+      "reason": "Tho, to dan ta ialah variasi transliterasi yang sengaja diterima untuk huruf ط; variasi ini bukan dua pilihan objektif yang bersaing.",
+      "reviewedAt": "2026-09-05"
+    },
+    {
+      "questionId": "ISLAM-JAWI-017",
+      "rule": "JAWI_ACCEPTED_TRANSLITERATIONS",
+      "reason": "Zho, zo dan za ialah variasi transliterasi yang sengaja diterima untuk huruf ظ; variasi ini bukan dua pilihan objektif yang bersaing.",
+      "reviewedAt": "2026-09-05"
+    }
+  ]
+}

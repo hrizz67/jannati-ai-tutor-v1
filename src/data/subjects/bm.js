@@ -7,7 +7,7 @@ import { attachInteractiveQuestionExamplesToSubject } from '../interactiveQuesti
 const BM_COMPREHENSION_CONTEXTS = Object.freeze([
   {
     source: 'Aina membantu ibu mengemas meja makan keluarga.',
-    passage: 'Selepas makan, Aina membantu ibu mengemas meja makan keluarga di ruang makan kerana ingin membantu ibu.'
+    passage: 'Selepas makan, Aina membantu ibu mengemas meja makan keluarga di ruang makan supaya ruang makan kembali kemas.'
   },
   {
     source: 'Faris membaca buku cerita bergambar di perpustakaan sekolah.',
@@ -15,11 +15,11 @@ const BM_COMPREHENSION_CONTEXTS = Object.freeze([
   },
   {
     source: 'Amir menyiram pokok cili di halaman rumah.',
-    passage: 'Pada petang, Amir menyiram pokok cili bersama ayah di halaman rumah kerana pokok itu perlu air.'
+    passage: 'Pada waktu petang, Amir menyiram pokok cili bersama ayah di halaman rumah kerana pokok itu perlu air.'
   },
   {
     source: 'Hani menyediakan roti bakar di dapur.',
-    passage: 'Pada pagi, Hani menyediakan roti bakar bersama ibunya di dapur kerana keluarganya lapar.'
+    passage: 'Pada waktu pagi, Hani menyediakan roti bakar bersama ibunya di dapur kerana keluarganya lapar.'
   },
   {
     source: 'Danish menyapu lantai kelas pada pagi Jumaat.',
@@ -45,9 +45,9 @@ const BM_COMPREHENSION_QUESTION_OVERRIDES = Object.freeze({
   'BM-PEMAHAMAN_PENULISAN-019': 'Lengkapkan ayat berdasarkan petikan: Faris membaca ______ di perpustakaan sekolah.',
   'BM-PEMAHAMAN_PENULISAN-020': 'Baca petikan: Pada waktu rehat, Faris membaca buku cerita bergambar di perpustakaan sekolah. Tulis satu ayat yang merumuskan tindakan utama Faris.',
   'BM-PEMAHAMAN_PENULISAN-029': 'Lengkapkan ayat berdasarkan petikan: Amir menyiram ______ di halaman rumah.',
-  'BM-PEMAHAMAN_PENULISAN-030': 'Baca petikan: Pada petang, Amir menyiram pokok cili di halaman rumah. Tulis satu ayat yang merumuskan tindakan utama Amir.',
+  'BM-PEMAHAMAN_PENULISAN-030': 'Baca petikan: Pada waktu petang, Amir menyiram pokok cili di halaman rumah. Tulis satu ayat yang merumuskan tindakan utama Amir.',
   'BM-PEMAHAMAN_PENULISAN-039': 'Lengkapkan ayat berdasarkan petikan: Hani menyediakan ______ di dapur.',
-  'BM-PEMAHAMAN_PENULISAN-040': 'Baca petikan: Pada pagi, Hani menyediakan roti bakar di dapur. Tulis satu ayat yang merumuskan tindakan utama Hani.',
+  'BM-PEMAHAMAN_PENULISAN-040': 'Baca petikan: Pada waktu pagi, Hani menyediakan roti bakar di dapur. Tulis satu ayat yang merumuskan tindakan utama Hani.',
   'BM-PEMAHAMAN_PENULISAN-049': 'Lengkapkan ayat berdasarkan petikan: Danish menyapu ______ bersama kawan-kawan.',
   'BM-PEMAHAMAN_PENULISAN-050': 'Baca petikan: Pada pagi Jumaat, Danish menyapu lantai kelas. Tulis satu ayat yang merumuskan tindakan utama Danish.',
   'BM-PEMAHAMAN_PENULISAN-059': 'Lengkapkan ayat berdasarkan petikan: Mira berkongsi ______ dengan Farah.',
@@ -59,11 +59,35 @@ const BM_COMPREHENSION_QUESTION_OVERRIDES = Object.freeze({
 });
 
 const BM_COMPREHENSION_ANSWER_OVERRIDES = Object.freeze({
+  'BM-PEMAHAMAN_PENULISAN-004': {
+    answer: 'supaya ruang makan kembali kemas',
+    accepted: ['supaya ruang makan kembali kemas', 'agar ruang makan kembali kemas', 'supaya ruang makan kemas'],
+    hint: 'Cari tujuan yang dinyatakan pada akhir petikan.',
+    explanation: 'Aina membantu ibu mengemas meja supaya ruang makan kembali kemas.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-010': {
+    accepted: [
+      'Aina membantu ibu mengemas meja makan keluarga.',
+      'Selepas makan, Aina membantu ibu mengemas meja makan keluarga.',
+      'Aina mengemas meja makan keluarga bersama ibu.'
+    ],
+    hint: 'Nyatakan watak dan tindakan utamanya tanpa menambah maklumat baharu.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Aina membantu ibu mengemas meja makan keluarga.'
+  },
   'BM-PEMAHAMAN_PENULISAN-018': {
     answer: 'membaca',
     accepted: ['membaca', 'membaca buku cerita', 'membaca buku cerita bergambar'],
     hint: 'Cari perkataan yang menunjukkan perbuatan Faris.',
     explanation: 'Kata kerja yang menunjukkan perbuatan Faris ialah membaca.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-020': {
+    accepted: [
+      'Faris membaca buku cerita bergambar di perpustakaan sekolah.',
+      'Pada waktu rehat, Faris membaca buku cerita bergambar di perpustakaan sekolah.',
+      'Faris membaca buku cerita bergambar di perpustakaan.'
+    ],
+    hint: 'Nyatakan watak, bahan bacaan dan tempat yang terdapat dalam petikan.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Faris membaca buku cerita bergambar di perpustakaan sekolah.'
   },
   'BM-PEMAHAMAN_PENULISAN-024': {
     answer: 'kerana pokok itu perlu air',
@@ -71,11 +95,41 @@ const BM_COMPREHENSION_ANSWER_OVERRIDES = Object.freeze({
     hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
     explanation: 'Amir menyiram pokok cili kerana pokok itu perlu air.'
   },
+  'BM-PEMAHAMAN_PENULISAN-025': {
+    answer: 'pada waktu petang',
+    accepted: ['pada waktu petang', 'waktu petang', 'pada petang'],
+    hint: 'Cari frasa masa pada awal petikan.',
+    explanation: 'Perbuatan itu dilakukan pada waktu petang.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-030': {
+    accepted: [
+      'Amir menyiram pokok cili di halaman rumah.',
+      'Pada waktu petang, Amir menyiram pokok cili di halaman rumah.',
+      'Amir menyiram pokok cili pada waktu petang.'
+    ],
+    hint: 'Nyatakan watak dan tindakan utama yang dilakukan terhadap pokok cili.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Amir menyiram pokok cili di halaman rumah.'
+  },
   'BM-PEMAHAMAN_PENULISAN-034': {
     answer: 'kerana keluarganya lapar',
     accepted: ['kerana keluarganya lapar', 'kerana keluarga lapar'],
     hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
     explanation: 'Hani menyediakan roti bakar kerana keluarganya lapar.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-035': {
+    answer: 'pada waktu pagi',
+    accepted: ['pada waktu pagi', 'waktu pagi', 'pada pagi'],
+    hint: 'Cari frasa masa pada awal petikan.',
+    explanation: 'Perbuatan itu dilakukan pada waktu pagi.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-040': {
+    accepted: [
+      'Hani menyediakan roti bakar di dapur.',
+      'Pada waktu pagi, Hani menyediakan roti bakar di dapur.',
+      'Hani membuat roti bakar di dapur.'
+    ],
+    hint: 'Nyatakan watak, makanan yang disediakan dan tempatnya.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Hani menyediakan roti bakar di dapur.'
   },
   'BM-PEMAHAMAN_PENULISAN-038': {
     answer: 'menyediakan',
@@ -83,17 +137,53 @@ const BM_COMPREHENSION_ANSWER_OVERRIDES = Object.freeze({
     hint: 'Cari perkataan yang menunjukkan perbuatan Hani.',
     explanation: 'Kata kerja yang menunjukkan perbuatan Hani ialah menyediakan.'
   },
+  'BM-PEMAHAMAN_PENULISAN-050': {
+    accepted: [
+      'Danish menyapu lantai kelas pada pagi Jumaat.',
+      'Pada pagi Jumaat, Danish menyapu lantai kelas.',
+      'Danish menyapu lantai kelas.'
+    ],
+    hint: 'Nyatakan watak dan tugas utama yang dilakukannya.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Danish menyapu lantai kelas pada pagi Jumaat.'
+  },
   'BM-PEMAHAMAN_PENULISAN-054': {
     answer: 'kerana Farah memerlukannya',
     accepted: ['kerana Farah memerlukannya', 'Farah memerlukan pensel warna'],
     hint: 'Cari sebab yang dinyatakan pada akhir petikan.',
     explanation: 'Mira berkongsi pensel warna kerana Farah memerlukannya.'
   },
+  'BM-PEMAHAMAN_PENULISAN-060': {
+    accepted: [
+      'Mira berkongsi pensel warna dengan Farah di kelas seni.',
+      'Pada waktu seni, Mira berkongsi pensel warna dengan Farah.',
+      'Mira berkongsi pensel warna dengan Farah.'
+    ],
+    hint: 'Nyatakan watak, barang yang dikongsi dan penerimanya.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Mira berkongsi pensel warna dengan Farah.'
+  },
   'BM-PEMAHAMAN_PENULISAN-064': {
     answer: 'supaya badannya tidak basah',
     accepted: ['supaya badannya tidak basah', 'supaya tidak basah'],
     hint: 'Fikirkan tujuan memakai baju hujan.',
     explanation: 'Hakim memakai baju hujan supaya badannya tidak basah.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-070': {
+    accepted: [
+      'Hakim memakai baju hujan ketika hujan lebat.',
+      'Ketika hujan lebat, Hakim memakai baju hujan.',
+      'Hakim memakai baju hujan.'
+    ],
+    hint: 'Nyatakan watak dan tindakan utama ketika hujan lebat.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Hakim memakai baju hujan ketika hujan lebat.'
+  },
+  'BM-PEMAHAMAN_PENULISAN-080': {
+    accepted: [
+      'Iman menyiapkan kerja sekolah sebelum bermain.',
+      'Sebelum bermain, Iman menyiapkan kerja sekolah.',
+      'Iman menyiapkan kerja sekolah.'
+    ],
+    hint: 'Nyatakan tindakan yang diselesaikan oleh Iman sebelum bermain.',
+    explanation: 'Ringkasan yang tepat menyatakan bahawa Iman menyiapkan kerja sekolah sebelum bermain.'
   }
 });
 
@@ -2360,17 +2450,18 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-015",
-          "q": "Betulkan ayat ini: \"Dia sedang berehat kerana demam.\" (merujuk kepada Hakim)",
-          "answer": "Dia sedang berehat kerana demam di rumah dengan tenang.",
+          "q": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Hakim: ____ sedang berehat kerana demam.",
+          "answer": "Dia",
           "accepted": [
-            "Dia sedang berehat kerana demam di rumah dengan tenang."
+            "Dia"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Dia sedang berehat kerana demam di rumah dengan tenang.",
+          "hint": "Hakim ialah seorang lelaki yang sedang diperkatakan.",
+          "explanation": "Kata ganti nama diri ketiga yang sesuai untuk Hakim ialah dia.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang berehat kerana demam.\" (merujuk kepada Hakim)"
+          "cognitiveLevel": "mengingat",
+          "question": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Hakim: ____ sedang berehat kerana demam."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-016",
@@ -2430,17 +2521,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-020",
-          "q": "Betulkan ayat ini: \"Dia sedang membaca buku cerita.\" (merujuk kepada Amir dan Faris)",
-          "answer": "Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
+          "q": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Amir dan Faris: ____ sedang membaca buku cerita.",
+          "answer": "Mereka",
           "accepted": [
-            "Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin."
+            "Mereka"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Mereka sedang membaca buku cerita di perpustakaan sekolah dengan rajin.",
+          "hint": "Gunakan kata ganti nama bagi lebih daripada seorang yang diperkatakan.",
+          "explanation": "Kata ganti nama diri ketiga bagi Amir dan Faris ialah mereka.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang membaca buku cerita.\" (merujuk kepada Amir dan Faris)"
+          "question": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Amir dan Faris: ____ sedang membaca buku cerita."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-021",
@@ -2570,17 +2661,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-030",
-          "q": "Betulkan ayat ini: \"Dia sedang berlatih bola sepak.\" (merujuk kepada Aina dan Mira)",
-          "answer": "Mereka sedang berlatih bola sepak di padang sekolah dengan bersungguh-sungguh.",
+          "q": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Aina dan Mira: ____ sedang berlatih bola sepak.",
+          "answer": "Mereka",
           "accepted": [
-            "Mereka sedang berlatih bola sepak di padang sekolah dengan bersungguh-sungguh."
+            "Mereka"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Mereka sedang berlatih bola sepak di padang sekolah dengan bersungguh-sungguh.",
+          "hint": "Gunakan kata ganti nama bagi dua orang yang diperkatakan.",
+          "explanation": "Kata ganti nama diri ketiga bagi Aina dan Mira ialah mereka.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang berlatih bola sepak.\" (merujuk kepada Aina dan Mira)"
+          "question": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk Aina dan Mira: ____ sedang berlatih bola sepak."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-031",
@@ -2640,17 +2731,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-035",
-          "q": "Betulkan ayat ini: \"Dia sedang menyampaikan ucapan.\" (merujuk kepada Guru Besar)",
-          "answer": "Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan.",
+          "q": "Lengkapkan ayat dengan kata ganti nama diri yang sopan untuk Guru Besar: ____ sedang menyampaikan ucapan.",
+          "answer": "Beliau",
           "accepted": [
-            "Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan."
+            "Beliau"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Beliau sedang menyampaikan ucapan di dewan sekolah dengan sopan.",
+          "hint": "Gunakan kata ganti nama yang menunjukkan rasa hormat.",
+          "explanation": "Beliau ialah kata ganti nama diri yang sopan bagi orang yang dihormati.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang menyampaikan ucapan.\" (merujuk kepada Guru Besar)"
+          "question": "Lengkapkan ayat dengan kata ganti nama diri yang sopan untuk Guru Besar: ____ sedang menyampaikan ucapan."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-036",
@@ -2850,17 +2941,17 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_GANTI_NAMA-050",
-          "q": "Betulkan ayat ini: \"Dia sedang makan bersama.\" (merujuk kepada Saya dan rakan-rakan)",
-          "answer": "Kami sedang makan bersama di kantin sekolah dengan gembira.",
+          "q": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk saya dan rakan-rakan: ____ sedang makan bersama.",
+          "answer": "Kami",
           "accepted": [
-            "Kami sedang makan bersama di kantin sekolah dengan gembira."
+            "Kami"
           ],
-          "hint": "Ganti kata ganti nama dengan yang betul.",
-          "explanation": "Ayat yang betul ialah: Kami sedang makan bersama di kantin sekolah dengan gembira.",
+          "hint": "Gunakan kata ganti nama yang melibatkan orang yang bercakap tetapi tidak semestinya pendengar.",
+          "explanation": "Kami digunakan apabila orang yang bercakap merujuk kepada dirinya bersama orang lain, tanpa melibatkan pendengar.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Betulkan ayat ini: \"Dia sedang makan bersama.\" (merujuk kepada Saya dan rakan-rakan)"
+          "question": "Lengkapkan ayat dengan kata ganti nama diri yang sesuai untuk saya dan rakan-rakan: ____ sedang makan bersama."
         },
         {
           "id": "BM-KATA_GANTI_NAMA-051",
@@ -5837,8 +5928,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-009",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Aina membaca buku. Adik melukis.",
-          "answer": "Aina membaca buku dan adik melukis di ruang tamu pada petang itu.",
-          "accepted": ["Aina membaca buku dan adik melukis di ruang tamu pada petang itu."],
+          "answer": "Aina membaca buku dan adik melukis.",
+          "accepted": ["Aina membaca buku dan adik melukis."],
           "hint": "Gabungkan dua ayat dengan kata hubung yang betul.",
           "explanation": "dan sesuai untuk menghubungkan dua ayat mudah.",
           "difficulty": "mudah",
@@ -5849,8 +5940,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-010",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Amir mahu bermain bola. Hujan turun.",
-          "answer": "Amir mahu bermain bola tetapi hujan turun dengan lebat di padang.",
-          "accepted": ["Amir mahu bermain bola tetapi hujan turun dengan lebat di padang."],
+          "answer": "Amir mahu bermain bola tetapi hujan turun.",
+          "accepted": ["Amir mahu bermain bola tetapi hujan turun."],
           "hint": "Gabungkan dua ayat yang menunjukkan pertentangan.",
           "explanation": "tetapi sesuai untuk keadaan yang berlawanan.",
           "difficulty": "mudah",
@@ -5860,21 +5951,21 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-011",
-          "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Sara membawa payung. Hari hujan.",
-          "answer": "Sara membawa payung kerana hari hujan yang sangat lebat.",
-          "accepted": ["Sara membawa payung kerana hari hujan yang sangat lebat."],
+          "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Sara membawa payung. Hujan turun.",
+          "answer": "Sara membawa payung kerana hujan turun.",
+          "accepted": ["Sara membawa payung kerana hujan turun."],
           "hint": "Gabungkan ayat untuk menunjukkan sebab.",
           "explanation": "kerana sesuai untuk menyatakan sebab.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Gabungkan ayat ini dengan kata hubung yang sesuai: Sara membawa payung. Hari hujan."
+          "question": "Gabungkan ayat ini dengan kata hubung yang sesuai: Sara membawa payung. Hujan turun."
         },
         {
           "id": "BM-KATA_HUBUNG-012",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Kamu mahu minum air. Kamu mahu susu.",
-          "answer": "Kamu hendak minum air atau susu di kantin sekolah selepas rehat.",
-          "accepted": ["Kamu hendak minum air atau susu di kantin sekolah selepas rehat."],
+          "answer": "Kamu mahu minum air atau susu.",
+          "accepted": ["Kamu mahu minum air atau susu."],
           "hint": "Gabungkan ayat untuk pilihan.",
           "explanation": "atau sesuai apabila ada dua pilihan.",
           "difficulty": "mudah",
@@ -5885,8 +5976,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-013",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Ibu memasak. Ibu menyanyi perlahan-lahan.",
-          "answer": "Ibu memasak sambil menyanyi perlahan-lahan sambil tersenyum.",
-          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan sambil tersenyum."],
+          "answer": "Ibu memasak sambil menyanyi perlahan-lahan.",
+          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan."],
           "hint": "Gabungkan dua perbuatan yang berlaku serentak.",
           "explanation": "sambil sesuai untuk perbuatan serentak.",
           "difficulty": "mudah",
@@ -5897,8 +5988,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-014",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Loceng berbunyi. Murid masuk ke kelas.",
-          "answer": "Loceng berbunyi lalu murid masuk ke kelas dengan cepat dan kemas.",
-          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas dengan cepat dan kemas."],
+          "answer": "Loceng berbunyi lalu murid masuk ke kelas.",
+          "accepted": ["Loceng berbunyi lalu murid masuk ke kelas."],
           "hint": "Gabungkan ayat yang berlaku berturutan.",
           "explanation": "lalu sesuai untuk urutan peristiwa.",
           "difficulty": "mudah",
@@ -5909,8 +6000,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-015",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Danish rajin belajar. Danish selalu membuat latihan.",
-          "answer": "Danish rajin belajar dan selalu membuat latihan sebelum tidur.",
-          "accepted": ["Danish rajin belajar dan selalu membuat latihan sebelum tidur."],
+          "answer": "Danish rajin belajar dan selalu membuat latihan.",
+          "accepted": ["Danish rajin belajar dan selalu membuat latihan."],
           "hint": "Gabungkan ayat dengan maklumat tambahan.",
           "explanation": "dan sesuai untuk menambah maklumat.",
           "difficulty": "mudah",
@@ -5921,8 +6012,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-016",
           "q": "Gabungkan ayat ini dengan kata hubung yang sesuai: Baju itu cantik. Harganya mahal.",
-          "answer": "Baju itu cantik tetapi harganya mahal untuk dibeli.",
-          "accepted": ["Baju itu cantik tetapi harganya mahal untuk dibeli."],
+          "answer": "Baju itu cantik tetapi harganya mahal.",
+          "accepted": ["Baju itu cantik tetapi harganya mahal."],
           "hint": "Gabungkan ayat yang berlawanan makna.",
           "explanation": "tetapi sesuai untuk pertentangan ringkas.",
           "difficulty": "mudah",
@@ -6052,15 +6143,15 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-027",
-          "q": "Di klinik, Sara membawa payung kerana cuaca hujan. Ayat yang sesuai ialah ________.",
-          "answer": "Sara membawa payung kerana hari hujan yang sangat renyai pada pagi itu.",
-          "accepted": ["Sara membawa payung kerana hari hujan yang sangat renyai pada pagi itu."],
-          "hint": "Pilih ayat yang sesuai dengan sebab.",
-          "explanation": "kerana menyatakan sebab dengan jelas.",
+          "q": "Lengkapkan ayat berdasarkan situasi hujan renyai-renyai: Sara membawa payung kerana ________.",
+          "answer": "hujan turun renyai-renyai",
+          "accepted": ["hujan turun renyai-renyai", "hujan renyai-renyai"],
+          "hint": "Nyatakan keadaan cuaca yang menyebabkan Sara membawa payung.",
+          "explanation": "Kata hubung kerana menghubungkan tindakan Sara dengan sebab, iaitu hujan turun renyai-renyai.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di klinik, Sara membawa payung kerana cuaca hujan. Ayat yang sesuai ialah ________."
+          "question": "Lengkapkan ayat berdasarkan situasi hujan renyai-renyai: Sara membawa payung kerana ________."
         },
         {
           "id": "BM-KATA_HUBUNG-028",
@@ -6077,8 +6168,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-029",
           "q": "Di dapur, ibu memasak sambil menyanyi perlahan-lahan. Ayat yang sesuai ialah ________.",
-          "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur sambil tersenyum.",
-          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur sambil tersenyum."],
+          "answer": "Ibu memasak sambil menyanyi perlahan-lahan di dapur.",
+          "accepted": ["Ibu memasak sambil menyanyi perlahan-lahan di dapur.", "Di dapur, ibu memasak sambil menyanyi perlahan-lahan."],
           "hint": "Pilih ayat yang paling sesuai dengan situasi.",
           "explanation": "sambil sesuai untuk dua perbuatan serentak.",
           "difficulty": "mudah",
@@ -6148,15 +6239,15 @@ const rawBMSSubject = {
         },
         {
           "id": "BM-KATA_HUBUNG-035",
-          "q": "Sara membawa payung kerana hari hujan pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab.",
-          "answer": "Sara membawa payung kerana hari hujan pada pagi itu.",
-          "accepted": ["Sara membawa payung kerana hari hujan pada pagi itu."],
+          "q": "Sara membawa payung kerana hujan turun pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab.",
+          "answer": "Sara membawa payung kerana hujan turun pada pagi itu.",
+          "accepted": ["Sara membawa payung kerana hujan turun pada pagi itu."],
           "hint": "Gunakan kata hubung yang menyatakan sebab.",
           "explanation": "kerana sesuai untuk sebab yang jelas.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Sara membawa payung kerana hari hujan pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab."
+          "question": "Sara membawa payung kerana hujan turun pada pagi itu. Pilih ayat yang paling sesuai untuk menunjukkan sebab."
         },
         {
           "id": "BM-KATA_HUBUNG-036",
@@ -6197,8 +6288,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-039",
           "q": "Betulkan ayat ini supaya lebih tepat: \"Aina membaca buku dan adik melukis sambil.\"",
-          "answer": "Aina membaca buku dan adik melukis di ruang tamu pada petang yang cerah.",
-          "accepted": ["Aina membaca buku dan adik melukis di ruang tamu pada petang yang cerah."],
+          "answer": "Aina membaca buku dan adik melukis.",
+          "accepted": ["Aina membaca buku dan adik melukis."],
           "hint": "Ayat ini perlu disusun semula dengan betul.",
           "explanation": "Kata hubung perlu berada pada tempat yang sesuai.",
           "difficulty": "mudah",
@@ -6209,8 +6300,8 @@ const rawBMSSubject = {
         {
           "id": "BM-KATA_HUBUNG-040",
           "q": "Betulkan ayat ini supaya lebih tepat: \"Amir mahu bermain bola kerana hujan turun.\"",
-          "answer": "Amir mahu bermain bola tetapi hujan turun di padang sekolah ketika petang.",
-          "accepted": ["Amir mahu bermain bola tetapi hujan turun di padang sekolah ketika petang."],
+          "answer": "Amir mahu bermain bola tetapi hujan turun.",
+          "accepted": ["Amir mahu bermain bola tetapi hujan turun."],
           "hint": "Ayat ini perlu menunjukkan pertentangan.",
           "explanation": "tetapi lebih sesuai untuk dua keadaan berlawanan.",
           "difficulty": "mudah",
@@ -6486,7 +6577,7 @@ const rawBMSSubject = {
           "id": "BM-KATA_HUBUNG-060",
           "q": "Penilaian KBAT: Farah menulis 'Amir tidak hadir kerana sakit.' Adakah penggunaan kata hubung itu tepat? Berikan jawapan ringkas berserta sebab.",
           "answer": "Ya, kerana sakit ialah sebab Amir tidak hadir",
-          "accepted": ["ya, kerana sakit ialah sebab Amir tidak hadir", "ya kerana sakit ialah sebab Amir tidak hadir", "betul kerana sakit menunjukkan sebab", "tepat kerana kerana menunjukkan sebab"],
+          "accepted": ["ya, kerana sakit ialah sebab Amir tidak hadir", "ya kerana sakit ialah sebab Amir tidak hadir", "betul kerana sakit menunjukkan sebab", "tepat kerana kata kerana menunjukkan sebab"],
           "hint": "Tentukan sama ada bahagian kedua ayat menerangkan punca ketidakhadiran Amir.",
           "explanation": "Penggunaan kerana tepat kerana sakit ialah sebab Amir tidak hadir.",
           "difficulty": "sukar",
