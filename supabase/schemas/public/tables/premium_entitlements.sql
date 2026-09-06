@@ -4,7 +4,8 @@ create table "public"."premium_entitlements" (
   "plan" text not null default 'premium',
   "status" text not null default 'active',
   "starts_at" timestamptz not null default now(),
-  "expires_at" timestamptz not null,
+  "expires_at" timestamptz,
+  "is_permanent" boolean not null default false,
   "source" text not null default 'admin',
   "notes" text,
   "revision" bigint not null default 1,
@@ -15,7 +16,12 @@ create table "public"."premium_entitlements" (
   constraint "premium_entitlements_status_check" check (status in ('active', 'expired', 'cancelled', 'trial', 'complimentary')),
   constraint "premium_entitlements_revision_check" check (revision > 0),
   constraint "premium_entitlements_source_check" check (char_length(trim(source)) between 1 and 120),
-  constraint "premium_entitlements_notes_check" check (notes is null or char_length(notes) <= 2000)
+  constraint "premium_entitlements_notes_check" check (notes is null or char_length(notes) <= 2000),
+  constraint "premium_entitlements_permanent_status_check" check (not is_permanent or status = 'complimentary'),
+  constraint "premium_entitlements_expiry_presence_check" check (
+    (is_permanent and status = 'complimentary' and expires_at is null)
+    or (not is_permanent and expires_at is not null)
+  )
 );
 
 create index premium_entitlements_status_expiry_idx
@@ -29,7 +35,6 @@ create policy "Users can read own premium entitlement" on "public"."premium_enti
 create policy "Admins can read premium entitlements" on "public"."premium_entitlements"
   for select to "authenticated" using (public.is_current_premium_admin());
 
-grant select on table "public"."premium_entitlements" to "authenticated";
 grant delete, insert, select, update on table "public"."premium_entitlements" to "postgres", "service_role";
 
 create trigger premium_entitlements_updated_at

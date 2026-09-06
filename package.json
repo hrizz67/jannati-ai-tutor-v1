@@ -1,6 +1,6 @@
 {
   "name": "jannati-ai-tutor-v1",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
@@ -52,6 +52,7 @@
     "validate:adaptive-subject": "node scripts/validate/adaptivePracticeSubjectGuardAudit.mjs",
     "validate:access": "node scripts/validate/accessControlAudit.mjs",
     "validate:admin-premium": "node scripts/validate/adminPremiumRegression.mjs",
+    "validate:admin-console": "node scripts/validate/adminPremiumManagementRegression.mjs",
     "validate:profile-date-quota": "node scripts/validate/profileDateQuotaRegression.mjs",
     "validate:uasa-answers": "node scripts/validate/uasaAnswerAudit.mjs",
     "validate:curriculum": "node scripts/validate/curriculumValidator.js",

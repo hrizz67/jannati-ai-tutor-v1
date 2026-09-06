@@ -18,19 +18,21 @@ returns jsonb language sql stable security definer set search_path = '' as $$
     select jsonb_build_object(
       'accountId', e.account_id, 'plan', e.plan, 'storedStatus', e.status,
       'effectiveStatus', case
-        when e.status in ('active', 'trial', 'complimentary') and e.expires_at > now() then e.status
+        when e.status in ('active', 'trial', 'complimentary') and (e.is_permanent or e.expires_at > now()) then e.status
         when e.status = 'cancelled' then 'cancelled' else 'expired' end,
-      'startsAt', e.starts_at, 'expiresAt', e.expires_at, 'source', e.source,
-      'notes', e.notes, 'updatedAt', e.updated_at, 'updatedBy', e.updated_by,
+      'startsAt', e.starts_at, 'expiresAt', e.expires_at, 'isPermanent', e.is_permanent, 'source', e.source,
+      'notes', case when public.is_current_premium_admin() then e.notes else null end,
+      'updatedAt', e.updated_at, 'updatedBy', case when public.is_current_premium_admin() then e.updated_by else null end,
       'revision', e.revision,
-      'accessAllowed', e.status in ('active', 'trial', 'complimentary') and e.expires_at > now(),
+      'accessAllowed', e.status in ('active', 'trial', 'complimentary') and (e.is_permanent or e.expires_at > now()),
+      'daysRemaining', case when e.is_permanent then null when e.expires_at > now() then greatest(0, ceil(extract(epoch from (e.expires_at - now())) / 86400.0)::integer) else 0 end,
       'serverNow', now()
     ) from public.premium_entitlements e where e.account_id = target_account_id
   ), jsonb_build_object(
     'accountId', target_account_id, 'plan', 'free', 'storedStatus', 'free',
-    'effectiveStatus', 'free', 'startsAt', null, 'expiresAt', null,
+    'effectiveStatus', 'free', 'startsAt', null, 'expiresAt', null, 'isPermanent', false,
     'source', 'none', 'notes', null, 'updatedAt', null, 'updatedBy', null,
-    'revision', 0, 'accessAllowed', false, 'serverNow', now()
+    'revision', 0, 'accessAllowed', false, 'daysRemaining', 0, 'serverNow', now()
   ));
 $$;
 
@@ -186,7 +188,6 @@ grant execute on function public.is_current_premium_admin() to authenticated;
 grant execute on function public.get_my_premium_entitlement() to authenticated;
 grant execute on function public.admin_premium_summary() to authenticated;
 grant execute on function public.admin_search_premium_accounts(text, integer, integer) to authenticated;
-grant execute on function public.admin_manage_premium_entitlement(uuid, text, integer, timestamptz, text, text, text, uuid) to authenticated;
 grant execute on function public.touch_premium_entitlement_updated_at() to postgres, service_role;
 grant execute on function public.is_current_premium_admin() to postgres, service_role;
 grant execute on function public.premium_entitlement_payload(uuid) to postgres, service_role;

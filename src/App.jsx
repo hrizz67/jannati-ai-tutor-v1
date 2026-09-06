@@ -1362,7 +1362,7 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [recoveryMessages]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
-  const [adminRouteActive, setAdminRouteActive] = useState(() => typeof window !== 'undefined' && window.location.hash === '#/admin/premium');
+  const [adminRouteActive, setAdminRouteActive] = useState(() => typeof window !== 'undefined' && ['#/admin', '#/admin/premium'].includes(window.location.hash));
   const [supabase, setSupabase] = useState(null);
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
@@ -1426,13 +1426,13 @@ export default function App() {
   const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
 
   useEffect(() => {
-    const syncAdminRoute = () => setAdminRouteActive(window.location.hash === '#/admin/premium');
+    const syncAdminRoute = () => setAdminRouteActive(['#/admin', '#/admin/premium'].includes(window.location.hash));
     window.addEventListener('hashchange', syncAdminRoute);
     return () => window.removeEventListener('hashchange', syncAdminRoute);
   }, []);
 
   function openAdminPremium() {
-    window.location.hash = '/admin/premium';
+    window.location.hash = '/admin';
     setAdminRouteActive(true);
   }
 
@@ -4524,7 +4524,7 @@ export default function App() {
 
   if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} /></BetaChrome>;
 
-  if (adminRouteActive) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="admin-premium"><ProductionErrorBoundary fallback={<EmptyState title="Pengurusan Premium tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba semula." actionLabel="Papan Utama" onAction={closeAdminPremium} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pengurusan Premium sedang dimuat</h2></div>}><AdminPremiumPage supabase={supabase} accountUser={accountUser} onBack={closeAdminPremium} onEntitlementChanged={() => refreshEntitlementRef.current?.()} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+  if (adminRouteActive) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="admin-premium"><ProductionErrorBoundary fallback={<EmptyState title="Konsol Admin tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba semula." actionLabel="Papan Utama" onAction={closeAdminPremium} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Konsol Admin sedang dimuat</h2></div>}><AdminPremiumPage supabase={supabase} accountUser={accountUser} onBack={closeAdminPremium} onEntitlementChanged={() => refreshEntitlementRef.current?.()} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
 
   if (loadingSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><LoadingSkeleton /></BetaChrome>;
   if (!selectedSubject) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Subjek tidak dijumpai." message="Pilih semula subjek daripada Papan Utama." actionLabel="Kembali ke Papan Utama" onAction={() => { setSelectedSubjectId('bm'); setScreen('dashboard'); }} /></main></BetaChrome>;
