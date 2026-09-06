@@ -32,9 +32,9 @@ function ensureMistakeRecord(bucket, topicId) {
   return bucket[topicId];
 }
 
-export function recordMistake(memory = loadMemory(), profile = {}, result = {}) {
-  const next = clone(memory);
-  if (Boolean(result.correct)) return next;
+export function recordMistake(memory = null, profile = {}, result = {}) {
+  const next = clone(memory || loadMemory(profile));
+  if (result.correct) return next;
 
   const subjectId = result.subjectId || null;
   const topicId = result.topicId || null;
@@ -70,8 +70,8 @@ export function getMistakeMemory(memory = loadMemory(), subjectId, topicId) {
   return memory?.mistakes?.[subjectId]?.[topicId] || null;
 }
 
-export function saveMistakeMemory(memory = loadMemory(), profile = {}, result = {}) {
-  return saveMemory(recordMistake(memory, profile, result));
+export function saveMistakeMemory(memory = null, profile = {}, result = {}) {
+  return saveMemory(recordMistake(memory, profile, result), profile);
 }
 
 export default {

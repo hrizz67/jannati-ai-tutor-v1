@@ -1,5 +1,7 @@
 import { getSupabaseClient, supabaseConfigured } from '../../services/supabaseClient.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
+import { getAnswerRevealPolicy, selectAnswerSafeText } from '../policy/answerRevealPolicy.js';
+import { getSubjectLanguagePresentation } from '../voice/voiceConfig.js';
 import {
   buildTutorSafetyResponse,
   containsPotentialPersonalData,
@@ -9,6 +11,7 @@ import {
 } from '../../../supabase/functions/_shared/tutorPolicy.js';
 
 const REMOTE_INTENTS = new Set(['knowledge_question', 'comparison_question', 'why_question', 'how_question', 'clarification_needed']);
+const ANSWER_PROTECTED_INTENTS = new Set(['hint', 'wrong_answer_coaching', 'question_help', 'direct_answer', 'correct_answer_reinforcement', 'show_answer']);
 const runtimeEnv = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
 const remoteEnabledByEnvironment = runtimeEnv.VITE_TUTOR_AI_REMOTE_ENABLED === 'true';
 
@@ -36,10 +39,33 @@ function redactKnownStudentNames(history = [], options = {}) {
 }
 
 export function buildTutorGatewayPayload(options = {}, localResponse = {}) {
+  const languagePresentation = options.languagePresentation || getSubjectLanguagePresentation(options.subject || options.subjectId);
+  const answerRevealPolicy = localResponse.answerRevealPolicy || getAnswerRevealPolicy({
+    status: localResponse.isCorrect ? 'correct' : '',
+    isCorrect: localResponse.isCorrect,
+    attemptCount: options.attemptCount,
+    hintsUsed: options.hintsUsed,
+    explanationMode: options.explanationMode
+  });
+  const protectedAnswers = [
+    options.expectedAnswer,
+    options.correctAnswer,
+    ...(Array.isArray(options.acceptedAnswers) ? options.acceptedAnswers : [])
+  ].filter(Boolean);
+  const protectAnswer = answerProtectionApplies(localResponse, options) && !answerRevealPolicy.canRevealAnswer;
+  const localGuidance = !protectAnswer
+    ? (localResponse.shortText || localResponse.text)
+    : selectAnswerSafeText(
+        [localResponse.shortText, localResponse.text],
+        protectedAnswers,
+        languagePresentation.teachingLanguage === 'en'
+          ? 'Guide the learner with a clue without revealing the answer.'
+          : 'Bimbing murid dengan petunjuk tanpa mendedahkan jawapan.'
+      );
   return sanitizeTutorGatewayPayload({
     message: options.prompt,
     intent: localResponse.intent || options.intent,
-    locale: options.locale || 'ms-MY',
+    locale: options.locale || languagePresentation.contentLocale,
     context: {
       subjectId: options.subject?.id || options.subjectId,
       subjectTitle: options.subject?.title || options.subject?.name,
@@ -50,7 +76,7 @@ export function buildTutorGatewayPayload(options = {}, localResponse = {}) {
       instruction: options.instruction || options.question?.instruction,
       options: options.options || options.question?.options,
       supportStage: localResponse.supportStage,
-      localGuidance: localResponse.shortText || localResponse.text
+      localGuidance
     },
     history: redactKnownStudentNames(options.history, options)
   });
@@ -67,11 +93,44 @@ export function shouldUseGenerativeTutor(localResponse = {}, options = {}, { ena
   return !containsPotentialPersonalData(userConversation) && !detectTutorSafetyRisk(userConversation);
 }
 
-export function mergeGenerativeTutorResponse(localResponse = {}, remoteResponse = {}) {
+function responseContainsHiddenAnswer(text = '', options = {}) {
+  const answers = [
+    options.expectedAnswer,
+    options.correctAnswer,
+    ...(Array.isArray(options.acceptedAnswers) ? options.acceptedAnswers : [])
+  ]
+    .map(value => normalizeText(value, 180))
+    .filter(value => value && /[\p{L}\p{N}]/u.test(value))
+    .sort((left, right) => right.length - left.length);
+  return answers.some(answer => {
+    const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(text);
+  });
+}
+
+function answerProtectionApplies(localResponse = {}, options = {}) {
+  const intent = String(localResponse.intent || options.intent || '').trim().toLowerCase();
+  if (ANSWER_PROTECTED_INTENTS.has(intent)) return true;
+  return Boolean(
+    localResponse.contextUsed?.hasQuestion &&
+    ['why_question', 'how_question', 'clarification_needed'].includes(intent) &&
+    (localResponse.referencesPreviousTurn || options.explanationMode)
+  );
+}
+
+export function mergeGenerativeTutorResponse(localResponse = {}, remoteResponse = {}, options = {}) {
   const safeRemote = sanitizeTutorModelOutput(remoteResponse);
   if (!safeRemote?.canAnswerSafely) return localResponse;
   const text = normalizeText(safeRemote.text, 1400);
   if (!text) return localResponse;
+  const answerRevealPolicy = localResponse.answerRevealPolicy || getAnswerRevealPolicy({
+    status: localResponse.isCorrect ? 'correct' : '',
+    isCorrect: localResponse.isCorrect,
+    attemptCount: options.attemptCount,
+    hintsUsed: options.hintsUsed,
+    explanationMode: options.explanationMode
+  });
+  if (answerProtectionApplies(localResponse, options) && !answerRevealPolicy.canRevealAnswer && responseContainsHiddenAnswer(text, options)) return localResponse;
   return {
     ...localResponse,
     text,
@@ -85,7 +144,8 @@ export function mergeGenerativeTutorResponse(localResponse = {}, remoteResponse 
     generativeUsed: true,
     grounded: true,
     needsGenerativeTutor: false,
-    needsAdultHelp: safeRemote.needsAdultHelp
+    needsAdultHelp: safeRemote.needsAdultHelp,
+    answerRevealPolicy
   };
 }
 
@@ -144,7 +204,7 @@ export async function maybeEnhanceTutorResponse(localResponse = {}, options = {}
     if (!client?.functions?.invoke) return localResponse;
     const { data, error } = await client.functions.invoke('tutor-ai', { body: payload, timeout: timeoutMs });
     if (error || !data?.ok || !data?.response) return localResponse;
-    return mergeGenerativeTutorResponse(localResponse, data.response);
+    return mergeGenerativeTutorResponse(localResponse, data.response, options);
   } catch {
     return localResponse;
   }

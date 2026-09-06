@@ -60,7 +60,9 @@ export default function StudentDashboard({
               <div><b>{formatStatus(analytics.status)}</b><span>Status Semasa</span></div>
             </div>
             <GamificationSummary profile={gamificationProfile} canonical={gamification} className="student-gamification-summary" />
-            <div className="progress-wrap"><div className="progress" style={{ width: `${summaryAccuracy}%` }} /></div>
+            <div className="progress-wrap" role="progressbar" aria-label="Ketepatan keseluruhan" aria-valuemin={0} aria-valuemax={100} aria-valuenow={summaryAccuracy}>
+              <div className="progress" aria-hidden="true" style={{ width: `${summaryAccuracy}%` }} />
+            </div>
             <div className="mastery-summary-grid">
               <div><b>{analytics.totalQuestions ?? adaptiveProfile.totalQuestions ?? 0}</b><span>Soalan</span></div>
               <div><b>{analytics.correctQuestions ?? adaptiveProfile.correctQuestions ?? 0}</b><span>Betul</span></div>

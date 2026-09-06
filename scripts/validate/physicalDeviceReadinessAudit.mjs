@@ -21,6 +21,7 @@ const [
   connectivityNotice,
   dashboardHelpers,
   main,
+  serviceWorkerRegistration,
   serviceWorker,
   manifestSource,
   voiceButton,
@@ -32,6 +33,7 @@ const [
   read('src/components/ConnectivityNotice.jsx'),
   read('src/dashboard/dashboardHelpers.jsx'),
   read('src/main.jsx'),
+  read('src/services/serviceWorkerRegistration.js'),
   read('public/service-worker.js'),
   read('public/manifest.webmanifest'),
   read('src/components/VoiceButton.jsx'),
@@ -66,9 +68,12 @@ check('installable-mobile-metadata', () => {
 });
 
 check('offline-shell-contract', () => {
-  assertIncludes(main, '`${import.meta.env.BASE_URL}service-worker.js?v=19`', 'Service-worker registration must use the build base URL and current cache version.');
+  assertIncludes(main, 'registerAppServiceWorker', 'The application entry must use the shared service-worker registration boundary.');
+  assertIncludes(serviceWorkerRegistration, 'import.meta.env.BASE_URL', 'Service-worker registration must use the build base URL.');
+  assertIncludes(serviceWorkerRegistration, '__APP_VERSION__', 'Service-worker registration must use the injected application version.');
   assertIncludes(main, 'import.meta.env.PROD', 'Service worker must not cache source modules during local development.');
-  assertIncludes(serviceWorker, "CACHE_NAME = 'jannati-ai-tutor-device-v19'", 'Physical-device cache version is missing.');
+  assertIncludes(serviceWorker, "new URL(self.location.href).searchParams.get('v')", 'Physical-device cache must derive its version from registration.');
+  assert.doesNotMatch(serviceWorker, /device-v\d+/, 'Physical-device cache must not depend on a hand-maintained suffix.');
   for (const token of ['manifest.webmanifest', "self.addEventListener('install'", "self.addEventListener('activate'", "self.addEventListener('fetch'", 'caches.match(BASE)']) {
     assertIncludes(serviceWorker, token, `Offline shell token is missing: ${token}`);
   }

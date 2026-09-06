@@ -131,14 +131,14 @@ const anonymousEmpty = snapshot(anonymousId, 300, 'Aisyah', 0);
 const premiumLearning = snapshot(premiumId, 200, 'Aisyah', 80);
 const anonymousPayload = {
   [CLOUD_CHILD_STATE_KEY]: childState([
-    { id: anonymousId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+    { id: anonymousId, name: 'Aisyah', year: 'Tahun 2', legacyIdentityKey: 'legacy:account-aisyah:aisyah|tahun 2', legacyReconciliationEligible: true, createdAt: '2026-08-20T00:00:00.000Z' }
   ], anonymousId),
   [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: anonymousEmpty,
   jannati_v151_profile: JSON.stringify({ name: 'Aisyah', xp: 0 })
 };
 const premiumPayload = {
   [CLOUD_CHILD_STATE_KEY]: childState([
-    { id: premiumId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' }
+    { id: premiumId, name: 'Aisyah', year: 'Tahun 2', legacyIdentityKey: 'legacy:account-aisyah:aisyah|tahun 2', legacyReconciliationEligible: true, createdAt: '2026-07-01T00:00:00.000Z' }
   ], premiumId),
   [`${CHILD_SNAPSHOT_PREFIX}${premiumId}`]: premiumLearning,
   jannati_v151_profile: JSON.stringify({ name: 'Aisyah', xp: 80 })
@@ -159,19 +159,19 @@ const authenticatedDeviceReconciliation = mergeCloudLearningPayload(anonymousPay
 const authenticatedDeviceState = JSON.parse(authenticatedDeviceReconciliation[CLOUD_CHILD_STATE_KEY]);
 assert.deepEqual(
   authenticatedDeviceState.profiles.map(profile => profile.id),
-  [premiumId],
-  'Two authenticated devices must converge on the canonical cloud child ID without a separate repair marker.'
+  [premiumId, anonymousId],
+  'Authenticated sync must not merge two stable child IDs merely because their display names match.'
 );
-assert.equal(authenticatedDeviceState.activeChildId, premiumId, 'The canonical cloud child must become active on the stale device.');
+assert.equal(authenticatedDeviceState.activeChildId, anonymousId, 'The explicitly selected stable child must remain active.');
 assert.equal(
   JSON.parse(authenticatedDeviceReconciliation.jannati_v151_profile).xp,
-  80,
-  'A stale authenticated device must hydrate the richer cloud XP after automatic identity reconciliation.'
+  0,
+  'A second same-name child must not borrow the first child\'s XP.'
 );
 assert.equal(
-  authenticatedDeviceReconciliation[`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`],
-  undefined,
-  'The stale per-device child snapshot must not remain as a second active projection.'
+  typeof authenticatedDeviceReconciliation[`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`],
+  'string',
+  'The distinct child snapshot must remain available.'
 );
 
 const reconciledLogin = mergeCloudLearningPayload(anonymousPayload, premiumPayload, {
@@ -189,8 +189,8 @@ assert.equal(JSON.parse(reconciledLogin.jannati_v151_profile).xp, 80, 'An empty 
 const corruptedCloudPayload = {
   ...premiumPayload,
   [CLOUD_CHILD_STATE_KEY]: childState([
-    { id: premiumId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
-    { id: anonymousId, name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+    { id: premiumId, lineageId: 'lineage:canonical-aisyah', name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
+    { id: anonymousId, lineageId: 'lineage:canonical-aisyah', name: 'Aisyah', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
   ], anonymousId),
   [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: anonymousEmpty
 };
@@ -229,13 +229,13 @@ const duplicateSplitLearning = JSON.stringify({
 });
 const meaningfulDuplicatePayload = {
   [CLOUD_CHILD_STATE_KEY]: childState([
-    { id: premiumId, name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
-    { id: anonymousId, name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
+    { id: premiumId, lineageId: 'lineage:canonical-fayyadh', name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-07-01T00:00:00.000Z' },
+    { id: anonymousId, lineageId: 'lineage:canonical-fayyadh', name: 'Fayyadh', year: 'Tahun 2', createdAt: '2026-08-20T00:00:00.000Z' }
   ], anonymousId),
   [`${CHILD_SNAPSHOT_PREFIX}${premiumId}`]: premiumSplitLearning,
   [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: duplicateSplitLearning
 };
-assert.equal(hasRecoverableChildProfileDuplicates(meaningfulDuplicatePayload), true, 'Same-name/year cloud duplicates must be detected even when both contain learning.');
+assert.equal(hasRecoverableChildProfileDuplicates(meaningfulDuplicatePayload), true, 'Matching stable lineage duplicates must be detected even when both contain learning.');
 const mergedMeaningfulDuplicate = mergeCloudLearningPayload(meaningfulDuplicatePayload, meaningfulDuplicatePayload, {
   dirtyChildIds: [anonymousId],
   localActiveChildId: anonymousId,
@@ -320,7 +320,7 @@ const crossChildProjection = normalizeActiveLearningProjection({
     { id: 'child-other', name: 'Aisyah', year: 'Tahun 2' }
   ], originalChild.id),
   [`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]: snapshot(originalChild.id, 900, 'Fayyadh', 40),
-  jannati_v151_profile: JSON.stringify({ name: 'Aisyah', year: 'Tahun 2', xp: 999 })
+  jannati_v151_profile: JSON.stringify({ childId: 'child-other', studentId: 'child-other', name: 'Aisyah', year: 'Tahun 2', xp: 999 })
 }, originalChild.id);
 assert.equal(
   JSON.parse(JSON.parse(crossChildProjection[`${CHILD_SNAPSHOT_PREFIX}${originalChild.id}`]).jannati_v151_profile).xp,
@@ -491,7 +491,7 @@ assert.deepEqual(interruptedDesktopPending.dirtyChildIds, [originalChild.id]);
 
 const localAliasPending = recoverOrphanedCloudOutbox({
   [CLOUD_CHILD_STATE_KEY]: childState([
-    { id: anonymousId, name: 'Fayyadh', year: 'Tahun 2' }
+    { id: anonymousId, lineageId: 'lineage:child-original', name: 'Fayyadh', year: 'Tahun 2' }
   ], anonymousId),
   [`${CHILD_SNAPSHOT_PREFIX}${anonymousId}`]: snapshot(anonymousId, 900, 'Fayyadh', 30)
 }, desktopXp140Payload, {
@@ -694,7 +694,7 @@ const reloadActiveChildSource = appSource.slice(
   appSource.indexOf('function reloadActiveChildState'),
   appSource.indexOf('function reloadCloudLearningState')
 );
-assert.match(reloadActiveChildSource, /function reloadActiveChildState\(child, preserveQuizUi\)[\s\S]{0,700}if \(!preserveQuizUi\) \{\s*setFeedback\(null\);\s*setAnswer\(''\);\s*\}/, 'Answer and feedback resets must be limited to explicit profile/session transitions.');
+assert.match(reloadActiveChildSource, /function reloadActiveChildState\(child, preserveQuizUi\)[\s\S]{0,1100}if \(!preserveQuizUi\) \{\s*setFeedback\(null\);\s*setAnswer\(''\);\s*\}/, 'Answer and feedback resets must be limited to explicit profile/session transitions.');
 const cloudPollingSource = appSource.slice(
   appSource.indexOf('const pullLatestCloudData = async'),
   appSource.indexOf('function refreshAdaptiveProfile')
@@ -712,18 +712,18 @@ const deleteChildSource = appSource.slice(
   appSource.indexOf('function handleDeleteChild'),
   appSource.indexOf('function resetSignedOutAccountState')
 );
-assert.match(deleteChildSource, /Pemadaman profil[\s\S]{0,200}dinyahaktifkan sementara[\s\S]{0,200}return false/, 'Client-side child deletion must fail closed until server archive and undo are available.');
+assert.match(deleteChildSource, /Pemadaman kekal profil[\s\S]{0,200}tidak dibenarkan[\s\S]{0,200}return false/, 'Permanent client-side child deletion must fail closed.');
 assert.doesNotMatch(deleteChildSource, /removeItem|markLocalLearningMutation|queueCloudLearningSave/, 'A disabled deletion path must not mutate or sync learning data.');
 assert.match(appSource, /!key\.startsWith\(CHILD_MERGED_BACKUP_PREFIX\)/, 'A merged-profile recovery backup must never be copied recursively into a child snapshot.');
-assert.match(appSource, /const duplicateProfile = existingProfiles\.find[\s\S]{0,450}Profil \$\{duplicateProfile\.name\}[\s\S]{0,150}return true;/, 'Creating the same child name and year must reuse the existing profile.');
+assert.match(appSource, /const nextChildId = createChildId\(\)[\s\S]{0,200}lineageId: createChildLineageId\(nextChildId\)/, 'Every child creation must receive a fresh stable identity even when display names match.');
 assert.match(appSource, /__childSnapshotAccountId: getActiveStorageScopeId\(\)/, 'Every new child snapshot must carry an account/guest scope marker.');
 assert.match(appSource, /snapshotAccountId && expectedAccountId && snapshotAccountId !== String\(expectedAccountId\)/, 'A mismatched account snapshot must be rejected before active storage is cleared.');
 assert.match(appSource, /function restoreAccountSnapshot[\s\S]{0,450}const previousSnapshot = readLocalAccountData\(\)[\s\S]{0,800}Object\.entries\(previousSnapshot\)/, 'A partial account restore must roll back to the previous active snapshot.');
-assert.match(appSource, /function restoreChildSnapshot[\s\S]{0,650}const previousSnapshot = readChildScopedData\(\)[\s\S]{0,1400}Object\.entries\(previousSnapshot\)/, 'A partial child restore must roll back instead of mixing two learner profiles.');
+assert.match(appSource, /function restoreChildSnapshot[\s\S]{0,1400}const previousSnapshot = readChildScopedData\([^;]*\)[\s\S]{0,2200}Object\.entries\(previousSnapshot\)/, 'A partial child restore must roll back instead of mixing two learner profiles.');
 assert.match(appSource, /Import terus ke akaun dinyahaktifkan sementara/, 'Raw imports must not directly overwrite an authenticated cloud account.');
 assert.match(appSource, /Reset akaun dinyahaktifkan/, 'Authenticated profile reset must fail closed.');
 assert.match(appSource, /hasUnacknowledgedChanges[\s\S]{0,600}queueCloudLearningSave\(\{ markMutation: false \}\)[\s\S]{0,500}Log keluar juga/, 'Logout must attempt pending sync and warn before leaving unacknowledged data.');
-assert.match(dashboardSource, /Profil dilindungi · tidak boleh dipadam/, 'The child switcher must disclose that destructive deletion is disabled.');
+assert.match(dashboardSource, /Arkib profil[\s\S]{0,500}Undo arkib/, 'The child switcher must offer recoverable archive and undo actions.');
 assert.match(integritySqlSource, /learning_revision bigint not null default 0/, 'The server must maintain a revision for optimistic concurrency.');
 assert.match(integritySqlSource, /for update;/, 'Revision checks and writes must lock the account row atomically.');
 assert.match(integritySqlSource, /current_revision <> expected_revision/, 'Stale device writes must return a conflict instead of replacing cloud data.');

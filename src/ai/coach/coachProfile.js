@@ -11,7 +11,7 @@ function toNumber(value, fallback = 0) {
 }
 
 export function getCoachProfile(profile = {}, memory = null) {
-  const aiMemory = memory || loadAIMemory();
+  const aiMemory = memory || loadAIMemory(profile);
   const studentMemory = getStudentMemory(profile);
   const totalQuestions = toNumber(profile.totalQuestions, 0);
   const correctQuestions = toNumber(profile.correctQuestions, 0);

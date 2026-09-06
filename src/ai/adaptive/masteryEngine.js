@@ -6,6 +6,7 @@ export const MASTERY_STATUS = {
 };
 
 import { calculateXP } from './xpEngine.js';
+import { addLocalDateKeyDays, getLocalDateKey } from '../../utils/localDate.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -14,19 +15,6 @@ function clamp(value, min, max) {
 function toNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
-}
-
-function todayString() {
-  const now = new Date();
-  const offsetMinutes = -now.getTimezoneOffset();
-  const local = new Date(now.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
-function addDays(date, days) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return next.toISOString().slice(0, 10);
 }
 
 function ensureTopicStore(profile = {}) {
@@ -215,7 +203,7 @@ export function recordAnswer(profile = {}, {
     difficulty
   });
   record.confidence = calculateConfidence(record);
-  record.lastPlayed = todayString();
+  record.lastPlayed = getLocalDateKey();
   return nextProfile;
 }
 
@@ -287,7 +275,7 @@ export function calculateTopicMastery({
     masteryLevel: status === MASTERY_STATUS.MASTERED ? 'Lanjutan' : status === MASTERY_STATUS.NOT_STARTED ? 'Permulaan' : 'Berkembang',
     masteryScore,
     status,
-    nextReviewDate: addDays(new Date(), reviewDays(status, confidence)),
+    nextReviewDate: addLocalDateKeyDays(new Date(), reviewDays(status, confidence)),
     confidence
   };
 }

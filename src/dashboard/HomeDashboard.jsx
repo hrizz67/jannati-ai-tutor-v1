@@ -58,6 +58,7 @@ import targetBadge from '../assets/icons/3d/target-badge.webp';
 import clockBadge from '../assets/icons/3d/clock-badge.webp';
 import fireBadge from '../assets/icons/3d/fire-badge.webp';
 import bellBadge from '../assets/icons/3d/bell-badge.webp';
+import { DEFAULT_STUDENT_YEAR, getStudentYearSupportLabel, SUPPORTED_STUDENT_YEARS } from '../config/studentYears.js';
 
 // Legacy motion tokens remain documented while the resume UI uses the 3D replacements: IconGlyph name="play" and IconGlyph name="repeat".
 
@@ -73,11 +74,15 @@ function SubjectBadge({ subjectId }) {
   return source ? <GameBadge src={source} /> : <SubjectIcon subjectId={subjectId} size={18} />;
 }
 
-function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild, onCreateChild, onDeleteChild }) {
+function ChildProfileSwitcher({ profiles = [], archivedChildren = {}, activeChildId = '', onSelectChild, onCreateChild, onRenameChild, onArchiveChild, onRestoreArchivedChild }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
   const [name, setName] = useState('');
-  const [year, setYear] = useState('Tahun 2');
+  const [year, setYear] = useState(DEFAULT_STUDENT_YEAR);
   const activeChild = profiles.find(child => child.id === activeChildId) || profiles[0];
+  const latestArchived = Object.values(archivedChildren || {})
+    .filter(record => record?.profile?.id && Number(record.archivedAt) > Number(record.restoredAt))
+    .sort((left, right) => Number(right.archivedAt) - Number(left.archivedAt))[0] || null;
 
   function submit(event) {
     event.preventDefault();
@@ -85,24 +90,39 @@ function ChildProfileSwitcher({ profiles = [], activeChildId = '', onSelectChild
     const created = onCreateChild?.({ name: name.trim(), year, avatar: 'janna' });
     if (created === false) return;
     setName('');
-    setYear('Tahun 2');
+    setYear(DEFAULT_STUDENT_YEAR);
     setIsAdding(false);
   }
 
   return (
     <section className="child-profile-switcher" aria-label="Profil anak">
       <div className="child-profile-switcher-heading">
-        <div><p className="eyebrow">Akaun keluarga</p><b>Profil anak</b><small>{activeChild?.name || 'Murid'} · {activeChild?.year || 'Tahun 2'}</small></div>
+        <div><p className="eyebrow">Akaun keluarga</p><b>Profil anak</b><small>{activeChild?.name || 'Murid'} · {getStudentYearSupportLabel(activeChild?.year)}</small></div>
         <button type="button" className="secondary" onClick={() => setIsAdding(value => !value)}>{isAdding ? 'Tutup' : 'Tambah anak'}</button>
       </div>
       <select aria-label="Pilih profil anak" value={activeChildId || activeChild?.id || ''} onChange={event => onSelectChild?.(event.target.value)}>
-        {profiles.map(child => <option key={child.id} value={child.id}>{child.name} · {child.year || 'Tahun 2'}</option>)}
+        {profiles.map(child => <option key={child.id} value={child.id}>{child.name} · {getStudentYearSupportLabel(child.year)}</option>)}
       </select>
-      {profiles.length > 1 ? <button type="button" className="secondary child-profile-delete" disabled aria-disabled="true" title="Pemadaman dihentikan sementara sehingga arkib server dan fungsi undo tersedia.">Profil dilindungi · tidak boleh dipadam</button> : null}
+      <div className="child-profile-safe-actions">
+        <button type="button" className="secondary" onClick={() => { setName(activeChild?.name || ''); setIsRenaming(value => !value); }}>{isRenaming ? 'Tutup nama' : 'Tukar nama'}</button>
+        {profiles.length > 1 ? <button type="button" className="secondary child-profile-delete" onClick={() => {
+          if (window.confirm(`Arkibkan profil ${activeChild?.name || 'ini'}? Data pembelajaran tidak akan dipadam.`)) onArchiveChild?.(activeChild?.id);
+        }}>Arkib profil</button> : null}
+        {latestArchived ? <button type="button" className="secondary" onClick={() => onRestoreArchivedChild?.(latestArchived.profile.id)}>Undo arkib {latestArchived.profile.name}</button> : null}
+      </div>
+      {isRenaming ? (
+        <form className="child-profile-form" onSubmit={event => {
+          event.preventDefault();
+          if (onRenameChild?.({ childId: activeChild?.id, name: name.trim() }) !== false) setIsRenaming(false);
+        }}>
+          <label>Nama baharu<input value={name} onChange={event => setName(event.target.value)} /></label>
+          <button type="submit" disabled={!name.trim()}>Simpan nama</button>
+        </form>
+      ) : null}
       {isAdding ? (
         <form className="child-profile-form" onSubmit={submit}>
           <label>Nama anak<input value={name} onChange={event => setName(event.target.value)} placeholder="Contoh: Aina" autoFocus /></label>
-          <label>Tahun<select value={year} onChange={event => setYear(event.target.value)}>{['Tahun 1', 'Tahun 2', 'Tahun 3', 'Tahun 4', 'Tahun 5', 'Tahun 6'].map(item => <option key={item}>{item}</option>)}</select></label>
+          <label>Tahun<select value={year} onChange={event => setYear(event.target.value)}>{SUPPORTED_STUDENT_YEARS.map(item => <option key={item}>{item}</option>)}</select></label>
           <button type="button" onClick={() => submit({ preventDefault: () => {} })} disabled={!name.trim()}>Simpan profil anak</button>
         </form>
       ) : null}
@@ -183,10 +203,13 @@ export default function HomeDashboard(props) {
     onExitLocalProfile,
     hasAccountSession,
     childProfiles,
+    archivedChildren,
     activeChildId,
     onSelectChild,
     onCreateChild,
-    onDeleteChild
+    onRenameChild,
+    onArchiveChild,
+    onRestoreArchivedChild
   } = props;
 
   const adaptiveStore = adaptiveProfile || profile;
@@ -209,7 +232,7 @@ export default function HomeDashboard(props) {
     ...interactiveActivitySource,
     questions: prioritizeInteractiveQuestions(interactiveActivitySource.questions)
   } : null;
-  const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp]);
+  const aiMemory = useMemo(() => loadAIMemory(profile), [profile.childId, profile.studentId, profile.history, profile.progress, profile.xp]);
   const adaptiveSubjects = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : [selectedSubject].filter(Boolean)), [allSubjects, selectedSubject]);
   const visibleSubjects = useMemo(() => (Array.isArray(subjectList) && subjectList.length ? subjectList : adaptiveSubjects), [subjectList, adaptiveSubjects]);
   const studentCore = useMemo(() => buildStudentIntelligence(profile, adaptiveSubjects, aiMemory), [profile, adaptiveSubjects, aiMemory]);
@@ -409,7 +432,7 @@ export default function HomeDashboard(props) {
           <div className="brand-student-strip">
             <div className="student-identity">
               <JannaAvatar size={48} className="student-avatar" />
-              <div className="student-identity-copy"><b title={studentName}>{studentName}</b><small>{profile?.year || 'Tahun 2'}</small></div>
+              <div className="student-identity-copy"><b title={studentName}>{studentName}</b><small>{getStudentYearSupportLabel(profile?.year)}</small></div>
             </div>
             <div className="student-achievement-chips">
               <span className="achievement-chip">Tahap {canonicalGamification.globalLevel}</span>
@@ -431,7 +454,7 @@ export default function HomeDashboard(props) {
             </div>
           </div>
         </header>
-        {childProfiles?.length ? <ChildProfileSwitcher profiles={childProfiles} activeChildId={activeChildId} onSelectChild={onSelectChild} onCreateChild={onCreateChild} onDeleteChild={onDeleteChild} /> : null}
+        {childProfiles?.length ? <ChildProfileSwitcher profiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={onSelectChild} onCreateChild={onCreateChild} onRenameChild={onRenameChild} onArchiveChild={onArchiveChild} onRestoreArchivedChild={onRestoreArchivedChild} /> : null}
         <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div><h2>{personalityGreeting || `Assalamualaikum, ${studentName}`}</h2><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /></div></section>
         <GamificationSummary profile={gamificationProfile} canonical={canonicalGamification} className="home-gamification-summary" />
         <div className="subject-rail-wrap">

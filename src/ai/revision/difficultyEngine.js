@@ -7,13 +7,6 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
 function getRecentAttempts(topicRecord = {}) {
   const history = Array.isArray(topicRecord.recentAnswers)
     ? topicRecord.recentAnswers

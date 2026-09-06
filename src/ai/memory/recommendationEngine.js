@@ -33,14 +33,15 @@ function normaliseTopicRow(subjectId, topicId, topicRecord = {}, profileTopic = 
   };
 }
 
-export function getRecommendationScores(memory = loadMemory(), profile = {}) {
+export function getRecommendationScores(memory = null, profile = {}) {
+  const scopedMemory = memory || loadMemory(profile);
   const scores = {};
   const topicGroups = profile.topics && typeof profile.topics === 'object' ? profile.topics : {};
 
   Object.entries(topicGroups).forEach(([subjectId, topics]) => {
     const subjectScores = [];
     Object.entries(topics || {}).forEach(([topicId, record]) => {
-      const memoryTopic = memory.topics?.[subjectId]?.[topicId] || {};
+      const memoryTopic = scopedMemory.topics?.[subjectId]?.[topicId] || {};
       const row = normaliseTopicRow(subjectId, topicId, memoryTopic, record, memoryTopic);
       subjectScores.push(row);
     });
@@ -51,7 +52,7 @@ export function getRecommendationScores(memory = loadMemory(), profile = {}) {
   return scores;
 }
 
-export function getRecommendedTopicScores(memory = loadMemory(), profile = {}) {
+export function getRecommendedTopicScores(memory = null, profile = {}) {
   return getRecommendationScores(memory, profile);
 }
 

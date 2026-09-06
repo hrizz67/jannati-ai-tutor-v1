@@ -1,6 +1,7 @@
 import { detectLearningCategory, getLearningExamples, getMathLearningGuidance, guardDistinctSections, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
+import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 
 const CATEGORY_RULES = {
   person: {
@@ -70,11 +71,20 @@ function buildBaseExamples(question, topic) {
   return examples.length ? examples : ['Baca ayat sekali lagi.', 'Cari kata kunci penting.', 'Bandingkan dengan jawapan.'];
 }
 
-export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '', questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
+export function explainAnswer({ question = {}, topic = {}, result = {}, userAnswer = '', questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '', studentId = '', studentProfile = null } = {}) {
   topic = topic || {};
   const category = detectLearningCategory(question, topic);
   const rule = CATEGORY_RULES[category] || CATEGORY_RULES.generic;
   const correctAnswer = sanitizeAiText(question.answer || 'jawapan yang betul');
+  const wasCorrect = result.status === 'correct' || result.correct === true;
+  const wasAlmost = result.status === 'almost';
+  const answerRevealPolicy = getAnswerRevealPolicy({
+    status: result.status,
+    isCorrect: wasCorrect,
+    isAlmostCorrect: wasAlmost,
+    attemptCount,
+    explanationMode
+  });
   const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
   const contextualGeneric = `Dalam soalan ini, teliti "${stem}" dan padankan jawapan dengan arahan yang diberi.`;
   const subjectId = String(question.subjectId || topic.subjectId || '').toLowerCase();
@@ -134,6 +144,15 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         : isBmLightTulang
           ? 'Cari maksud yang menunjukkan sikap rajin bekerja atau suka membantu.'
         : bmFamilyContent?.hint || question.hint || rule.hint
+  );
+  const safeHint = selectAnswerSafeText(
+    [hint, question.hint, rule.hint],
+    [correctAnswer],
+    subjectId === 'english'
+      ? 'Read the question again and identify the key word before trying once more.'
+      : subjectId === 'arab'
+        ? 'Lihat huruf, baris dan maksud yang diminta tanpa meneka jawapan.'
+        : 'Baca soalan semula, cari kata kunci dan cuba satu langkah lagi.'
   );
   const examples = buildBaseExamples(question, topic).map(item => sanitizeAiText(item));
   const focus = isNumberOrder
@@ -209,12 +228,11 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
     instruction ? `Arahan: ${instruction}.` : '',
     ''
   ].filter(Boolean).join(' ')) || 'Mari kita semak soalan ini bersama-sama.';
-  const studentProfile = getStudentProfileSummary('default');
-  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
+  const resolvedStudentId = studentId || studentProfile?.childId || studentProfile?.studentId || 'default';
+  const resolvedStudentProfile = getStudentProfileSummary(resolvedStudentId, studentProfile);
+  const topicProgress = getTopicProgress(resolvedStudentId, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', resolvedStudentProfile);
   const topicStatus = topicProgress?.status || 'new';
-  const mistakeContext = getMistakeContext(studentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
-  const wasCorrect = result.status === 'correct';
-  const wasAlmost = result.status === 'almost';
+  const mistakeContext = getMistakeContext(resolvedStudentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
   const encouragementBase = wasCorrect
     ? (topicStatus === 'mastered'
     ? 'Hebat! Kamu sudah kuasai topik ini.'
@@ -229,23 +247,32 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
         ? 'Tak mengapa. Kita ulang perlahan-lahan.'
         : 'Tak mengapa. Kita cuba sekali lagi.';
 
-  const revealAnswer = Boolean(
-    wasCorrect ||
-    wasAlmost ||
-    explanationMode === 'correct_answer_reinforcement' ||
-    Number(attemptCount) >= 3
-  );
+  const revealAnswer = answerRevealPolicy.canRevealAnswer;
+  const safeFocus = revealAnswer
+    ? focus
+    : selectAnswerSafeText([focus], [correctAnswer], currentLearningObjective || 'Fokus pada kemahiran yang diminta dalam soalan.');
+  const safeExplanation = revealAnswer ? explanation : safeHint;
+  const safeSimpleExplanation = revealAnswer ? simpleExplanation : safeHint;
+  const safeWhyCorrect = revealAnswer ? whyCorrect : '';
+  const safeSteps = revealAnswer
+    ? steps
+    : [safeHint, subjectId === 'english' ? 'Check the clue against the sentence before answering.' : 'Semak petunjuk itu dengan soalan sebelum menjawab.'];
+  const safeExamples = revealAnswer ? examples : [];
+  const safeExample = revealAnswer ? example : '';
+  const safeMemoryTip = revealAnswer
+    ? sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? pronounWhy : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : mathGuidance?.memoryTip || bmMemoryTip))
+    : (subjectId === 'english' ? 'Use the key word as your guide.' : 'Gunakan kata kunci sebagai panduan, bukan jawapan terus.');
 
   const response = {
     category,
-    explanation,
-    simpleExplanation,
-    focus,
-    whyCorrect,
-    hint,
-    examples,
+    explanation: safeExplanation,
+    simpleExplanation: safeSimpleExplanation,
+    focus: safeFocus,
+    whyCorrect: safeWhyCorrect,
+    hint: safeHint,
+    examples: safeExamples,
     commonMistakes,
-    memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? pronounWhy : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : mathGuidance?.memoryTip || bmMemoryTip)),
+    memoryTip: safeMemoryTip,
     encouragement: isBmPronoun
       ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba lihat siapa yang bercakap atau dirujuk dalam ayat.')
       : isBmCommonNoun
@@ -253,18 +280,21 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       : encouragementBase,
     answerLine: revealAnswer ? `Jawapan: ${correctAnswer}` : '',
     correctAnswer: revealAnswer ? correctAnswer : '',
-    shortText: sanitizeChildFacingText(`${focus} ${wasCorrect ? whyCorrect : hint}`),
+    shortText: sanitizeChildFacingText(`${safeFocus} ${revealAnswer && wasCorrect ? safeWhyCorrect : safeHint}`),
     showCorrectAnswer: revealAnswer,
+    answerRevealPolicy,
+    attemptCount: answerRevealPolicy.attemptCount,
+    status: result.status || '',
     sections: {
-      summary: focus,
-      focus,
-      simpleExplanation,
-      whyCorrect,
-      hint,
-      steps,
+      summary: safeFocus,
+      focus: safeFocus,
+      simpleExplanation: safeSimpleExplanation,
+      whyCorrect: safeWhyCorrect,
+      hint: safeHint,
+      steps: safeSteps,
       commonMistake: commonMistakes[0] || '',
-      example,
-      memoryTip: sanitizeAiText(question.memoryTip || (isNumberOrder ? 'Nombor selepas tambah 1; nombor sebelum tolak 1.' : isBmPronoun ? pronounWhy : isBmCommonNoun ? 'Nama umum = kata nama am. Nama khusus = kata nama khas.' : mathGuidance?.memoryTip || bmMemoryTip)),
+      example: safeExample,
+      memoryTip: safeMemoryTip,
       correctAnswer: revealAnswer ? correctAnswer : '',
       coachMessage: sanitizeChildFacingText(isBmPronoun
         ? (wasCorrect ? 'Bagus. Kamu sudah memilih kata ganti nama yang betul.' : 'Cuba lihat siapa yang bercakap atau dirujuk dalam ayat.')
@@ -274,22 +304,22 @@ export function explainAnswer({ question = {}, topic = {}, result = {}, userAnsw
       learningObjective: sanitizeChildFacingText(currentLearningObjective || question.learningObjective || topic.learningObjective || topic.objective || '')
     },
     learningProfile: {
-      studentId: studentProfile.studentId || 'default',
+      studentId: resolvedStudentId,
       topicStatus,
-      accuracy: studentProfile.summary?.accuracy || 0,
-      weakTopics: studentProfile.weakTopics || [],
-      strongTopics: studentProfile.strongTopics || [],
+      accuracy: resolvedStudentProfile.summary?.accuracy || 0,
+      weakTopics: resolvedStudentProfile.weakTopics || [],
+      strongTopics: resolvedStudentProfile.strongTopics || [],
       mistakeContext
     }
   };
   response.sections = guardDistinctSections(response.sections, stem, {
-    summary: focus,
-    focus,
-    simpleExplanation,
-    whyCorrect,
-    hint,
-    steps,
-    example,
+    summary: safeFocus,
+    focus: safeFocus,
+    simpleExplanation: safeSimpleExplanation,
+    whyCorrect: safeWhyCorrect,
+    hint: safeHint,
+    steps: safeSteps,
+    example: safeExample,
     commonMistake: commonMistakes[0] || '',
     memoryTip: response.memoryTip,
     coachMessage: response.encouragement

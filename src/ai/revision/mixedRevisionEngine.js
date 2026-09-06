@@ -2,6 +2,7 @@ import { generateRevisionPlan } from './revisionPlannerEngine.js';
 import { getReviewQueue } from './spacedRepetitionEngine.js';
 import { buildDifficultyPlan } from './difficultyEngine.js';
 import { generateRecommendation } from '../adaptive/recommendationEngine.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
@@ -14,13 +15,6 @@ function toNumber(value, fallback = 0) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
-}
-
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function normalizeQuestionBank(questionBank) {
@@ -64,7 +58,7 @@ function flattenQuestionBank(questionBank) {
 }
 
 function getCurrentDate() {
-  return localDateKey();
+  return getLocalDateKey();
 }
 
 function getRecentQuestionIds(profile = {}, limit = 40) {

@@ -171,14 +171,15 @@ function collectPrioritizedText(pack, subjectId) {
   return dedupeText(values);
 }
 
-function buildPackData(pack, subjectId, topicId, question = {}, result = {}, userAnswer = '') {
+function buildPackData(pack, subjectId, topicId, question = {}, result = {}, userAnswer = '', studentId = '', suppliedStudentProfile = null) {
   if (!pack) return null;
   const questionIdentity = question?.id || question?.questionId || question?.q || question?.question || 'current';
-  const contextKey = `${subjectId}:${topicId}:${questionIdentity}`;
-  const studentProfile = getStudentProfileSummary('default');
-  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', subjectId, topicId, studentProfile);
-  const subjectProgress = getSubjectProgress(studentProfile.studentId || 'default', subjectId, studentProfile);
-  const revisionPlan = generateRevisionPlan(studentProfile.studentId || 'default', { limit: 6 }, studentProfile);
+  const resolvedStudentId = studentId || suppliedStudentProfile?.childId || suppliedStudentProfile?.studentId || 'default';
+  const contextKey = `${resolvedStudentId}:${subjectId}:${topicId}:${questionIdentity}`;
+  const studentProfile = getStudentProfileSummary(resolvedStudentId, suppliedStudentProfile);
+  const topicProgress = getTopicProgress(resolvedStudentId, subjectId, topicId, studentProfile);
+  const subjectProgress = getSubjectProgress(resolvedStudentId, subjectId, studentProfile);
+  const revisionPlan = generateRevisionPlan(resolvedStudentId, { limit: 6 }, studentProfile);
   const mistakeContext = getMistakeContext(studentProfile, subjectId, topicId);
   const topicStatus = topicProgress?.status || 'new';
 
@@ -228,7 +229,7 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
   const hint = selectString(hintSources, `${subjectId}:${topicId}:hint`) || sanitizeAiText(question?.hint || 'Cari kata kunci penting dalam soalan.');
   const practicePrompt = followUpQuestions[0] || sanitizeAiText(question?.hint || 'Cuba sekali lagi selepas membaca penerangan ini.');
   const learningProfile = {
-    studentId: studentProfile.studentId || 'default',
+    studentId: resolvedStudentId,
     name: studentProfile.name || '',
     accuracy: studentProfile.summary?.accuracy || 0,
     currentStreak: studentProfile.summary?.currentStreak || 0,
@@ -373,7 +374,7 @@ export function getFollowUpQuestions(subjectId, topicId) {
   return buildPackData(getCachedPackOrEmpty(subjectId, topicId), subjectId, topicId)?.followUpQuestions || [];
 }
 
-export async function fetchCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '' } = {}) {
+export async function fetchCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '', studentId = '', studentProfile = null } = {}) {
   if (!subjectId || !topicId) {
     logKnowledgeEvent('missing topic', { subjectId: subjectId || null, topicId: topicId || null });
     return null;
@@ -387,7 +388,7 @@ export async function fetchCoachKnowledgeData({ subjectId, topicId, question = {
     }
     logKnowledgeEvent('knowledge pack loaded', { subjectId, topicId, displayName: pack.displayName || '' });
     primeKnowledgePack(subjectId, topicId, pack);
-    return buildPackData(pack, subjectId, topicId, question, result, userAnswer);
+    return buildPackData(pack, subjectId, topicId, question, result, userAnswer, studentId, studentProfile);
   } catch (error) {
     logKnowledgeEvent('fallback used', {
       subjectId,
@@ -399,14 +400,14 @@ export async function fetchCoachKnowledgeData({ subjectId, topicId, question = {
   }
 }
 
-export function buildCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '' } = {}) {
+export function buildCoachKnowledgeData({ subjectId, topicId, question = {}, result = {}, userAnswer = '', studentId = '', studentProfile = null } = {}) {
   const pack = getCachedPackOrEmpty(subjectId, topicId);
   if (!pack) return null;
-  return buildPackData(pack, subjectId, topicId, question, result, userAnswer);
+  return buildPackData(pack, subjectId, topicId, question, result, userAnswer, studentId, studentProfile);
 }
 
-export async function prefetchCoachKnowledgePack(subjectId, topicId, question = {}, result = {}, userAnswer = '') {
-  return fetchCoachKnowledgeData({ subjectId, topicId, question, result, userAnswer });
+export async function prefetchCoachKnowledgePack(subjectId, topicId, question = {}, result = {}, userAnswer = '', studentId = '', studentProfile = null) {
+  return fetchCoachKnowledgeData({ subjectId, topicId, question, result, userAnswer, studentId, studentProfile });
 }
 
 export default {

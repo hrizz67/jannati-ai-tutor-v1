@@ -1,3 +1,5 @@
+import { getLearningStorageScope, stampLearningIdentity } from '../services/studentIdentity.js';
+
 export const RESUME_KEY = 'jannati_v151_resume';
 export const RESUME_SLOTS_KEY = 'jannati_v152_resume_slots';
 export const LEGACY_RESUME_KEYS = ['jannati_v150_resume', 'jannati_v140_resume'];
@@ -51,6 +53,9 @@ export function normalizeResumeData(value) {
         ? [...session.answers]
         : [];
   const metadata = { ...(state.metadata || {}), ...(value.metadata || {}) };
+  const accountId = value.accountId || state.accountId || '';
+  const childId = value.childId || state.childId || '';
+  const studentId = value.studentId || state.studentId || childId || '';
   const normalized = {
     version: Number(value.version || state.version || 1),
     questionBankVersion: Number(value.questionBankVersion || state.questionBankVersion || 1),
@@ -74,12 +79,16 @@ export function normalizeResumeData(value) {
     xp: Number(value.xp ?? state.xp ?? session?.xp ?? 0),
     coins: Number(value.coins ?? state.coins ?? session?.coins ?? 0),
     attemptNumber: Number(value.attemptNumber ?? state.attemptNumber ?? session?.attemptNumber ?? 0),
+    accountId,
+    childId,
+    studentId,
+    learningScope: value.learningScope || state.learningScope || '',
     metadata,
     startedAt: value.startedAt || state.startedAt || session?.startedAt || new Date().toISOString(),
     updatedAt: value.updatedAt || state.updatedAt || new Date().toISOString(),
     completed: Boolean(value.completed ?? state.completed ?? false),
     session,
-    state: { ...state, ...value.state, session, metadata }
+    state: { ...state, ...value.state, accountId, childId, studentId, session, metadata }
   };
 
   if (QUESTION_MODES.has(mode) && (!subjectId || !topicId || !normalized.questions?.length)) return null;
@@ -94,10 +103,11 @@ export function normalizeResumeData(value) {
 export function getResumeScopeKey(value = {}) {
   const resume = normalizeResumeData(value) || value || {};
   const mode = String(resume.mode || 'quiz');
-  if (mode === 'uasa') return `uasa::${resume.subjectId || 'unknown'}`;
-  if (QUESTION_MODES.has(mode)) return `${mode}::${resume.subjectId || 'unknown'}::${resume.topicId || 'unknown'}`;
-  if (COMMUNICATION_MODES.has(mode)) return mode;
-  return `${mode}::${resume.subjectId || 'global'}::${resume.topicId || 'global'}`;
+  const studentId = String(resume.studentId || resume.childId || 'default');
+  if (mode === 'uasa') return `${studentId}::uasa::${resume.subjectId || 'unknown'}`;
+  if (QUESTION_MODES.has(mode)) return `${studentId}::${mode}::${resume.subjectId || 'unknown'}::${resume.topicId || 'unknown'}`;
+  if (COMMUNICATION_MODES.has(mode)) return `${studentId}::${mode}`;
+  return `${studentId}::${mode}::${resume.subjectId || 'global'}::${resume.topicId || 'global'}`;
 }
 
 export function resumeMatchesCriteria(resume, criteria = {}) {
@@ -105,7 +115,10 @@ export function resumeMatchesCriteria(resume, criteria = {}) {
   return (!criteria.mode || resume.mode === criteria.mode)
     && (!criteria.subjectId || resume.subjectId === criteria.subjectId)
     && (!criteria.topicId || resume.topicId === criteria.topicId)
-    && (!criteria.sessionId || resume.sessionId === criteria.sessionId);
+    && (!criteria.sessionId || resume.sessionId === criteria.sessionId)
+    && (!criteria.studentId || resume.studentId === criteria.studentId)
+    && (!criteria.childId || resume.childId === criteria.childId)
+    && (!criteria.accountId || resume.accountId === criteria.accountId);
 }
 
 function readResumeSlots(storage) {
@@ -172,8 +185,12 @@ export function loadResume(criteria = {}, storage) {
   return entries[0] || null;
 }
 
-export function saveResume(data, storage) {
-  const normalized = normalizeResumeData(data);
+export function saveResume(data, storage, identityInput = data) {
+  const normalizedInput = normalizeResumeData(data);
+  const identity = getLearningStorageScope(identityInput);
+  const normalized = identity.explicit
+    ? normalizeResumeData(stampLearningIdentity(normalizedInput || {}, identity))
+    : normalizedInput;
   if (!normalized) return null;
   const slots = readResumeSlots(storage);
   slots[getResumeScopeKey(normalized)] = normalized;

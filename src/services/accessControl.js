@@ -1,3 +1,5 @@
+import { getLocalDateKey } from '../utils/localDate.js';
+
 export const ACCESS_STATUS = Object.freeze({
   FREE: 'free',
   PENDING: 'pending',
@@ -92,17 +94,40 @@ export function getAccessFeatureLabel(feature) {
 }
 
 export function getDailyQuestionCount(profile = {}, adaptiveProfile = {}, dateKey = '', subjectId = '') {
-  const day = dateKey || new Date().toISOString().slice(0, 10);
-  const subject = String(subjectId || '').trim();
+  const day = getLocalDateKey(dateKey || new Date());
+  if (!day) return 0;
+  const subject = String(subjectId || '').trim().toLowerCase();
   const records = [
     ...(Array.isArray(profile.history) ? profile.history : []),
     ...(Array.isArray(adaptiveProfile.learningHistory) ? adaptiveProfile.learningHistory : [])
   ];
+  const seenAttempts = new Set();
   return records.filter(item => {
     const timestamp = item?.answeredAt || item?.date || item?.createdAt;
-    return timestamp
-      && String(timestamp).slice(0, 10) === day
-      && (!subject || String(item?.subjectId || item?.subject || '').trim() === subject)
-      && (item?.questionId || item?.eventType === 'quiz-answer');
+    const questionId = String(item?.questionId || '').trim();
+    const itemSubject = String(item?.subjectId || item?.subject || '').trim().toLowerCase();
+    if (!timestamp
+      || getLocalDateKey(timestamp) !== day
+      || (subject && itemSubject !== subject)
+      || (!questionId && item?.eventType !== 'quiz-answer')) return false;
+
+    const parsedTimestamp = new Date(timestamp);
+    const exactTimestamp = String(timestamp).includes('T') && !Number.isNaN(parsedTimestamp.getTime())
+      ? parsedTimestamp.toISOString()
+      : '';
+    const attemptKey = item?.eventId
+      ? `event:${item.eventId}`
+      : item?.attemptId
+        ? `attempt:${item.attemptId}`
+        : item?.resultId
+          ? `result:${item.resultId}`
+          : item?.sessionId && questionId && exactTimestamp
+            ? `session:${item.sessionId}:${questionId}:${exactTimestamp}`
+            : questionId && itemSubject && item?.topicId && exactTimestamp
+              ? `question:${questionId}:${itemSubject}:${item.topicId}:${exactTimestamp}`
+              : '';
+    if (attemptKey && seenAttempts.has(attemptKey)) return false;
+    if (attemptKey) seenAttempts.add(attemptKey);
+    return true;
   }).length;
 }

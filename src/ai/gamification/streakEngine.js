@@ -1,3 +1,5 @@
+import { getCalendarDayDifference, getLocalDateKey } from '../../utils/localDate.js';
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
 }
@@ -7,34 +9,19 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(number) ? number : fallback;
 }
 
-function localDayKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
-function daysBetween(dateA, dateB) {
-  if (!dateA || !dateB) return 0;
-  const a = new Date(`${dateA}T00:00:00`);
-  const b = new Date(`${dateB}T00:00:00`);
-  return Math.round((b.getTime() - a.getTime()) / 86400000);
-}
-
 export function updateGamificationStreak(profile = {}, adaptiveProfile = {}, today = new Date(), context = {}) {
   const next = clone(profile);
   const eventCompleted = context.activityCompleted !== false;
   const currentStreak = Math.max(0, toNumber(next.currentStreak, toNumber(adaptiveProfile.streak, 0)));
   const bestStreak = Math.max(toNumber(next.bestStreak, 0), currentStreak);
-  const todayKey = localDayKey(today);
-  const lastActive = localDayKey(
+  const todayKey = getLocalDateKey(today);
+  const lastActive = getLocalDateKey(
     next.lastRewardDate ||
     adaptiveProfile.lastStudyDate ||
     adaptiveProfile.lastAnsweredAt ||
     ''
   );
-  const gap = lastActive ? daysBetween(lastActive, todayKey) : 0;
+  const gap = lastActive ? getCalendarDayDifference(lastActive, todayKey) : 0;
   const previousCurrent = Math.max(0, toNumber(next.currentStreak, 0));
 
   if (!eventCompleted) {

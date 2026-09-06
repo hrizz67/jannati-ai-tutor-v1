@@ -5,6 +5,7 @@ import { rememberQuestionIntelligenceHistory } from './question/questionEngine.j
 import { loadMemory as loadStudentMemory } from './memory/memoryStorage.js';
 import { applyActivityCompletion, applyQuestionCompletions, loadStudentProfile, resolveStudentId, saveStudentProfile } from './profile/index.js';
 import { recordMistakes } from './mistakes/index.js';
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../services/studentIdentity.js';
 
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
@@ -13,8 +14,8 @@ function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
 }
 
-function emptyMemory() {
-  return {
+function emptyMemory(identityInput = {}) {
+  const memory = {
     weakTopics: [],
     strongTopics: [],
     lastLesson: null,
@@ -48,73 +49,68 @@ function emptyMemory() {
     memoryUpdatedAt: '',
     updatedAt: ''
   };
+  const identity = getLearningStorageScope(identityInput);
+  return identity.explicit ? stampLearningIdentity(memory, identity) : memory;
 }
 
-export function loadAIMemory() {
+function mergeMemorySources(savedMemory, studentMemory, identity) {
+  const merged = {
+    ...emptyMemory(identity),
+    ...(savedMemory || {}),
+    topicHistory: studentMemory.topics || {},
+    mistakeHistory: studentMemory.mistakes || {},
+    dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
+    recommendationScores: studentMemory.recommendationScores || {},
+    learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
+    memoryUpdatedAt: studentMemory.updatedAt || ''
+  };
+  return identity.explicit ? stampLearningIdentity(merged, identity) : merged;
+}
+
+export function loadAIMemory(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
   try {
-    const studentMemory = loadStudentMemory();
+    const studentMemory = loadStudentMemory(identity);
     const saved = localStorage.getItem(MEMORY_KEY);
     if (saved) {
-      return {
-        ...emptyMemory(),
-        ...JSON.parse(saved),
-        topicHistory: studentMemory.topics || {},
-        mistakeHistory: studentMemory.mistakes || {},
-        dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
-        recommendationScores: studentMemory.recommendationScores || {},
-        learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
-        memoryUpdatedAt: studentMemory.updatedAt || ''
-      };
+      const parsed = JSON.parse(saved);
+      if (getLearningIdentityMismatch(parsed, identity)) return mergeMemorySources(null, studentMemory, identity);
+      return mergeMemorySources(parsed, studentMemory, identity);
     }
 
     for (const key of LEGACY_MEMORY_KEYS) {
       const legacy = localStorage.getItem(key);
       if (legacy) {
-        localStorage.setItem(MEMORY_KEY, legacy);
-        return {
-          ...emptyMemory(),
-          ...JSON.parse(legacy),
-          topicHistory: studentMemory.topics || {},
-          mistakeHistory: studentMemory.mistakes || {},
-          dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
-          recommendationScores: studentMemory.recommendationScores || {},
-          learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
-          memoryUpdatedAt: studentMemory.updatedAt || ''
-        };
+        const parsed = JSON.parse(legacy);
+        if (getLearningIdentityMismatch(parsed, identity)) continue;
+        const migrated = identity.explicit ? stampLearningIdentity(parsed, identity) : parsed;
+        localStorage.setItem(MEMORY_KEY, JSON.stringify(migrated));
+        return mergeMemorySources(migrated, studentMemory, identity);
       }
     }
 
-    return {
-      ...emptyMemory(),
-      topicHistory: studentMemory.topics || {},
-      mistakeHistory: studentMemory.mistakes || {},
-      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
-      recommendationScores: studentMemory.recommendationScores || {},
-      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
-      memoryUpdatedAt: studentMemory.updatedAt || ''
-    };
+    return mergeMemorySources(null, studentMemory, identity);
   } catch {
-    localStorage.removeItem(MEMORY_KEY);
-    LEGACY_MEMORY_KEYS.forEach(key => localStorage.removeItem(key));
-    const studentMemory = loadStudentMemory();
-    return {
-      ...emptyMemory(),
-      topicHistory: studentMemory.topics || {},
-      mistakeHistory: studentMemory.mistakes || {},
-      dailySnapshots: Array.isArray(studentMemory.dailySnapshots) ? [...studentMemory.dailySnapshots] : [],
-      recommendationScores: studentMemory.recommendationScores || {},
-      learningHistory: Array.isArray(studentMemory.learningHistory) ? [...studentMemory.learningHistory] : [],
-      memoryUpdatedAt: studentMemory.updatedAt || ''
-    };
+    const studentMemory = loadStudentMemory(identity);
+    return mergeMemorySources(null, studentMemory, identity);
   }
 }
 
-export function saveAIMemory(memory) {
+export function saveAIMemory(memory, identityInput = memory) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(memory, identity)) return loadAIMemory(identity);
+  const safeMemory = {
+    ...emptyMemory(identity),
+    ...memory,
+    updatedAt: new Date().toISOString()
+  };
+  const scopedMemory = identity.explicit ? stampLearningIdentity(safeMemory, identity) : safeMemory;
   try {
-    localStorage.setItem(MEMORY_KEY, JSON.stringify({ ...emptyMemory(), ...memory, updatedAt: new Date().toISOString() }));
+    localStorage.setItem(MEMORY_KEY, JSON.stringify(scopedMemory));
   } catch {
-    localStorage.removeItem(MEMORY_KEY);
+    // Existing learning memory must never be deleted because a write failed.
   }
+  return scopedMemory;
 }
 
 function buildTopicRows(profile = {}, subjects = []) {
@@ -132,7 +128,7 @@ function buildTopicRows(profile = {}, subjects = []) {
   }));
 }
 
-export function buildAIMemory(profile = {}, subjects = [], previousMemory = loadAIMemory()) {
+export function buildAIMemory(profile = {}, subjects = [], previousMemory = loadAIMemory(profile)) {
   const rows = buildTopicRows(profile, subjects);
   const attempted = rows.filter(row => row.attempts > 0);
   const weakTopics = attempted.filter(row => row.best < 80).sort((a, b) => a.best - b.best).slice(0, 12);
@@ -144,7 +140,7 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
   const masterySummary = summarizeMastery(topicMastery);
   const mastery = masterySummary.total ? masterySummary.masteryScore : previousMemory.mastery || 0;
   const curriculumCoverage = buildCurriculumCoverage(profile, subjects);
-  const studentMemory = loadStudentMemory();
+  const studentMemory = loadStudentMemory(profile);
 
   return {
     ...previousMemory,
@@ -167,7 +163,7 @@ export function buildAIMemory(profile = {}, subjects = [], previousMemory = load
 }
 
 export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent = 0, session = {}, studySeconds = 0 }) {
-  const previous = loadAIMemory();
+  const previous = loadAIMemory(profile);
   const next = buildAIMemory(profile, [subject], previous);
   const studentId = resolveStudentId(profile, 'default');
   const lesson = {
@@ -191,7 +187,7 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
     ...historyMemory,
     lastLesson: lesson,
     studyTime: Math.max(0, previous.studyTime || 0) + Math.max(0, studySeconds || 0)
-  });
+  }, profile);
 
   const studentProfile = loadStudentProfile(studentId, profile);
   const completionRows = Array.isArray(session.answers) ? session.answers : [];
@@ -250,10 +246,10 @@ export function saveQuizMemory({ profile = {}, subject = {}, topic = {}, percent
   saveStudentProfile(updatedMistakeProfile, studentId);
 }
 
-export function saveQuestionHistory(questions = []) {
-  const previous = loadAIMemory();
+export function saveQuestionHistory(questions = [], identityInput = {}) {
+  const previous = loadAIMemory(identityInput);
   const rows = Array.isArray(questions) ? questions : [questions];
-  saveAIMemory(rememberQuestionIntelligenceHistory(rememberQuestionHistory(previous, rows), rows));
+  saveAIMemory(rememberQuestionIntelligenceHistory(rememberQuestionHistory(previous, rows), rows), identityInput);
 }
 
 function refreshMemoryBase(profile, subjects, previous) {
@@ -261,7 +257,7 @@ function refreshMemoryBase(profile, subjects, previous) {
 }
 
 export function saveReadingMemory(result = {}, profile = null, subjects = []) {
-  const previous = loadAIMemory();
+  const previous = loadAIMemory(profile || {});
   const base = refreshMemoryBase(profile, subjects, previous);
   const readingResult = {
     language: result.language || 'bm',
@@ -289,7 +285,7 @@ export function saveReadingMemory(result = {}, profile = null, subjects = []) {
   saveAIMemory({
     ...base,
     readingHistory: [readingResult, ...(base.readingHistory || [])].slice(0, 20)
-  });
+  }, profile || {});
 
   const studentId = resolveStudentId(profile || {}, 'default');
   const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
@@ -301,7 +297,7 @@ export function saveReadingMemory(result = {}, profile = null, subjects = []) {
 }
 
 export function saveListeningMemory(result = {}, profile = null, subjects = []) {
-  const previous = loadAIMemory();
+  const previous = loadAIMemory(profile || {});
   const base = refreshMemoryBase(profile, subjects, previous);
   const listeningResult = {
     language: result.language || 'bm',
@@ -316,7 +312,7 @@ export function saveListeningMemory(result = {}, profile = null, subjects = []) 
   saveAIMemory({
     ...base,
     listeningHistory: [listeningResult, ...(base.listeningHistory || [])].slice(0, 20)
-  });
+  }, profile || {});
 
   const studentId = resolveStudentId(profile || {}, 'default');
   const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
@@ -328,7 +324,7 @@ export function saveListeningMemory(result = {}, profile = null, subjects = []) 
 }
 
 export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
-  const previous = loadAIMemory();
+  const previous = loadAIMemory(profile || {});
   const base = refreshMemoryBase(profile, subjects, previous);
   const speakingResult = {
     language: result.language || 'bm',
@@ -344,7 +340,7 @@ export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
   saveAIMemory({
     ...base,
     speakingHistory: [speakingResult, ...(base.speakingHistory || [])].slice(0, 20)
-  });
+  }, profile || {});
 
   const studentId = resolveStudentId(profile || {}, 'default');
   const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {
@@ -356,7 +352,7 @@ export function saveSpeakingMemory(result = {}, profile = null, subjects = []) {
 }
 
 export function saveWritingMemory(result = {}, profile = null, subjects = []) {
-  const previous = loadAIMemory();
+  const previous = loadAIMemory(profile || {});
   const base = refreshMemoryBase(profile, subjects, previous);
   const writingResult = {
     language: result.language || 'bm',
@@ -374,7 +370,7 @@ export function saveWritingMemory(result = {}, profile = null, subjects = []) {
   saveAIMemory({
     ...base,
     writingHistory: [writingResult, ...(base.writingHistory || [])].slice(0, 20)
-  });
+  }, profile || {});
 
   const studentId = resolveStudentId(profile || {}, 'default');
   const nextProfile = applyActivityCompletion(loadStudentProfile(studentId, profile || {}), {

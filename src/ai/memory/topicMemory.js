@@ -40,8 +40,8 @@ function ensureTopicRecord(bucket, topicId) {
   return bucket[topicId];
 }
 
-export function updateTopicMemory(memory = loadMemory(), profile = {}, result = {}) {
-  const next = clone(memory);
+export function updateTopicMemory(memory = null, profile = {}, result = {}) {
+  const next = clone(memory || loadMemory(profile));
   const subjectId = result.subjectId || null;
   const topicId = result.topicId || null;
   if (!subjectId || !topicId) return next;
@@ -93,8 +93,8 @@ export function getTopicMemory(memory = loadMemory(), subjectId, topicId) {
   return memory?.topics?.[subjectId]?.[topicId] || null;
 }
 
-export function saveTopicMemory(memory = loadMemory(), profile = {}, result = {}) {
-  return saveMemory(updateTopicMemory(memory, profile, result));
+export function saveTopicMemory(memory = null, profile = {}, result = {}) {
+  return saveMemory(updateTopicMemory(memory, profile, result), profile);
 }
 
 export default {

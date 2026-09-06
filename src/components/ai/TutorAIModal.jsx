@@ -5,6 +5,9 @@ import { formatSubjectName, formatTopicName, getHumanReadableTopic, getStudentDi
 import { getTutorResponse } from '../../utils/tutorResponseService.js';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
+import { getAnswerRevealPolicy } from '../../ai/policy/answerRevealPolicy.js';
+import { getSubjectLanguagePresentation } from '../../ai/voice/voiceConfig.js';
+import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const FALLBACK_MESSAGE = 'Saya belum memahami soalan itu dengan tepat. Cuba tanya semula dengan ayat lain.';
@@ -12,9 +15,15 @@ const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sek
 const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
 const RESPONSE_TIMEOUT_MS = 4500;
 
-function buildNaturalGreeting({ studentName = '', subjectLabel = '', topicLabel = '', questionText = '' } = {}) {
+function buildNaturalGreeting({ studentName = '', subjectLabel = '', topicLabel = '', questionText = '', teachingLanguage = 'ms' } = {}) {
   const name = studentName ? `Hai ${studentName}` : 'Hai';
   const subject = subjectLabel || 'pelajaran ini';
+  if (teachingLanguage === 'en') {
+    const englishName = studentName ? `Hi ${studentName}` : 'Hi';
+    if (questionText) return `${englishName}. I can see your ${subjectLabel || 'English'} question. Shall we start with a hint, an explanation, or an example?`;
+    if (topicLabel && topicLabel !== 'topik semasa') return `${englishName}. Today we are focusing on ${topicLabel}. What would you like to understand first?`;
+    return `${englishName}. I am ready to teach and guide you. What would you like to understand?`;
+  }
   if (questionText) return `${name}. Saya sudah lihat soalan ${subject} kamu. Kita fikir bersama — kamu mahu petunjuk, penerangan atau contoh?`;
   if (topicLabel && topicLabel !== 'topik semasa') return `${name}. Hari ini kita fokus pada ${topicLabel}. Apa yang kamu mahu faham dahulu?`;
   return `${name}. Saya sedia mengajar dan membimbing kamu, bukan sekadar memberi jawapan. Apa yang ingin kamu faham?`;
@@ -124,11 +133,11 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
   };
 }
 
-function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY', source = '', onSuggestion = null }) {
+function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY', subjectId = '', source = '', onSuggestion = null }) {
   const safeText = normalizeText(text, '');
   return (
     <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
-      <p className="chat-bubble-text">{safeText}</p>
+      <SubjectLanguageText as="p" className="chat-bubble-text" text={safeText} subjectId={subjectId} teaching={role === 'ai'} />
       {role === 'ai' && source === 'generative-gateway' && (
         <small className="tutor-ai-source-label">Jawapan AI generatif · semak bersama guru</small>
       )}
@@ -144,7 +153,7 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
         <ul className="chat-suggestions" aria-label="Balasan pantas">
           {suggestions.slice(0, 3).map((item, index) => (
             <li key={`${safeText.slice(0, 12)}-${index}`}>
-              <button type="button" onClick={() => onSuggestion?.(item)}>{item}</button>
+              <button type="button" onClick={() => onSuggestion?.(item)}><SubjectLanguageText text={item} subjectId={subjectId} teaching /></button>
             </li>
           ))}
         </ul>
@@ -190,6 +199,7 @@ export default function TutorAIModal({
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
   const requestIdRef = useRef(0);
+  const requestContextRef = useRef('');
   const [messages, setMessages] = useState(() => Array.isArray(initialMessages) ? initialMessages : []);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -229,17 +239,34 @@ export default function TutorAIModal({
   const normalizedExplanationMode = normalizeText(explanationMode || questionContext.explanationMode, '');
   const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
   const isCorrect = questionContext.isCorrect;
-  const revealExpectedAnswer = isCorrect || normalizedExplanationMode === 'correct_answer_reinforcement' || normalizedExplanationMode === 'show_answer' || Number(attemptCount) >= 3;
+  const answerRevealPolicy = getAnswerRevealPolicy({
+    status: feedback?.status,
+    isCorrect,
+    attemptCount,
+    hintsUsed,
+    explanationMode: normalizedExplanationMode,
+    explicitAnswerRequest: normalizedExplanationMode === 'show_answer'
+  });
+  const revealExpectedAnswer = answerRevealPolicy.canRevealAnswer;
   const hasExerciseContext = Boolean(normalizedQuestionText || normalizedInstruction || normalizedExpectedAnswer || normalizedOptions.length);
   const hasVisibleQuestionContext = Boolean(normalizedInstruction || normalizedQuestionText || (normalizedExpectedAnswer && revealExpectedAnswer));
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
-  const voiceLang = activeSubject?.id === 'english' ? 'en-US' : activeSubject?.id === 'arab' ? 'ar-SA' : 'ms-MY';
+  const languagePresentation = getSubjectLanguagePresentation(activeSubject);
+  const voiceLang = languagePresentation.teachingLocale;
+  const fallbackMessage = languagePresentation.teachingLanguage === 'en'
+    ? 'I could not understand that question accurately. Please ask again using different words.'
+    : FALLBACK_MESSAGE;
+  const timeoutMessage = languagePresentation.teachingLanguage === 'en'
+    ? 'I cannot prepare an answer right now. Please try again.'
+    : TIMEOUT_MESSAGE;
 
   const sessionKey = useMemo(
     () => normalizeText(conversationKey || studentProfile?.studentId || studentProfile?.name || 'learner', 'learner'),
     [conversationKey, studentProfile?.studentId, studentProfile?.name]
   );
+  const requestContextKey = `${sessionKey}::${activeSubject?.id || 'general'}::${activeTopic?.id || 'general'}::${currentQuestion?.id || currentQuestion?.questionId || 'general'}`;
+  requestContextRef.current = requestContextKey;
 
   useModalRuntime({
     open,
@@ -271,7 +298,8 @@ export default function TutorAIModal({
         studentName,
         subjectLabel,
         topicLabel,
-        questionText: normalizedQuestionText
+        questionText: normalizedQuestionText,
+        teachingLanguage: languagePresentation.teachingLanguage
       }),
       suggestions: []
     }]);
@@ -318,6 +346,7 @@ export default function TutorAIModal({
     const text = normalizeText(rawText, '');
     if (!text || loading) return;
     const started = ++requestIdRef.current;
+    const startedContext = requestContextKey;
     const nextHistory = [...messages, { role: 'user', text }];
     setMessages(nextHistory);
     setLoading(true);
@@ -348,7 +377,9 @@ export default function TutorAIModal({
         strongTopics,
         prompt: text,
         intent,
-        locale: 'ms-MY',
+        locale: languagePresentation.contentLocale,
+        languagePresentation,
+        answerRevealPolicy,
         history: messages,
         adaptiveProfile,
         studyPlan,
@@ -357,9 +388,9 @@ export default function TutorAIModal({
         predictionProfile,
         gamificationProfile
       }));
-      if (requestIdRef.current !== started) return;
+      if (requestIdRef.current !== started || requestContextRef.current !== startedContext) return;
       setMessages(prev => {
-        const nextText = normalizeText(response?.shortText || response?.text, FALLBACK_MESSAGE);
+        const nextText = normalizeText(response?.shortText || response?.text, fallbackMessage);
         if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
         return [...prev, {
         role: 'ai',
@@ -374,18 +405,18 @@ export default function TutorAIModal({
         }];
       });
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
-      setError(response?.fallbackUsed ? FALLBACK_MESSAGE : '');
+      setError(response?.fallbackUsed ? fallbackMessage : '');
       setInput('');
     } catch (err) {
-      if (requestIdRef.current !== started) return;
-      const message = err?.code === 'TUTOR_RESPONSE_TIMEOUT' ? TIMEOUT_MESSAGE : FALLBACK_MESSAGE;
+      if (requestIdRef.current !== started || requestContextRef.current !== startedContext) return;
+      const message = err?.code === 'TUTOR_RESPONSE_TIMEOUT' ? timeoutMessage : fallbackMessage;
       setMessages(prev => normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(message)
         ? prev
         : [...prev, { role: 'ai', text: message, suggestions: [] }]);
       setStatus('error');
       setError(message);
     } finally {
-      if (requestIdRef.current === started) {
+      if (requestIdRef.current === started && requestContextRef.current === startedContext) {
         setLoading(false);
       }
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:response');
@@ -420,9 +451,9 @@ export default function TutorAIModal({
   const statusLabel = status === 'loading'
     ? 'Tutor AI sedang menaip...'
     : status === 'error'
-      ? error || FALLBACK_MESSAGE
+      ? error || fallbackMessage
       : status === 'fallback'
-        ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : FALLBACK_MESSAGE)
+        ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : fallbackMessage)
         : 'Tutor AI sedia membantu.';
   const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
 
@@ -448,10 +479,14 @@ export default function TutorAIModal({
           </div>
           <strong className="ai-chat-title" id="tutor-ai-title">Tutor AI</strong>
           <button ref={closeButtonRef} type="button" className="secondary" onClick={onTutup} aria-label="Tutup">Tutup</button>
-          <p className="ai-modal-context-line" id="tutor-ai-description">
-            {subjectLabel || 'Semua subjek'}
-            {topicLabel ? ` · ${topicLabel}` : ''}
-          </p>
+          <SubjectLanguageText
+            as="p"
+            className="ai-modal-context-line"
+            id="tutor-ai-description"
+            text={`${subjectLabel || 'Semua subjek'}${topicLabel ? ` · ${topicLabel}` : ''}`}
+            subjectId={activeSubject?.id}
+            teaching
+          />
         </header>
 
         {showStatus && (
@@ -470,19 +505,19 @@ export default function TutorAIModal({
                 {normalizedInstruction && (
                   <div>
                     <span className="ai-chat-context-label">Arahan</span>
-                    <p>{normalizedInstruction}</p>
+                    <SubjectLanguageText as="p" text={normalizedInstruction} subjectId={activeSubject?.id} />
                   </div>
                 )}
                 {normalizedQuestionText && (
                   <div>
                     <span className="ai-chat-context-label">Soalan</span>
-                    <p>{normalizedQuestionText}</p>
+                    <SubjectLanguageText as="p" text={normalizedQuestionText} subjectId={activeSubject?.id} />
                   </div>
                 )}
                 {normalizedExpectedAnswer && revealExpectedAnswer && (
                   <div>
                     <span className="ai-chat-context-label">Jawapan dijangka</span>
-                    <p>{normalizedExpectedAnswer}</p>
+                    <SubjectLanguageText as="p" text={normalizedExpectedAnswer} subjectId={activeSubject?.id} />
                   </div>
                 )}
               </div>
@@ -497,11 +532,12 @@ export default function TutorAIModal({
               suggestions={message.suggestions || []}
               tone={message.tone || ''}
               voiceLang={voiceLang}
+              subjectId={activeSubject?.id}
               source={message.source || ''}
               onSuggestion={suggestion => void sendMessage(suggestion, 'general')}
             />
           ))}
-          {loading && <MessageBubble role="ai" text="Tutor AI sedang berfikir..." loading voiceLang={voiceLang} />}
+          {loading && <MessageBubble role="ai" text={languagePresentation.teachingLanguage === 'en' ? 'Tutor AI is thinking...' : 'Tutor AI sedang berfikir...'} loading voiceLang={voiceLang} subjectId={activeSubject?.id} />}
 
           <nav className="tutor-ai-tools" aria-label="Alat pembelajaran Tutor AI">
             <button

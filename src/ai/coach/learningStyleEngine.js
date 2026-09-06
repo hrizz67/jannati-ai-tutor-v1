@@ -9,11 +9,12 @@ function scoreHistory(entries = []) {
   return entries.reduce((sum, item) => sum + toNumber(item?.score, 0), 0);
 }
 
-export function getLearningStyle(profile = {}, memory = loadAIMemory()) {
-  const readingScore = scoreHistory(memory.readingHistory || []);
-  const listeningScore = scoreHistory(memory.listeningHistory || []);
-  const speakingScore = scoreHistory(memory.speakingHistory || []);
-  const writingScore = scoreHistory(memory.writingHistory || []);
+export function getLearningStyle(profile = {}, memory = null) {
+  const scopedMemory = memory || loadAIMemory(profile);
+  const readingScore = scoreHistory(scopedMemory.readingHistory || []);
+  const listeningScore = scoreHistory(scopedMemory.listeningHistory || []);
+  const speakingScore = scoreHistory(scopedMemory.speakingHistory || []);
+  const writingScore = scoreHistory(scopedMemory.writingHistory || []);
   const attemptBias = Math.max(
     toNumber(profile.totalQuestions, 0),
     toNumber(profile.studyMinutes, 0)

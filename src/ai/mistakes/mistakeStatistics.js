@@ -1,3 +1,5 @@
+import { getLocalDateKey } from '../../utils/localDate.js';
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
 }
@@ -11,14 +13,6 @@ function safeDate(value) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function dayKey(date) {
-  if (!date) return '';
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 function groupBy(items = [], keyFn = () => '') {
@@ -135,7 +129,7 @@ export function bucketMistakeByDay(records = []) {
   const map = new Map();
   rows.forEach(row => {
     const date = safeDate(row?.timestamp);
-    const key = dayKey(date || new Date());
+    const key = getLocalDateKey(date || new Date());
     if (!map.has(key)) {
       map.set(key, []);
     }

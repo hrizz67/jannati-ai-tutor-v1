@@ -112,7 +112,7 @@ assert.ok(app.includes('onAnswerChange={changeQuizAnswer}'), 'Setiap perubahan j
 assert.match(app, /disabled=\{answerChecked\}>Semak Jawapan/, 'Jawapan yang sudah direkodkan tidak boleh dihantar semula selepas resume.');
 for (const mode of ['reading', 'listening', 'speaking', 'writing']) {
   assert.ok(app.includes(`resume?.mode === '${mode}' ? resume : null`), `${mode} mesti menerima resume modnya sahaja.`);
-  assert.ok(app.includes(`clearResumeData(setResume, { mode: '${mode}' })`), `${mode} mesti memadam slotnya sahaja.`);
+  assert.ok(app.includes(`clearResumeData(setResume, { mode: '${mode}' }, learningIdentity)`), `${mode} mesti memadam slot profil aktif sahaja.`);
 }
 assert.ok(resumeCard.includes('onResume?.(resume)'), 'Butang Sambung mesti menghantar rekod resume, bukan objek acara klik.');
 assert.equal((homeDashboard.match(/<ResumePracticeCard/g) || []).length, 1, 'Dashboard mesti mempunyai satu kad resume utama sahaja.');

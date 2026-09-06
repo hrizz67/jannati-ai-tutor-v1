@@ -192,6 +192,24 @@ export function getQuestionAnswerDisplay(question = {}) {
   return accepted[0] || String(question?.answer || question?.correctAnswer || '').trim();
 }
 
+export function getCanonicalQuestionAnswers(question = {}) {
+  const accepted = getAcceptedAnswers(question);
+  const rawQuestionText = String(question?.q || question?.question || question?.stem || '');
+  const questionText = normalizeAcceptedAnswer(rawQuestionText);
+  const punctuationPrompt = /\b(?:tanda baca|tanda soal|tanda seru|tanda noktah|tanda koma)\b/.test(questionText)
+    && /_{2,}/.test(rawQuestionText);
+  if (punctuationPrompt) {
+    const punctuation = accepted.map(value => String(value).trim().match(/([?!.,;:])$/)?.[1]).find(Boolean);
+    if (punctuation) return [punctuation];
+  }
+  const categories = accepted
+    .map(value => normalizeAcceptedAnswer(value).match(/\bayat\s+(?:tanya|penyata|perintah|seruan)\b/)?.[0])
+    .filter(Boolean);
+  const asksForSentenceType = /\b(?:jenis ayat|tentukan jenis(?:nya)?|kenal pasti jenis)\b/.test(questionText)
+    || (/^\s*(?:baca|perhatikan) ayat ini\b/.test(questionText) && categories.length > 0);
+  return asksForSentenceType && categories.length ? [...new Set(categories)] : accepted;
+}
+
 const GENERIC_VARIANT_WORDS = new Set(['kata', 'nama', 'orang', 'benda', 'tempat', 'haiwan', 'makanan', 'pakaian']);
 const PERSONAL_PRONOUNS = new Set([
   'saya', 'aku', 'kami', 'kita', 'awak', 'kamu', 'anda', 'kau',
@@ -501,4 +519,4 @@ export function isAcceptedQuestionAnswer(answer, question = {}) {
   });
 }
 
-export default { getAcceptedAnswers, getQuestionAnswerDisplay, isAcceptedQuestionAnswer, normalizeAcceptedAnswer, supportsInteractiveQuestion };
+export default { getAcceptedAnswers, getCanonicalQuestionAnswers, getQuestionAnswerDisplay, isAcceptedQuestionAnswer, normalizeAcceptedAnswer, supportsInteractiveQuestion };

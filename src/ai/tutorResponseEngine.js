@@ -21,6 +21,8 @@ import {
 } from './guidedLearning/index.js';
 import { understandStudentTurn } from './conversation/studentTurnEngine.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
+import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
+import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -528,7 +530,11 @@ function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = 
     const operation = /darab|×|x\s*\d|kali/i.test(`${topic} ${stem}`) ? 'darab' : /tolak|baki|beza/i.test(`${topic} ${stem}`) ? 'tolak' : /tambah|jumlah|lagi/i.test(`${topic} ${stem}`) ? 'tambah' : /bahagi/i.test(`${topic} ${stem}`) ? 'bahagi' : 'operasi';
     return { hint: `Kenal pasti operasi ${operation}${numbers.length ? ` dan susun nombor ${numbers.join(' dan ')}` : ''}.`, steps: [`Tulis nombor penting daripada soalan: ${numbers.join(', ') || 'nombor yang diberi'}.`, `Gunakan operasi ${operation} satu langkah pada satu masa.`, 'Semak unit dan anggaran jawapan.'], example: 'Gunakan nombor dalam soalan semasa, bukan contoh lain.' };
   }
-  if (subject === 'english') return { hint: `Fokus pada perkataan petunjuk dalam ayat dan bentuk ${topic.includes('verb') ? 'kata kerja' : topic.includes('noun') ? 'kata nama' : topic.includes('adjective') ? 'kata sifat' : 'tatabahasa'} yang diminta.`, steps: ['Baca ayat dan cari subjek.', 'Kenal pasti bentuk perkataan yang diperlukan.', 'Semak susunan ayat dan tanda baca.'], example: 'Gunakan perkataan daripada ayat semasa.' };
+  if (subject === 'english') return {
+    hint: `Focus on the key word and the required ${topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form'}.`,
+    steps: ['Read the complete sentence and find the subject.', 'Identify the word form the question asks for.', 'Check the grammar and punctuation.'],
+    example: 'Use a word from the current sentence.'
+  };
   if (subject === 'sains') return { hint: `Fokus pada ciri atau proses untuk topik ${topicTitle || 'Sains'} dalam soalan ini.`, steps: ['Kenal pasti benda hidup atau bahan yang disebut.', 'Perhatikan ciri, fungsi atau perubahan yang diminta.', 'Padankan bukti dengan konsep Sains yang tepat.'], example: 'Gunakan pemerhatian daripada soalan semasa.' };
   if (subject === 'islam') return { hint: `Cari kata kunci yang menunjukkan konsep ${topicTitle || 'Pendidikan Islam'} dan pilih amalan atau fakta yang tepat.`, steps: ['Baca istilah penting dalam soalan.', 'Hubungkan istilah itu dengan pelajaran topik semasa.', 'Semak jawapan supaya tepat dan beradab.'], example: 'Gunakan contoh daripada topik semasa.' };
   if (subject === 'arab') return { hint: `Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.`, steps: ['Kenal pasti perkataan Arab yang diberi.', 'Padankan makna atau sebutan berdasarkan topik semasa.', 'Semak huruf dan baris jika ditunjukkan.'], example: 'Rujuk perkataan Arab dalam soalan semasa.' };
@@ -568,6 +574,7 @@ function buildContextualSections({
   history = []
 }) {
   const categoryRule = getCategoryRule(question, topic);
+  const isEnglishSubject = subject?.id === 'english';
   const subjectLabel = subject?.id === 'english' ? 'Bahasa Inggeris' : (subject?.title || formatSubjectName(subject?.id));
   const resolvedQuestion = questionText || getQuestionText(question);
   const resolvedInstruction = instruction || getInstruction(question);
@@ -592,6 +599,18 @@ function buildContextualSections({
   const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer });
   const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
+  const answerRevealPolicy = guided?.answerRevealPolicy || getAnswerRevealPolicy({
+    isCorrect,
+    attemptCount,
+    hintsUsed,
+    explanationMode,
+    explicitAnswerRequest: explanationMode === 'show_answer'
+  });
+  const revealAnswer = answerRevealPolicy.canRevealAnswer;
+  const protectedAnswers = [expectedAnswer, ...acceptedAnswers].filter(Boolean);
+  const answerSafeText = (candidates, fallback) => revealAnswer
+    ? normalizeText((Array.isArray(candidates) ? candidates : [candidates]).find(Boolean) || fallback)
+    : selectAnswerSafeText(candidates, protectedAnswers, fallback);
   const explanationText = normalizeText(
     coachResponse?.explanation?.explanation ||
     coachResponse?.explanation ||
@@ -606,26 +625,28 @@ function buildContextualSections({
     question?.simpleExplanation ||
     ''
   );
-  const hintText = normalizeText(
-    binaHint ||
-    subjectGuidance?.hint ||
-    guided?.hint ||
-    coachResponse?.hint?.hint ||
-    coachResponse?.hint ||
-    question?.hint ||
-    buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
-  );
+  const hintText = answerSafeText([
+    binaHint,
+    subjectGuidance?.hint,
+    guided?.hint,
+    coachResponse?.hint?.hint,
+    coachResponse?.hint,
+    question?.hint,
+    buildQuestionSpecificFallback({
+      questionText: resolvedQuestion,
+      instruction: resolvedInstruction,
+      expectedAnswer: revealAnswer ? expectedAnswer : '',
+      acceptedAnswers: revealAnswer ? acceptedAnswers : [],
+      options: resolvedOptions,
+      learnerAnswer: learner,
+      category: categoryRule.category
+    })
+  ], 'Baca soalan perlahan-lahan dan cari satu kata kunci penting.');
   const praiseText = normalizeText(
     guided?.praise ||
     coachResponse?.praise?.praise ||
     coachResponse?.praise ||
     'Bagus! Teruskan usaha kamu.'
-  );
-  const learningTipText = normalizeText(
-    binaFocus ||
-    coachResponse?.learningTip ||
-    coachResponse?.tips?.spotlight ||
-    buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
   const coachKnowledge = coachResponse?.knowledge || {};
   const steps = normalizeList(
@@ -637,13 +658,14 @@ function buildContextualSections({
     INTENT_STEPS[intent] ||
     INTENT_STEPS.general)
   );
-  const commonMistake = normalizeText(
+  const commonMistake = answerSafeText([
     isBinaAyat && !isCorrect
       ? `${binaTokens.name ? `Nama “${binaTokens.name}” sudah ada. ` : ''}${binaTokens.word ? `Kata “${binaTokens.word}” sudah ada. ` : ''}Tambah objek, tempat atau tujuan, kemudian semak huruf besar dan tanda noktah.` :
     coachKnowledge?.commonMistakes?.[0] ||
     coachResponse?.commonMistakes?.[0] ||
-    categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
-  );
+    categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : '',
+    buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
+  ], 'Semak semula perkara utama yang diminta oleh soalan.');
   const example = normalizeText(
     subjectGuidance?.example ||
     coachKnowledge?.examples?.[0] ||
@@ -702,13 +724,6 @@ function buildContextualSections({
   const safeHintLead = sanitizeChildFacingText(
     hintText || 'Cari kata kunci penting dalam soalan.'
   );
-
-  const revealAnswer =
-    Boolean(isCorrect) ||
-    explanationMode === 'correct_answer_reinforcement' ||
-    explanationMode === 'show_answer' ||
-    (intent === 'wrong_answer_coaching' && Number(attemptCount) >= 3) ||
-    Boolean(guided?.revealAnswer && intent !== 'hint');
 
   const instructionCore = resolvedInstruction.replace(/[.!?]+$/g, '').trim();
   const friendlyInstruction = instructionCore
@@ -793,11 +808,20 @@ function buildContextualSections({
   const learnerLabel = learner ? `Kamu jawab “${learner}”.` : '';
   const firstStep = steps[0] || 'baca soalan dan cari maklumat penting';
   const dialogueCandidates = intent === 'hint'
-    ? [
-        `${safeHintLead} Cuba fikir dahulu sebelum memilih jawapan.`,
-        `Mari guna satu petunjuk: ${safeHintLead} Selepas itu, pilih jawapan yang paling sesuai.`,
-        `Baik, kita tambah bantuan sedikit. ${safeHintLead} Apakah jawapan yang kamu dapat?`
-      ]
+    ? revealAnswer && expectedAnswer
+      ? [
+          `Selepas tiga cubaan, kita semak bersama. Jawapannya ialah ${expectedAnswer}. ${simpleExplanationText || 'Jawapan itu menepati kehendak soalan.'}`,
+          `Sekarang jawapan boleh dipaparkan: ${expectedAnswer}. Mari lihat sebabnya bersama-sama.`
+        ]
+      : answerRevealPolicy.stage === 'strong_hint'
+        ? [
+            `Petunjuk lebih jelas: ${safeHintLead} ${guided?.guidingQuestion || `Mulakan dengan ${firstStep}.`}`,
+            `Mari kecilkan langkahnya. ${firstStep}. Kemudian semak semula jawapan kamu.`
+          ]
+        : [
+            `${safeHintLead} Cuba fikir dahulu sebelum memilih jawapan.`,
+            `Mari guna satu petunjuk: ${safeHintLead} Selepas itu, pilih jawapan yang paling sesuai.`
+          ]
     : intent === 'wrong_answer_coaching'
       ? [
           `${learnerLabel} Belum tepat, tetapi kita boleh baiki bersama. ${commonMistake || 'Semak semula maksud soalan.'}`,
@@ -821,16 +845,54 @@ function buildContextualSections({
               `Mari kita lihat bahagian yang paling penting dahulu: ${firstStep}.`,
               `Baik, kita belajar melalui soalan ini. Cuba beritahu saya bahagian yang paling mengelirukan.`
             ];
-  const shortText = sanitizeTutorText(pickFreshDialogue(dialogueCandidates, history));
+  const englishDialogueCandidates = intent === 'hint'
+    ? revealAnswer && expectedAnswer
+      ? [
+          `After three attempts, let us check it together. The answer is ${expectedAnswer}. It matches what the question asks for.`,
+          `The answer can now be shown: ${expectedAnswer}. Let us look at the reason together.`
+        ]
+      : answerRevealPolicy.stage === 'strong_hint'
+        ? [
+            `Here is a stronger clue: ${safeHintLead} ${guided?.guidingQuestion || `Start with this step: ${firstStep}.`}`,
+            `Let us make the task smaller. ${firstStep}. Then check your answer again.`
+          ]
+        : [
+            `${safeHintLead} Think before choosing an answer.`,
+            `Let us use one clue: ${safeHintLead} Then choose the best answer.`
+          ]
+    : intent === 'wrong_answer_coaching'
+      ? [
+          `${learner ? `You answered “${learner}”. ` : ''}That is not correct yet, but we can improve it together. ${commonMistake}`,
+          `${learner ? `You answered “${learner}”. ` : ''}I can see your thinking. Now check this: ${guided?.guidingQuestion || firstStep}`,
+          `That is okay. Let us try another way. ${commonMistake || safeHintLead}`
+        ]
+      : intent === 'correct_answer_reinforcement'
+        ? [
+            `${coachMessage} ${revealAnswer && expectedAnswer ? `Your answer, ${expectedAnswer}, matches the question.` : 'Can you tell me how you found it?'}`,
+            'Yes, that is correct. Use the same clue for the next question.',
+            `Well done. ${revealAnswer && expectedAnswer ? `The answer is ${expectedAnswer}.` : ''} Let us take the next step.`
+          ]
+        : intent === 'question_help'
+          ? [
+              `Let us break this question into a smaller step. Start by doing this: ${firstStep}.`,
+              `First, check ${resolvedInstruction || 'what the question asks for'}. Then we will compare your answer.`,
+              `I understand that you need an explanation. ${safeHintLead}`
+            ]
+          : [
+              'Let us understand this question together, one step at a time.',
+              `Start with the most important step: ${firstStep}.`,
+              'Tell me which part of the question is confusing.'
+            ];
+  const shortText = sanitizeTutorText(pickFreshDialogue(isEnglishSubject ? englishDialogueCandidates : dialogueCandidates, history));
 
   const text = sanitizeTutorText([
     summary,
     isHintIntent ? hint : '',
     !isHintIntent && intent === 'wrong_answer_coaching' ? commonMistake || whyCorrect : (!isHintIntent ? whyCorrect : ''),
     steps[0] ? `Langkah pertama: ${steps[0]}.` : '',
-    !isHintIntent && example ? `Contoh mudah: ${example}.` : '',
-    !isHintIntent && memoryTip ? `Tip ingatan: ${memoryTip}.` : '',
-    !isHintIntent && revealAnswer && expectedAnswer ? `Jawapan betul: ${expectedAnswer}.` : '',
+    !isHintIntent && revealAnswer && example ? `Contoh mudah: ${example}.` : '',
+    !isHintIntent && revealAnswer && memoryTip ? `Tip ingatan: ${memoryTip}.` : '',
+    revealAnswer && expectedAnswer ? `Jawapan betul: ${expectedAnswer}.` : '',
     coachMessage,
     !isHintIntent && guided?.nextAction ? `Seterusnya: ${guided.nextAction}.` : ''
   ].filter(Boolean).join(' ')) || DEFAULT_FALLBACK;
@@ -839,12 +901,12 @@ function buildContextualSections({
     summary,
     whyCorrect,
     hint,
-    steps,
+    steps: revealAnswer ? steps : steps.slice(0, answerRevealPolicy.stage === 'strong_hint' ? 2 : 1),
     commonMistake,
-    example,
-    memoryTip,
+    example: revealAnswer ? example : '',
+    memoryTip: revealAnswer ? memoryTip : '',
     correctAnswer: revealAnswer ? expectedAnswer : '',
-    acceptedAnswers,
+    acceptedAnswers: revealAnswer ? acceptedAnswers : [],
     coachMessage,
     learningObjective,
     questionText: resolvedQuestion,
@@ -863,8 +925,8 @@ function buildContextualSections({
     options: resolvedOptions,
     subject: subjectLabel,
     topic: topicLabel,
-    expectedAnswer,
-    acceptedAnswers,
+    expectedAnswer: revealAnswer ? expectedAnswer : '',
+    acceptedAnswers: revealAnswer ? acceptedAnswers : [],
     learnerAnswer: learner,
     isCorrect: Boolean(isCorrect),
     attemptCount: Number(attemptCount) || 0,
@@ -1079,7 +1141,7 @@ export async function getTutorResponse(options = {}) {
     adaptiveRecommendation = null,
     prompt = '',
     intent = '',
-    locale = 'ms-MY',
+    locale = '',
     history = [],
     adaptiveProfile = null,
     studyPlan = null,
@@ -1092,6 +1154,8 @@ export async function getTutorResponse(options = {}) {
 
   const studentProfile = student || profile || adaptiveProfile || {};
   const subjectContext = getSubjectContext(subject || {}, subjectId);
+  const languagePresentation = getSubjectLanguagePresentation(subjectContext);
+  const resolvedLocale = locale || languagePresentation.contentLocale;
   const topicContext = getTopicContext(topic || {}, topicId);
   const resolvedQuestion = question || {};
   const studentName = getStudentDisplayName(studentProfile, 'Murid');
@@ -1166,7 +1230,7 @@ export async function getTutorResponse(options = {}) {
           topic: topicContext,
           prompt: normalizeText(prompt, ''),
           intent: resolvedIntent,
-          locale,
+          locale: resolvedLocale,
           historyCount: Array.isArray(history) ? history.length : 0,
           attemptCount: Number(attemptCount) || 0,
           hintsUsed: Number(hintsUsed) || 0,
@@ -1327,10 +1391,10 @@ export async function getTutorResponse(options = {}) {
     questionText: resolvedQuestionText,
     instruction: resolvedInstruction,
     options: resolvedOptions,
-    expectedAnswer: expected,
+    expectedAnswer: guided.answerRevealPolicy.canRevealAnswer ? expected : '',
     learnerAnswer: answerText,
-    acceptedAnswers,
-    correctAnswer: expected,
+    acceptedAnswers: guided.answerRevealPolicy.canRevealAnswer ? acceptedAnswers : [],
+    correctAnswer: guided.answerRevealPolicy.canRevealAnswer ? expected : '',
     isCorrect: resolvedCorrect,
     contextUsed: contextBundle.contextUsed,
     sections: contextBundle.sections,
@@ -1344,6 +1408,9 @@ export async function getTutorResponse(options = {}) {
     learnerAnswerText: answerText,
     tutorMode: guided.mode,
     supportStage: guided.stage,
+    answerRevealPolicy: guided.answerRevealPolicy,
+    locale: resolvedLocale,
+    languagePresentation,
     misconception: guided.misconception,
     guidingQuestion: guided.guidingQuestion,
     quickReplies: conversationalReply?.quickReplies?.length

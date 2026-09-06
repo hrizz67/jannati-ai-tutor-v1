@@ -4,6 +4,9 @@ import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { dedupeContent, dedupeSections } from '../../utils/dedupeText.js';
+import { getAnswerRevealPolicy } from '../../ai/policy/answerRevealPolicy.js';
+import { getSubjectLanguagePresentation } from '../../ai/voice/voiceConfig.js';
+import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const GENERIC_TEXTS = [
@@ -134,24 +137,24 @@ function getPronounExamples(pronoun) {
   return examples[pronoun] || [];
 }
 
-function renderListSection(title, items) {
+function renderListSection(title, items, subjectId = '') {
   const filtered = safeList(items).filter(item => !isGenericText(item));
   if (!filtered.length) return null;
   return (
     <section className="explain-section">
       <h3>{title}</h3>
-      <ul>{filtered.map((item, index) => <li key={`${title}-${index}`}>{item}</li>)}</ul>
+      <ul>{filtered.map((item, index) => <li key={`${title}-${index}`}><SubjectLanguageText text={item} subjectId={subjectId} teaching /></li>)}</ul>
     </section>
   );
 }
 
-function renderTextSection(title, value) {
+function renderTextSection(title, value, subjectId = '') {
   const text = pickMeaningfulText(value);
   if (!text) return null;
   return (
     <section className="explain-section">
       <h3>{title}</h3>
-      <p>{text}</p>
+      <SubjectLanguageText as="p" text={text} subjectId={subjectId} teaching />
     </section>
   );
 }
@@ -182,9 +185,17 @@ export default function AITeacherModal({ open, data, context = null, character =
   const characterName = character === 'jati' ? 'Jati' : 'Janna';
 
   const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
-  const pronounContext = getPronounContext(context);
   const subjectId = String(context?.subjectId || data.subjectId || '').toLowerCase();
   const isEnglish = subjectId === 'english';
+  const languagePresentation = getSubjectLanguagePresentation(subjectId);
+  const contextLabel = `${context?.subjectTitle || (isEnglish ? 'All subjects' : 'Semua subjek')}${context?.topicTitle ? ` · ${context.topicTitle}` : ''}`;
+  const answerRevealPolicy = data.answerRevealPolicy || getAnswerRevealPolicy({
+    status: data.status,
+    isCorrect: data.showCorrectAnswer && data.status === 'correct',
+    attemptCount: data.attemptCount || context?.attemptCount || 0,
+    explanationMode: context?.explanationMode
+  });
+  const pronounContext = answerRevealPolicy.canRevealAnswer ? getPronounContext(context) : null;
   const labels = isEnglish
     ? { offline: `${characterName} Offline Tutor`, title: 'Teach Me', focus: 'Learning focus', simple: 'Simple explanation', hint: 'Hint', steps: 'Step by step', additional: 'View more help', examples: 'Examples', extra: 'More examples', mistakes: 'Common mistakes', memory: 'Memory tip', practice: 'Try again', train: 'Practise', close: 'Close', read: 'Read lesson' }
     : { offline: `${characterName} AI Luar Talian`, title: 'Ajar Saya', focus: 'Fokus pembelajaran', simple: 'Penerangan mudah', hint: 'Petunjuk', steps: 'Langkah demi langkah', additional: 'Lihat bahan tambahan', examples: 'Contoh', extra: 'Contoh lain', mistakes: 'Kesilapan biasa', memory: 'Tip ingatan', practice: 'Latih semula', train: 'Latih', close: 'Tutup', read: 'Baca Ajaran' };
@@ -199,7 +210,9 @@ export default function AITeacherModal({ open, data, context = null, character =
   );
   const focus = isEnglish && isLikelyMalay(rawFocus) ? 'Identify the language skill asked in the question.' : rawFocus;
   const summary = pronounContext?.explanation || pickLanguageText(isEnglish, sections.simpleExplanation, data.simpleExplanation, sections.summary, data.explanation) || (isEnglish ? 'Read the sentence and identify what the question asks for.' : 'Baca ayat dan kenal pasti perkara yang ditanya.');
-  const whyCorrect = pronounContext?.explanation || pickLanguageText(isEnglish, sections.whyCorrect, data.explanation, data.simpleExplanation) || (isEnglish ? 'The answer matches the meaning of the sentence.' : (context?.expectedAnswer ? `Mari hubungkan jawapan ${context.expectedAnswer} dengan soalan.` : ''));
+  const whyCorrect = answerRevealPolicy.canRevealAnswer
+    ? (pronounContext?.explanation || pickLanguageText(isEnglish, sections.whyCorrect, data.explanation, data.simpleExplanation) || (isEnglish ? 'The answer matches the meaning of the sentence.' : (context?.expectedAnswer ? `Mari hubungkan jawapan ${context.expectedAnswer} dengan soalan.` : '')))
+    : '';
   const hint = pickLanguageText(isEnglish, sections.hint, data.hint) || (isEnglish ? 'Look for the key word or phrase in the question.' : 'Cari kata kunci penting dalam soalan.');
   const steps = safeList(sections.steps || data.steps);
   const languageFilter = item => !isEnglish || !isLikelyMalay(item);
@@ -244,7 +257,7 @@ export default function AITeacherModal({ open, data, context = null, character =
             <div>
               <p className="eyebrow">{labels.offline}</p>
               <h2 id="ai-teacher-title">{labels.title}</h2>
-              <span className="modal-context-badge">{context?.subjectTitle || 'Semua subjek'}{context?.topicTitle ? ` · ${context.topicTitle}` : ''}</span>
+              <SubjectLanguageText as="span" className="modal-context-badge" text={contextLabel} subjectId={subjectId} teaching />
             </div>
           </div>
           <button
@@ -256,33 +269,38 @@ export default function AITeacherModal({ open, data, context = null, character =
           >
             ×
           </button>
-          <p className="ai-modal-context-line" id="ai-teacher-description">
-            {pickMeaningfulText(summary, whyCorrect, coachMessage, 'Belajar langkah demi langkah dengan Janna AI.')}
-          </p>
+          <SubjectLanguageText
+            as="p"
+            className="ai-modal-context-line"
+            id="ai-teacher-description"
+            text={pickMeaningfulText(summary, whyCorrect, coachMessage, isEnglish ? 'Learn one step at a time with Janna AI.' : 'Belajar langkah demi langkah dengan Janna AI.')}
+            subjectId={subjectId}
+            teaching
+          />
         </div>
 
         <div className="ai-explain-body ai-teacher-body" tabIndex="-1">
-          <VoiceButton text={voiceText} lang={context?.sourceLanguage} label={labels.read} title={labels.read} className="voice-inline" />
+          <VoiceButton text={voiceText} lang={languagePresentation.teachingLocale} label={labels.read} title={labels.read} className="voice-inline" />
           <section className="explain-section explain-context-card" aria-label="Fokus pembelajaran">
             <h3>{labels.focus}</h3>
-            <p>{focus}</p>
+            <SubjectLanguageText as="p" text={focus} subjectId={subjectId} teaching />
           </section>
-          {renderTextSection(labels.simple, summary)}
+          {renderTextSection(labels.simple, summary, subjectId)}
           <MascotCard character={character} mood="teaching" size="md" animation="gentle" message={coachMessage} />
 
-          {renderTextSection(labels.hint, hint)}
-          {renderListSection(labels.steps, uniqueSteps)}
+          {renderTextSection(labels.hint, hint, subjectId)}
+          {renderListSection(labels.steps, uniqueSteps, subjectId)}
           <details className="explain-details">
             <summary>{labels.additional}</summary>
-            {renderListSection(labels.examples, uniqueExamples)}
-            {renderListSection(labels.extra, uniqueExtraExamples)}
-            {renderListSection(labels.mistakes, uniqueMistakes)}
-            {renderTextSection(labels.memory, memoryTip)}
+            {renderListSection(labels.examples, uniqueExamples, subjectId)}
+            {renderListSection(labels.extra, uniqueExtraExamples, subjectId)}
+            {renderListSection(labels.mistakes, uniqueMistakes, subjectId)}
+            {renderTextSection(labels.memory, memoryTip, subjectId)}
           </details>
 
           <div className="explain-answer-box">
             <span>{labels.practice}</span>
-            <b style={{ whiteSpace: 'pre-line' }}>{practicePrompt}</b>
+            <SubjectLanguageText as="b" text={practicePrompt} subjectId={subjectId} teaching style={{ whiteSpace: 'pre-line' }} />
           </div>
         </div>
 

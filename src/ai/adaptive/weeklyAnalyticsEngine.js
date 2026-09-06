@@ -1,4 +1,5 @@
 import { loadProfile } from './storageEngine.js';
+import { addLocalDateKeyDays, getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
@@ -9,27 +10,17 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
 function normalizeDate(value) {
   if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : localDateKey(date);
+  return getLocalDateKey(value) || null;
 }
 
 function buildDateRange(days = 7) {
   const count = Math.max(1, Math.floor(toNumber(days, 7)));
-  const end = new Date();
+  const end = getLocalDateKey();
   const dates = [];
   for (let index = count - 1; index >= 0; index -= 1) {
-    const current = new Date(end);
-    current.setDate(end.getDate() - index);
-    dates.push(localDateKey(current));
+    dates.push(addLocalDateKeyDays(end, -index));
   }
   return dates;
 }
@@ -165,8 +156,8 @@ function getTrendDirection(daily = []) {
 export function getWeeklySummary(profile = {}, options = {}) {
   const days = Math.max(1, Math.floor(toNumber(options.days, 7)));
   const daily = getLastNDaysActivity(profile, days);
-  const startDate = daily[0]?.date || localDateKey();
-  const endDate = daily[daily.length - 1]?.date || localDateKey();
+  const startDate = daily[0]?.date || getLocalDateKey();
+  const endDate = daily[daily.length - 1]?.date || getLocalDateKey();
   const totals = daily.reduce((acc, day) => {
     acc.questions += day.questions;
     acc.correct += day.correct;

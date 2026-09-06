@@ -4,7 +4,10 @@ import fs from 'node:fs';
 const appSource = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
 const finishSource = fs.readFileSync(new URL('../../src/components/FinishScreen.jsx', import.meta.url), 'utf8');
 const iconSource = fs.readFileSync(new URL('../../src/components/IconGlyph.jsx', import.meta.url), 'utf8');
-const cssSource = fs.readFileSync(new URL('../../src/styles/style.css', import.meta.url), 'utf8');
+const cssSource = [
+  fs.readFileSync(new URL('../../src/styles/style.css', import.meta.url), 'utf8'),
+  fs.readFileSync(new URL('../../src/styles/features/finish-screen.css', import.meta.url), 'utf8')
+].join('\n');
 
 const finishRouteStart = appSource.indexOf("if (screen === 'finish')");
 const finishRouteEnd = appSource.indexOf("if (screen === 'reading')", finishRouteStart);

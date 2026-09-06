@@ -394,13 +394,13 @@ export default function IconGlyph({
   decorative = false,
   ...props
 }) {
+  const iconId = React.useId().replace(/:/g, '');
   const imageSrc = IMAGE_ICONS[name];
   if (imageSrc) {
     const imageProps = { ...props };
     delete imageProps.size;
     return <img src={imageSrc} className={`icon-glyph icon-glyph-3d ${className}`.trim()} alt={decorative || !title ? '' : title} aria-hidden={decorative || !title ? 'true' : undefined} title={title || undefined} data-icon-name={name} data-motion={motion !== 'none' ? motion : undefined} data-active={active ? 'true' : undefined} {...imageProps} />;
   }
-  const iconId = React.useId().replace(/:/g, '');
   const content = scopeSvgIds(ICON_PATHS[name] || ICON_PATHS.spark, iconId);
   const activeClass = active ? 'icon-active' : '';
   const decorativeProps = decorative || !title

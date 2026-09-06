@@ -1,3 +1,6 @@
+import { getLocalDateKey } from '../../utils/localDate.js';
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
+
 export const GAMIFICATION_STORAGE_KEY = 'jannati.gamification.profile';
 export const GAMIFICATION_VERSION = 1;
 
@@ -62,7 +65,7 @@ function migrateGamificationProfile(rawProfile = {}) {
 
   merged.version = GAMIFICATION_VERSION;
   merged.updatedAt = toIsoDate(rawProfile.updatedAt, base.updatedAt);
-  merged.lastRewardDate = toIsoDate(rawProfile.lastRewardDate, base.lastRewardDate).slice(0, 10);
+  merged.lastRewardDate = getLocalDateKey(rawProfile.lastRewardDate) || base.lastRewardDate;
   merged.xp = Math.max(0, Number(merged.xp) || 0);
   merged.level = Math.max(1, Number(merged.level) || 1);
   merged.coins = Math.max(0, Number(merged.coins) || 0);
@@ -76,31 +79,45 @@ function migrateGamificationProfile(rawProfile = {}) {
   return merged;
 }
 
-export function loadGamificationProfile() {
+function createScopedDefault(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  const fresh = clone(createDefaultGamificationProfile());
+  return identity.explicit ? stampLearningIdentity(fresh, identity) : fresh;
+}
+
+export function loadGamificationProfile(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
   if (!hasStorage()) {
-    return clone(createDefaultGamificationProfile());
+    return createScopedDefault(identity);
   }
 
   try {
     const raw = localStorage.getItem(GAMIFICATION_STORAGE_KEY);
-    if (!raw) return clone(createDefaultGamificationProfile());
+    if (!raw) return createScopedDefault(identity);
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return clone(createDefaultGamificationProfile());
-    return migrateGamificationProfile(parsed);
+    if (!parsed || typeof parsed !== 'object') return createScopedDefault(identity);
+    if (getLearningIdentityMismatch(parsed, identity)) return createScopedDefault(identity);
+    const migrated = migrateGamificationProfile(parsed);
+    return identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
   } catch {
-    return clone(createDefaultGamificationProfile());
+    return createScopedDefault(identity);
   }
 }
 
-export function saveGamificationProfile(profile = createDefaultGamificationProfile()) {
-  const safeProfile = migrateGamificationProfile(profile);
+export function saveGamificationProfile(profile = createDefaultGamificationProfile(), identityInput = profile) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(profile, identity)) return loadGamificationProfile(identity);
+  const migrated = migrateGamificationProfile(profile);
+  const safeProfile = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
 
   if (hasStorage()) {
     try {
       const currentRaw = localStorage.getItem(GAMIFICATION_STORAGE_KEY);
       if (currentRaw) {
         try {
-          const current = migrateGamificationProfile(JSON.parse(currentRaw));
+          const currentParsed = JSON.parse(currentRaw);
+          if (getLearningIdentityMismatch(currentParsed, identity)) return safeProfile;
+          const current = migrateGamificationProfile(currentParsed);
           const currentUpdatedAt = new Date(current.updatedAt || 0).getTime();
           const incomingUpdatedAt = new Date(safeProfile.updatedAt || 0).getTime();
           if (currentUpdatedAt > incomingUpdatedAt) {

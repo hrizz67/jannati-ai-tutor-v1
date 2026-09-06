@@ -1,14 +1,8 @@
 import { loadMemory, saveMemory } from './memoryStorage.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
-}
-
-function localDayKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function toNumber(value, fallback = 0) {
@@ -33,10 +27,10 @@ function summarizeSubjects(profile = {}) {
   }));
 }
 
-export function createDailySnapshot(profile = {}, memory = loadMemory(), timestamp = new Date()) {
-  const next = clone(memory);
+export function createDailySnapshot(profile = {}, memory = null, timestamp = new Date()) {
+  const next = clone(memory || loadMemory(profile));
   const snapshots = ensureSnapshots(next);
-  const date = localDayKey(timestamp);
+  const date = getLocalDateKey(timestamp);
   const answeredAt = timestamp instanceof Date ? timestamp.toISOString() : new Date(timestamp || Date.now()).toISOString();
   const totalQuestions = toNumber(profile.totalQuestions, 0);
   const correctQuestions = toNumber(profile.correctQuestions, 0);
@@ -68,12 +62,12 @@ export function createDailySnapshot(profile = {}, memory = loadMemory(), timesta
 }
 
 export function getDailySnapshot(memory = loadMemory(), date = new Date()) {
-  const day = localDayKey(date);
+  const day = getLocalDateKey(date);
   return (memory.dailySnapshots || []).find(item => item?.date === day) || null;
 }
 
-export function saveDailySnapshot(profile = {}, memory = loadMemory(), timestamp = new Date()) {
-  return saveMemory(createDailySnapshot(profile, memory, timestamp));
+export function saveDailySnapshot(profile = {}, memory = null, timestamp = new Date()) {
+  return saveMemory(createDailySnapshot(profile, memory, timestamp), profile);
 }
 
 export default {

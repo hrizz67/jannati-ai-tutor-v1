@@ -1,3 +1,5 @@
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
+
 const MEMORY_STORAGE_KEY = 'jannati.memory.student';
 const MEMORY_VERSION = 1;
 
@@ -85,31 +87,45 @@ function toEpoch(value) {
   return Number.isFinite(time) ? time : 0;
 }
 
-export function loadMemory() {
+function createScopedDefault(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  const fresh = clone(createDefaultMemory());
+  return identity.explicit ? stampLearningIdentity(fresh, identity) : fresh;
+}
+
+export function loadMemory(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
   if (!hasStorage()) {
-    return clone(createDefaultMemory());
+    return createScopedDefault(identity);
   }
 
   try {
     const raw = localStorage.getItem(MEMORY_STORAGE_KEY);
-    if (!raw) return clone(createDefaultMemory());
+    if (!raw) return createScopedDefault(identity);
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return clone(createDefaultMemory());
-    return migrateMemory(parsed);
+    if (!parsed || typeof parsed !== 'object') return createScopedDefault(identity);
+    if (getLearningIdentityMismatch(parsed, identity)) return createScopedDefault(identity);
+    const migrated = migrateMemory(parsed);
+    return identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
   } catch {
-    return clone(createDefaultMemory());
+    return createScopedDefault(identity);
   }
 }
 
-export function saveMemory(memory = createDefaultMemory()) {
-  const safeMemory = migrateMemory(memory);
+export function saveMemory(memory = createDefaultMemory(), identityInput = memory) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(memory, identity)) return loadMemory(identity);
+  const migrated = migrateMemory(memory);
+  const safeMemory = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
 
   if (hasStorage()) {
     try {
       const currentRaw = localStorage.getItem(MEMORY_STORAGE_KEY);
       if (currentRaw) {
         try {
-          const current = migrateMemory(JSON.parse(currentRaw));
+          const currentParsed = JSON.parse(currentRaw);
+          if (getLearningIdentityMismatch(currentParsed, identity)) return safeMemory;
+          const current = migrateMemory(currentParsed);
           if (toEpoch(current.updatedAt) > toEpoch(safeMemory.updatedAt)) {
             return current;
           }
@@ -136,7 +152,7 @@ export function hasProcessedAnswer(memory = loadMemory(), answerKey = '') {
   return getProcessedAnswerKeys(memory).includes(answerKey);
 }
 
-export function markProcessedAnswer(memory = loadMemory(), answerKey = '') {
+export function markProcessedAnswer(memory = loadMemory(), answerKey = '', identityInput = memory) {
   const safeKey = typeof answerKey === 'string' ? answerKey.trim() : '';
   if (!safeKey) return migrateMemory(memory);
 
@@ -145,7 +161,7 @@ export function markProcessedAnswer(memory = loadMemory(), answerKey = '') {
   processed.add(safeKey);
   safeMemory.processedAnswerKeys = Array.from(processed).slice(-500);
   safeMemory.updatedAt = new Date().toISOString();
-  return saveMemory(safeMemory);
+  return saveMemory(safeMemory, identityInput);
 }
 
 export function resetMemory() {

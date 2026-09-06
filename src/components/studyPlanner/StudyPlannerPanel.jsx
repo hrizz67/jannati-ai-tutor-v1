@@ -39,16 +39,20 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
     );
   }
 
+  if (plannerError) {
+    return (
+      <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
+        <h2 id={titleId}>Pelan Belajar</h2>
+        <p className="memory-last" role="status">Pelan belajar tidak tersedia buat masa ini.</p>
+        <p>Cuba semula selepas data pembelajaran selesai dimuat atau selepas latihan seterusnya.</p>
+      </section>
+    );
+  }
+
   return (
     <section className={`card study-planner-panel ${className}`.trim()} aria-labelledby={titleId}>
       <h2 id={titleId}>Pelan Belajar</h2>
       <p className="memory-last" role="status">{buildSectionMessage(planner)}</p>
-      {plannerError && (
-        <p className="memory-last" role="status">
-          {safeText(plannerError.message, 'Pelan belajar tidak dapat dijana buat masa ini.')}
-        </p>
-      )}
-
       <div className="mastery-summary-grid study-planner-summary">
         <div><b>{formatDurationLabel(availableMinutes)}</b><span>Masa Belajar</span></div>
         <div><b>{dailyBlocks.length}</b><span>Blok Hari Ini</span></div>

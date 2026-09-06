@@ -1,16 +1,9 @@
 import { formatSubjectName, formatTopicName } from '../../utils/displayFormatter.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function toNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
-}
-
-function localDayKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function createBadge(id, label, reason, earnedAt) {
@@ -22,7 +15,7 @@ function sortByEarnedAtDesc(rows = []) {
 }
 
 export function buildBadges(profile = {}, memory = {}, context = {}) {
-  const today = localDayKey(context.today || new Date());
+  const today = getLocalDateKey(context.today || new Date());
   const badges = [];
   const totalQuestions = toNumber(profile.totalQuestions, 0);
   const currentStreak = toNumber(profile.streak, 0);

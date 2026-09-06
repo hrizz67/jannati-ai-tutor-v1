@@ -4,17 +4,10 @@ import { buildDailyReward } from './dailyRewardEngine.js';
 import { calculateGamificationXP } from './xpEngine.js';
 import { calculateGamificationCoins } from './coinEngine.js';
 import { updateGamificationStreak } from './streakEngine.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
-}
-
-function localDayKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 export function buildGamificationReward(profile = {}, memory = {}, context = {}, existingProfile = {}) {
@@ -27,7 +20,7 @@ export function buildGamificationReward(profile = {}, memory = {}, context = {},
     gamificationProfile: streakProfile
   });
   const dailyRewards = buildDailyReward(profile, context, streakProfile.dailyRewards || []);
-  const today = localDayKey(context.today || new Date());
+  const today = getLocalDateKey(context.today || new Date());
   const currentReward = dailyRewards.find(item => item?.date === today) || null;
   const provisionalContext = {
     ...context,
@@ -83,7 +76,7 @@ export function buildGamificationEventKey(event = {}, context = {}) {
   const questionId = String(event.questionId || context.questionId || 'question');
   const attemptNumber = Number.isFinite(event.attemptNumber) ? Math.max(1, Math.floor(event.attemptNumber)) : Math.max(1, Math.floor(Number(context.attemptNumber) || 1));
   const date = event.date || event.answeredAt || context.today || context.endedAt || context.completedAt || '';
-  const datePart = date ? new Date(date).toISOString().slice(0, 10) : '';
+  const datePart = date ? getLocalDateKey(date) : '';
 
   if (eventType === 'daily-reward') {
     return `daily-reward::${datePart || 'today'}`;

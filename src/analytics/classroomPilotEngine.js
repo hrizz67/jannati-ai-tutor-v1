@@ -1,3 +1,5 @@
+import { addLocalDateKeyDays, getLocalDateKey, getLocalDayBounds } from '../utils/localDate.js';
+
 export const CLASSROOM_PILOT_SCHEMA_VERSION = 1;
 
 export const DEFAULT_CLASSROOM_PILOT_OPTIONS = Object.freeze({
@@ -35,21 +37,6 @@ function safeIso(value, fallback = '') {
   return Number.isNaN(date.getTime()) ? fallback : date.toISOString();
 }
 
-function dateKey(value) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function subtractDays(value, days) {
-  const date = new Date(value);
-  date.setDate(date.getDate() - Math.max(0, days));
-  return date;
-}
-
 function withinWindow(value, start, end) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return false;
@@ -58,11 +45,11 @@ function withinWindow(value, start, end) {
 
 function normalizeOptions(options = {}) {
   const generatedAt = safeIso(options.generatedAt || new Date(), new Date().toISOString());
-  const end = new Date(generatedAt);
   const windowDays = Math.max(1, Math.floor(toNumber(options.windowDays, DEFAULT_CLASSROOM_PILOT_OPTIONS.windowDays)));
-  const start = subtractDays(end, windowDays - 1);
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
+  const endKey = getLocalDateKey(generatedAt);
+  const startKey = addLocalDateKeyDays(endKey, -(windowDays - 1));
+  const start = getLocalDayBounds(startKey).start;
+  const end = getLocalDayBounds(endKey).end;
   return {
     generatedAt,
     windowDays,
@@ -100,7 +87,7 @@ function normalizeLearningEntry(entry = {}, index = 0) {
     correct: Boolean(entry.correct),
     timeSpent: Math.max(0, toNumber(entry.timeSpent ?? entry.timeTaken ?? entry.duration, 0)),
     answeredAt,
-    day: dateKey(answeredAt),
+    day: getLocalDateKey(answeredAt),
     usedHint: Boolean(entry.usedHint ?? toNumber(entry.hintsUsed, 0) > 0),
     usedExplain: Boolean(entry.usedExplain ?? toNumber(entry.explanationsUsed, 0) > 0),
     hasSupportSignal: hasHintSignal || hasExplainSignal,
@@ -384,8 +371,8 @@ export function buildClassroomPilotReport({ adaptiveProfile = {}, participantCod
       participantCode: normalizeParticipantCode(participantCode),
       generatedAt: normalizedOptions.generatedAt,
       window: {
-        startDate: dateKey(normalizedOptions.start),
-        endDate: dateKey(normalizedOptions.end),
+        startDate: getLocalDateKey(normalizedOptions.start),
+        endDate: getLocalDateKey(normalizedOptions.end),
         days: normalizedOptions.windowDays
       }
     },

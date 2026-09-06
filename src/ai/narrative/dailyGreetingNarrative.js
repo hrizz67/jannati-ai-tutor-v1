@@ -1,24 +1,17 @@
+import { getCalendarDayDifference, getLocalDateKey } from '../../utils/localDate.js';
+
 function toNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
 }
 
-function localDayKey(value) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
 function getDaysSinceLastStudy(profile = {}, memory = {}) {
   const lastStudy = profile.lastStudyDate || profile.lastAnsweredAt || memory.adaptive?.lastStudyDate || memory.lastAnsweredAt || null;
   if (!lastStudy) return null;
-  const today = localDayKey(new Date());
-  const last = localDayKey(lastStudy);
+  const today = getLocalDateKey(new Date());
+  const last = getLocalDateKey(lastStudy);
   if (!today || !last) return null;
-  const diff = new Date(`${today}T00:00:00`).getTime() - new Date(`${last}T00:00:00`).getTime();
-  return Math.max(0, Math.round(diff / 86400000));
+  return Math.max(0, getCalendarDayDifference(last, today));
 }
 
 function getTimeGreeting(timeOfDay = new Date()) {
