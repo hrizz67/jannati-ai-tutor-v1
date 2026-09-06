@@ -186,6 +186,8 @@ export default function HomeDashboard(props) {
     onOpenParent,
     onOpenUasa,
     onOpenAi,
+    onOpenAdmin,
+    isAdmin,
     onReset,
     onExportBetaReport,
     onImportLearningData,
@@ -444,6 +446,7 @@ export default function HomeDashboard(props) {
                 <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
               </span>
               <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout} disabled={!cloudSyncActionEnabled}>{cloudSyncPresentation.label}</button>
+              {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Admin Premium</button> : null}
               <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
               {hasAccountSession
                 ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>

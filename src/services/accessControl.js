@@ -25,15 +25,14 @@ export function normalizeAccessStatus(status) {
 
 export function isPremiumAccess(access) {
   if (!access || normalizeAccessStatus(access.access_status) !== ACCESS_STATUS.PREMIUM) return false;
-  if (!access.access_expires_at) return true;
-  return new Date(access.access_expires_at).getTime() > Date.now();
+  return access.server_verified === true && access.server_access_allowed === true;
 }
 
 export function formatAccessExpiry(access) {
   if (!access?.access_expires_at) return '';
   const expiry = new Date(access.access_expires_at);
   if (Number.isNaN(expiry.getTime())) return '';
-  return expiry.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+  return expiry.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
 }
 
 export function getAccessLabel(access) {

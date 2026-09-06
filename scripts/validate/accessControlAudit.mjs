@@ -12,9 +12,9 @@ import fs from 'node:fs';
 const today = '2026-08-08';
 assert.equal(FREE_DAILY_QUESTION_LIMIT, 10);
 assert.equal(isPremiumAccess({ access_status: 'free' }), false);
-assert.equal(isPremiumAccess({ access_status: 'premium', access_expires_at: '2099-01-01T00:00:00Z' }), true);
+assert.equal(isPremiumAccess({ access_status: 'premium', access_expires_at: '2099-01-01T00:00:00Z', server_verified: true, server_access_allowed: true }), true);
 assert.equal(isPremiumAccess({ access_status: 'premium', access_expires_at: '2020-01-01T00:00:00Z' }), false);
-assert.match(getAccessLabel({ access_status: 'premium', access_expires_at: '2099-01-01T00:00:00Z' }), /Premium aktif.*Tamat/);
+assert.match(getAccessLabel({ access_status: 'premium', access_expires_at: '2099-01-01T00:00:00Z', server_verified: true, server_access_allowed: true }), /Premium aktif.*Tamat/);
 assert.equal(getAccessFeatureLabel('tutorAi'), 'Tutor AI');
 assert.equal(getAccessFeatureLabel('unknown'), 'Ciri Premium');
 assert.equal(getDailyQuestionCount({}, {
@@ -34,7 +34,9 @@ assert.equal(getDailyQuestionCount({}, {
 const matchingPremium = resolveAuthoritativeAccess('account-premium', {
   id: 'account-premium',
   access_status: 'premium',
-  access_expires_at: '2099-01-01T00:00:00Z'
+  access_expires_at: '2099-01-01T00:00:00Z',
+  server_verified: true,
+  server_access_allowed: true
 });
 assert.equal(matchingPremium.isPremium, true, 'A matching server Premium record must remain Premium.');
 assert.equal(matchingPremium.verifiedForAccount, true);

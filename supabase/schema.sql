@@ -1,6 +1,6 @@
--- Jannati AI Tutor: Free/Premium access foundation
--- Run this once in Supabase Dashboard > SQL Editor.
--- Payment verification remains manual in this first no-cost version.
+-- Legacy bootstrap reference only. Production Premium authority is now
+-- public.premium_entitlements from the versioned migrations. Do not run this
+-- file to renew subscriptions; use the protected Admin Premium module.
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -39,9 +39,8 @@ create policy "Users can read their own profile"
   to authenticated
   using (auth.uid() = id);
 
--- No client update policy is created intentionally. Access status and admin
--- flags are changed manually by the owner in the SQL editor, so a browser
--- user can never upgrade their own account.
+-- No client update policy is created intentionally. These access columns are
+-- retained as a compatibility mirror and are not the canonical entitlement.
 revoke insert, update, delete on table public.profiles from anon, authenticated;
 
 -- New public objects must opt in to browser access explicitly.
@@ -70,7 +69,5 @@ create trigger profiles_updated_at
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 revoke all on function public.touch_profile_updated_at() from public, anon, authenticated;
 
--- Manual admin workflow (run only from the SQL editor):
--- update public.profiles
--- set access_status = 'premium', access_expires_at = now() + interval '30 days'
--- where id = '<USER_UUID>';
+-- Premium changes must use admin_manage_premium_entitlement through
+-- #/admin/premium so authorization, idempotency and audit logging all apply.

@@ -6,18 +6,21 @@ describe('account hydration', () => {
     const result = await settleAccountHydration({
       loadProfile: async () => ({ data: { id: 'account-1' }, error: null }),
       loadLearning: async () => ({ data: { progress: true }, error: null }),
+      loadAccess: async () => ({ data: { access_status: 'premium' }, error: null }),
       timeoutMs: 100
     });
 
     expect(result.timedOut).toBe(false);
     expect(result.profileResult.data.id).toBe('account-1');
     expect(result.learningResult.data.progress).toBe(true);
+    expect(result.accessResult.data.access_status).toBe('premium');
   });
 
   it('contains a rejected request without discarding the other result', async () => {
     const result = await settleAccountHydration({
       loadProfile: async () => { throw new Error('profile_failed'); },
       loadLearning: async () => ({ data: { progress: true }, error: null }),
+      loadAccess: async () => ({ data: { access_status: 'free' }, error: null }),
       timeoutMs: 100
     });
 
@@ -35,6 +38,7 @@ describe('account hydration', () => {
     const hydration = settleAccountHydration({
       loadProfile,
       loadLearning: () => pendingLearning,
+      loadAccess: () => pendingLearning,
       timeoutMs: 20
     });
 
@@ -44,6 +48,7 @@ describe('account hydration', () => {
 
     expect(result.timedOut).toBe(true);
     expect(result.profileResult.error.name).toBe('TimeoutError');
+    expect(result.accessResult.error.name).toBe('TimeoutError');
     expect(loadProfile.mock.calls[0][0].aborted).toBe(true);
   });
 });
