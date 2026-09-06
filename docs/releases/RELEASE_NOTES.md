@@ -1,16 +1,17 @@
-# Jannati AI Tutor 3.10.2 Release Notes
+# Jannati AI Tutor 3.11.0 Release Notes
 
 Status: stable
-Tag: v3.10.2
-Build date: 2026-09-06T10:58:21.435Z
+Tag: v3.11.0
+Build date: 2026-09-06T12:17:07.469Z
 
 ## Highlights
 
-- Fixes the post-login device hydration failure reported as `Sync gagal` even after a newer Supabase revision was received.
-- Skips duplicate legacy backups for data that already belongs to the authenticated account and child profile.
-- Restores account and child learning snapshots transactionally; a quota or write failure rolls back to the previous complete device data.
-- Keeps cloud writes locked until restore succeeds and retries safely without resetting XP, answers, or resume data.
-- Adds non-identifying stage codes so any remaining device-specific failure can be diagnosed precisely.
+- Adds a secure Premium administration workspace for authorised administrators.
+- Makes the Supabase `premium_entitlements` record the canonical source for Premium access.
+- Supports activation, extension, fixed expiry, cancellation, and complimentary access with confirmation and idempotency protection.
+- Records every administrator action in an append-only audit log and blocks direct browser writes through RLS.
+- Revalidates access on authentication and browser lifecycle events, and safely returns to Free access when server verification is unavailable.
+- Uses the same server entitlement decision for Tutor AI access.
 
 ## Release Readiness
 
@@ -42,12 +43,13 @@ Build date: 2026-09-06T10:58:21.435Z
 
 ## Known Follow-ups
 
-- Confirm equal XP and cloud revision on desktop and mobile using the same Fayyadh child profile after this deployment.
 - Large JavaScript chunks remain a performance improvement target.
+- Complete physical desktop/mobile acceptance for the new administrator workflow.
+- Continue diagnosis of the separate cross-device learning-data synchronization issue; this release does not migrate, merge, or delete learner progress.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
 
 ## Readiness Decision
 
-- Closed beta hotfix: READY for tagged deployment.
-- Wider beta: NOT YET READY until cross-device XP synchronization is confirmed on physical desktop and mobile devices.
+- Closed beta Premium administration: READY after the database migration is applied.
+- Wider beta: NOT YET READY until physical-device admin acceptance and the separate learning-sync investigation are complete.
 - Paid public release: NOT READY.

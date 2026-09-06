@@ -122,7 +122,8 @@ const edgeText = readFileSync(resolve(root, 'supabase/functions/tutor-ai/index.t
 const configText = readFileSync(resolve(root, 'supabase/config.toml'), 'utf8');
 const serviceText = readFileSync(resolve(root, 'src/utils/tutorResponseService.js'), 'utf8');
 const modalText = readFileSync(resolve(root, 'src/components/ai/TutorAIModal.jsx'), 'utf8');
-assert.match(edgeText, /premiumIsActive\(callerAccess\)/, 'Gateway mesti menyemak Premium pada server.');
+assert.match(edgeText, /premiumIsActive\(callerAccess, userId\)/, 'Gateway mesti menyemak Premium pada server untuk akaun pemanggil.');
+assert.match(edgeText, /rpc\/get_my_premium_entitlement/, 'Gateway mesti menggunakan sumber entitlement kanonik.');
 assert.match(edgeText, /TUTOR_AI_U18_COMPLIANCE_CONFIRMED/, 'Gateway mesti mempunyai kunci pematuhan bawah umur.');
 assert.match(edgeText, /TUTOR_AI_GENERATIVE_ENABLED/, 'Gateway mesti mempunyai suis pengaktifan server.');
 assert.match(edgeText, /TUTOR_AI_SAFETY_SALT/, 'Gateway mesti memerlukan salt bagi pengecam keselamatan pseudonim.');

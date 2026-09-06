@@ -7,6 +7,7 @@ function asRejectedResult(reason) {
 export async function settleAccountHydration({
   loadProfile,
   loadLearning,
+  loadAccess,
   timeoutMs = ACCOUNT_HYDRATION_TIMEOUT_MS
 } = {}) {
   const controller = typeof AbortController === 'function' ? new AbortController() : null;
@@ -16,15 +17,19 @@ export async function settleAccountHydration({
 
   const remoteRequest = Promise.allSettled([
     Promise.resolve().then(() => loadProfile?.(controller?.signal)),
-    Promise.resolve().then(() => loadLearning?.(controller?.signal))
-  ]).then(([profileResult, learningResult]) => ({
+    Promise.resolve().then(() => loadLearning?.(controller?.signal)),
+    Promise.resolve().then(() => loadAccess?.(controller?.signal))
+  ]).then(([profileResult, learningResult, accessResult]) => ({
     timedOut: false,
     profileResult: profileResult.status === 'fulfilled'
       ? profileResult.value
       : asRejectedResult(profileResult.reason),
     learningResult: learningResult.status === 'fulfilled'
       ? learningResult.value
-      : asRejectedResult(learningResult.reason)
+      : asRejectedResult(learningResult.reason),
+    accessResult: accessResult.status === 'fulfilled'
+      ? accessResult.value
+      : asRejectedResult(accessResult.reason)
   }));
 
   const timeoutRequest = new Promise(resolve => {
@@ -33,7 +38,8 @@ export async function settleAccountHydration({
       resolve({
         timedOut: true,
         profileResult: asRejectedResult(timeoutError),
-        learningResult: asRejectedResult(timeoutError)
+        learningResult: asRejectedResult(timeoutError),
+        accessResult: asRejectedResult(timeoutError)
       });
     }, Math.max(1, Number(timeoutMs) || ACCOUNT_HYDRATION_TIMEOUT_MS));
   });

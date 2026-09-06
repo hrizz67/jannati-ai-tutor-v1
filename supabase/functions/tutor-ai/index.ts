@@ -68,11 +68,9 @@ function getPublishableKey() {
   }
 }
 
-function premiumIsActive(profile: Record<string, unknown> | null) {
-  if (profile?.access_status !== 'premium') return false;
-  if (!profile.access_expires_at) return true;
-  const expiry = new Date(String(profile.access_expires_at)).getTime();
-  return Number.isFinite(expiry) && expiry > Date.now();
+function premiumIsActive(entitlement: Record<string, unknown> | null, userId: string) {
+  return entitlement?.accessAllowed === true
+    && String(entitlement?.accountId || '') === String(userId || '');
 }
 
 async function loadCallerAccess(userId: string, authorization: string) {
@@ -80,11 +78,15 @@ async function loadCallerAccess(userId: string, authorization: string) {
   const publishableKey = getPublishableKey();
   if (!supabaseUrl || !publishableKey) return null;
   const response = await fetch(
-    `${supabaseUrl}/rest/v1/profiles?select=access_status,access_expires_at&id=eq.${encodeURIComponent(userId)}&limit=1`,
-    { headers: { Authorization: authorization, apikey: publishableKey } }
+    `${supabaseUrl}/rest/v1/rpc/get_my_premium_entitlement`,
+    {
+      method: 'POST',
+      headers: { Authorization: authorization, apikey: publishableKey, 'Content-Type': 'application/json' },
+      body: '{}'
+    }
   );
   if (!response.ok) return null;
-  return (await response.json())?.[0] || null;
+  return (await response.json()) || null;
 }
 
 function withinRateLimit(userId: string) {
@@ -134,7 +136,7 @@ Deno.serve(async request => {
   if (!withinRateLimit(userId)) return jsonResponse({ ok: false, code: 'rate_limited' }, 429, allowedOrigin);
 
   const callerAccess = await loadCallerAccess(userId, authorization);
-  if (!premiumIsActive(callerAccess)) return jsonResponse({ ok: false, code: 'premium_required' }, 403, allowedOrigin);
+  if (!premiumIsActive(callerAccess, userId)) return jsonResponse({ ok: false, code: 'premium_required' }, 403, allowedOrigin);
 
   let rawPayload: unknown;
   try {

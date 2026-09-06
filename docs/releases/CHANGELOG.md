@@ -1,5 +1,30 @@
 # Changelog
 
+## 3.11.0 - 2026-09-06
+
+### Secure premium administration
+
+- Adds a protected `#/admin/premium` workspace for account search, entitlement summaries, renewal, fixed-expiry changes, cancellation, and complimentary access.
+- Establishes `premium_entitlements` as the single server-authoritative Premium source while retaining legacy profile fields only as a compatibility mirror.
+- Uses server-validated admin RPCs, row-level security, transaction locks, idempotency keys, and an append-only audit trail for every entitlement change.
+- Calculates fixed Malaysian expiry dates at the end of the selected local day and extends active subscriptions from their current expiry.
+
+### Client and Tutor access safety
+
+- Revalidates Premium state after login, account hydration, focus, visibility, reconnect, and server-calculated expiry without granting access from stale local fields.
+- Falls back safely to Free access if server verification fails and keeps the authenticated cache bounded to five minutes.
+- Aligns the Tutor AI gateway with the same entitlement RPC used by the application so browser and server access decisions cannot diverge.
+
+### Regression protection
+
+- Adds 18 focused entitlement tests plus release-blocking audits for route protection, RLS, audit logging, renewal rules, lifecycle refresh, and Tutor gateway parity.
+- Build, 33 unit tests, the complete validation suite, and the Supabase migration dry run pass with 0 errors and 0 warnings.
+
+### Follow-up work
+
+- Run the final admin workflow and responsive acceptance check on real desktop and mobile devices.
+- Continue physical verification of the previously reported cross-device learning-data synchronization issue; this release does not alter learner progress records.
+
 ## 3.10.2 - 2026-09-06
 
 ### Cloud hydration recovery

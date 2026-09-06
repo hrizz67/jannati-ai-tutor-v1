@@ -3,6 +3,7 @@ import App from './App';
 import './styles/style.css';
 import './styles/features/finish-screen.css';
 import './styles/brand.css';
+import './styles/admin-premium.css';
 import { registerAppServiceWorker } from './services/serviceWorkerRegistration.js';
 createRoot(document.getElementById('root')).render(<App />);
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
