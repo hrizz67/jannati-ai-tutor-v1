@@ -1,16 +1,16 @@
-# Jannati AI Tutor 3.10.0 Release Notes
+# Jannati AI Tutor 3.10.1 Release Notes
 
 Status: stable
-Tag: v3.10.0
-Build date: 2026-09-06T05:05:07.298Z
+Tag: v3.10.1
+Build date: 2026-09-06T06:15:54.747Z
 
 ## Highlights
 
-- Completes controlled architecture and data-isolation hardening across Batches 1-5 without replacing React, Vite, Supabase, the design system, or the question bank.
-- Uses stable account and child identifiers for learner state, resume data, analytics, rewards, Tutor AI context, and guarded legacy migration.
-- Adds a focused ESLint gate, nine Vitest unit tests, and new regression coverage for architecture, child isolation, parent mode, access, quota, language, and answer-reveal safety.
-- Derives the service-worker cache namespace from application version `3.10.0`, reducing stale-cache risk across deployments.
-- Preserves lazy loading and passes all production bundle budgets.
+- Fixes successful account login remaining stuck on the login page while Supabase learning data is loading.
+- Opens the correct account-scoped device dashboard immediately, then hydrates profile and learning data safely in the background.
+- Adds an eight-second cloud timeout, request abort support, automatic retry, and deduplication for simultaneous authentication callbacks.
+- Keeps cloud autosave disabled until hydration is verified, so a timeout cannot overwrite an existing learner snapshot.
+- Keeps an active quiz open during background retry and clears stale cloud revision metadata when accounts change.
 
 ## Release Readiness
 
@@ -42,13 +42,13 @@ Build date: 2026-09-06T05:05:07.298Z
 
 ## Known Follow-ups
 
-- The previously observed desktop/mobile Supabase XP mismatch still requires live-account, two-device verification; automated isolation and conflict tests pass but do not replace that evidence.
-- Playwright was deliberately deferred to avoid adding a browser runtime before stable authentication, Supabase, voice, and physical-device fixtures exist.
-- Initial JavaScript is 880.05 kB against a 900 kB budget; large chunks remain a P2 performance target.
+- The previously observed desktop/mobile Supabase XP mismatch still requires a same-account, same-child physical-device verification after deployment.
+- Live login should be rechecked on desktop and mobile against production Supabase after the tagged deployment completes.
+- Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
 
 ## Readiness Decision
 
-- Closed beta: READY, with monitoring and recoverable test data.
-- Wider beta: NOT YET READY until cross-device sync and critical physical-device flows are evidenced.
+- Closed beta hotfix: READY for tagged deployment.
+- Wider beta: NOT YET READY until cross-device XP synchronization and critical physical-device flows are evidenced.
 - Paid public release: NOT READY.

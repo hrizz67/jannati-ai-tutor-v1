@@ -989,10 +989,16 @@ function createOperationId() {
   }
 }
 
-export async function loadCloudLearningDataResult(client) {
+export async function loadCloudLearningDataResult(client, options = {}) {
   if (!client) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: new Error('cloud_client_unavailable') };
   try {
-    const revisioned = await client.rpc('get_learning_data_v3');
+    const runRpc = name => {
+      const request = client.rpc(name);
+      return options.signal && typeof request?.abortSignal === 'function'
+        ? request.abortSignal(options.signal)
+        : request;
+    };
+    const revisioned = await runRpc('get_learning_data_v3');
     if (!revisioned?.error) return normalizeEnvelope(revisioned?.data);
     if (!isMissingRevisionedRpc(revisioned.error)) {
       return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: revisioned.error };
@@ -1001,7 +1007,7 @@ export async function loadCloudLearningDataResult(client) {
     // Read-only compatibility allows a coordinated rollout without risking a
     // blind legacy write. The client keeps mutations pending until migration
     // v3 is available on the linked Supabase project.
-    const legacy = await client.rpc('get_learning_data');
+    const legacy = await runRpc('get_learning_data');
     if (legacy?.error) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: legacy.error };
     return {
       data: isObject(legacy?.data) ? legacy.data : {},

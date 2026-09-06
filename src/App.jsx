@@ -65,6 +65,7 @@ import { EmptyState } from './dashboard/dashboardHelpers.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
 import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient.js';
+import { settleAccountHydration } from './services/accountHydration.js';
 import {
   CHILD_MERGED_BACKUP_PREFIX,
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
@@ -1986,6 +1987,69 @@ export default function App() {
   useEffect(() => {
     if (!supabase) return undefined;
     let alive = true;
+    let inFlightAccountId = '';
+    let inFlightHydration = null;
+    let hydrationRetryTimer = null;
+    let dashboardReadyAccountId = '';
+
+    const clearHydrationRetry = () => {
+      if (hydrationRetryTimer) window.clearTimeout(hydrationRetryTimer);
+      hydrationRetryTimer = null;
+    };
+
+    const openAccountDashboardFromDevice = user => {
+      const accountDisplayName = [
+        user.user_metadata?.display_name,
+        user.email?.split('@')[0]
+      ]
+        .map(value => String(value || '').trim())
+        .find(value => value && !isPlaceholderStudentName(value)) || 'Murid';
+      const storedAccountProfile = loadProfile();
+      const childState = ensureChildProfiles({
+        ...storedAccountProfile,
+        name: isPlaceholderStudentName(storedAccountProfile?.name) || !storedAccountProfile?.name
+          ? accountDisplayName
+          : storedAccountProfile.name
+      });
+      const hydratedIdentity = getLearningStorageScope({ accountId: user.id, childId: childState.activeId });
+      const localAccess = resolveAuthoritativeAccess(user.id, {
+        id: user.id,
+        access_status: 'free',
+        access_source: 'hydrating'
+      });
+      const storedCore = stampLearningIdentity(loadStudentCore(loadProfile(), hydratedIdentity), hydratedIdentity);
+      const activeChild = childState.activeProfile;
+      setProfile({
+        ...storedCore,
+        name: activeChild?.name || accountDisplayName,
+        year: activeChild?.year || storedCore.year || 'Tahun 2',
+        avatar: activeChild?.avatar || storedCore.avatar,
+        email: user.email || storedCore.email || '',
+        accountId: user.id,
+        isDemo: false,
+        accessStatus: localAccess.access_status,
+        accessLabel: localAccess.accessLabel,
+        accessExpiresAt: localAccess.access_expires_at,
+        isPremium: localAccess.isPremium
+      });
+      setAdaptiveProfile(loadAdaptiveStudentProfile(hydratedIdentity));
+      setGamificationProfile(loadGamificationState(hydratedIdentity));
+      setResume(loadResume(hydratedIdentity));
+      localStorage.setItem(ONBOARDING_KEY, 'done');
+      setShowOnboarding(false);
+      setShowAccountLogin(false);
+      setScreen('dashboard');
+      setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'syncing');
+      dashboardReadyAccountId = user.id;
+    };
+
+    const scheduleHydrationRetry = user => {
+      clearHydrationRetry();
+      hydrationRetryTimer = window.setTimeout(() => {
+        hydrationRetryTimer = null;
+        if (alive && user?.id) void requestAccountSync(user);
+      }, 5000);
+    };
 
     const syncAccount = async (user) => {
       const syncSequence = accountSyncSequenceRef.current + 1;
@@ -1993,6 +2057,10 @@ export default function App() {
       if (!alive) return;
       setAccountUser(user || null);
       if (!user) {
+        inFlightAccountId = '';
+        inFlightHydration = null;
+        dashboardReadyAccountId = '';
+        clearHydrationRetry();
         const scopedAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
         if (scopedAccountId) resetSignedOutAccountState(scopedAccountId);
         else {
@@ -2010,16 +2078,54 @@ export default function App() {
       activateAccountStorage(user.id);
       dirtyChildIdsRef.current = new Set(readPendingDirtyChildIds(user.id));
       childMutationVersionRef.current = new Map([...dirtyChildIdsRef.current].map(childId => [childId, 1]));
-      const [{ data, error }, cloudResult] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('id, display_name, access_status, access_expires_at, is_admin')
-          .eq('id', user.id)
-          .maybeSingle(),
-        loadCloudLearningDataResult(supabase)
-      ]);
+      if (dashboardReadyAccountId !== user.id) {
+        setCloudSyncInfo({ revision: 0, serverUpdatedAt: '' });
+        lastCloudSignatureRef.current = '';
+        try {
+          // Authentication and local account activation are enough to enter the
+          // dashboard. Cloud hydration remains read-only until it is verified.
+          openAccountDashboardFromDevice(user);
+        } catch {
+          dashboardReadyAccountId = user.id;
+          setShowOnboarding(false);
+          setShowAccountLogin(false);
+          setScreen('dashboard');
+          setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
+          setRecoveryMessages(prev => [...prev, 'Dashboard dibuka, tetapi data pada peranti tidak dapat dimuatkan sepenuhnya.']);
+        }
+      }
+
+      const hydration = await settleAccountHydration({
+        loadProfile: signal => {
+          const request = supabase
+            .from('profiles')
+            .select('id, display_name, access_status, access_expires_at, is_admin')
+            .eq('id', user.id)
+            .maybeSingle();
+          return signal && typeof request?.abortSignal === 'function'
+            ? request.abortSignal(signal)
+            : request;
+        },
+        loadLearning: signal => loadCloudLearningDataResult(supabase, { signal })
+      });
 
       if (!alive || syncSequence !== accountSyncSequenceRef.current) return;
+      if (hydration.timedOut) {
+        pendingOfflineCloudSaveRef.current = dirtyChildIdsRef.current.size > 0 || hasPendingCloudMutation(user.id);
+        setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
+        setRecoveryMessages(prev => [...prev, 'Dashboard telah dibuka menggunakan data peranti. Sync cloud akan dicuba semula secara selamat.']);
+        scheduleHydrationRetry(user);
+        return;
+      }
+      clearHydrationRetry();
+      const { data, error } = hydration.profileResult || {};
+      const cloudResult = hydration.learningResult || {
+        data: null,
+        revision: 0,
+        protocolVersion: 0,
+        serverUpdatedAt: '',
+        error: new Error('cloud_hydration_unavailable')
+      };
       const cloudLearningData = cloudResult.data || {};
       if (!cloudResult.error) {
         setCloudSyncInfo({
@@ -2140,7 +2246,6 @@ export default function App() {
       localStorage.setItem(ONBOARDING_KEY, 'done');
       setShowOnboarding(false);
       setShowAccountLogin(false);
-      setScreen('dashboard');
       const nextAccess = error || !data
         ? { id: user.id, access_status: 'free', access_source: error ? 'fallback' : 'default' }
         : data;
@@ -2175,17 +2280,45 @@ export default function App() {
       setCloudHydratedAccountId(user.id);
     };
 
+    const requestAccountSync = user => {
+      const accountId = String(user?.id || '');
+      if (accountId && inFlightAccountId === accountId && inFlightHydration) return inFlightHydration;
+      const task = syncAccount(user).catch(() => {
+        if (!alive) return;
+        setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
+        if (user?.id) {
+          if (dashboardReadyAccountId !== user.id) {
+            dashboardReadyAccountId = user.id;
+            setShowAccountLogin(false);
+            setScreen('dashboard');
+          }
+          setRecoveryMessages(prev => [...prev, 'Dashboard telah dibuka. Sambungan profil dan data cloud akan dicuba semula.']);
+          scheduleHydrationRetry(user);
+        }
+      });
+      if (!accountId) return task;
+      inFlightAccountId = accountId;
+      inFlightHydration = task;
+      void task.finally(() => {
+        if (inFlightHydration !== task) return;
+        inFlightAccountId = '';
+        inFlightHydration = null;
+      });
+      return task;
+    };
+
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      syncAccount(session?.user || null);
+      void requestAccountSync(session?.user || null);
     });
     supabase.auth.getSession()
-      .then(({ data }) => syncAccount(data.session?.user || null))
+      .then(({ data }) => requestAccountSync(data.session?.user || null))
       .catch(() => {
         if (alive) setRecoveryMessages(prev => [...prev, 'Sesi akaun tidak dapat dipulihkan. Sila log masuk semula.']);
       });
 
     return () => {
       alive = false;
+      clearHydrationRetry();
       authListener.subscription.unsubscribe();
     };
   }, [supabase]);

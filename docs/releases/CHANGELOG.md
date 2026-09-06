@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.10.1 - 2026-09-06
+
+### Login and account hydration
+
+- Opens the authenticated learner dashboard from the correct account-scoped device snapshot without waiting indefinitely for Supabase profile and learning-data requests.
+- Moves cloud hydration behind an eight-second timeout with abort support and a safe automatic retry.
+- Keeps cloud autosave locked until the remote learning snapshot has been read and classified, preventing an incomplete login from overwriting cloud progress.
+- Deduplicates simultaneous auth callbacks and releases stale in-flight hydration when a learner logs out and signs in again.
+- Prevents background hydration retries from returning an active learner to the dashboard or interrupting a quiz.
+- Clears prior-account revision metadata during an actual account switch.
+
+### Regression protection
+
+- Adds focused unit tests for successful, partial-failure, and timed-out account hydration.
+- Adds a release-blocking login hydration regression covering local-first dashboard entry, bounded cloud wait, autosave locking, safe retry, auth deduplication, and account metadata isolation.
+- Extends cloud reads to accept an abort signal while retaining compatibility with revisioned and legacy read-only RPCs.
+
+### Quality snapshot
+
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
+- Twelve unit tests and all account, child-isolation, access-control, learning-sync, performance, build, and bundle gates pass.
+
+### Follow-up work
+
+- Physically verify the previously reported desktop/mobile Supabase XP mismatch with the same account and child profile after deployment.
+- Complete real-device Safari, microphone, audio, RTL, and accessibility acceptance checks.
+
 ## 3.10.0 - 2026-09-06
 
 ### Controlled hardening batches 1-5

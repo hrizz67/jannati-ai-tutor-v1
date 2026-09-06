@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import './loginHydrationRegression.mjs';
 
 function read(path) {
   return fs.readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
