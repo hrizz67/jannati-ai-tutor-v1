@@ -1,16 +1,16 @@
-# Jannati AI Tutor 3.10.1 Release Notes
+# Jannati AI Tutor 3.10.2 Release Notes
 
 Status: stable
-Tag: v3.10.1
-Build date: 2026-09-06T06:15:54.747Z
+Tag: v3.10.2
+Build date: 2026-09-06T10:58:21.435Z
 
 ## Highlights
 
-- Fixes successful account login remaining stuck on the login page while Supabase learning data is loading.
-- Opens the correct account-scoped device dashboard immediately, then hydrates profile and learning data safely in the background.
-- Adds an eight-second cloud timeout, request abort support, automatic retry, and deduplication for simultaneous authentication callbacks.
-- Keeps cloud autosave disabled until hydration is verified, so a timeout cannot overwrite an existing learner snapshot.
-- Keeps an active quiz open during background retry and clears stale cloud revision metadata when accounts change.
+- Fixes the post-login device hydration failure reported as `Sync gagal` even after a newer Supabase revision was received.
+- Skips duplicate legacy backups for data that already belongs to the authenticated account and child profile.
+- Restores account and child learning snapshots transactionally; a quota or write failure rolls back to the previous complete device data.
+- Keeps cloud writes locked until restore succeeds and retries safely without resetting XP, answers, or resume data.
+- Adds non-identifying stage codes so any remaining device-specific failure can be diagnosed precisely.
 
 ## Release Readiness
 
@@ -42,13 +42,12 @@ Build date: 2026-09-06T06:15:54.747Z
 
 ## Known Follow-ups
 
-- The previously observed desktop/mobile Supabase XP mismatch still requires a same-account, same-child physical-device verification after deployment.
-- Live login should be rechecked on desktop and mobile against production Supabase after the tagged deployment completes.
+- Confirm equal XP and cloud revision on desktop and mobile using the same Fayyadh child profile after this deployment.
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
 
 ## Readiness Decision
 
 - Closed beta hotfix: READY for tagged deployment.
-- Wider beta: NOT YET READY until cross-device XP synchronization and critical physical-device flows are evidenced.
+- Wider beta: NOT YET READY until cross-device XP synchronization is confirmed on physical desktop and mobile devices.
 - Paid public release: NOT READY.

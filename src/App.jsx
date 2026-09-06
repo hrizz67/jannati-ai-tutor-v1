@@ -326,7 +326,10 @@ function getActiveStorageScopeId() {
 }
 
 function writeChildProfiles(profiles) {
-  localStorage.setItem(CHILD_PROFILES_KEY, JSON.stringify((profiles || []).map(normalizeChildProfile)));
+  const nextValue = JSON.stringify((profiles || []).map(normalizeChildProfile));
+  if (localStorage.getItem(CHILD_PROFILES_KEY) !== nextValue) {
+    localStorage.setItem(CHILD_PROFILES_KEY, nextValue);
+  }
 }
 
 function readArchivedChildren() {
@@ -339,7 +342,10 @@ function readArchivedChildren() {
 }
 
 function writeArchivedChildren(records = {}) {
-  localStorage.setItem(ARCHIVED_CHILDREN_KEY, JSON.stringify(records));
+  const nextValue = JSON.stringify(records);
+  if (localStorage.getItem(ARCHIVED_CHILDREN_KEY) !== nextValue) {
+    localStorage.setItem(ARCHIVED_CHILDREN_KEY, nextValue);
+  }
 }
 
 function getStoredLearningIdentity(profile = {}) {
@@ -707,10 +713,11 @@ function getGuestProfileSummary() {
   }
 }
 
-function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
+function restoreCloudLearningSnapshotResult(cloudData = {}, preferredChildId = '') {
   repairChildSnapshotStorage();
   const localActiveChildId = readActiveChildId();
   const accountScopeId = getActiveStorageScopeId();
+  const previousSnapshot = readLocalAccountData();
   try {
     const metadata = JSON.parse(cloudData[CLOUD_CHILD_STATE_KEY] || '{}');
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
@@ -730,22 +737,32 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     const normalizedCloudData = active
       ? normalizeActiveLearningProjection(cloudData, active.id, { accountId: accountScopeId })
       : cloudData;
-    if (!restoreAccountSnapshot(normalizedCloudData, accountScopeId)) return '';
+    if (!restoreAccountSnapshot(normalizedCloudData, accountScopeId)) {
+      return { ok: false, childId: '', reason: 'account-snapshot-restore-failed' };
+    }
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
     writeArchivedChildren(archivedChildren);
     Object.keys(deletedChildren).forEach(childId => {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`);
     });
-    if (!cloudProfiles.length) return '';
+    if (!cloudProfiles.length) return { ok: true, childId: '', reason: 'empty-profile-set' };
     writeChildProfiles(cloudProfiles);
-    if (!active) return '';
+    if (!active) return { ok: true, childId: '', reason: 'empty-active-profile' };
     localStorage.setItem(ACTIVE_CHILD_KEY, active.id);
     const childSnapshot = readChildSnapshot(active.id);
-    if (childSnapshot) restoreChildSnapshot(childSnapshot, active.id, accountScopeId);
-    return active.id;
-  } catch {
-    return '';
+    if (childSnapshot && !restoreChildSnapshot(childSnapshot, active.id, accountScopeId)) {
+      restoreAccountSnapshot(previousSnapshot, accountScopeId);
+      return { ok: false, childId: '', reason: 'child-snapshot-restore-failed' };
+    }
+    return { ok: true, childId: active.id, reason: 'restored' };
+  } catch (error) {
+    restoreAccountSnapshot(previousSnapshot, accountScopeId);
+    return {
+      ok: false,
+      childId: '',
+      reason: error?.name === 'QuotaExceededError' ? 'storage-quota-exceeded' : 'cloud-restore-failed'
+    };
   }
 }
 
@@ -1991,6 +2008,7 @@ export default function App() {
     let inFlightHydration = null;
     let hydrationRetryTimer = null;
     let dashboardReadyAccountId = '';
+    const hydrationStageByAccount = new Map();
 
     const clearHydrationRetry = () => {
       if (hydrationRetryTimer) window.clearTimeout(hydrationRetryTimer);
@@ -2035,7 +2053,11 @@ export default function App() {
       setAdaptiveProfile(loadAdaptiveStudentProfile(hydratedIdentity));
       setGamificationProfile(loadGamificationState(hydratedIdentity));
       setResume(loadResume(hydratedIdentity));
-      localStorage.setItem(ONBOARDING_KEY, 'done');
+      try {
+        localStorage.setItem(ONBOARDING_KEY, 'done');
+      } catch {
+        // Optional onboarding metadata must never block the local dashboard.
+      }
       setShowOnboarding(false);
       setShowAccountLogin(false);
       setScreen('dashboard');
@@ -2060,6 +2082,7 @@ export default function App() {
         inFlightAccountId = '';
         inFlightHydration = null;
         dashboardReadyAccountId = '';
+        hydrationStageByAccount.clear();
         clearHydrationRetry();
         const scopedAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
         if (scopedAccountId) resetSignedOutAccountState(scopedAccountId);
@@ -2075,6 +2098,7 @@ export default function App() {
       // account profile is still being verified by Supabase.
       setAccessProfile(current => String(current?.id || '') === String(user.id) ? current : null);
       setCloudHydratedAccountId('');
+      hydrationStageByAccount.set(user.id, 'activate-device');
       activateAccountStorage(user.id);
       dirtyChildIdsRef.current = new Set(readPendingDirtyChildIds(user.id));
       childMutationVersionRef.current = new Map([...dirtyChildIdsRef.current].map(childId => [childId, 1]));
@@ -2084,6 +2108,7 @@ export default function App() {
         try {
           // Authentication and local account activation are enough to enter the
           // dashboard. Cloud hydration remains read-only until it is verified.
+          hydrationStageByAccount.set(user.id, 'open-device-dashboard');
           openAccountDashboardFromDevice(user);
         } catch {
           dashboardReadyAccountId = user.id;
@@ -2095,6 +2120,7 @@ export default function App() {
         }
       }
 
+      hydrationStageByAccount.set(user.id, 'remote-read');
       const hydration = await settleAccountHydration({
         loadProfile: signal => {
           const request = supabase
@@ -2118,6 +2144,7 @@ export default function App() {
         return;
       }
       clearHydrationRetry();
+      hydrationStageByAccount.set(user.id, 'reconcile-cloud');
       const { data, error } = hydration.profileResult || {};
       const cloudResult = hydration.learningResult || {
         data: null,
@@ -2200,7 +2227,20 @@ export default function App() {
       lastCloudSignatureRef.current = cloudResult.error ? '' : getCloudResultSignature(cloudResult);
       if (!cloudResult.error && Object.keys(cloudLearningData).length && !hasPendingLocalData) {
         skipNextCloudSaveRef.current = true;
-        restoreCloudLearningSnapshot(cloudLearningData, readActiveChildId());
+        hydrationStageByAccount.set(user.id, 'restore-cloud');
+        const restoreResult = restoreCloudLearningSnapshotResult(cloudLearningData, readActiveChildId());
+        if (!restoreResult.ok) {
+          lastCloudSignatureRef.current = '';
+          pendingOfflineCloudSaveRef.current = false;
+          skipNextCloudSaveRef.current = true;
+          setCloudSyncStatus('error');
+          setRecoveryMessages(prev => [
+            ...prev,
+            `Data cloud belum dapat dipulihkan pada peranti ini (kod ${restoreResult.reason}). Data semasa dikekalkan dan cubaan semula dijadualkan.`
+          ]);
+          scheduleHydrationRetry(user);
+          return;
+        }
         repairImportedLearningProfile();
         setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'loaded');
       } else if (cloudResult.error) {
@@ -2217,6 +2257,7 @@ export default function App() {
         setPendingCloudMutation(user.id, true);
         setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'empty');
       }
+      hydrationStageByAccount.set(user.id, 'load-active-profile');
       const accountDisplayName = [
         user.user_metadata?.display_name,
         data?.display_name,
@@ -2243,7 +2284,11 @@ export default function App() {
       setAdaptiveProfile(loadAdaptiveStudentProfile(hydratedIdentity));
       setGamificationProfile(loadGamificationState(hydratedIdentity));
       setResume(loadResume(hydratedIdentity));
-      localStorage.setItem(ONBOARDING_KEY, 'done');
+      try {
+        localStorage.setItem(ONBOARDING_KEY, 'done');
+      } catch {
+        // Optional onboarding metadata must never fail account hydration.
+      }
       setShowOnboarding(false);
       setShowAccountLogin(false);
       const nextAccess = error || !data
@@ -2278,13 +2323,20 @@ export default function App() {
         };
       });
       setCloudHydratedAccountId(user.id);
+      hydrationStageByAccount.set(user.id, 'complete');
     };
 
     const requestAccountSync = user => {
       const accountId = String(user?.id || '');
       if (accountId && inFlightAccountId === accountId && inFlightHydration) return inFlightHydration;
-      const task = syncAccount(user).catch(() => {
+      const task = syncAccount(user).catch(error => {
         if (!alive) return;
+        const stage = hydrationStageByAccount.get(accountId) || 'unknown';
+        console.error('Account hydration failed', {
+          stage,
+          name: String(error?.name || 'Error'),
+          code: String(error?.code || '')
+        });
         setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
         if (user?.id) {
           if (dashboardReadyAccountId !== user.id) {
@@ -2292,7 +2344,10 @@ export default function App() {
             setShowAccountLogin(false);
             setScreen('dashboard');
           }
-          setRecoveryMessages(prev => [...prev, 'Dashboard telah dibuka. Sambungan profil dan data cloud akan dicuba semula.']);
+          setRecoveryMessages(prev => [
+            ...prev,
+            `Dashboard telah dibuka. Sambungan profil dan data cloud akan dicuba semula (kod ${stage}).`
+          ]);
           scheduleHydrationRetry(user);
         }
       });
@@ -2577,7 +2632,14 @@ export default function App() {
           }
           skipNextCloudSaveRef.current = true;
           const activeChildBeforeCloudRestore = readActiveChildId();
-          const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
+          const restoreResult = restoreCloudLearningSnapshotResult(cloudResult.data, activeChildBeforeCloudRestore);
+          if (!restoreResult.ok) {
+            lastCloudSignatureRef.current = '';
+            setCloudSyncStatus('error');
+            inFlight = false;
+            return;
+          }
+          const restoredChildId = restoreResult.childId;
           repairImportedLearningProfile();
           reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
           captureAccountSnapshot(accountUser.id);
@@ -3041,7 +3103,17 @@ export default function App() {
     if (cloudResult.data && Object.keys(cloudResult.data).length) {
       skipNextCloudSaveRef.current = true;
       const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
-      const restoredChildId = restoreCloudLearningSnapshot(cloudResult.data, activeChildBeforeCloudRestore);
+      const restoreResult = restoreCloudLearningSnapshotResult(cloudResult.data, activeChildBeforeCloudRestore);
+      if (!restoreResult.ok) {
+        lastCloudSignatureRef.current = '';
+        setCloudSyncStatus('error');
+        setRecoveryMessages(prev => [
+          ...prev,
+          `Data cloud belum dapat dipulihkan (kod ${restoreResult.reason}). Data peranti tidak diubah.`
+        ]);
+        return;
+      }
+      const restoredChildId = restoreResult.childId;
       repairImportedLearningProfile();
       reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
       captureAccountSnapshot(accountUser.id);
@@ -3086,7 +3158,17 @@ export default function App() {
     }
     skipNextCloudSaveRef.current = true;
     const activeChildBeforeCloudRestore = activeChildId || readActiveChildId();
-    const restoredChildId = restoreCloudLearningSnapshot(cloudData, activeChildBeforeCloudRestore);
+    const restoreResult = restoreCloudLearningSnapshotResult(cloudData, activeChildBeforeCloudRestore);
+    if (!restoreResult.ok) {
+      lastCloudSignatureRef.current = '';
+      setCloudSyncStatus('error');
+      setRecoveryMessages(prev => [
+        ...prev,
+        `Data cloud tidak dapat dimuat dengan selamat (kod ${restoreResult.reason}). Data peranti dikekalkan.`
+      ]);
+      return;
+    }
+    const restoredChildId = restoreResult.childId;
     repairImportedLearningProfile();
     reloadCloudLearningState(restoredChildId, restoredChildId === activeChildBeforeCloudRestore);
     pendingOfflineCloudSaveRef.current = false;
