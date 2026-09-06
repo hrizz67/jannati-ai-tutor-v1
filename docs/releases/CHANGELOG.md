@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.10.2 - 2026-09-06
+
+### Cloud hydration recovery
+
+- Prevents an already child-scoped learner from generating another full legacy backup during every login, avoiding browser-storage quota failures after a valid cloud revision is received.
+- Restores cloud account and child snapshots transactionally and rolls back to the complete device snapshot if any write fails.
+- Keeps cloud autosave locked and schedules a safe retry whenever device hydration is incomplete, so partial data cannot replace the learner's current progress.
+- Makes profile and archive metadata writes idempotent to avoid unnecessary storage pressure.
+- Adds safe hydration-stage diagnostics without logging learner data or other personally identifiable information.
+
+### Regression protection
+
+- Adds quota-failure tests covering transactional rollback, unchanged learner XP, contained legacy-backup failure, and already-scoped migration.
+- Extends the release-blocking login hydration audit to require rollback, retry, autosave locking, and staged diagnostics.
+- Build, 15 unit tests, and the complete validation suite pass with 0 errors and 0 warnings.
+
+### Follow-up work
+
+- Physically verify matching XP and revision on desktop and mobile for the same Fayyadh child profile after deployment.
+- Complete real-device Safari, microphone, audio, RTL, and accessibility acceptance checks.
+
 ## 3.10.1 - 2026-09-06
 
 ### Login and account hydration

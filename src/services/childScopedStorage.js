@@ -114,20 +114,41 @@ export function applyScopedLearningSnapshot(storage, snapshot = {}, identityInpu
   if (!storage) return { ok: false, issues: [{ key: '', reason: 'storage-unavailable' }] };
   const result = scopeChildLearningSnapshot(snapshot, identityInput);
   if (!result.ok) return result;
-  Object.entries(result.snapshot).forEach(([key, raw]) => {
-    if (typeof raw === 'string') storage.setItem(key, raw);
-  });
-
   const identity = result.identity;
-  const legacyKey = `${STUDENT_PROFILE_STORAGE_PREFIX}${LEGACY_STUDENT_ID}`;
-  const scopedKey = `${STUDENT_PROFILE_STORAGE_PREFIX}${identity.studentId}`;
-  if (identity.explicit && !storage.getItem(scopedKey) && storage.getItem(legacyKey)) {
-    const legacyProfile = parseJsonObject(storage.getItem(legacyKey));
-    if (legacyProfile && !getLearningIdentityMismatch(legacyProfile, identity)) {
-      storage.setItem(scopedKey, JSON.stringify(stampLearningIdentity(legacyProfile, identity)));
+  const writes = new Map(Object.entries(result.snapshot).filter(([, raw]) => typeof raw === 'string'));
+  const previousValues = new Map();
+
+  try {
+    const legacyKey = `${STUDENT_PROFILE_STORAGE_PREFIX}${LEGACY_STUDENT_ID}`;
+    const scopedKey = `${STUDENT_PROFILE_STORAGE_PREFIX}${identity.studentId}`;
+    if (identity.explicit && !storage.getItem(scopedKey) && storage.getItem(legacyKey)) {
+      const legacyProfile = parseJsonObject(storage.getItem(legacyKey));
+      if (legacyProfile && !getLearningIdentityMismatch(legacyProfile, identity)) {
+        writes.set(scopedKey, JSON.stringify(stampLearningIdentity(legacyProfile, identity)));
+      }
     }
+
+    writes.forEach((_raw, key) => previousValues.set(key, storage.getItem(key)));
+    writes.forEach((raw, key) => storage.setItem(key, raw));
+    return result;
+  } catch (error) {
+    [...previousValues.entries()].reverse().forEach(([key, previous]) => {
+      try {
+        if (previous === null) storage.removeItem(key);
+        else storage.setItem(key, previous);
+      } catch {
+        // The source snapshot remains available for a later recovery attempt.
+      }
+    });
+    return {
+      ...result,
+      ok: false,
+      issues: [...result.issues, {
+        key: '',
+        reason: error?.name === 'QuotaExceededError' ? 'storage-quota-exceeded' : 'storage-write-failed'
+      }]
+    };
   }
-  return result;
 }
 
 export default {
