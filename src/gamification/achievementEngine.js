@@ -1,12 +1,8 @@
+import { getLocalDateKey } from '../utils/localDate.js';
+
 function toNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
-}
-
-function normalizeDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toISOString().slice(0, 10);
 }
 
 function uniqueById(items = []) {
@@ -69,7 +65,7 @@ export function getAchievementDefinitions() {
 }
 
 export function evaluateAchievements(profile = {}, context = {}) {
-  const earnedAt = normalizeDateKey(context.today || new Date());
+  const earnedAt = getLocalDateKey(context.today || new Date());
   const unlocked = ACHIEVEMENTS
     .filter(definition => {
       try {

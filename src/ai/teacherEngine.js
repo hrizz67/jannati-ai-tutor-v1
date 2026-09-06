@@ -1,6 +1,7 @@
 import { detectLearningCategory, getLearningExamples, getLearningMemoryTip, getSubjectId, sanitizeAiText, sanitizeChildFacingText } from './learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress } from './profile/index.js';
 import { getMistakeContext } from './mistakes/index.js';
+import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 
 const TEACHING_RULES = {
   person: {
@@ -133,10 +134,18 @@ function getRule(question, topic) {
   return { category, ...(TEACHING_RULES[category] || TEACHING_RULES.generic) };
 }
 
-export function teachAnswer({ question = {}, topic = {}, explanationData = {}, questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '' } = {}) {
+export function teachAnswer({ question = {}, topic = {}, explanationData = {}, questionText = '', instruction = '', currentLearningObjective = '', attemptCount = 0, explanationMode = '', studentId = '', studentProfile = null } = {}) {
   topic = topic || {};
   const rule = getRule(question, topic);
   const subjectId = String(question.subjectId || topic.subjectId || '').toLowerCase();
+  const answerRevealPolicy = explanationData.answerRevealPolicy || getAnswerRevealPolicy({
+    status: explanationData.status,
+    isCorrect: explanationData.showCorrectAnswer && explanationMode === 'correct_answer_reinforcement',
+    attemptCount,
+    explanationMode
+  });
+  const revealAnswer = answerRevealPolicy.canRevealAnswer;
+  const expectedAnswer = sanitizeAiText(question.answer || question.correctAnswer || '');
   const subjectDefaults = SUBJECT_TEACHING_DEFAULTS[subjectId];
   const stem = sanitizeAiText(questionText || question.q || question.question || question.stem || 'soalan ini');
   const contextualGeneric = `Mari kita teliti "${stem}" dan pilih jawapan yang paling sepadan dengan arahan.`;
@@ -164,10 +173,11 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {}, q
     subjectLabel ? `Subjek: ${subjectLabel}.` : '',
     ''
   ].filter(Boolean).join(' ')) || 'Mari kita belajar langkah demi langkah.';
-  const studentProfile = getStudentProfileSummary('default');
-  const topicProgress = getTopicProgress(studentProfile.studentId || 'default', question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', studentProfile);
+  const resolvedStudentId = studentId || studentProfile?.childId || studentProfile?.studentId || 'default';
+  const resolvedStudentProfile = getStudentProfileSummary(resolvedStudentId, studentProfile);
+  const topicProgress = getTopicProgress(resolvedStudentId, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '', resolvedStudentProfile);
   const topicStatus = topicProgress?.status || 'new';
-  const mistakeContext = getMistakeContext(studentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
+  const mistakeContext = getMistakeContext(resolvedStudentProfile, question.subjectId || topic.subjectId || '', question.topicId || topic.id || '');
   const profileAwarePracticePrompt = topicStatus === 'mastered'
     ? 'Kamu sudah mahir. Cuba soalan yang lebih mencabar.'
     : mistakeContext.repeatedMistakes > 1
@@ -177,33 +187,57 @@ export function teachAnswer({ question = {}, topic = {}, explanationData = {}, q
       : topicStatus === 'needs_practice'
         ? 'Ulang sekali lagi langkah yang penting.'
         : practicePrompt;
+  const hiddenExplanation = subjectId === 'english'
+    ? 'Let us identify the key word and the language skill before choosing an answer.'
+    : subjectId === 'arab'
+      ? 'Mari kenal pasti perkataan Arab, huruf dan maksud yang diminta sebelum memilih jawapan.'
+      : 'Mari kenal pasti kata kunci dan kemahiran yang diminta sebelum memilih jawapan.';
+  const safeHint = selectAnswerSafeText(
+    [explanationData.hint, explanationData.sections?.hint, question.hint],
+    [expectedAnswer],
+    subjectId === 'english' ? 'Find the key word in the sentence.' : 'Cari kata kunci penting dalam soalan.'
+  );
+  const visibleExplanation = revealAnswer ? explanation : hiddenExplanation;
+  const visibleExamples = revealAnswer ? examples : [];
+  const visibleMemoryTip = revealAnswer
+    ? memoryTip
+    : (subjectId === 'english' ? 'Use the question clue as your guide.' : 'Gunakan petunjuk soalan sebagai panduan.');
+  const visibleSteps = revealAnswer
+    ? steps
+    : [safeHint, subjectId === 'english' ? 'Compare the clue with the sentence.' : 'Padankan petunjuk dengan kehendak soalan.', subjectId === 'english' ? 'Try the answer again.' : 'Cuba jawab sekali lagi.'];
 
   return {
     category: rule.category,
-    explanation,
-    examples,
+    explanation: visibleExplanation,
+    examples: visibleExamples,
     commonMistakes,
-    memoryTip,
+    memoryTip: visibleMemoryTip,
     practicePrompt: profileAwarePracticePrompt,
-    shortText: sanitizeChildFacingText(`${summary} ${explanation}`),
+    shortText: sanitizeChildFacingText(`${summary} ${visibleExplanation}`),
+    correctAnswer: revealAnswer ? expectedAnswer : '',
+    showCorrectAnswer: revealAnswer,
+    answerRevealPolicy,
+    attemptCount: answerRevealPolicy.attemptCount,
     sections: {
       summary,
-      whyCorrect: explanation,
-      hint: sanitizeAiText(question.hint || rule.practicePrompt),
-      steps,
+      whyCorrect: revealAnswer ? explanation : '',
+      simpleExplanation: visibleExplanation,
+      hint: safeHint,
+      steps: visibleSteps,
       commonMistake: commonMistakes[0] || '',
-      example: examples[0] || '',
-      memoryTip,
+      example: visibleExamples[0] || '',
+      memoryTip: visibleMemoryTip,
+      correctAnswer: revealAnswer ? expectedAnswer : '',
       coachMessage: sanitizeChildFacingText(profileAwarePracticePrompt),
       practicePrompt: profileAwarePracticePrompt,
       learningObjective: sanitizeChildFacingText(currentLearningObjective || question.learningObjective || topic.learningObjective || topic.objective || '')
     },
     learningProfile: {
-      studentId: studentProfile.studentId || 'default',
+      studentId: resolvedStudentId,
       topicStatus,
-      accuracy: studentProfile.summary?.accuracy || 0,
-      weakTopics: studentProfile.weakTopics || [],
-      strongTopics: studentProfile.strongTopics || [],
+      accuracy: resolvedStudentProfile.summary?.accuracy || 0,
+      weakTopics: resolvedStudentProfile.weakTopics || [],
+      strongTopics: resolvedStudentProfile.strongTopics || [],
       mistakeContext
     }
   };

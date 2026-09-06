@@ -1,5 +1,42 @@
 # Changelog
 
+## 3.10.0 - 2026-09-06
+
+### Controlled hardening batches 1-5
+
+- Centralized child identity and child-scoped storage so same-name profiles, account changes, logout, deletion, restore, Tutor AI memory, analytics, rewards, and resume state use stable account/child boundaries.
+- Added guarded legacy migration and archive/undo recovery paths without removing historical learner data automatically.
+- Hardened Free/Premium access, Malaysia-day quota counting, parent verification, answer reveal policy, language handling, and Tutor AI safety boundaries.
+- Added controlled interactive-question coverage and preserved canonical answers, scoring, question identifiers, and the 4,530-question bank.
+- Extracted authoritative Premium access into a dedicated hook and service-worker registration into a version-derived service.
+- Isolated finish-screen CSS while preserving the existing cascade and visual design.
+
+### Quality controls
+
+- Added ESLint with React hook checks and a focused correctness configuration.
+- Added Vitest with nine unit tests for date, quota, access, answer safety, child identity, analytics, storage isolation, and service-worker versioning.
+- Added architecture, child-isolation, parent-mode, profile/date/quota, and Tutor-language/reveal regression gates.
+- Added progressbar semantics and retained keyboard, modal-focus, Arabic direction, and vertical-ordering accessibility behaviour.
+
+### Release controls
+
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+
+### Quality snapshot
+
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
+- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
+
+### Follow-up work
+
+- Resolve and physically verify the previously reported cross-device Supabase XP mismatch before wider beta.
+- Add a small Playwright smoke suite after stable test accounts and browser fixtures are available.
+- Continue reducing large production chunks; initial JavaScript is 880.05 kB against a 900 kB budget.
+- Complete real-device Safari, microphone, audio, RTL, and accessibility acceptance checks.
+
 ## 3.9.7 - 2026-08-28
 
 ### Question bank quality
@@ -15,19 +52,7 @@
 - Question count remains 4530 across 8 subjects and 84 topics.
 - Scoring, adaptive/mastery behaviour, question IDs, and learner progress data are unchanged.
 
-### Release controls
-
-- Package metadata is the single source of truth for version and release status.
-- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
-- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
-
 ### Quality snapshot
 
 - 8 subjects, 84 topics, and 4530 questions validated.
 - Validation result: 0 error(s), 0 warning(s), 14814 informational item(s).
-- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
-
-### Follow-up work
-
-- Continue reducing large production chunks through route and subject-level code splitting.
-- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.

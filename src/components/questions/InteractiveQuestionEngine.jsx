@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import JannaAvatar from '../JannaAvatar.jsx';
 import QuestionVisual from './QuestionVisual.jsx';
+import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import {
   getInteractiveQuestionConfig,
   serializeDragDropResponse,
@@ -19,7 +20,7 @@ function responseClass(feedback, selected) {
   return feedback.status === 'correct' ? 'correct' : 'wrong';
 }
 
-function ChoiceGrid({ config, value, onChange, feedback, visualMath = false }) {
+function ChoiceGrid({ config, value, onChange, feedback, subjectId = '', visualMath = false }) {
   const locked = isLocked(feedback);
   return <div className={`interactive-choice-layout ${visualMath ? 'visual-math-layout' : ''}`}>
     {visualMath && <QuestionVisual visual={config.visual} />}
@@ -52,7 +53,7 @@ function ChoiceGrid({ config, value, onChange, feedback, visualMath = false }) {
           }}
         >
           {option.visual && <QuestionVisual visual={option.visual} />}
-          <span>{option.label}</span>
+          <SubjectLanguageText text={option.label} subjectId={subjectId} />
         </button>;
       })}
     </div>
@@ -76,7 +77,7 @@ function parseDragDropResponse(config, value) {
   return assignments;
 }
 
-function DragDropQuestion({ config, value, onChange, feedback }) {
+function DragDropQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const [assignments, setAssignments] = useState(() => parseDragDropResponse(config, value));
   const [selectedItemId, setSelectedItemId] = useState('');
   const locked = isLocked(feedback);
@@ -121,7 +122,7 @@ function DragDropQuestion({ config, value, onChange, feedback }) {
           onClick={() => setSelectedItemId(current => current === item.id ? '' : item.id)}
         >
           {item.visual && <QuestionVisual visual={item.visual} />}
-          <span>{item.label}</span>
+          <SubjectLanguageText text={item.label} subjectId={subjectId} />
         </button>)}
         {!remaining.length && <span className="interactive-pool-complete">Semua pilihan telah diletakkan.</span>}
       </div>
@@ -144,7 +145,7 @@ function DragDropQuestion({ config, value, onChange, feedback }) {
             disabled={locked || !selectedItemId}
             onClick={() => assignItem(selectedItemId, zone.id)}
             aria-label={`Letakkan pilihan dalam ${zone.label}`}
-          >{zone.label}</button>
+          ><SubjectLanguageText text={zone.label} subjectId={subjectId} /></button>
           <div className="interactive-token-list placed" aria-label={`Pilihan dalam ${zone.label}`}>
             {placedItems.map(item => <button
               className={`interactive-token ${selectedItemId === item.id ? 'selected' : ''}`}
@@ -157,7 +158,7 @@ function DragDropQuestion({ config, value, onChange, feedback }) {
               onClick={() => setSelectedItemId(current => current === item.id ? '' : item.id)}
             >
               {item.visual && <QuestionVisual visual={item.visual} />}
-              <span>{item.label}</span>
+              <SubjectLanguageText text={item.label} subjectId={subjectId} />
             </button>)}
             {!placedItems.length && <span className="interactive-zone-empty">Letak di sini</span>}
           </div>
@@ -180,7 +181,7 @@ function parseMatchingResponse(config, value) {
   return matches;
 }
 
-function MatchingQuestion({ config, value, onChange, feedback }) {
+function MatchingQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const [matches, setMatches] = useState(() => parseMatchingResponse(config, value));
   const [selectedItemId, setSelectedItemId] = useState('');
   const locked = isLocked(feedback);
@@ -204,8 +205,8 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
   const targetById = useMemo(() => new Map(config.targets.map(target => [target.id, target])), [config.targets]);
   return <div className="matching-question">
     <div className="matching-columns">
-      <section aria-label="Objek untuk dipadankan">
-        <b className="interactive-column-title">1. Pilih objek</b>
+      <section aria-label={config.itemGroupLabel || 'Pilihan untuk dipadankan'}>
+        <b className="interactive-column-title">{config.itemHeading || '1. Pilih satu kad'}</b>
         <div className="matching-list">
           {config.items.map(item => <button
             className={`matching-button ${selectedItemId === item.id ? 'selected' : ''} ${matches[item.id] ? 'matched' : ''}`}
@@ -216,13 +217,13 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
             onClick={() => setSelectedItemId(current => current === item.id ? '' : item.id)}
           >
             {item.visual && <QuestionVisual visual={item.visual} />}
-            <span>{item.label}</span>
-            {matches[item.id] && <small>→ {targetById.get(matches[item.id])?.label}</small>}
+            <SubjectLanguageText text={item.label} subjectId={subjectId} />
+            {matches[item.id] && <small>→ <SubjectLanguageText text={targetById.get(matches[item.id])?.label} subjectId={subjectId} /></small>}
           </button>)}
         </div>
       </section>
-      <section aria-label="Nama bentuk untuk dipilih">
-        <b className="interactive-column-title">2. Pilih padanan</b>
+      <section aria-label={config.targetGroupLabel || 'Padanan untuk dipilih'}>
+        <b className="interactive-column-title">{config.targetHeading || '2. Pilih padanannya'}</b>
         <div className="matching-list">
           {config.targets.map(target => {
             const used = Object.values(matches).includes(target.id);
@@ -232,7 +233,7 @@ function MatchingQuestion({ config, value, onChange, feedback }) {
               disabled={locked || !selectedItemId}
               key={target.id}
               onClick={() => matchTarget(target.id)}
-            >{target.label}{used && <small>Sudah dipadankan</small>}</button>;
+            ><SubjectLanguageText text={target.label} subjectId={subjectId} />{used && <small>{config.matchedLabel || 'Sudah dipadankan'}</small>}</button>;
           })}
         </div>
       </section>
@@ -252,7 +253,7 @@ function parseOrderingResponse(config, value) {
     : config.items.map(item => item.id);
 }
 
-function OrderingQuestion({ config, value, onChange, feedback }) {
+function OrderingQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const [order, setOrder] = useState(() => parseOrderingResponse(config, value));
   const locked = isLocked(feedback);
 
@@ -300,26 +301,26 @@ function OrderingQuestion({ config, value, onChange, feedback }) {
           }}
         >
           <span className="ordering-position" aria-hidden="true">{index + 1}</span>
-          <b>{item?.label}</b>
+          <SubjectLanguageText as="b" text={item?.label} subjectId={subjectId} />
           <span className="ordering-controls">
-            <button type="button" className="secondary" disabled={locked || index === 0} onClick={() => move(itemId, -1)} aria-label={`Gerakkan ${item?.label} ke kiri`}>←</button>
-            <button type="button" className="secondary" disabled={locked || index === order.length - 1} onClick={() => move(itemId, 1)} aria-label={`Gerakkan ${item?.label} ke kanan`}>→</button>
+            <button type="button" className="secondary" disabled={locked || index === 0} onClick={() => move(itemId, -1)} aria-label={`Gerakkan ${item?.label} ke atas`}>↑</button>
+            <button type="button" className="secondary" disabled={locked || index === order.length - 1} onClick={() => move(itemId, 1)} aria-label={`Gerakkan ${item?.label} ke bawah`}>↓</button>
           </span>
         </li>;
       })}
     </ol>
-    <p className="interactive-response-preview" aria-live="polite"><span>{config.responsePreviewLabel || 'Susunan kamu'}:</span> {serializeOrderingResponse(config, order)}</p>
+    <p className="interactive-response-preview" aria-live="polite"><span>{config.responsePreviewLabel || 'Susunan kamu'}:</span> <SubjectLanguageText text={serializeOrderingResponse(config, order)} subjectId={subjectId} /></p>
   </div>;
 }
 
-function FillBlankQuestion({ config, value, onChange, feedback }) {
+function FillBlankQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const locked = isLocked(feedback);
   const [before, after] = config.sentenceParts;
   return <div className="fill-blank-question">
     <p className="fill-blank-sentence">
-      <span>{before}</span>
-      <strong className={value ? 'filled' : ''} aria-live="polite">{value || '______'}</strong>
-      <span>{after}</span>
+      <SubjectLanguageText text={before} subjectId={subjectId} />
+      <SubjectLanguageText as="strong" className={value ? 'filled' : ''} aria-live="polite" text={value || '______'} subjectId={subjectId} />
+      <SubjectLanguageText text={after} subjectId={subjectId} />
     </p>
     <div className="fill-blank-options" role="radiogroup" aria-label="Pilihan untuk tempat kosong">
       {config.options.map((option, optionIndex) => {
@@ -343,7 +344,7 @@ function FillBlankQuestion({ config, value, onChange, feedback }) {
             onChange(String(nextOption.value));
             event.currentTarget.parentElement?.querySelector(`[data-blank-option-id="${nextOption.id}"]`)?.focus();
           }}
-        >{option.label}</button>;
+        ><SubjectLanguageText text={option.label} subjectId={subjectId} /></button>;
       })}
     </div>
   </div>;
@@ -356,7 +357,7 @@ function parseMultiSelectResponse(config, value) {
     .map(option => option.id);
 }
 
-function MultiSelectQuestion({ config, value, onChange, feedback }) {
+function MultiSelectQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const [selectedIds, setSelectedIds] = useState(() => parseMultiSelectResponse(config, value));
   const locked = isLocked(feedback);
 
@@ -398,7 +399,7 @@ function MultiSelectQuestion({ config, value, onChange, feedback }) {
           onClick={() => toggle(option.id)}
         >
           <span className="multi-select-check" aria-hidden="true">{selected ? '✓' : ''}</span>
-          <span>{option.label}</span>
+          <SubjectLanguageText text={option.label} subjectId={subjectId} />
         </button>;
       })}
     </div>
@@ -406,7 +407,7 @@ function MultiSelectQuestion({ config, value, onChange, feedback }) {
   </div>;
 }
 
-function HotspotQuestion({ config, value, onChange, feedback }) {
+function HotspotQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const locked = isLocked(feedback);
   return <div className="hotspot-question">
     <div className="hotspot-stage">
@@ -424,7 +425,7 @@ function HotspotQuestion({ config, value, onChange, feedback }) {
           onClick={() => onChange(String(hotspot.value))}
         >
           <span aria-hidden="true">{index + 1}</span>
-          <small>{hotspot.label}</small>
+          <SubjectLanguageText as="small" text={hotspot.label} subjectId={subjectId} />
         </button>;
       })}
     </div>
@@ -490,26 +491,29 @@ function MoneyQuestion({ config, value, onChange, feedback }) {
 }
 
 export default function InteractiveQuestionEngine({ question, value, onChange, feedback }) {
+  const instructionId = useId();
+  const helpId = useId();
   const config = getInteractiveQuestionConfig(question);
   if (!config) return null;
+  const subjectId = String(question?.subjectId || question?.metadata?.subjectId || '').toLowerCase();
   const isEnglish = String(question?.id || '').startsWith('ENG-');
 
   let content = null;
-  if (config.type === 'choice' || config.type === 'imageChoice') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'dragDrop') content = <DragDropQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'matching') content = <MatchingQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'ordering') content = <OrderingQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'visualMath') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} visualMath />;
-  if (config.type === 'fillBlank') content = <FillBlankQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'multiSelect') content = <MultiSelectQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'hotspot') content = <HotspotQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'clock') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} />;
+  if (config.type === 'choice' || config.type === 'imageChoice') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'dragDrop') content = <DragDropQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'matching') content = <MatchingQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'ordering') content = <OrderingQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'visualMath') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} visualMath />;
+  if (config.type === 'fillBlank') content = <FillBlankQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'multiSelect') content = <MultiSelectQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'hotspot') content = <HotspotQuestion config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
+  if (config.type === 'clock') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} />;
   if (config.type === 'money') content = <MoneyQuestion config={config} value={value} onChange={onChange} feedback={feedback} />;
-  if (config.type === 'measurement') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} visualMath />;
+  if (config.type === 'measurement') content = <ChoiceGrid config={config} value={value} onChange={onChange} feedback={feedback} subjectId={subjectId} visualMath />;
 
-  return <section className={`interactive-question-engine type-${config.type}`} aria-label={isEnglish ? 'Interactive question activity' : 'Aktiviti soalan interaktif'}>
-    <div className="interactive-instruction"><JannaAvatar size={46} /><p><small>{isEnglish ? 'Janna guides you' : 'Janna membimbing'}</small>{config.instruction}</p></div>
+  return <section className={`interactive-question-engine type-${config.type}`} aria-labelledby={instructionId} aria-describedby={helpId}>
+    <div className="interactive-instruction"><JannaAvatar size={46} /><p id={instructionId}><small>{isEnglish ? 'Janna guides you' : 'Janna membimbing'}</small><SubjectLanguageText text={config.instruction} subjectId={subjectId} teaching /></p></div>
     {content}
-    <p className="interactive-help">{isEnglish ? 'Use touch, mouse or keyboard.' : 'Boleh guna sentuhan, tetikus atau papan kekunci.'}</p>
+    <p className="interactive-help" id={helpId}>{config.screenReaderInstruction || (isEnglish ? 'Use touch, mouse or keyboard.' : 'Boleh guna sentuhan, tetikus atau papan kekunci.')}</p>
   </section>;
 }

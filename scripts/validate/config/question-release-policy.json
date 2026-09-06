@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "blockOnP2": false,
+  "maximumTeacherReviewItems": 200,
+  "nearDuplicateThreshold": 0.92,
+  "templateClusterMinimum": 12,
+  "adaptiveSeeds": [1103, 2207, 3301]
+}

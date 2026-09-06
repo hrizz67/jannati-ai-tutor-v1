@@ -44,6 +44,8 @@ import { buildCurriculumCoverage } from '../curriculum/coverageEngine';
 import { buildTeacherPortalSnapshot } from '../curriculum/curriculumEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from '../brand/personalities';
 import { formatStatus, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { addLocalDateKeyDays, getLocalDateKey } from '../utils/localDate.js';
+import { getStudentYearSupportLabel } from '../config/studentYears.js';
 
 export function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
@@ -65,7 +67,7 @@ export function getGrade(score = 0) {
 }
 
 export function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalDateKey();
 }
 
 export function getSubjectAverage(profile, subject) {
@@ -95,9 +97,8 @@ export function getAdaptiveMotivation(streak = 0) {
 }
 
 export function summarizeHistory(history = [], days = 7) {
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days + 1);
-  const rows = history.filter(item => item.date && new Date(item.date) >= cutoff);
+  const cutoff = addLocalDateKeyDays(getLocalDateKey(), -Math.max(0, Number(days) - 1));
+  const rows = history.filter(item => item.date && getLocalDateKey(item.date) >= cutoff);
   const average = rows.length ? Math.max(0, Math.min(100, Math.round(rows.reduce((sum, item) => sum + (item.percent || 0), 0) / rows.length))) : 0;
   return { count: rows.length, average };
 }
@@ -152,7 +153,7 @@ export function EmptyState({ title, message, actionLabel, onAction, showMascot =
 }
 
 export function DashboardHeader({ profile, level, levelProgress }) {
-  const studentYear = profile.year || 'Tahun 2';
+  const studentYear = getStudentYearSupportLabel(profile.year);
   const studentName = getStudentDisplayName(profile, 'Murid');
   return <header className="brand-app-header">
     <div className="brand-student-strip">

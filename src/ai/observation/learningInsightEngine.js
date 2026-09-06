@@ -1,6 +1,7 @@
 import { formatSubjectName, formatTopicName } from '../../utils/displayFormatter.js';
 import { getStudentStrengthSummary } from './studentStrengthEngine.js';
 import { getStudentWeaknessSummary } from './studentWeaknessEngine.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function toNumber(value, fallback = 0) {
   const number = Number(value);
@@ -13,14 +14,6 @@ function sortByScoreDesc(rows = []) {
 
 function sortByScoreAsc(rows = []) {
   return [...rows].sort((a, b) => a.score - b.score || (a.topicId || '').localeCompare(b.topicId || ''));
-}
-
-function localDayKey(value) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function buildTopicRows(profile = {}, memory = {}) {
@@ -110,7 +103,7 @@ function buildMission(topics = []) {
 }
 
 function buildMemorySpeech(profile = {}, memory = {}, insight = {}) {
-  const today = localDayKey(profile.lastStudyDate || profile.lastAnsweredAt || new Date());
+  const today = getLocalDateKey(profile.lastStudyDate || profile.lastAnsweredAt || new Date());
   const lastSnapshot = (memory.dailySnapshots || []).find(item => item?.date === today) || (memory.dailySnapshots || [])[0] || null;
   const strongest = insight.strongestTopic;
   const weakness = insight.weakestTopic;

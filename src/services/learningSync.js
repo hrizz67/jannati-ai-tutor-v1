@@ -1,4 +1,6 @@
 export const CHILD_SNAPSHOT_PREFIX = 'jannati_child_snapshot:';
+import { getStableChildIdentity } from './studentIdentity.js';
+
 export const CHILD_ORIGINAL_SNAPSHOT_PREFIX = 'jannati_child_original_snapshot:';
 export const CHILD_MERGED_BACKUP_PREFIX = 'jannati_merged_child_backup:';
 export const CLOUD_CHILD_STATE_KEY = 'jannati_cloud_child_state';
@@ -9,11 +11,13 @@ export const CLOUD_SYNC_PROTOCOL_VERSION = 3;
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
 const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
+const ARCHIVED_CHILDREN_KEY = 'jannati_archived_child_profiles';
 const GLOBAL_XP_PROFILE_KEYS = ['jannati_v151_profile', 'jannati_v150_profile', 'jannati_v140_profile'];
 const GLOBAL_XP_MEMORY_KEYS = ['jannati_v151_ai_memory', 'jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
 const STUDENT_CORE_KEY = 'jannati_v152_student_core';
 const ADAPTIVE_PROFILE_KEY = 'jannati.adaptive.studentProfile';
 const GAMIFICATION_PROFILE_KEY = 'jannati.gamification.profile';
+const PARENT_SECURITY_STORAGE_PREFIX = 'jannati_parent_security:';
 
 function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -108,6 +112,10 @@ export function sanitizeLearningPayloadOwnership(payload = {}, options = {}) {
   const expectedAccountId = String(options.accountId || '').trim();
 
   Object.entries(next).forEach(([key, raw]) => {
+    if (key.startsWith(PARENT_SECURITY_STORAGE_PREFIX)) {
+      delete next[key];
+      return;
+    }
     const childId = childIdFromSnapshotKey(key);
     if (!childId) return;
     const ownership = getSnapshotOwnership(raw);
@@ -258,15 +266,59 @@ function normalizeProfileIdentityPart(value = '') {
 }
 
 export function getChildProfileIdentity(profile = {}) {
+  return getStableChildIdentity(profile);
+}
+
+function normalizeArchivedChildren(value = {}) {
+  return Object.fromEntries(Object.entries(isObject(value) ? value : {})
+    .filter(([id, record]) => id && isObject(record))
+    .map(([id, record]) => [id, {
+      ...record,
+      archivedAt: Math.max(0, parseTimestamp(record.archivedAt)),
+      restoredAt: Math.max(0, parseTimestamp(record.restoredAt)),
+      profile: isObject(record.profile) ? record.profile : null
+    }]));
+}
+
+function mergeArchivedChildren(localValue, cloudValue) {
+  const local = normalizeArchivedChildren(localValue);
+  const cloud = normalizeArchivedChildren(cloudValue);
+  const ids = new Set([...Object.keys(cloud), ...Object.keys(local)]);
+  return Object.fromEntries([...ids].map(id => {
+    const left = local[id] || {};
+    const right = cloud[id] || {};
+    const latest = Math.max(left.archivedAt || 0, left.restoredAt || 0) >= Math.max(right.archivedAt || 0, right.restoredAt || 0)
+      ? left
+      : right;
+    return [id, {
+      ...right,
+      ...left,
+      ...latest,
+      archivedAt: Math.max(left.archivedAt || 0, right.archivedAt || 0),
+      restoredAt: Math.max(left.restoredAt || 0, right.restoredAt || 0),
+      profile: latest.profile || left.profile || right.profile || null
+    }];
+  }));
+}
+
+function isChildArchived(record = {}) {
+  return (Number(record.archivedAt) || 0) > (Number(record.restoredAt) || 0);
+}
+
+export function getLegacyChildProfileIdentity(profile = {}) {
+  const explicitLegacyIdentity = String(profile.legacyIdentityKey || '').trim();
+  if (explicitLegacyIdentity) return explicitLegacyIdentity;
+  if (profile.legacyReconciliationEligible !== true) return '';
   const name = normalizeProfileIdentityPart(profile.name);
   const year = normalizeProfileIdentityPart(profile.year);
   if (!name || !year || ['anak', 'murid', 'pelajar', 'demo murid'].includes(name)) return '';
-  return `${name}|${year}`;
+  return `legacy:${name}|${year}`;
 }
 
 function listProfiles(metadata = {}, deletedChildren = {}) {
+  const archivedChildren = normalizeArchivedChildren(metadata.archivedChildren);
   return (Array.isArray(metadata.profiles) ? metadata.profiles : [])
-    .filter(profile => profile?.id && !deletedChildren[profile.id]);
+    .filter(profile => profile?.id && !deletedChildren[profile.id] && !isChildArchived(archivedChildren[profile.id]));
 }
 
 function buildUniqueIdentityMap(profiles = []) {
@@ -533,6 +585,21 @@ function buildProfileReconciliation(localPayload = {}, cloudPayload = {}, option
     if (cloudProfile && localProfile.id !== cloudProfile.id) aliases.set(localProfile.id, cloudProfile.id);
   }
 
+  if (options.reconcileChildIdentity) {
+    const localLegacyUnique = buildUniqueIdentityMap(localProfiles.map(profile => ({
+      ...profile,
+      lineageId: getLegacyChildProfileIdentity(profile)
+    })).filter(profile => profile.lineageId));
+    const cloudLegacyUnique = buildUniqueIdentityMap(cloudProfiles.map(profile => ({
+      ...profile,
+      lineageId: getLegacyChildProfileIdentity(profile)
+    })).filter(profile => profile.lineageId));
+    for (const [identity, localProfile] of localLegacyUnique) {
+      const cloudProfile = cloudLegacyUnique.get(identity);
+      if (cloudProfile && localProfile.id !== cloudProfile.id) aliases.set(localProfile.id, cloudProfile.id);
+    }
+  }
+
   const combinedProfiles = new Map([...cloudProfiles, ...localProfiles].map(profile => [profile.id, profile]));
   const identityGroups = new Map();
   [...combinedProfiles.values()].forEach(profile => {
@@ -644,9 +711,11 @@ export function recoverOrphanedCloudOutbox(localPayload = {}, cloudPayload = {},
   if (cloudHasData && localEvidence <= 0) return { ...base, clearPending: true };
 
   const localIdentity = getChildProfileIdentity(activeProfile);
-  const matchingCloudProfile = localIdentity
-    ? cloudProfiles.find(profile => getChildProfileIdentity(profile) === localIdentity)
-    : null;
+  const localLegacyIdentity = getLegacyChildProfileIdentity(activeProfile);
+  const matchingCloudProfile = cloudProfiles.find(profile => (
+    (localIdentity && getChildProfileIdentity(profile) === localIdentity)
+    || (localLegacyIdentity && getLegacyChildProfileIdentity(profile) === localLegacyIdentity)
+  )) || null;
   return {
     dirtyChildIds: [activeChildId],
     recovered: true,
@@ -660,8 +729,10 @@ function isRootLearningProjectionKey(key = '') {
     && key !== CHILD_PROFILES_KEY
     && key !== ACTIVE_CHILD_KEY
     && key !== DELETED_CHILDREN_KEY
+    && key !== ARCHIVED_CHILDREN_KEY
     && key !== CLOUD_CHILD_STATE_KEY
     && key !== CLOUD_SYNC_META_KEY
+    && !key.startsWith(PARENT_SECURITY_STORAGE_PREFIX)
     && !key.startsWith(CHILD_SNAPSHOT_PREFIX)
     && !key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)
     && !key.startsWith(CHILD_MERGED_BACKUP_PREFIX);
@@ -751,9 +822,11 @@ export function recoverMonotonicCloudGap(localPayload = {}, cloudPayload = {}, o
   let cloudProfile = cloudProfiles.find(profile => profile.id === localProfile.id) || null;
   if (!cloudProfile) {
     const identity = getChildProfileIdentity(localProfile);
-    const identityMatches = identity
-      ? cloudProfiles.filter(profile => getChildProfileIdentity(profile) === identity)
-      : [];
+    const legacyIdentity = getLegacyChildProfileIdentity(localProfile);
+    const identityMatches = cloudProfiles.filter(profile => (
+      (identity && getChildProfileIdentity(profile) === identity)
+      || (legacyIdentity && getLegacyChildProfileIdentity(profile) === legacyIdentity)
+    ));
     if (identityMatches.length === 1) cloudProfile = identityMatches[0];
   }
   if (!cloudProfile) return base;
@@ -823,15 +896,9 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   );
   let dirtyChildIds = new Set((options.dirtyChildIds || []).filter(Boolean).map(String));
   let localActiveChildId = options.localActiveChildId;
-  // Every authenticated device is already isolated inside the same account
-  // storage namespace. Reconcile a unique name/year identity on every
-  // account-scoped merge so an older mobile-generated child ID cannot remain
-  // active while a desktop uses the canonical cloud child ID. Guest payloads
-  // still require an explicit login migration flag, preventing free learning
-  // from being joined to an unrelated Premium account by display name alone.
-  const reconcileAuthenticatedProfiles = Boolean(String(options.accountId || '').trim())
-    && options.reconcileAuthenticatedProfiles !== false;
-  if (options.reconcileChildIdentity || reconcileAuthenticatedProfiles) {
+  // Reconciliation is ID/lineage based. A legacy name/year bridge is only
+  // considered when the caller explicitly requests a marked migration.
+  if (options.reconcileChildIdentity) {
     const reconciled = buildProfileReconciliation(local, cloud, options);
     local = reconciled.local;
     cloud = reconciled.cloud;
@@ -841,7 +908,13 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   const localMeta = parseObject(local[CLOUD_CHILD_STATE_KEY]);
   const cloudMeta = parseObject(cloud[CLOUD_CHILD_STATE_KEY]);
   const deletedChildren = mergeDeletedChildren(localMeta.deletedChildren, cloudMeta.deletedChildren);
-  const profiles = mergeChildProfiles(localMeta.profiles, cloudMeta.profiles, deletedChildren);
+  const archivedChildren = mergeArchivedChildren(localMeta.archivedChildren, cloudMeta.archivedChildren);
+  const archivedProfiles = Object.values(archivedChildren).map(record => record.profile).filter(Boolean);
+  const profiles = mergeChildProfiles(
+    [...(Array.isArray(localMeta.profiles) ? localMeta.profiles : []), ...archivedProfiles],
+    Array.isArray(cloudMeta.profiles) ? cloudMeta.profiles : [],
+    deletedChildren
+  ).filter(profile => !isChildArchived(archivedChildren[profile.id]));
   const requestedActiveId = String(localActiveChildId || localMeta.activeChildId || '').trim();
   const activeChildId = [requestedActiveId, cloudMeta.activeChildId, profiles[0]?.id]
     .find(id => id && profiles.some(profile => profile.id === id)) || '';
@@ -868,11 +941,13 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
     version: CLOUD_SYNC_VERSION,
     profiles,
     activeChildId,
-    deletedChildren
+    deletedChildren,
+    archivedChildren
   });
   merged[CHILD_PROFILES_KEY] = JSON.stringify(profiles);
   merged[ACTIVE_CHILD_KEY] = activeChildId;
   merged[DELETED_CHILDREN_KEY] = JSON.stringify(deletedChildren);
+  merged[ARCHIVED_CHILDREN_KEY] = JSON.stringify(archivedChildren);
 
   merged[CLOUD_SYNC_META_KEY] = JSON.stringify({
     version: CLOUD_SYNC_VERSION,

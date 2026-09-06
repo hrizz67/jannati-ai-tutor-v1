@@ -1,4 +1,5 @@
 import { getTopicStatus, getTopicStatusLabel } from './confidenceEngine.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 const STORAGE_PREFIX = 'jannati.smartPersonalTutor.profile';
 const PROFILE_VERSION = 1;
@@ -65,16 +66,6 @@ function writeJson(key, value) {
   } catch {
     return false;
   }
-}
-
-function safeDateKey(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 function safeIsoDate(value) {
@@ -314,7 +305,7 @@ function deriveFromLegacyProfile(profile, rawProfile = {}) {
   profile.totals.correct = Math.max(profile.totals.correct, toNumber(rawProfile.correctQuestions || rawProfile.totalCorrect, 0));
   profile.totals.wrong = Math.max(profile.totals.wrong, toNumber(rawProfile.wrongQuestions || rawProfile.totalWrong, 0));
   profile.totals.totalStudySeconds = Math.max(profile.totals.totalStudySeconds, toNumber(rawProfile.totalStudySeconds || rawProfile.studySeconds, 0));
-  profile.totals.lastStudyDate = safeDateKey(rawProfile.lastStudy || rawProfile.lastStudyDate || profile.totals.lastStudyDate);
+  profile.totals.lastStudyDate = getLocalDateKey(rawProfile.lastStudy || rawProfile.lastStudyDate || profile.totals.lastStudyDate);
   profile.totals.lastAnsweredAt = safeIsoDate(rawProfile.lastAnsweredAt || rawProfile.updatedAt || profile.totals.lastAnsweredAt);
   deriveFromProgress(profile, rawProfile.progress || {});
   deriveFromHistory(profile, rawProfile.history || []);
@@ -428,9 +419,14 @@ function recalculateSubjectStats(profile) {
 
 export function normalizeStudentProfile(rawProfile = {}, studentId = DEFAULT_STUDENT_ID) {
   const source = isObject(rawProfile) ? clone(rawProfile) : {};
-  const normalized = createDefaultStudentProfile(source.studentId || studentId);
+  const requestedStudentId = normalizeStudentId(studentId);
+  const resolvedStudentId = requestedStudentId !== DEFAULT_STUDENT_ID
+    ? requestedStudentId
+    : normalizeStudentId(source.childId || source.studentId || requestedStudentId);
+  const normalized = createDefaultStudentProfile(resolvedStudentId);
   normalized.version = PROFILE_VERSION;
-  normalized.studentId = normalizeStudentId(source.studentId || studentId);
+  normalized.studentId = resolvedStudentId;
+  normalized.childId = resolvedStudentId;
   normalized.name = toText(source.name || '', normalized.name);
   normalized.year = toText(source.year || normalized.year, normalized.year);
   normalized.avatar = toText(source.avatar || normalized.avatar, normalized.avatar);
@@ -449,7 +445,7 @@ export function normalizeStudentProfile(rawProfile = {}, studentId = DEFAULT_STU
   normalized.totals.averageResponseTimeMs = Math.max(0, toNumber(totals.averageResponseTimeMs, normalized.totals.averageResponseTimeMs));
   normalized.totals.totalResponseTimeMs = Math.max(0, toNumber(totals.totalResponseTimeMs, normalized.totals.totalResponseTimeMs));
   normalized.totals.lastAnsweredAt = safeIsoDate(source.lastAnsweredAt || totals.lastAnsweredAt || '');
-  normalized.totals.lastStudyDate = safeDateKey(source.lastStudy || source.lastStudyDate || totals.lastStudyDate || '');
+  normalized.totals.lastStudyDate = getLocalDateKey(source.lastStudy || source.lastStudyDate || totals.lastStudyDate || '');
   normalized.totals.activitiesCompleted = Math.max(0, toNumber(totals.activitiesCompleted, normalized.totals.activitiesCompleted));
 
   const subjects = isObject(source.subjects) ? source.subjects : {};
@@ -508,7 +504,7 @@ export function cloneStudentProfile(profile = {}) {
 }
 
 export function resolveStudentId(profile = {}, fallback = DEFAULT_STUDENT_ID) {
-  return normalizeStudentId(profile?.studentId || profile?.id || fallback);
+  return normalizeStudentId(profile?.childId || profile?.studentId || profile?.id || fallback);
 }
 
 export function listKnownStudentIds() {

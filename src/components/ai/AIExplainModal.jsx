@@ -4,6 +4,9 @@ import MascotCard from '../MascotCard';
 import VoiceButton from '../VoiceButton.jsx';
 import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { dedupeContent, dedupeSections } from '../../utils/dedupeText.js';
+import { getAnswerRevealPolicy } from '../../ai/policy/answerRevealPolicy.js';
+import { getSubjectLanguagePresentation } from '../../ai/voice/voiceConfig.js';
+import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
 const GENERIC_TEXTS = [
@@ -124,24 +127,24 @@ function getPronounExamples(pronoun) {
   return examples[pronoun] || [];
 }
 
-function renderListSection(title, items) {
+function renderListSection(title, items, subjectId = '') {
   const filtered = safeList(items).filter(item => !isGenericText(item));
   if (!filtered.length) return null;
   return (
     <section className="explain-section">
       <h3>{title}</h3>
-      <ul>{filtered.map((item, index) => <li key={`${title}-${index}`}>{item}</li>)}</ul>
+      <ul>{filtered.map((item, index) => <li key={`${title}-${index}`}><SubjectLanguageText text={item} subjectId={subjectId} teaching /></li>)}</ul>
     </section>
   );
 }
 
-function renderTextSection(title, value) {
+function renderTextSection(title, value, subjectId = '') {
   const text = pickMeaningfulText(value);
   if (!text) return null;
   return (
     <section className="explain-section">
       <h3>{title}</h3>
-      <p>{text}</p>
+      <SubjectLanguageText as="p" text={text} subjectId={subjectId} teaching />
     </section>
   );
 }
@@ -172,24 +175,34 @@ export default function AIExplainModal({ open, data, context = null, question, c
   const sections = data.sections && typeof data.sections === 'object' ? data.sections : {};
   const subjectId = String(context?.subjectId || data.subjectId || '').toLowerCase();
   const isEnglish = subjectId === 'english';
+  const languagePresentation = getSubjectLanguagePresentation(subjectId);
+  const contextLabel = `${context?.subjectTitle || (isEnglish ? 'All subjects' : 'Semua subjek')}${context?.topicTitle ? ` · ${context.topicTitle}` : ''}`;
+  const answerRevealPolicy = data.answerRevealPolicy || getAnswerRevealPolicy({
+    status: data.status,
+    isCorrect: data.showCorrectAnswer && data.status === 'correct',
+    attemptCount: data.attemptCount || context?.attemptCount || 0,
+    explanationMode: context?.explanationMode
+  });
   const labels = isEnglish
     ? { offline: 'AI Explanation Offline', title: 'Explain', focus: 'Explanation focus', simple: 'Simple explanation', why: 'Why this answer is correct', answer: 'Correct answer', steps: 'Step-by-step example', extra: 'More examples', mistakes: 'Common mistakes', memory: 'Memory tip', followUp: 'Follow-up question', additional: 'View more help', read: 'Read explanation', retry: 'Try again', close: 'Close', teach: 'Teach me' }
     : { offline: 'Penerangan AI Luar Talian', title: 'Terangkan', focus: 'Fokus penerangan', simple: 'Penerangan mudah', why: 'Kenapa jawapan itu betul', answer: 'Jawapan betul', steps: 'Contoh langkah demi langkah', extra: 'Contoh lain', mistakes: 'Kesilapan biasa', memory: 'Tip ingatan', followUp: 'Soalan susulan', additional: 'Lihat bahan tambahan', read: 'Baca Penerangan', retry: 'Cuba Lagi', close: 'Tutup', teach: 'Ajar Saya' };
   // Coach data can arrive asynchronously. Keep the visible explanation tied to
   // the current question so a stale generic response cannot replace the answer.
-  const pronounContext = getPronounContext(context, question);
+  const pronounContext = answerRevealPolicy.canRevealAnswer ? getPronounContext(context, question) : null;
   const focus = pickLanguageText(isEnglish, sections.focus, sections.summary) || (isEnglish ? 'Focus on the language skill asked in this question.' : 'Fokus pada kemahiran dalam soalan ini.');
   const summary = pronounContext?.explanation || pickLanguageText(isEnglish, sections.simpleExplanation, data.simpleExplanation, sections.summary, data.explanation) || (isEnglish ? 'Read the sentence and identify what the question asks for.' : 'Baca ayat dan kenal pasti perkara yang ditanya.');
-  const answerText = pickMeaningfulText(sections.correctAnswer, data.correctAnswer, question?.answer);
-  const expectedAnswerText = context?.expectedAnswer ? `Jawapan “${context.expectedAnswer}” tepat kerana menepati kehendak soalan.` : '';
+  const answerCandidate = pickMeaningfulText(sections.correctAnswer, data.correctAnswer, question?.answer);
+  const showCorrectAnswer = Boolean(answerRevealPolicy.canRevealAnswer && data.showCorrectAnswer !== false && answerCandidate);
+  const answerText = showCorrectAnswer ? answerCandidate : '';
+  const expectedAnswerText = showCorrectAnswer && context?.expectedAnswer ? `Jawapan “${context.expectedAnswer}” tepat kerana menepati kehendak soalan.` : '';
   const answerFallback = answerText ? `Jawapan “${answerText}” tepat kerana sepadan dengan soalan.` : '';
-  const whyCorrect = pronounContext?.explanation || pickLanguageText(
+  const whyCorrect = showCorrectAnswer ? (pronounContext?.explanation || pickLanguageText(
     isEnglish,
     sections.whyCorrect,
     data.whyCorrect,
     expectedAnswerText,
     answerFallback
-  ) || (isEnglish ? 'The answer matches the meaning of the sentence.' : 'Jawapan ini tepat kerana sepadan dengan maksud soalan.');
+  ) || (isEnglish ? 'The answer matches the meaning of the sentence.' : 'Jawapan ini tepat kerana sepadan dengan maksud soalan.')) : '';
   const hint = pickLanguageText(isEnglish, sections.hint, data.hint) || (isEnglish ? 'Look for the key word or phrase in the question.' : 'Cari kata kunci penting dalam soalan.');
   const steps = safeList(sections.steps || data.steps);
   const languageFilter = item => !isEnglish || !isLikelyMalay(item);
@@ -202,8 +215,6 @@ export default function AIExplainModal({ open, data, context = null, question, c
   const followUpQuestions = safeList(data.followUpQuestions);
   const [uniqueSteps, uniqueExamples, uniqueExtraExamples, uniqueMistakes, uniqueMemoryTips, uniqueFollowUps] = dedupeSections([steps, examples, extraExamples, commonMistakes, memoryTips, followUpQuestions]);
   const coachMessage = pickLanguageText(isEnglish, sections.coachMessage, data.encouragement) || (isEnglish ? 'Read carefully and check your answer.' : 'Baca dengan teliti dan semak jawapan kamu.');
-  const showCorrectAnswer = data.showCorrectAnswer !== false && Boolean(answerText);
-
   const voiceText = [
     focus,
     summary,
@@ -216,7 +227,7 @@ export default function AIExplainModal({ open, data, context = null, question, c
     ...uniqueMemoryTips,
     ...uniqueFollowUps,
     coachMessage,
-    showCorrectAnswer ? `Jawapan betul ${answerText}` : ''
+    showCorrectAnswer ? `${isEnglish ? 'Correct answer' : 'Jawapan betul'} ${answerText}` : ''
   ].filter(Boolean).join('. ');
 
   const modalNode = (
@@ -236,7 +247,7 @@ export default function AIExplainModal({ open, data, context = null, question, c
             <div>
               <p className="eyebrow">{labels.offline}</p>
               <h2 id="ai-explain-title">{labels.title}</h2>
-              <span className="modal-context-badge">{context?.subjectTitle || 'Semua subjek'}{context?.topicTitle ? ` · ${context.topicTitle}` : ''}</span>
+              <SubjectLanguageText as="span" className="modal-context-badge" text={contextLabel} subjectId={subjectId} teaching />
             </div>
           </div>
           <button
@@ -249,19 +260,24 @@ export default function AIExplainModal({ open, data, context = null, question, c
           >
             ×
           </button>
-          <p className="ai-modal-context-line" id="ai-explain-description">
-            {pickMeaningfulText(summary, whyCorrect, hint, 'Penerangan AI membantu kamu faham langkah demi langkah.')}
-          </p>
+          <SubjectLanguageText
+            as="p"
+            className="ai-modal-context-line"
+            id="ai-explain-description"
+            text={pickMeaningfulText(summary, whyCorrect, hint, isEnglish ? 'The AI explanation helps you understand each step.' : 'Penerangan AI membantu kamu faham langkah demi langkah.')}
+            subjectId={subjectId}
+            teaching
+          />
         </div>
 
         <div className="ai-explain-body" tabIndex="-1">
-          <VoiceButton text={voiceText} lang={context?.sourceLanguage} label={labels.read} title={labels.read} className="voice-inline" />
+           <VoiceButton text={voiceText} lang={languagePresentation.teachingLocale} label={labels.read} title={labels.read} className="voice-inline" />
           <section className="explain-section explain-context-card" aria-label="Konteks penerangan">
             <h3>{labels.focus}</h3>
-            <p>{focus}</p>
-          </section>
-          {renderTextSection(labels.simple, summary)}
-          {renderTextSection(labels.why, whyCorrect)}
+             <SubjectLanguageText as="p" text={focus} subjectId={subjectId} teaching />
+           </section>
+           {renderTextSection(labels.simple, summary, subjectId)}
+           {renderTextSection(labels.why, whyCorrect, subjectId)}
 
           <MascotCard character={character} mood="thinking" size="md" animation="gentle" message={coachMessage} />
 
@@ -270,19 +286,19 @@ export default function AIExplainModal({ open, data, context = null, question, c
               <h3>{labels.answer}</h3>
               <div className="explain-answer-box">
                 <span>{labels.answer}</span>
-                <b>{answerText}</b>
+                 <SubjectLanguageText as="b" text={answerText} subjectId={subjectId} />
               </div>
             </section>
           )}
 
-          {renderListSection(labels.steps, uniqueSteps)}
+           {renderListSection(labels.steps, uniqueSteps, subjectId)}
           <details className="explain-details">
             <summary>{labels.additional}</summary>
-            {renderListSection(isEnglish ? 'Examples' : 'Contoh', uniqueExamples)}
-            {renderListSection(labels.extra, uniqueExtraExamples)}
-            {renderListSection(labels.mistakes, uniqueMistakes)}
-            {renderListSection(labels.memory, uniqueMemoryTips)}
-            {renderListSection(labels.followUp, uniqueFollowUps)}
+             {renderListSection(isEnglish ? 'Examples' : 'Contoh', uniqueExamples, subjectId)}
+             {renderListSection(labels.extra, uniqueExtraExamples, subjectId)}
+             {renderListSection(labels.mistakes, uniqueMistakes, subjectId)}
+             {renderListSection(labels.memory, uniqueMemoryTips, subjectId)}
+             {renderListSection(labels.followUp, uniqueFollowUps, subjectId)}
           </details>
 
         </div>

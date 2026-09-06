@@ -1,8 +1,9 @@
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../services/studentIdentity.js';
+import { buildLearningObservation } from './observation/learningObservationEngine.js';
+
 const STUDENT_CORE_KEY = 'jannati_v152_student_core';
 const LEGACY_STUDENT_CORE_KEYS = ['jannati_v151_student_core', 'jannati_v150_student_core'];
 const STUDENT_CORE_VERSION = 1;
-
-import { buildLearningObservation } from './observation/learningObservationEngine.js';
 
 function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
@@ -154,35 +155,50 @@ function summarizeActivity(profile = {}) {
   };
 }
 
-export function loadStudentCore(defaultProfile = buildDefaultProfile()) {
+export function loadStudentCore(defaultProfile = buildDefaultProfile(), identityInput = defaultProfile) {
   const freshDefault = buildDefaultProfile();
+  const identity = getLearningStorageScope(identityInput);
+  const scopedFallback = identity.explicit
+    ? stampLearningIdentity(migrateProfileShape(defaultProfile || freshDefault, freshDefault), identity)
+    : migrateProfileShape(defaultProfile || freshDefault, freshDefault);
   try {
     const snapshot = readJson(STUDENT_CORE_KEY);
     if (snapshot?.profile) {
+      if (getLearningIdentityMismatch(snapshot, identity) || getLearningIdentityMismatch(snapshot.profile, identity)) {
+        return scopedFallback;
+      }
       const storedProfile = migrateProfileShape(snapshot.profile, freshDefault);
-      const fallbackProfile = migrateProfileShape(defaultProfile || freshDefault, freshDefault);
-      return profileEvidenceScore(fallbackProfile) > profileEvidenceScore(storedProfile)
-        ? fallbackProfile
+      const selected = profileEvidenceScore(scopedFallback) > profileEvidenceScore(storedProfile)
+        ? scopedFallback
         : storedProfile;
+      return identity.explicit ? stampLearningIdentity(selected, identity) : selected;
     }
 
     for (const key of LEGACY_STUDENT_CORE_KEYS) {
       const legacy = readJson(key);
       if (legacy?.profile) {
+        if (getLearningIdentityMismatch(legacy, identity) || getLearningIdentityMismatch(legacy.profile, identity)) continue;
         const nextProfile = migrateProfileShape(legacy.profile, defaultProfile || freshDefault);
-        writeJson(STUDENT_CORE_KEY, { ...legacy, profile: nextProfile, version: STUDENT_CORE_VERSION, updatedAt: new Date().toISOString() });
-        return nextProfile;
+        const safeProfile = identity.explicit ? stampLearningIdentity(nextProfile, identity) : nextProfile;
+        const nextCore = identity.explicit
+          ? stampLearningIdentity({ ...legacy, profile: safeProfile, version: STUDENT_CORE_VERSION, updatedAt: new Date().toISOString() }, identity)
+          : { ...legacy, profile: safeProfile, version: STUDENT_CORE_VERSION, updatedAt: new Date().toISOString() };
+        writeJson(STUDENT_CORE_KEY, nextCore);
+        return safeProfile;
       }
     }
   } catch {
-    removeKeys([STUDENT_CORE_KEY, ...LEGACY_STUDENT_CORE_KEYS]);
+    // Never delete shared legacy records after a parse or identity failure.
   }
 
-  return migrateProfileShape(defaultProfile || freshDefault, freshDefault);
+  return scopedFallback;
 }
 
-export function saveStudentCore(profile = {}, subjects = [], memory = {}) {
-  const normalizedProfile = migrateProfileShape(profile);
+export function saveStudentCore(profile = {}, subjects = [], memory = {}, identityInput = profile) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(profile, identity) || getLearningIdentityMismatch(memory, identity)) return null;
+  const migratedProfile = migrateProfileShape(profile);
+  const normalizedProfile = identity.explicit ? stampLearningIdentity(migratedProfile, identity) : migratedProfile;
   const subjectStats = buildSubjectStats(normalizedProfile, subjects);
   const topicStats = subjectStats.flatMap(subject => subject.topicStats);
   const completedTopics = topicStats.filter(topic => topic.mastered).length;
@@ -198,7 +214,7 @@ export function saveStudentCore(profile = {}, subjects = [], memory = {}) {
   const strongTopics = Array.isArray(memory.strongTopics) ? memory.strongTopics : [];
   const learningObservation = buildLearningObservation(normalizedProfile, memory, { subjects });
 
-  const payload = {
+  const basePayload = {
     version: STUDENT_CORE_VERSION,
     updatedAt: new Date().toISOString(),
     profile: normalizedProfile,
@@ -223,6 +239,14 @@ export function saveStudentCore(profile = {}, subjects = [], memory = {}) {
       activity
     }
   };
+
+  const payload = identity.explicit
+    ? stampLearningIdentity({
+      ...basePayload,
+      profile: stampLearningIdentity(basePayload.profile, identity),
+      core: stampLearningIdentity(basePayload.core, identity)
+    }, identity)
+    : basePayload;
 
   if (writeJson(STUDENT_CORE_KEY, payload)) {
     return payload;

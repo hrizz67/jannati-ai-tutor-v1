@@ -65,12 +65,13 @@ export function summarizeGamificationProfile(profile = loadGamificationProfile()
 }
 
 export function recordGamificationEvent(profile = loadGamificationProfile(), memory = {}, context = {}, event = {}) {
-  const current = loadGamificationProfile();
+  const identityInput = context.studentIdentity || context.profile || profile;
+  const current = loadGamificationProfile(identityInput);
   const incomingTime = new Date(profile?.updatedAt || 0).getTime();
   const currentTime = new Date(current.updatedAt || 0).getTime();
   const baseProfile = currentTime >= incomingTime ? current : profile;
   const next = applyGamificationEvent(baseProfile, memory, context, event);
-  return saveGamificationProfile(next);
+  return saveGamificationProfile(next, identityInput);
 }
 
 export {

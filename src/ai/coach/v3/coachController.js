@@ -5,13 +5,15 @@ import { buildPraise } from './praiseEngine.js';
 import { buildLearningTips } from './learningTips.js';
 import { getSubjectStrategy } from './subjectStrategies.js';
 
-export async function buildCoachResponse({ subjectId, topicId, question = {}, result = {}, userAnswer = '', context = {}, mode = 'explain' } = {}) {
+export async function buildCoachResponse({ subjectId, topicId, question = {}, result = {}, userAnswer = '', context = {}, mode = 'explain', studentId = '', studentProfile = null } = {}) {
   const knowledge = await fetchCoachKnowledgeData({
     subjectId,
     topicId,
     question,
     result,
-    userAnswer
+    userAnswer,
+    studentId,
+    studentProfile
   });
 
   const teachingContext = { ...context, mode };

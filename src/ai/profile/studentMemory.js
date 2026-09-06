@@ -1,5 +1,6 @@
 import { clampConfidence, getTopicStatus, getTopicStatusLabel, updateConfidence } from './confidenceEngine.js';
 import { cloneStudentProfile, resolveStudentId } from './studentProfile.js';
+import { getCalendarDayDifference, getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
@@ -18,15 +19,6 @@ function safeIsoDate(value) {
   if (!value) return '';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : date.toISOString();
-}
-
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 function ensureShape(profile = {}) {
@@ -168,7 +160,7 @@ function recalcTotals(profile) {
 }
 
 function updateStudyStreak(profile, activityDate = new Date()) {
-  const today = localDateKey(activityDate);
+  const today = getLocalDateKey(activityDate);
   const lastStudyDate = profile.totals.lastStudyDate || '';
   if (!today) return;
 
@@ -177,9 +169,7 @@ function updateStudyStreak(profile, activityDate = new Date()) {
   } else if (lastStudyDate === today) {
     profile.totals.currentStreak = Math.max(1, toNumber(profile.totals.currentStreak, 0));
   } else {
-    const previous = new Date(lastStudyDate);
-    const current = new Date(today);
-    const diffDays = Math.round((current.getTime() - previous.getTime()) / 86400000);
+    const diffDays = getCalendarDayDifference(lastStudyDate, today);
     profile.totals.currentStreak = diffDays === 1 ? Math.max(1, toNumber(profile.totals.currentStreak, 0) + 1) : 1;
   }
 

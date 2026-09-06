@@ -23,19 +23,34 @@ const addIssues = (issues = [], stage = 'static') => {
 };
 
 const staticQuestions = bm.topics.flatMap(topic => (topic.questions || []).map(question => ({ ...question, topic: topic.id || topic.title })));
+const isQuotedIncorrectExample = text => {
+  const value = String(text || '');
+  return /["“”'][^"“”']{3,}["“”']/u.test(value)
+    && /(?:analisis|betulkan|kesalahan|tidak sesuai|tidak tepat|nilai|penilaian|semak)/iu.test(value);
+};
 let repairedCount = 0;
 let regeneratedCount = 0;
 let rejectedCount = 0;
 for (const record of staticQuestions) {
   const text = record.q || record.question || '';
-  const result = validateBmNaturalness(text, { contentType: 'question', expectedSemanticRole: record.topic });
+  const context = {
+    contentType: 'question',
+    expectedSemanticRole: record.topic,
+    isQuotedIncorrectExample: isQuotedIncorrectExample(text)
+  };
+  const result = validateBmNaturalness(text, context);
   if (!result.valid) addIssues(result.issues);
   const normalized = normalizeBMQuestionRecord(record);
   if ((normalized.q || normalized.question || '') !== text) {
     repairedCount += 1;
     if (representativeRepairs.length < 20) representativeRepairs.push({ id: record.id, before: text, after: normalized.q || normalized.question });
   }
-  const after = validateBmNaturalness(normalized.q || normalized.question || '', { contentType: 'question' });
+  const afterText = normalized.q || normalized.question || '';
+  const after = validateBmNaturalness(afterText, {
+    contentType: 'question',
+    expectedSemanticRole: record.topic,
+    isQuotedIncorrectExample: isQuotedIncorrectExample(afterText)
+  });
   if (!after.valid) addIssues(after.issues, 'after');
 }
 

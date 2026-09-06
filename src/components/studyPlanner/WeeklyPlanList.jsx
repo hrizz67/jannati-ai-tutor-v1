@@ -1,6 +1,7 @@
 import React from 'react';
 import StudyBlockItem from './StudyBlockItem.jsx';
 import { formatDurationLabel, formatFriendlyDate, formatSubjectList } from '../../utils/displayFormatter.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function safeText(value, fallback = '') {
   const text = String(value ?? '').trim();
@@ -13,12 +14,8 @@ function safeNumber(value, fallback = 0) {
 }
 
 function isToday(dateValue) {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return false;
-  const today = new Date();
-  return date.getFullYear() === today.getFullYear()
-    && date.getMonth() === today.getMonth()
-    && date.getDate() === today.getDate();
+  return Boolean(getLocalDateKey(dateValue))
+    && getLocalDateKey(dateValue) === getLocalDateKey();
 }
 
 export default function WeeklyPlanList({ weeklyPlan = null, className = '' }) {

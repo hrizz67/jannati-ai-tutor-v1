@@ -88,7 +88,6 @@ export function buildQuestionSession(options = {}) {
       debug: questions.map(question => ({
         id: question.id,
         selectedQuestion: question.qip?.metadata?.questionId || question.id || '',
-        selectionReason: question.qip?.reasonSelected || '',
         template: question.qip?.metadata?.templateId || '',
         stemVariant: question.q || '',
         originalStem: question.qip?.originalStem || question.question || question.q || '',
@@ -155,7 +154,6 @@ export function buildQuestionSession(options = {}) {
     debug: questions.map(question => ({
       id: question.id,
       selectedQuestion: question.qip?.metadata?.questionId || question.id || '',
-      selectionReason: question.qip?.reasonSelected || '',
       template: question.qip?.metadata?.templateId || '',
       stemVariant: question.q || '',
       originalStem: question.qip?.originalStem || question.question || question.q || '',

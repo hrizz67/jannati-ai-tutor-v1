@@ -1,3 +1,5 @@
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
+
 export const SMART_QUESTION_STORAGE_KEY = 'jannati.smartQuestion';
 export const SMART_QUESTION_VERSION = 1;
 export const SMART_QUESTION_HISTORY_LIMIT = 50;
@@ -41,16 +43,25 @@ export function createDefaultSmartQuestionState(overrides = {}) {
   };
 }
 
-export function loadSmartQuestionState() {
-  if (!hasStorage()) return clone(createDefaultSmartQuestionState());
+function createScopedDefault(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  const fresh = clone(createDefaultSmartQuestionState());
+  return identity.explicit ? stampLearningIdentity(fresh, identity) : fresh;
+}
+
+export function loadSmartQuestionState(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  if (!hasStorage()) return createScopedDefault(identity);
   try {
     const raw = localStorage.getItem(SMART_QUESTION_STORAGE_KEY);
-    if (!raw) return clone(createDefaultSmartQuestionState());
+    if (!raw) return createScopedDefault(identity);
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return clone(createDefaultSmartQuestionState());
-    return migrateSmartQuestionState(parsed);
+    if (!parsed || typeof parsed !== 'object') return createScopedDefault(identity);
+    if (getLearningIdentityMismatch(parsed, identity)) return createScopedDefault(identity);
+    const migrated = migrateSmartQuestionState(parsed);
+    return identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
   } catch {
-    return clone(createDefaultSmartQuestionState());
+    return createScopedDefault(identity);
   }
 }
 
@@ -70,14 +81,19 @@ export function migrateSmartQuestionState(rawState = {}) {
   return merged;
 }
 
-export function saveSmartQuestionState(state = createDefaultSmartQuestionState()) {
-  const safeState = migrateSmartQuestionState(state);
+export function saveSmartQuestionState(state = createDefaultSmartQuestionState(), identityInput = state) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(state, identity)) return loadSmartQuestionState(identity);
+  const migrated = migrateSmartQuestionState(state);
+  const safeState = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
   if (hasStorage()) {
     try {
       const currentRaw = localStorage.getItem(SMART_QUESTION_STORAGE_KEY);
       if (currentRaw) {
         try {
-          const current = migrateSmartQuestionState(JSON.parse(currentRaw));
+          const currentParsed = JSON.parse(currentRaw);
+          if (getLearningIdentityMismatch(currentParsed, identity)) return safeState;
+          const current = migrateSmartQuestionState(currentParsed);
           if (new Date(current.updatedAt || 0).getTime() > new Date(safeState.updatedAt || 0).getTime()) {
             return current;
           }
@@ -160,7 +176,7 @@ export function recordSmartQuestionState(state = loadSmartQuestionState(), decis
     updatedAt: new Date().toISOString()
   };
 
-  return saveSmartQuestionState(next);
+  return saveSmartQuestionState(next, context.studentIdentity || context.profile || state);
 }
 
 export default {

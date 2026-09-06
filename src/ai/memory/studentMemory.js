@@ -34,12 +34,12 @@ function syncAdaptiveSummary(memory, profile = {}) {
   return next;
 }
 
-export function getStudentMemory(profile = {}, memory = loadMemory()) {
+export function getStudentMemory(profile = {}, memory = loadMemory(profile)) {
   return syncAdaptiveSummary(memory, profile);
 }
 
-export function saveStudentMemory(profile = {}, memory = loadMemory()) {
-  return saveMemory(syncAdaptiveSummary(memory, profile));
+export function saveStudentMemory(profile = {}, memory = loadMemory(profile)) {
+  return saveMemory(syncAdaptiveSummary(memory, profile), profile);
 }
 
 export default {

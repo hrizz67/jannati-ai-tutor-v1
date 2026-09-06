@@ -1,3 +1,5 @@
+import { addLocalDateKeyDays, getLocalDateKey } from '../../utils/localDate.js';
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
 }
@@ -7,30 +9,12 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
-function startOfDay(dateKey) {
-  const date = new Date(`${dateKey}T00:00:00`);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function addDays(date, days) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return next;
-}
-
 function rollingDays(days = 30) {
   const count = Math.max(1, Math.floor(toNumber(days, 30)));
-  const today = startOfDay(localDateKey());
+  const today = getLocalDateKey();
   const list = [];
   for (let index = count - 1; index >= 0; index -= 1) {
-    list.push(localDateKey(addDays(today, -index)));
+    list.push(addLocalDateKeyDays(today, -index));
   }
   return list;
 }
@@ -49,8 +33,7 @@ function getQuestionLog(profile = {}) {
 
 function normalizeDate(value) {
   if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : localDateKey(date);
+  return getLocalDateKey(value) || null;
 }
 
 function buildDailyMap(profile = {}) {
@@ -82,7 +65,7 @@ function getDayStatus(day, todayKey, dailyMap) {
 
 function getCalendarEntries(profile = {}, days = 30) {
   const dayList = rollingDays(days);
-  const todayKey = localDateKey();
+  const todayKey = getLocalDateKey();
   const dailyMap = buildDailyMap(profile);
   return dayList.map(date => ({
     date,
@@ -143,7 +126,7 @@ function getAllSubjectMastery(profile = {}) {
 }
 
 export function getCalendarDay(profile = {}, date) {
-  const todayKey = localDateKey();
+  const todayKey = getLocalDateKey();
   const dateKey = normalizeDate(date);
   if (!dateKey) return null;
   const dailyMap = buildDailyMap(profile);

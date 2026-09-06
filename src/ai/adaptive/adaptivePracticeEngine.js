@@ -308,13 +308,21 @@ export function buildAdaptivePracticeSession(profile, questionBank, options = {}
   const difficulty = String(options.difficulty || 'medium').toLowerCase();
   const seed = options.seed || Date.now();
   const subjectFilter = options.subjectId || null;
-  const bank = normalizeQuestionBank(questionBank).filter(subject => !subjectFilter || subject.id === subjectFilter);
+  const topicFilter = options.topicId || null;
+  const bank = normalizeQuestionBank(questionBank)
+    .filter(subject => !subjectFilter || subject.id === subjectFilter)
+    .map(subject => ({
+      ...subject,
+      topics: (subject.topics || []).filter(topic => !topicFilter || topic.id === topicFilter)
+    }))
+    .filter(subject => subject.topics.length > 0);
 
   const recommendationPlan = generateStudyPlan(profile, {
     questionCount,
     mode,
     difficulty,
     subjectId: subjectFilter,
+    topicId: topicFilter,
     seed
   });
 
@@ -355,6 +363,9 @@ export function buildAdaptivePracticeSession(profile, questionBank, options = {}
       adaptive: true,
       fallbackUsed: fallbackUsed || resolved.metadata.fallbackUsed,
       insufficientEvidence,
+      requestedSubjectId: subjectFilter,
+      requestedTopicId: topicFilter,
+      requestedDifficulty: difficulty,
       skippedTopics: [...new Map((resolved.metadata.skippedTopics || []).map(item => [`${item.subjectId}:${item.topicId}`, item])).values()],
       shortfall: resolved.metadata.shortfall,
       validationIssues: validation.issues || []

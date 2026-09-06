@@ -1,4 +1,5 @@
 import { DEFAULT_PROFILE, PROFILE_VERSION, createDefaultProfile } from './studentProfile.js';
+import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
 
 const STORAGE_KEY = 'jannati.adaptive.studentProfile';
 
@@ -33,30 +34,41 @@ function migrateProfile(rawProfile = {}) {
   return merged;
 }
 
-export function loadProfile() {
+function createScopedDefault(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  const fresh = cloneProfile(DEFAULT_PROFILE);
+  return identity.explicit ? stampLearningIdentity(fresh, identity) : fresh;
+}
+
+export function loadProfile(identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
   if (!hasStorage()) {
-    return cloneProfile(DEFAULT_PROFILE);
+    return createScopedDefault(identity);
   }
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return cloneProfile(DEFAULT_PROFILE);
+      return createScopedDefault(identity);
     }
 
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') {
-      return cloneProfile(DEFAULT_PROFILE);
+      return createScopedDefault(identity);
     }
-
-    return migrateProfile(parsed);
+    if (getLearningIdentityMismatch(parsed, identity)) return createScopedDefault(identity);
+    const migrated = migrateProfile(parsed);
+    return identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
   } catch {
-    return cloneProfile(DEFAULT_PROFILE);
+    return createScopedDefault(identity);
   }
 }
 
-export function saveProfile(profile = DEFAULT_PROFILE) {
-  const safeProfile = migrateProfile(profile);
+export function saveProfile(profile = DEFAULT_PROFILE, identityInput = profile) {
+  const identity = getLearningStorageScope(identityInput);
+  if (getLearningIdentityMismatch(profile, identity)) return loadProfile(identity);
+  const migrated = migrateProfile(profile);
+  const safeProfile = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
 
   if (!hasStorage()) {
     return safeProfile;

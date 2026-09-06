@@ -1,6 +1,7 @@
 import { generateRecommendation } from '../adaptive/recommendationEngine.js';
 import { rankWeakTopics } from '../adaptive/weakTopicEngine.js';
 import { getMistakeContext } from '../mistakes/index.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
@@ -13,13 +14,6 @@ function toNumber(value, fallback = 0) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
-}
-
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function daysSince(value) {
@@ -57,7 +51,7 @@ function getRecentTopicMap(profile = {}) {
   return new Map(recent.map(entry => [`${entry.subjectId}_${entry.topicId}`, entry]));
 }
 
-function normalizeTopic(entry = {}, weakTopicMap = new Map(), recentTopicMap = new Map(), nowKey = localDateKey()) {
+function normalizeTopic(entry = {}, weakTopicMap = new Map(), recentTopicMap = new Map(), nowKey = getLocalDateKey()) {
   const record = entry.record || {};
   const weakTopic = weakTopicMap.get(`${entry.subjectId}_${entry.topicId}`) || {};
   const lastPlayed = record.lastPlayed || weakTopic.lastPlayed || null;
@@ -106,7 +100,7 @@ function buildCandidateList(profile = {}) {
   const records = getTopicRecords(profile);
   const weakMap = getWeakTopicMap(profile);
   const recentMap = getRecentTopicMap(profile);
-  const today = localDateKey();
+  const today = getLocalDateKey();
   const mistakeContext = getMistakeContext(profile, '', '');
 
   return records.map(entry => {

@@ -20,7 +20,7 @@ assert.equal(getAccessFeatureLabel('unknown'), 'Ciri Premium');
 assert.equal(getDailyQuestionCount({}, {
   learningHistory: [
     { questionId: 'q1', answeredAt: `${today}T01:00:00Z` },
-    { questionId: 'q2', answeredAt: '2026-08-07T23:00:00Z' },
+    { questionId: 'q2', answeredAt: '2026-08-07T12:00:00Z' },
     { eventType: 'quiz-answer', date: `${today}T02:00:00Z` }
   ]
 }, today), 2);
@@ -73,6 +73,7 @@ assert.equal(expiredPremium.access_status, 'expired', 'An elapsed Premium entitl
 assert.match(expiredPremium.accessLabel, /Premium tamat/);
 
 const app = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
+const premiumAccessHook = fs.readFileSync(new URL('../../src/hooks/usePremiumAccess.js', import.meta.url), 'utf8');
 const dashboard = fs.readFileSync(new URL('../../src/dashboard/HomeDashboard.jsx', import.meta.url), 'utf8');
 const schema = fs.readFileSync(new URL('../../supabase/schema.sql', import.meta.url), 'utf8');
 const learningSql = fs.readFileSync(new URL('../../supabase/learning_data.sql', import.meta.url), 'utf8');
@@ -102,7 +103,8 @@ for (const token of ['openTutorAi', 'openPremiumScreen', 'FREE_DAILY_QUESTION_LI
 }
 assert.ok(!app.includes("onOpenUasa={() => setScreen('uasa')}"));
 assert.ok(!app.includes("onStartBacaan={() => setScreen('reading')}"));
-assert.match(app, /resolveAuthoritativeAccess\(accountUser\?\.id, accessProfile\)/, 'App access must be derived from the active account and server record.');
+assert.match(app, /usePremiumAccess\(\{ accountUser, accessProfile \}\)/, 'App access must use the isolated authoritative access hook.');
+assert.match(premiumAccessHook, /resolveAuthoritativeAccess\(accountId, accessProfile\)/, 'Premium access must be derived from the active account and server record.');
 assert.match(app, /setAccessProfile\(current => String\(current\?\.id \|\| ''\) === String\(user\.id\) \? current : null\)/, 'Account switching must drop a previous account entitlement before hydration.');
 assert.match(app, /if \(!accountUser\?\.id && \(screen === 'login' \|\| showAccountLogin\)\) return;/, 'Login must not resurrect a signed-out profile through persistence.');
 assert.match(app, /setProfile\(\{ \.\.\.defaultProfile \}\)[\s\S]{0,300}setChildProfiles\(\[\]\)/, 'Logout must clear in-memory entitlement and child state.');

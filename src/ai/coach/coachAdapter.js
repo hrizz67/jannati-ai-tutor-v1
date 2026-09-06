@@ -4,6 +4,7 @@ import { teachAnswer } from '../teacherEngine.js';
 import { sanitizeAiText } from '../learningCopy.js';
 import { formatSubjectName, getHumanReadableTopic } from '../../utils/displayFormatter.js';
 import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
+import { getAnswerRevealPolicy } from '../policy/answerRevealPolicy.js';
 
 const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
@@ -103,10 +104,10 @@ function normalizeError(error) {
   };
 }
 
-function buildFallbackData(mode, { question = {}, topic = {}, result = {}, userAnswer = '' } = {}) {
-  const explainData = explainAnswer({ question, topic, result, userAnswer });
+function buildFallbackData(mode, { question = {}, topic = {}, result = {}, userAnswer = '', studentId = '', studentProfile = null } = {}) {
+  const explainData = explainAnswer({ question, topic, result, userAnswer, studentId, studentProfile });
   if (mode === 'teach') {
-    return teachAnswer({ question, topic, explanationData: explainData });
+    return teachAnswer({ question, topic, explanationData: explainData, studentId, studentProfile });
   }
   return explainData;
 }
@@ -260,8 +261,8 @@ function mergeList(primary = [], secondary = []) {
   return result;
 }
 
-function buildFallbackPayload(mode, { question = {}, topic = {}, result = {}, userAnswer = '' } = {}) {
-  return buildFallbackData(mode, { question, topic, result, userAnswer });
+function buildFallbackPayload(mode, { question = {}, topic = {}, result = {}, userAnswer = '', studentId = '', studentProfile = null } = {}) {
+  return buildFallbackData(mode, { question, topic, result, userAnswer, studentId, studentProfile });
 }
 
 function buildContextUsed({
@@ -308,13 +309,15 @@ function buildContextUsed({
   };
 }
 
-function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '' } = {}) {
+function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, question = {}, result = {}, userAnswer = '', coachData = null, fallbackData = null, error = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '', studentId = '', studentProfile = null } = {}) {
   const subjectLabel = getCoachSubjectLabel(subjectId, coachData || {}, question, topic || {});
   const rawFallback = fallbackData || buildFallbackPayload(mode, {
     question: { ...question, subjectId: question.subjectId || subjectId },
     topic: { ...(topic || {}), subjectId: topic?.subjectId || subjectId },
     result,
-    userAnswer
+    userAnswer,
+    studentId,
+    studentProfile
   });
   const hasCoachData = Boolean(coachData && !error);
   const payload = hasCoachData ? coachData : rawFallback;
@@ -358,12 +361,15 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     attemptCount,
     hintsUsed
   });
-  const revealAnswer = Boolean(
-    result?.correct ||
-    result?.status === 'correct' ||
-    result?.status === 'almost' ||
-    explanationMode === 'correct_answer_reinforcement'
-  );
+  const answerRevealPolicy = getAnswerRevealPolicy({
+    status: result?.status,
+    isCorrect: result?.correct || result?.status === 'correct',
+    isAlmostCorrect: result?.status === 'almost',
+    attemptCount,
+    hintsUsed,
+    explanationMode
+  });
+  const revealAnswer = answerRevealPolicy.canRevealAnswer;
   const resolvedFallbackUsed = !hasCoachData ||
     !normalizedCore.explanation ||
     !normalizedCore.hint ||
@@ -380,8 +386,8 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     hint: normalizedCore.hint || 'Baca soalan perlahan-lahan dan cari kata kunci.',
     learningTip: normalizedCore.learningTip || 'Fokus pada kata kunci penting.',
     praise: normalizedCore.praise || 'Bagus! Teruskan usaha kamu.',
-    correctAnswer: normalizedCore.correctAnswer || '',
-    acceptedAnswers: getAcceptedAnswers({ ...question, acceptedAnswers }),
+    correctAnswer: revealAnswer ? (normalizedCore.correctAnswer || question.answer || '') : '',
+    acceptedAnswers: revealAnswer ? getAcceptedAnswers({ ...question, acceptedAnswers }) : [],
     subject: normalizedCore.subject || subjectLabel,
     topic: normalizedCore.topic || '',
     fallbackUsed: resolvedFallbackUsed,
@@ -395,8 +401,10 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
       code: 'COACH_FALLBACK',
       message: 'Coach payload was incomplete, so a safe fallback was used.'
     } : null),
-    simpleExplanation: safeSimpleExplanation || normalizedCore.explanation || '',
-    whyCorrect: normalizedCore.whyCorrect || '',
+    simpleExplanation: revealAnswer
+      ? (safeSimpleExplanation || normalizedCore.explanation || '')
+      : (rawFallback.hint || rawFallback.sections?.hint || normalizedCore.hint || ''),
+    whyCorrect: revealAnswer ? (normalizedCore.whyCorrect || '') : '',
     subjectId: subjectId || null,
     topicId: topicId || question.topicId || topic?.id || null,
     subjectLabel,
@@ -404,6 +412,8 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
     shortText: sanitizeAiText(rawFallback.shortText || normalizedCore.explanation || normalizedCore.simpleExplanation || normalizedCore.hint || ''),
     contextUsed,
     showCorrectAnswer: Boolean(revealAnswer),
+    answerRevealPolicy,
+    attemptCount: answerRevealPolicy.attemptCount,
     sections: rawFallback.sections || {
       summary: sanitizeAiText(questionText || question?.q || question?.question || topic?.title || 'Mari kita lihat soalan ini.'),
       whyCorrect: normalizedCore.whyCorrect || normalizedCore.explanation || normalizedCore.simpleExplanation || '',
@@ -474,7 +484,7 @@ function normalizeCoachPayload(mode, { subjectId, topicId, topic = null, questio
   return normalized;
 }
 
-export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '' } = {}) {
+export async function buildCoachAdapterData(mode, { subjectId, topicId, question = {}, result = {}, userAnswer = '', topic = null, questionText = '', instruction = '', options = [], expectedAnswer = '', acceptedAnswers = [], learnerAnswer = '', explanationMode = '', currentLearningObjective = '', attemptCount = 0, hintsUsed = 0, sourceLanguage = '', studentId = '', studentProfile = null } = {}) {
   const startedAt = Date.now();
   try {
     const coachData = await buildCoachResponse({
@@ -484,6 +494,8 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       result,
       userAnswer,
       mode,
+      studentId,
+      studentProfile,
       context: {
         subjectId,
         topicId,
@@ -520,7 +532,9 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       currentLearningObjective,
       attemptCount,
       hintsUsed,
-      sourceLanguage
+      sourceLanguage,
+      studentId,
+      studentProfile
     });
     if (isDev && normalized.fallbackUsed) {
       console.warn('[coach-adapter] contract fallback', {
@@ -549,9 +563,11 @@ export async function buildCoachAdapterData(mode, { subjectId, topicId, question
       result,
       userAnswer,
       coachData: null,
-      fallbackData: buildFallbackPayload(mode, { question, topic, result, userAnswer }),
+      fallbackData: buildFallbackPayload(mode, { question, topic, result, userAnswer, studentId, studentProfile }),
       error,
-      sourceLanguage
+      sourceLanguage,
+      studentId,
+      studentProfile
     });
     if (isDev) {
       console.warn('[coach-adapter] contract fallback after error', {

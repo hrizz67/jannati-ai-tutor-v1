@@ -12,9 +12,9 @@ import MascotCard from './components/MascotCard';
 import JannaAvatar from './components/JannaAvatar';
 import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
+import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
 import IconGlyph from './components/IconGlyph.jsx';
-import { explainAnswer } from './ai/explainEngine';
 import { updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
 import { loadProfile as loadAdaptiveStudentProfile, resetProfile as resetAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
@@ -25,7 +25,6 @@ import { buildStudyPlan } from './ai/prediction/studyPlanEngine';
 import { forecastMastery } from './ai/prediction/masteryForecastEngine';
 import { buildCoachingDecision } from './ai/coach/coachingEngine';
 import { buildTeachingStrategy } from './ai/coach/adaptiveTeachingEngine';
-import { buildCoachAdapterData, getCoachExplainData, getCoachTeacherData } from './ai/coach/coachAdapter';
 import { buildPersonalityResponse } from './ai/personality/personalityEngine.js';
 import { buildLearningObservation } from './ai/observation/learningObservationEngine.js';
 import { buildNarrativeBundle } from './ai/narrative/narrativeEngine.js';
@@ -39,7 +38,6 @@ import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionSt
 import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { createReadingSpeechSession } from './ai/speech/speechSession.js';
 import { mergeSpeechTranscript } from './ai/speech/speechEngine.js';
-import { teachAnswer } from './ai/teacherEngine';
 import { sanitizeAiText } from './ai/learningCopy';
 import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
 import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
@@ -48,10 +46,10 @@ import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personal
 import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName, isPlaceholderStudentName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
-import { splitQuestionPresentationLines } from './utils/questionPresentation.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
-import { getAcceptedAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
+import { buildChildSafeHint, getAnswerRevealPolicy } from './ai/policy/answerRevealPolicy.js';
+import { getAcceptedAnswers, getCanonicalQuestionAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
   buildCommunicationSessionSummary,
@@ -62,7 +60,7 @@ import {
 import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
-const ParentDashboardPage = React.lazy(() => import('./dashboard/ParentDashboard'));
+const ParentModeBoundary = React.lazy(() => import('./components/parent/ParentModeBoundary.jsx'));
 import { EmptyState } from './dashboard/dashboardHelpers.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
@@ -84,7 +82,14 @@ import {
   syncRevisionedCloudLearning
 } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
+import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
+import { normalizeSupportedStudentYear, SUPPORTED_STUDENT_YEARS } from './config/studentYears.js';
+import { getLocalDateKey } from './utils/localDate.js';
+import { applyScopedLearningSnapshot, scopeChildLearningSnapshot, STUDENT_PROFILE_STORAGE_PREFIX } from './services/childScopedStorage.js';
+import { LEARNING_IDENTITY_MIGRATION_PREFIX, migrateLegacyStudentData } from './services/legacyStudentMigration.js';
+import { createChildLineageId, createTutorConversationScope, getLearningStorageScope, stampLearningIdentity } from './services/studentIdentity.js';
+import { usePremiumAccess } from './hooks/usePremiumAccess.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
@@ -102,6 +107,7 @@ const GUEST_SNAPSHOT_KEY = 'jannati_guest_snapshot_v1';
 const CHILD_PROFILES_KEY = 'jannati_child_profiles';
 const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
 const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
+const ARCHIVED_CHILDREN_KEY = 'jannati_archived_child_profiles';
 const CLOUD_PENDING_PREFIX = 'jannati_cloud_sync_pending:';
 const CLOUD_DIRTY_CHILDREN_PREFIX = 'jannati_cloud_dirty_children:';
 const PROFILE_RECONCILIATION_PREFIX = 'jannati_profile_reconciliation_pending:';
@@ -120,6 +126,11 @@ const PREMIUM_SCREEN_FEATURES = Object.freeze({
   parent: 'parent',
   uasa: 'uasa'
 });
+let coachAdapterPromise = null;
+function loadCoachAdapter() {
+  coachAdapterPromise ||= import('./ai/coach/coachAdapter');
+  return coachAdapterPromise;
+}
 const storageRecoveryEvents = [];
 
 function mergeLoadedSubjects(current = [], incoming = []) {
@@ -153,9 +164,11 @@ function isAccountDataKey(key = '') {
     && key !== ACCOUNT_MIGRATION_KEY
     && key !== GUEST_SNAPSHOT_KEY
     && key !== SYNC_DEVICE_KEY
+    && !key.startsWith(LEARNING_IDENTITY_MIGRATION_PREFIX)
     && !key.startsWith(CLOUD_PENDING_PREFIX)
     && !key.startsWith(CLOUD_DIRTY_CHILDREN_PREFIX)
     && !key.startsWith(PROFILE_RECONCILIATION_PREFIX)
+    && !key.startsWith(PARENT_SECURITY_STORAGE_PREFIX)
     && !key.startsWith(ACCOUNT_SNAPSHOT_PREFIX);
 }
 
@@ -165,6 +178,22 @@ function createChildId() {
   } catch {
     return `child-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
+}
+
+function normalizeChildProfile(profile = {}) {
+  const id = String(profile?.id || '').trim();
+  if (!id) return profile;
+  return {
+    ...profile,
+    id,
+    lineageId: String(profile.lineageId || '').trim() || createChildLineageId(id)
+  };
+}
+
+function createLegacyIdentityKey(profile = {}, accountId = '') {
+  const name = String(profile.name || '').trim().toLocaleLowerCase('ms');
+  const year = String(profile.year || '').trim().toLocaleLowerCase('ms');
+  return name && year ? `legacy:${String(accountId || 'guest')}:${name}|${year}` : '';
 }
 
 function getSyncDeviceId() {
@@ -273,7 +302,7 @@ function readDeletedChildren() {
 function readChildProfiles() {
   try {
     const parsed = JSON.parse(localStorage.getItem(CHILD_PROFILES_KEY) || '[]');
-    return Array.isArray(parsed) ? parsed.filter(item => item?.id && item?.name) : [];
+    return Array.isArray(parsed) ? parsed.filter(item => item?.id && item?.name).map(normalizeChildProfile) : [];
   } catch {
     return [];
   }
@@ -296,14 +325,45 @@ function getActiveStorageScopeId() {
 }
 
 function writeChildProfiles(profiles) {
-  localStorage.setItem(CHILD_PROFILES_KEY, JSON.stringify(profiles));
+  localStorage.setItem(CHILD_PROFILES_KEY, JSON.stringify((profiles || []).map(normalizeChildProfile)));
 }
 
-function isChildScopedDataKey(key = '') {
+function readArchivedChildren() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ARCHIVED_CHILDREN_KEY) || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeArchivedChildren(records = {}) {
+  localStorage.setItem(ARCHIVED_CHILDREN_KEY, JSON.stringify(records));
+}
+
+function getStoredLearningIdentity(profile = {}) {
+  return getLearningStorageScope({
+    accountId: getActiveStorageScopeId(),
+    childId: readActiveChildId(),
+    profile
+  });
+}
+
+function loadStoredStudentCore() {
+  const storedProfile = loadProfile();
+  return loadStudentCore(storedProfile, getStoredLearningIdentity(storedProfile));
+}
+
+function isChildScopedDataKey(key = '', childId = '') {
+  if (key.startsWith(STUDENT_PROFILE_STORAGE_PREFIX)) {
+    const storedStudentId = key.slice(STUDENT_PROFILE_STORAGE_PREFIX.length);
+    if (storedStudentId && storedStudentId !== 'default' && childId && storedStudentId !== String(childId)) return false;
+  }
   return isAccountDataKey(key)
     && key !== CHILD_PROFILES_KEY
     && key !== ACTIVE_CHILD_KEY
     && key !== DELETED_CHILDREN_KEY
+    && key !== ARCHIVED_CHILDREN_KEY
     && key !== CLOUD_CHILD_STATE_KEY
     && key !== CLOUD_SYNC_META_KEY
     && !key.startsWith(CHILD_SNAPSHOT_PREFIX)
@@ -311,12 +371,12 @@ function isChildScopedDataKey(key = '') {
     && !key.startsWith(CHILD_MERGED_BACKUP_PREFIX);
 }
 
-function readChildScopedData() {
+function readChildScopedData(childId = readActiveChildId()) {
   const snapshot = {};
   try {
     for (let index = 0; index < localStorage.length; index += 1) {
       const key = localStorage.key(index);
-      if (isChildScopedDataKey(key)) snapshot[key] = localStorage.getItem(key);
+      if (isChildScopedDataKey(key, childId)) snapshot[key] = localStorage.getItem(key);
     }
   } catch {
     // Keep the current child usable when storage is unavailable.
@@ -335,6 +395,26 @@ function clearChildScopedData() {
   } catch {
     // Keep the current child usable when storage cleanup is unavailable.
   }
+}
+
+function quarantineChildScopeFailure(childId, snapshot, issues = []) {
+  try {
+    const backupKey = `${CHILD_MERGED_BACKUP_PREFIX}identity-conflict-${childId}-${Date.now()}`;
+    localStorage.setItem(backupKey, JSON.stringify({
+      version: 1,
+      reason: 'child-learning-identity-conflict',
+      childId,
+      accountId: getActiveStorageScopeId(),
+      issues,
+      snapshot
+    }));
+  } catch {
+    // The original snapshot remains untouched when quarantine storage fails.
+  }
+}
+
+function scopeSnapshotForChild(snapshot, childId, accountId = getActiveStorageScopeId()) {
+  return scopeChildLearningSnapshot(snapshot, { accountId, childId });
 }
 
 function repairChildSnapshotStorage() {
@@ -371,21 +451,30 @@ function repairChildSnapshotStorage() {
 }
 
 function captureChildSnapshot(childId, { force = false } = {}) {
-  if (!childId) return;
+  if (!childId) return false;
   try {
     repairChildSnapshotStorage();
+    const rawSnapshot = readChildScopedData(childId);
+    const scoped = scopeSnapshotForChild(rawSnapshot, childId);
+    if (!scoped.ok) {
+      quarantineChildScopeFailure(childId, rawSnapshot, scoped.issues);
+      return false;
+    }
+    applyScopedLearningSnapshot(localStorage, scoped.snapshot, scoped.identity);
     const nextSnapshot = {
-      ...readChildScopedData(),
+      ...scoped.snapshot,
       __childSnapshotChildId: childId,
       __childSnapshotAccountId: getActiveStorageScopeId(),
       __childSnapshotCapturedAt: Date.now(),
       __childSnapshotDeviceId: getSyncDeviceId()
     };
     const existingSnapshot = readChildSnapshot(childId);
-    if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return;
+    if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return true;
     localStorage.setItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`, JSON.stringify(nextSnapshot));
+    return true;
   } catch {
     // Child switching must remain usable when storage is unavailable.
+    return false;
   }
 }
 
@@ -477,17 +566,22 @@ function restoreChildSnapshot(snapshot = {}, expectedChildId = '', expectedAccou
   const snapshotAccountId = String(snapshot?.__childSnapshotAccountId || '').trim();
   if (snapshotChildId && expectedChildId && snapshotChildId !== String(expectedChildId)) return false;
   if (snapshotAccountId && expectedAccountId && snapshotAccountId !== String(expectedAccountId)) return false;
-  const previousSnapshot = readChildScopedData();
+  const scoped = scopeSnapshotForChild(snapshot, expectedChildId || snapshotChildId, expectedAccountId);
+  if (!scoped.ok) {
+    quarantineChildScopeFailure(expectedChildId || snapshotChildId, snapshot, scoped.issues);
+    return false;
+  }
+  const previousSnapshot = readChildScopedData(readActiveChildId());
   clearChildScopedData();
   try {
-    Object.entries(snapshot).forEach(([key, value]) => {
-      if (isChildScopedDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+    Object.entries(scoped.snapshot).forEach(([key, value]) => {
+      if (isChildScopedDataKey(key, expectedChildId || snapshotChildId) && typeof value === 'string') localStorage.setItem(key, value);
     });
   } catch {
     clearChildScopedData();
     try {
       Object.entries(previousSnapshot).forEach(([key, value]) => {
-        if (isChildScopedDataKey(key) && typeof value === 'string') localStorage.setItem(key, value);
+        if (isChildScopedDataKey(key, readActiveChildId()) && typeof value === 'string') localStorage.setItem(key, value);
       });
     } catch {
       // The account/child snapshots remain available for explicit recovery.
@@ -556,7 +650,8 @@ function buildCloudLearningPayload({ captureActiveChild = true } = {}) {
       version: CLOUD_SYNC_PROTOCOL_VERSION,
       profiles: readChildProfiles(),
       activeChildId,
-      deletedChildren: readDeletedChildren()
+      deletedChildren: readDeletedChildren(),
+      archivedChildren: readArchivedChildren()
     });
     snapshot[CLOUD_SYNC_META_KEY] = JSON.stringify({
       version: CLOUD_SYNC_PROTOCOL_VERSION,
@@ -620,8 +715,12 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
       ? metadata.deletedChildren
       : {};
+    const archivedChildren = metadata.archivedChildren && typeof metadata.archivedChildren === 'object'
+      ? metadata.archivedChildren
+      : {};
     const cloudProfiles = Array.isArray(metadata.profiles)
-      ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id])
+      ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id]
+        && !(Number(archivedChildren[item.id]?.archivedAt) > Number(archivedChildren[item.id]?.restoredAt)))
       : [];
     const preferred = cloudProfiles.find(item => item.id === preferredChildId);
     const localActive = cloudProfiles.find(item => item.id === localActiveChildId);
@@ -632,6 +731,7 @@ function restoreCloudLearningSnapshot(cloudData = {}, preferredChildId = '') {
       : cloudData;
     if (!restoreAccountSnapshot(normalizedCloudData, accountScopeId)) return '';
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
+    writeArchivedChildren(archivedChildren);
     Object.keys(deletedChildren).forEach(childId => {
       localStorage.removeItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`);
       localStorage.removeItem(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`);
@@ -656,8 +756,12 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
     const deletedChildren = metadata.deletedChildren && typeof metadata.deletedChildren === 'object'
       ? metadata.deletedChildren
       : {};
+    const archivedChildren = metadata.archivedChildren && typeof metadata.archivedChildren === 'object'
+      ? metadata.archivedChildren
+      : {};
     const profiles = Array.isArray(metadata.profiles)
-      ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id])
+      ? metadata.profiles.filter(item => item?.id && item?.name && !deletedChildren[item.id]
+        && !(Number(archivedChildren[item.id]?.archivedAt) > Number(archivedChildren[item.id]?.restoredAt)))
       : readChildProfiles();
     const requestedActiveProfile = profiles.find(item => item.id === activeChildId);
     const resolvedActiveChildId = requestedActiveProfile?.id
@@ -666,6 +770,7 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
       || '';
     writeChildProfiles(profiles);
     localStorage.setItem(DELETED_CHILDREN_KEY, JSON.stringify(deletedChildren));
+    writeArchivedChildren(archivedChildren);
     if (typeof payload[CLOUD_CHILD_STATE_KEY] === 'string') localStorage.setItem(CLOUD_CHILD_STATE_KEY, payload[CLOUD_CHILD_STATE_KEY]);
     if (typeof payload[CLOUD_SYNC_META_KEY] === 'string') localStorage.setItem(CLOUD_SYNC_META_KEY, payload[CLOUD_SYNC_META_KEY]);
     Object.keys(deletedChildren).forEach(childId => {
@@ -977,17 +1082,22 @@ function loadProfile() {
   return demoProfile;
 }
 
-function persistResumeData(data, setResume) {
-  const normalized = normalizeResumeData(data);
+function persistResumeData(data, setResume, identityInput = data) {
+  const identity = getLearningStorageScope(identityInput);
+  const normalized = normalizeResumeData(identity.explicit ? stampLearningIdentity(data, identity) : data);
   if (!normalized) return null;
-  saveResume(normalized);
+  saveResume(normalized, undefined, identity);
   setResume(normalized);
   return normalized;
 }
 
-function clearResumeData(setResume, targetResume = loadResume()) {
-  clearResume(targetResume);
-  setResume(loadResume());
+function clearResumeData(setResume, targetResume, identityInput = {}) {
+  const identity = getLearningStorageScope(identityInput);
+  const scopedTarget = targetResume === undefined
+    ? loadResume(identity)
+    : { ...targetResume, ...(identity.explicit ? identity : {}) };
+  clearResume(scopedTarget);
+  setResume(loadResume(identity));
 }
 
 function loadFeedbackItems() {
@@ -1055,7 +1165,7 @@ function getGrade(score = 0) {
 }
 
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalDateKey();
 }
 
 function isTopicUnlocked(profile, subject, topicIndex) {
@@ -1132,10 +1242,10 @@ function buildDailyChallenge(observation = null) {
   ];
 }
 
-function buildUasaSet(subject, count = 20) {
-  const profile = loadAdaptiveStudentProfile();
-  const memory = loadAIMemory();
-  const gamificationProfile = loadGamificationState();
+function buildUasaSet(subject, count = 20, identityInput = {}) {
+  const profile = loadAdaptiveStudentProfile(identityInput);
+  const memory = loadAIMemory(identityInput);
+  const gamificationProfile = loadGamificationState(identityInput);
   const subjectQuestions = (subject?.topics || []).flatMap(topic => (topic?.questions || []).map(question => ({
     ...question,
     subjectId: subject.id,
@@ -1156,7 +1266,7 @@ function buildUasaSet(subject, count = 20) {
     readiness,
     gamificationProfile,
     count,
-    smartState: loadSmartQuestionState()
+    smartState: loadSmartQuestionState(identityInput)
   });
   const orderedQuestions = smartSet.questions.length ? smartSet.questions : subjectQuestions;
   const sessionSeed = smartSet.variationSeed || createSmartQuestionSeed([
@@ -1216,10 +1326,10 @@ function buildPredictionGreeting(profile, predictionProfile, readiness, studyPla
 }
 
 export default function App() {
-  const [profile, setProfile] = useState(() => loadStudentCore(loadProfile()));
-  const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile());
-  const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState());
-  const [resume, setResume] = useState(loadResume);
+  const [profile, setProfile] = useState(loadStoredStudentCore);
+  const [adaptiveProfile, setAdaptiveProfile] = useState(() => loadAdaptiveStudentProfile(getStoredLearningIdentity(loadProfile())));
+  const [gamificationProfile, setGamificationProfile] = useState(() => loadGamificationState(getStoredLearningIdentity(loadProfile())));
+  const [resume, setResume] = useState(() => loadResume(getStoredLearningIdentity(loadProfile())));
   const [recoveryMessages, setRecoveryMessages] = useState(() => [...storageRecoveryEvents]);
   useEffect(() => {
     if (!recoveryMessages.length) return undefined;
@@ -1230,7 +1340,13 @@ export default function App() {
   const [supabase, setSupabase] = useState(null);
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
+  const [archivedChildren, setArchivedChildren] = useState(() => readArchivedChildren());
   const [activeChildId, setActiveChildId] = useState(() => readActiveChildId());
+  const learningIdentity = useMemo(() => getLearningStorageScope({
+    accountId: accountUser?.id || getActiveStorageScopeId(),
+    childId: activeChildId,
+    profile
+  }), [accountUser?.id, activeChildId, profile?.accountId, profile?.childId, profile?.studentId]);
   const childSnapshotCacheRef = useRef(new Map());
   const [accessProfile, setAccessProfile] = useState(null);
   const [learningMode, setLearningMode] = useState('nota');
@@ -1279,24 +1395,8 @@ export default function App() {
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);
   const modalOpen = chatOpen || explainOpen || teacherOpen;
-  const effectiveAccess = useMemo(
-    () => resolveAuthoritativeAccess(accountUser?.id, accessProfile),
-    [accountUser?.id, accessProfile]
-  );
-  const isPremiumUser = Boolean(effectiveAccess.isPremium);
+  const { effectiveAccess, isPremiumUser, applyAuthoritativeProfileAccess } = usePremiumAccess({ accountUser, accessProfile });
   const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
-
-  function applyAuthoritativeProfileAccess(candidate = {}) {
-    return {
-      ...candidate,
-      accountId: accountUser?.id || '',
-      email: accountUser?.email || '',
-      accessStatus: effectiveAccess.access_status,
-      accessLabel: effectiveAccess.accessLabel,
-      accessExpiresAt: effectiveAccess.access_expires_at || null,
-      isPremium: isPremiumUser
-    };
-  }
 
   useEffect(() => {
     if (!supabaseConfigured) return undefined;
@@ -1339,21 +1439,33 @@ export default function App() {
   }
 
   function reloadActiveChildState(child, preserveQuizUi) {
-    const storedProfile = loadStudentCore(loadProfile());
-    const nextProfile = applyAuthoritativeProfileAccess(child
+    const identity = getLearningStorageScope({
+      accountId: accountUser?.id || getActiveStorageScopeId(),
+      childId: child?.id || readActiveChildId()
+    });
+    if (child?.id) {
+      migrateLegacyStudentData({
+        storage: localStorage,
+        accountId: identity.accountId,
+        child,
+        profiles: readChildProfiles()
+      });
+    }
+    const storedProfile = loadStudentCore(loadProfile(), identity);
+    const nextProfile = stampLearningIdentity(applyAuthoritativeProfileAccess(child
       ? {
         ...storedProfile,
         name: child.name,
         year: child.year || storedProfile.year || 'Tahun 2',
         avatar: child.avatar || storedProfile.avatar
       }
-      : storedProfile);
+      : storedProfile), identity);
     localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
     saveSelectedStudentName(nextProfile.name);
     setProfile(nextProfile);
-    setAdaptiveProfile(loadAdaptiveStudentProfile());
-    setGamificationProfile(loadGamificationState());
-    setResume(loadResume());
+    setAdaptiveProfile(loadAdaptiveStudentProfile(identity));
+    setGamificationProfile(loadGamificationState(identity));
+    setResume(loadResume(identity));
     if (!preserveQuizUi) {
       setFeedback(null);
       setAnswer('');
@@ -1366,13 +1478,15 @@ export default function App() {
       .find(id => id && profiles.some(item => item.id === id)) || '';
     const activeChild = profiles.find(item => item.id === resolvedChildId) || profiles[0] || null;
     setChildProfiles(profiles);
+    setArchivedChildren(readArchivedChildren());
     setActiveChildId(resolvedChildId);
     if (activeChild) reloadActiveChildState(activeChild, preserveQuizUi);
     else {
-      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
-      setAdaptiveProfile(loadAdaptiveStudentProfile());
-      setGamificationProfile(loadGamificationState());
-      setResume(loadResume());
+      const identity = getStoredLearningIdentity();
+      setProfile(stampLearningIdentity(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile(), identity)), identity));
+      setAdaptiveProfile(loadAdaptiveStudentProfile(identity));
+      setGamificationProfile(loadGamificationState(identity));
+      setResume(loadResume(identity));
     }
     return resolvedChildId;
   }
@@ -1454,6 +1568,7 @@ export default function App() {
             reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
           }
           setChildProfiles(readChildProfiles());
+          setArchivedChildren(readArchivedChildren());
           setActiveChildId(readActiveChildId());
           lastCloudSignatureRef.current = getCloudResultSignature({
             data: payload,
@@ -1565,13 +1680,37 @@ export default function App() {
     return resolveChildSnapshot(childId);
   }
 
+  function clearTransientChildState() {
+    stopVoice();
+    setChatOpen(false);
+    setExplainOpen(false);
+    setExplainData(null);
+    setTeacherOpen(false);
+    setTeacherData(null);
+    setCoachKnowledgeData(null);
+    coachRequestRef.current = { requestId: coachRequestRef.current.requestId + 1, open: false, mode: '', snapshot: null };
+    setActiveSubject(null);
+    setActiveTopic(null);
+    setQuestionIndex(0);
+    setAnswer('');
+    setFeedback(null);
+    setSession({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
+    adaptiveSessionRef.current = null;
+    quizSubmitKeyRef.current = '';
+    resetQuestionSupport(null);
+  }
+
   function ensureChildProfiles(currentProfile = profile) {
     let profiles = readChildProfiles();
     let activeId = readActiveChildId();
     if (!profiles.length) {
       activeId = createChildId();
+      const legacyIdentityKey = createLegacyIdentityKey(currentProfile, getActiveStorageScopeId());
       profiles = [{
         id: activeId,
+        lineageId: createChildLineageId(activeId),
+        legacyIdentityKey,
+        legacyReconciliationEligible: Boolean(legacyIdentityKey),
         name: currentProfile?.name || 'Anak',
         year: currentProfile?.year || 'Tahun 2',
         avatar: currentProfile?.avatar || 'janna',
@@ -1580,11 +1719,26 @@ export default function App() {
       }];
       writeChildProfiles(profiles);
       localStorage.setItem(ACTIVE_CHILD_KEY, activeId);
+      migrateLegacyStudentData({ storage: localStorage, accountId: getActiveStorageScopeId(), child: profiles[0], profiles });
       captureChildSnapshot(activeId);
       captureOriginalChildSnapshot(activeId);
-    } else if (!profiles.some(item => item.id === activeId)) {
-      activeId = profiles[0].id;
-      localStorage.setItem(ACTIVE_CHILD_KEY, activeId);
+    } else {
+      profiles = profiles.map(normalizeChildProfile);
+      if (profiles.length === 1 && !profiles[0].legacyIdentityKey) {
+        const legacyIdentityKey = createLegacyIdentityKey(profiles[0], getActiveStorageScopeId());
+        profiles[0] = {
+          ...profiles[0],
+          legacyIdentityKey,
+          legacyReconciliationEligible: Boolean(legacyIdentityKey)
+        };
+      }
+      writeChildProfiles(profiles);
+      if (!profiles.some(item => item.id === activeId)) {
+        activeId = profiles[0].id;
+        localStorage.setItem(ACTIVE_CHILD_KEY, activeId);
+      }
+      const activeProfile = profiles.find(item => item.id === activeId) || profiles[0];
+      migrateLegacyStudentData({ storage: localStorage, accountId: getActiveStorageScopeId(), child: activeProfile, profiles });
     }
     setChildProfiles(profiles);
     setActiveChildId(activeId);
@@ -1596,7 +1750,10 @@ export default function App() {
     const target = availableProfiles.find(item => item.id === childId);
     const currentChildId = activeChildId || readActiveChildId();
     if (!target || target.id === currentChildId) return;
-    captureChildSnapshot(currentChildId);
+    if (currentChildId && !captureChildSnapshot(currentChildId, { force: true })) {
+      setRecoveryMessages(prev => [...prev, 'Pertukaran profil dihentikan kerana data profil semasa belum dapat disahkan dan disimpan dengan selamat.']);
+      return;
+    }
     cacheCurrentChildSnapshot(currentChildId);
     const snapshot = resolveCachedChildSnapshot(target.id);
     if (snapshot) {
@@ -1606,7 +1763,10 @@ export default function App() {
       }
     } else {
       clearChildScopedData();
-      const freshProfile = { ...defaultProfile, name: target.name, year: target.year || 'Tahun 2', avatar: target.avatar || 'janna' };
+      const freshProfile = stampLearningIdentity({ ...defaultProfile, name: target.name, year: target.year || 'Tahun 2', avatar: target.avatar || 'janna' }, {
+        accountId: accountUser?.id || getActiveStorageScopeId(),
+        childId: target.id
+      });
       localStorage.setItem(PROFILE_KEY, JSON.stringify(freshProfile));
       resetAdaptiveStudentProfile();
       setGamificationProfile(resetGamificationProfile());
@@ -1616,6 +1776,7 @@ export default function App() {
     }
     repairImportedLearningProfile();
     localStorage.setItem(ACTIVE_CHILD_KEY, target.id);
+    clearTransientChildState();
     setActiveChildId(target.id);
     if (accountUser?.id) skipNextCloudSaveRef.current = true;
     reloadActiveChildState(target);
@@ -1628,18 +1789,10 @@ export default function App() {
     const cleanName = String(name || '').trim();
     if (!cleanName) return false;
     try {
-      const nextChild = { id: createChildId(), name: cleanName, year: year || 'Tahun 2', avatar, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      const nextChildId = createChildId();
+      const nextChild = { id: nextChildId, lineageId: createChildLineageId(nextChildId), name: cleanName, year: normalizeSupportedStudentYear(year), avatar, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
       const currentChildId = activeChildId || readActiveChildId();
       const existingProfiles = readChildProfiles();
-      const duplicateProfile = existingProfiles.find(item => (
-        getChildProfileIdentity(item)
-        && getChildProfileIdentity(item) === getChildProfileIdentity(nextChild)
-      ));
-      if (duplicateProfile) {
-        if (duplicateProfile.id !== currentChildId) handleSelectChild(duplicateProfile.id);
-        setRecoveryMessages(prev => [...prev, `Profil ${duplicateProfile.name} untuk ${duplicateProfile.year} sudah wujud dan telah digunakan semula.`]);
-        return true;
-      }
       const currentLearningSnapshot = {
         ...readChildScopedData(),
         __childSnapshotChildId: currentChildId,
@@ -1681,11 +1834,15 @@ export default function App() {
       const nextProfiles = [...existingProfiles.filter(item => item.id !== nextChild.id), nextChild];
       writeChildProfiles(nextProfiles);
       clearChildScopedData();
-      localStorage.setItem(PROFILE_KEY, JSON.stringify(applyAuthoritativeProfileAccess({ ...defaultProfile, name: nextChild.name, year: nextChild.year, avatar: nextChild.avatar })));
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(stampLearningIdentity(applyAuthoritativeProfileAccess({ ...defaultProfile, name: nextChild.name, year: nextChild.year, avatar: nextChild.avatar }), {
+        accountId: accountUser?.id || getActiveStorageScopeId(),
+        childId: nextChild.id
+      })));
       resetAdaptiveStudentProfile();
       setGamificationProfile(resetGamificationProfile());
       resetSmartQuestionState();
       localStorage.setItem(ACTIVE_CHILD_KEY, nextChild.id);
+      clearTransientChildState();
       setChildProfiles(nextProfiles);
       setActiveChildId(nextChild.id);
       if (accountUser?.id) skipNextCloudSaveRef.current = true;
@@ -1703,12 +1860,88 @@ export default function App() {
     }
   }
 
+  function handleRenameChild({ childId = activeChildId, name = '' } = {}) {
+    const cleanName = String(name || '').trim();
+    const profiles = readChildProfiles();
+    const target = profiles.find(item => item.id === childId);
+    if (!target || !cleanName) return false;
+    const updatedAt = new Date().toISOString();
+    const nextProfiles = profiles.map(item => item.id === childId
+      ? { ...item, name: cleanName, updatedAt }
+      : item);
+    writeChildProfiles(nextProfiles);
+    setChildProfiles(nextProfiles);
+    if (childId === (activeChildId || readActiveChildId())) {
+      const nextProfile = stampLearningIdentity({ ...profile, name: cleanName }, learningIdentity);
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
+      setProfile(nextProfile);
+      captureChildSnapshot(childId, { force: true });
+    }
+    markLocalLearningMutation(childId);
+    scheduleCloudLearningSave({ childId, delay: 0 });
+    return true;
+  }
+
+  function handleArchiveChild(childId) {
+    const profiles = readChildProfiles();
+    const target = profiles.find(item => item.id === childId);
+    if (!target || profiles.length <= 1) return false;
+    if (childId === (activeChildId || readActiveChildId()) && !captureChildSnapshot(childId, { force: true })) {
+      setRecoveryMessages(prev => [...prev, 'Arkib dihentikan kerana snapshot pembelajaran belum dapat disahkan.']);
+      return false;
+    }
+    backupChildBeforeDeletion(target);
+    const archivedAt = Date.now();
+    const nextArchived = {
+      ...readArchivedChildren(),
+      [childId]: { profile: normalizeChildProfile(target), archivedAt, restoredAt: 0 }
+    };
+    const nextProfiles = profiles.filter(item => item.id !== childId);
+    writeArchivedChildren(nextArchived);
+    writeChildProfiles(nextProfiles);
+    setArchivedChildren(nextArchived);
+    setChildProfiles(nextProfiles);
+    const nextActive = nextProfiles.find(item => item.id === activeChildId) || nextProfiles[0];
+    if (childId === (activeChildId || readActiveChildId()) && nextActive) handleSelectChild(nextActive.id);
+    markLocalLearningMutation(childId);
+    scheduleCloudLearningSave({ childId, delay: 0 });
+    setRecoveryMessages(prev => [...prev, `Profil ${target.name} diarkibkan. Data pembelajaran masih disimpan dan boleh dipulihkan.`]);
+    return true;
+  }
+
+  function handleRestoreArchivedChild(childId = '') {
+    const records = readArchivedChildren();
+    const record = childId
+      ? records[childId]
+      : Object.values(records).filter(item => item?.profile?.id)
+        .sort((left, right) => Number(right.archivedAt) - Number(left.archivedAt))[0];
+    const target = record?.profile ? normalizeChildProfile(record.profile) : null;
+    if (!target?.id || Number(record.archivedAt) <= Number(record.restoredAt)) return false;
+    const restoredAt = Date.now();
+    const nextArchived = {
+      ...records,
+      [target.id]: { ...record, profile: target, restoredAt }
+    };
+    const profiles = readChildProfiles();
+    const nextProfiles = profiles.some(item => item.id === target.id)
+      ? profiles
+      : [...profiles, { ...target, updatedAt: new Date(restoredAt).toISOString() }];
+    writeArchivedChildren(nextArchived);
+    writeChildProfiles(nextProfiles);
+    setArchivedChildren(nextArchived);
+    setChildProfiles(nextProfiles);
+    markLocalLearningMutation(target.id);
+    scheduleCloudLearningSave({ childId: target.id, delay: 0 });
+    handleSelectChild(target.id);
+    setRecoveryMessages(prev => [...prev, `Profil ${target.name} dan semua data pembelajarannya dipulihkan.`]);
+    return true;
+  }
+
   function handleDeleteChild(childId) {
     const availableProfiles = readChildProfiles();
     const target = availableProfiles.find(item => item.id === childId);
     if (!target || availableProfiles.length <= 1) return false;
-    backupChildBeforeDeletion(target);
-    setRecoveryMessages(prev => [...prev, `Pemadaman profil ${target.name} dinyahaktifkan sementara. Data pembelajaran kekal selamat sehingga fungsi arkib server tersedia.`]);
+    setRecoveryMessages(prev => [...prev, `Pemadaman kekal profil ${target.name} tidak dibenarkan. Gunakan Arkib supaya data boleh dipulihkan.`]);
     return false;
   }
 
@@ -1739,6 +1972,7 @@ export default function App() {
     setGamificationProfile(loadGamificationState());
     setResume(null);
     setChildProfiles([]);
+    setArchivedChildren({});
     setActiveChildId('');
     childSnapshotCacheRef.current.clear();
     tutorConversationRef.current.clear();
@@ -1898,10 +2132,11 @@ export default function App() {
         setPendingCloudMutation(user.id, true);
       }
       skipNextCloudSaveRef.current = true;
-      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
-      setAdaptiveProfile(loadAdaptiveStudentProfile());
-      setGamificationProfile(loadGamificationState());
-      setResume(loadResume());
+      const hydratedIdentity = getLearningStorageScope({ accountId: user.id, childId: childState.activeId });
+      setProfile(stampLearningIdentity(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile(), hydratedIdentity)), hydratedIdentity));
+      setAdaptiveProfile(loadAdaptiveStudentProfile(hydratedIdentity));
+      setGamificationProfile(loadGamificationState(hydratedIdentity));
+      setResume(loadResume(hydratedIdentity));
       localStorage.setItem(ONBOARDING_KEY, 'done');
       setShowOnboarding(false);
       setShowAccountLogin(false);
@@ -2024,7 +2259,7 @@ export default function App() {
   const questionStartedAtRef = useRef(Date.now());
   const quizSubmitKeyRef = useRef('');
   const questionSupportRef = useRef({ questionId: null, usedHint: false, usedExplain: false });
-  const aiMemory = useMemo(() => loadAIMemory(), [profile.history, profile.progress, profile.xp, adaptiveProfile.updatedAt, adaptiveProfile.totalQuestions, adaptiveProfile.studyMinutes]);
+  const aiMemory = useMemo(() => loadAIMemory(learningIdentity), [learningIdentity.scopeKey, profile.history, profile.progress, profile.xp, adaptiveProfile.updatedAt, adaptiveProfile.totalQuestions, adaptiveProfile.studyMinutes]);
   const learningObservation = useMemo(() => buildLearningObservation(adaptiveProfile, aiMemory, { subjects: allSubjects, profile }), [adaptiveProfile, aiMemory, allSubjects, profile]);
   const predictionProfile = useMemo(() => getPredictionProfile(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
   const readiness = useMemo(() => getReadiness(adaptiveProfile, aiMemory, { subjectId: selectedSubject?.id, topicId: activeTopic?.id }), [adaptiveProfile, aiMemory, selectedSubject?.id, activeTopic?.id]);
@@ -2135,7 +2370,7 @@ export default function App() {
       if (activeAccountId && accountUser?.id && profileAccountId && profileAccountId !== accountUser.id) return;
       if (activeAccountId && !accountUser?.id && profileAccountId && profileAccountId !== activeAccountId) return;
       localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-      saveStudentCore(profile, allSubjects, loadAIMemory());
+      saveStudentCore(stampLearningIdentity(profile, learningIdentity), allSubjects, loadAIMemory(learningIdentity), learningIdentity);
       const scopedChildId = readActiveChildId() || activeChildId;
       if (scopedChildId) captureChildSnapshot(scopedChildId);
       if (accountUser?.id && activeAccountId === accountUser.id) {
@@ -2251,7 +2486,7 @@ export default function App() {
   }, [accountUser?.id, cloudHydratedAccountId]);
 
   function refreshAdaptiveProfile() {
-    setAdaptiveProfile(loadAdaptiveStudentProfile());
+    setAdaptiveProfile(loadAdaptiveStudentProfile(learningIdentity));
   }
 
   function recordGamification(event = {}, sourceProfile = adaptiveProfile, context = {}) {
@@ -2263,6 +2498,7 @@ export default function App() {
       readiness,
       studyPlan,
       narrativeBundle,
+      studentIdentity: learningIdentity,
       today: new Date(),
       ...context
     }, event);
@@ -2396,8 +2632,10 @@ export default function App() {
     setGamificationProfile(nextGamification);
     resetSmartQuestionState();
     const freeChild = ensureChildProfiles(freeProfile);
+    const scopedFreeProfile = stampLearningIdentity(freeProfile, { accountId: 'guest', childId: freeChild.activeId });
     writeChildProfiles(freeChild.profiles.map(child => child.id === freeChild.activeId ? { ...child, name: nextName, avatar, updatedAt: new Date().toISOString() } : child));
-    setProfile(freeProfile);
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(scopedFreeProfile));
+    setProfile(scopedFreeProfile);
     captureChildSnapshot(freeChild.activeId, { force: true });
     captureGuestSnapshot();
     localStorage.setItem(ONBOARDING_KEY, 'done');
@@ -2408,15 +2646,19 @@ export default function App() {
 
   function completeOnboarding({ name, year }) {
     const nextName = name?.trim() || profile.name || 'Demo Murid';
-    const nextYear = year || profile.year || 'Tahun 2';
-    setProfile(prev => ({ ...prev, name: nextName, year: nextYear, isDemo: false }));
+    const nextYear = normalizeSupportedStudentYear(year || profile.year);
     const childState = ensureChildProfiles({ ...profile, name: nextName, year: nextYear, isDemo: false });
+    const nextProfile = stampLearningIdentity({ ...profile, name: nextName, year: nextYear, isDemo: false }, {
+      accountId: accountUser?.id || getActiveStorageScopeId(),
+      childId: childState.activeId
+    });
+    setProfile(nextProfile);
     const updatedProfiles = childState.profiles.map(child => child.id === childState.activeId
       ? { ...child, name: nextName, year: nextYear, updatedAt: new Date().toISOString() }
       : child);
     writeChildProfiles(updatedProfiles);
     setChildProfiles(updatedProfiles);
-    localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...profile, name: nextName, year: nextYear, isDemo: false }));
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
     captureChildSnapshot(childState.activeId);
     void persistStudentName(nextName);
     try {
@@ -2468,7 +2710,7 @@ export default function App() {
       exportClassroomPilotReport();
       return;
     }
-    const aiMemory = loadAIMemory();
+    const aiMemory = loadAIMemory(learningIdentity);
     const subjects = allSubjects?.length ? allSubjects : (selectedSubject ? [selectedSubject] : []);
     const topicMastery = {
       ...(aiMemory.topicMastery || {}),
@@ -2528,7 +2770,7 @@ export default function App() {
       participantCode = createClassroomPilotCode();
     }
     const pilotReport = buildClassroomPilotReport({
-      adaptiveProfile: getAdaptiveProfile(),
+      adaptiveProfile: getAdaptiveProfile(learningIdentity),
       participantCode,
       options: { windowDays: 14 }
     });
@@ -2578,10 +2820,11 @@ export default function App() {
         return;
       }
       const repairedProfile = repairImportedLearningProfile();
-      setProfile(applyAuthoritativeProfileAccess(loadStudentCore(repairedProfile || loadProfile())));
-      setAdaptiveProfile(loadAdaptiveStudentProfile());
-      setGamificationProfile(loadGamificationState());
-      setResume(loadResume());
+      const restoredIdentity = getStoredLearningIdentity(repairedProfile || loadProfile());
+      setProfile(stampLearningIdentity(applyAuthoritativeProfileAccess(loadStudentCore(repairedProfile || loadProfile(), restoredIdentity)), restoredIdentity));
+      setAdaptiveProfile(loadAdaptiveStudentProfile(restoredIdentity));
+      setGamificationProfile(loadGamificationState(restoredIdentity));
+      setResume(loadResume(restoredIdentity));
       if (activeChildId) {
         captureChildSnapshot(activeChildId);
         // An explicit import is the user's chosen source of truth for the
@@ -2612,10 +2855,11 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Backup ditolak kerana penanda akaunnya tidak sepadan dengan akaun semasa.']);
       return;
     }
-    setProfile(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile())));
-    setAdaptiveProfile(loadAdaptiveStudentProfile());
-    setGamificationProfile(loadGamificationState());
-    setResume(loadResume());
+    const restoredIdentity = getStoredLearningIdentity(loadProfile());
+    setProfile(stampLearningIdentity(applyAuthoritativeProfileAccess(loadStudentCore(loadProfile(), restoredIdentity)), restoredIdentity));
+    setAdaptiveProfile(loadAdaptiveStudentProfile(restoredIdentity));
+    setGamificationProfile(loadGamificationState(restoredIdentity));
+    setResume(loadResume(restoredIdentity));
     if (accountUser?.id) {
       captureAccountSnapshot(accountUser.id);
       markLocalLearningMutation();
@@ -2738,7 +2982,7 @@ export default function App() {
     }
     const resumeMode = options.mode || 'quiz';
     const matchingResume = !options.restoreFromResume && isQuestionResumeMode(resumeMode)
-      ? loadResume({ mode: resumeMode, subjectId: subject.id, topicId: topic.id })
+      ? loadResume({ ...learningIdentity, mode: resumeMode, subjectId: subject.id, topicId: topic.id })
       : null;
     if (matchingResume && !matchingResume.completed) {
       const sameSubject = matchingResume.subjectId === subject.id;
@@ -2766,7 +3010,7 @@ export default function App() {
       narrativeBundle,
       gamificationProfile,
       count: sourceQuestions.length,
-      smartState: loadSmartQuestionState()
+      smartState: loadSmartQuestionState(learningIdentity)
       });
     const orderedQuestions = smartSession.questions.length ? smartSession.questions : sourceQuestions;
     const diversity = options.preserveQuestions
@@ -2776,7 +3020,7 @@ export default function App() {
         topic,
         questions: orderedQuestions,
         count: orderedQuestions.length,
-        memory: loadAIMemory(),
+        memory: loadAIMemory(learningIdentity),
         allowReinforcement: Boolean(options.allowReinforcement),
         allowAdaptiveOverride: Boolean(options.allowAdaptiveOverride),
         sessionSeed: smartSession.variationSeed || createSmartQuestionSeed([
@@ -2821,15 +3065,16 @@ export default function App() {
       startedAt: new Date().toISOString()
     };
     if (!options.restoreFromResume && smartSession?.question) {
-      recordSmartQuestionState(loadSmartQuestionState(), smartSession, {
+      recordSmartQuestionState(loadSmartQuestionState(learningIdentity), smartSession, {
         mode: resumeMode,
         subjectId: subject.id,
         topicId: topic.id,
         revisionQueue: smartSession.revisionQueue,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        studentIdentity: learningIdentity
       });
     }
-    recordSessionStart(getAdaptiveProfile(), {
+    recordSessionStart(getAdaptiveProfile(learningIdentity), {
       sessionId: adaptiveSessionId,
       startedAt: adaptiveSessionRef.current.startedAt,
       subjectId: subject.id,
@@ -2873,7 +3118,7 @@ export default function App() {
       startedAt: startSession.startedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    persistResumeData(resumeData, setResume);
+    persistResumeData(resumeData, setResume, learningIdentity);
   }
 
   async function startResume(resumeToStart = resume) {
@@ -2958,7 +3203,7 @@ export default function App() {
     if (!resume) return;
     const targetResume = resume;
     const mode = targetResume.mode || 'quiz';
-    clearResumeData(setResume, targetResume);
+    clearResumeData(setResume, targetResume, learningIdentity);
     if (mode === 'adaptive-practice') {
       await startAdaptivePractice(targetResume.session?.requestedQuestions || targetResume.metadata?.requestedQuestions || adaptivePracticeCount, { forceFresh: true });
       return;
@@ -3006,38 +3251,49 @@ export default function App() {
       subject,
       topic,
       count: smartLessonQuestions.length,
-      smartState: loadSmartQuestionState()
+      smartState: loadSmartQuestionState(learningIdentity)
     });
     const questions = smartSession.questions.length ? smartSession.questions : smartLessonQuestions;
     startTopic(topic, subject, { questions, preserveQuestions: true, allowReinforcement: true, allowAdaptiveOverride: true, mode: 'adaptive-lesson' });
   }
 
   async function startAdaptivePractice(questionCount = adaptivePracticeCount, options = {}) {
-    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(selectedSubjectId);
+    const requestedChildId = String(options.childId || '').trim();
+    const currentChildId = String(activeChildId || readActiveChildId() || '').trim();
+    if (requestedChildId && requestedChildId !== currentChildId) {
+      setRecoveryMessages(prev => [...prev, 'Latihan tidak dimulakan kerana profil anak telah berubah. Pilih semula profil yang betul.']);
+      return false;
+    }
+    const targetSubjectId = String(options.subjectId || selectedSubjectId || '').trim();
+    const targetTopicId = String(options.topicId || '').trim();
+    const targetDifficulty = String(options.difficulty || 'medium').trim().toLowerCase();
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(targetSubjectId);
     if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
       openAccessNotice('daily-limit', 'Latihan harian');
-      return;
+      return false;
     }
     const allowedQuestionCount = isPremiumUser
       ? questionCount
       : Math.min(questionCount, Math.max(1, FREE_DAILY_QUESTION_LIMIT - subjectDailyQuestionCount));
-    const practiceResume = options.forceFresh ? null : loadResume({ mode: 'adaptive-practice', subjectId: selectedSubjectId });
+    const practiceResume = options.forceFresh ? null : loadResume({ ...learningIdentity, mode: 'adaptive-practice', subjectId: targetSubjectId });
     const resumeSubjectId = practiceResume?.subjectId || practiceResume?.metadata?.subjectId || practiceResume?.session?.subjectId;
-    const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === selectedSubjectId);
+    const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === targetSubjectId);
     if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
       await startResume(practiceResume);
-      return;
+      return true;
     }
     let practiceSubjects = allSubjects;
     if (practiceSubjects.length < subjectList.length) {
       const loadedSubjects = await ensureAllSubjectsLoaded();
       if (loadedSubjects.length) practiceSubjects = loadedSubjects;
     }
-    if (!practiceSubjects.length) return;
+    if (!practiceSubjects.length || !practiceSubjects.some(subject => subject?.id === targetSubjectId)) return false;
     const session = buildAdaptivePracticeSession(profile, practiceSubjects, {
       questionCount: allowedQuestionCount,
       mode: 'balanced',
-      subjectId: selectedSubjectId,
+      subjectId: targetSubjectId,
+      topicId: targetTopicId || undefined,
+      difficulty: targetDifficulty,
       seed: createSmartQuestionSeed([
         profile.totalQuestions || 0,
         profile.correctQuestions || 0,
@@ -3045,15 +3301,20 @@ export default function App() {
         adaptiveProfile.totalQuestions || 0,
         adaptiveProfile.correctQuestions || 0,
         adaptiveProfile.streak || 0,
-        selectedSubjectId || '',
+        targetSubjectId,
+        targetTopicId,
+        targetDifficulty,
         allowedQuestionCount,
         practiceSubjects.length,
         aiMemory?.history?.length || 0
       ])
     });
-    if (!session.questions.length) return;
+    if (!session.questions.length) return false;
     const smartSession = buildSmartQuestionSession(session.questions, {
       mode: 'adaptive-practice',
+      subjectId: targetSubjectId,
+      topicId: targetTopicId || undefined,
+      difficulty: targetDifficulty,
       profile: adaptiveProfile,
       memory: aiMemory,
       learningObservation,
@@ -3064,7 +3325,7 @@ export default function App() {
       narrativeBundle,
       gamificationProfile,
       count: session.questions.length,
-      smartState: loadSmartQuestionState()
+      smartState: loadSmartQuestionState(learningIdentity)
     });
     const orderedQuestions = smartSession.questions.length ? smartSession.questions : session.questions;
 
@@ -3082,7 +3343,14 @@ export default function App() {
           adaptivePractice: true,
           adaptiveSessionId: session.sessionId,
           adaptivePlan: session.plan,
-          adaptiveMetadata: session.metadata
+          adaptiveMetadata: {
+            ...session.metadata,
+            requestedChildId: requestedChildId || currentChildId,
+            requestedSubjectId: targetSubjectId,
+            requestedTopicId: targetTopicId,
+            requestedDifficulty: targetDifficulty,
+            source: options.source || 'adaptive-practice'
+          }
         }
       ]
     };
@@ -3102,10 +3370,16 @@ export default function App() {
         estimatedMinutes: session.estimatedMinutes
       }
     });
+    return true;
   }
 
   function currentQuestion() {
     return activeTopic?.questions?.[questionIndex];
+  }
+
+  function currentQuestionAttemptCount(question = currentQuestion()) {
+    if (!question?.id) return 0;
+    return (session.answers || []).filter(item => item.questionId === question.id).length;
   }
 
   function resetQuestionSupport(questionId = null) {
@@ -3139,14 +3413,16 @@ export default function App() {
       return undefined;
     }
 
-    void buildCoachAdapterData('explain', {
-      subjectId: activeSubject.id,
-      topicId: activeTopic.id,
-      question,
-      result: feedback || {},
-      userAnswer: answer,
-      topic: activeTopic
-    }).then(nextData => {
+    void loadCoachAdapter().then(({ buildCoachAdapterData }) => buildCoachAdapterData('explain', {
+        subjectId: activeSubject.id,
+        topicId: activeTopic.id,
+        question,
+        result: feedback || {},
+        userAnswer: answer,
+        topic: activeTopic,
+        studentId: learningIdentity.studentId,
+        studentProfile: profile
+      })).then(nextData => {
       if (cancelled) return;
       if (nextData) setCoachKnowledgeData(nextData);
     });
@@ -3154,7 +3430,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [screen, activeSubject?.id, activeTopic?.id, questionIndex, feedback?.status]);
+  }, [screen, activeSubject?.id, activeTopic?.id, questionIndex, feedback?.status, learningIdentity.scopeKey]);
 
   function autoSave(nextIndex = questionIndex, nextSession = session, nextQuestionState = null) {
     if (!activeSubject || !activeTopic) return;
@@ -3202,7 +3478,7 @@ export default function App() {
       startedAt: session.startedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    persistResumeData(resumeData, setResume);
+    persistResumeData(resumeData, setResume, learningIdentity);
   }
 
   function changeQuizAnswer(nextAnswer) {
@@ -3308,6 +3584,7 @@ export default function App() {
     setGamificationProfile(loadGamificationState());
     setResume(null);
     setChildProfiles([]);
+    setArchivedChildren({});
     setActiveChildId('');
     childSnapshotCacheRef.current.clear();
     tutorConversationRef.current.clear();
@@ -3419,10 +3696,10 @@ export default function App() {
       answeredAt
     });
     nextSession.questions = [...(nextSession.questions || []), question];
-    saveQuestionHistory(question);
+    saveQuestionHistory(question, learningIdentity);
     const adaptiveSubjectId = question.subjectId || activeSubject?.id;
     const adaptiveTopicId = question.topicId || activeTopic?.id;
-    const adaptiveResult = recordQuestionResult(getAdaptiveProfile(), {
+    const adaptiveResult = recordQuestionResult(getAdaptiveProfile(learningIdentity), {
       sessionId,
       questionId: question.id,
       subjectId: adaptiveSubjectId,
@@ -3444,7 +3721,7 @@ export default function App() {
       attemptNumber,
       date: answeredAt,
       answeredAt
-    }, adaptiveResult?.profile || getAdaptiveProfile(), {
+    }, adaptiveResult?.profile || getAdaptiveProfile(learningIdentity), {
       questionId: question.id,
       sessionId,
       attemptNumber,
@@ -3454,14 +3731,33 @@ export default function App() {
     resetQuestionSupport(question.id);
 
     setSession(nextSession);
-    setExplainData(explainAnswer({ question: { ...question, subjectId: activeSubject?.id }, topic: { ...activeTopic, subjectId: activeSubject?.id }, result, userAnswer: answer }));
+    const answerRevealPolicy = getAnswerRevealPolicy({
+      status: result.status,
+      isCorrect: result.status === 'correct',
+      isAlmostCorrect: result.status === 'almost',
+      attemptCount: attemptNumber,
+      explanationMode: result.status === 'correct' || result.status === 'almost' ? 'correct_answer_reinforcement' : ''
+    });
     const feedbackExplanation = sanitizeAiText(question.explanation || question.hint);
     const specificWrongAnswerFeedback = getSpecificWrongAnswerFeedback(question, answer);
     const wrongAnswerExplanation = specificWrongAnswerFeedback || sanitizeAiText(question.wrongExplanation || '');
-    const feedbackMessage = result.status === 'correct' || !wrongAnswerExplanation
+    const safeWrongGuidance = buildChildSafeHint(question, activeSubject, [wrongAnswerExplanation, question.hint]);
+    const feedbackMessage = result.status === 'correct' || result.status === 'almost'
       ? result.message
-      : `Jawapan kamu belum tepat. ${wrongAnswerExplanation}`;
-    const nextFeedback = { ...result, xp, coins, correctAnswer: getQuestionAnswerDisplay(question), acceptedAnswers: getAcceptedAnswers(question), message: feedbackMessage, explanation: feedbackExplanation };
+      : answerRevealPolicy.guidanceLevel >= 2
+        ? `Jawapan kamu belum tepat. Petunjuk lebih jelas: ${safeWrongGuidance}`
+        : `Jawapan kamu belum tepat. ${safeWrongGuidance}`;
+    const nextFeedback = {
+      ...result,
+      xp,
+      coins,
+      correctAnswer: answerRevealPolicy.canRevealAnswer ? getQuestionAnswerDisplay(question) : '',
+      acceptedAnswers: answerRevealPolicy.canRevealAnswer ? getAcceptedAnswers(question) : [],
+      message: feedbackMessage,
+      explanation: answerRevealPolicy.canRevealAnswer ? feedbackExplanation : safeWrongGuidance,
+      attemptCount: attemptNumber,
+      answerRevealPolicy
+    };
     setFeedback(nextFeedback);
     autoSave(questionIndex, nextSession, {
       questionId: question.id || null,
@@ -3481,7 +3777,8 @@ export default function App() {
       allSubjects,
       learnerAnswer: answer,
       feedback,
-      explanationMode: feedback?.status || ''
+      explanationMode: feedback?.status || '',
+      attemptCount: currentQuestionAttemptCount(question)
     });
     coachRequestRef.current = { requestId, open: true, mode, snapshot };
     return snapshot;
@@ -3491,17 +3788,6 @@ export default function App() {
     coachRequestRef.current = { ...coachRequestRef.current, open: false };
     setOpen(false);
     setData?.(null);
-  }
-
-  function decorateCoachData(data, snapshot, mode) {
-    return {
-      ...(data || {}),
-      sourceQuestionId: snapshot.questionId,
-      sourceSubjectId: snapshot.subjectId,
-      sourceTopicId: snapshot.topicId,
-      sourceLanguage: snapshot.sourceLanguage,
-      generatedMode: mode
-    };
   }
 
   function isCurrentCoachResponse(snapshot, data, mode) {
@@ -3524,6 +3810,18 @@ export default function App() {
     );
   }
 
+  function createPendingCoachData(snapshot, mode) {
+    return {
+      generatedMode: mode,
+      sourceQuestionId: snapshot.questionId,
+      sourceSubjectId: snapshot.subjectId,
+      sourceTopicId: snapshot.topicId,
+      subjectId: snapshot.subjectId,
+      attemptCount: snapshot.attemptCount,
+      sections: { summary: 'Sedang menyediakan bimbingan untuk soalan ini.' }
+    };
+  }
+
   function openExplain() {
     const question = currentQuestion();
     if (!question || !feedback || feedback.status === 'empty') return;
@@ -3539,21 +3837,10 @@ export default function App() {
     const currentLearningObjective = snapshot.learningObjective;
     const snapshotSubject = allSubjects.find(item => item.id === snapshot.subjectId) || activeSubject;
     const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
-    const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
-    const fallbackData = explainAnswer({
-      question: { ...question, subjectId: snapshot.subjectId },
-      topic: { ...snapshotTopic, subjectId: snapshot.subjectId },
-      result: feedback,
-      userAnswer: answer,
-      questionText,
-      instruction,
-      currentLearningObjective,
-      attemptCount,
-      explanationMode
-    });
-    setExplainData(decorateCoachData(fallbackData, snapshot, 'explain'));
+    const attemptCount = snapshot.attemptCount;
+    setExplainData(createPendingCoachData(snapshot, 'explain'));
     setExplainOpen(true);
-    void getCoachExplainData({
+    void loadCoachAdapter().then(({ getCoachExplainData }) => getCoachExplainData({
       subjectId: snapshot.subjectId,
       topicId: snapshot.topicId,
       question,
@@ -3571,7 +3858,7 @@ export default function App() {
       attemptCount,
       hintsUsed: feedback?.status === 'hint' ? 1 : 0
       ,sourceLanguage: snapshot.sourceLanguage
-    }).then(nextData => {
+    })).then(nextData => {
       if (nextData && isCurrentCoachResponse(snapshot, nextData, 'explain')) setExplainData(nextData);
     });
   }
@@ -3591,38 +3878,17 @@ export default function App() {
     const currentLearningObjective = snapshot.learningObjective;
     const snapshotSubject = allSubjects.find(item => item.id === snapshot.subjectId) || activeSubject;
     const snapshotTopic = snapshotSubject?.topics?.find(item => item.id === snapshot.topicId) || activeTopic;
-    const attemptCount = currentQuestion() ? ((session.answers || []).filter(item => item.questionId === currentQuestion()?.id).length + 1) : 0;
-    const fallbackExplainData = explainAnswer({
-      question: { ...question, subjectId: snapshot.subjectId },
-      topic: { ...snapshotTopic, subjectId: snapshot.subjectId },
-      result: feedback || {},
-      userAnswer: answer,
-      questionText,
-      instruction,
-      currentLearningObjective,
-      attemptCount,
-      explanationMode
-    });
-    const fallbackTeacherData = teachAnswer({
-      question,
-      topic: snapshotTopic,
-      explanationData: fallbackExplainData,
-      questionText,
-      instruction,
-      currentLearningObjective,
-      attemptCount,
-      explanationMode
-    });
-    setTeacherData(decorateCoachData(fallbackTeacherData, snapshot, 'teach'));
+    const attemptCount = snapshot.attemptCount;
+    setTeacherData(createPendingCoachData(snapshot, 'teach'));
     setExplainOpen(false);
     setTeacherOpen(true);
-    void getCoachTeacherData({
+    void loadCoachAdapter().then(({ getCoachTeacherData }) => getCoachTeacherData({
       subjectId: snapshot.subjectId,
       topicId: snapshot.topicId,
       question,
       result: feedback || {},
       userAnswer: answer,
-      topic: activeTopic,
+      topic: snapshotTopic,
       questionText,
       instruction,
       options,
@@ -3634,7 +3900,7 @@ export default function App() {
       attemptCount,
       hintsUsed: feedback?.status === 'hint' ? 1 : 0
       ,sourceLanguage: snapshot.sourceLanguage
-    }).then(nextData => {
+    })).then(nextData => {
       if (!nextData) return;
       if (isCurrentCoachResponse(snapshot, nextData, 'teach')) setTeacherData(nextData);
     });
@@ -3684,7 +3950,7 @@ export default function App() {
     const key = progressKey(activeSubject.id, activeTopic.id);
     const studySeconds = Math.max(1, Math.round((Date.now() - quizStartedAt) / 1000));
     const finishedSessionId = session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || '';
-    const adaptiveSessionResult = recordSessionEnd(getAdaptiveProfile(), {
+    const adaptiveSessionResult = recordSessionEnd(getAdaptiveProfile(learningIdentity), {
       sessionId: finishedSessionId,
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
@@ -3732,7 +3998,7 @@ export default function App() {
       mode: session.mode || activeTopic.resumeMode || 'quiz',
       subjectId: activeSubject.id,
       topicId: activeTopic.id
-    });
+    }, learningIdentity);
     setScreen('finish');
     refreshAdaptiveProfile();
   }
@@ -3777,7 +4043,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date(result?.date || todayKey())
     });
-    clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id });
+    clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id }, learningIdentity);
   }
 
   function finishBacaan(result) {
@@ -3813,7 +4079,7 @@ export default function App() {
       passedCount,
       today: new Date()
     });
-    clearResumeData(setResume, { mode: 'reading' });
+    clearResumeData(setResume, { mode: 'reading' }, learningIdentity);
     setScreen('dashboard');
   }
 
@@ -3834,7 +4100,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume, { mode: 'listening' });
+    clearResumeData(setResume, { mode: 'listening' }, learningIdentity);
     setScreen('dashboard');
   }
 
@@ -3855,7 +4121,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume, { mode: 'speaking' });
+    clearResumeData(setResume, { mode: 'speaking' }, learningIdentity);
     setScreen('dashboard');
   }
 
@@ -3876,7 +4142,7 @@ export default function App() {
       sessionCompleted: true,
       today: new Date()
     });
-    clearResumeData(setResume, { mode: 'writing' });
+    clearResumeData(setResume, { mode: 'writing' }, learningIdentity);
     setScreen('dashboard');
   }
 
@@ -3896,7 +4162,12 @@ export default function App() {
       : activeTopic;
   const coachSnapshot = coachRequestRef.current.snapshot;
   const coachSubject = allSubjects.find(item => item.id === coachSnapshot?.subjectId) || activeSubject;
-  const tutorConversationKey = activeChildId || profile?.name || 'learner';
+  const tutorConversationKey = createTutorConversationScope(learningIdentity, {
+    subjectId: chatSubject?.id,
+    topicId: chatTopic?.id,
+    sessionId: adaptiveSessionRef.current?.sessionId || session?.adaptiveSessionId || 'general-session',
+    questionId: tutorQuestion?.id || tutorQuestion?.questionId
+  });
   const chatWidget = chatOpen && chatSubject ? (
     <React.Suspense fallback={<TutorAIModalLoading onCancel={() => setChatOpen(false)} />}>
       <TutorAIModal
@@ -3920,7 +4191,7 @@ export default function App() {
       learnerAnswer={tutorHasExerciseContext ? answer : ''}
       explanationMode={tutorHasExerciseContext ? (feedback?.status || (feedback?.correct ? 'correct_answer_reinforcement' : '')) : ''}
       currentLearningObjective={chatTopic?.learningObjective || chatTopic?.objective || tutorQuestion?.learningObjective || tutorQuestion?.objective || ''}
-      attemptCount={tutorQuestion ? ((session.answers || []).filter(item => item.questionId === tutorQuestion?.id).length + 1) : 0}
+      attemptCount={tutorQuestion ? currentQuestionAttemptCount(tutorQuestion) : 0}
       hintsUsed={tutorHasExerciseContext && feedback?.status === 'hint' ? 1 : 0}
       learningObservation={learningObservation}
       predictionProfile={predictionProfile}
@@ -3963,16 +4234,16 @@ export default function App() {
   }
 
   function returnToDashboard() {
-    setResume(loadResume());
+    setResume(loadResume(learningIdentity));
     setScreen('dashboard');
   }
 
   function openPremiumScreen(targetScreen, feature) {
     if (!requirePremium(feature)) return;
     if (targetScreen === 'uasa') {
-      setResume(loadResume({ mode: 'uasa', subjectId: selectedSubject?.id }));
+      setResume(loadResume({ ...learningIdentity, mode: 'uasa', subjectId: selectedSubject?.id }));
     } else if (['reading', 'listening', 'speaking', 'writing'].includes(targetScreen)) {
-      setResume(loadResume({ mode: targetScreen }));
+      setResume(loadResume({ ...learningIdentity, mode: targetScreen }));
     }
     setScreen(targetScreen);
   }
@@ -4000,17 +4271,17 @@ export default function App() {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={openTutorAi} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><BacaanCoach profile={profile} resume={resume?.mode === 'reading' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'reading' })} onBack={returnToDashboard} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume?.mode === 'listening' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'listening' })} onBack={returnToDashboard} onFinish={finishMendengar} /></BetaChrome>;
-  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume?.mode === 'speaking' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'speaking' })} onBack={returnToDashboard} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><MenulisCoach resume={resume?.mode === 'writing' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'writing' })} onBack={returnToDashboard} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentDashboardPage profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume?.mode === 'uasa' && resume?.subjectId === selectedSubject?.id ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume)} onClearResume={() => clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id })} onBack={returnToDashboard} onSave={saveUasaResult} /></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><BacaanCoach profile={profile} resume={resume?.mode === 'reading' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'reading' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume?.mode === 'listening' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'listening' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMendengar} /></BetaChrome>;
+  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume?.mode === 'speaking' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'speaking' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBertutur} /></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><MenulisCoach resume={resume?.mode === 'writing' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'writing' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentModeBoundary accountId={accountUser?.id || ''} accountEmail={accountUser?.email || ''} authMarker={accountUser?.last_sign_in_at || accountUser?.updated_at || ''} activeChildId={activeChildId} cloudSyncStatus={cloudSyncStatus} profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onLogout={logoutAccount} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume?.mode === 'uasa' && resume?.subjectId === selectedSubject?.id ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id }, learningIdentity)} onBack={returnToDashboard} onSave={saveUasaResult} /></BetaChrome>;
 
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onMarkMaterial={markLearningMaterial} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -4046,61 +4317,7 @@ function TutorAIModalLoading({ onCancel }) {
   );
 }
 
-function getCanonicalQuestionAnswers(question = {}) {
-  const accepted = getAcceptedAnswers(question);
-  const questionText = normalizeAcceptedAnswer(question?.q || question?.question || question?.stem || '');
-
-  // Punctuation fill-ins display and evaluate only the missing symbol. The
-  // complete sentence remains in the question data for explanations, but it
-  // must not leak into the learner's expected answer (e.g. `!`, not the full
-  // sentence ending in `!`).
-  const punctuationPrompt = /\b(?:tanda baca|tanda soal|tanda seru|tanda noktah|tanda koma)\b/.test(questionText)
-    && /_{2,}/.test(String(question?.q || question?.question || question?.stem || ''));
-  if (punctuationPrompt) {
-    const punctuation = accepted
-      .map(value => String(value).trim().match(/([?!.,;:])$/)?.[1])
-      .find(Boolean);
-    if (punctuation) return [punctuation];
-  }
-
-  // UASA BM classification items ask for the sentence category only. The
-  // source answer may include a teaching explanation, so do not use that
-  // explanation as the answer that is evaluated or shown to the learner.
-  const categories = accepted
-    .map(value => normalizeAcceptedAnswer(value).match(/\bayat\s+(?:tanya|penyata|perintah|seruan)\b/)?.[0])
-    .filter(Boolean);
-  const asksForSentenceType = /\b(?:jenis ayat|tentukan jenis(?:nya)?|kenal pasti jenis)\b/.test(questionText)
-    || (/^\s*(?:baca|perhatikan) ayat ini\b/.test(questionText) && categories.length > 0);
-  if (asksForSentenceType && categories.length) return [...new Set(categories)];
-
-  return accepted;
-}
-
-function renderUasaQuestionText(text = '') {
-  const value = String(text || '');
-  const lines = splitQuestionPresentationLines(value);
-  if (lines.length <= 1) return value;
-  return <>{lines.map((line, index) => <React.Fragment key={`${index}-${line}`}><span className={index ? 'uasa-question-example question-line' : 'question-line'}>{line}</span>{index < lines.length - 1 ? <br /> : null}</React.Fragment>)}</>;
-}
-
-function buildChildSafeHint(question = {}, subject = {}, candidates = []) {
-  const answers = getCanonicalQuestionAnswers(question)
-    .map(value => value.toLocaleLowerCase('ms-MY'))
-    .filter(Boolean);
-  const leaksAnswer = value => {
-    const text = String(value || '').toLocaleLowerCase('ms-MY');
-    if (!text || text.includes('=')) return true;
-    return answers.some(answer => {
-      const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`, 'u').test(text);
-    });
-  };
-  const safeCandidate = candidates.find(candidate => candidate && !leaksAnswer(candidate));
-  if (safeCandidate) return sanitizeAiText(safeCandidate);
-  if (subject?.id === 'math') return 'Kenal pasti operasi yang digunakan, kemudian kira satu langkah pada satu masa. Semak jawapan dengan operasi songsang.';
-  if (subject?.id === 'bm') return 'Cari kata kunci dalam ayat dan fikirkan maksud yang ditanya. Pilih jawapan yang paling sesuai.';
-  return 'Baca soalan perlahan-lahan, cari kata kunci penting, kemudian semak pilihan kamu sekali lagi.';
-}
+const renderUasaQuestionText = renderSubjectQuestionText;
 
 function BrandSplash() {
   return <div className="brand-splash" aria-label="Jannati AI Tutor sedang dimuat">
@@ -4131,8 +4348,8 @@ function StorageRecoveryNotice({ messages }) {
 function FirstRunWizard({ profile, onComplete, onAccountLogin }) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState(profile.name || 'Demo Murid');
-  const [year, setYear] = useState(profile.year || 'Tahun 2');
-  const years = ['Tahun 1', 'Tahun 2', 'Tahun 3'];
+  const [year, setYear] = useState(normalizeSupportedStudentYear(profile.year));
+  const years = SUPPORTED_STUDENT_YEARS;
   const steps = [
     'Selamat datang ke Jannati AI Tutor.',
     'Pilih nama murid.',
@@ -4181,7 +4398,6 @@ function FirstRunWizard({ profile, onComplete, onAccountLogin }) {
 }
 
 function BetaFeedbackButton({ suppressed = false }) {
-  if (suppressed) return null;
   const categories = ['Pepijat', 'Cadangan', 'Kandungan', 'AI', 'Pengalaman'];
   const [open, setOpen] = useState(false);
   const [category, setKategori] = useState('Pepijat');
@@ -4200,6 +4416,8 @@ function BetaFeedbackButton({ suppressed = false }) {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
+
+  if (suppressed) return null;
 
   function submitFeedback() {
     const trimmed = comment.trim();
@@ -4363,7 +4581,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = buildChildSafeHint(question, subject, [coachKnowledgeData?.hint, safeCoachingDecision?.hint, question?.hint]);
-  const safeQuestionExplanation = feedback?.status === 'empty'
+  const safeQuestionExplanation = feedback?.status === 'empty' || !feedback?.answerRevealPolicy?.canRevealAnswer
     ? ''
     : sanitizeAiText(question?.explanation || question?.hint || '');
   const [speechState, setSpeechState] = useState('idle');
@@ -4458,7 +4676,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
       ? storedSubjectResume
       : null
   );
-  const questions = useMemo(() => Array.isArray(subjectResume?.questions) && subjectResume.questions.length ? subjectResume.questions : buildUasaSet(subject, 50), [subject?.id, subjectResume?.sessionId]);
+  const questions = useMemo(() => Array.isArray(subjectResume?.questions) && subjectResume.questions.length ? subjectResume.questions : buildUasaSet(subject, 50, profile), [subject?.id, subjectResume?.sessionId, profile?.childId, profile?.studentId]);
   const [questionIndex, setQuestionIndex] = useState(() => Number.isInteger(subjectResume?.currentIndex) ? subjectResume.currentIndex : Number.isInteger(subjectResume?.questionIndex) ? subjectResume.questionIndex : 0);
   const [answer, setAnswer] = useState(() => subjectResume?.state?.answer || '');
   const [result, setResult] = useState(() => subjectResume?.state?.result || null);
@@ -4546,6 +4764,12 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     };
     const checked = smartCheck(answer, normalizedQuestion);
     const correct = checked.status === 'correct';
+    const answerRevealPolicy = getAnswerRevealPolicy({
+      status: checked.status,
+      isCorrect: correct,
+      attemptCount: 1,
+      explanationMode: correct ? 'correct_answer_reinforcement' : ''
+    });
     const nextScore = {
       correct: score.correct + (correct ? 1 : 0),
       wrong: score.wrong + (correct ? 0 : 1)
@@ -4553,9 +4777,15 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setScore(nextScore);
     setResult({
       correct,
-      expected: canonicalAnswers.join(' / ') || normalizedQuestion.answer,
-      explanation: question.explanation || question.hint || '',
-      message: checked.message
+      expected: answerRevealPolicy.canRevealAnswer
+        ? (canonicalAnswers.join(' / ') || normalizedQuestion.answer)
+        : 'Belum dipaparkan selepas cubaan pertama.',
+      explanation: answerRevealPolicy.canRevealAnswer
+        ? (question.explanation || question.hint || '')
+        : buildChildSafeHint(question, subject, [question.hint]),
+      message: checked.message,
+      answerRevealPolicy,
+      attemptCount: 1
     });
     if (questionIndex + 1 >= questions.length) {
       const total = questions.length;

@@ -3,12 +3,13 @@ import { addXP, calculateXP } from './xpEngine.js';
 import { calculateLevel } from './levelEngine.js';
 import { updateStreak } from './streakEngine.js';
 import { recordAnswer } from './masteryEngine.js';
-import { saveMemory, hasProcessedAnswer, markProcessedAnswer } from '../memory/memoryStorage.js';
+import { loadMemory, saveMemory, hasProcessedAnswer, markProcessedAnswer } from '../memory/memoryStorage.js';
 import { getStudentMemory } from '../memory/studentMemory.js';
 import { updateTopicMemory } from '../memory/topicMemory.js';
 import { recordMistake } from '../memory/mistakeMemory.js';
 import { createDailySnapshot } from '../memory/dailySnapshot.js';
 import { getRecommendationScores } from '../memory/recommendationEngine.js';
+import { getLocalDateKey } from '../../utils/localDate.js';
 
 const MAX_SESSION_HISTORY = 20;
 const MAX_QUESTION_LOG = 200;
@@ -24,13 +25,6 @@ function nowIso() {
 
 function normalizeLearningSignal(value, fallback = '') {
   return String(value || fallback).trim().slice(0, 120);
-}
-
-function localDayKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
 }
 
 function createSessionId() {
@@ -104,7 +98,7 @@ function applyLifetimeTotals(profile, { correct, timeSpent, correctAnswer }) {
   const studyMinutes = Number.isFinite(profile.studyMinutes) ? profile.studyMinutes : 0;
   const addedMinutes = Number.isFinite(timeSpent) && timeSpent > 0 ? timeSpent / 60 : 0;
   profile.studyMinutes = Math.max(0, Math.round((studyMinutes + addedMinutes) * 10) / 10);
-  profile.lastStudyDate = localDayKey();
+  profile.lastStudyDate = getLocalDateKey();
   profile.lastAnsweredAt = nowIso();
   return profile;
 }
@@ -130,7 +124,7 @@ function applySubjectTotals(profile, subjectId, correct) {
 function syncMemoryAfterAnswer(profile, result, summary = {}) {
   try {
     const answerKey = `${result.sessionId || profile.currentSession?.sessionId || 'no-session'}::${result.questionId || 'no-question'}::${Number.isFinite(result.attemptNumber) ? Math.floor(result.attemptNumber) : 1}`;
-    if (hasProcessedAnswer(undefined, answerKey)) {
+    if (hasProcessedAnswer(loadMemory(profile), answerKey)) {
       if (isDev) {
         console.warn?.('[adaptiveSessionEngine] Skipped memory sync for duplicate answer identity.', { answerKey });
       }
@@ -170,8 +164,8 @@ function syncMemoryAfterAnswer(profile, result, summary = {}) {
       },
       ...(Array.isArray(memory.learningHistory) ? memory.learningHistory : [])
     ].slice(0, 300);
-    memory = markProcessedAnswer(memory, answerKey);
-    saveMemory(memory);
+    memory = markProcessedAnswer(memory, answerKey, profile);
+    saveMemory(memory, profile);
   } catch {
     // Memory updates must never block adaptive learning.
   }
@@ -230,15 +224,15 @@ function finalizeSession(profile, sessionInfo = {}) {
 /**
  * Returns the adaptive profile from storage.
  */
-export function getAdaptiveProfile() {
-  return loadProfile();
+export function getAdaptiveProfile(identityInput = {}) {
+  return loadProfile(identityInput);
 }
 
 /**
  * Saves the adaptive profile safely.
  */
 export function saveAdaptiveProfile(profile) {
-  return saveProfile(profile);
+  return saveProfile(profile, profile);
 }
 
 /**

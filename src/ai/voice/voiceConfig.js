@@ -45,6 +45,38 @@ export const SUBJECT_LANGUAGE_MAP = Object.freeze({
   pk: 'ms'
 });
 
+function normalizeSubjectId(subject = '') {
+  if (subject && typeof subject === 'object') {
+    return normalizeSubjectId(subject.id || subject.subjectId || subject.slug || subject.title);
+  }
+  const normalized = String(subject || '').trim().toLowerCase();
+  if (SUBJECT_LANGUAGE_MAP[normalized]) return normalized;
+  if (normalized.includes('english') || normalized.includes('bahasa inggeris')) return 'english';
+  if (normalized.includes('bahasa arab') || normalized === 'arabic') return 'arab';
+  if (normalized.includes('bahasa melayu')) return 'bm';
+  return normalized;
+}
+
+export function getSubjectLanguagePresentation(subject = '') {
+  const subjectId = normalizeSubjectId(subject);
+  const contentLanguage = SUBJECT_LANGUAGE_MAP[subjectId] || CANONICAL_LANGUAGES.MALAY;
+  const contentConfig = LANGUAGE_CONFIG[contentLanguage] || LANGUAGE_CONFIG.ms;
+  const teachingLanguage = contentLanguage === CANONICAL_LANGUAGES.ARABIC
+    ? CANONICAL_LANGUAGES.MALAY
+    : contentLanguage;
+  const teachingConfig = LANGUAGE_CONFIG[teachingLanguage] || LANGUAGE_CONFIG.ms;
+
+  return Object.freeze({
+    subjectId,
+    contentLanguage,
+    contentLocale: contentConfig.locale,
+    teachingLanguage,
+    teachingLocale: teachingConfig.locale,
+    direction: contentLanguage === CANONICAL_LANGUAGES.ARABIC ? 'rtl' : 'ltr',
+    teachingDirection: teachingLanguage === CANONICAL_LANGUAGES.ARABIC ? 'rtl' : 'ltr'
+  });
+}
+
 // Reserved for a future provider without coupling the browser engine to a paid API.
 export const FUTURE_NEURAL_VOICES = Object.freeze({
   ms: null,

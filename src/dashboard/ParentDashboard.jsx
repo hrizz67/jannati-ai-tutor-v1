@@ -93,6 +93,45 @@ function buildSubjectTimelineCopy(subjectAnalytics) {
   };
 }
 
+function buildEvidenceState(totalQuestions, reportHasData) {
+  if (!reportHasData || totalQuestions <= 0) {
+    return {
+      level: 'none',
+      label: 'Belum bermula',
+      message: 'Belum cukup data untuk analisis.',
+      meaningful: false
+    };
+  }
+  if (totalQuestions <= 2) {
+    return {
+      level: 'limited',
+      label: 'Data sedang dikumpulkan',
+      message: 'Data masih terlalu sedikit untuk membuat kesimpulan.',
+      meaningful: false
+    };
+  }
+  return {
+    level: 'ready',
+    label: 'Analisis tersedia',
+    message: `${totalQuestions} jawapan telah digunakan untuk ringkasan ini.`,
+    meaningful: true
+  };
+}
+
+function getRecommendedDifficulty(mastery) {
+  const score = safePercent(mastery);
+  if (score < 40) return 'easy';
+  if (score >= 80) return 'hard';
+  return 'medium';
+}
+
+function getCloudStateMessage(status) {
+  if (['syncing', 'loading', 'recovering'].includes(status)) return 'Data cloud sedang dimuat atau dipulihkan. Ringkasan akan dikemas kini secara automatik.';
+  if (status === 'offline') return 'Peranti di luar talian. Laporan menggunakan data selamat yang tersedia pada peranti ini.';
+  if (['error', 'upgrade-required'].includes(status)) return 'Data cloud belum dapat disahkan. Semak status sync di Papan Utama sebelum membuat kesimpulan.';
+  return '';
+}
+
 export default function ParentDashboard({
   profile,
   adaptiveProfile,
@@ -105,6 +144,8 @@ export default function ParentDashboard({
   allSubjects,
   adaptivePracticeCount,
   readiness,
+  activeChildId,
+  cloudSyncStatus = 'idle',
   onStartAdaptivePractice,
   onBack
 }) {
@@ -202,7 +243,9 @@ export default function ParentDashboard({
 
   const strongestSubject = [...subjectInsights].filter(subject => subject.hasData).sort((left, right) => right.mastery - left.mastery)[0] || null;
   const weakestSubject = [...subjectInsights].filter(subject => subject.hasData).sort((left, right) => left.mastery - right.mastery)[0] || null;
-  const focusTopics = canonicalAnalytics.weakTopics.slice(0, 4);
+  const reportHasData = canonicalAnalytics.hasEvidence || subjectInsights.some(subject => subject.hasData);
+  const evidenceState = buildEvidenceState(canonicalAnalytics.totalQuestions, reportHasData);
+  const focusTopics = evidenceState.meaningful ? canonicalAnalytics.weakTopics.slice(0, 4) : [];
   const selectedRecommendationKey = buildRecommendationKey(selectedSubject?.analytics);
   const overallRecommendationKey = buildRecommendationKey(canonicalAnalytics);
   const aiRecommendationText = overallRecommendationKey
@@ -218,44 +261,96 @@ export default function ParentDashboard({
     return String(left.subjectId || '').localeCompare(String(right.subjectId || ''));
   });
 
-  const reportHasData = canonicalAnalytics.hasEvidence || subjectInsights.some(subject => subject.hasData);
-  const statusBadge = canonicalAnalytics.status === 'Dikuasai'
+  const statusBadge = !evidenceState.meaningful
+    ? { icon: 'book', label: evidenceState.label }
+    : canonicalAnalytics.status === 'Dikuasai'
     ? { icon: 'medal', label: 'Cemerlang' }
     : canonicalAnalytics.status === 'Berkembang Baik' || canonicalAnalytics.status === 'Hampir Menguasai'
       ? { icon: 'check', label: 'Baik' }
       : { icon: 'book', label: 'Perlu Ditingkatkan' };
 
   const selectedTimeline = buildSubjectTimelineCopy(selectedSubject?.analytics);
+  const cloudStateMessage = getCloudStateMessage(cloudSyncStatus);
+  const childYear = safeText(sourceProfile?.year || profile?.year, 'Tahun belum ditetapkan');
+  const primaryFocus = focusTopics[0] || null;
+  const primaryActionSubjectId = primaryFocus?.subjectId || weakestSubject?.id || selectedSubject?.id || subjectCatalog[0]?.id || 'bm';
+  const primaryActionTopicId = primaryFocus?.topicId || '';
+  const primaryActionLabel = evidenceState.level === 'none'
+    ? 'Mulakan latihan 10 minit'
+    : primaryFocus
+      ? 'Latih topik ini'
+      : 'Buka latihan adaptif';
+
+  function startParentPractice({
+    subjectId = primaryActionSubjectId,
+    topicId = primaryActionTopicId,
+    mastery = primaryFocus?.mastery,
+    source = 'parent-dashboard',
+    count = Math.min(5, Math.max(3, safeNumber(adaptivePracticeCount, 4)))
+  } = {}) {
+    return onStartAdaptivePractice?.(count, {
+      childId: activeChildId,
+      subjectId,
+      topicId,
+      difficulty: getRecommendedDifficulty(mastery),
+      context: evidenceState.level,
+      source,
+      forceFresh: true
+    });
+  }
 
   return (
-    <main className="app parent-page">
-      <div className="topbar">
+    <main id="parent-print-report" className="app parent-page parent-print-report" data-child-name={studentName} data-child-year={childYear}>
+      <div className="topbar print-hide">
         <button type="button" className="ghost" onClick={onBack}>Papan Utama</button>
         <span className="pill">Laporan Ibu Bapa</span>
       </div>
 
-      <section className="card">
-        <h2>Ringkasan Prestasi Anak</h2>
-        {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
+      <section className="card parent-overview-card" aria-labelledby="parent-overview-title">
+        <p className="eyebrow">Laporan Pembelajaran Anak</p>
+        <h1 id="parent-overview-title">{studentName}</h1>
+        <p className="parent-child-year">{childYear}</p>
+        {cloudStateMessage && <p className="parent-cloud-state" role="status">{cloudStateMessage}</p>}
+        <div className={`parent-evidence-state ${evidenceState.level}`}>
+          <span>Status pembelajaran semasa</span>
+          <b>{statusBadge.label}</b>
+          <p>{evidenceState.message}</p>
+        </div>
+        <div className="parent-next-action">
+          <div>
+            <span>Perlu diberi perhatian</span>
+            <b>{primaryFocus
+              ? `${formatTopicName(primaryFocus.topicId)} · ${formatSubjectName(primaryFocus.subjectId)}`
+              : evidenceState.meaningful
+                ? 'Tiada topik lemah dikesan berdasarkan data semasa.'
+                : 'Kumpulkan beberapa jawapan dahulu.'}</b>
+            <p>{primaryFocus
+              ? 'Mulakan latihan berfokus untuk mengukuhkan topik ini.'
+              : evidenceState.meaningful
+                ? 'Teruskan latihan pengukuhan supaya prestasi kekal konsisten.'
+                : 'Latihan pendek akan membantu membina analisis yang lebih tepat.'}</p>
+          </div>
+          <button type="button" className="full parent-primary-action print-hide" onClick={() => startParentPractice()}>{primaryActionLabel}</button>
+        </div>
+        {reportHasData ? (
           <>
             <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
             <div className="metric-grid parent-primary-metrics">
-              <MetricCard value={safeText(summary.name || studentName, 'Murid')} label="Nama Murid" />
-              <MetricCard value={formatStatus(readiness?.level || 'needs_support')} label="Tahap" subtitle={safeText(readiness?.message, 'Masih memerlukan sokongan.')} />
               <MetricCard value={`${safePercent(canonicalAnalytics.accuracy)}%`} label="Ketepatan" />
               <MetricCard value={`${safePercent(canonicalAnalytics.masteryPercent)}%`} label="Penguasaan" />
               <MetricCard value={formatStudyMinutes(canonicalAnalytics.studyMinutes || 0)} label="Masa Belajar" />
-              <MetricCard value={formatStreakLabel(canonicalAnalytics.currentStreak)} label="Streak Semasa" />
             </div>
             <div className="status-badge-row">
               <span className="badge"><IconGlyph name={statusBadge.icon} size={16} aria-hidden="true" /> {statusBadge.label}</span>
-              <span className="badge">Data tersedia untuk analisis.</span>
+              <span className="badge">{evidenceState.message}</span>
             </div>
             <details className="parent-secondary-disclosure">
               <summary><span>Butiran kemajuan tambahan</span><small>Aktiviti, streak terbaik dan ganjaran</small></summary>
               <div className="metric-grid parent-secondary-metrics">
                 <MetricCard value={canonicalAnalytics.totalQuestions} label="Soalan Dijawab" />
                 <MetricCard value={canonicalAnalytics.correctQuestions} label="Jawapan Betul" />
+                <MetricCard value={evidenceState.meaningful ? formatStatus(readiness?.level || canonicalAnalytics.status) : 'Belum cukup data'} label="Tahap" subtitle={evidenceState.meaningful ? safeText(readiness?.message, canonicalAnalytics.status) : evidenceState.message} />
+                <MetricCard value={formatStreakLabel(canonicalAnalytics.currentStreak)} label="Streak Semasa" />
                 <MetricCard value={formatStreakLabel(canonicalAnalytics.bestStreak)} label="Streak Terpanjang" />
                 <MetricCard value={safeNumber(adaptivePracticeCount, 0)} label="Latihan Adaptif" />
               </div>
@@ -268,10 +363,8 @@ export default function ParentDashboard({
           </>
         ) : (
           <EmptyState
-            title="Belum ada penguasaan subjek"
-            message={allowMock
-              ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
-              : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+            title="Belum cukup data untuk analisis."
+            message="Mulakan satu latihan pendek untuk membina ringkasan kemajuan anak."
             showMascot={false}
           />
         )}
@@ -321,34 +414,52 @@ export default function ParentDashboard({
               ))}
             </div>
             {selectedSubject && (
-              <div className="timeline">
-                <div className="timeline-item">
-                  <span>{selectedSubject.label}</span>
-                  <b>{selectedTimeline.headline}</b>
-                  <em>{selectedTimeline.meta}</em>
-                  <p>{selectedTimeline.body}</p>
+              <>
+                <div className="timeline">
+                  <div className="timeline-item">
+                    <span>{selectedSubject.label}</span>
+                    <b>{selectedTimeline.headline}</b>
+                    <em>{selectedTimeline.meta}</em>
+                    <p>{selectedTimeline.body}</p>
+                  </div>
+                  <div className="timeline-item">
+                    <span>Topik Lemah</span>
+                    <b>{evidenceState.meaningful && selectedSubject.analytics.weakTopics.length ? selectedSubject.analytics.weakTopics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : selectedSubject.hasData ? 'Tiada topik lemah dikesan' : 'Subjek belum bermula'}</b>
+                    <em>{evidenceState.meaningful ? `${selectedSubject.analytics.weakTopics.length} topik` : 'Belum cukup bukti'}</em>
+                    <p>{evidenceState.meaningful && selectedSubject.analytics.weakTopics[0]
+                      ? `Fokus pada ${formatTopicName(selectedSubject.analytics.weakTopics[0].topicId)}.`
+                      : selectedSubject.hasData
+                        ? 'Teruskan latihan untuk mengesahkan penguasaan.'
+                        : 'Pilih topik untuk memulakan subjek ini.'}</p>
+                  </div>
+                  <div className="timeline-item">
+                    <span>Cadangan Ibu Bapa</span>
+                    <b>{evidenceState.meaningful && selectedRecommendationKey ? formatRecommendationKey(selectedRecommendationKey) : 'Kumpulkan lebih banyak data'}</b>
+                    <em>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Tiada data'}</em>
+                    <p>{evidenceState.meaningful ? 'Gunakan maklumat ini untuk sokongan di rumah.' : 'Beberapa latihan lagi diperlukan sebelum kesimpulan dibuat.'}</p>
+                  </div>
                 </div>
-                <div className="timeline-item">
-                  <span>Topik Lemah</span>
-                  <b>{selectedSubject.analytics.weakTopics.length ? selectedSubject.analytics.weakTopics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : 'Belum ada topik lemah'}</b>
-                  <em>{selectedSubject.analytics.weakTopics.length} topik</em>
-                  <p>{selectedSubject.analytics.weakTopics[0] ? `Fokus pada ${formatTopicName(selectedSubject.analytics.weakTopics[0].topicId)}.` : 'Topik lemah akan muncul selepas murid membuat lebih banyak latihan.'}</p>
-                </div>
-                <div className="timeline-item">
-                  <span>Cadangan Ibu Bapa</span>
-                  <b>{selectedRecommendationKey ? formatRecommendationKey(selectedRecommendationKey) : 'Belum ada cadangan'}</b>
-                  <em>{selectedSubject.hasData ? `${safePercent(selectedSubject.mastery)}% penguasaan` : 'Tiada data'}</em>
-                  <p>{selectedSubject.hasData ? 'Gunakan maklumat ini untuk sokongan di rumah.' : 'Murid perlu mula menjawab soalan untuk cadangan muncul.'}</p>
-                </div>
-              </div>
+                <button
+                  type="button"
+                  className="full print-hide"
+                  onClick={() => startParentPractice({
+                    subjectId: selectedSubject.id,
+                    topicId: selectedSubject.analytics.weakTopics[0]?.topicId || '',
+                    mastery: selectedSubject.mastery,
+                    source: 'parent-subject-action'
+                  })}
+                >
+                  {selectedSubject.hasData ? 'Buka latihan adaptif' : 'Mulakan subjek ini'}
+                </button>
+              </>
             )}
           </>
         ) : (
           <EmptyState
-            title="Belum ada penguasaan subjek"
-            message={allowMock
-              ? 'Mod pembangunan menggunakan data mock apabila profil sebenar belum tersedia.'
-              : 'Profil murid belum mempunyai data penguasaan. Selesaikan beberapa latihan dahulu.'}
+            title="Subjek belum bermula"
+            message="Pilih satu subjek dan mulakan latihan pendek untuk membina data penguasaan."
+            actionLabel="Mulakan latihan"
+            onAction={() => startParentPractice()}
             showMascot={false}
           />
         )}
@@ -356,7 +467,7 @@ export default function ParentDashboard({
 
       <section className="card">
         <h2>Fokus dan Cadangan</h2>
-        {reportHasData && (weakestSubject || strongestSubject || focusTopics.length || overallRecommendationKey) ? (
+        {evidenceState.meaningful ? (
           <>
             <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
             <div className="metric-grid">
@@ -369,17 +480,29 @@ export default function ParentDashboard({
               <div className="parent-topic-list">
                 {focusTopics.map(topic => (
                   <div className="parent-topic-item" key={`${topic.subjectId}-${topic.topicId}`}>
-                    <b>{formatTopicName(topic.topicId)}</b>
-                    <span>{formatSubjectName(topic.subjectId)} · {formatRecommendationKey('review')}</span>
+                    <div>
+                      <b>{formatTopicName(topic.topicId)}</b>
+                      <span>{formatSubjectName(topic.subjectId)} · {formatRecommendationKey('review')}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="ghost parent-topic-action print-hide"
+                      onClick={() => startParentPractice({
+                        subjectId: topic.subjectId,
+                        topicId: topic.topicId,
+                        mastery: topic.mastery,
+                        source: 'parent-weak-topic'
+                      })}
+                    >Latih topik ini</button>
                   </div>
                 ))}
               </div>
             ) : (
-              <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." showMascot={false} />
+              <EmptyState title="Tiada topik lemah dikesan" message="Prestasi semasa adalah baik. Teruskan latihan pengukuhan untuk mengekalkan kemajuan." actionLabel="Buka latihan adaptif" onAction={() => startParentPractice()} showMascot={false} />
             )}
           </>
         ) : (
-          <EmptyState title="Belum ada topik fokus" message="Cadangan fokus akan muncul selepas murid mengumpul lebih banyak data." showMascot={false} />
+          <EmptyState title={evidenceState.level === 'none' ? 'Belum cukup data untuk analisis.' : 'Data masih terlalu sedikit untuk membuat kesimpulan.'} message="Lengkapkan beberapa latihan sebelum topik fokus ditentukan." actionLabel="Mulakan latihan 10 minit" onAction={() => startParentPractice()} showMascot={false} />
         )}
       </section>
 
@@ -389,14 +512,26 @@ export default function ParentDashboard({
           <div className="parent-topic-list">
             {revisionItems.slice(0, 8).map(item => (
               <div className={`parent-topic-item ${item.isOverdue ? 'strong' : ''}`} key={`${item.subjectId}-${item.topicId}-${item.nextReviewAt}`}>
-                <b>{formatTopicName(item.topicId)}</b>
-                <span>{formatSubjectName(item.subjectId)}</span>
-                <em>{formatReviewQueueMeta(item)}</em>
+                <div>
+                  <b>{formatTopicName(item.topicId)}</b>
+                  <span>{formatSubjectName(item.subjectId)}</span>
+                  <em>{formatReviewQueueMeta(item)}</em>
+                </div>
+                <button
+                  type="button"
+                  className="ghost parent-topic-action print-hide"
+                  onClick={() => startParentPractice({
+                    subjectId: item.subjectId,
+                    topicId: item.topicId,
+                    mastery: item.mastery,
+                    source: 'parent-revision'
+                  })}
+                >Mulakan ulang kaji</button>
               </div>
             ))}
           </div>
         ) : (
-          <EmptyState title="Belum ada jadual ulang kaji" message="Jadual akan muncul selepas murid mempunyai data penguasaan." showMascot={false} />
+          <EmptyState title="Belum ada jadual ulang kaji" message={evidenceState.meaningful ? 'Tiada ulang kaji diperlukan pada masa ini.' : 'Jadual akan muncul selepas murid mempunyai data penguasaan.'} actionLabel="Mulakan ulang kaji" onAction={() => startParentPractice({ source: 'parent-empty-revision' })} showMascot={false} />
         )}
       </section>
 
@@ -435,7 +570,8 @@ export default function ParentDashboard({
       </section>
 
       <section className="card">
-        <button type="button" className="full" onClick={() => printParentReport()}>Cetak Laporan</button>
+        <button type="button" className="full print-hide" onClick={() => printParentReport('parent-print-report')}>Cetak Laporan</button>
+        <p className="parent-report-footer">Laporan untuk {studentName} · {childYear}</p>
       </section>
     </main>
   );

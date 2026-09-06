@@ -1,13 +1,13 @@
 {
-  "version": "3.9.7",
+  "version": "3.10.0",
   "status": "stable",
-  "tag": "v3.9.7",
-  "buildDate": "2026-08-28T16:01:22.939Z",
+  "tag": "v3.10.0",
+  "buildDate": "2026-09-06T05:05:07.298Z",
   "questionCount": 4530,
   "curriculumCoverage": "100%",
   "validation": {
     "status": "pass",
-    "info": 14814,
+    "info": 14816,
     "warnings": 0,
     "errors": 0
   }

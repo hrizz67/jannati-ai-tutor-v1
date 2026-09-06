@@ -12,7 +12,7 @@ import {
 import { formatSubjectName, formatTopicName } from '../../utils/displayFormatter.js';
 
 export function buildSmartQuestionDecision(candidates = [], options = {}) {
-  const state = migrateSmartQuestionState(options.smartState || loadSmartQuestionState());
+  const state = migrateSmartQuestionState(options.smartState || loadSmartQuestionState(options.studentIdentity || options.profile));
   const selection = selectSmartQuestions(candidates, {
     ...options,
     smartState: state
@@ -62,8 +62,9 @@ export function buildSmartQuestionSession(candidates = [], options = {}) {
   return buildSmartQuestionDecision(candidates, options);
 }
 
-export function persistSmartQuestionDecision(state = loadSmartQuestionState(), decision = {}, context = {}) {
-  return recordSmartQuestionState(state, decision, context);
+export function persistSmartQuestionDecision(state = null, decision = {}, context = {}) {
+  const scopedState = state || loadSmartQuestionState(context.studentIdentity || context.profile);
+  return recordSmartQuestionState(scopedState, decision, context);
 }
 
 export {

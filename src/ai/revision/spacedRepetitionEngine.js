@@ -1,3 +1,5 @@
+import { addLocalDateKeyDays, getCalendarDayDifference, getLocalDateKey } from '../../utils/localDate.js';
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value || {}));
 }
@@ -9,26 +11,6 @@ function toNumber(value, fallback = 0) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
-}
-
-function localDateKey(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const local = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  return local.toISOString().slice(0, 10);
-}
-
-function startOfLocalDay(value = new Date()) {
-  const date = value instanceof Date ? new Date(value) : new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function daysBetween(a, b) {
-  const startA = startOfLocalDay(a);
-  const startB = startOfLocalDay(b);
-  if (!startA || !startB) return 0;
-  return Math.round((startB.getTime() - startA.getTime()) / 86400000);
 }
 
 function getProfileTopics(profile = {}) {
@@ -58,7 +40,7 @@ function getAdjustmentFactor(topicRecord = {}) {
   const confidence = clamp(toNumber(topicRecord.confidence, 0), 0, 100);
   const wrong = Math.max(0, toNumber(topicRecord.wrong, 0));
   const total = Math.max(0, toNumber(topicRecord.total, 0));
-  const recentMistakePenalty = daysBetween(topicRecord.lastPlayed || topicRecord.lastReviewed || null, new Date()) <= 2 ? 0.75 : 1;
+  const recentMistakePenalty = getCalendarDayDifference(topicRecord.lastPlayed || topicRecord.lastReviewed || null, new Date()) <= 2 ? 0.75 : 1;
   const lowConfidenceFactor = confidence < 40 ? 0.7 : confidence < 60 ? 0.85 : confidence > 90 ? 1.2 : 1;
   const wrongFactor = wrong >= Math.ceil(Math.max(1, total) / 2) ? 0.75 : wrong > 0 ? 0.9 : 1;
   return clamp(lowConfidenceFactor * wrongFactor * recentMistakePenalty, 0.35, 1.35);
@@ -69,12 +51,7 @@ function getReviewDate(topicRecord = {}, referenceDate = new Date()) {
   const factor = getAdjustmentFactor(topicRecord);
   const adjustedDays = Math.max(1, Math.round(baseDays * factor));
   const reviewedAt = topicRecord.lastReviewed || topicRecord.lastPlayed || referenceDate;
-  const next = new Date(reviewedAt);
-  if (Number.isNaN(next.getTime())) {
-    return localDateKey(referenceDate);
-  }
-  next.setDate(next.getDate() + adjustedDays);
-  return localDateKey(next);
+  return addLocalDateKeyDays(reviewedAt, adjustedDays) || getLocalDateKey(referenceDate);
 }
 
 function normalizeTopicRecord(topicRecord = {}) {
@@ -83,7 +60,7 @@ function normalizeTopicRecord(topicRecord = {}) {
   const lastReviewed = record.lastReviewed || record.lastPlayed || null;
   const priority = getReviewPriority(record);
   const dueToday = isDueForReview({ ...record, nextReview });
-  const overdueDays = nextReview ? daysBetween(nextReview, localDateKey()) : 0;
+  const overdueDays = nextReview ? getCalendarDayDifference(nextReview, getLocalDateKey()) : 0;
 
   return {
     ...record,
@@ -100,7 +77,7 @@ export function calculateNextReview(topicRecord = {}) {
 }
 
 export function isDueForReview(topicRecord = {}, today = new Date()) {
-  const normalizedToday = localDateKey(today);
+  const normalizedToday = getLocalDateKey(today);
   const nextReview = topicRecord?.nextReview || calculateNextReview(topicRecord);
   return String(nextReview) <= String(normalizedToday);
 }
@@ -111,8 +88,8 @@ export function getReviewPriority(topicRecord = {}) {
   const wrong = Math.max(0, toNumber(topicRecord.wrong, 0));
   const total = Math.max(0, toNumber(topicRecord.total, 0));
   const nextReview = topicRecord?.nextReview || calculateNextReview(topicRecord);
-  const daysToReview = daysBetween(localDateKey(), nextReview);
-  const recentMistake = daysBetween(topicRecord.lastPlayed || topicRecord.lastReviewed || null, new Date()) <= 2;
+  const daysToReview = getCalendarDayDifference(getLocalDateKey(), nextReview);
+  const recentMistake = getCalendarDayDifference(topicRecord.lastPlayed || topicRecord.lastReviewed || null, new Date()) <= 2;
   const overduePenalty = daysToReview < 0 ? Math.min(30, Math.abs(daysToReview) * 8) : 0;
   const dueBoost = daysToReview <= 0 ? 30 : daysToReview <= 2 ? 18 : daysToReview <= 5 ? 10 : 0;
 
@@ -151,7 +128,7 @@ export function buildReviewSchedule(profile = {}) {
   return sortQueue(topics);
 }
 
-function bucketByDueDate(topics = [], today = localDateKey()) {
+function bucketByDueDate(topics = [], today = getLocalDateKey()) {
   return topics.reduce((acc, topic) => {
     const nextReview = topic.nextReview || calculateNextReview(topic);
     const bucket = String(nextReview) < String(today)
@@ -170,7 +147,7 @@ function bucketByDueDate(topics = [], today = localDateKey()) {
 
 export function getReviewQueue(profile = {}) {
   const generatedAt = new Date().toISOString();
-  const today = localDateKey();
+  const today = getLocalDateKey();
   const schedule = buildReviewSchedule(profile);
   const buckets = bucketByDueDate(schedule, today);
   const dueTopics = sortQueue(buckets.dueTopics);

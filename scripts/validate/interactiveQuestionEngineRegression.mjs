@@ -111,13 +111,31 @@ const reviewedRichBatch4Ids = new Set([
   'MATH-BENTUK-PILOT-049',
   'MATH-NOMBOR-PILOT-050'
 ]);
+const reviewedQuestionBatchQ4Ids = new Set([
+  'BM-KATA_NAMA_AM-002',
+  'BM-KATA_KERJA-003',
+  'BM-PENJODOH_BILANGAN-002',
+  'MATH-MASA-PILOT-007',
+  'MATH-BENTUK-PILOT-003',
+  'ENG-NOUNS-001',
+  'ENG-ANIMALS-004',
+  'ENG-SENTENCES-001',
+  'SAINS-HAIWAN-011',
+  'SAINS-TUMBUHAN-001',
+  'SAINS-BAHAN-001',
+  'ARAB-HURUF_HIJAIYAH-001',
+  'ARAB-WARNA_ARAB-001',
+  'ISLAM-JAWI-001',
+  'PJ-PERGERAKAN_ASAS-032'
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
 assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewed questions each for BM, Mathematics and Science.');
 assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty deliberately reviewed rich interactions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size, 'Every reviewed interactive example must be attached exactly once.');
-assert.equal(derivedChoiceQuestions.length, 993, 'Every safe legacy objective question must become a tappable choice without editing bank data.');
+assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contain fifteen deliberately selected, teacher-reviewed interactions.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
 
@@ -169,6 +187,20 @@ for (const id of reviewedRichBatch4Ids) {
   assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires reviewed learning-intelligence hints.`);
 }
 
+for (const id of reviewedQuestionBatchQ4Ids) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing Question Batch Q4 interaction ${id}.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid Question Batch Q4 interaction schema.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires curriculum, assessment and textbook review notes.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
+  if (question.interaction.type === 'ordering') {
+    const correctResponse = serializeOrderingResponse(question.interaction, question.interaction.correctOrder);
+    assert.equal(smartCheck(correctResponse, question).status, 'correct', `${id} ordering must serialize to the original accepted answer.`);
+  } else {
+    assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must retain exactly one accepted option.`);
+  }
+}
+
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
 assert.equal(smartCheck('3', imageChoice).status, 'correct', 'Image choice must submit an accepted canonical answer.');
 assert.notEqual(smartCheck('4', imageChoice).status, 'correct', 'Image choice distractor must remain incorrect.');
@@ -182,7 +214,7 @@ const reorderedKataNamaAm = prioritizeInteractiveQuestions([
   kataNamaAmTopic.questions[2],
   kataNamaAmTopic.questions[0]
 ]);
-assert.equal(reorderedKataNamaAm[0]?.id, 'BM-KATA_NAMA_AM-001', 'A new topic session must surface an interactive question first.');
+assert.equal(reorderedKataNamaAm[0]?.id, 'BM-KATA_NAMA_AM-002', 'A new topic session must preserve the first teacher-reviewed interactive question in the supplied session order.');
 const lokomotorTopic = subjects.find(subject => subject.id === 'pj')?.topics.find(topic => topic.id === 'lokomotor');
 assert.equal(prioritizeInteractiveQuestions(lokomotorTopic.questions)[0]?.id, 'PJ-LOKOMOTOR-039', 'A teacher-reviewed interaction must take priority over an automatically derived choice in the same topic.');
 const haiwanTopic = subjects.find(subject => subject.id === 'sains')?.topics.find(topic => topic.id === 'haiwan');
@@ -243,6 +275,11 @@ assert.ok(hotspot.interaction.hotspots.every(point => point.x >= 0 && point.x <=
 const clock = byId.get('MATH-MASA-PILOT-008');
 assert.equal(smartCheck('3:30', clock).status, 'correct', 'Clock choice must submit the accepted time.');
 assert.notEqual(smartCheck('3:00', clock).status, 'correct', 'Clock distractor must remain incorrect.');
+assert.ok(clock.interaction.options.every(option => !option.label.includes(':')), 'Clock card labels must not reveal their hidden scoring values.');
+
+const q4Clock = byId.get('MATH-MASA-PILOT-007');
+assert.equal(smartCheck('8:00', q4Clock).status, 'correct', 'Question Batch Q4 digital-to-analogue clock must retain the accepted time.');
+assert.ok(q4Clock.interaction.options.every(option => !option.label.includes(':')), 'Question Batch Q4 clock labels must remain answer-neutral.');
 
 const money = byId.get('MATH-WANG-PILOT-008');
 assert.equal(serializeMoneyResponse(250), 'RM 2.50', 'Money totals must be formatted from integer sen.');
@@ -254,7 +291,7 @@ assert.equal(smartCheck('11 cm', measurement).status, 'correct', 'Ruler measurem
 assert.notEqual(smartCheck('14 cm', measurement).status, 'correct', 'Reading only the ruler endpoint must remain incorrect.');
 
 assert.ok(validateInteractiveQuestionConfig({ version: 2, type: 'imageChoice', instruction: 'x', options: [] }).length, 'Unsupported or malformed configs must be rejected.');
-assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'BM-KATA_NAMA_AM-002')), null, 'Legacy questions must remain on the compatibility fallback.');
+assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'MATH-MASA-PILOT-021')), null, 'A constructed-response time problem must remain on the standard input path when a richer interaction could alter the assessed construct.');
 const derivedObjective = questions.find(question => question.id === 'PJ-PERGERAKAN_ASAS-001');
 assert.equal(getInteractiveQuestionConfig(derivedObjective)?.type, 'choice', 'A safe legacy objective question must render as a tappable choice.');
 assert.equal(smartCheck('berjalan', derivedObjective).status, 'correct', 'Derived choice interaction must retain the canonical answer path.');
@@ -262,6 +299,7 @@ assert.equal(smartCheck('berjalan', derivedObjective).status, 'correct', 'Derive
 const appSource = fs.readFileSync(path.join(root, 'src/App.jsx'), 'utf8');
 const dashboardSource = fs.readFileSync(path.join(root, 'src/dashboard/HomeDashboard.jsx'), 'utf8');
 const engineSource = fs.readFileSync(path.join(root, 'src/components/questions/InteractiveQuestionEngine.jsx'), 'utf8');
+const visualSource = fs.readFileSync(path.join(root, 'src/components/questions/QuestionVisual.jsx'), 'utf8');
 const styleSource = fs.readFileSync(path.join(root, 'src/styles/style.css'), 'utf8');
 assert.ok(appSource.includes('InteractiveQuestionEngine'), 'Quiz surfaces must integrate the interactive engine.');
 assert.ok(appSource.includes("supportsInteractiveQuestion } from './utils/acceptedAnswers.js'"), 'Quiz surfaces must use the lightweight interaction support gate without eagerly loading the renderer utilities.');
@@ -276,9 +314,13 @@ assert.ok(appSource.includes(': <input value={answer}'), 'Legacy text-input fall
 assert.ok(engineSource.includes('role="radiogroup"') && engineSource.includes('aria-pressed') && engineSource.includes('aria-live="polite"'), 'Renderer must expose keyboard and assistive-technology states.');
 assert.ok(engineSource.includes('role="checkbox"') && engineSource.includes('hotspot-button') && engineSource.includes('money-counter'), 'Phase 2 selection, hotspot and money controls must expose semantic interactive controls.');
 assert.ok(engineSource.includes('onDragStart') && engineSource.includes('onClick'), 'Drag interactions must also offer tap/click controls.');
+assert.ok(engineSource.includes('useId') && engineSource.includes('aria-labelledby={instructionId}') && engineSource.includes('aria-describedby={helpId}'), 'Interactive instructions and help must be associated with the activity for assistive technology.');
+assert.ok(engineSource.includes('ke atas') && engineSource.includes('ke bawah') && engineSource.includes('↑') && engineSource.includes('↓'), 'Vertical ordering must provide explicit up/down keyboard and touch controls.');
+assert.ok(visualSource.includes('lang={visual.lang}') && visualSource.includes('dir={visual.dir}'), 'Arabic and Jawi symbols must expose language and reading direction metadata.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
 assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');
+assert.ok(styleSource.includes('.interactive-object-symbol.arabic-glyph'), 'Arabic and Jawi glyphs must retain a readable responsive size.');
 assert.ok(!engineSource.includes('dangerouslySetInnerHTML'), 'Question visuals must not inject unsafe HTML.');
 
 console.log(JSON.stringify({
