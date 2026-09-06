@@ -69,5 +69,6 @@ create trigger profiles_updated_at
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 revoke all on function public.touch_profile_updated_at() from public, anon, authenticated;
 
--- Premium changes must use admin_manage_premium_entitlement through
--- #/admin/premium so authorization, idempotency and audit logging all apply.
+-- Premium changes must use admin_apply_subscription_change through #/admin
+-- so authorization, idempotency, payment bookkeeping and audit logging all
+-- complete atomically. premium_entitlements remains the canonical source.

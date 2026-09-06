@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.12.0 - 2026-09-06
+
+### Admin Console V2
+
+- Adds the protected `#/admin` console with account summaries, customer search, status filters, pagination, customer details, CSV export, and responsive admin layouts.
+- Adds server-authorized Premium activation, 30/90/365-day renewal, custom expiry, trials, timed/permanent complimentary access, cancellation, and immediate expiry.
+- Adds atomic entitlement, payment-reference, and append-only audit writes with idempotency and server-time renewal rules.
+- Keeps `premium_entitlements` as the only access authority, retires the legacy browser write RPC, and removes normal-user access to admin notes, payment records, and audit history.
+
+### Validation
+
+- Full validation passes with 0 errors and 0 warnings; 63/63 unit tests and the production bundle budget pass.
+- Supabase dry-run confirms `20260906210000_admin_console_v2.sql` is the only pending migration.
+
 ## 3.11.0 - 2026-09-06
 
 ### Secure premium administration

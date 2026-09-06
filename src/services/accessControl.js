@@ -39,10 +39,18 @@ export function getAccessLabel(access) {
   const status = normalizeAccessStatus(access?.access_status);
   const expiry = formatAccessExpiry(access);
   const expiryLabel = expiry ? ` · Tamat ${expiry}` : '';
+  const serverNowMs = new Date(access?.server_now).getTime();
+  const expiryMs = new Date(access?.access_expires_at).getTime();
+  const daysRemaining = !access?.is_permanent && Number.isFinite(serverNowMs) && Number.isFinite(expiryMs) && expiryMs > serverNowMs
+    ? Math.ceil((expiryMs - serverNowMs) / 86400000)
+    : null;
+  const activeExpiryLabel = daysRemaining !== null && daysRemaining <= 7
+    ? ` · Tamat ${daysRemaining} hari lagi`
+    : expiryLabel;
   return {
     [ACCESS_STATUS.FREE]: 'Versi Free',
     [ACCESS_STATUS.PENDING]: 'Menunggu semakan',
-    [ACCESS_STATUS.PREMIUM]: isPremiumAccess(access) ? `Premium aktif${expiryLabel}` : `Premium tamat${expiryLabel}`,
+    [ACCESS_STATUS.PREMIUM]: isPremiumAccess(access) ? `Premium aktif${activeExpiryLabel}` : `Premium tamat${expiryLabel}`,
     [ACCESS_STATUS.EXPIRED]: `Premium tamat${expiryLabel}`,
     [ACCESS_STATUS.BLOCKED]: 'Akses disekat'
   }[status];

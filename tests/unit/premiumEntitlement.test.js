@@ -54,7 +54,10 @@ describe('canonical premium entitlement acceptance cases', () => {
     const rpc = vi.fn(async () => ({ data: { ok: true, effectiveStatus: 'active' }, error: null }));
     await expect(managePremiumEntitlement({ rpc }, { targetUserId: 'user-1', action: 'ACTIVATE_PREMIUM', durationDays: 30, requestId: 'request-1' }))
       .resolves.toMatchObject({ ok: true });
-    expect(rpc).toHaveBeenCalledWith('admin_manage_premium_entitlement', expect.objectContaining({ target_user_id: 'user-1' }));
+    expect(rpc).toHaveBeenCalledWith('admin_apply_subscription_change', expect.objectContaining({
+      target_user_id: 'user-1',
+      payment_status: 'waived'
+    }));
   });
 
   it('7. normal-user rejection remains a denied mutation', async () => {

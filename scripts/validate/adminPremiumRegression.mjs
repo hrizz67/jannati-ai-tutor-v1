@@ -57,3 +57,5 @@ assert.doesNotMatch(tutorEdge.slice(tutorEdge.indexOf('function premiumIsActive'
 assert.equal((tests.match(/\bit\('/g) || []).length, 18, 'The Premium suite must contain all 18 deterministic acceptance tests.');
 
 console.log('Admin Premium regression: PASS (canonical entitlement, RLS, audit, idempotency, refresh lifecycle)');
+
+await import('./adminPremiumManagementRegression.mjs');

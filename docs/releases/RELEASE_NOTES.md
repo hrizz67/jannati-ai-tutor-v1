@@ -1,17 +1,16 @@
-# Jannati AI Tutor 3.11.0 Release Notes
+# Jannati AI Tutor 3.12.0 Release Notes
 
 Status: stable
-Tag: v3.11.0
-Build date: 2026-09-06T12:17:07.469Z
+Tag: v3.12.0
+Build date: 2026-09-06T14:58:41.814Z
 
-## Highlights
+## Admin Console V2
 
-- Adds a secure Premium administration workspace for authorised administrators.
-- Makes the Supabase `premium_entitlements` record the canonical source for Premium access.
-- Supports activation, extension, fixed expiry, cancellation, and complimentary access with confirmation and idempotency protection.
-- Records every administrator action in an append-only audit log and blocks direct browser writes through RLS.
-- Revalidates access on authentication and browser lifecycle events, and safely returns to Free access when server verification is unavailable.
-- Uses the same server entitlement decision for Tutor AI access.
+- Owners and verified admins can manage customers and Premium access from the protected `#/admin` console.
+- Renewal supports 30, 90, and 365 days without discarding unused active time, plus custom Malaysia end-of-day expiry.
+- Trials and complimentary access are time-aware; permanent complimentary access is represented explicitly without a synthetic expiry year.
+- Entitlement changes, manual payment references, and audit history are committed atomically by one server-authorized operation.
+- Normal accounts cannot view other customers, admin notes, payment records, audit history, or mutate Premium access.
 
 ## Release Readiness
 
@@ -44,12 +43,4 @@ Build date: 2026-09-06T12:17:07.469Z
 ## Known Follow-ups
 
 - Large JavaScript chunks remain a performance improvement target.
-- Complete physical desktop/mobile acceptance for the new administrator workflow.
-- Continue diagnosis of the separate cross-device learning-data synchronization issue; this release does not migrate, merge, or delete learner progress.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
-
-## Readiness Decision
-
-- Closed beta Premium administration: READY after the database migration is applied.
-- Wider beta: NOT YET READY until physical-device admin acceptance and the separate learning-sync investigation are complete.
-- Paid public release: NOT READY.
