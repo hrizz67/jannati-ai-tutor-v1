@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.12.1 - 2026-09-07
+
+### Admin Console V2 transaction recovery
+
+- Bound subscription mutations, verification and admin reads to 12 seconds; confirmed success no longer waits on background refreshes.
+- Verify ambiguous outcomes through protected audit/payment lookup, retaining the original request UUID for retries and reload recovery.
+- Serialize requests and accounts, reject conflicting UUID reuse, and preserve atomic entitlement/payment/audit updates.
+- Ignore stale customer detail/search responses and keep uncertain transactions visible for manual verification.
+- Add 43 recovery unit checks (106 total unit tests) and an opt-in linked-database rollback preflight.
+- No changes to learning records, child profiles, question content, tutor behavior or cross-device sync.
+
+### Release controls
+
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+
+### Quality snapshot
+
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
+- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
+
+### Follow-up work
+
+- Continue reducing large production chunks through route and subject-level code splitting.
+- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
+
 ## 3.12.0 - 2026-09-06
 
 ### Admin Console V2

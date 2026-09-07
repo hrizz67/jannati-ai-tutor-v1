@@ -1,89 +1,11 @@
-create or replace function public.admin_console_summary()
-returns jsonb language plpgsql stable security definer set search_path = '' as $$
-declare
-  month_start timestamptz := date_trunc('month', now() at time zone 'Asia/Kuala_Lumpur') at time zone 'Asia/Kuala_Lumpur';
-begin
-  if auth.uid() is null then raise exception 'not_authenticated'; end if;
-  if not public.is_current_premium_admin() then raise exception 'admin_required'; end if;
-  return jsonb_build_object(
-    'totalAccounts', (select count(*) from auth.users),
-    'activePremium', (select count(*) from public.premium_entitlements e where e.status = 'active' and e.expires_at > now()),
-    'expiringIn7Days', (select count(*) from public.premium_entitlements e where e.status in ('active', 'trial', 'complimentary') and not e.is_permanent and e.expires_at > now() and e.expires_at <= now() + interval '7 days'),
-    'expiringIn30Days', (select count(*) from public.premium_entitlements e where e.status in ('active', 'trial', 'complimentary') and not e.is_permanent and e.expires_at > now() and e.expires_at <= now() + interval '30 days'),
-    'expired', (select count(*) from public.premium_entitlements e where e.status = 'expired' or (e.status in ('active', 'trial', 'complimentary') and not e.is_permanent and e.expires_at <= now())),
-    'trialAccounts', (select count(*) from public.premium_entitlements e where e.status = 'trial' and e.expires_at > now()),
-    'complimentaryAccounts', (select count(*) from public.premium_entitlements e where e.status = 'complimentary' and (e.is_permanent or e.expires_at > now())),
-    'newAccountsThisMonth', (select count(*) from auth.users u where u.created_at >= month_start),
-    'renewalsThisMonth', (select count(*) from public.premium_payment_records p where p.created_at >= month_start and p.action in ('ACTIVATE_PREMIUM', 'EXTEND_PREMIUM', 'SET_EXPIRY')),
-    'serverNow', now()
-  );
-end;
-$$;
+begin;
 
-create or replace function public.admin_search_customers(search_text text default '', status_filter text default 'all', page_size integer default 20, page_offset integer default 0)
-returns jsonb language plpgsql stable security definer set search_path = '' as $$
-declare
-  normalized_search text := lower(trim(coalesce($1, '')));
-  normalized_filter text := lower(trim(coalesce(nullif($2, ''), 'all')));
-  safe_size integer := least(greatest(coalesce($3, 20), 1), 50);
-  safe_offset integer := greatest(coalesce($4, 0), 0);
-  response_payload jsonb;
-begin
-  if auth.uid() is null then raise exception 'not_authenticated'; end if;
-  if not public.is_current_premium_admin() then raise exception 'admin_required'; end if;
-  if normalized_filter not in ('all', 'active', 'expiring_7', 'expiring_30', 'expired', 'trial', 'complimentary') then raise exception 'invalid_status_filter'; end if;
-  with base as (
-    select u.id account_id, u.email,
-      coalesce(nullif(trim(p.display_name), ''), nullif(trim(u.raw_user_meta_data ->> 'display_name'), ''), split_part(coalesce(u.email, ''), '@', 1), 'Akaun') display_name,
-      u.created_at, e.plan, e.status stored_status, e.starts_at, e.expires_at,
-      coalesce(e.is_permanent, false) is_permanent, e.source, e.notes, e.updated_at,
-      coalesce(e.revision, 0) revision,
-      case when e.account_id is null then 'free'
-        when e.status in ('active', 'trial', 'complimentary') and (e.is_permanent or e.expires_at > now()) then e.status
-        when e.status = 'cancelled' then 'cancelled' else 'expired' end effective_status,
-      e.status in ('active', 'trial', 'complimentary') and (e.is_permanent or e.expires_at > now()) access_allowed,
-      case when e.is_permanent then null when e.expires_at > now() then greatest(0, ceil(extract(epoch from (e.expires_at - now())) / 86400.0)::integer) else 0 end days_remaining,
-      coalesce((select count(*) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null), 0) child_count,
-      coalesce((select jsonb_agg(jsonb_build_object('id', lp.id, 'name', lp.display_name, 'year', lp.school_year) order by lp.created_at) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null), '[]'::jsonb) children,
-      last_payment.payment_reference last_payment_reference, last_payment.payment_status last_payment_status,
-      last_payment.notes last_payment_note, last_payment.created_at last_renewal_at
-    from auth.users u
-    left join public.profiles p on p.id = u.id
-    left join public.premium_entitlements e on e.account_id = u.id
-    left join lateral (select pr.payment_reference, pr.payment_status, pr.notes, pr.created_at from public.premium_payment_records pr where pr.account_id = u.id order by pr.created_at desc limit 1) last_payment on true
-    where normalized_search = ''
-      or position(normalized_search in lower(coalesce(u.email, ''))) > 0
-      or position(normalized_search in lower(coalesce(p.display_name, ''))) > 0
-      or position(normalized_search in lower(u.id::text)) > 0
-      or exists (select 1 from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null and position(normalized_search in lower(lp.display_name)) > 0)
-  ), filtered as (
-    select base.*, count(*) over() total_count from base
-    where normalized_filter = 'all'
-      or (normalized_filter = 'active' and base.effective_status = 'active')
-      or (normalized_filter = 'expiring_7' and base.access_allowed and not base.is_permanent and base.expires_at <= now() + interval '7 days')
-      or (normalized_filter = 'expiring_30' and base.access_allowed and not base.is_permanent and base.expires_at <= now() + interval '30 days')
-      or (normalized_filter = 'expired' and base.effective_status = 'expired')
-      or (normalized_filter = 'trial' and base.effective_status = 'trial')
-      or (normalized_filter = 'complimentary' and base.effective_status = 'complimentary')
-    order by coalesce(base.updated_at, base.created_at) desc, base.account_id limit safe_size offset safe_offset
-  )
-  select jsonb_build_object(
-    'accounts', coalesce(jsonb_agg(jsonb_build_object(
-      'accountId', f.account_id, 'email', f.email, 'displayName', f.display_name, 'createdAt', f.created_at,
-      'childCount', f.child_count, 'children', f.children, 'plan', coalesce(f.plan, 'free'),
-      'storedStatus', coalesce(f.stored_status, 'free'), 'effectiveStatus', f.effective_status,
-      'startsAt', f.starts_at, 'expiresAt', f.expires_at, 'isPermanent', f.is_permanent,
-      'daysRemaining', f.days_remaining, 'source', coalesce(f.source, 'none'), 'notes', f.notes,
-      'updatedAt', f.updated_at, 'revision', f.revision, 'accessAllowed', f.access_allowed,
-      'lastPaymentReference', f.last_payment_reference, 'lastPaymentStatus', f.last_payment_status,
-      'lastPaymentNote', f.last_payment_note, 'lastRenewalAt', f.last_renewal_at
-    ) order by coalesce(f.updated_at, f.created_at) desc, f.account_id), '[]'::jsonb),
-    'total', coalesce(max(f.total_count), 0), 'pageSize', safe_size, 'pageOffset', safe_offset,
-    'filter', normalized_filter, 'serverNow', now()
-  ) into response_payload from filtered f;
-  return response_payload;
-end;
-$$;
+-- A request ID represents exactly one mutation globally, including when another
+-- admin verifies or retries the request after a lost HTTP response.
+alter table public.premium_admin_audit_log
+  drop constraint if exists premium_admin_audit_request_key;
+alter table public.premium_admin_audit_log
+  add constraint premium_admin_audit_request_key unique (request_id);
 
 create or replace function public.admin_get_customer_details(target_user_id uuid)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
@@ -139,16 +61,11 @@ begin
     return jsonb_build_object('requestId', $1, 'status', 'in_progress', 'serverNow', now());
   end if;
 
-  select * into audit_row
-  from public.premium_admin_audit_log a
-  where a.request_id = $1
-  order by a.created_at desc limit 1;
+  select * into audit_row from public.premium_admin_audit_log a
+    where a.request_id = $1 order by a.created_at desc limit 1;
   audit_found := found;
-
-  select * into payment_row
-  from public.premium_payment_records p
-  where p.request_id = $1
-  order by p.created_at desc limit 1;
+  select * into payment_row from public.premium_payment_records p
+    where p.request_id = $1 order by p.created_at desc limit 1;
   payment_found := found;
 
   if not audit_found and not payment_found then
@@ -165,31 +82,22 @@ begin
     'ACTIVATE_PREMIUM', 'EXTEND_PREMIUM', 'SET_EXPIRY',
     'START_TRIAL', 'MARK_COMPLIMENTARY'
   );
-
   if audit_found then
     entitlement_matches := (entitlement_payload ->> 'storedStatus') is not distinct from audit_row.new_status
       and (entitlement_payload ->> 'expiresAt')::timestamptz is not distinct from audit_row.new_expiry
       and coalesce((entitlement_payload ->> 'isPermanent')::boolean, false)
         = coalesce((audit_row.after_state ->> 'isPermanent')::boolean, false);
   end if;
-
-  result_status := case
-    when audit_found and (not payment_expected or payment_found) then 'success'
-    else 'incomplete'
-  end;
+  result_status := case when audit_found and (not payment_expected or payment_found) then 'success' else 'incomplete' end;
 
   return jsonb_build_object(
-    'requestId', $1,
-    'found', true,
-    'status', result_status,
+    'requestId', $1, 'found', true, 'status', result_status,
     'accountId', resolved_account_id,
     'action', case when audit_found then audit_row.action else payment_row.action end,
     'previousExpiry', case when audit_found then audit_row.old_expiry else payment_row.previous_expiry end,
     'newExpiry', case when audit_found then audit_row.new_expiry else payment_row.new_expiry end,
-    'auditRecordFound', audit_found,
-    'paymentExpected', payment_expected,
-    'paymentRecordFound', payment_found,
-    'entitlementMatches', entitlement_matches,
+    'auditRecordFound', audit_found, 'paymentExpected', payment_expected,
+    'paymentRecordFound', payment_found, 'entitlementMatches', entitlement_matches,
     'effectiveStatus', entitlement_payload ->> 'effectiveStatus',
     'accessAllowed', coalesce((entitlement_payload ->> 'accessAllowed')::boolean, false),
     'revision', coalesce((entitlement_payload ->> 'revision')::bigint, 0),
@@ -224,12 +132,12 @@ declare
   normalized_reference text := nullif(left(trim(coalesce($13, '')), 200), '');
   normalized_payment_status text := lower(trim(coalesce(nullif($14, ''), 'paid')));
   old_entitlement public.premium_entitlements%rowtype;
+  replay_audit public.premium_admin_audit_log%rowtype;
   old_status text := 'free'; old_plan text := 'free'; old_expiry timestamptz; old_permanent boolean := false;
   entitlement_active boolean := false; next_status text; next_plan text; next_starts_at timestamptz;
   next_expiry timestamptz; next_permanent boolean := false; renewal_base timestamptz;
   days_added integer := 0; should_record_payment boolean := false;
   old_state jsonb; next_state jsonb; payment_payload jsonb := null;
-  replay_audit public.premium_admin_audit_log%rowtype;
 begin
   if caller_id is null then raise exception 'not_authenticated'; end if;
   if not public.is_current_premium_admin() then raise exception 'admin_required'; end if;
@@ -241,23 +149,28 @@ begin
   if normalized_payment_status not in ('paid', 'pending', 'waived', 'failed', 'refunded') then raise exception 'invalid_payment_status'; end if;
   if coalesce($10, 0) < 0 then raise exception 'invalid_payment_amount'; end if;
   if normalized_payment_status = 'paid' and normalized_reference is null then raise exception 'payment_reference_required'; end if;
+
   perform pg_advisory_xact_lock(hashtextextended('admin-subscription:' || $8::text, 0));
   perform pg_advisory_xact_lock(hashtextextended($1::text, 0));
   select * into replay_audit from public.premium_admin_audit_log a where a.request_id = $8 limit 1;
   if found then
     if replay_audit.target_user_id <> $1 or replay_audit.action <> normalized_action then raise exception 'request_id_conflict'; end if;
-    return public.admin_verify_subscription_request($8) || jsonb_build_object('ok', true, 'duplicate', true, 'idempotentReplay', true);
+    return public.admin_verify_subscription_request($8)
+      || jsonb_build_object('ok', true, 'duplicate', true, 'idempotentReplay', true);
   end if;
+
   select * into old_entitlement from public.premium_entitlements e where e.account_id = $1 for update;
   if found then
-    old_status := old_entitlement.status; old_plan := old_entitlement.plan; old_expiry := old_entitlement.expires_at;
-    old_permanent := old_entitlement.is_permanent;
-    entitlement_active := old_entitlement.status in ('active', 'trial', 'complimentary') and (old_entitlement.is_permanent or old_entitlement.expires_at > server_now);
+    old_status := old_entitlement.status; old_plan := old_entitlement.plan;
+    old_expiry := old_entitlement.expires_at; old_permanent := old_entitlement.is_permanent;
+    entitlement_active := old_entitlement.status in ('active', 'trial', 'complimentary')
+      and (old_entitlement.is_permanent or old_entitlement.expires_at > server_now);
   end if;
   old_state := jsonb_build_object('plan', old_plan, 'status', old_status, 'expiresAt', old_expiry, 'isPermanent', old_permanent);
   renewal_base := case when entitlement_active and old_expiry is not null then old_expiry else server_now end;
   next_starts_at := case when entitlement_active then old_entitlement.starts_at else server_now end;
   next_plan := normalized_plan;
+
   case normalized_action
     when 'ACTIVATE_PREMIUM' then next_status := 'active'; next_expiry := (case when old_permanent then server_now else renewal_base end) + make_interval(days => coalesce($3, 30)); days_added := coalesce($3, 30); should_record_payment := true;
     when 'EXTEND_PREMIUM' then
@@ -286,6 +199,7 @@ begin
     when 'CANCEL_PREMIUM' then next_status := 'cancelled'; next_plan := old_plan; next_starts_at := coalesce(old_entitlement.starts_at, server_now); next_expiry := coalesce(old_expiry, server_now);
     when 'EXPIRE_PREMIUM' then next_status := 'expired'; next_plan := old_plan; next_starts_at := coalesce(old_entitlement.starts_at, server_now); next_expiry := server_now;
   end case;
+
   next_state := jsonb_build_object('plan', next_plan, 'status', next_status, 'expiresAt', next_expiry, 'isPermanent', next_permanent);
   insert into public.premium_entitlements(account_id, plan, status, starts_at, expires_at, is_permanent, source, notes, updated_by)
     values($1, next_plan, next_status, next_starts_at, next_expiry, next_permanent, normalized_source, normalized_note, caller_id)
@@ -308,20 +222,16 @@ begin
   return public.premium_entitlement_payload($1) || jsonb_build_object(
     'ok', true, 'duplicate', false, 'idempotentReplay', false,
     'requestId', $8, 'accountId', $1, 'action', normalized_action,
-    'previousExpiry', old_expiry, 'newExpiry', next_expiry,
-    'payment', payment_payload
+    'previousExpiry', old_expiry, 'newExpiry', next_expiry, 'payment', payment_payload
   );
 end;
 $$;
 
-revoke all on function public.admin_console_summary() from public, anon, authenticated;
-revoke all on function public.admin_manage_premium_entitlement(uuid, text, integer, timestamptz, text, text, text, uuid) from authenticated;
-revoke all on function public.admin_search_customers(text, text, integer, integer) from public, anon, authenticated;
 revoke all on function public.admin_get_customer_details(uuid) from public, anon, authenticated;
 revoke all on function public.admin_verify_subscription_request(uuid) from public, anon, authenticated;
 revoke all on function public.admin_apply_subscription_change(uuid, text, integer, timestamptz, text, text, text, uuid, boolean, numeric, text, text, text, text, timestamptz) from public, anon, authenticated;
-grant execute on function public.admin_console_summary() to authenticated, postgres, service_role;
-grant execute on function public.admin_search_customers(text, text, integer, integer) to authenticated, postgres, service_role;
 grant execute on function public.admin_get_customer_details(uuid) to authenticated, postgres, service_role;
 grant execute on function public.admin_verify_subscription_request(uuid) to authenticated, postgres, service_role;
 grant execute on function public.admin_apply_subscription_change(uuid, text, integer, timestamptz, text, text, text, uuid, boolean, numeric, text, text, text, text, timestamptz) to authenticated, postgres, service_role;
+
+commit;
