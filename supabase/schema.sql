@@ -69,6 +69,8 @@ create trigger profiles_updated_at
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 revoke all on function public.touch_profile_updated_at() from public, anon, authenticated;
 
--- Premium changes must use admin_apply_subscription_change through #/admin
+-- Premium changes must use admin_apply_subscription_change through #/admin.
+-- Ambiguous outcomes must be reconciled with admin_verify_subscription_request;
+-- the browser must never write entitlement, payment or audit tables directly.
 -- so authorization, idempotency, payment bookkeeping and audit logging all
 -- complete atomically. premium_entitlements remains the canonical source.

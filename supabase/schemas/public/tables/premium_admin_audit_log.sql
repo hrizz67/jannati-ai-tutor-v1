@@ -18,7 +18,7 @@ create table "public"."premium_admin_audit_log" (
     'EXPIRE_PREMIUM', 'ADD_PAYMENT_RECORD', 'EDIT_PAYMENT_REFERENCE'
   )),
   constraint "premium_admin_audit_reason_check" check (reason is null or char_length(reason) <= 2000),
-  constraint "premium_admin_audit_request_key" unique (admin_user_id, request_id)
+  constraint "premium_admin_audit_request_key" unique (request_id)
 );
 
 create index premium_admin_audit_target_created_idx

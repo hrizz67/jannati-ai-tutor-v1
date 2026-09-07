@@ -227,32 +227,38 @@ export function buildSubscriptionPreview(account = {}, command = {}, serverNow =
   };
 }
 
-export async function loadAdminConsoleSummary(supabase) {
-  const { data, error } = await supabase.rpc('admin_console_summary');
+export async function loadAdminConsoleSummary(supabase, { signal } = {}) {
+  let request = supabase.rpc('admin_console_summary');
+  if (signal && typeof request?.abortSignal === 'function') request = request.abortSignal(signal);
+  const { data, error } = await request;
   if (error) throw error;
   return data;
 }
 
-export async function searchAdminCustomers(supabase, searchText = '', { statusFilter = 'all', pageSize = 20, pageOffset = 0 } = {}) {
+export async function searchAdminCustomers(supabase, searchText = '', { statusFilter = 'all', pageSize = 20, pageOffset = 0, signal } = {}) {
   const normalizedFilter = ADMIN_CUSTOMER_FILTERS.includes(statusFilter) ? statusFilter : 'all';
-  const { data, error } = await supabase.rpc('admin_search_customers', {
+  let request = supabase.rpc('admin_search_customers', {
     search_text: asText(searchText),
     status_filter: normalizedFilter,
     page_size: pageSize,
     page_offset: pageOffset
   });
+  if (signal && typeof request?.abortSignal === 'function') request = request.abortSignal(signal);
+  const { data, error } = await request;
   if (error) throw error;
   return data || { accounts: [], total: 0, pageSize, pageOffset, filter: normalizedFilter };
 }
 
-export async function loadAdminCustomerDetails(supabase, accountId) {
-  const { data, error } = await supabase.rpc('admin_get_customer_details', { target_user_id: accountId });
+export async function loadAdminCustomerDetails(supabase, accountId, options = {}) {
+  let request = supabase.rpc('admin_get_customer_details', { target_user_id: accountId });
+  if (options.signal && typeof request?.abortSignal === 'function') request = request.abortSignal(options.signal);
+  const { data, error } = await request;
   if (error) throw error;
   return data;
 }
 
-export async function applyAdminSubscriptionChange(supabase, command = {}) {
-  const { data, error } = await supabase.rpc('admin_apply_subscription_change', {
+export async function applyAdminSubscriptionChange(supabase, command = {}, options = {}) {
+  let request = supabase.rpc('admin_apply_subscription_change', {
     target_user_id: command.targetUserId,
     requested_action: command.action,
     duration_days: command.durationDays ?? null,
@@ -269,6 +275,18 @@ export async function applyAdminSubscriptionChange(supabase, command = {}) {
     payment_status: asText(command.paymentStatus, 'paid').toLowerCase(),
     payment_paid_at: command.paymentPaidAt || null
   });
+  if (options.signal && typeof request?.abortSignal === 'function') request = request.abortSignal(options.signal);
+  const { data, error } = await request;
+  if (error) throw error;
+  return data;
+}
+
+export async function verifyAdminSubscriptionRequest(supabase, requestId, options = {}) {
+  let request = supabase.rpc('admin_verify_subscription_request', {
+    target_request_id: requestId
+  });
+  if (options.signal && typeof request?.abortSignal === 'function') request = request.abortSignal(options.signal);
+  const { data, error } = await request;
   if (error) throw error;
   return data;
 }
