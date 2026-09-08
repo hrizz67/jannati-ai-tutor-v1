@@ -1,99 +1,106 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   canRecoverParentPin,
-  clearParentPinAttempts,
+  createParentPinSubmission,
+  getParentAccessMessage,
   getParentPinAttemptState,
-  hasParentPin,
-  isValidParentPin,
-  recordParentPinFailure,
-  replaceParentPinAfterReauthentication,
-  requestParentPinRecovery,
-  saveParentPin,
-  verifyParentPin
+  getParentPinStatus,
+  requestParentPinRecovery
 } from '../../services/parentAccess.js';
 
 function getBlockedSeconds(state) {
   return Math.max(1, Math.ceil((Number(state?.remainingMs) || 0) / 1000));
 }
 
-export default function ParentAccessGate({ accountId, authMarker, onUnlock, onBack, onLogout }) {
+export default function ParentAccessGate({ accountId, authMarker, activeChildId, onUnlock, onBack, onLogout }) {
   const inputRef = useRef(null);
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [tick, setTick] = useState(Date.now());
-  const pinExists = useMemo(() => hasParentPin(accountId), [accountId]);
-  const recoveryAllowed = useMemo(() => canRecoverParentPin(accountId, authMarker), [accountId, authMarker]);
-  const [setupMode, setSetupMode] = useState(!pinExists || recoveryAllowed);
+  const [pinStatus, setPinStatus] = useState(() => getParentPinStatus(accountId));
+  const pinExists = pinStatus.exists;
+  const [recoveryAllowed, setRecoveryAllowed] = useState(() => canRecoverParentPin(accountId, authMarker));
+  const [setupMode, setSetupMode] = useState((!pinExists && !pinStatus.errorCode) || recoveryAllowed);
+  const [submission] = useState(() => createParentPinSubmission());
+  const contextRef = useRef(null);
   const attemptState = getParentPinAttemptState(accountId, { now: tick });
+  const rateBlocked = !setupMode && attemptState.isBlocked && !attemptState.errorCode;
+
+  useLayoutEffect(() => {
+    const context = { accountId, authMarker, activeChildId };
+    contextRef.current = context;
+    submission.invalidate();
+    return () => { contextRef.current = null; submission.invalidate(); };
+  }, [accountId, authMarker, activeChildId, submission]);
 
   useEffect(() => {
     setPin('');
     setConfirmPin('');
     setMessage('');
-    setSetupMode(!hasParentPin(accountId) || canRecoverParentPin(accountId, authMarker));
-    window.setTimeout(() => inputRef.current?.focus(), 0);
-  }, [accountId, authMarker]);
+    setBusy(false);
+    const refreshStatus = () => {
+      const status = getParentPinStatus(accountId);
+      const recovery = canRecoverParentPin(accountId, authMarker);
+      setPinStatus(status);
+      setRecoveryAllowed(recovery);
+      setSetupMode((!status.exists && !status.errorCode) || recovery);
+    };
+    refreshStatus();
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 0);
+    window.addEventListener('storage', refreshStatus);
+    return () => { window.clearTimeout(timer); window.removeEventListener('storage', refreshStatus); };
+  }, [accountId, authMarker, activeChildId]);
 
   useEffect(() => {
-    if (!attemptState.isBlocked) return undefined;
+    if (!rateBlocked) return undefined;
     const timer = window.setInterval(() => setTick(Date.now()), 1000);
     return () => window.clearInterval(timer);
-  }, [attemptState.isBlocked, attemptState.blockedUntil]);
+  }, [rateBlocked, attemptState.blockedUntil]);
 
   async function handleSubmit(event) {
     event.preventDefault();
     if (!accountId || busy) return;
-    const currentAttempts = getParentPinAttemptState(accountId);
-    if (!setupMode && currentAttempts.isBlocked) {
-      setTick(Date.now());
-      setMessage(`Terlalu banyak cubaan. Cuba semula dalam ${getBlockedSeconds(currentAttempts)} saat.`);
-      return;
-    }
-    if (!isValidParentPin(pin)) {
-      setMessage('Masukkan PIN 4 hingga 6 digit.');
-      return;
-    }
-    if (setupMode && pin !== confirmPin) {
-      setMessage('Pengesahan PIN tidak sepadan.');
-      return;
-    }
-
+    const context = contextRef.current;
+    const isCurrent = () => context && contextRef.current === context;
     setBusy(true);
     setMessage('');
-    try {
-      if (setupMode) {
-        if (pinExists) await replaceParentPinAfterReauthentication(accountId, pin, authMarker);
-        else await saveParentPin(accountId, pin);
-        clearParentPinAttempts(accountId);
-        onUnlock?.();
-      } else if (await verifyParentPin(accountId, pin)) {
-        clearParentPinAttempts(accountId);
-        onUnlock?.();
-      } else {
-        const failed = recordParentPinFailure(accountId);
-        setPin('');
-        setTick(Date.now());
-        setMessage(failed.isBlocked
-          ? `PIN tidak tepat. Cuba semula dalam ${getBlockedSeconds(failed)} saat.`
-          : 'PIN tidak tepat. Maklumat anak masih dikunci.');
-        window.setTimeout(() => inputRef.current?.focus(), 0);
-      }
-    } catch (error) {
-      setMessage(error?.message === 'parent_pin_crypto_unavailable'
-        ? 'Pengesahan selamat tidak tersedia dalam pelayar ini.'
-        : 'PIN tidak dapat disimpan dengan selamat. Cuba semula.');
-    } finally {
-      setBusy(false);
+    const result = await submission.submit({ accountId, authMarker, pin, confirmPin, setupMode, isCurrent, onUnlock: () => onUnlock?.(context) });
+    // A duplicate handler must not release the first request's busy state.
+    if (!isCurrent() || result.status === 'busy' || result.status === 'stale') return;
+    setBusy(false);
+    setTick(Date.now());
+    if (result.saved) {
+      setPinStatus(getParentPinStatus(accountId));
+      setSetupMode(false);
+      setRecoveryAllowed(false);
+      setPin('');
+      setConfirmPin('');
+    }
+    if (result.status === 'incorrect') {
+      setPin('');
+      setMessage(result.attempts.isBlocked
+        ? `PIN tidak tepat. Cuba semula dalam ${getBlockedSeconds(result.attempts)} saat.`
+        : 'PIN tidak tepat. Maklumat anak masih dikunci.');
+      inputRef.current?.focus();
+    } else if (result.code) {
+      setMessage(getParentAccessMessage(result.code));
     }
   }
 
   async function startRecovery() {
     if (!accountId || busy) return;
-    requestParentPinRecovery(accountId, authMarker);
+    const context = contextRef.current;
+    if (!requestParentPinRecovery(accountId, authMarker)) {
+      setMessage(getParentAccessMessage('parent_pin_session_storage_unavailable'));
+      return;
+    }
+    setBusy(true);
     setMessage('Log masuk semula diperlukan sebelum PIN boleh ditetapkan semula.');
-    await onLogout?.();
+    try { await onLogout?.(); }
+    catch { if (contextRef.current === context) setMessage('Log keluar belum berjaya. Cuba log keluar dan log masuk semula sebelum menetapkan PIN.'); }
+    finally { if (contextRef.current === context) setBusy(false); }
   }
 
   if (!accountId) {
@@ -137,7 +144,7 @@ export default function ParentAccessGate({ accountId, authMarker, onUnlock, onBa
             autoComplete="current-password"
             value={pin}
             onChange={event => setPin(event.target.value.replace(/\D/g, '').slice(0, 6))}
-            disabled={busy || (!setupMode && attemptState.isBlocked)}
+            disabled={busy || rateBlocked}
             aria-describedby="parent-pin-help parent-pin-status"
             required
           />
@@ -162,11 +169,11 @@ export default function ParentAccessGate({ accountId, authMarker, onUnlock, onBa
             </>
           )}
           <p id="parent-pin-status" className="parent-pin-status" role="status" aria-live="polite">
-            {attemptState.isBlocked
+            {rateBlocked
               ? `Terlalu banyak cubaan. Cuba semula dalam ${getBlockedSeconds(attemptState)} saat.`
-              : message}
+              : message || (pinStatus.errorCode && !recoveryAllowed ? getParentAccessMessage(pinStatus.errorCode) : '')}
           </p>
-          <button type="submit" className="full" disabled={busy || (!setupMode && attemptState.isBlocked)}>
+          <button type="submit" className="full" disabled={busy || rateBlocked}>
             {busy ? 'Mengesahkan…' : setupMode ? 'Simpan dan Buka Laporan' : 'Buka Laporan Ibu Bapa'}
           </button>
         </form>

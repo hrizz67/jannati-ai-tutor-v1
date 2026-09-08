@@ -4,7 +4,13 @@ import ParentDashboard from '../../dashboard/ParentDashboard.jsx';
 
 const PARENT_INACTIVITY_MS = 10 * 60 * 1000;
 
-export default function ParentModeBoundary({
+export default function ParentModeBoundary(props) {
+  // Remount before rendering a different context, not one effect after exposing it.
+  const sessionKey = JSON.stringify([props.accountId || '', props.activeChildId || '', props.authMarker || '']);
+  return <ParentModeSession key={sessionKey} {...props} />;
+}
+
+function ParentModeSession({
   accountId,
   accountEmail,
   authMarker,
@@ -59,7 +65,9 @@ export default function ParentModeBoundary({
         <ParentAccessGate
           accountId={accountId}
           authMarker={authMarker}
-          onUnlock={() => {
+          activeChildId={activeChildId}
+          onUnlock={context => {
+            if (context?.accountId !== accountId || context?.activeChildId !== activeChildId || context?.authMarker !== authMarker) return;
             setLockMessage('');
             setUnlockedAccountId(accountId);
           }}

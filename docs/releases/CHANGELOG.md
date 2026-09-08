@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.12.2 - 2026-09-08
+
+### Parent PIN runtime hotfix
+
+- Verify secure PIN persistence by reading back and re-deriving the stored verifier before opening the report.
+- Separate persistence failures from session cleanup and unlock-callback failures; runtime errors no longer count as wrong PIN attempts.
+- Reject corrupted records, stale setup and duplicate/asynchronous submissions across account, child and auth changes.
+- Relock Parent mode synchronously on context changes; retain the 10-minute timeout, account-scoped PBKDF2 and reauthentication recovery.
+- Preserve newer records during safe rollback and consume recovery permission even when session cleanup fails.
+- Add 47 PIN unit tests (153 total) and 12 native-browser checks using diagnostic identities.
+- No learner-data, learning-sync, entitlement, question-bank or database changes. Original production-browser reproduction and physical-device acceptance remain unconfirmed.
+
+### Release controls
+
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+
+### Quality snapshot
+
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
+- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
+
+### Follow-up work
+
+- Continue reducing large production chunks through route and subject-level code splitting.
+- Complete real-device Safari, speech, RTL, and accessibility acceptance checks.
+
 ## 3.12.1 - 2026-09-07
 
 ### Admin Console V2 transaction recovery

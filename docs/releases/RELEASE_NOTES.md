@@ -1,21 +1,21 @@
-# Jannati AI Tutor 3.12.1 Release Notes
+# Jannati AI Tutor 3.12.2 Release Notes
 
 Status: stable
-Tag: v3.12.1
-Build date: 2026-09-07T11:12:34.706Z
+Tag: v3.12.2
+Build date: 2026-09-08T11:00:17.611Z
 
 ## Release Readiness
 
-### Admin Console V2 hotfix
+### Parent PIN save and unlock
 
-- Prevent endless "Menyimpan" states with a shared timeout and explicit submitting/verifying/success/failure/uncertain states.
-- Recover a lost response by checking server audit and payment evidence, without submitting another renewal.
-- Retry and reload recovery preserve the original UUID; malformed/mismatched responses never count as confirmed success.
-- Request-scoped transaction locks prevent in-flight writes being reported as absent; entitlement, payment and audit remain atomic.
-- Successful mutations release their UI lock before bounded background refreshes. Late customer responses cannot replace another selected account.
-- Deploy `20260907090000_admin_subscription_recovery.sql` before publishing the frontend tag. SQL compilation, role checks and verification were exercised in a rollback-only linked-database preflight.
-- Validation: 106 unit tests passed (43 recovery); full validation returned 0 errors and 0 warnings; production build and asset/bundle gates passed.
-- No real customer renewal was created for this release test. Physical-device and payment-workflow acceptance remain manual checks.
+- Secure save now requires a verified storage readback; browser/crypto failures have precise safe Malay messages.
+- Post-save cleanup does not invalidate a saved PIN. A failing unlock callback explicitly reports that the PIN was saved.
+- Duplicate and stale submissions cannot open another account/child/auth context; context switches relock synchronously.
+- PBKDF2-SHA-256 (120000 iterations), account scoping, reauthentication recovery, backup exclusion and the 10-minute inactivity lock remain intact.
+- Validation: 153 unit tests, full validation with 0 errors/warnings, production build/assets/bundle gates, and 12 real-browser diagnostic checks passed locally.
+- No Supabase migration or learner-data changes are required. The prior desktop/mobile learning-sync issue is outside this release.
+- The original intermittent production-browser failure was not reproduced; controlled fault injection verifies the repaired paths. Live recovery and physical-device acceptance remain manual.
+- Detailed evidence and manual protocol: `docs/PARENT_PIN_HOTFIX_REPORT.md`.
 
 - Package, lockfile, release tag, and generated metadata are version-aligned.
 - Question-bank regression and release-pipeline audits run before the main validator suite.
