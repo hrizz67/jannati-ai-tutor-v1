@@ -296,12 +296,12 @@ begin
       case when next_status in ('active', 'trial', 'complimentary') and (next_permanent or next_expiry > server_now) then 'premium' else 'expired' end, next_expiry)
     on conflict(id) do update set access_status = excluded.access_status, access_expires_at = excluded.access_expires_at;
   if should_record_payment then
-    insert into public.premium_payment_records(request_id, account_id, action, amount, currency, payment_method, payment_reference, payment_status, paid_at, subscription_days_added, previous_expiry, new_expiry, notes, recorded_by)
+    insert into public.premium_payment_records as pr(request_id, account_id, action, amount, currency, payment_method, payment_reference, payment_status, paid_at, subscription_days_added, previous_expiry, new_expiry, notes, recorded_by)
       values($8, $1, normalized_action, coalesce($10, 0), normalized_currency, normalized_method, normalized_reference,
         normalized_payment_status, case when normalized_payment_status = 'paid' then coalesce($15, server_now) else $15 end,
         days_added, old_expiry, next_expiry, normalized_note, caller_id)
-      returning jsonb_build_object('id', id, 'amount', amount, 'currency', currency, 'paymentMethod', payment_method,
-        'paymentReference', payment_reference, 'paymentStatus', payment_status, 'createdAt', created_at) into payment_payload;
+      returning jsonb_build_object('id', pr.id, 'amount', pr.amount, 'currency', pr.currency, 'paymentMethod', pr.payment_method,
+        'paymentReference', pr.payment_reference, 'paymentStatus', pr.payment_status, 'createdAt', pr.created_at) into payment_payload;
   end if;
   insert into public.premium_admin_audit_log(request_id, admin_user_id, target_user_id, action, old_status, new_status, old_expiry, new_expiry, reason, before_state, after_state)
     values($8, caller_id, $1, normalized_action, old_status, next_status, old_expiry, next_expiry, normalized_note, old_state, next_state);
