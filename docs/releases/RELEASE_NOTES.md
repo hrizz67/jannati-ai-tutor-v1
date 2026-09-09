@@ -1,21 +1,20 @@
-# Jannati AI Tutor 3.12.2 Release Notes
+# Jannati AI Tutor 3.12.3 Release Notes
 
 Status: stable
-Tag: v3.12.2
-Build date: 2026-09-08T11:00:17.611Z
+Tag: v3.12.3
+Build date: 2026-09-09T11:07:35.354Z
 
 ## Release Readiness
 
-### Parent PIN save and unlock
+### Learning-sync storage hardening
 
-- Secure save now requires a verified storage readback; browser/crypto failures have precise safe Malay messages.
-- Post-save cleanup does not invalidate a saved PIN. A failing unlock callback explicitly reports that the PIN was saved.
-- Duplicate and stale submissions cannot open another account/child/auth context; context switches relock synchronously.
-- PBKDF2-SHA-256 (120000 iterations), account scoping, reauthentication recovery, backup exclusion and the 10-minute inactivity lock remain intact.
-- Validation: 153 unit tests, full validation with 0 errors/warnings, production build/assets/bundle gates, and 12 real-browser diagnostic checks passed locally.
-- No Supabase migration or learner-data changes are required. The prior desktop/mobile learning-sync issue is outside this release.
-- The original intermittent production-browser failure was not reproduced; controlled fault injection verifies the repaired paths. Live recovery and physical-device acceptance remain manual.
-- Detailed evidence and manual protocol: `docs/PARENT_PIN_HOTFIX_REPORT.md`.
+- Routine pre-write backups are capped at the latest 10 per account; recovery snapshots with explicit retention reasons remain protected.
+- Applied operation records expire after 30 days and conflict records after 90 days, preventing unbounded table growth.
+- Operation history now stores hashes and payload sizes without retaining a second full copy of every learner payload.
+- Identical payloads succeed without creating a revision, backup, or operation-payload duplicate.
+- Client retries reuse the same operation ID, and timestamp-only changes no longer trigger cloud writes.
+- Account/child isolation, compare-and-swap conflict protection, idempotency, and rollback safeguards remain enforced.
+- The production database migration is applied before the v3.12.3 deployment tag is published.
 
 - Package, lockfile, release tag, and generated metadata are version-aligned.
 - Question-bank regression and release-pipeline audits run before the main validator suite.
