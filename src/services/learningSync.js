@@ -34,6 +34,21 @@ function parseObject(value) {
   }
 }
 
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(item => stableJson(item)).join(',')}]`;
+  if (isObject(value)) {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function hasSameCanonicalLearningState(left = {}, right = {}) {
+  const withoutTransportMetadata = value => Object.fromEntries(
+    Object.entries(isObject(value) ? value : {}).filter(([key]) => key !== CLOUD_SYNC_META_KEY)
+  );
+  return stableJson(withoutTransportMetadata(left)) === stableJson(withoutTransportMetadata(right));
+}
+
 function harmonizeSnapshotGlobalXp(snapshot = {}) {
   const next = { ...snapshot };
   const records = new Map();
@@ -949,16 +964,22 @@ export function mergeCloudLearningPayload(localPayload = {}, cloudPayload = {}, 
   merged[DELETED_CHILDREN_KEY] = JSON.stringify(deletedChildren);
   merged[ARCHIVED_CHILDREN_KEY] = JSON.stringify(archivedChildren);
 
-  merged[CLOUD_SYNC_META_KEY] = JSON.stringify({
+  // Transport metadata must not manufacture a learning-state change. Normalize
+  // first, compare without the volatile sync timestamp, and return the exact
+  // cloud payload when the canonical state is unchanged.
+  delete merged[CLOUD_SYNC_META_KEY];
+  const normalized = normalizeActiveLearningProjection(merged, activeChildId, {
+    ...options,
+    mergeRoot: false
+  });
+  if (hasSameCanonicalLearningState(normalized, cloud)) return cloud;
+  normalized[CLOUD_SYNC_META_KEY] = JSON.stringify({
     version: CLOUD_SYNC_VERSION,
     activeChildId,
     deviceId: String(options.deviceId || '').trim() || null,
     updatedAt: new Date().toISOString()
   });
-  return normalizeActiveLearningProjection(merged, activeChildId, {
-    ...options,
-    mergeRoot: false
-  });
+  return normalized;
 }
 
 function normalizeEnvelope(value = {}) {
@@ -987,6 +1008,23 @@ function createOperationId() {
       return (token === 'x' ? value : (value & 0x3) | 0x8).toString(16);
     });
   }
+}
+
+function isRetryableSyncTransportError(error) {
+  const rawStatus = error?.status ?? error?.statusCode;
+  const status = Number(rawStatus);
+  const code = String(error?.code || '');
+  const message = String(error?.message || error || '');
+  return (rawStatus !== undefined && status === 0)
+    || status === 408
+    || status === 429
+    || status >= 500
+    || ['57014', 'PGRST000', 'PGRST001', 'PGRST002'].includes(code)
+    || /failed to fetch|fetch failed|network|timeout|timed out|connection|temporarily unavailable/i.test(message);
+}
+
+function waitForRetry(delayMs) {
+  return new Promise(resolve => setTimeout(resolve, Math.max(0, delayMs)));
 }
 
 export async function loadCloudLearningDataResult(client, options = {}) {
@@ -1031,34 +1069,49 @@ export async function saveRevisionedCloudLearningData(client, {
   expectedRevision = 0,
   operationId = createOperationId(),
   deviceId = '',
-  dirtyChildIds = []
+  dirtyChildIds = [],
+  transportMaxAttempts = 3,
+  retryBaseDelayMs = 300
 } = {}) {
   if (!client || !isObject(payload)) {
     return { ok: false, conflict: false, error: new Error('invalid_revisioned_sync_request') };
   }
-  try {
-    const { data, error } = await client.rpc('save_learning_data_v3', {
-      payload,
-      expected_revision: Number(expectedRevision) || 0,
-      operation_id: operationId,
-      device_id: String(deviceId || ''),
-      dirty_child_ids: [...new Set((dirtyChildIds || []).map(String).filter(Boolean))]
-    });
-    if (error) return { ok: false, conflict: false, error };
-    const result = isObject(data) ? data : {};
-    return {
-      ok: Boolean(result.ok),
-      conflict: Boolean(result.conflict),
-      duplicate: Boolean(result.duplicate),
-      payload: isObject(result.payload) ? result.payload : {},
-      revision: Number(result.revision) || 0,
-      serverUpdatedAt: String(result.serverUpdatedAt || ''),
-      operationId,
-      error: null
-    };
-  } catch (error) {
-    return { ok: false, conflict: false, operationId, error };
+  const maxAttempts = Math.max(1, Math.min(3, Number(transportMaxAttempts) || 1));
+  const rpcArguments = {
+    payload,
+    expected_revision: Number(expectedRevision) || 0,
+    operation_id: operationId,
+    device_id: String(deviceId || ''),
+    dirty_child_ids: [...new Set((dirtyChildIds || []).map(String).filter(Boolean))]
+  };
+  let lastError = null;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const { data, error } = await client.rpc('save_learning_data_v3', rpcArguments);
+      if (error) {
+        lastError = error;
+        if (!isRetryableSyncTransportError(error) || attempt + 1 >= maxAttempts) break;
+      } else {
+        const result = isObject(data) ? data : {};
+        return {
+          ok: Boolean(result.ok),
+          unchanged: Boolean(result.unchanged),
+          conflict: Boolean(result.conflict),
+          duplicate: Boolean(result.duplicate),
+          payload: isObject(result.payload) ? result.payload : {},
+          revision: Number(result.revision) || 0,
+          serverUpdatedAt: String(result.serverUpdatedAt || ''),
+          operationId,
+          error: null
+        };
+      }
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableSyncTransportError(error) || attempt + 1 >= maxAttempts) break;
+    }
+    await waitForRetry((Number(retryBaseDelayMs) || 0) * (2 ** attempt));
   }
+  return { ok: false, unchanged: false, conflict: false, operationId, error: lastError || new Error('cloud_sync_transport_failed') };
 }
 
 export async function syncRevisionedCloudLearning(client, localPayload = {}, options = {}) {
@@ -1076,6 +1129,9 @@ export async function syncRevisionedCloudLearning(client, localPayload = {}, opt
 
   let conflictCount = 0;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const logicalOperationId = attempt === 0 && options.operationId
+      ? options.operationId
+      : createOperationId();
     const payload = mergeCloudLearningPayload(localPayload, envelope.data, {
       ...options,
       mergeDirtySnapshots: true
@@ -1083,9 +1139,11 @@ export async function syncRevisionedCloudLearning(client, localPayload = {}, opt
     const result = await saveRevisionedCloudLearningData(client, {
       payload,
       expectedRevision: envelope.revision,
-      operationId: createOperationId(),
+      operationId: logicalOperationId,
       deviceId: options.deviceId,
-      dirtyChildIds: options.dirtyChildIds
+      dirtyChildIds: options.dirtyChildIds,
+      transportMaxAttempts: options.transportMaxAttempts,
+      retryBaseDelayMs: options.retryBaseDelayMs
     });
     if (result.ok) {
       return {

@@ -464,6 +464,13 @@ function repairChildSnapshotStorage() {
   }
 }
 
+function getChildSnapshotContentSignature(snapshot = {}) {
+  return JSON.stringify(Object.keys(snapshot)
+    .filter(key => !['__childSnapshotCapturedAt', '__childSnapshotDeviceId'].includes(key))
+    .sort()
+    .map(key => [key, snapshot[key]]));
+}
+
 function captureChildSnapshot(childId, { force = false } = {}) {
   if (!childId) return false;
   try {
@@ -483,6 +490,10 @@ function captureChildSnapshot(childId, { force = false } = {}) {
       __childSnapshotDeviceId: getSyncDeviceId()
     };
     const existingSnapshot = readChildSnapshot(childId);
+    if (
+      existingSnapshot
+      && getChildSnapshotContentSignature(existingSnapshot) === getChildSnapshotContentSignature(nextSnapshot)
+    ) return true;
     if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return true;
     localStorage.setItem(`${CHILD_SNAPSHOT_PREFIX}${childId}`, JSON.stringify(nextSnapshot));
     return true;

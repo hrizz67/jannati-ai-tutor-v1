@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint src tests scripts/validate/architectureHardeningRegression.mjs vite.config.mjs eslint.config.mjs vitest.config.mjs",
-    "test:unit": "vitest run",
+    "test": "vitest run",
+    "test:unit": "vitest run && node scripts/validate/supabaseLearningStorageRegression.mjs",
     "build": "vite build",
     "postbuild": "node scripts/validate/bundleBudgetAudit.mjs",
     "prevalidate": "npm run lint && npm run test:unit && node scripts/validate/adminPremiumRegression.mjs && node scripts/validate/adminPremiumManagementRegression.mjs && node scripts/validate/architectureHardeningRegression.mjs && node scripts/validate/voiceEngineRegression.mjs && node scripts/validate/tutorConversationRegression.mjs && node scripts/validate/tutorGenerativeGatewayRegression.mjs && node scripts/validate/tutorLanguageRevealRegression.mjs && node scripts/validate/parentModeRegression.mjs && node scripts/validate/smartCheckRegression.mjs && node scripts/validate/questionPresentationRegression.mjs && node scripts/validate/interactiveQuestionEngineRegression.mjs && node scripts/validate/interactiveQuestionIntelligenceRegression.mjs && node scripts/validate/interactiveSuitabilityAudit.mjs && node scripts/validate/interactiveCoverageQualityAudit.mjs && node scripts/validate/resumeIsolationRegression.mjs && node scripts/validate/learningMaterialsProgressRegression.mjs && node scripts/validate/finishScreenRegression.mjs && node scripts/validate/responsiveTextRegression.mjs && node scripts/validate/learningSyncRegression.mjs && node scripts/validate/childDataIsolationRegression.mjs && node scripts/validate/accessControlAudit.mjs && node scripts/validate/profileDateQuotaRegression.mjs && node scripts/validate/adaptiveSessionRegression.mjs && node scripts/validate/questionAuditRegression.mjs && node scripts/validate/semanticQuestionUniquenessAudit.mjs && node scripts/validate/distractorDifficultyAudit.mjs && node scripts/validate/deepCoreSubjectContentAudit.mjs && node scripts/validate/learningJourneyAlignmentAudit.mjs --gate && node scripts/validate/browserDeviceAcceptanceAudit.mjs && node scripts/validate/physicalDeviceReadinessAudit.mjs && node scripts/validate/performanceArchitectureAudit.mjs && node scripts/validate/classroomPilotAudit.mjs && node scripts/validate/releasePipelineAudit.mjs",
@@ -36,6 +37,7 @@
     "validate:finish-screen": "node scripts/validate/finishScreenRegression.mjs",
     "validate:responsive-text": "node scripts/validate/responsiveTextRegression.mjs",
     "validate:learning-sync": "node scripts/validate/learningSyncRegression.mjs",
+    "validate:supabase-storage": "node scripts/validate/supabaseLearningStorageRegression.mjs",
     "validate:child-isolation": "node scripts/validate/childDataIsolationRegression.mjs",
     "validate:voice-engine": "node scripts/validate/voiceEngineRegression.mjs",
     "validate:tutor-language-reveal": "node scripts/validate/tutorLanguageRevealRegression.mjs",
