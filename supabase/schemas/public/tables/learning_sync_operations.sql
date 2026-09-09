@@ -6,12 +6,18 @@ create table "public"."learning_sync_operations" (
   "resulting_revision" bigint,
   "status" text not null check (status in ('applied', 'conflict')),
   "dirty_child_ids" text[] not null default '{}'::text[],
-  "submitted_payload" jsonb not null default '{}'::jsonb,
+  "submitted_payload" jsonb,
+  "payload_hash" text,
+  "payload_size_bytes" bigint check (payload_size_bytes is null or payload_size_bytes >= 0),
+  "unchanged" boolean not null default false,
   "created_at" timestamp with time zone not null default now()
 );
 
 create index "learning_sync_operations_account_created_idx"
   on "public"."learning_sync_operations" (account_id, created_at desc);
+
+create index "learning_sync_operations_account_status_created_idx"
+  on "public"."learning_sync_operations" (account_id, status, created_at desc);
 
 alter table "public"."learning_sync_operations" enable row level security;
 

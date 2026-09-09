@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.12.3 - 2026-09-09
+
+### Learning-sync storage hardening
+
+- Bound automatic pre-write learning backups to the latest 10 routine snapshots per account while preserving explicitly retained recovery snapshots.
+- Retain applied sync operations for 30 days and conflict records for 90 days, with cleanup performed inside the protected server write path.
+- Store lightweight operation metadata instead of duplicating full submitted learner payloads; keep hashes and byte sizes for diagnostics.
+- Treat byte-identical submissions as successful no-op writes without incrementing the cloud revision or creating another backup.
+- Reuse one operation identifier across bounded transport retries and stop timestamp-only client changes from producing unnecessary cloud writes.
+- Preserve compare-and-swap, idempotency, account/child isolation, rollback protection, and server-authoritative revision handling.
+- Add a dedicated storage-growth regression validator and document the retention and recovery policy.
+
+### Release controls
+
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+
+### Quality snapshot
+
+- 8 subjects, 84 topics, and 4530 questions validated.
+- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
+- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
+
+### Follow-up work
+
+- Complete a physical desktop/mobile acceptance test using the same account and child after the production migration.
+- Continue reducing large production chunks and complete real-device Safari, speech, RTL, and accessibility checks.
+
 ## 3.12.2 - 2026-09-08
 
 ### Parent PIN runtime hotfix

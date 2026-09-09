@@ -13,7 +13,7 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 7. Perubahan yang belum diakui server kekal pending mengikut akaun dan anak walaupun browser ditutup atau logout dibatalkan.
 8. Snapshot daripada akaun atau anak yang tidak sepadan mesti ditolak sebelum storan aktif dikosongkan.
 9. Pemadaman profil ialah arkib server dengan revision dan laluan undo. Hard delete pada client tidak dibenarkan.
-10. Sebelum setiap penggantian snapshot server, salinan revision sebelumnya mesti disimpan.
+10. Sebelum setiap penggantian snapshot server yang benar-benar berubah, revision sebelumnya mesti memasuki sejarah pemulihan; sejarah `pre-write` dibatasi kepada 10 revision terkini dan snapshot khas tidak dipadam.
 11. Semua storan yang memaparkan XP global bagi anak yang sama ialah projection kepada satu nilai, bukan ganjaran berasingan; ia mesti ditumpukan kepada nilai sah tertinggi tanpa penambahan.
 
 ## Sumber kebenaran
@@ -42,7 +42,7 @@ Dokumen ini menetapkan syarat keselamatan untuk semua data pembelajaran Jannati.
 3. Client memanggil `save_learning_data_v3` dengan `expected_revision`, `operation_id`, `device_id`, dan senarai anak dirty.
 4. RPC mengunci row akaun. Revision tidak sepadan menghasilkan konflik tanpa menulis.
 5. Client menggabungkan payload konflik dan mencuba semula dengan revision terkini.
-6. Revision lama disalin ke `learning_data_backups` sebelum write diterima.
+6. Revision lama disalin ke `learning_data_backups` sebelum write berubah diterima; payload sama menjadi no-op dan backup `pre-write` lama dipangkas selepas aliran selamat selesai.
 7. Endpoint lama `save_learning_data(jsonb)` ditarik balik daripada role browser.
 
 ## Pelan rollout produksi
