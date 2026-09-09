@@ -63,6 +63,21 @@ function errorMessage(error, fallback) {
   return fallback;
 }
 
+function recoveryCauseMessage(mutation = {}) {
+  const type = mutation.errorType || mutation.verificationErrorType;
+  return {
+    timeout: 'Punca: pelayan melepasi had menunggu UI. Permintaan tulis dibiarkan selesai dan disemak menggunakan ID yang sama.',
+    network_offline: 'Punca: peranti berada di luar talian ketika permintaan dihantar.',
+    network_connection: 'Punca: sambungan ke Supabase terputus atau tidak stabil.',
+    rpc_missing: 'Punca: RPC pembaharuan tidak tersedia pada database produksi.',
+    admin_unauthorized: 'Punca: server tidak mengesahkan peranan admin bagi sesi ini.',
+    database_validation: 'Punca: butiran pembaharuan ditolak oleh validasi server.',
+    database_transaction: 'Punca: transaksi database gagal sebelum disahkan.',
+    ambiguous_result: 'Punca: jawapan server tidak lengkap atau tidak sepadan dengan permintaan asal.',
+    unknown: 'Punca asal belum dapat dikenal pasti daripada jawapan rangkaian.'
+  }[type] || '';
+}
+
 function SummaryCard({ label, value, filter, onFilter }) {
   const content = <><strong>{Number(value) || 0}</strong><span>{label}</span></>;
   return filter
@@ -145,21 +160,23 @@ function RecoveryPanel({ mutation, pending, retryAvailable, onVerify, onRetry, o
     [ADMIN_MUTATION_STATES.VERIFYING]: ['Menyemak status transaksi', 'Sistem sedang menyemak rekod audit dan pembayaran menggunakan ID permintaan yang sama.'],
     [ADMIN_MUTATION_STATES.SUCCESS]: ['Transaksi disahkan berjaya', 'Rekod audit server membuktikan perubahan telah disimpan.'],
     [ADMIN_MUTATION_STATES.FAILED]: ['Transaksi gagal', 'Server mengembalikan kegagalan yang diketahui; transaksi separa tidak dianggap berjaya.'],
-    [ADMIN_MUTATION_STATES.NOT_EXECUTED]: ['Transaksi belum direkodkan', retryAvailable ? 'ID ini belum direkodkan pada masa semakan. Cuba semula menggunakan ID yang sama.' : 'Pilih akaun dan tindakan asal, kemudian masukkan semula butiran. Sistem akan menggunakan ID permintaan asal.'],
+    [ADMIN_MUTATION_STATES.NOT_EXECUTED]: ['Transaksi belum direkodkan', retryAvailable ? 'ID ini belum direkodkan selepas semakan berulang. Cuba semula menggunakan ID yang sama.' : `Masukkan semula jumlah dan rujukan bayaran, kemudian pilih ${ACTION_LABELS[operation.action] || 'tindakan asal'}${operation.durationDays ? ` ${operation.durationDays} hari` : ''}. Sistem akan menggunakan ID permintaan asal.`],
     [ADMIN_MUTATION_STATES.UNCERTAIN]: ['Status transaksi belum dapat dipastikan', 'Jangan ulang pembaharuan. Semak status transaksi apabila sambungan kembali stabil.']
   }[state] || ['Pemulihan transaksi', 'Semak status transaksi sebelum melakukan tindakan lain.'];
   const verification = mutation?.verification;
   const checkedAt = verification?.serverNow || mutation?.checkedAt;
+  const cause = recoveryCauseMessage(mutation);
   return <aside className={`admin-recovery-panel state-${state}`} role="status" aria-live="polite">
-    <div><p className="eyebrow">Pemulihan transaksi</p><h3>{meta[0]}</h3><p>{meta[1]}</p></div>
+    <div><p className="eyebrow">Pemulihan transaksi</p><h3>{meta[0]}</h3><p>{meta[1]}</p>{cause ? <p className="admin-recovery-cause">{cause}</p> : null}</div>
     <dl>
       <div><dt>ID permintaan</dt><dd title={operation.requestId}>{shortAdminRequestId(operation.requestId)}</dd></div>
-      <div><dt>Tindakan</dt><dd>{ACTION_LABELS[operation.action] || operation.action}</dd></div>
+      <div><dt>Tindakan</dt><dd>{ACTION_LABELS[operation.action] || operation.action}{operation.durationDays ? ` · ${operation.durationDays} hari` : ''}</dd></div>
       <div><dt>Akaun</dt><dd>{operation.accountId || operation.targetUserId}</dd></div>
       <div><dt>Dimulakan</dt><dd>{formatMalaysiaDateTime(operation.startedAt)}</dd></div>
       <div><dt>Keadaan semasa</dt><dd>{state.replaceAll('_', ' ')}</dd></div>
       <div><dt>Semakan terakhir</dt><dd>{formatMalaysiaDateTime(checkedAt)}</dd></div>
       <div><dt>Keputusan</dt><dd>{verification?.status || state}</dd></div>
+      {mutation?.attempts ? <div><dt>Semakan server</dt><dd>{mutation.attempts} percubaan</dd></div> : null}
       {verification?.newExpiry ? <div><dt>Tarikh server</dt><dd>{formatMalaysiaDateTime(verification.newExpiry)}</dd></div> : null}
     </dl>
     <div className="admin-recovery-actions">
@@ -348,7 +365,12 @@ export default function AdminPremiumPage({ supabase, accountUser, onBack, onEnti
     try {
       const result = await reconcileSubscriptionOperation({
         operation,
-        submit: current => withAdminRequestTimeout(signal => applyAdminSubscriptionChange(supabase, current, { signal })),
+        // Never abort an idempotent write at the UI timeout. A cancelled fetch
+        // can prevent the RPC from reaching Supabase, which leaves no audit row.
+        submit: current => withAdminRequestTimeout(
+          signal => applyAdminSubscriptionChange(supabase, current, { signal }),
+          { abortOnTimeout: false }
+        ),
         verify: requestId => withAdminRequestTimeout(signal => verifyAdminSubscriptionRequest(supabase, requestId, { signal })),
         onState: (state, payload) => {
           if (mountedRef.current && currentRequestRef.current === operation.requestId) setMutation({ state, ...payload });

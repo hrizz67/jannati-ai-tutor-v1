@@ -61,8 +61,12 @@ assert.match(recoveryMigration, /pg_advisory_xact_lock[\s\S]*request_id = \$8[\s
 assert.match(recoveryMigration, /auditRecordFound[\s\S]*paymentRecordFound[\s\S]*entitlementMatches/, 'Verification must reconcile audit, payment and canonical entitlement state.');
 assert.match(recoveryMigration, /revoke all on function public\.admin_verify_subscription_request[\s\S]*grant execute[\s\S]*authenticated/, 'Verification RPC must be explicitly protected and granted through its internal admin check.');
 assert.match(page, /withAdminRequestTimeout[\s\S]*applyAdminSubscriptionChange/, 'Admin mutations must use the canonical bounded RPC helper.');
+assert.match(page, /applyAdminSubscriptionChange[\s\S]{0,180}abortOnTimeout: false/, 'Idempotent subscription writes must not be aborted at the UI deadline.');
 assert.match(service, /admin_verify_subscription_request/, 'The client must verify uncertain request IDs on the server.');
 assert.match(recovery, /ADMIN_SUBSCRIPTION_TIMEOUT_MS = 12_000/, 'The canonical admin timeout must be 12 seconds.');
+assert.match(recovery, /ADMIN_VERIFICATION_RETRY_DELAYS_MS = Object\.freeze\(\[400, 1_000, 2_000\]\)/, 'Ambiguous writes must use bounded server-verification backoff.');
+assert.match(recovery, /if \(abortOnTimeout\) controller\.abort\('timeout'\)/, 'Only explicitly abortable operations may be cancelled at timeout.');
+assert.match(recovery, /'in_progress'/, 'Server in-progress status must remain distinguishable for safe verification retry.');
 assert.match(recovery, /SUBMITTING:[\s\S]*VERIFYING:[\s\S]*SUCCESS:[\s\S]*FAILED:[\s\S]*UNCERTAIN:/, 'Mutation state machine must expose terminal and uncertain states.');
 assert.match(recovery, /Promise\.race/, 'A never-settling request must have a bounded exit path.');
 assert.match(recovery, /requestId[\s\S]*accountId[\s\S]*action[\s\S]*startedAt/, 'Pending recovery metadata must persist the safe minimum operation identity.');
@@ -70,6 +74,6 @@ assert.doesNotMatch(recovery, /localStorage|service[_-]?role/i, 'Recovery must n
 assert.match(page, /Semak Status Transaksi/, 'Uncertain operations must expose manual verification.');
 assert.match(page, /Cuba Lagi \(ID Sama\)/, 'Safe retry must visibly reuse the confirmed request ID.');
 assert.match(page, /Promise\.allSettled/, 'Successful recovery must refresh all authoritative views without creating another write.');
-assert.ok((recoveryTests.match(/\bit\('/g) || []).length >= 30, 'Recovery hardening must include all 30 deterministic regression scenarios.');
+assert.ok((recoveryTests.match(/\bit\('/g) || []).length >= 33, 'Recovery hardening must include all 33 deterministic regression scenarios.');
 
 console.log('Admin Premium Management regression: PASS (dashboard, bounded mutation, verification, idempotent recovery, RLS, audit)');

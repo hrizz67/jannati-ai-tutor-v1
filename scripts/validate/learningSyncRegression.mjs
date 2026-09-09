@@ -639,6 +639,7 @@ assert.match(blockedLegacySync.error.message, /migration_required/);
 assert.equal(legacyWriteCalls, 0, 'A v3 client must never fall back to the blind legacy write RPC.');
 
 const appSource = fs.readFileSync('src/App.jsx', 'utf8');
+const recoverySource = fs.readFileSync('src/services/cloudSnapshotRecovery.js', 'utf8');
 const dashboardSource = fs.readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
 const legacySqlSource = fs.readFileSync('supabase/learning_data.sql', 'utf8');
 const integritySqlSource = fs.readFileSync('supabase/migrations/20260823090000_learning_data_integrity_v3.sql', 'utf8');
@@ -651,7 +652,8 @@ assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.cur
 assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,700}dirtyChildIdsRef\.current\.add\(childId\)/, 'Initial hydration must recover richer same-child learning before applying a lower cloud projection.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
-assert.match(appSource, /normalizeActiveLearningProjection\(cloudData, active\.id, \{ accountId: accountScopeId \}\)[\s\S]{0,200}restoreAccountSnapshot\(normalizedCloudData, accountScopeId\)/, 'Cloud hydration must validate ownership, then normalize the account projection and active child snapshot before storage replacement.');
+assert.match(recoverySource, /normalizeActiveLearningProjection\(cloudData, activeChildId, \{ accountId \}\)/, 'Cloud hydration must validate ownership and normalize the active child projection before local persistence.');
+assert.match(recoverySource, /activeStatePersisted[\s\S]{0,800}snapshotPersisted/, 'Canonical active-state persistence must be evaluated independently from optional snapshot caching.');
 assert.match(appSource, /localStorage\.setItem\('jannati\.adaptive\.studentProfile',[\s\S]{0,100}\{ \.\.\.adaptive, xp \}/, 'Hydration repair must align adaptive XP with the richest global projection.');
 assert.match(appSource, /localStorage\.setItem\('jannati_v151_ai_memory',[\s\S]{0,100}\{ \.\.\.memory, xp \}/, 'Hydration repair must align AI-memory XP with the richest global projection.');
 assert.match(appSource, /syncRevisionedCloudLearning\(supabase, localPayload[\s\S]{0,300}accountId: operationAccountId/, 'Every cloud merge must validate snapshot ownership against the authenticated account.');
@@ -663,7 +665,7 @@ const accountActivationSource = appSource.slice(
   appSource.indexOf('function getEmailRedirectUrl')
 );
 assert.match(accountActivationSource, /if \(currentId\) captureAccountSnapshot\(currentId\);\s*else captureGuestSnapshot\(\);/, 'Switching from Free mode must preserve a separate guest backup.');
-assert.match(accountActivationSource, /if \(existingSnapshot && !restoreAccountSnapshot\(existingSnapshot, nextId\)\) clearAccountData\(\);\s*else if \(!existingSnapshot\) clearAccountData\(\);/, 'An authenticated account must restore only its own account-scoped snapshot and fail closed when restore cannot complete.');
+assert.match(accountActivationSource, /buildCompactAccountSnapshot\(existingSnapshot, nextId\)[\s\S]{0,220}restoreAccountSnapshot\(boundedSnapshot, nextId\)/, 'An authenticated account must bound its own account-scoped recovery snapshot before restoring it.');
 assert.doesNotMatch(accountActivationSource, /mergeCloudLearningPayload|anonymousDirtyChildIds|reconcileChildIdentity/, 'Free learning must never be merged automatically into a different authenticated account.');
 const accountSubmitSource = appSource.slice(
   appSource.indexOf('async function handleAccountSubmit'),
@@ -688,7 +690,7 @@ assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an expl
 assert.match(appSource, /setCloudSyncInfo\(\{[\s\S]{0,120}revision: Number\(syncResult\.revision\)/, 'An acknowledged upload must expose its exact server revision.');
 assert.match(appSource, /!cloudResult\.error && Number\(cloudResult\.protocolVersion\) < CLOUD_SYNC_PROTOCOL_VERSION/, 'A network or RPC error must not be mislabeled as a migration problem.');
 assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
-assert.match(appSource, /reloadCloudLearningState\(restoredChildId, restoredChildId === activeChildBeforeCloudRestore\)/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
+assert.match(appSource, /applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
 assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId, resolvedActiveChildId === activeChildId\)/, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
 const reloadActiveChildSource = appSource.slice(
   appSource.indexOf('function reloadActiveChildState'),
@@ -699,7 +701,7 @@ const cloudPollingSource = appSource.slice(
   appSource.indexOf('const pullLatestCloudData = async'),
   appSource.indexOf('function refreshAdaptiveProfile')
 );
-assert.match(cloudPollingSource, /activeChildBeforeCloudRestore[\s\S]{0,350}reloadCloudLearningState\(restoredChildId, restoredChildId === activeChildBeforeCloudRestore\)/, 'Polling must preserve draft and feedback only when the cloud snapshot belongs to the same child.');
+assert.match(cloudPollingSource, /activeChildBeforeCloudRestore[\s\S]{0,500}applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'Polling must preserve draft and feedback only when the cloud snapshot belongs to the same child.');
 const selectChildSource = appSource.slice(
   appSource.indexOf('function handleSelectChild'),
   appSource.indexOf('function handleCreateChild')
