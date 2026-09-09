@@ -1,5 +1,6 @@
 export const ADMIN_SUBSCRIPTION_TIMEOUT_MS = 12_000;
 export const ADMIN_PENDING_OPERATION_KEY = 'jannati.admin.pending-subscription.v1';
+export const ADMIN_VERIFICATION_RETRY_DELAYS_MS = Object.freeze([400, 1_000, 2_000]);
 
 export const ADMIN_MUTATION_STATES = Object.freeze({
   IDLE: 'idle',
@@ -53,7 +54,8 @@ function abortError() {
 
 export async function withAdminRequestTimeout(requestFactory, {
   timeoutMs = ADMIN_SUBSCRIPTION_TIMEOUT_MS,
-  signal: externalSignal
+  signal: externalSignal,
+  abortOnTimeout = true
 } = {}) {
   if (typeof requestFactory !== 'function') throw new TypeError('request_factory_required');
   if (externalSignal?.aborted) throw abortError();
@@ -66,7 +68,9 @@ export async function withAdminRequestTimeout(requestFactory, {
   const timeoutPromise = new Promise((_, reject) => {
     timeoutId = setTimeout(() => {
       reject(new AdminSubscriptionTimeoutError(timeoutMs));
-      controller.abort('timeout');
+      // Reads can be cancelled safely. A write must be allowed to reach the
+      // server so its idempotency key can be verified after the UI deadline.
+      if (abortOnTimeout) controller.abort('timeout');
     }, Math.max(1, Number(timeoutMs) || ADMIN_SUBSCRIPTION_TIMEOUT_MS));
   });
 
@@ -108,7 +112,7 @@ export function isAmbiguousAdminSubscriptionError(type) {
 
 export function normalizeSubscriptionVerification(payload = {}, requestId = '') {
   const status = String(payload?.status || '').toLowerCase();
-  const normalizedStatus = ['success', 'not_found', 'incomplete'].includes(status) ? status : 'uncertain';
+  const normalizedStatus = ['success', 'not_found', 'incomplete', 'in_progress'].includes(status) ? status : 'uncertain';
   return {
     ...payload,
     requestId: String(payload?.requestId || payload?.request_id || requestId || ''),
@@ -127,6 +131,10 @@ export function verificationMutationState(verification = {}) {
   return ADMIN_MUTATION_STATES.UNCERTAIN;
 }
 
+function waitForVerification(delayMs) {
+  return new Promise(resolve => setTimeout(resolve, Math.max(0, Number(delayMs) || 0)));
+}
+
 function verifiedOperationState(verification, operation) {
   if (verification.requestId !== operation.requestId
     || verification.accountId && verification.accountId !== (operation.accountId || operation.targetUserId)
@@ -134,7 +142,15 @@ function verifiedOperationState(verification, operation) {
   return verificationMutationState(verification);
 }
 
-export async function reconcileSubscriptionOperation({ operation, submit, verify, onState = () => {}, online } = {}) {
+export async function reconcileSubscriptionOperation({
+  operation,
+  submit,
+  verify,
+  onState = () => {},
+  online,
+  verificationRetryDelaysMs = ADMIN_VERIFICATION_RETRY_DELAYS_MS,
+  verificationSleep = waitForVerification
+} = {}) {
   if (!operation?.requestId || typeof submit !== 'function' || typeof verify !== 'function') throw new TypeError('invalid_admin_subscription_operation');
   onState(ADMIN_MUTATION_STATES.SUBMITTING, { operation });
   try {
@@ -154,55 +170,86 @@ export async function reconcileSubscriptionOperation({ operation, submit, verify
       return result;
     }
 
-    onState(ADMIN_MUTATION_STATES.VERIFYING, { operation, error, errorType });
+    return verifySubscriptionOperation({
+      operation,
+      verify,
+      onState,
+      online,
+      context: { error, errorType },
+      retryDelaysMs: verificationRetryDelaysMs,
+      sleep: verificationSleep
+    });
+  }
+}
+
+export async function verifySubscriptionOperation({
+  operation,
+  verify,
+  onState = () => {},
+  online,
+  context = {},
+  retryDelaysMs = ADMIN_VERIFICATION_RETRY_DELAYS_MS,
+  sleep = waitForVerification
+} = {}) {
+  if (!operation?.requestId || typeof verify !== 'function') throw new TypeError('invalid_admin_subscription_verification');
+  const delays = Array.isArray(retryDelaysMs) ? retryDelaysMs : [];
+  let lastVerification = null;
+  let verificationError = null;
+  let verificationErrorType = null;
+  let attemptsCompleted = 0;
+
+  for (let attempt = 0; attempt <= delays.length; attempt += 1) {
+    if (attempt > 0) await sleep(delays[attempt - 1]);
+    attemptsCompleted = attempt + 1;
+    onState(ADMIN_MUTATION_STATES.VERIFYING, {
+      operation,
+      ...context,
+      attempt: attempt + 1,
+      maxAttempts: delays.length + 1
+    });
     try {
       const verification = normalizeSubscriptionVerification(await verify(operation.requestId), operation.requestId);
       const state = verifiedOperationState(verification, operation);
-      const result = { state, operation, error, errorType, verification };
-      onState(state, result);
-      return result;
-    } catch (verificationError) {
-      const result = {
-        state: ADMIN_MUTATION_STATES.UNCERTAIN,
-        operation,
-        error,
-        errorType,
-        verificationError,
-        verificationErrorType: classifyAdminSubscriptionError(verificationError, { online })
-      };
-      onState(result.state, result);
-      return result;
+      lastVerification = verification;
+      verificationError = null;
+      verificationErrorType = null;
+      const retryableStatus = verification.status === 'not_found' || verification.status === 'in_progress';
+      if (state === ADMIN_MUTATION_STATES.SUCCESS || !retryableStatus || attempt === delays.length) {
+        const result = { state, operation, ...context, verification, attempts: attemptsCompleted };
+        onState(state, result);
+        return result;
+      }
+    } catch (error) {
+      verificationError = error;
+      verificationErrorType = classifyAdminSubscriptionError(error, { online });
+      const retryableError = isAmbiguousAdminSubscriptionError(verificationErrorType);
+      if (!retryableError || attempt === delays.length) break;
     }
   }
-}
 
-export async function verifySubscriptionOperation({ operation, verify, onState = () => {} } = {}) {
-  if (!operation?.requestId || typeof verify !== 'function') throw new TypeError('invalid_admin_subscription_verification');
-  onState(ADMIN_MUTATION_STATES.VERIFYING, { operation });
-  try {
-    const verification = normalizeSubscriptionVerification(await verify(operation.requestId), operation.requestId);
-    const state = verifiedOperationState(verification, operation);
-    const result = { state, operation, verification };
-    onState(state, result);
-    return result;
-  } catch (error) {
-    const result = {
-      state: ADMIN_MUTATION_STATES.UNCERTAIN,
-      operation,
-      verificationError: error,
-      verificationErrorType: classifyAdminSubscriptionError(error)
-    };
-    onState(result.state, result);
-    return result;
-  }
+  const result = {
+    state: ADMIN_MUTATION_STATES.UNCERTAIN,
+    operation,
+    ...context,
+    verification: lastVerification,
+    verificationError,
+    verificationErrorType,
+    attempts: attemptsCompleted
+  };
+  onState(result.state, result);
+  return result;
 }
 
 export function createPendingSubscriptionOperation(command = {}, startedAt = new Date().toISOString()) {
+  const durationDays = command.durationDays == null || command.durationDays === ''
+    ? null
+    : Number(command.durationDays);
   return {
     requestId: String(command.requestId || ''),
     accountId: String(command.targetUserId || command.accountId || ''),
     action: String(command.action || ''),
-    startedAt: String(startedAt || '')
+    startedAt: String(startedAt || ''),
+    durationDays: Number.isFinite(durationDays) ? durationDays : null
   };
 }
 
@@ -212,6 +259,7 @@ export function isValidPendingSubscriptionOperation(operation) {
     && UUID_PATTERN.test(String(operation?.accountId || ''))
     && /^[A-Z_]{3,40}$/.test(String(operation?.action || ''))
     && Number.isFinite(new Date(operation?.startedAt).getTime())
+    && (operation?.durationDays == null || (Number.isInteger(operation.durationDays) && operation.durationDays >= 1 && operation.durationDays <= 3650))
   );
 }
 

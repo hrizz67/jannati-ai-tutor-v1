@@ -69,6 +69,32 @@ describe('Admin subscription recovery acceptance matrix', () => {
     await expect(withAdminRequestTimeout(() => Promise.resolve('ok'), { timeoutMs: 50 })).resolves.toBe('ok');
   });
 
+  it('7a. a timed-out write is not aborted before server verification', async () => {
+    vi.useFakeTimers();
+    let requestSignal;
+    const pending = withAdminRequestTimeout(signal => {
+      requestSignal = signal;
+      return new Promise(() => {});
+    }, { timeoutMs: 20, abortOnTimeout: false });
+    const expectation = expect(pending).rejects.toBeInstanceOf(AdminSubscriptionTimeoutError);
+    await vi.advanceTimersByTimeAsync(21);
+    await expectation;
+    expect(requestSignal.aborted).toBe(false);
+  });
+
+  it('7b. reads keep the default abort-on-timeout behaviour', async () => {
+    vi.useFakeTimers();
+    let requestSignal;
+    const pending = withAdminRequestTimeout(signal => {
+      requestSignal = signal;
+      return new Promise(() => {});
+    }, { timeoutMs: 20 });
+    const expectation = expect(pending).rejects.toBeInstanceOf(AdminSubscriptionTimeoutError);
+    await vi.advanceTimersByTimeAsync(21);
+    await expectation;
+    expect(requestSignal.aborted).toBe(true);
+  });
+
   it('8. lost success response is recovered by server verification', async () => {
     const result = await reconcileSubscriptionOperation({
       operation,
@@ -82,7 +108,8 @@ describe('Admin subscription recovery acceptance matrix', () => {
     const result = await reconcileSubscriptionOperation({
       operation,
       submit: async () => { throw new Error('Failed to fetch'); },
-      verify: async () => ({ status: 'not_found', requestId: REQUEST_ID })
+      verify: async () => ({ status: 'not_found', requestId: REQUEST_ID }),
+      verificationRetryDelaysMs: []
     });
     expect(result.state).toBe(ADMIN_MUTATION_STATES.NOT_EXECUTED);
   });
@@ -102,7 +129,7 @@ describe('Admin subscription recovery acceptance matrix', () => {
   });
 
   it('12. manual verification can confirm not executed', async () => {
-    const result = await verifySubscriptionOperation({ operation, verify: async () => ({ status: 'not_found', requestId: REQUEST_ID }) });
+    const result = await verifySubscriptionOperation({ operation, verify: async () => ({ status: 'not_found', requestId: REQUEST_ID }), retryDelaysMs: [] });
     expect(result.state).toBe(ADMIN_MUTATION_STATES.NOT_EXECUTED);
   });
 
@@ -139,7 +166,7 @@ describe('Admin subscription recovery acceptance matrix', () => {
   it('19. pending operation persists only recovery metadata', () => {
     const storage = memoryStorage();
     savePendingSubscriptionOperation(storage, { ...operation, paymentReference: 'SECRET-1', note: 'private' }, '2026-09-07T01:00:00.000Z');
-    expect(JSON.parse(storage.values.get(ADMIN_PENDING_OPERATION_KEY))).toEqual({ requestId: REQUEST_ID, accountId: ACCOUNT_ID, action: 'EXTEND_PREMIUM', startedAt: '2026-09-07T01:00:00.000Z' });
+    expect(JSON.parse(storage.values.get(ADMIN_PENDING_OPERATION_KEY))).toEqual({ requestId: REQUEST_ID, accountId: ACCOUNT_ID, action: 'EXTEND_PREMIUM', startedAt: '2026-09-07T01:00:00.000Z', durationDays: null });
   });
 
   it('20. pending storage excludes payment and note fields', () => {
@@ -203,13 +230,40 @@ describe('Admin subscription recovery acceptance matrix', () => {
     expect(source).toContain('Semak Status Transaksi');
     expect(source).toContain('Cuba Lagi (ID Sama)');
     expect(source).toContain('Menyemak status…');
+    expect(source).toContain('{ abortOnTimeout: false }');
+    expect(source).toContain('Punca: sambungan ke Supabase terputus atau tidak stabil.');
+  });
+
+  it('31. verification retries a transient not-found result before succeeding', async () => {
+    const verify = vi.fn()
+      .mockResolvedValueOnce({ status: 'not_found', requestId: REQUEST_ID })
+      .mockResolvedValueOnce({ status: 'success', requestId: REQUEST_ID, accountId: ACCOUNT_ID });
+    const sleep = vi.fn(async () => {});
+    const result = await verifySubscriptionOperation({ operation, verify, retryDelaysMs: [400], sleep });
+    expect(result).toMatchObject({ state: 'success', attempts: 2 });
+    expect(sleep).toHaveBeenCalledWith(400);
+  });
+
+  it('32. in-progress verification is retained and retried', async () => {
+    const verify = vi.fn()
+      .mockResolvedValueOnce({ status: 'in_progress', requestId: REQUEST_ID })
+      .mockResolvedValueOnce({ status: 'success', requestId: REQUEST_ID, accountId: ACCOUNT_ID });
+    const result = await verifySubscriptionOperation({ operation, verify, retryDelaysMs: [0], sleep: async () => {} });
+    expect(result).toMatchObject({ state: 'success', attempts: 2 });
+  });
+
+  it('33. safe recovery metadata retains the original renewal duration', () => {
+    const storage = memoryStorage();
+    savePendingSubscriptionOperation(storage, { ...operation, durationDays: 30, paymentReference: 'SECRET-2' });
+    expect(loadPendingSubscriptionOperation(storage)).toMatchObject({ durationDays: 30 });
+    expect(storage.values.get(ADMIN_PENDING_OPERATION_KEY)).not.toContain('SECRET-2');
   });
 });
 
 describe('Release recovery safety gates', () => {
   it.each([null, {}, { ok: false }, { ok: true, status: 'incomplete' }])('verifies an ambiguous mutation payload: %j', async payload => {
     const verify = vi.fn(async () => ({ status: 'not_found', requestId: REQUEST_ID }));
-    const result = await reconcileSubscriptionOperation({ operation, submit: async () => payload, verify });
+    const result = await reconcileSubscriptionOperation({ operation, submit: async () => payload, verify, verificationRetryDelaysMs: [] });
     expect(result.state).toBe('not_executed');
     expect(verify).toHaveBeenCalledWith(REQUEST_ID);
   });
@@ -222,7 +276,7 @@ describe('Release recovery safety gates', () => {
   });
 
   it('does not permit retry while the server transaction is in progress', async () => {
-    const result = await verifySubscriptionOperation({ operation, verify: async () => ({ status: 'in_progress', requestId: REQUEST_ID }) });
+    const result = await verifySubscriptionOperation({ operation, verify: async () => ({ status: 'in_progress', requestId: REQUEST_ID }), retryDelaysMs: [] });
     expect(result.state).toBe('uncertain');
     expect(canRetrySubscriptionOperation(result)).toBe(false);
   });
