@@ -188,6 +188,19 @@ button.admin-premium-summary-card:hover { border-color: var(--green2); transform
 }
 
 .admin-children-grid article { display: grid; gap: 4px; }
+.admin-child-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.admin-child-active {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border: 1px solid rgba(15, 138, 67, .25);
+  border-radius: 999px;
+  color: var(--green2);
+  background: #effcf5;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
 .admin-children-grid span,
 .admin-history-item small { color: var(--muted); overflow-wrap: anywhere; }
 .admin-history-list { display: grid; gap: 8px; }
