@@ -20,6 +20,90 @@ begin
 end;
 $$;
 
+create or replace function public.admin_child_summary_payload(target_account_id uuid)
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare
+  account_learning_data jsonb := '{}'::jsonb;
+  encoded_child_state jsonb;
+  canonical_child_state jsonb;
+  canonical_shape_valid boolean := false;
+  raw_active_child_id text := '';
+  resolved_active_child_id text := '';
+  children_payload jsonb := '[]'::jsonb;
+begin
+  if auth.uid() is null then raise exception 'not_authenticated'; end if;
+  if not public.is_current_premium_admin() then raise exception 'admin_required'; end if;
+  if $1 is null or not exists (select 1 from auth.users as account_user where account_user.id = $1) then raise exception 'target_user_not_found'; end if;
+
+  select coalesce(account_profile.learning_data, '{}'::jsonb) into account_learning_data
+  from public.profiles as account_profile where account_profile.id = $1;
+  encoded_child_state := account_learning_data -> 'jannati_cloud_child_state';
+  if encoded_child_state is not null then
+    begin
+      canonical_child_state := case jsonb_typeof(encoded_child_state)
+        when 'object' then encoded_child_state
+        when 'string' then (encoded_child_state #>> '{}')::jsonb
+        else null
+      end;
+    exception when others then canonical_child_state := null;
+    end;
+  end if;
+  canonical_shape_valid := jsonb_typeof(canonical_child_state) = 'object' and jsonb_typeof(canonical_child_state -> 'profiles') = 'array';
+
+  if canonical_shape_valid then
+    raw_active_child_id := trim(coalesce(canonical_child_state ->> 'activeChildId', ''));
+    with profile_candidates as (
+      select profile_entry.profile_ordinal,
+        trim(profile_entry.profile_value ->> 'id') child_id,
+        trim(profile_entry.profile_value ->> 'name') child_name,
+        trim(coalesce(profile_entry.profile_value ->> 'year', '')) child_year,
+        trim(coalesce(profile_entry.profile_value ->> 'avatar', '')) child_avatar
+      from jsonb_array_elements(canonical_child_state -> 'profiles') with ordinality as profile_entry(profile_value, profile_ordinal)
+      where jsonb_typeof(profile_entry.profile_value) = 'object'
+    ), effective_profiles as (
+      select candidate.* from profile_candidates candidate
+      where candidate.child_id <> '' and candidate.child_name <> '' and char_length(candidate.child_id) <= 512
+        and not (jsonb_typeof(canonical_child_state -> 'deletedChildren') = 'object' and (canonical_child_state -> 'deletedChildren') ? candidate.child_id)
+        and not (exists (
+          select 1 from jsonb_array_elements_text(case
+            when jsonb_typeof(canonical_child_state -> 'deletedChildren') = 'array' then canonical_child_state -> 'deletedChildren'
+            else '[]'::jsonb end) deleted_entry(child_id)
+          where deleted_entry.child_id = candidate.child_id
+        ))
+        and not (jsonb_typeof(canonical_child_state -> 'archivedChildren') = 'object'
+          and jsonb_typeof((canonical_child_state -> 'archivedChildren') -> candidate.child_id) = 'object'
+          and case when coalesce((canonical_child_state -> 'archivedChildren' -> candidate.child_id ->> 'archivedAt'), '') ~ '^[0-9]+([.][0-9]+)?$'
+            then (canonical_child_state -> 'archivedChildren' -> candidate.child_id ->> 'archivedAt')::numeric else 0 end
+          > case when coalesce((canonical_child_state -> 'archivedChildren' -> candidate.child_id ->> 'restoredAt'), '') ~ '^[0-9]+([.][0-9]+)?$'
+            then (canonical_child_state -> 'archivedChildren' -> candidate.child_id ->> 'restoredAt')::numeric else 0 end)
+    ), distinct_profiles as (
+      select distinct on (effective.child_id) effective.* from effective_profiles effective
+      order by effective.child_id, effective.profile_ordinal
+    )
+    select coalesce(jsonb_agg(jsonb_build_object(
+      'id', distinct_profile.child_id, 'name', left(distinct_profile.child_name, 200),
+      'year', left(distinct_profile.child_year, 80), 'avatar', left(distinct_profile.child_avatar, 256),
+      'isActive', distinct_profile.child_id = raw_active_child_id
+    ) order by distinct_profile.profile_ordinal), '[]'::jsonb) into children_payload
+    from distinct_profiles distinct_profile;
+    select coalesce((select child_entry ->> 'id' from jsonb_array_elements(children_payload) child_entry
+      where child_entry ->> 'id' = raw_active_child_id limit 1), '') into resolved_active_child_id;
+    return jsonb_build_object('childCount', jsonb_array_length(children_payload), 'activeChildId', resolved_active_child_id,
+      'children', children_payload, 'source', 'learning_data');
+  end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'id', coalesce(nullif(trim(legacy_profile.legacy_child_id), ''), legacy_profile.id::text),
+    'name', left(trim(legacy_profile.display_name), 200), 'year', left(trim(coalesce(legacy_profile.school_year, '')), 80),
+    'avatar', left(trim(coalesce(legacy_profile.avatar, '')), 256), 'isActive', false
+  ) order by legacy_profile.created_at, legacy_profile.id), '[]'::jsonb) into children_payload
+  from public.learner_profiles legacy_profile
+  where legacy_profile.account_id = $1 and legacy_profile.archived_at is null and trim(coalesce(legacy_profile.display_name, '')) <> '';
+  return jsonb_build_object('childCount', jsonb_array_length(children_payload), 'activeChildId', '',
+    'children', children_payload, 'source', 'learner_profiles');
+end;
+$$;
+
 create or replace function public.admin_search_customers(search_text text default '', status_filter text default 'all', page_size integer default 20, page_offset integer default 0)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
@@ -43,19 +127,23 @@ begin
         when e.status = 'cancelled' then 'cancelled' else 'expired' end effective_status,
       e.status in ('active', 'trial', 'complimentary') and (e.is_permanent or e.expires_at > now()) access_allowed,
       case when e.is_permanent then null when e.expires_at > now() then greatest(0, ceil(extract(epoch from (e.expires_at - now())) / 86400.0)::integer) else 0 end days_remaining,
-      coalesce((select count(*) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null), 0) child_count,
-      coalesce((select jsonb_agg(jsonb_build_object('id', lp.id, 'name', lp.display_name, 'year', lp.school_year) order by lp.created_at) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null), '[]'::jsonb) children,
+      coalesce((child_summary.payload ->> 'childCount')::integer, 0) child_count,
+      coalesce(child_summary.payload -> 'children', '[]'::jsonb) children,
+      coalesce(child_summary.payload ->> 'activeChildId', '') active_child_id,
+      coalesce(child_summary.payload ->> 'source', 'learner_profiles') child_source,
       last_payment.payment_reference last_payment_reference, last_payment.payment_status last_payment_status,
       last_payment.notes last_payment_note, last_payment.created_at last_renewal_at
     from auth.users u
     left join public.profiles p on p.id = u.id
     left join public.premium_entitlements e on e.account_id = u.id
+    cross join lateral (select public.admin_child_summary_payload(u.id) payload) child_summary
     left join lateral (select pr.payment_reference, pr.payment_status, pr.notes, pr.created_at from public.premium_payment_records pr where pr.account_id = u.id order by pr.created_at desc limit 1) last_payment on true
     where normalized_search = ''
       or position(normalized_search in lower(coalesce(u.email, ''))) > 0
       or position(normalized_search in lower(coalesce(p.display_name, ''))) > 0
       or position(normalized_search in lower(u.id::text)) > 0
-      or exists (select 1 from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null and position(normalized_search in lower(lp.display_name)) > 0)
+      or exists (select 1 from jsonb_array_elements(coalesce(child_summary.payload -> 'children', '[]'::jsonb)) child_entry
+        where position(normalized_search in lower(coalesce(child_entry ->> 'name', ''))) > 0)
   ), filtered as (
     select base.*, count(*) over() total_count from base
     where normalized_filter = 'all'
@@ -70,7 +158,8 @@ begin
   select jsonb_build_object(
     'accounts', coalesce(jsonb_agg(jsonb_build_object(
       'accountId', f.account_id, 'email', f.email, 'displayName', f.display_name, 'createdAt', f.created_at,
-      'childCount', f.child_count, 'children', f.children, 'plan', coalesce(f.plan, 'free'),
+      'childCount', f.child_count, 'children', f.children, 'activeChildId', f.active_child_id,
+      'childSource', f.child_source, 'plan', coalesce(f.plan, 'free'),
       'storedStatus', coalesce(f.stored_status, 'free'), 'effectiveStatus', f.effective_status,
       'startsAt', f.starts_at, 'expiresAt', f.expires_at, 'isPermanent', f.is_permanent,
       'daysRemaining', f.days_remaining, 'source', coalesce(f.source, 'none'), 'notes', f.notes,
@@ -96,9 +185,12 @@ begin
     'overview', jsonb_build_object('accountId', u.id, 'email', u.email,
       'displayName', coalesce(nullif(trim(p.display_name), ''), nullif(trim(u.raw_user_meta_data ->> 'display_name'), ''), split_part(coalesce(u.email, ''), '@', 1), 'Akaun'),
       'createdAt', u.created_at, 'lastSignInAt', u.last_sign_in_at,
-      'childCount', (select count(*) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null)),
+      'childCount', coalesce((child_summary.payload ->> 'childCount')::integer, 0),
+      'activeChildId', coalesce(child_summary.payload ->> 'activeChildId', ''),
+      'childSource', coalesce(child_summary.payload ->> 'source', 'learner_profiles')),
     'subscription', public.premium_entitlement_payload(u.id),
-    'children', coalesce((select jsonb_agg(jsonb_build_object('id', lp.id, 'name', lp.display_name, 'year', lp.school_year, 'avatar', lp.avatar, 'createdAt', lp.created_at, 'updatedAt', lp.updated_at) order by lp.created_at) from public.learner_profiles lp where lp.account_id = u.id and lp.archived_at is null), '[]'::jsonb),
+    'children', coalesce(child_summary.payload -> 'children', '[]'::jsonb),
+    'activeChildId', coalesce(child_summary.payload ->> 'activeChildId', ''),
     'payments', coalesce((select jsonb_agg(to_jsonb(payment_row) order by payment_row."createdAt" desc) from (
       select pr.id, pr.request_id "requestId", pr.action, pr.amount, pr.currency, pr.payment_method "paymentMethod", pr.payment_reference "paymentReference",
         pr.payment_status "paymentStatus", pr.paid_at "paidAt", pr.subscription_days_added "subscriptionDaysAdded",
@@ -111,7 +203,8 @@ begin
         a.admin_user_id "adminUserId", a.created_at "createdAt"
       from public.premium_admin_audit_log a where a.target_user_id = u.id order by a.created_at desc limit 100
     ) audit_row), '[]'::jsonb), 'serverNow', now()
-  ) into response_payload from auth.users u left join public.profiles p on p.id = u.id where u.id = $1;
+  ) into response_payload from auth.users u left join public.profiles p on p.id = u.id
+    cross join lateral (select public.admin_child_summary_payload(u.id) payload) child_summary where u.id = $1;
   return response_payload;
 end;
 $$;
@@ -316,11 +409,13 @@ $$;
 
 revoke all on function public.admin_console_summary() from public, anon, authenticated;
 revoke all on function public.admin_manage_premium_entitlement(uuid, text, integer, timestamptz, text, text, text, uuid) from authenticated;
+revoke all on function public.admin_child_summary_payload(uuid) from public, anon, authenticated;
 revoke all on function public.admin_search_customers(text, text, integer, integer) from public, anon, authenticated;
 revoke all on function public.admin_get_customer_details(uuid) from public, anon, authenticated;
 revoke all on function public.admin_verify_subscription_request(uuid) from public, anon, authenticated;
 revoke all on function public.admin_apply_subscription_change(uuid, text, integer, timestamptz, text, text, text, uuid, boolean, numeric, text, text, text, text, timestamptz) from public, anon, authenticated;
 grant execute on function public.admin_console_summary() to authenticated, postgres, service_role;
+grant execute on function public.admin_child_summary_payload(uuid) to postgres, service_role;
 grant execute on function public.admin_search_customers(text, text, integer, integer) to authenticated, postgres, service_role;
 grant execute on function public.admin_get_customer_details(uuid) to authenticated, postgres, service_role;
 grant execute on function public.admin_verify_subscription_request(uuid) to authenticated, postgres, service_role;
