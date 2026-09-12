@@ -1,20 +1,10 @@
-# Jannati AI Tutor 3.12.3 Release Notes
+# Jannati AI Tutor 3.13.0 Release Notes
 
 Status: stable
-Tag: v3.12.3
-Build date: 2026-09-09T11:07:35.354Z
+Tag: v3.13.0
+Build date: 2026-09-12T12:19:58.377Z
 
 ## Release Readiness
-
-### Learning-sync storage hardening
-
-- Routine pre-write backups are capped at the latest 10 per account; recovery snapshots with explicit retention reasons remain protected.
-- Applied operation records expire after 30 days and conflict records after 90 days, preventing unbounded table growth.
-- Operation history now stores hashes and payload sizes without retaining a second full copy of every learner payload.
-- Identical payloads succeed without creating a revision, backup, or operation-payload duplicate.
-- Client retries reuse the same operation ID, and timestamp-only changes no longer trigger cloud writes.
-- Account/child isolation, compare-and-swap conflict protection, idempotency, and rollback safeguards remain enforced.
-- The production database migration is applied before the v3.12.3 deployment tag is published.
 
 - Package, lockfile, release tag, and generated metadata are version-aligned.
 - Question-bank regression and release-pipeline audits run before the main validator suite.
