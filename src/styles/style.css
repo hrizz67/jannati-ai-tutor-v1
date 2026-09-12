@@ -5023,13 +5023,27 @@ input:focus {
 
 .ai-chat-input {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
 }
 
+.ai-chat-input.ai-chat-input-no-speech {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .ai-chat-input input {
   min-width: 0;
+}
+
+.tutor-ai-mic-button {
+  white-space: nowrap;
+}
+
+.tutor-ai-mic-status {
+  grid-column: 1 / -1;
+  color: #40634d;
+  font-weight: 700;
 }
 
 .ai-explain-footer,

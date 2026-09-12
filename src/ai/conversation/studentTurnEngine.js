@@ -1,7 +1,10 @@
 const AUTO_INTENTS = new Set(['', 'auto', 'general']);
+const KNOWLEDGE_QUESTION = 'knowledge_question';
+const QUESTION_HELP = 'question_help';
+const FOLLOW_UP_QUESTION = 'follow_up_question';
 
 const INTENT_ALIASES = Object.freeze({
-  question_help: 'question_help',
+  [QUESTION_HELP]: QUESTION_HELP,
   hint: 'hint',
   wrong_answer_coaching: 'wrong_answer_coaching',
   correct_answer_reinforcement: 'correct_answer_reinforcement',
@@ -20,6 +23,7 @@ const LEARNING_RECOMMENDATION_PATTERN = /(?:\b(?:hari\s*(?:ini|ni)|sekarang)\b.{
 const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S)/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
+const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|then(?: what)?|what(?:'s| is)? next|next step)[.!?？]*$/u;
 
 function clean(value = '') {
   return String(value ?? '')
@@ -62,8 +66,7 @@ function extractAnswerCandidate(prompt = '', options = {}) {
     .filter(Boolean);
   if (accepted.includes(comparable(text))) return text;
 
-  const words = text.split(/\s+/).filter(Boolean);
-  if (options.hasExerciseContext && words.length <= 4 && text.length <= 60 && !/[?؟]/.test(prompt)) return text;
+  if (options.hasExerciseContext && !options.continuation && text.split(/\s+/).length <= 4 && text.length <= 60 && !/[?؟]/.test(prompt)) return text;
   return '';
 }
 
@@ -140,7 +143,7 @@ export function understandStudentTurn({
   if (/\b(?:ulang\s*kaji|revision\s+plan|jadual\s+belajar|cadangan\s+belajar)\b/iu.test(lower)) return makeTurn('revision_plan', 'progress_question', 0.96, conversation);
   if (/\b(?:uasa|pentaksiran)\b/iu.test(lower) && /\b(?:saya|markah|prestasi|bagaimana|ringkasan)\b/iu.test(lower)) return makeTurn('uasa_summary', 'progress_question', 0.96, conversation);
   if (NAMED_LEARNING_REQUEST_PATTERN.test(lower)) {
-    return makeTurn('how_question', 'knowledge_question', 0.97, { ...conversation, isQuestion: true });
+    return makeTurn('how_question', KNOWLEDGE_QUESTION, 0.97, { ...conversation, isQuestion: true });
   }
 
   if (/^(?:saya\s+)?(?:dah|sudah|telah)?\s*faham\b|^(?:ok|baik),?\s*(?:saya\s+)?faham\b/iu.test(lower)) {
@@ -150,7 +153,7 @@ export function understandStudentTurn({
     });
   }
 
-  if (/\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b/iu.test(lower)) {
+  if (/\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b/iu.test(lower)) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
@@ -158,35 +161,47 @@ export function understandStudentTurn({
     });
   }
 
-  const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext });
+  if (/^(?:yang\s+tadi|yang\s+itu)[.!?？]*$/iu.test(lower)) {
+    return makeTurn('clarification_needed', 'ambiguous_request', 0.96, {
+      ...conversation,
+      referencesPreviousTurn: conversation.hasHistory,
+      needsClarification: true,
+      clarifyingQuestion: 'Baik, kita kekal pada langkah tadi. Bahagian mana yang kamu mahu saya terangkan?',
+      quickReplies: ['Terangkan langkah tadi', 'Beri petunjuk', 'Saya mahu cuba lagi']
+    });
+  }
+
+  const continuation = hasExerciseContext && conversation.hasHistory && CONTINUATION_PATTERN.test(lower);
+  const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
     return makeTurn('direct_answer', 'answer_attempt', 0.96, { ...conversation, answerCandidate });
   }
+  if (continuation) return makeTurn(QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, { ...conversation, referencesPreviousTurn: true });
 
   if (/\b(?:beri|bagi|minta|mahu|nak)?\s*(?:satu\s+)?(?:petunjuk|hint)\b/iu.test(lower)) return makeTurn('hint', 'help_request', 0.99, conversation);
   if (/\b(?:jawapan\s+saya\s+salah|kenapa\s+salah|silap\s+di\s+mana|where\s+did\s+i\s+go\s+wrong)\b/iu.test(lower)) return makeTurn('wrong_answer_coaching', 'help_request', 0.98, conversation);
   if (/\b(?:contoh|example)(?:\s+lagi|\s+mudah|\s+lain)?\b/iu.test(lower) || /^(?:lagi|satu\s+lagi)$/iu.test(lower)) {
-    return makeTurn('example_request', 'knowledge_question', 0.97, { ...conversation, isQuestion: true, referencesPreviousTurn });
+    return makeTurn('example_request', KNOWLEDGE_QUESTION, 0.97, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
   if (/\b(?:cara\s+lain|terangkan\s+lagi|jelaskan\s+lagi|ulang\s+semula|explain\s+again|another\s+way)\b/iu.test(lower)) {
-    return makeTurn('alternative_explanation', 'follow_up_question', 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn: conversation.hasHistory });
+    return makeTurn('alternative_explanation', FOLLOW_UP_QUESTION, 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn: conversation.hasHistory });
   }
   if (/\b(?:apa\s+beza|apakah\s+perbezaan|bezakan|bandingkan|difference\s+between|compare)\b/iu.test(lower)) {
-    return makeTurn('comparison_question', 'knowledge_question', 0.99, { ...conversation, isQuestion: true });
+    return makeTurn('comparison_question', KNOWLEDGE_QUESTION, 0.99, { ...conversation, isQuestion: true });
   }
   if (/^(?:kenapa|mengapa|why|لماذا)\b/iu.test(lower)) {
-    return makeTurn('why_question', 'knowledge_question', 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn });
+    return makeTurn('why_question', KNOWLEDGE_QUESTION, 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
   if (/^(?:bagaimana|macam\s*mana|how|كيف)\b/iu.test(lower) || /\b(?:ajar|tunjuk(?:kan)?\s+cara|langkah\s+demi\s+langkah|teach\s+me)\b/iu.test(lower)) {
-    return makeTurn('how_question', 'knowledge_question', 0.96, { ...conversation, isQuestion: true, referencesPreviousTurn });
+    return makeTurn('how_question', KNOWLEDGE_QUESTION, 0.96, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
   if (/^(?:apa(?:kah)?\s+(?:itu|maksud|erti)|what\s+is|what\s+does|ما|ماذا)\b/iu.test(lower)) {
-    return makeTurn('knowledge_question', 'knowledge_question', 0.96, { ...conversation, isQuestion: true });
+    return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.96, { ...conversation, isQuestion: true });
   }
   if (/\b(?:terangkan|jelaskan|bantu|tolong\s+ajar|explain|help\s+me)\b/iu.test(lower)) {
-    return makeTurn('question_help', 'help_request', 0.93, { ...conversation, isQuestion: /[?؟]/.test(text) });
+    return makeTurn(QUESTION_HELP, 'help_request', 0.93, { ...conversation, isQuestion: /[?؟]/.test(text) });
   }
-  if (QUESTION_PATTERN.test(text)) return makeTurn('knowledge_question', 'knowledge_question', 0.82, { ...conversation, isQuestion: true, referencesPreviousTurn });
+  if (QUESTION_PATTERN.test(text)) return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.82, { ...conversation, isQuestion: true, referencesPreviousTurn });
 
   if (/^(?:ini|itu|yang\s+ini|yang\s+itu|tolong|bantu|entah|tak\s+tahu|tidak\s+tahu)$/iu.test(lower)) {
     const clarifyingQuestion = hasLearningContext
