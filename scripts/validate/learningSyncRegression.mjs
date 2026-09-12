@@ -554,15 +554,15 @@ function createRevisionedServer(initialPayload = {}) {
         if (name === 'get_learning_data_v3') {
           return { data: { protocolVersion: 3, payload, revision, serverUpdatedAt: `revision-${revision}` }, error: null };
         }
-        if (name !== 'save_learning_data_v3') return { data: null, error: new Error(`unexpected_rpc:${name}`) };
+        if (name !== 'save_learning_data_v4') return { data: null, error: new Error(`unexpected_rpc:${name}`) };
         const existing = operations.get(args.operation_id);
-        if (existing) return { data: { ...existing, duplicate: true, payload, revision }, error: null };
+        if (existing) return { data: { ...existing, duplicate: true }, error: null };
         if (args.expected_revision !== revision) {
           return { data: { ok: false, conflict: true, duplicate: false, payload, revision }, error: null };
         }
         revision += 1;
         payload = args.payload;
-        const result = { ok: true, conflict: false, duplicate: false, payload, revision };
+        const result = { ok: true, conflict: false, duplicate: false, revision, serverUpdatedAt: `revision-${revision}` };
         operations.set(args.operation_id, result);
         return { data: result, error: null };
       }
@@ -639,6 +639,7 @@ assert.match(blockedLegacySync.error.message, /migration_required/);
 assert.equal(legacyWriteCalls, 0, 'A v3 client must never fall back to the blind legacy write RPC.');
 
 const appSource = fs.readFileSync('src/App.jsx', 'utf8');
+const egressSource = fs.readFileSync('src/services/learningSyncEgress.js', 'utf8');
 const recoverySource = fs.readFileSync('src/services/cloudSnapshotRecovery.js', 'utf8');
 const dashboardSource = fs.readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
 const legacySqlSource = fs.readFileSync('supabase/learning_data.sql', 'utf8');
@@ -651,7 +652,7 @@ assert.match(appSource, /cloudResult\.error[\s\S]{0,250}pendingOfflineCloudSaveR
 assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.current\.add\(childState\.activeId\)[\s\S]{0,500}skipNextCloudSaveRef\.current = true/, 'Account hydration must suppress generic autosave and explicitly bootstrap only a genuinely empty v3 cloud.');
 assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,700}dirtyChildIdsRef\.current\.add\(childId\)/, 'Initial hydration must recover richer same-child learning before applying a lower cloud projection.');
-assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'Polling must upload a richer same-child projection instead of overwriting it with a lower revision.');
+assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudResult\.data[\s\S]{0,1000}queueCloudLearningSave\(\{ markMutation: false \}\)/, 'A revision-triggered pull must upload a richer same-child projection instead of overwriting it with a lower revision.');
 assert.match(recoverySource, /normalizeActiveLearningProjection\(cloudData, activeChildId, \{ accountId \}\)/, 'Cloud hydration must validate ownership and normalize the active child projection before local persistence.');
 assert.match(recoverySource, /activeStatePersisted[\s\S]{0,800}snapshotPersisted/, 'Canonical active-state persistence must be evaluated independently from optional snapshot caching.');
 assert.match(appSource, /localStorage\.setItem\('jannati\.adaptive\.studentProfile',[\s\S]{0,100}\{ \.\.\.adaptive, xp \}/, 'Hydration repair must align adaptive XP with the richest global projection.');
@@ -679,16 +680,18 @@ assert.match(appSource, /captureGuestSnapshot\(\);\s*localStorage\.setItem\(ONBO
 assert.match(appSource, /writePendingDirtyChildIds\(accountId, dirtyChildIdsRef\.current\)/, 'Offline dirty child IDs must be persisted per account.');
 assert.doesNotMatch(appSource, /if \(activeChildId\) dirtyChildIdsRef\.current\.add\(activeChildId\)/, 'A stale pending flag must not mark an untouched account snapshot as current learning.');
 assert.match(appSource, /if \(!accountUser\?\.id\)[\s\S]{0,200}captureChildSnapshot\(currentChildId, \{ force: true \}\)[\s\S]{0,100}setShowAccountLogin\(true\)/, 'Opening account login from local mode must preserve the current learning snapshot.');
-assert.match(appSource, /window\.setInterval\(pullLatestCloudData, 5000\)/, 'Visible devices must check for newer cloud learning promptly.');
-assert.match(appSource, /\.channel\(`learning-revision:\$\{accountUser\.id\}`\)[\s\S]{0,500}postgres_changes[\s\S]{0,300}pullLatestCloudData/, 'Realtime revision changes must trigger an immediate safe pull.');
+assert.doesNotMatch(appSource, /window\.setInterval\(pullLatestCloudData, 5000\)/, 'Idle devices must not poll the full learning payload every five seconds.');
+assert.match(appSource, /import\('\.\/services\/learningSyncEgress\.js'\)/, 'Authenticated cloud revision monitoring must remain deferred from the initial bundle.');
+assert.match(egressSource, /\.channel\(`learning-revision:\$\{accountId\}`\)[\s\S]{0,300}postgres_changes/, 'Authenticated learning revision changes must have a scoped Realtime subscription.');
+assert.match(egressSource, /const onRealtimeChange[\s\S]{0,400}learning_revision[\s\S]{0,200}checkNow/, 'Realtime revision changes must trigger an immediate revision-grounded safe pull.');
 assert.match(appSource, /window\.addEventListener\('pagehide', persistBeforePageExit\)/, 'Page exit must persist the account-scoped recovery snapshot and pending outbox.');
 assert.match(appSource, /window\.addEventListener\('storage', receiveSameOriginOutbox\)/, 'Same-origin tabs must share pending outbox notifications without force-pushing stale state.');
 assert.match(appSource, /Disimpan pada peranti ini sahaja\. Log masuk akaun yang sama/, 'Anonymous quiz storage must not be described as cross-device cloud sync.');
 assert.match(dashboardSource, /Cloud tidak aktif/, 'The dashboard must disclose when cloud sync is inactive.');
 assert.match(dashboardSource, /Log masuk untuk Sync/, 'The dashboard must give local-only users a clear cloud sign-in action.');
 assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an explicit exit action for a local Free profile.');
-assert.match(appSource, /setCloudSyncInfo\(\{[\s\S]{0,120}revision: Number\(syncResult\.revision\)/, 'An acknowledged upload must expose its exact server revision.');
-assert.match(appSource, /!cloudResult\.error && Number\(cloudResult\.protocolVersion\) < CLOUD_SYNC_PROTOCOL_VERSION/, 'A network or RPC error must not be mislabeled as a migration problem.');
+assert.match(appSource, /rememberCloudEnvelope\(operationAccountId, \{ \.\.\.syncResult, data: payload \}\)/, 'An acknowledged upload must expose its exact server revision and resulting payload.');
+assert.match(egressSource, /if \(result\.migrationRequired\) onMigrationRequired[\s\S]{0,120}else if \(result\.error\) onError/, 'A network or RPC error must not be mislabeled as a migration problem.');
 assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
 assert.match(appSource, /applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
 assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId, resolvedActiveChildId === activeChildId\)/, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
@@ -697,11 +700,11 @@ const reloadActiveChildSource = appSource.slice(
   appSource.indexOf('function reloadCloudLearningState')
 );
 assert.match(reloadActiveChildSource, /function reloadActiveChildState\(child, preserveQuizUi\)[\s\S]{0,1100}if \(!preserveQuizUi\) \{\s*setFeedback\(null\);\s*setAnswer\(''\);\s*\}/, 'Answer and feedback resets must be limited to explicit profile/session transitions.');
-const cloudPollingSource = appSource.slice(
-  appSource.indexOf('const pullLatestCloudData = async'),
+const cloudRevisionSource = appSource.slice(
+  appSource.indexOf('const handleCloudData = async'),
   appSource.indexOf('function refreshAdaptiveProfile')
 );
-assert.match(cloudPollingSource, /activeChildBeforeCloudRestore[\s\S]{0,500}applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'Polling must preserve draft and feedback only when the cloud snapshot belongs to the same child.');
+assert.match(cloudRevisionSource, /activeChildBeforeCloudRestore[\s\S]{0,500}applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'A revision-triggered pull must preserve draft and feedback only when the cloud snapshot belongs to the same child.');
 const selectChildSource = appSource.slice(
   appSource.indexOf('function handleSelectChild'),
   appSource.indexOf('function handleCreateChild')

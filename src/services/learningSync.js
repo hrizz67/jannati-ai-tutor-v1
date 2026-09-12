@@ -1087,7 +1087,11 @@ export async function saveRevisionedCloudLearningData(client, {
   let lastError = null;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
-      const { data, error } = await client.rpc('save_learning_data_v3', rpcArguments);
+      let response = await client.rpc('save_learning_data_v4', rpcArguments);
+      if (isMissingRevisionedRpc(response?.error) && /save_learning_data_v4/i.test(String(response.error?.message || ''))) {
+        response = await client.rpc('save_learning_data_v3', rpcArguments);
+      }
+      const { data, error } = response;
       if (error) {
         lastError = error;
         if (!isRetryableSyncTransportError(error) || attempt + 1 >= maxAttempts) break;
@@ -1098,7 +1102,7 @@ export async function saveRevisionedCloudLearningData(client, {
           unchanged: Boolean(result.unchanged),
           conflict: Boolean(result.conflict),
           duplicate: Boolean(result.duplicate),
-          payload: isObject(result.payload) ? result.payload : {},
+          payload: isObject(result.payload) ? result.payload : null,
           revision: Number(result.revision) || 0,
           serverUpdatedAt: String(result.serverUpdatedAt || ''),
           operationId,
@@ -1148,7 +1152,7 @@ export async function syncRevisionedCloudLearning(client, localPayload = {}, opt
     if (result.ok) {
       return {
         ...result,
-        payload: result.payload,
+        payload: result.payload || payload,
         protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
         conflictCount
       };

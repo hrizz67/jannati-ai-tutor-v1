@@ -23,8 +23,8 @@ function functionBody(source, name, nextName = '') {
   return source.slice(start, end);
 }
 
-const saveSql = functionBody(functionSql, 'save_learning_data_v3', 'append_learning_event_v1');
-const pruneSql = functionBody(functionSql, 'prune_learning_sync_history_v1', 'save_learning_data_v3');
+const saveSql = functionBody(functionSql, '_save_learning_data_v4_impl', 'save_learning_data_v4');
+const pruneSql = functionBody(functionSql, 'prune_learning_sync_history_v1', '_save_learning_data_v4_impl');
 const conflictPosition = saveSql.indexOf('if current_revision <> $2 then');
 const unchangedPosition = saveSql.indexOf('if current_payload = incoming_payload then');
 const backupPosition = saveSql.indexOf("values (caller_id, current_revision, 'pre-write', current_payload)");
@@ -90,7 +90,6 @@ const retryClient = {
         unchanged: false,
         duplicate: true,
         conflict: false,
-        payload: cloudPayload,
         revision: 12,
         serverUpdatedAt: '2026-09-09T00:02:00.000Z'
       },
@@ -108,6 +107,7 @@ const retryResult = await saveRevisionedCloudLearningData(retryClient, {
   retryBaseDelayMs: 0
 });
 assert.equal(retryResult.ok, true, 'A transient response failure must be safely retryable.');
+assert.equal(retryResult.payload, null, 'A successful compact save response must not manufacture an empty payload.');
 assert.equal(retryCalls.length, 2, 'Transport retry must be bounded.');
 assert.equal(retryCalls[0].operation_id, retryCalls[1].operation_id, 'A transport retry must reuse the same operation_id.');
 

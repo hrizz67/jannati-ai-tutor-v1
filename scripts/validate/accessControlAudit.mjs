@@ -144,5 +144,7 @@ assert.doesNotMatch(declarativeProfiles, /grant[\s\S]{0,200}on table "public"\."
 assert.match(declarativeProfiles, /grant select on table "public"\."profiles" to "authenticated";/, 'Declarative schema must preserve RLS-scoped authenticated reads.');
 assert.match(declarativeIntegrityFunctions, /set search_path to ''/, 'Declarative revisioned RPCs must pin an empty search path.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v3[\s\S]{0,120}to authenticated;/, 'Authenticated users need only the revisioned learning write RPC.');
+assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');
+assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');
 
 console.log('Access-control audit: PASS');

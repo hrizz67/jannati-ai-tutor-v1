@@ -1392,6 +1392,7 @@ export default function App() {
   const dirtyChildIdsRef = useRef(new Set());
   const childMutationVersionRef = useRef(new Map());
   const lastCloudSignatureRef = useRef('');
+  const cloudEnvelopeRef = useRef({});
   const cloudWriteGuardRef = useRef({ accountId: '', blocked: false, serverProfileCount: 0, reason: '' });
   const [accessNotice, setAccessNotice] = useState(null);
   const [accessReturnScreen, setAccessReturnScreen] = useState('dashboard');
@@ -1605,6 +1606,16 @@ export default function App() {
     }
   }
 
+  function rememberCloudEnvelope(accountId, result) {
+    const data = result?.data;
+    if (!accountId || result?.error || !data) return;
+    cloudEnvelopeRef.current = { ...result, accountId };
+    setCloudSyncInfo({
+      revision: Number(result.revision) || 0,
+      serverUpdatedAt: String(result.serverUpdatedAt || '')
+    });
+  }
+
   function queueCloudLearningSave({ markMutation = true } = {}) {
     if (!supabase || !accountUser?.id) return Promise.resolve(false);
     if (markMutation) markLocalLearningMutation();
@@ -1645,7 +1656,11 @@ export default function App() {
         cloudWritePendingRef.current = true;
         setCloudSyncStatus('syncing');
         const localPayload = buildCloudLearningPayload({ captureActiveChild: false });
+        const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
+          ? cloudEnvelopeRef.current
+          : undefined;
         const syncResult = await syncRevisionedCloudLearning(supabase, localPayload, {
+          cloudEnvelope: knownCloudEnvelope,
           dirtyChildIds,
           localActiveChildId: activeChildId,
           deviceId: getSyncDeviceId(),
@@ -1661,10 +1676,7 @@ export default function App() {
         const payload = syncResult.payload || {};
         cloudWritePendingRef.current = false;
         if (ok) {
-          setCloudSyncInfo({
-            revision: Number(syncResult.revision) || 0,
-            serverUpdatedAt: String(syncResult.serverUpdatedAt || '')
-          });
+          rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload });
           const preserveLocalChildIds = dirtyChildIds.filter(childId => (
             (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
           ));
@@ -2073,6 +2085,7 @@ export default function App() {
     setCloudHydratedAccountId('');
     setCloudSyncInfo({ revision: 0, serverUpdatedAt: '' });
     lastCloudSignatureRef.current = '';
+    cloudEnvelopeRef.current = {};
     cloudWriteGuardRef.current = { accountId: '', blocked: false, serverProfileCount: 0, reason: '' };
     setProfile({ ...defaultProfile });
     setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -2179,6 +2192,7 @@ export default function App() {
           setAccessProfile(null);
           setCloudHydratedAccountId('');
           lastCloudSignatureRef.current = '';
+          cloudEnvelopeRef.current = {};
         }
         return;
       }
@@ -2189,6 +2203,7 @@ export default function App() {
       const loadStudentLearning = currentHash !== '#/admin' && currentHash !== '#/admin/premium';
       setAccessProfile(current => String(current?.id || '') === String(user.id) ? current : null);
       setCloudHydratedAccountId('');
+      cloudEnvelopeRef.current = {};
       cloudWriteGuardRef.current = { accountId: user.id, blocked: false, serverProfileCount: 0, reason: '' };
       if (loadStudentLearning) {
         hydrationStageByAccount.set(user.id, 'activate-device');
@@ -2271,10 +2286,7 @@ export default function App() {
       }
       const cloudLearningData = cloudResult.data || {};
       if (!cloudResult.error) {
-        setCloudSyncInfo({
-          revision: Number(cloudResult.revision) || 0,
-          serverUpdatedAt: String(cloudResult.serverUpdatedAt || '')
-        });
+        rememberCloudEnvelope(user.id, cloudResult);
       }
       const cloudHasProfileDuplicates = !cloudResult.error
         && hasRecoverableChildProfileDuplicates(cloudLearningData);
@@ -2744,106 +2756,87 @@ export default function App() {
   useEffect(() => {
     if (!supabase || !accountUser?.id || cloudHydratedAccountId !== accountUser.id) return undefined;
     let cancelled = false;
-    let inFlight = false;
+    let revisionController = null;
+    const accountId = accountUser.id;
 
-    const pullLatestCloudData = async () => {
-      if (cancelled || inFlight || document.visibilityState === 'hidden' || navigator.onLine === false) return;
-      if (pendingOfflineCloudSaveRef.current || hasPendingCloudMutation(accountUser.id)) {
+    const handleCloudData = async cloudResult => {
+      if (cancelled || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim() !== accountId) return;
+      rememberCloudEnvelope(accountId, cloudResult);
+      if (pendingOfflineCloudSaveRef.current || hasPendingCloudMutation(accountId) || dirtyChildIdsRef.current.size > 0) {
         void queueCloudLearningSave({ markMutation: false });
         return;
       }
-      // A recent child/profile change must reach Supabase before a polling
-      // request is allowed to restore an older cloud snapshot over it.
-      if (cloudWritePendingRef.current || Date.now() - cloudMutationAtRef.current < 5000) return;
-      inFlight = true;
-      const cloudResult = await loadCloudLearningDataResult(supabase);
-      if (!cancelled && cloudResult.error) {
-        setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error');
-      } else if (!cancelled) {
-        setCloudSyncInfo({
-          revision: Number(cloudResult.revision) || 0,
-          serverUpdatedAt: String(cloudResult.serverUpdatedAt || '')
+      if (!cloudResult.data || !Object.keys(cloudResult.data).length) return;
+      const cloudSignature = getCloudResultSignature(cloudResult);
+      if (cloudSignature === lastCloudSignatureRef.current) return;
+      const localLearningData = buildCloudLearningPayload();
+      const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudResult.data, {
+        localActiveChildId: readActiveChildId(),
+        accountId
+      });
+      if (recoveredGap.recovered) {
+        recoveredGap.dirtyChildIds.forEach(childId => {
+          dirtyChildIdsRef.current.add(childId);
+          childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
         });
+        writePendingDirtyChildIds(accountId, dirtyChildIdsRef.current);
+        setPendingCloudMutation(accountId, true);
+        pendingOfflineCloudSaveRef.current = true;
+        if (recoveredGap.reconcileChildIdentity) setPendingProfileReconciliation(accountId, true);
+        setCloudSyncStatus('syncing');
+        void queueCloudLearningSave({ markMutation: false });
+        return;
       }
-      if (!cancelled && !cloudResult.error && cloudResult.data && Object.keys(cloudResult.data).length) {
-        const cloudSignature = getCloudResultSignature(cloudResult);
-        if (cloudSignature !== lastCloudSignatureRef.current) {
-          const localLearningData = buildCloudLearningPayload();
-          const recoveredGap = recoverMonotonicCloudGap(localLearningData, cloudResult.data, {
-            localActiveChildId: readActiveChildId(),
-            accountId: accountUser.id
-          });
-          if (recoveredGap.recovered) {
-            recoveredGap.dirtyChildIds.forEach(childId => {
-              dirtyChildIdsRef.current.add(childId);
-              childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
-            });
-            writePendingDirtyChildIds(accountUser.id, dirtyChildIdsRef.current);
-            setPendingCloudMutation(accountUser.id, true);
-            pendingOfflineCloudSaveRef.current = true;
-            if (recoveredGap.reconcileChildIdentity) setPendingProfileReconciliation(accountUser.id, true);
-            setCloudSyncStatus('syncing');
-            void queueCloudLearningSave({ markMutation: false });
-            inFlight = false;
-            return;
-          }
-          skipNextCloudSaveRef.current = true;
-          const activeChildBeforeCloudRestore = readActiveChildId();
-          const restoreResult = await restoreCloudLearningSnapshotResult(cloudResult.data, activeChildBeforeCloudRestore);
-          if (!restoreResult.ok) {
-            lastCloudSignatureRef.current = '';
-            setCloudSyncStatus('error');
-            inFlight = false;
-            return;
-          }
-          applyCloudRestoreResult(
-            restoreResult,
-            accountUser,
-            restoreResult.childId === activeChildBeforeCloudRestore
-          );
-          if (!restoreResult.activeStatePersisted) {
-            lastCloudSignatureRef.current = '';
-            setCloudSyncStatus('error');
-            inFlight = false;
-            return;
-          }
-          captureAccountSnapshot(accountUser.id);
-          lastCloudSignatureRef.current = cloudSignature;
-          setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
-        }
-      } else if (!cancelled && !cloudResult.error && Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
-        setCloudSyncStatus('upgrade-required');
+      skipNextCloudSaveRef.current = true;
+      const activeChildBeforeCloudRestore = readActiveChildId();
+      const restoreResult = await restoreCloudLearningSnapshotResult(cloudResult.data, activeChildBeforeCloudRestore);
+      if (!restoreResult.ok) {
+        lastCloudSignatureRef.current = '';
+        setCloudSyncStatus('error');
+        return;
       }
-      inFlight = false;
+      applyCloudRestoreResult(
+        restoreResult,
+        accountUser,
+        restoreResult.childId === activeChildBeforeCloudRestore
+      );
+      if (!restoreResult.activeStatePersisted) {
+        lastCloudSignatureRef.current = '';
+        setCloudSyncStatus('error');
+        return;
+      }
+      captureAccountSnapshot(accountId);
+      lastCloudSignatureRef.current = cloudSignature;
+      setCloudSyncStatus('loaded');
     };
 
-    const timer = window.setTimeout(pullLatestCloudData, 1500);
-    const interval = window.setInterval(pullLatestCloudData, 5000);
-    const realtimeChannel = typeof supabase.channel === 'function'
-      ? supabase
-        .channel(`learning-revision:${accountUser.id}`)
-        .on('postgres_changes', {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${accountUser.id}`
-        }, () => { void pullLatestCloudData(); })
-        .subscribe()
-      : null;
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') pullLatestCloudData();
-    };
-    window.addEventListener('focus', pullLatestCloudData);
-    document.addEventListener('visibilitychange', handleVisibility);
+    void import('./services/learningSyncEgress.js').then(({ startCloudLearningRevisionSync }) => {
+      if (cancelled) return;
+      revisionController = startCloudLearningRevisionSync({
+        client: supabase,
+        accountId,
+        getKnownRevision: () => cloudEnvelopeRef.current.accountId === accountId
+          ? cloudEnvelopeRef.current.revision
+          : 0,
+        hasPendingChanges: () => pendingOfflineCloudSaveRef.current
+          || hasPendingCloudMutation(accountId)
+          || dirtyChildIdsRef.current.size > 0,
+        isWritePending: () => cloudWritePendingRef.current,
+        getLastMutationAt: () => cloudMutationAtRef.current,
+        queuePendingSave: () => { void queueCloudLearningSave({ markMutation: false }); },
+        isCurrentAccount: () => String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim() === accountId,
+        onCloudData: handleCloudData,
+        onError: () => setCloudSyncStatus(navigator.onLine === false ? 'offline' : 'error'),
+        onMigrationRequired: () => setCloudSyncStatus('upgrade-required')
+      });
+    }).catch(() => {
+      if (!cancelled) setCloudSyncStatus('error');
+    });
     return () => {
       cancelled = true;
-      window.clearTimeout(timer);
-      window.clearInterval(interval);
-      if (realtimeChannel && typeof supabase.removeChannel === 'function') void supabase.removeChannel(realtimeChannel);
-      window.removeEventListener('focus', pullLatestCloudData);
-      document.removeEventListener('visibilitychange', handleVisibility);
+      revisionController?.dispose();
     };
-  }, [accountUser?.id, cloudHydratedAccountId]);
+  }, [supabase, accountUser?.id, cloudHydratedAccountId]);
 
   function refreshAdaptiveProfile() {
     setAdaptiveProfile(loadAdaptiveStudentProfile(learningIdentity));
@@ -3260,6 +3253,7 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Status cloud tidak dapat disemak. Tiada data peranti dihantar.']);
       return;
     }
+    rememberCloudEnvelope(accountUser.id, cloudResult);
     if (Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION) {
       setCloudSyncStatus('upgrade-required');
       setRecoveryMessages(prev => [...prev, 'Migration Data Integrity v3 perlu dipasang sebelum cloud boleh menerima perubahan baharu.']);
@@ -3301,10 +3295,6 @@ export default function App() {
       captureAccountSnapshot(accountUser.id);
     }
     lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
-    setCloudSyncInfo({
-      revision: Number(cloudResult.revision) || 0,
-      serverUpdatedAt: String(cloudResult.serverUpdatedAt || '')
-    });
     setCloudSyncStatus('loaded');
     setRecoveryMessages(prev => [...prev, 'Peranti ini sudah menggunakan revision cloud terkini.']);
   }
@@ -3332,6 +3322,7 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Data cloud tidak dapat dimuat. Semak sambungan dan cuba lagi.']);
       return;
     }
+    rememberCloudEnvelope(accountUser.id, cloudResult);
     const cloudData = cloudResult.data || {};
     if (!Object.keys(cloudData).length) {
       setCloudSyncStatus('empty');
@@ -3369,10 +3360,6 @@ export default function App() {
     dirtyChildIdsRef.current.clear();
     childMutationVersionRef.current.clear();
     lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
-    setCloudSyncInfo({
-      revision: Number(cloudResult.revision) || 0,
-      serverUpdatedAt: String(cloudResult.serverUpdatedAt || '')
-    });
     captureAccountSnapshot(accountUser.id);
     setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
     setRecoveryMessages(prev => [...prev, restoreResult.snapshotPersisted
