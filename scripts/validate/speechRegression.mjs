@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { extractSpeechTranscript, collectSpeechTranscriptFragments, createSpeechSession, cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
 import { createReadingSpeechSession } from '../../src/ai/speech/speechSession.js';
 import { matchSpeechAnswer } from '../../src/ai/speech/speechMatcher.js';
+import { createTutorSpeechInputSession, mergeTutorSpeechDraft } from '../../src/ai/speech/tutorSpeechInput.js';
 import { speak, stop as stopVoice } from '../../src/ai/voice/voiceEngine.js';
+import { getSubjectLanguagePresentation } from '../../src/ai/voice/voiceConfig.js';
 
 class FakeRecognition {
   static instances = [];
@@ -561,6 +563,93 @@ async function main() {
   });
   secondSession.start();
   assert.ok(firstRecognition.stopCalls >= 1 || firstRecognition.abortCalls >= 1, 'Starting a new session should dispose the previous one.');
+
+  assert.equal(mergeTutorSpeechDraft('', 'dua belas'), 'dua belas', 'Transkrip Tutor mesti masuk ke input sebagai teks boleh sunting.');
+  assert.equal(mergeTutorSpeechDraft('Saya rasa', 'dua belas'), 'Saya rasa dua belas', 'Transkrip Tutor mesti bergabung dengan draf sedia ada.');
+  assert.equal(getSubjectLanguagePresentation('math').contentLocale, 'ms-MY');
+  assert.equal(getSubjectLanguagePresentation('english').contentLocale, 'en-GB');
+  assert.equal(getSubjectLanguagePresentation('arab').contentLocale, 'ar-SA');
+
+  let currentTutorContext = 'scope-a';
+  let tutorDraft = '';
+  let tutorCallbacks = null;
+  let capturedTutorLocale = '';
+  const tutorOrder = [];
+  const tutorStates = [];
+  const tutorInputSession = createTutorSpeechInputSession({
+    contextKey: 'scope-a',
+    getCurrentContextKey: () => currentTutorContext,
+    getDraft: () => tutorDraft,
+    lang: getSubjectLanguagePresentation('english').contentLocale,
+    onDraftChange: nextDraft => { tutorDraft = nextDraft; },
+    onStateChange: nextState => tutorStates.push(nextState),
+    sessionFactory(options) {
+      tutorCallbacks = options;
+      capturedTutorLocale = options.lang;
+      return {
+        supported: true,
+        start() {
+          tutorOrder.push('recognition-start');
+          options.onChange({ status: 'listening' });
+          return { status: 'listening' };
+        },
+        cancel() {},
+        stop() {},
+        getState: () => ({ status: 'listening' })
+      };
+    },
+    stopSpeaking() {
+      tutorOrder.push('tts-stop');
+    }
+  });
+  tutorInputSession.start();
+  assert.deepEqual(tutorOrder, ['tts-stop', 'recognition-start'], 'Tutor TTS mesti berhenti sebelum mikrofon mula mendengar.');
+  assert.equal(capturedTutorLocale, 'en-GB', 'Sesi mikrofon Tutor mesti menggunakan locale bahasa subjek.');
+  tutorCallbacks.onResult({ transcript: 'dua belas' });
+  assert.equal(tutorDraft, 'dua belas');
+  assert.equal(tutorStates.at(-1), 'ready', 'Transkrip mesti sedia untuk semakan tanpa dihantar automatik.');
+
+  let staleDraft = '';
+  let staleCallbacks = null;
+  currentTutorContext = 'scope-old';
+  const staleTutorSession = createTutorSpeechInputSession({
+    contextKey: 'scope-old',
+    getCurrentContextKey: () => currentTutorContext,
+    getDraft: () => staleDraft,
+    lang: 'ms-MY',
+    onDraftChange: nextDraft => { staleDraft = nextDraft; },
+    sessionFactory(options) {
+      staleCallbacks = options;
+      return { supported: true, start: () => ({ status: 'listening' }), cancel() {}, stop() {} };
+    },
+    stopSpeaking() {}
+  });
+  staleTutorSession.start();
+  currentTutorContext = 'scope-new';
+  staleCallbacks.onResult({ transcript: 'dua belas' });
+  assert.equal(staleDraft, '', 'Callback mikrofon lama mesti dibuang selepas conversationKey berubah.');
+  staleTutorSession.cancel();
+
+  const unsupportedTutorSession = createTutorSpeechInputSession({
+    contextKey: 'scope-new',
+    getCurrentContextKey: () => 'scope-new',
+    sessionFactory(options) {
+      return {
+        supported: false,
+        start() {
+          const result = { unsupported: true, transcript: '' };
+          options.onChange({ status: 'unsupported', result });
+          options.onResult(result);
+          return result;
+        },
+        cancel() {},
+        stop() {}
+      };
+    },
+    stopSpeaking() {}
+  });
+  assert.equal(unsupportedTutorSession.supported, false, 'Browser tanpa SpeechRecognition mesti kekal selamat untuk chat teks.');
+  assert.doesNotThrow(() => unsupportedTutorSession.start());
 
   cancelActiveSpeechRecognition();
   stopVoice();

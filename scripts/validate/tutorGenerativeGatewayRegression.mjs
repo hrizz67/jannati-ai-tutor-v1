@@ -113,6 +113,17 @@ const privateDataResponse = await maybeEnhanceTutorResponse(localResponse, { ...
 assert.equal(privateDataResponse.source, 'child-privacy');
 assert.match(privateDataResponse.text, /jangan kongsi/i);
 
+const existingPendingStep = { stepId: 'math-step-1', attempts: 0, conversationKey: 'scope-a' };
+const locallyAdvancedStep = { ...existingPendingStep, attempts: 1 };
+const privatePendingResponse = await maybeEnhanceTutorResponse(
+  { ...localResponse, intent: 'pedagogical_step', pendingPedagogicalStep: locallyAdvancedStep },
+  { ...options, history: [], prompt: 'Nama saya Ali 11', pendingPedagogicalStep: existingPendingStep },
+  { enabled: true, configured: true }
+);
+assert.equal(privatePendingResponse.source, 'child-privacy');
+assert.equal(privatePendingResponse.pendingPedagogicalStep, existingPendingStep, 'Privasi mesti dinilai sebelum perubahan state langkah digunakan.');
+assert.equal(privatePendingResponse.pendingPedagogicalStep.attempts, 0, 'Mesej privasi tidak boleh dikira sebagai cubaan langkah salah.');
+
 const safetyResponse = await maybeEnhanceTutorResponse(localResponse, { ...options, history: [], prompt: 'Saya nak bunuh diri' }, { enabled: true, configured: true });
 assert.equal(safetyResponse.source, 'child-safety');
 assert.equal(safetyResponse.needsAdultHelp, true);

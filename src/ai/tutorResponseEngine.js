@@ -37,7 +37,7 @@ const CATEGORY_COMMON_MISTAKES = {
   simpulan: ['Membaca setiap perkataan secara literal.', 'Memilih frasa yang tiada maksud khas.'],
   conjunction: ['Memilih kata sendi nama.', 'Memilih kata nama.'],
   sendi: ['Memilih kata kerja.', 'Memilih kata hubung.'],
-  generic: ['Menjawab terlalu cepat.', 'Tidak semak ayat penuh.']
+  generic: ['Semak semula soalan.', 'Bandingkan jawapan dengan soalan.']
 };
 
 const INTENT_STEPS = {
@@ -825,7 +825,7 @@ function buildContextualSections({
     : intent === 'wrong_answer_coaching'
       ? [
           `${learnerLabel} Belum tepat, tetapi kita boleh baiki bersama. ${commonMistake || 'Semak semula maksud soalan.'}`,
-          `${learnerLabel} Saya nampak cara kamu berfikir. Sekarang semak satu perkara: ${guided?.guidingQuestion || firstStep}`,
+          `${learnerLabel} Mari semak satu perkara: ${guided?.guidingQuestion || firstStep}`,
           `Tak mengapa, kita cuba cara lain. ${commonMistake || safeHintLead} Cuba jawab sekali lagi.`
         ]
       : intent === 'correct_answer_reinforcement'
@@ -863,7 +863,7 @@ function buildContextualSections({
     : intent === 'wrong_answer_coaching'
       ? [
           `${learner ? `You answered “${learner}”. ` : ''}That is not correct yet, but we can improve it together. ${commonMistake}`,
-          `${learner ? `You answered “${learner}”. ` : ''}I can see your thinking. Now check this: ${guided?.guidingQuestion || firstStep}`,
+          `${learner ? `You answered “${learner}”. ` : ''}Now check this: ${guided?.guidingQuestion || firstStep}`,
           `That is okay. Let us try another way. ${commonMistake || safeHintLead}`
         ]
       : intent === 'correct_answer_reinforcement'
@@ -1143,6 +1143,9 @@ export async function getTutorResponse(options = {}) {
     intent = '',
     locale = '',
     history = [],
+    conversationKey = '',
+    pendingPedagogicalStep = null,
+    tutorAction = null,
     adaptiveProfile = null,
     studyPlan = null,
     readiness = null,
@@ -1170,16 +1173,51 @@ export async function getTutorResponse(options = {}) {
     ]
   });
   const expected = getExpectedAnswer(resolvedQuestion, expectedAnswer || correctAnswer);
+  const pendingExpectedAnswers = Array.isArray(pendingPedagogicalStep?.expectedAnswers)
+    ? pendingPedagogicalStep.expectedAnswers
+    : [];
   const studentTurn = understandStudentTurn({
     prompt,
     intent,
     history,
-    expectedAnswer: expected,
-    acceptedAnswers,
+    expectedAnswer: pendingExpectedAnswers[0] || expected,
+    acceptedAnswers: pendingExpectedAnswers.length ? pendingExpectedAnswers : acceptedAnswers,
     hasExerciseContext: Boolean(resolvedQuestionText || expected),
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id)
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
+  const mathPedagogy = subjectContext.id === 'math' && conversationKey
+    ? await import('./pedagogy/mathPedagogicalTurn.js')
+    : null;
+  const mathQuestionContext = mathPedagogy?.resolveMathQuestionContext(resolvedQuestion, resolvedQuestionText) || null;
+  const pedagogicalResponse = mathPedagogy
+    ? mathPedagogy.buildYear2MathPedagogicalResponse({
+        conversationKey,
+        subjectId: subjectContext.id,
+        topicId: topicContext.id,
+        question: resolvedQuestion,
+        questionText: resolvedQuestionText,
+        expectedAnswer: expected,
+        acceptedAnswers,
+        prompt,
+        tutorAction,
+        studentTurn,
+        pendingStep: pendingPedagogicalStep,
+        studentName,
+        subjectTitle: subjectContext.title,
+        topicTitle: topicContext.title,
+        instruction: resolvedInstruction,
+        options: resolvedOptions,
+        locale: resolvedLocale,
+        languagePresentation,
+        attemptCount,
+        hintsUsed,
+        isOriginalCorrect: isCorrect === true,
+        explanationMode,
+        mathQuestionContext
+      })
+    : null;
+  if (pedagogicalResponse) return pedagogicalResponse;
   const relevantLearningContext = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
     .includes(resolvedIntent)
       ? findRelevantLearningContext(prompt, availableSubjects, subjectContext)
@@ -1424,7 +1462,8 @@ export async function getTutorResponse(options = {}) {
     referencesPreviousTurn: Boolean(studentTurn.referencesPreviousTurn),
     needsClarification: Boolean(studentTurn.needsClarification),
     grounded: conversationalReply ? Boolean(conversationalReply.grounded) : Boolean(contextBundle?.contextUsed?.hasCoachData),
-    needsGenerativeTutor: Boolean(conversationalReply && !conversationalReply.grounded)
+    needsGenerativeTutor: Boolean(conversationalReply && !conversationalReply.grounded),
+    mathQuestionContext
   };
 }
 

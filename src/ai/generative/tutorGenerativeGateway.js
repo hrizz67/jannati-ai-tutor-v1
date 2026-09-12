@@ -149,7 +149,7 @@ export function mergeGenerativeTutorResponse(localResponse = {}, remoteResponse 
   };
 }
 
-export function buildTutorPrivacyResponse(localResponse = {}) {
+export function buildTutorPrivacyResponse(localResponse = {}, options = {}) {
   const text = 'Untuk keselamatan kamu, jangan kongsi nama penuh, alamat, sekolah, nombor telefon, kata laluan atau maklumat peribadi. Tulis semula soalan tanpa maklumat tersebut.';
   const quickReplies = ['Tulis semula soalan', 'Kembali kepada pelajaran', 'Minta bantuan orang dewasa'];
   return {
@@ -162,11 +162,12 @@ export function buildTutorPrivacyResponse(localResponse = {}) {
     source: 'child-privacy',
     fallbackUsed: false,
     generativeUsed: false,
-    needsGenerativeTutor: false
+    needsGenerativeTutor: false,
+    pendingPedagogicalStep: options.pendingPedagogicalStep || null
   };
 }
 
-export function buildLocalTutorSafetyResponse(localResponse = {}, risk = '') {
+export function buildLocalTutorSafetyResponse(localResponse = {}, risk = '', options = {}) {
   const safe = buildTutorSafetyResponse(risk);
   return {
     ...localResponse,
@@ -178,7 +179,8 @@ export function buildLocalTutorSafetyResponse(localResponse = {}, risk = '') {
     fallbackUsed: false,
     generativeUsed: false,
     needsGenerativeTutor: false,
-    intent: 'child_safety'
+    intent: 'child_safety',
+    pendingPedagogicalStep: options.pendingPedagogicalStep || null
   };
 }
 
@@ -193,8 +195,8 @@ export async function maybeEnhanceTutorResponse(localResponse = {}, options = {}
     ...(Array.isArray(options.history) ? options.history.filter(item => item?.role === 'user').map(item => item?.text) : [])
   ].join(' ');
   const safetyRisk = detectTutorSafetyRisk(userConversation);
-  if (safetyRisk) return buildLocalTutorSafetyResponse(localResponse, safetyRisk);
-  if (containsPotentialPersonalData(userConversation)) return buildTutorPrivacyResponse(localResponse);
+  if (safetyRisk) return buildLocalTutorSafetyResponse(localResponse, safetyRisk, options);
+  if (containsPotentialPersonalData(userConversation)) return buildTutorPrivacyResponse(localResponse, options);
   if (!configured || !shouldUseGenerativeTutor(localResponse, options, { enabled })) return localResponse;
 
   const payload = buildTutorGatewayPayload(options, localResponse);

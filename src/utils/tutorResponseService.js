@@ -1,4 +1,4 @@
-import { getTutorResponse as getLocalTutorResponse } from '../ai/index.js';
+import { getTutorResponse as getLocalTutorResponse } from '../ai/tutorResponseEngine.js';
 import { maybeEnhanceTutorResponse } from '../ai/generative/tutorGenerativeGateway.js';
 
 export async function getTutorResponse(options = {}) {

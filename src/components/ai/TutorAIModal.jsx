@@ -7,6 +7,8 @@ import { sanitizeChildFacingText } from '../../utils/childText.js';
 import { getAcceptedAnswers } from '../../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy } from '../../ai/policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from '../../ai/voice/voiceConfig.js';
+import { supportsSpeechRecognition } from '../../ai/speech/speechEngine.js';
+import { createTutorSpeechInputSession } from '../../ai/speech/tutorSpeechInput.js';
 import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
@@ -14,6 +16,7 @@ const FALLBACK_MESSAGE = 'Saya belum memahami soalan itu dengan tepat. Cuba tany
 const TIMEOUT_MESSAGE = 'Saya belum dapat menyediakan jawapan sekarang. Cuba sekali lagi.';
 const FALLBACK_STATE_MESSAGE = 'Menggunakan jawapan sandaran yang selamat.';
 const RESPONSE_TIMEOUT_MS = 4500;
+const TUTOR_ENGINE_HISTORY_LIMIT = 12;
 
 function buildNaturalGreeting({ studentName = '', subjectLabel = '', topicLabel = '', questionText = '', teachingLanguage = 'ms' } = {}) {
   const name = studentName ? `Hai ${studentName}` : 'Hai';
@@ -153,7 +156,7 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
         <ul className="chat-suggestions" aria-label="Balasan pantas">
           {suggestions.slice(0, 3).map((item, index) => (
             <li key={`${safeText.slice(0, 12)}-${index}`}>
-              <button type="button" onClick={() => onSuggestion?.(item)}><SubjectLanguageText text={item} subjectId={subjectId} teaching /></button>
+              <button type="button" onClick={() => onSuggestion?.(item)}><SubjectLanguageText text={item?.label || item} subjectId={subjectId} teaching /></button>
             </li>
           ))}
         </ul>
@@ -200,12 +203,17 @@ export default function TutorAIModal({
   const bodyRef = useRef(null);
   const requestIdRef = useRef(0);
   const requestContextRef = useRef('');
+  const inputDraftRef = useRef('');
+  const speechSessionRef = useRef(null);
   const [messages, setMessages] = useState(() => Array.isArray(initialMessages) ? initialMessages : []);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
   const [activeToolPanel, setActiveToolPanel] = useState('');
+  const [pendingPedagogicalStep, setPendingPedagogicalStep] = useState(null);
+  const [speechState, setSpeechState] = useState('idle');
+  const [speechMessage, setSpeechMessage] = useState('');
 
   const studentProfile = adaptiveProfile || profile || {};
   const studentName = getStudentDisplayName([profile, adaptiveProfile], '');
@@ -254,6 +262,7 @@ export default function TutorAIModal({
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
   const languagePresentation = getSubjectLanguagePresentation(activeSubject);
   const voiceLang = languagePresentation.teachingLocale;
+  const speechSupported = useMemo(() => supportsSpeechRecognition(), []);
   const fallbackMessage = languagePresentation.teachingLanguage === 'en'
     ? 'I could not understand that question accurately. Please ask again using different words.'
     : FALLBACK_MESSAGE;
@@ -267,6 +276,7 @@ export default function TutorAIModal({
   );
   const requestContextKey = `${sessionKey}::${activeSubject?.id || 'general'}::${activeTopic?.id || 'general'}::${currentQuestion?.id || currentQuestion?.questionId || 'general'}`;
   requestContextRef.current = requestContextKey;
+  inputDraftRef.current = input;
 
   useModalRuntime({
     open,
@@ -282,14 +292,26 @@ export default function TutorAIModal({
     setStatus('idle');
     setError('');
     setActiveToolPanel('');
-  }, [sessionKey]);
+    setPendingPedagogicalStep(null);
+    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current = null;
+    setSpeechState(speechSupported ? 'idle' : 'unsupported');
+    setSpeechMessage('');
+  }, [sessionKey, speechSupported]);
 
   useEffect(() => {
     onMessagesChange?.(sessionKey, messages);
   }, [messages, sessionKey, onMessagesChange]);
 
   useEffect(() => {
-    if (!open) return undefined;
+    if (!open) {
+      speechSessionRef.current?.cancel?.();
+      speechSessionRef.current = null;
+      setPendingPedagogicalStep(null);
+      setSpeechState(speechSupported ? 'idle' : 'unsupported');
+      setSpeechMessage('');
+      return undefined;
+    }
     const started = ++requestIdRef.current;
     if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:open');
     setMessages(current => current.length ? current : [{
@@ -309,9 +331,16 @@ export default function TutorAIModal({
     setActiveToolPanel('');
     return () => {
       if (requestIdRef.current === started) requestIdRef.current += 1;
+      speechSessionRef.current?.cancel?.();
+      speechSessionRef.current = null;
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:open');
     };
-  }, [open, sessionKey]);
+  }, [open, sessionKey, speechSupported]);
+
+  useEffect(() => () => {
+    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current = null;
+  }, []);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -342,9 +371,13 @@ export default function TutorAIModal({
     }
   }, [open, normalizedQuestionText, normalizedInstruction, normalizedExpectedAnswer, normalizedLearningObjective, activeSubject?.id, activeTopic?.id]);
 
-  async function sendMessage(rawText = input, intent = 'general') {
+  async function sendMessage(rawText = input, intent = 'general', tutorAction = null) {
     const text = normalizeText(rawText, '');
     if (!text || loading) return;
+    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current = null;
+    setSpeechState(speechSupported ? 'idle' : 'unsupported');
+    setSpeechMessage('');
     const started = ++requestIdRef.current;
     const startedContext = requestContextKey;
     const nextHistory = [...messages, { role: 'user', text }];
@@ -377,10 +410,13 @@ export default function TutorAIModal({
         strongTopics,
         prompt: text,
         intent,
+        tutorAction,
         locale: languagePresentation.contentLocale,
         languagePresentation,
         answerRevealPolicy,
-        history: messages,
+        history: messages.slice(-TUTOR_ENGINE_HISTORY_LIMIT),
+        conversationKey: sessionKey,
+        pendingPedagogicalStep,
         adaptiveProfile,
         studyPlan,
         readiness,
@@ -389,19 +425,23 @@ export default function TutorAIModal({
         gamificationProfile
       }));
       if (requestIdRef.current !== started || requestContextRef.current !== startedContext) return;
+      if (Object.prototype.hasOwnProperty.call(response || {}, 'pendingPedagogicalStep')) {
+        setPendingPedagogicalStep(response.pendingPedagogicalStep || null);
+      }
       setMessages(prev => {
         const nextText = normalizeText(response?.shortText || response?.text, fallbackMessage);
         if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
         return [...prev, {
         role: 'ai',
         text: nextText,
-        tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : response?.isCorrect ? 'correct' : '',
+        tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : (response?.pedagogicalStepCorrect || response?.isCorrect) ? 'correct' : '',
         source: response?.source || '',
-        suggestions: normalizeList(
-          response?.quickReplies?.length
+        suggestions: response?.quickActions?.length
+          ? response.quickActions
+          : normalizeList(response?.quickReplies?.length
             ? response.quickReplies
             : (response?.suggestedActions || response?.suggestions)
-        )
+          )
         }];
       });
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
@@ -423,13 +463,64 @@ export default function TutorAIModal({
     }
   }
 
+  function createTutorAction(actionId, label, intent = 'question_help') {
+    return {
+      actionId,
+      label,
+      intent,
+      source: 'tutor_quick_action',
+      conversationKey: sessionKey,
+      questionId: currentQuestion?.id || currentQuestion?.questionId || normalizedQuestionText,
+      subjectId: activeSubject?.id || '',
+      topicId: activeTopic?.id || ''
+    };
+  }
+
   function handlePromptClick(prompt, intent) {
     setActiveToolPanel('');
-    void sendMessage(prompt, intent);
+    void sendMessage(prompt, intent, createTutorAction(intent, prompt, intent));
+  }
+
+  function handleTutorSuggestion(suggestion) {
+    const action = suggestion && typeof suggestion === 'object'
+      ? suggestion
+      : hasExerciseContext
+        ? createTutorAction('continue_current_question', suggestion)
+        : null;
+    const label = normalizeText(action?.label || suggestion, '');
+    if (action?.actionId === 'return_to_original_question' || label.toLocaleLowerCase('ms-MY') === 'kembali ke soalan') {
+      onTutup();
+      return;
+    }
+    void sendMessage(label, action?.intent || 'general', action);
   }
 
   function toggleToolPanel(panel) {
     setActiveToolPanel(current => current === panel ? '' : panel);
+  }
+
+  function handleSpeechStart() {
+    if (!speechSupported || loading || ['listening', 'processing'].includes(speechState)) return;
+    speechSessionRef.current?.cancel?.();
+    setSpeechState('processing');
+    setSpeechMessage('');
+    const speechSession = createTutorSpeechInputSession({
+      contextKey: requestContextKey,
+      getCurrentContextKey: () => requestContextRef.current,
+      getDraft: () => inputDraftRef.current,
+      lang: languagePresentation.contentLocale,
+      onDraftChange(nextDraft) {
+        const boundedDraft = nextDraft.slice(0, 700);
+        inputDraftRef.current = boundedDraft;
+        setInput(boundedDraft);
+        window.requestAnimationFrame?.(() => inputRef.current?.focus?.());
+      },
+      onStateChange: setSpeechState,
+      onMessage: setSpeechMessage
+    });
+    speechSessionRef.current = speechSession;
+    const started = speechSession.start();
+    if (started?.unsupported || !speechSession.supported) setSpeechState('unsupported');
   }
 
   if (!open) return null;
@@ -456,6 +547,17 @@ export default function TutorAIModal({
         ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : fallbackMessage)
         : 'Tutor AI sedia membantu.';
   const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
+  const speechButtonLabel = speechState === 'listening'
+    ? '🎤 Mendengar…'
+    : speechState === 'processing'
+      ? '🎤 Memproses…'
+      : speechState === 'ready'
+        ? '🎤 Cakap lagi'
+        : speechState === 'error'
+          ? '🎤 Cuba lagi'
+          : speechState === 'unsupported'
+            ? '🎤 Tiada'
+            : '🎤 Cakap';
 
   const modalNode = (
     <div className="ai-chat-overlay" data-modal-open="true">
@@ -534,7 +636,7 @@ export default function TutorAIModal({
               voiceLang={voiceLang}
               subjectId={activeSubject?.id}
               source={message.source || ''}
-              onSuggestion={suggestion => void sendMessage(suggestion, 'general')}
+              onSuggestion={handleTutorSuggestion}
             />
           ))}
           {loading && <MessageBubble role="ai" text={languagePresentation.teachingLanguage === 'en' ? 'Tutor AI is thinking...' : 'Tutor AI sedang berfikir...'} loading voiceLang={voiceLang} subjectId={activeSubject?.id} />}
@@ -588,7 +690,18 @@ export default function TutorAIModal({
           )}
         </div>
 
-        <div className="ai-chat-input ai-modal-footer" data-modal-footer="true">
+        <div className={`ai-chat-input ai-modal-footer${speechSupported ? '' : ' ai-chat-input-no-speech'}`} data-modal-footer="true">
+          {speechSupported && (
+            <button
+              type="button"
+              className="secondary tutor-ai-mic-button"
+              onClick={handleSpeechStart}
+              disabled={loading || ['listening', 'processing'].includes(speechState)}
+              aria-label={speechState === 'listening' ? 'Mikrofon sedang mendengar' : 'Cakap menggunakan mikrofon'}
+            >
+              {speechButtonLabel}
+            </button>
+          )}
           <input
             ref={inputRef}
             value={input}
@@ -601,6 +714,7 @@ export default function TutorAIModal({
             }}
             placeholder="Tanya Janna..."
             aria-label="Tanya Tutor AI"
+            maxLength={700}
           />
           <button
             type="button"
@@ -609,6 +723,7 @@ export default function TutorAIModal({
           >
             Hantar
           </button>
+          {speechMessage && <small className="tutor-ai-mic-status" aria-live="polite">{speechMessage}</small>}
         </div>
       </section>
     </div>
