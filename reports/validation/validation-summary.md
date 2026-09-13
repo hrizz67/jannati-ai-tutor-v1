@@ -1,18 +1,18 @@
 # Validation Summary
 
-Generated: 2026-08-12T15:50:30.389Z
+Generated: 2026-09-13T12:19:55.966Z
 
 Overall status: PASS
 
 | Validator | Status | Info | Warnings | Errors | Report |
 | --- | --- | ---: | ---: | ---: | --- |
 | questions | pass | 0 | 0 | 0 | reports/validation/question-report.json |
-| curriculum | pass | 22910 | 0 | 0 | reports/validation/curriculum-report.json |
+| curriculum | pass | 14816 | 0 | 0 | reports/validation/curriculum-report.json |
 | metadata | pass | 0 | 0 | 0 | reports/validation/metadata-report.json |
 | storage | pass | 0 | 0 | 0 | reports/validation/storage-report.json |
 | content-quality | pass | 0 | 0 | 0 | reports/validation/content-quality-report.json |
 
-Total info: 22910
+Total info: 14816
 Total warnings: 0
 Total errors: 0
 

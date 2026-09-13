@@ -1,9 +1,9 @@
 {
   "validator": "master",
-  "generatedAt": "2026-08-12T15:50:30.389Z",
+  "generatedAt": "2026-09-13T12:19:55.966Z",
   "status": "pass",
   "totals": {
-    "infos": 22910,
+    "infos": 14816,
     "errors": 0,
     "warnings": 0
   },
@@ -19,7 +19,7 @@
     {
       "validator": "curriculum",
       "status": "pass",
-      "infos": 22910,
+      "infos": 14816,
       "errors": 0,
       "warnings": 0,
       "reportFile": "reports/validation/curriculum-report.json"
