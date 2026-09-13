@@ -4,7 +4,6 @@ import IconGlyph from '../components/IconGlyph.jsx';
 import SubjectBadge from '../components/SubjectBadge.jsx';
 import GameBadge from '../components/GameBadge.jsx';
 import bellBadge from '../assets/icons/3d/bell-badge.webp';
-import MascotCard from '../components/MascotCard';
 import JannaAvatar from '../components/JannaAvatar';
 import { getStudentDisplayName } from '../utils/displayFormatter';
 import {
@@ -46,6 +45,8 @@ import { PERSONALITY_MESSAGES, getPersonalityForSubject } from '../brand/persona
 import { formatStatus, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
 import { addLocalDateKeyDays, getLocalDateKey } from '../utils/localDate.js';
 import { getStudentYearSupportLabel } from '../config/studentYears.js';
+
+export { EmptyState } from './EmptyState.jsx';
 
 export function progressKey(subjectId, topicId) {
   return `${subjectId}_${topicId}`;
@@ -146,10 +147,6 @@ export function isTopicUnlocked(profile, subject, index) {
   const prev = subject.topics[index - 1];
   const best = profile.progress?.[progressKey(subject.id, prev.id)]?.best || 0;
   return best >= 80 || isWeakTopic(profile, subject, topic);
-}
-
-export function EmptyState({ title, message, actionLabel, onAction, showMascot = true }) {
-  return <div className="empty-state">{showMascot ? <MascotCard character="janna" mood="encouraging" size="sm" message="Belum ada rekod lagi. Jom mula sedikit demi sedikit." /> : null}<b>{title}</b><p>{message}</p>{actionLabel && onAction && <button type="button" className="secondary" onClick={onAction}>{actionLabel}</button>}</div>;
 }
 
 export function DashboardHeader({ profile, level, levelProgress }) {

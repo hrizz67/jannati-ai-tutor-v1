@@ -62,7 +62,7 @@ const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
 const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
 const ParentModeBoundary = React.lazy(() => import('./components/parent/ParentModeBoundary.jsx'));
-import { EmptyState } from './dashboard/dashboardHelpers.jsx';
+import { EmptyState } from './dashboard/EmptyState.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
 import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient.js';
