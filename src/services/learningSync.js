@@ -18,6 +18,7 @@ const STUDENT_CORE_KEY = 'jannati_v152_student_core';
 const ADAPTIVE_PROFILE_KEY = 'jannati.adaptive.studentProfile';
 const GAMIFICATION_PROFILE_KEY = 'jannati.gamification.profile';
 const PARENT_SECURITY_STORAGE_PREFIX = 'jannati_parent_security:';
+const RESUME_CACHE_KEYS = new Set(['jannati_v151_resume', 'jannati_v152_resume_slots', 'jannati_v152_resume_tombstones', 'jannati_v152_resume_pending_tombstones', 'jannati_v150_resume', 'jannati_v140_resume']);
 
 function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -741,6 +742,7 @@ export function recoverOrphanedCloudOutbox(localPayload = {}, cloudPayload = {},
 
 function isRootLearningProjectionKey(key = '') {
   return String(key).startsWith('jannati')
+    && !RESUME_CACHE_KEYS.has(key)
     && key !== CHILD_PROFILES_KEY
     && key !== ACTIVE_CHILD_KEY
     && key !== DELETED_CHILDREN_KEY
@@ -780,6 +782,7 @@ export function normalizeActiveLearningProjection(payload = {}, activeChildId = 
   const originalSnapshotKey = `${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`;
   const combinedRaw = mergeLearningSnapshots(next[snapshotKey], next[originalSnapshotKey], childId);
   const combined = parseObject(combinedRaw);
+  RESUME_CACHE_KEYS.forEach(key => delete combined[key]);
   let hasLearningData = Object.keys(combined).some(key => !key.startsWith('__'));
 
   if (
@@ -999,34 +1002,6 @@ function isMissingRevisionedRpc(error) {
   return code === 'PGRST202' || code === '42883' || /get_learning_data_v3|schema cache|does not exist/i.test(message);
 }
 
-function createOperationId() {
-  try {
-    return crypto.randomUUID();
-  } catch {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, token => {
-      const value = Math.floor(Math.random() * 16);
-      return (token === 'x' ? value : (value & 0x3) | 0x8).toString(16);
-    });
-  }
-}
-
-function isRetryableSyncTransportError(error) {
-  const rawStatus = error?.status ?? error?.statusCode;
-  const status = Number(rawStatus);
-  const code = String(error?.code || '');
-  const message = String(error?.message || error || '');
-  return (rawStatus !== undefined && status === 0)
-    || status === 408
-    || status === 429
-    || status >= 500
-    || ['57014', 'PGRST000', 'PGRST001', 'PGRST002'].includes(code)
-    || /failed to fetch|fetch failed|network|timeout|timed out|connection|temporarily unavailable/i.test(message);
-}
-
-function waitForRetry(delayMs) {
-  return new Promise(resolve => setTimeout(resolve, Math.max(0, delayMs)));
-}
-
 export async function loadCloudLearningDataResult(client, options = {}) {
   if (!client) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: new Error('cloud_client_unavailable') };
   try {
@@ -1064,115 +1039,12 @@ export async function loadCloudLearningData(client) {
   return result.error ? null : result.data;
 }
 
-export async function saveRevisionedCloudLearningData(client, {
-  payload = {},
-  expectedRevision = 0,
-  operationId = createOperationId(),
-  deviceId = '',
-  dirtyChildIds = [],
-  transportMaxAttempts = 3,
-  retryBaseDelayMs = 300
-} = {}) {
-  if (!client || !isObject(payload)) {
-    return { ok: false, conflict: false, error: new Error('invalid_revisioned_sync_request') };
-  }
-  const maxAttempts = Math.max(1, Math.min(3, Number(transportMaxAttempts) || 1));
-  const rpcArguments = {
-    payload,
-    expected_revision: Number(expectedRevision) || 0,
-    operation_id: operationId,
-    device_id: String(deviceId || ''),
-    dirty_child_ids: [...new Set((dirtyChildIds || []).map(String).filter(Boolean))]
-  };
-  let lastError = null;
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    try {
-      let response = await client.rpc('save_learning_data_v4', rpcArguments);
-      if (isMissingRevisionedRpc(response?.error) && /save_learning_data_v4/i.test(String(response.error?.message || ''))) {
-        response = await client.rpc('save_learning_data_v3', rpcArguments);
-      }
-      const { data, error } = response;
-      if (error) {
-        lastError = error;
-        if (!isRetryableSyncTransportError(error) || attempt + 1 >= maxAttempts) break;
-      } else {
-        const result = isObject(data) ? data : {};
-        return {
-          ok: Boolean(result.ok),
-          unchanged: Boolean(result.unchanged),
-          conflict: Boolean(result.conflict),
-          duplicate: Boolean(result.duplicate),
-          payload: isObject(result.payload) ? result.payload : null,
-          revision: Number(result.revision) || 0,
-          serverUpdatedAt: String(result.serverUpdatedAt || ''),
-          operationId,
-          error: null
-        };
-      }
-    } catch (error) {
-      lastError = error;
-      if (!isRetryableSyncTransportError(error) || attempt + 1 >= maxAttempts) break;
-    }
-    await waitForRetry((Number(retryBaseDelayMs) || 0) * (2 ** attempt));
-  }
-  return { ok: false, unchanged: false, conflict: false, operationId, error: lastError || new Error('cloud_sync_transport_failed') };
+export async function saveRevisionedCloudLearningData(...args) {
+  return (await import('./learningSyncCoordinator.js')).saveRevisionedCloudLearningData(...args);
 }
 
-export async function syncRevisionedCloudLearning(client, localPayload = {}, options = {}) {
-  const maxAttempts = Math.max(1, Math.min(5, Number(options.maxAttempts) || 4));
-  let envelope = options.cloudEnvelope || await loadCloudLearningDataResult(client);
-  if (envelope.error) return { ok: false, conflict: false, error: envelope.error };
-  if (envelope.protocolVersion < CLOUD_SYNC_PROTOCOL_VERSION) {
-    return {
-      ok: false,
-      conflict: false,
-      protocolVersion: envelope.protocolVersion,
-      error: new Error('cloud_sync_migration_required')
-    };
-  }
-
-  let conflictCount = 0;
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const logicalOperationId = attempt === 0 && options.operationId
-      ? options.operationId
-      : createOperationId();
-    const payload = mergeCloudLearningPayload(localPayload, envelope.data, {
-      ...options,
-      mergeDirtySnapshots: true
-    });
-    const result = await saveRevisionedCloudLearningData(client, {
-      payload,
-      expectedRevision: envelope.revision,
-      operationId: logicalOperationId,
-      deviceId: options.deviceId,
-      dirtyChildIds: options.dirtyChildIds,
-      transportMaxAttempts: options.transportMaxAttempts,
-      retryBaseDelayMs: options.retryBaseDelayMs
-    });
-    if (result.ok) {
-      return {
-        ...result,
-        payload: result.payload || payload,
-        protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
-        conflictCount
-      };
-    }
-    if (!result.conflict) return { ...result, conflictCount };
-    conflictCount += 1;
-    envelope = {
-      data: result.payload,
-      revision: result.revision,
-      protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
-      serverUpdatedAt: result.serverUpdatedAt,
-      error: null
-    };
-  }
-  return {
-    ok: false,
-    conflict: true,
-    conflictCount,
-    error: new Error('cloud_sync_conflict_retry_exhausted')
-  };
+export async function syncRevisionedCloudLearning(...args) {
+  return (await import('./learningSyncCoordinator.js')).syncRevisionedCloudLearning(...args);
 }
 
 // Kept only for legacy imports. Application writes must use the revisioned

@@ -45,7 +45,7 @@ import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName, isPlaceholderStudentName } from './utils/displayFormatter';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
-import { clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
+import { acknowledgeResumeTombstones, clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { buildChildSafeHint, getAnswerRevealPolicy } from './ai/policy/answerRevealPolicy.js';
@@ -86,8 +86,7 @@ import {
   loadCloudLearningDataResult,
   normalizeActiveLearningProjection,
   recoverMonotonicCloudGap,
-  recoverOrphanedCloudOutbox,
-  syncRevisionedCloudLearning
+  recoverOrphanedCloudOutbox
 } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
 import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
@@ -379,6 +378,7 @@ function isChildScopedDataKey(key = '', childId = '') {
     if (storedStudentId && storedStudentId !== 'default' && childId && storedStudentId !== String(childId)) return false;
   }
   return isAccountDataKey(key)
+    && !/^jannati_v(?:140|150|151|152)_resume(?:_slots|_tombstones|_pending_tombstones)?$/.test(key)
     && key !== CHILD_PROFILES_KEY
     && key !== ACTIVE_CHILD_KEY
     && key !== DELETED_CHILDREN_KEY
@@ -1659,6 +1659,7 @@ export default function App() {
         const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
           ? cloudEnvelopeRef.current
           : undefined;
+        const { syncRevisionedCloudLearning } = await import('./services/learningSyncCoordinator.js');
         const syncResult = await syncRevisionedCloudLearning(supabase, localPayload, {
           cloudEnvelope: knownCloudEnvelope,
           dirtyChildIds,
@@ -1676,6 +1677,11 @@ export default function App() {
         const payload = syncResult.payload || {};
         cloudWritePendingRef.current = false;
         if (ok) {
+          const pendingResumeDelete = acknowledgeResumeTombstones(
+            syncResult.acknowledgedResumeTombstones,
+            undefined,
+            operationAccountId
+          );
           rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload });
           const preserveLocalChildIds = dirtyChildIds.filter(childId => (
             (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
@@ -1701,7 +1707,7 @@ export default function App() {
           });
           const remainingDirtyChildIds = [...dirtyChildIdsRef.current];
           writePendingDirtyChildIds(accountUser.id, remainingDirtyChildIds);
-          const stillPending = remainingDirtyChildIds.length > 0;
+          const stillPending = remainingDirtyChildIds.length > 0 || pendingResumeDelete;
           pendingOfflineCloudSaveRef.current = stillPending;
           setPendingCloudMutation(accountUser.id, stillPending);
           captureAccountSnapshot(accountUser.id);
