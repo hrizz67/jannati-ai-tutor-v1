@@ -34,7 +34,7 @@ import {
 } from '../utils/displayFormatter';
 import { getAnalyticsNoData, getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
-import { isInteractiveQuestion, prioritizeInteractiveQuestions } from '../utils/interactiveQuestion.js';
+import { buildInteractivePracticeSession } from '../ai/question/interactiveSessionComposer.js';
 import tutorAiBadge from '../assets/icons/3d/tutor-ai-badge.webp';
 import uasaBadge from '../assets/icons/3d/uasa-badge.webp';
 import ibuBapaBadge from '../assets/icons/3d/ibu-bapa-badge.webp';
@@ -224,16 +224,6 @@ export default function HomeDashboard(props) {
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
   const topics = selectedSubject?.topics || [];
-  const reviewedInteractiveActivitySource = topics.find(topic => (
-    (topic.questions || []).some(question => question.interaction && isInteractiveQuestion(question))
-  ));
-  const interactiveActivitySource = reviewedInteractiveActivitySource || topics.find(topic => (
-    (topic.questions || []).some(isInteractiveQuestion)
-  )) || null;
-  const interactiveActivityTopic = interactiveActivitySource ? {
-    ...interactiveActivitySource,
-    questions: prioritizeInteractiveQuestions(interactiveActivitySource.questions)
-  } : null;
   const aiMemory = useMemo(() => loadAIMemory(profile), [profile.childId, profile.studentId, profile.history, profile.progress, profile.xp]);
   const adaptiveSubjects = useMemo(() => (Array.isArray(allSubjects) && allSubjects.length ? allSubjects : [selectedSubject].filter(Boolean)), [allSubjects, selectedSubject]);
   const visibleSubjects = useMemo(() => (Array.isArray(subjectList) && subjectList.length ? subjectList : adaptiveSubjects), [subjectList, adaptiveSubjects]);
@@ -248,6 +238,18 @@ export default function HomeDashboard(props) {
   const topicMastery = useMemo(() => ({ ...(aiMemory.topicMastery || {}), ...buildMasteryMap(profile, adaptiveSubjects, aiMemory) }), [profile, adaptiveSubjects, aiMemory]);
   const masterySummary = useMemo(() => summarizeMastery(topicMastery), [topicMastery]);
   const effectiveMemory = useMemo(() => ({ ...aiMemory, topicMastery, masterySummary, mastery: masterySummary.masteryScore }), [aiMemory, topicMastery, masterySummary]);
+  const interactiveActivityTopic = useMemo(() => {
+    const composed = buildInteractivePracticeSession(selectedSubject, { memory: effectiveMemory, count: 10 });
+    if (!composed.questions.length || !selectedSubject?.id) return null;
+    return {
+      id: `interactive_${selectedSubject.id}`,
+      title: 'Aktiviti Interaktif',
+      note: 'Latihan interaktif merentas topik',
+      questions: composed.questions,
+      interactivePractice: true,
+      interactivePracticeMetadata: composed.metadata
+    };
+  }, [selectedSubject, effectiveMemory]);
   const smartLesson = useMemo(() => buildAdaptiveRecommendation({ profile, memory: effectiveMemory, subjects: adaptiveSubjects }), [profile, effectiveMemory, adaptiveSubjects]);
   const learningJourney = useMemo(() => buildLessonPlan({ subjects: adaptiveSubjects, topicMastery }), [adaptiveSubjects, topicMastery]);
   const todayLesson = learningJourney.todayLesson || null;
@@ -526,7 +528,7 @@ export default function HomeDashboard(props) {
         <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
         <section className="quick-actions" aria-label="Aktiviti pembelajaran">
           {!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}
-          {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { restoreFromResume: true, preserveQuestions: true, displayTitle: `Aktiviti Interaktif: ${interactiveActivityTopic.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Aktiviti Interaktif</span></button> : null}
+          {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { preserveQuestions: true, mode: 'interactive-practice', displayTitle: `Aktiviti Interaktif: ${selectedSubject.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Aktiviti Interaktif</span></button> : null}
           <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button>
           <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button>
           <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button>

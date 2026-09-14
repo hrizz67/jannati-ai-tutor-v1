@@ -56,16 +56,60 @@ const adaptive = questionResume({ mode: 'adaptive-practice', topicId: 'adaptive_
 const uasaBm = questionResume({ mode: 'uasa', topicId: 'uasa_bm', id: 'BM-UASA-001', updatedAt: '2026-08-14T08:02:00.000Z' });
 const uasaMath = questionResume({ mode: 'uasa', subjectId: 'math', topicId: 'uasa_math', id: 'MATH-UASA-001', updatedAt: '2026-08-14T08:03:00.000Z' });
 const reading = communicationResume('reading', '2026-08-14T08:04:00.000Z');
+const interactiveA = {
+  version: 1,
+  mode: 'interactive-practice',
+  subjectId: 'math',
+  topicId: 'interactive_math',
+  accountId: 'family',
+  childId: 'child-a',
+  studentId: 'child-a',
+  questions: [
+    { id: 'MATH-NOMBOR-001', topicId: 'nombor', topicTitle: 'Nombor Hingga 1000' },
+    { id: 'MATH-MASA-001', topicId: 'masa', topicTitle: 'Masa dan Waktu' }
+  ],
+  currentIndex: 1,
+  state: {
+    questionId: 'MATH-MASA-001',
+    answer: 'Rabu',
+    feedback: { status: 'correct', message: 'Betul!' }
+  },
+  updatedAt: '2026-08-14T08:05:00.000Z'
+};
+const interactiveB = {
+  ...interactiveA,
+  childId: 'child-b',
+  studentId: 'child-b',
+  questions: [
+    { id: 'MATH-WANG-001', topicId: 'wang', topicTitle: 'Wang' },
+    { id: 'MATH-PANJANG-001', topicId: 'panjang', topicTitle: 'Panjang' }
+  ],
+  currentIndex: 0,
+  state: { questionId: 'MATH-WANG-001', answer: '', feedback: null },
+  updatedAt: '2026-08-14T08:06:00.000Z'
+};
 
-[quiz, adaptive, uasaBm, uasaMath, reading].forEach(item => saveResume(item, storage));
+[quiz, adaptive, uasaBm, uasaMath, reading, interactiveA, interactiveB].forEach(item => saveResume(item, storage));
 
 assert.equal(loadResume({ mode: 'quiz', subjectId: 'bm', topicId: 'kata_nama_am' }, storage)?.questions?.[0]?.id, 'BM-QUIZ-001');
 assert.equal(loadResume({ mode: 'adaptive-practice', subjectId: 'bm' }, storage)?.questions?.[0]?.id, 'BM-AI-001');
 assert.equal(loadResume({ mode: 'uasa', subjectId: 'bm' }, storage)?.questions?.[0]?.id, 'BM-UASA-001');
 assert.equal(loadResume({ mode: 'uasa', subjectId: 'math' }, storage)?.questions?.[0]?.id, 'MATH-UASA-001');
 assert.equal(loadResume({ mode: 'reading' }, storage)?.mode, 'reading');
-assert.equal(loadResume({}, storage)?.mode, 'reading', 'Kad resume utama mesti menunjukkan sesi terkini.');
-assert.equal(Object.keys(JSON.parse(storage.getItem(RESUME_SLOTS_KEY))).length, 5, 'Semua resume perlu kekal dalam slot berasingan.');
+assert.equal(loadResume({}, storage)?.studentId, 'child-b', 'Kad resume utama mesti menunjukkan sesi terkini.');
+assert.equal(Object.keys(JSON.parse(storage.getItem(RESUME_SLOTS_KEY))).length, 7, 'Semua resume perlu kekal dalam slot berasingan.');
+
+const restoredInteractiveA = loadResume({ mode: 'interactive-practice', subjectId: 'math', topicId: 'interactive_math', studentId: 'child-a' }, storage);
+const restoredInteractiveB = loadResume({ mode: 'interactive-practice', subjectId: 'math', topicId: 'interactive_math', studentId: 'child-b' }, storage);
+assert.equal(restoredInteractiveA?.mode, 'interactive-practice', 'Mod latihan interaktif mesti kekal selepas save/load.');
+assert.equal(restoredInteractiveA?.subjectId, 'math', 'Subjek latihan interaktif mesti kekal selepas save/load.');
+assert.equal(restoredInteractiveA?.topicId, 'interactive_math', 'ID aktiviti sintetik mesti kekal selepas save/load.');
+assert.deepEqual(restoredInteractiveA?.questions?.map(question => question.id), ['MATH-NOMBOR-001', 'MATH-MASA-001'], 'Susunan ID soalan latihan interaktif mesti kekal.');
+assert.equal(restoredInteractiveA?.currentIndex, 1, 'Indeks semasa latihan interaktif mesti kekal.');
+assert.equal(restoredInteractiveA?.state?.answer, 'Rabu', 'Jawapan semasa latihan interaktif mesti kekal.');
+assert.equal(restoredInteractiveA?.state?.feedback?.status, 'correct', 'Maklum balas semasa latihan interaktif mesti kekal.');
+assert.deepEqual(restoredInteractiveB?.questions?.map(question => question.id), ['MATH-WANG-001', 'MATH-PANJANG-001'], 'Resume anak lain mesti kekal terasing.');
+assert.notDeepEqual(restoredInteractiveA?.questions?.map(question => question.id), restoredInteractiveB?.questions?.map(question => question.id), 'Soalan latihan interaktif tidak boleh bocor merentas anak.');
 
 const answeredQuiz = {
   ...quiz,
@@ -104,7 +148,11 @@ const analyticsDashboard = fs.readFileSync('src/dashboard/AnalyticsDashboard.jsx
 const learningDashboard = fs.readFileSync('src/dashboard/LearningDashboard.jsx', 'utf8');
 assert.match(app, /resume\?\.mode === 'uasa' && resume\?\.subjectId === selectedSubject\?\.id/);
 assert.match(app, /storedSubjectResume\?\.mode === 'uasa'/);
+assert.match(app, /\['quiz', 'adaptive-practice', 'adaptive-lesson', 'interactive-practice'\]\.includes\(mode\)/, 'Latihan interaktif mesti menggunakan laluan resume soalan sedia ada.');
 assert.match(app, /const smartSession = options\.preserveQuestions\s*\?\s*\{\s*questions:\s*sourceQuestions/, 'Sesi yang meminta susunan dikekalkan mesti menggunakan soalan asal.');
+assert.match(app, /rehydrateInteractivePracticeQuestions\(subject, targetResume\.questions\)/, 'Resume latihan interaktif mesti rehidrasi soalan tersimpan merentas semua topik subjek.');
+assert.match(app, /startInteractivePracticeResume\(targetResume\);/, 'Sambung latihan interaktif mesti menggunakan set soalan tersimpan.');
+assert.match(app, /startInteractivePracticeResume\(targetResume, \{ restart: true \}\);/, 'Mula semula latihan interaktif mesti menggunakan set soalan tersimpan dari soalan pertama.');
 assert.match(app, /questions:\s*targetResume\.questions,[\s\S]{0,250}preserveQuestions:\s*true,[\s\S]{0,120}restoreFromResume:\s*true/, 'Resume latihan adaptif mesti mengekalkan susunan soalan asal sesi.');
 assert.match(app, /questions,[\s\S]{0,250}preserveQuestions:\s*true,[\s\S]{0,120}restoreFromResume:\s*true/, 'Resume kuiz mesti mengekalkan susunan soalan asal sesi.');
 assert.match(app, /state:\s*targetResume\.state,[\s\S]{0,180}restoreFromResume:\s*true/, 'Resume kuiz mesti menghantar draf jawapan dan maklum balas untuk dipulihkan.');
@@ -117,6 +165,8 @@ for (const mode of ['reading', 'listening', 'speaking', 'writing']) {
 assert.ok(resumeCard.includes('onResume?.(resume)'), 'Butang Sambung mesti menghantar rekod resume, bukan objek acara klik.');
 assert.equal((homeDashboard.match(/<ResumePracticeCard/g) || []).length, 1, 'Dashboard mesti mempunyai satu kad resume utama sahaja.');
 assert.doesNotMatch(homeDashboard, /onClick=\{resume \? onResume/, 'Butang pantas tidak boleh menghantar objek acara klik sebagai resume.');
+assert.match(homeDashboard, /mode: 'interactive-practice'/, 'CTA Aktiviti Interaktif mesti menyimpan mod resume khususnya.');
+assert.match(homeDashboard, /preserveQuestions: true/, 'CTA Aktiviti Interaktif mesti memintas pemilihan soalan pintar kedua.');
 assert.doesNotMatch(analyticsDashboard, /ResumePracticeCard/, 'Panel analitik tidak boleh menduplikasi kad resume utama.');
 assert.match(learningDashboard, /onClick=\{\(\) => onResume\?\.\(resume\)\}/, 'Nota dan Buku Teks mesti menyediakan tindakan kembali ke latihan aktif.');
 assert.match(app, /<LearningDashboard[\s\S]{0,500}resume=\{resume\}[\s\S]{0,500}onResume=\{startResume\}/, 'Pusat Belajar mesti menerima resume aktif dan pengendali sambung yang sama.');
