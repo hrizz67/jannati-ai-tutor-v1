@@ -28,10 +28,35 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 152, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 167, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2778, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2763, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
+
+const interactiveContentBatch2Types = new Map([
+  ['MATH-NOMBOR-PILOT-004', 'visualMath'],
+  ['MATH-NOMBOR-PILOT-009', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-010', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-017', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-018', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-029', 'fillBlank'],
+  ['MATH-PANJANG-PILOT-006', 'measurement'],
+  ['MATH-MASA-PILOT-001', 'choice'],
+  ['MATH-WANG-PILOT-003', 'fillBlank'],
+  ['SAINS-MANUSIA-004', 'imageChoice'],
+  ['SAINS-MANUSIA-005', 'imageChoice'],
+  ['SAINS-HAIWAN-015', 'imageChoice'],
+  ['SAINS-HAIWAN-016', 'imageChoice'],
+  ['SAINS-TUMBUHAN-005', 'imageChoice'],
+  ['SAINS-TUMBUHAN-021', 'fillBlank']
+]);
+for (const [id, type] of interactiveContentBatch2Types) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah kepada laluan interaktif disemak.`);
+  assert.equal(row?.recommendedType, type, `${id} mesti mengekalkan jenis interaksi Batch 2 yang diluluskan.`);
+  assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai konfigurasi authored yang sepadan.`);
+}
 
 for (const row of report.questionClassifications.filter(item => item.category === 'auto_safe')) {
   const question = questionMap.get(row.questionId);
