@@ -830,8 +830,366 @@ const REVIEWED_Q4_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_CONTENT_BATCH_1_SPECS = Object.freeze({
+  'MATH-BENTUK-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan bentuk, kemudian pilih bilangan bucunya.',
+      visual: { kind: 'shape', shape: 'circle', label: 'Rajah bentuk bulat dengan sempadan melengkung' },
+      options: [
+        { id: 'zero', label: '0 bucu', value: '0' },
+        { id: 'three', label: '3 bucu', value: '3' },
+        { id: 'four', label: '4 bucu', value: '4' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti bahawa bulatan tidak mempunyai bucu.',
+      assessment: 'Rajah tidak menyatakan bilangan bucu; murid memerhati sempadan bentuk sebelum memilih 0, 3 atau 4.',
+      textbook: 'Bentuk bulat dijana secara dalaman dengan label semantik yang menerangkan rupa tanpa mendedahkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'bentuk.bucu_bulatan', responseMode: 'visual_counting',
+      conceptTags: ['bentuk_2d', 'bulatan', 'bucu'],
+      misconceptionTags: ['menganggap_bulatan_mempunyai_bucu', 'keliru_bucu_dan_sisi'],
+      hintSteps: ['Bucu ialah tempat dua sisi lurus bertemu.', 'Jejaki sempadan bulatan dengan mata.', 'Periksa sama ada terdapat mana-mana penjuru pada bentuk itu.']
+    }
+  },
+  'MATH-BENTUK-PILOT-006': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan objek 3D, kemudian pilih bilangan permukaan ratanya.',
+      visual: { kind: 'shape', shape: 'cube', label: 'Rajah objek tiga dimensi yang mempunyai permukaan rata' },
+      options: [
+        { id: 'six', label: '6 permukaan', value: '6' },
+        { id: 'four', label: '4 permukaan', value: '4' },
+        { id: 'eight', label: '8 permukaan', value: '8' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti enam permukaan rata pada sebuah kubus.',
+      assessment: 'Distraktor 4 dan 8 mengesan kekeliruan antara permukaan, bucu dan ciri bentuk 2D.',
+      textbook: 'Rajah kubus dalaman memperlihatkan objek ruang tanpa menulis bilangan permukaannya.'
+    },
+    intelligence: {
+      skillId: 'bentuk.permukaan_rata_kubus', responseMode: 'visual_counting',
+      conceptTags: ['objek_3d', 'kubus', 'permukaan_rata'],
+      misconceptionTags: ['keliru_permukaan_dan_bucu', 'mengira_permukaan_kelihatan_sahaja'],
+      hintSteps: ['Permukaan ialah bahagian rata yang menutupi objek.', 'Bayangkan permukaan di hadapan, belakang, kiri dan kanan.', 'Jangan lupa permukaan di bahagian atas dan bawah.']
+    }
+  },
+  'MATH-BENTUK-PILOT-009': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih objek 3D yang menyerupai tin minuman.',
+      options: [
+        { id: 'cylinder', label: 'Silinder', value: 'silinder', visual: { kind: 'shape', shape: 'cylinder', label: 'Objek dengan dua permukaan bulat dan satu permukaan melengkung' } },
+        { id: 'cube', label: 'Kubus', value: 'kubus', visual: { kind: 'shape', shape: 'cube', label: 'Model kotak dengan permukaan rata yang sama besar' } },
+        { id: 'sphere', label: 'Sfera', value: 'sfera', visual: { kind: 'object', symbol: '●', label: 'Model objek bulat penuh seperti bola' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan tin minuman dengan objek 3D silinder.',
+      assessment: 'Tiga objek 3D lazim dibandingkan dan hanya silinder mempunyai rupa yang sepadan dengan tin.',
+      textbook: 'Visual dalaman disertai nama objek supaya murid menghubungkan contoh harian dengan istilah geometri.'
+    },
+    intelligence: {
+      skillId: 'bentuk.memadankan_tin_dan_silinder', responseMode: 'visual_selection',
+      conceptTags: ['objek_3d', 'silinder', 'objek_harian'],
+      misconceptionTags: ['keliru_silinder_dan_sfera', 'memilih_berdasarkan_saiz'],
+      hintSteps: ['Perhatikan bentuk bahagian atas dan bawah tin.', 'Fikir sama ada sisi tin rata atau melengkung.', 'Pilih objek yang mempunyai dua hujung bulat.']
+    }
+  },
+  'MATH-MASA-PILOT-009': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan cara membaca waktu 6:15.',
+      sentenceParts: ['6:15 dibaca sebagai ', '.'],
+      options: [
+        { id: 'quarter', label: 'pukul enam suku', value: 'pukul enam suku' },
+        { id: 'half', label: 'pukul enam setengah', value: 'pukul enam setengah' },
+        { id: 'exact', label: 'pukul enam tepat', value: 'pukul enam tepat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menyatakan waktu 6:15 menggunakan ungkapan suku jam yang betul.',
+      assessment: 'Tempat kosong mengekalkan kemahiran membaca waktu dalam perkataan; tiga istilah masa mempunyai tepat satu jawapan diterima.',
+      textbook: 'Ayat lengkap menghubungkan notasi digital dengan ungkapan waktu tanpa mendedahkan perkataan sasaran dalam arahan.'
+    },
+    intelligence: {
+      skillId: 'masa.membaca_pukul_enam_suku', responseMode: 'completion',
+      conceptTags: ['waktu_digital', 'suku_jam', 'ungkapan_waktu'],
+      misconceptionTags: ['keliru_suku_dan_setengah', 'keliru_waktu_tepat_dan_suku'],
+      hintSteps: ['Perhatikan bahawa waktu itu 15 minit selepas pukul enam.', 'Lima belas minit bersamaan satu perempat jam.', 'Pilih perkataan yang digunakan untuk satu perempat jam.']
+    }
+  },
+  'MATH-WANG-PILOT-010': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih notasi wang yang betul.',
+      sentenceParts: ['RM 7 dan 5 sen ditulis sebagai ', '.'],
+      options: [
+        { id: 'correct', label: 'RM 7.05', value: 'RM 7.05' },
+        { id: 'fifty-sen', label: 'RM 7.50', value: 'RM 7.50' },
+        { id: 'missing-zero', label: 'RM 7.5', value: 'RM 7.5' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menukar RM 7 dan 5 sen kepada notasi wang ringgit yang lengkap.',
+      assessment: 'Pilihan menguji penggunaan tepat dua digit bagi sen dan membezakan 5 sen daripada 50 sen serta notasi satu digit.',
+      textbook: 'Ayat lengkap mengekalkan nilai sumber dan menekankan sifar di hadapan bagi nilai sen satu digit.'
+    },
+    intelligence: {
+      skillId: 'wang.membina_notasi_rm7_05', responseMode: 'completion',
+      conceptTags: ['wang_malaysia', 'notasi_wang', 'ringgit_dan_sen'],
+      misconceptionTags: ['menulis_rm7_5_tanpa_sifar', 'keliru_ringgit_dan_sen'],
+      hintSteps: ['Letakkan nilai ringgit sebelum titik perpuluhan.', 'Bahagian sen mesti mempunyai dua digit.', 'Lima sen ditulis dengan sifar di hadapan.']
+    }
+  },
+  'MATH-PANJANG-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih alat yang sesuai untuk mengukur panjang pensel dalam cm.',
+      options: [
+        { id: 'ruler', label: 'Pembaris', value: 'pembaris', visual: { kind: 'object', symbol: '📏', label: 'Alat lurus bertanda sentimeter' } },
+        { id: 'tape', label: 'Pita ukur', value: 'pita ukur', visual: { kind: 'object', symbol: '➰', label: 'Alat ukur panjang yang boleh dilentur' } },
+        { id: 'scale', label: 'Penimbang', value: 'penimbang', visual: { kind: 'object', symbol: '⚖️', label: 'Alat untuk mengukur jisim' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih pembaris untuk mengukur objek pendek dalam sentimeter.',
+      assessment: 'Pilihan membezakan alat panjang berskala cm daripada pita untuk objek besar dan alat mengukur jisim.',
+      textbook: 'Simbol alat dan label teks menyokong pemilihan alat ukur yang biasa digunakan di bilik darjah.'
+    },
+    intelligence: {
+      skillId: 'panjang.memilih_pembaris_untuk_pensel', responseMode: 'visual_selection',
+      conceptTags: ['panjang', 'sentimeter', 'alat_ukur'],
+      misconceptionTags: ['keliru_alat_panjang_dan_jisim', 'memilih_pita_untuk_objek_pendek'],
+      hintSteps: ['Pensel ialah objek yang pendek dan lurus.', 'Cari alat yang mempunyai tanda sentimeter pada tepi lurus.', 'Singkirkan alat yang digunakan untuk menimbang.']
+    }
+  },
+  'MATH-PANJANG-PILOT-005': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih alat yang lebih sesuai untuk mengukur tinggi pintu dalam m.',
+      options: [
+        { id: 'tape', label: 'Pita ukur', value: 'pita ukur', visual: { kind: 'object', symbol: '➰', label: 'Alat panjang yang boleh dilentur dan ditarik' } },
+        { id: 'ruler', label: 'Pembaris', value: 'pembaris', visual: { kind: 'object', symbol: '📏', label: 'Alat lurus pendek bertanda sentimeter' } },
+        { id: 'scale', label: 'Penimbang', value: 'penimbang', visual: { kind: 'object', symbol: '⚖️', label: 'Alat untuk mengukur jisim' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih pita ukur untuk mengukur objek tinggi dalam unit meter.',
+      assessment: 'Pilihan alat menguji kesesuaian panjang alat dan unit, bukan sekadar mengenal alat ukur.',
+      textbook: 'Visual menunjukkan perbezaan alat lurus pendek, alat fleksibel panjang dan alat jisim.'
+    },
+    intelligence: {
+      skillId: 'panjang.memilih_pita_ukur_untuk_pintu', responseMode: 'visual_selection',
+      conceptTags: ['panjang', 'meter', 'alat_ukur'],
+      misconceptionTags: ['memilih_pembaris_untuk_objek_tinggi', 'keliru_panjang_dan_jisim'],
+      hintSteps: ['Pintu lebih tinggi daripada pembaris sekolah.', 'Cari alat yang boleh dipanjangkan sepanjang pintu.', 'Pilih alat panjang yang mempunyai tanda ukuran meter.']
+    }
+  },
+  'MATH-PANJANG-PILOT-010': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih objek yang lebih sesuai diukur dalam cm.',
+      options: [
+        { id: 'eraser', label: 'Pemadam', value: 'pemadam', visual: { kind: 'object', symbol: '▰', label: 'Objek kecil yang digunakan bersama pensel' } },
+        { id: 'corridor', label: 'Koridor sekolah', value: 'koridor sekolah', visual: { kind: 'object', symbol: '🏫', label: 'Laluan panjang di dalam bangunan sekolah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih sentimeter sebagai unit sesuai bagi objek kecil berbanding jarak yang panjang.',
+      assessment: 'Dua objek asal dikekalkan tepat supaya murid membanding skala pemadam dengan koridor sekolah.',
+      textbook: 'Perbandingan objek kecil dan ruang sekolah menjelaskan penggunaan cm tanpa menambah distraktor.'
+    },
+    intelligence: {
+      skillId: 'panjang.memilih_objek_untuk_sentimeter', responseMode: 'visual_selection',
+      conceptTags: ['panjang', 'sentimeter', 'pemilihan_unit'],
+      misconceptionTags: ['menggunakan_cm_untuk_jarak_panjang', 'tidak_membanding_saiz_objek'],
+      hintSteps: ['Sentimeter sesuai untuk benda yang pendek.', 'Bayangkan panjang setiap pilihan.', 'Pilih benda kecil yang boleh diletakkan di atas pembaris.']
+    }
+  },
+  'SAINS-HAIWAN-012': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara burung bergerak.',
+      options: [
+        { id: 'fly', label: 'Terbang', value: 'terbang', visual: { kind: 'object', symbol: '🪽', label: 'Haiwan bergerak di udara menggunakan sayap' } },
+        { id: 'swim', label: 'Berenang', value: 'berenang', visual: { kind: 'object', symbol: '🌊', label: 'Haiwan bergerak di dalam air' } },
+        { id: 'slither', label: 'Menjalar', value: 'menjalar', visual: { kind: 'object', symbol: '〰️', label: 'Haiwan bergerak rapat di permukaan tanah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan burung dengan cara pergerakan terbang.',
+      assessment: 'Tiga cara pergerakan berbeza dipaparkan dan hanya pergerakan menggunakan sayap sesuai untuk burung.',
+      textbook: 'Simbol gerakan disertai label teks supaya makna tidak bergantung pada gambar sahaja.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_burung', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'burung'],
+      misconceptionTags: ['keliru_habitat_dan_pergerakan', 'mengabaikan_fungsi_sayap'],
+      hintSteps: ['Perhatikan anggota badan burung yang lebar di kiri dan kanan.', 'Fikir tempat burung bergerak apabila menggunakan sayap.', 'Pilih pergerakan yang berlaku di udara.']
+    }
+  },
+  'SAINS-HAIWAN-013': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara ular bergerak.',
+      options: [
+        { id: 'slither', label: 'Menjalar', value: 'menjalar', visual: { kind: 'object', symbol: '〰️', label: 'Haiwan bergerak rapat di permukaan tanah tanpa kaki' } },
+        { id: 'jump', label: 'Melompat', value: 'melompat', visual: { kind: 'object', symbol: '↗️', label: 'Haiwan menolak badan lalu bergerak ke atas' } },
+        { id: 'run', label: 'Berlari', value: 'berlari', visual: { kind: 'object', symbol: '🏃', label: 'Haiwan bergerak pantas menggunakan kaki' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan ular dengan cara pergerakan menjalar.',
+      assessment: 'Distraktor memerlukan penggunaan kaki, manakala gerakan sasaran sesuai dengan bentuk badan ular.',
+      textbook: 'Visual gerakan dan label ringkas membantu murid membanding cara haiwan bergerak.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_ular', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'ular'],
+      misconceptionTags: ['menganggap_semua_haiwan_berkaki', 'keliru_menjalar_dan_melompat'],
+      hintSteps: ['Ular tidak mempunyai kaki.', 'Bayangkan badannya bergerak dekat dengan tanah.', 'Pilih gerakan beralun di atas permukaan.']
+    }
+  },
+  'SAINS-HAIWAN-014': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara katak bergerak.',
+      options: [
+        { id: 'jump', label: 'Melompat', value: 'melompat', visual: { kind: 'object', symbol: '↗️', label: 'Haiwan menolak badan dengan kaki belakang lalu bergerak ke atas' } },
+        { id: 'swim', label: 'Berenang', value: 'berenang', visual: { kind: 'object', symbol: '🌊', label: 'Haiwan bergerak di dalam air' } },
+        { id: 'slither', label: 'Menjalar', value: 'menjalar', visual: { kind: 'object', symbol: '〰️', label: 'Haiwan bergerak rapat di permukaan tanah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan katak dengan cara pergerakan melompat.',
+      assessment: 'Pilihan membezakan gerakan utama katak di darat daripada berenang dan menjalar.',
+      textbook: 'Simbol arah dan penerangan kaki belakang menyokong pemerhatian cara pergerakan.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_katak', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'katak'],
+      misconceptionTags: ['memilih_berenang_kerana_habitat', 'keliru_melompat_dan_menjalar'],
+      hintSteps: ['Perhatikan kaki belakang katak yang kuat.', 'Fikir bagaimana katak bergerak di atas tanah.', 'Pilih gerakan yang mengangkat seluruh badan dari tanah.']
+    }
+  },
+  'SAINS-TUMBUHAN-003': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih fungsi daun yang betul.',
+      options: [
+        { id: 'food', label: 'Membuat makanan', value: 'membuat makanan', visual: { kind: 'object', symbol: '🍃☀️', label: 'Daun menerima cahaya untuk menghasilkan keperluan tumbuhan' } },
+        { id: 'water', label: 'Menyerap air', value: 'menyerap air', visual: { kind: 'object', symbol: '💧', label: 'Air masuk dari tanah melalui akar' } },
+        { id: 'support', label: 'Menyokong tumbuhan', value: 'menyokong tumbuhan', visual: { kind: 'object', symbol: '🌱', label: 'Batang menegakkan bahagian tumbuhan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti fungsi daun untuk membuat makanan bagi tumbuhan.',
+      assessment: 'Arah soalan asal dikekalkan dan distraktor ialah fungsi akar serta batang.',
+      textbook: 'Cahaya, air dan sokongan digambarkan bersama label supaya fungsi bahagian tumbuhan dapat dibandingkan.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.fungsi_daun_membuat_makanan', responseMode: 'visual_selection',
+      conceptTags: ['tumbuhan', 'daun', 'fungsi_bahagian'],
+      misconceptionTags: ['keliru_fungsi_daun_dan_akar', 'keliru_fungsi_daun_dan_batang'],
+      hintSteps: ['Daun biasanya lebar dan menerima cahaya.', 'Akar mengambil air, manakala batang menegakkan tumbuhan.', 'Pilih fungsi daun yang menggunakan cahaya.']
+    }
+  },
+  'SAINS-TUMBUHAN-004': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih fungsi bunga yang betul.',
+      options: [
+        { id: 'fruit', label: 'Menjadi buah', value: 'menjadi buah', visual: { kind: 'object', symbol: '🌼➡️🍎', label: 'Perubahan daripada bunga kepada hasil tumbuhan' } },
+        { id: 'food', label: 'Membuat makanan', value: 'membuat makanan', visual: { kind: 'object', symbol: '🍃☀️', label: 'Daun menerima cahaya' } },
+        { id: 'water', label: 'Menyerap air', value: 'menyerap air', visual: { kind: 'object', symbol: '🌱💧', label: 'Akar mengambil air dari tanah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti fungsi bunga yang berkembang menjadi buah.',
+      assessment: 'Arah soalan asal dikekalkan dan distraktor membezakan fungsi bunga daripada daun serta akar.',
+      textbook: 'Urutan visual bunga kepada hasil tumbuhan menyokong perubahan tanpa menggantikan label teks.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.fungsi_bunga_menjadi_buah', responseMode: 'visual_selection',
+      conceptTags: ['tumbuhan', 'bunga', 'fungsi_bahagian'],
+      misconceptionTags: ['keliru_bunga_dan_daun', 'keliru_bunga_dan_akar'],
+      hintSteps: ['Fikir apa yang boleh terbentuk selepas bunga berkembang.', 'Daun membuat makanan dan akar menyerap air.', 'Pilih hasil yang bermula daripada bunga.']
+    }
+  },
+  'SAINS-MANUSIA-002': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih kegunaan telinga.',
+      options: [
+        { id: 'hear', label: 'Mendengar', value: 'mendengar', visual: { kind: 'object', symbol: '👂🔊', label: 'Gelombang bunyi masuk ke organ deria' } },
+        { id: 'see', label: 'Melihat', value: 'melihat', visual: { kind: 'object', symbol: '👀', label: 'Mata memerhati objek' } },
+        { id: 'smell', label: 'Menghidu', value: 'menghidu', visual: { kind: 'object', symbol: '👃', label: 'Hidung mengesan bau' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan telinga dengan deria pendengaran.',
+      assessment: 'Tiga fungsi organ deria dibandingkan dan hanya mendengar sepadan dengan telinga.',
+      textbook: 'Simbol organ serta label kegunaan menyokong pembelajaran pelbagai deria secara aksesibel.'
+    },
+    intelligence: {
+      skillId: 'manusia.deria_pendengaran', responseMode: 'visual_selection',
+      conceptTags: ['manusia', 'organ_deria', 'telinga'],
+      misconceptionTags: ['keliru_telinga_dan_mata', 'keliru_telinga_dan_hidung'],
+      hintSteps: ['Fikir bunyi loceng atau suara kawan.', 'Organ manakah menerima bunyi itu?', 'Pilih perbuatan yang menggunakan telinga.']
+    }
+  },
+  'SAINS-MANUSIA-003': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih kegunaan hidung.',
+      options: [
+        { id: 'smell', label: 'Menghidu', value: 'menghidu', visual: { kind: 'object', symbol: '👃🌸', label: 'Organ deria mengesan bau bunga' } },
+        { id: 'hear', label: 'Mendengar', value: 'mendengar', visual: { kind: 'object', symbol: '👂🔊', label: 'Telinga menerima bunyi' } },
+        { id: 'taste', label: 'Merasa', value: 'merasa', visual: { kind: 'object', symbol: '👅', label: 'Lidah mengesan rasa makanan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan hidung dengan deria bau.',
+      assessment: 'Pilihan membezakan fungsi hidung daripada telinga dan lidah dengan tepat satu jawapan.',
+      textbook: 'Organ deria dipaparkan bersama rangsangan harian dan label untuk perbandingan yang jelas.'
+    },
+    intelligence: {
+      skillId: 'manusia.deria_bau', responseMode: 'visual_selection',
+      conceptTags: ['manusia', 'organ_deria', 'hidung'],
+      misconceptionTags: ['keliru_hidung_dan_telinga', 'keliru_bau_dan_rasa'],
+      hintSteps: ['Bayangkan bau bunga atau makanan.', 'Organ manakah mengesan bau di udara?', 'Pilih perbuatan yang menggunakan hidung.']
+    }
+  }
+});
+
 const REVIEWED_Q4_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_Q4_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
+const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
     qualityReview: spec.qualityReview
   }])
@@ -842,6 +1200,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_FILL_BLANK_EXAMPLES,
   ...REVIEWED_RICH_EXAMPLES,
   ...REVIEWED_Q4_EXAMPLES,
+  ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -1101,6 +1460,10 @@ const REVIEWED_Q4_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_Q4_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_CONTENT_BATCH_1_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -1145,6 +1508,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_FILL_BLANK_INTELLIGENCE,
   ...REVIEWED_RICH_INTELLIGENCE,
   ...REVIEWED_Q4_INTELLIGENCE,
+  ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',

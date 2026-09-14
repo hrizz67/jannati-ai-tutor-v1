@@ -29,6 +29,14 @@ const q4Ids = new Set([
   'ARAB-HURUF_HIJAIYAH-001', 'ARAB-WARNA_ARAB-001', 'ISLAM-JAWI-001',
   'PJ-PERGERAKAN_ASAS-032'
 ]);
+const batch1Ids = new Set([
+  'MATH-BENTUK-PILOT-004', 'MATH-BENTUK-PILOT-006', 'MATH-BENTUK-PILOT-009',
+  'MATH-MASA-PILOT-009', 'MATH-WANG-PILOT-010',
+  'MATH-PANJANG-PILOT-004', 'MATH-PANJANG-PILOT-005', 'MATH-PANJANG-PILOT-010',
+  'SAINS-HAIWAN-012', 'SAINS-HAIWAN-013', 'SAINS-HAIWAN-014',
+  'SAINS-TUMBUHAN-003', 'SAINS-TUMBUHAN-004',
+  'SAINS-MANUSIA-002', 'SAINS-MANUSIA-003'
+]);
 
 function metricTemplate() {
   return {
@@ -239,15 +247,26 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
   assert.equal(smartCheck(solution, question).status, 'correct', `${question.id} reviewed interaction must preserve an accepted original answer.`);
 }
 
-assert.equal(rows.length, 4530, 'Question Batch Q4 must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1129, TEACHER_REVIEW: 2793, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved Q4 decision path.');
-assert.equal(summary.authoredInteractive, 137, 'All reviewed authored interactions must be counted once.');
+assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1144, TEACHER_REVIEW: 2778, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 152, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
+assert.equal(summary.interactive, 1144, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3386, 'All remaining questions must stay on the standard response path.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
 assert.ok(mobileViewportChecks.every(check => check.responsiveRulePresent && check.singleColumnChoices && check.minimumTouchTarget), 'The 320px, 375px and 430px mobile contracts must be present.');
 assert.ok([...q4Ids].every(id => rows.find(row => row.questionId === id)?.classification === 'AUTO_SAFE'), 'Every selected Q4 conversion must be valid and teacher reviewed.');
+assert.equal(batch1Ids.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen approved question IDs.');
+assert.ok([...batch1Ids].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Interactive Content Batch 1 question must be authored, valid, accessible and AUTO_SAFE.');
 assert.equal(rows.find(row => row.questionId === 'MATH-MASA-PILOT-021')?.classification, 'KEEP_STANDARD', 'Constructed-response time reasoning must remain standard.');
 
 const report = {
@@ -266,6 +285,7 @@ const report = {
   byTopic: [...topicMap.values()].sort((left, right) => `${left.subjectId}/${left.topicId}`.localeCompare(`${right.subjectId}/${right.topicId}`)),
   byQuestionType: breakdownBy('questionType'),
   q4Conversions: rows.filter(row => q4Ids.has(row.questionId)),
+  batch1Conversions: rows.filter(row => batch1Ids.has(row.questionId)),
   risks: rows.filter(row => row.mobileIssues.length || row.accessibilityIssues.length),
   teacherReviewQueue: rows.filter(row => row.classification === 'TEACHER_REVIEW').slice(0, 250),
   classifications: rows
@@ -274,7 +294,8 @@ const report = {
 function markdown() {
   const subjectRows = report.bySubject.map(row => `| ${row.subjectTitle} | ${row.total} | ${row.standard} | ${row.interactive} | ${row.visual} | ${row.matching} | ${row.ordering} | ${row.dragDrop} | ${row.fillBlank} | ${row.imageChoice} | ${row.teacherReview} | ${row.mobileUnsafe} | ${row.accessibilityRisk} |`).join('\n');
   const q4Rows = report.q4Conversions.map(row => `| ${row.questionId} | ${row.subjectTitle} | ${row.topicTitle} | ${row.interactionType} | ${row.classification} |`).join('\n');
-  return `# Audit Liputan dan Kualiti Interaktif — Question Batch Q4\n\n`
+  const batch1Rows = report.batch1Conversions.map(row => `| ${row.questionId} | ${row.subjectTitle} | ${row.topicTitle} | ${row.interactionType} | ${row.classification} |`).join('\n');
+  return `# Audit Liputan dan Kualiti Interaktif\n\n`
     + `## Ringkasan\n\n`
     + `- Jumlah soalan: ${summary.total}\n`
     + `- Standard: ${summary.standard}\n`
@@ -293,6 +314,8 @@ function markdown() {
     + `|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n${subjectRows}\n\n`
     + `## Penukaran Q4 yang diluluskan\n\n`
     + `| ID | Subjek | Topik | Format | Keputusan |\n|---|---|---|---|---|\n${q4Rows}\n\n`
+    + `## Interactive Content Batch 1 yang diluluskan\n\n`
+    + `| ID | Subjek | Topik | Format | Keputusan |\n|---|---|---|---|---|\n${batch1Rows}\n\n`
     + `## Keputusan pedagogi\n\n`
     + `- Interaksi digunakan hanya apabila tindakan murid mengukur kemahiran yang sama dengan soalan asal.\n`
     + `- Soalan berstruktur dan respons terbuka kekal standard.\n`
@@ -307,11 +330,12 @@ fs.writeFileSync(path.join(outputDirectory, 'interactive-coverage-quality-report
 
 console.log(JSON.stringify({
   status: 'PASS',
-  audit: 'Interactive Coverage Quality — Question Batch Q4',
+  audit: 'Interactive Coverage Quality',
   ...report.summary,
   reports: [
     'reports/validation/interactive-coverage-quality-report.json',
     'reports/validation/interactive-coverage-quality-report.md'
   ],
-  questionBatchQ5Implemented: true
+  questionBatchQ5Implemented: true,
+  interactiveContentBatch1Implemented: true
 }, null, 2));
