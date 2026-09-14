@@ -3374,7 +3374,38 @@ export default function App() {
   }
 
   function isQuestionResumeMode(mode) {
-    return ['quiz', 'adaptive-practice', 'adaptive-lesson'].includes(mode);
+    return ['quiz', 'adaptive-practice', 'adaptive-lesson', 'interactive-practice'].includes(mode);
+  }
+
+  async function startInteractivePracticeResume(targetResume, { restart = false } = {}) {
+    const subject = await loadSubjectData(targetResume.subjectId);
+    if (!subject) return false;
+    const { rehydrateInteractivePracticeQuestions } = await import('./ai/question/interactiveSessionComposer.js');
+    const questions = rehydrateInteractivePracticeQuestions(subject, targetResume.questions);
+    if (!questions.length) return false;
+    const topic = {
+      id: targetResume.topicId || `interactive_${subject.id}`,
+      title: targetResume.metadata?.topicTitle || 'Aktiviti Interaktif',
+      note: targetResume.metadata?.displayNote || 'Latihan interaktif merentas topik',
+      questions,
+      interactivePractice: true
+    };
+    syncSelectedSubjectState(subject);
+    startTopic(topic, subject, {
+      questions,
+      questionIndex: restart
+        ? 0
+        : Number.isInteger(targetResume.currentIndex)
+          ? targetResume.currentIndex
+          : targetResume.questionIndex,
+      ...(restart ? {} : { session: targetResume.session, state: targetResume.state }),
+      preserveQuestions: true,
+      mode: 'interactive-practice',
+      restoreFromResume: true,
+      displayTitle: targetResume.metadata?.displayTitle || `Aktiviti Interaktif: ${subject.title}`,
+      displayNote: targetResume.metadata?.displayNote || 'Latihan interaktif merentas topik'
+    });
+    return true;
   }
 
   function startTopic(topic, subject = selectedSubject, options = {}) {
@@ -3537,6 +3568,10 @@ export default function App() {
     }[targetResume.mode];
     if (premiumResumeFeature && !requirePremium(premiumResumeFeature)) return;
     if (isQuestionResumeMode(targetResume.mode || 'quiz')) {
+      if ((targetResume.mode || 'quiz') === 'interactive-practice') {
+        await startInteractivePracticeResume(targetResume);
+        return;
+      }
       if ((targetResume.mode || 'quiz') === 'adaptive-practice') {
         const practiceSubject = {
           id: targetResume.subjectId || 'adaptive',
@@ -3607,6 +3642,10 @@ export default function App() {
     const targetResume = resume;
     const mode = targetResume.mode || 'quiz';
     clearResumeData(setResume, targetResume, learningIdentity);
+    if (mode === 'interactive-practice') {
+      await startInteractivePracticeResume(targetResume, { restart: true });
+      return;
+    }
     if (mode === 'adaptive-practice') {
       await startAdaptivePractice(targetResume.session?.requestedQuestions || targetResume.metadata?.requestedQuestions || adaptivePracticeCount, { forceFresh: true });
       return;
