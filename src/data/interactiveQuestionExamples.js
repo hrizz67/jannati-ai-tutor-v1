@@ -1188,6 +1188,377 @@ const REVIEWED_Q4_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_CONTENT_BATCH_2_SPECS = Object.freeze({
+  'MATH-NOMBOR-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan kedudukan digit 8, kemudian pilih nilainya.',
+      visual: {
+        kind: 'placeValue',
+        columns: [
+          { id: 'hundreds', label: 'Ratus', value: 5, block: 'hundred' },
+          { id: 'tens', label: 'Puluh', value: 8, block: 'ten' },
+          { id: 'ones', label: 'Sa', value: 2, block: 'one' }
+        ]
+      },
+      options: [
+        { id: 'digit', label: '8', value: '8' },
+        { id: 'tens-value', label: '80', value: '80' },
+        { id: 'hundreds-value', label: '800', value: '800' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan nilai digit berdasarkan tempat ratus, puluh dan sa dalam nombor hingga 1,000.',
+      assessment: 'Model menunjukkan struktur 582 tanpa menulis persamaan 8 puluh = 80; pilihan menguji digit berbanding nilai tempat.',
+      textbook: 'Lajur nilai tempat membantu murid membezakan digit 8 daripada nilainya dalam nombor 582.'
+    },
+    intelligence: {
+      skillId: 'nombor.nilai_digit_puluh', responseMode: 'visual_reasoning',
+      conceptTags: ['nilai_tempat', 'digit_puluh', 'nombor_582'],
+      misconceptionTags: ['menyamakan_digit_dengan_nilai', 'keliru_puluh_dan_ratus'],
+      hintSteps: ['Cari lajur yang mengandungi digit 8.', 'Baca nama nilai tempat pada lajur itu.', 'Tentukan nilai digit apabila 8 berada pada tempat puluh.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-009': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih simbol perbandingan yang melengkapkan ayat nombor.',
+      sentenceParts: ['458 ', ' 485.'],
+      options: [
+        { id: 'greater', label: '>', value: '>' },
+        { id: 'less', label: '<', value: '<' },
+        { id: 'equal', label: '=', value: '=' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membandingkan dua nombor hingga 1,000 menggunakan simbol lebih besar, lebih kecil atau sama dengan.',
+      assessment: 'Tiga simbol perbandingan dikekalkan dan tepat satu melengkapkan hubungan 458 dengan 485.',
+      textbook: 'Ayat nombor lengkap dipaparkan selepas pilihan supaya arah simbol boleh disemak dalam konteks.'
+    },
+    intelligence: {
+      skillId: 'nombor.membanding_458_485', responseMode: 'completion',
+      conceptTags: ['banding_nombor', 'simbol_perbandingan', 'nilai_tempat'],
+      misconceptionTags: ['arah_simbol_terbalik', 'membanding_digit_sa_dahulu'],
+      hintSteps: ['Bandingkan digit ratus terlebih dahulu.', 'Jika digit ratus sama, teruskan kepada digit puluh.', 'Pilih simbol yang membuka ke arah nombor yang lebih besar.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-010': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nombor yang melengkapkan urutan menurun.',
+      sentenceParts: ['603, 602, ', '.'],
+      options: [
+        { id: 'previous', label: '601', value: '601' },
+        { id: 'repeat', label: '602', value: '602' },
+        { id: 'skip', label: '600', value: '600' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Melengkapkan urutan nombor menurun satu demi satu hingga 1,000.',
+      assessment: 'Distraktor mengesan pengulangan nombor dan penurunan dua langkah berbanding satu langkah.',
+      textbook: 'Urutan ringkas mengekalkan fokus pada perubahan satu bagi setiap kedudukan.'
+    },
+    intelligence: {
+      skillId: 'nombor.urutan_menurun_satu', responseMode: 'completion',
+      conceptTags: ['urutan_menurun', 'tolak_satu', 'nombor_hingga_1000'],
+      misconceptionTags: ['mengulang_nombor', 'melangkau_dua_nombor'],
+      hintSteps: ['Perhatikan perubahan daripada 603 kepada 602.', 'Gunakan perubahan yang sama sekali lagi.', 'Cari nombor tepat sebelum 602.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-017': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nombor yang melengkapkan pola.',
+      sentenceParts: ['245, 250, 255, ', '.'],
+      options: [
+        { id: 'plus-five', label: '260', value: '260' },
+        { id: 'plus-one', label: '256', value: '256' },
+        { id: 'plus-ten', label: '265', value: '265' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Melengkapkan pola nombor yang bertambah lima secara berterusan.',
+      assessment: 'Distraktor membezakan pola tambah 5 daripada tambah 1 dan tambah 10.',
+      textbook: 'Empat kedudukan pola membolehkan murid mengenal perubahan yang berulang.'
+    },
+    intelligence: {
+      skillId: 'nombor.pola_tambah_lima', responseMode: 'completion',
+      conceptTags: ['pola_nombor', 'tambah_lima', 'urutan_menaik'],
+      misconceptionTags: ['menggunakan_tambah_satu', 'menggunakan_tambah_sepuluh'],
+      hintSteps: ['Cari beza antara dua nombor pertama.', 'Semak bahawa beza yang sama berlaku pada pasangan seterusnya.', 'Tambah beza itu sekali lagi kepada 255.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-018': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nombor yang melengkapkan pola.',
+      sentenceParts: ['430, 440, 450, ', '.'],
+      options: [
+        { id: 'plus-ten', label: '460', value: '460' },
+        { id: 'plus-one', label: '451', value: '451' },
+        { id: 'plus-hundred', label: '550', value: '550' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Melengkapkan pola nombor yang bertambah sepuluh secara berterusan.',
+      assessment: 'Distraktor membezakan pola tambah 10 daripada tambah 1 dan tambah 100.',
+      textbook: 'Digit puluh berubah secara tetap sementara nilai tempat lain boleh dibandingkan.'
+    },
+    intelligence: {
+      skillId: 'nombor.pola_tambah_sepuluh', responseMode: 'completion',
+      conceptTags: ['pola_nombor', 'tambah_sepuluh', 'nilai_tempat_puluh'],
+      misconceptionTags: ['menggunakan_tambah_satu', 'menggunakan_tambah_seratus'],
+      hintSteps: ['Cari beza antara 430 dengan 440.', 'Semak perubahan yang sama daripada 440 kepada 450.', 'Tambah satu puluh lagi kepada 450.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-029': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nilai tempat yang melengkapkan bentuk cerakin.',
+      sentenceParts: ['300 + ', ' + 7 = 357'],
+      options: [
+        { id: 'tens', label: '50', value: '50' },
+        { id: 'ones', label: '5', value: '5' },
+        { id: 'hundreds', label: '500', value: '500' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti nilai puluh yang hilang dalam bentuk cerakin nombor 357.',
+      assessment: 'Distraktor membezakan digit 5, nilai puluh dan nilai ratus tanpa mendedahkan jawapan dalam arahan.',
+      textbook: 'Ayat nombor lengkap mengekalkan hubungan antara 300, nilai puluh dan 7.'
+    },
+    intelligence: {
+      skillId: 'nombor.nilai_puluh_dalam_bentuk_cerakin', responseMode: 'completion',
+      conceptTags: ['bentuk_cerakin', 'nilai_tempat_puluh', 'nombor_357'],
+      misconceptionTags: ['menulis_digit_lima', 'memilih_nilai_ratus'],
+      hintSteps: ['Lihat digit di tempat puluh dalam 357.', 'Bezakan digit itu daripada nilainya.', 'Pilih nilai yang melengkapkan 300 dan 7 untuk membina 357.']
+    }
+  },
+  'MATH-PANJANG-PILOT-006': {
+    interaction: {
+      version: 1,
+      type: 'measurement',
+      instruction: 'Perhatikan skala pembaris, kemudian pilih tanda mula yang betul sebelum mengukur.',
+      visual: { kind: 'ruler', startCm: 0, endCm: 10, maxCm: 10, objectLabel: 'Skala penuh pembaris' },
+      options: [
+        { id: 'zero', label: '0 cm', value: '0 cm' },
+        { id: 'one', label: '1 cm', value: '1 cm' },
+        { id: 'ten', label: '10 cm', value: '10 cm' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti tanda mula yang betul ketika meletakkan objek pada pembaris.',
+      assessment: 'Skala penuh memaparkan semua tanda secara sama tanpa penanda jawapan khas; pilihan menguji kekeliruan tanda mula, tanda pertama dan hujung skala.',
+      textbook: 'Pembaris bernombor menghubungkan amalan meletakkan hujung objek dengan bacaan ukuran yang tepat.'
+    },
+    intelligence: {
+      skillId: 'panjang.meletakkan_objek_pada_tanda_mula', responseMode: 'visual_measurement',
+      conceptTags: ['panjang', 'pembaris', 'tanda_mula'],
+      misconceptionTags: ['bermula_pada_satu', 'bermula_pada_hujung_skala'],
+      hintSteps: ['Cari nombor paling awal pada skala pembaris.', 'Ukuran bermula sebelum tanda satu sentimeter.', 'Pilih tanda yang menjadi asal skala.']
+    }
+  },
+  'MATH-MASA-PILOT-001': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih hari yang hadir selepas Selasa.',
+      options: [
+        { id: 'monday', label: 'Isnin', value: 'Isnin' },
+        { id: 'wednesday', label: 'Rabu', value: 'Rabu' },
+        { id: 'thursday', label: 'Khamis', value: 'Khamis' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan hari berikutnya dalam urutan tujuh hari seminggu.',
+      assessment: 'Pilihan mengekalkan konstruk urutan hari dan mempunyai tepat satu jawapan yang diterima.',
+      textbook: 'Nama hari dipaparkan ringkas supaya murid menggunakan turutan minggu, bukan membaca muka jam.'
+    },
+    intelligence: {
+      skillId: 'masa.hari_selepas_selasa', responseMode: 'choice_selection',
+      conceptTags: ['hari_seminggu', 'urutan_hari', 'selepas'],
+      misconceptionTags: ['memilih_hari_sebelum', 'melangkau_satu_hari'],
+      hintSteps: ['Sebut urutan hari seminggu perlahan-lahan.', 'Berhenti apabila kamu sampai pada Selasa.', 'Pilih nama hari yang disebut tepat selepasnya.']
+    }
+  },
+  'MATH-WANG-PILOT-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nombor yang melengkapkan hubungan sen dengan ringgit.',
+      sentenceParts: ['100 sen = RM ', '.'],
+      options: [
+        { id: 'one', label: '1', value: '1' },
+        { id: 'ten', label: '10', value: '10' },
+        { id: 'hundred', label: '100', value: '100' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menyatakan hubungan asas antara 100 sen dengan ringgit Malaysia.',
+      assessment: 'Tempat kosong menilai nilai ringgit yang setara; distraktor mengesan kekeliruan digit dan unit tanpa menggunakan pembina wang.',
+      textbook: 'Ayat persamaan lengkap menghubungkan unit sen di sebelah kiri dengan simbol RM di sebelah kanan.'
+    },
+    intelligence: {
+      skillId: 'wang.hubungan_seratus_sen_satu_ringgit', responseMode: 'completion',
+      conceptTags: ['wang_malaysia', 'sen_dan_ringgit', 'kesetaraan_nilai'],
+      misconceptionTags: ['mengekalkan_nombor_seratus', 'menganggap_seratus_sen_sepuluh_ringgit'],
+      hintSteps: ['Ingat berapa sen membentuk satu ringgit.', 'Sebelah kanan sudah mempunyai simbol RM.', 'Pilih bilangan ringgit yang nilainya sama dengan 100 sen.']
+    }
+  },
+  'SAINS-MANUSIA-004': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih perkara yang dikesan oleh lidah pada makanan.',
+      options: [
+        { id: 'taste', label: 'Rasa', value: 'rasa', visual: { kind: 'object', symbol: '🍋🍬', label: 'Makanan masam dan manis' } },
+        { id: 'sound', label: 'Bunyi', value: 'bunyi', visual: { kind: 'object', symbol: '🔔', label: 'Loceng menghasilkan bunyi' } },
+        { id: 'smell', label: 'Bau', value: 'bau', visual: { kind: 'object', symbol: '🌸', label: 'Bunga mempunyai bau' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan lidah dengan deria rasa ketika makan.',
+      assessment: 'Pilihan membezakan rasa daripada bunyi dan bau dengan tepat satu jawapan diterima.',
+      textbook: 'Simbol organ dan rangsangan harian disertai label teks untuk perbandingan fungsi deria.'
+    },
+    intelligence: {
+      skillId: 'manusia.deria_rasa', responseMode: 'visual_selection',
+      conceptTags: ['manusia', 'organ_deria', 'lidah', 'rasa'],
+      misconceptionTags: ['keliru_rasa_dan_bau', 'keliru_lidah_dan_telinga'],
+      hintSteps: ['Bayangkan kamu makan sesuatu yang masam.', 'Fikir organ yang berada di dalam mulut.', 'Pilih perkara pada makanan yang organ itu boleh kesan.']
+    }
+  },
+  'SAINS-MANUSIA-005': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih perkara yang dikesan oleh kulit pada badan.',
+      options: [
+        { id: 'touch', label: 'Sentuhan', value: 'sentuhan', visual: { kind: 'object', symbol: '✋🧸', label: 'Tangan menyentuh objek lembut' } },
+        { id: 'colour', label: 'Warna', value: 'warna', visual: { kind: 'object', symbol: '👀🎨', label: 'Mata melihat warna' } },
+        { id: 'sound', label: 'Bunyi', value: 'bunyi', visual: { kind: 'object', symbol: '👂🔔', label: 'Telinga mendengar loceng' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan kulit dengan deria sentuhan.',
+      assessment: 'Pilihan membezakan sentuhan daripada rangsangan yang dikesan oleh mata dan telinga.',
+      textbook: 'Simbol organ dan objek disertai label untuk menerangkan pengalaman deria yang biasa.'
+    },
+    intelligence: {
+      skillId: 'manusia.deria_sentuhan', responseMode: 'visual_selection',
+      conceptTags: ['manusia', 'organ_deria', 'kulit', 'sentuhan'],
+      misconceptionTags: ['keliru_kulit_dan_mata', 'keliru_sentuhan_dan_bunyi'],
+      hintSteps: ['Bayangkan memegang objek yang lembut atau kasar.', 'Fikir organ deria yang meliputi seluruh badan.', 'Pilih perkara yang dapat dirasai apabila objek menyentuh kulit.']
+    }
+  },
+  'SAINS-HAIWAN-015': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara kuda bergerak.',
+      options: [
+        { id: 'run', label: 'Berlari', value: 'berlari', visual: { kind: 'object', symbol: '🏃', label: 'Gerakan pantas di darat' } },
+        { id: 'swim', label: 'Berenang', value: 'berenang', visual: { kind: 'object', symbol: '🏊', label: 'Gerakan di dalam air' } },
+        { id: 'fly', label: 'Terbang', value: 'terbang', visual: { kind: 'object', symbol: '🪽', label: 'Gerakan di udara' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan kuda dengan cara pergerakan utamanya.',
+      assessment: 'Tiga gerakan jelas berbeza dan hanya gerakan menggunakan kaki di darat sepadan dengan kuda.',
+      textbook: 'Simbol gerakan dan label teks membantu murid membandingkan cara haiwan bergerak.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_kuda', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'kuda'],
+      misconceptionTags: ['keliru_habitat_dan_pergerakan', 'mengabaikan_penggunaan_kaki'],
+      hintSteps: ['Perhatikan bahawa kuda mempunyai empat kaki yang kuat.', 'Fikir cara kuda bergerak pantas di darat.', 'Pilih gerakan yang menggunakan kaki dan kekal di permukaan tanah.']
+    }
+  },
+  'SAINS-HAIWAN-016': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih cara siput bergerak.',
+      options: [
+        { id: 'crawl', label: 'Merayap', value: 'merayap', visual: { kind: 'object', symbol: '〰️', label: 'Gerakan perlahan rapat pada permukaan' } },
+        { id: 'run', label: 'Berlari', value: 'berlari', visual: { kind: 'object', symbol: '🏃', label: 'Gerakan pantas menggunakan kaki' } },
+        { id: 'jump', label: 'Melompat', value: 'melompat', visual: { kind: 'object', symbol: '↗️', label: 'Gerakan menolak badan ke atas' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan siput dengan cara pergerakan merayap.',
+      assessment: 'Distraktor memerlukan kaki atau lompatan, manakala gerakan sasaran sesuai dengan badan siput.',
+      textbook: 'Simbol haiwan dan gerakan disertai label teks supaya perbezaan pergerakan jelas.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pergerakan_siput', responseMode: 'visual_selection',
+      conceptTags: ['haiwan', 'pergerakan', 'siput'],
+      misconceptionTags: ['menganggap_semua_haiwan_berlari', 'keliru_merayap_dan_melompat'],
+      hintSteps: ['Siput tidak mempunyai kaki untuk berlari.', 'Bayangkan badannya bergerak rapat pada permukaan.', 'Pilih gerakan perlahan tanpa melompat atau terbang.']
+    }
+  },
+  'SAINS-TUMBUHAN-005': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih fungsi buah pada tumbuhan.',
+      options: [
+        { id: 'protect-seeds', label: 'Melindungi biji benih', value: 'melindungi biji benih', visual: { kind: 'object', symbol: '🛡️🫘', label: 'Biji benih berada terlindung di bahagian dalam' } },
+        { id: 'absorb-water', label: 'Menyerap air', value: 'menyerap air', visual: { kind: 'object', symbol: '⬇️💧', label: 'Air masuk dari tanah' } },
+        { id: 'make-food', label: 'Membuat makanan', value: 'membuat makanan', visual: { kind: 'object', symbol: '☀️🍚', label: 'Cahaya digunakan untuk menghasilkan makanan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menyatakan fungsi buah dalam melindungi biji benih.',
+      assessment: 'Distraktor ialah fungsi akar dan daun; hanya satu fungsi sepadan dengan buah.',
+      textbook: 'Simbol bahagian tumbuhan dan label teks membantu murid membandingkan fungsi yang berbeza.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.fungsi_buah', responseMode: 'visual_selection',
+      conceptTags: ['tumbuhan', 'bahagian_tumbuhan', 'buah', 'biji_benih'],
+      misconceptionTags: ['keliru_fungsi_buah_dan_akar', 'keliru_fungsi_buah_dan_daun'],
+      hintSteps: ['Fikir perkara yang biasanya terdapat di dalam buah.', 'Bandingkan fungsi buah dengan fungsi akar dan daun.', 'Pilih fungsi yang menjaga bahagian di dalam buah.']
+    }
+  },
+  'SAINS-TUMBUHAN-021': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih peringkat yang melengkapkan urutan pertumbuhan tumbuhan.',
+      sentenceParts: ['Biji benih boleh menjadi ', '.'],
+      options: [
+        { id: 'seedling', label: 'anak pokok', value: 'anak pokok' },
+        { id: 'adult-tree', label: 'pokok dewasa', value: 'pokok dewasa' },
+        { id: 'flower', label: 'bunga', value: 'bunga' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti peringkat awal selepas biji benih dalam urutan pertumbuhan tumbuhan.',
+      assessment: 'Distraktor ialah peringkat kemudian dan struktur tumbuhan; hanya satu melengkapkan perubahan segera daripada biji benih.',
+      textbook: 'Ayat lengkap menghubungkan biji benih dengan peringkat pertumbuhan berikutnya.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.urutan_biji_benih_anak_pokok', responseMode: 'completion',
+      conceptTags: ['tumbuhan', 'pertumbuhan', 'biji_benih', 'anak_pokok'],
+      misconceptionTags: ['melangkau_ke_pokok_dewasa', 'keliru_peringkat_dan_bahagian'],
+      hintSteps: ['Fikir apa yang keluar apabila biji benih mula bercambah.', 'Cari peringkat yang masih kecil dan baru tumbuh.', 'Pilih peringkat sebelum tumbuhan menjadi pokok dewasa.']
+    }
+  }
+});
+
+const REVIEWED_CONTENT_BATCH_2_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_CONTENT_BATCH_2_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -1201,6 +1572,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_RICH_EXAMPLES,
   ...REVIEWED_Q4_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
+  ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -1464,6 +1836,10 @@ const REVIEWED_CONTENT_BATCH_1_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_CONTENT_BATCH_2_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_CONTENT_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -1509,6 +1885,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_RICH_INTELLIGENCE,
   ...REVIEWED_Q4_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
+  ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',

@@ -37,6 +37,14 @@ const batch1Ids = new Set([
   'SAINS-TUMBUHAN-003', 'SAINS-TUMBUHAN-004',
   'SAINS-MANUSIA-002', 'SAINS-MANUSIA-003'
 ]);
+const batch2Ids = new Set([
+  'MATH-NOMBOR-PILOT-004', 'MATH-NOMBOR-PILOT-009', 'MATH-NOMBOR-PILOT-010',
+  'MATH-NOMBOR-PILOT-017', 'MATH-NOMBOR-PILOT-018', 'MATH-NOMBOR-PILOT-029',
+  'MATH-PANJANG-PILOT-006', 'MATH-MASA-PILOT-001', 'MATH-WANG-PILOT-003',
+  'SAINS-MANUSIA-004', 'SAINS-MANUSIA-005',
+  'SAINS-HAIWAN-015', 'SAINS-HAIWAN-016',
+  'SAINS-TUMBUHAN-005', 'SAINS-TUMBUHAN-021'
+]);
 
 function metricTemplate() {
   return {
@@ -248,11 +256,11 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1144, TEACHER_REVIEW: 2778, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 152, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1159, TEACHER_REVIEW: 2763, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 167, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1144, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3386, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.interactive, 1159, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3371, 'All remaining questions must stay on the standard response path.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -267,6 +275,16 @@ assert.ok([...batch1Ids].every(id => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every Interactive Content Batch 1 question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(batch2Ids.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen approved question IDs.');
+assert.equal(new Set([...batch1Ids, ...batch2Ids]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate IDs.');
+assert.ok([...batch2Ids].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Interactive Content Batch 2 question must be authored, valid, accessible and AUTO_SAFE.');
 assert.equal(rows.find(row => row.questionId === 'MATH-MASA-PILOT-021')?.classification, 'KEEP_STANDARD', 'Constructed-response time reasoning must remain standard.');
 
 const report = {
@@ -286,6 +304,7 @@ const report = {
   byQuestionType: breakdownBy('questionType'),
   q4Conversions: rows.filter(row => q4Ids.has(row.questionId)),
   batch1Conversions: rows.filter(row => batch1Ids.has(row.questionId)),
+  batch2Conversions: rows.filter(row => batch2Ids.has(row.questionId)),
   risks: rows.filter(row => row.mobileIssues.length || row.accessibilityIssues.length),
   teacherReviewQueue: rows.filter(row => row.classification === 'TEACHER_REVIEW').slice(0, 250),
   classifications: rows
@@ -295,6 +314,7 @@ function markdown() {
   const subjectRows = report.bySubject.map(row => `| ${row.subjectTitle} | ${row.total} | ${row.standard} | ${row.interactive} | ${row.visual} | ${row.matching} | ${row.ordering} | ${row.dragDrop} | ${row.fillBlank} | ${row.imageChoice} | ${row.teacherReview} | ${row.mobileUnsafe} | ${row.accessibilityRisk} |`).join('\n');
   const q4Rows = report.q4Conversions.map(row => `| ${row.questionId} | ${row.subjectTitle} | ${row.topicTitle} | ${row.interactionType} | ${row.classification} |`).join('\n');
   const batch1Rows = report.batch1Conversions.map(row => `| ${row.questionId} | ${row.subjectTitle} | ${row.topicTitle} | ${row.interactionType} | ${row.classification} |`).join('\n');
+  const batch2Rows = report.batch2Conversions.map(row => `| ${row.questionId} | ${row.subjectTitle} | ${row.topicTitle} | ${row.interactionType} | ${row.classification} |`).join('\n');
   return `# Audit Liputan dan Kualiti Interaktif\n\n`
     + `## Ringkasan\n\n`
     + `- Jumlah soalan: ${summary.total}\n`
@@ -316,6 +336,8 @@ function markdown() {
     + `| ID | Subjek | Topik | Format | Keputusan |\n|---|---|---|---|---|\n${q4Rows}\n\n`
     + `## Interactive Content Batch 1 yang diluluskan\n\n`
     + `| ID | Subjek | Topik | Format | Keputusan |\n|---|---|---|---|---|\n${batch1Rows}\n\n`
+    + `## Interactive Content Batch 2 yang diluluskan\n\n`
+    + `| ID | Subjek | Topik | Format | Keputusan |\n|---|---|---|---|---|\n${batch2Rows}\n\n`
     + `## Keputusan pedagogi\n\n`
     + `- Interaksi digunakan hanya apabila tindakan murid mengukur kemahiran yang sama dengan soalan asal.\n`
     + `- Soalan berstruktur dan respons terbuka kekal standard.\n`
@@ -337,5 +359,6 @@ console.log(JSON.stringify({
     'reports/validation/interactive-coverage-quality-report.md'
   ],
   questionBatchQ5Implemented: true,
-  interactiveContentBatch1Implemented: true
+  interactiveContentBatch1Implemented: true,
+  interactiveContentBatch2Implemented: true
 }, null, 2));

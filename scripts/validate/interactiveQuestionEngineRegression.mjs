@@ -145,6 +145,40 @@ const reviewedInteractiveContentBatch1Types = new Map([
   ['SAINS-MANUSIA-002', 'imageChoice'],
   ['SAINS-MANUSIA-003', 'imageChoice']
 ]);
+const reviewedInteractiveContentBatch2Types = new Map([
+  ['MATH-NOMBOR-PILOT-004', 'visualMath'],
+  ['MATH-NOMBOR-PILOT-009', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-010', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-017', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-018', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-029', 'fillBlank'],
+  ['MATH-PANJANG-PILOT-006', 'measurement'],
+  ['MATH-MASA-PILOT-001', 'choice'],
+  ['MATH-WANG-PILOT-003', 'fillBlank'],
+  ['SAINS-MANUSIA-004', 'imageChoice'],
+  ['SAINS-MANUSIA-005', 'imageChoice'],
+  ['SAINS-HAIWAN-015', 'imageChoice'],
+  ['SAINS-HAIWAN-016', 'imageChoice'],
+  ['SAINS-TUMBUHAN-005', 'imageChoice'],
+  ['SAINS-TUMBUHAN-021', 'fillBlank']
+]);
+const reviewedInteractiveContentBatch2Contracts = new Map([
+  ['MATH-NOMBOR-PILOT-004', { answer: '80', accepted: ['80'] }],
+  ['MATH-NOMBOR-PILOT-009', { answer: '<', accepted: ['<', 'lebih kecil daripada'] }],
+  ['MATH-NOMBOR-PILOT-010', { answer: '601', accepted: ['601'] }],
+  ['MATH-NOMBOR-PILOT-017', { answer: '260', accepted: ['260'] }],
+  ['MATH-NOMBOR-PILOT-018', { answer: '460', accepted: ['460'] }],
+  ['MATH-NOMBOR-PILOT-029', { answer: '50', accepted: ['50'] }],
+  ['MATH-PANJANG-PILOT-006', { answer: 'Hujung objek biasanya diletakkan pada tanda 0 cm.', accepted: ['Hujung objek biasanya diletakkan pada tanda 0 cm.', '0 cm', '0'] }],
+  ['MATH-MASA-PILOT-001', { answer: 'Hari selepas Selasa ialah Rabu.', accepted: ['Hari selepas Selasa ialah Rabu.', 'Rabu'] }],
+  ['MATH-WANG-PILOT-003', { answer: '100 sen bersamaan dengan RM 1.', accepted: ['100 sen bersamaan dengan RM 1.', 'RM 1', 'RM1', '1'] }],
+  ['SAINS-MANUSIA-004', { answer: 'rasa', accepted: ['rasa'] }],
+  ['SAINS-MANUSIA-005', { answer: 'sentuhan', accepted: ['sentuhan'] }],
+  ['SAINS-HAIWAN-015', { answer: 'berlari', accepted: ['berlari'] }],
+  ['SAINS-HAIWAN-016', { answer: 'merayap', accepted: ['merayap'] }],
+  ['SAINS-TUMBUHAN-005', { answer: 'melindungi biji benih', accepted: ['melindungi biji benih'] }],
+  ['SAINS-TUMBUHAN-021', { answer: 'anak pokok', accepted: ['anak pokok'] }]
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
@@ -152,7 +186,10 @@ assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewe
 assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty deliberately reviewed rich interactions.');
 assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contain fifteen deliberately selected, teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(reviewedInteractiveContentBatch2Types.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen teacher-reviewed interactions.');
+assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
+assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -236,6 +273,71 @@ for (const [id, type] of reviewedInteractiveContentBatch1Types) {
   }
 }
 
+for (const [id, type] of reviewedInteractiveContentBatch2Types) {
+  const question = byId.get(id);
+  const contract = reviewedInteractiveContentBatch2Contracts.get(id);
+  assert.ok(question, `Missing Interactive Content Batch 2 interaction ${id}.`);
+  assert.equal(question.id, id, `${id} must preserve its original question ID.`);
+  assert.equal(question.interaction.type, type, `${id} must use the reviewed ${type} renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid Interactive Content Batch 2 schema.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its original canonical answer.`);
+  assert.deepEqual(question.accepted, contract.accepted, `${id} must preserve its original accepted answers.`);
+  assert.deepEqual(question.acceptedAnswers, contract.accepted, `${id} must preserve its normalized accepted-answer contract.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires curriculum, assessment and textbook review notes.`);
+  assert.ok(question.learningIntelligence?.skillId && question.learningIntelligence?.responseMode, `${id} requires reviewed skill and response metadata.`);
+  assert.ok(question.learningIntelligence?.conceptTags?.length && question.learningIntelligence?.misconceptionTags?.length, `${id} requires reviewed concept and misconception tags.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
+  const correctOptions = question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct');
+  assert.equal(correctOptions.length, 1, `${id} must retain exactly one accepted authored response.`);
+  assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject every important authored distractor.`);
+  assert.ok(!question.interaction.instruction.toLocaleLowerCase('ms-MY').includes(String(correctOptions[0].value).toLocaleLowerCase('ms-MY')), `${id} instruction must not reveal its accepted response.`);
+}
+
+const batch2PlaceValue = byId.get('MATH-NOMBOR-PILOT-004');
+assert.deepEqual(batch2PlaceValue.interaction.visual.columns.map(column => [column.label, column.value]), [['Ratus', 5], ['Puluh', 8], ['Sa', 2]], 'The reviewed place-value visual must preserve the 582 structure.');
+assert.ok(!JSON.stringify(batch2PlaceValue.interaction.visual).includes('80'), 'The place-value visual must not state the final value 80.');
+
+const batch2Measurement = byId.get('MATH-PANJANG-PILOT-006');
+assert.deepEqual(batch2Measurement.interaction.options.map(option => option.value), ['0 cm', '1 cm', '10 cm'], 'The ruler task must expose exactly the reviewed start-mark choices.');
+assert.equal(batch2Measurement.interaction.visual.startCm, 0, 'The full ruler scale must begin at its ordinary zero tick.');
+assert.equal(batch2Measurement.interaction.visual.endCm, batch2Measurement.interaction.visual.maxCm, 'The ruler guide must span the full scale instead of highlighting the correct start mark alone.');
+assert.ok(!Object.keys(batch2Measurement.interaction.visual).some(key => /correct|answer|highlight|selected/i.test(key)), 'The ruler visual must not carry an explicit answer-marker property.');
+assert.ok(!/jawapan|0\s*cm/i.test(batch2Measurement.interaction.visual.objectLabel), 'The ruler label must not identify 0 cm as the answer.');
+
+for (const id of ['SAINS-MANUSIA-004', 'SAINS-MANUSIA-005', 'SAINS-HAIWAN-015', 'SAINS-HAIWAN-016', 'SAINS-TUMBUHAN-005']) {
+  const question = byId.get(id);
+  const correctOption = question.interaction.options.find(option => smartCheck(option.value, question).status === 'correct');
+  assert.ok(question.interaction.options.every(option => option.visual?.label), `${id} must retain a semantic label for every visual choice.`);
+  assert.ok(!correctOption.visual.label.toLocaleLowerCase('ms-MY').includes(String(correctOption.value).toLocaleLowerCase('ms-MY')), `${id} visual description must not state the accepted response as a hidden label.`);
+}
+
+const batch2StemIdentityCueGuards = new Map([
+  ['SAINS-MANUSIA-004', { label: 'lidah', symbol: '👅' }],
+  ['SAINS-HAIWAN-015', { label: 'kuda', symbol: '🐎' }],
+  ['SAINS-HAIWAN-016', { label: 'siput', symbol: '🐌' }],
+  ['SAINS-TUMBUHAN-005', { label: 'buah', symbol: '🍎' }]
+]);
+for (const [id, forbiddenCue] of batch2StemIdentityCueGuards) {
+  const question = byId.get(id);
+  const correctOption = question.interaction.options.find(option => smartCheck(option.value, question).status === 'correct');
+  assert.ok(!correctOption.visual.label.toLocaleLowerCase('ms-MY').includes(forbiddenCue.label), `${id} correct visual label must not repeat the object identity from the stem.`);
+  assert.ok(!correctOption.visual.symbol.includes(forbiddenCue.symbol), `${id} correct visual symbol must not repeat the object identity from the stem.`);
+}
+
+const batch2ExpandedNumber = byId.get('MATH-NOMBOR-PILOT-029');
+const batch2ExpandedCorrect = batch2ExpandedNumber.interaction.options.find(option => smartCheck(option.value, batch2ExpandedNumber).status === 'correct');
+assert.equal(`${batch2ExpandedNumber.interaction.sentenceParts[0]}${batch2ExpandedCorrect.value}${batch2ExpandedNumber.interaction.sentenceParts[1]}`, '300 + 50 + 7 = 357', 'The missing-tens selection must compose the exact reviewed expanded notation.');
+assert.equal(smartCheck('50', batch2ExpandedNumber).status, 'correct', 'The missing tens value must remain accepted.');
+assert.notEqual(smartCheck('5', batch2ExpandedNumber).status, 'correct', 'The ones-value misconception must remain rejected.');
+assert.notEqual(smartCheck('500', batch2ExpandedNumber).status, 'correct', 'The hundreds-value misconception must remain rejected.');
+
+const batch2MoneyEquivalence = byId.get('MATH-WANG-PILOT-003');
+const batch2MoneyCorrect = batch2MoneyEquivalence.interaction.options.find(option => smartCheck(option.value, batch2MoneyEquivalence).status === 'correct');
+assert.equal(`${batch2MoneyEquivalence.interaction.sentenceParts[0]}${batch2MoneyCorrect.value}${batch2MoneyEquivalence.interaction.sentenceParts[1]}`, '100 sen = RM 1.', 'The ringgit/sen selection must compose the exact reviewed equivalence.');
+assert.equal(smartCheck('1', batch2MoneyEquivalence).status, 'correct', 'The one-ringgit response must remain accepted.');
+assert.notEqual(smartCheck('10', batch2MoneyEquivalence).status, 'correct', 'The ten-ringgit distractor must remain rejected.');
+assert.notEqual(smartCheck('100', batch2MoneyEquivalence).status, 'correct', 'The hundred-ringgit distractor must remain rejected.');
+
 const batch1Clock = byId.get('MATH-MASA-PILOT-009');
 assert.equal(batch1Clock.interaction.type, 'fillBlank', 'The reviewed time expression must remain a completion task.');
 assert.deepEqual(batch1Clock.interaction.options.map(option => [option.label, option.value]), [
@@ -278,7 +380,7 @@ assert.equal(prioritizeInteractiveQuestions(lokomotorTopic.questions)[0]?.id, 'P
 const haiwanTopic = subjects.find(subject => subject.id === 'sains')?.topics.find(topic => topic.id === 'haiwan');
 assert.equal(prioritizeInteractiveQuestions(haiwanTopic.questions)[0]?.id, 'SAINS-HAIWAN-002', 'A new Science activity must surface its reviewed visual question before standard questions.');
 const nomborTopic = subjects.find(subject => subject.id === 'math')?.topics.find(topic => topic.id === 'nombor');
-assert.equal(prioritizeInteractiveQuestions(nomborTopic.questions)[0]?.id, 'MATH-NOMBOR-PILOT-015', 'A rich reviewed interaction must surface before a basic reviewed choice so Free learners can reach it.');
+assert.equal(prioritizeInteractiveQuestions(nomborTopic.questions)[0]?.id, 'MATH-NOMBOR-PILOT-004', 'The first reviewed rich interaction in the Number topic must surface before basic reviewed choices.');
 
 const dragDrop = byId.get('MATH-BENTUK-PILOT-021');
 const dragResponse = serializeDragDropResponse(dragDrop.interaction, {
