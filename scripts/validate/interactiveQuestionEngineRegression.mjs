@@ -128,13 +128,31 @@ const reviewedQuestionBatchQ4Ids = new Set([
   'ISLAM-JAWI-001',
   'PJ-PERGERAKAN_ASAS-032'
 ]);
+const reviewedInteractiveContentBatch1Types = new Map([
+  ['MATH-BENTUK-PILOT-004', 'visualMath'],
+  ['MATH-BENTUK-PILOT-006', 'visualMath'],
+  ['MATH-BENTUK-PILOT-009', 'imageChoice'],
+  ['MATH-MASA-PILOT-009', 'fillBlank'],
+  ['MATH-WANG-PILOT-010', 'fillBlank'],
+  ['MATH-PANJANG-PILOT-004', 'imageChoice'],
+  ['MATH-PANJANG-PILOT-005', 'imageChoice'],
+  ['MATH-PANJANG-PILOT-010', 'imageChoice'],
+  ['SAINS-HAIWAN-012', 'imageChoice'],
+  ['SAINS-HAIWAN-013', 'imageChoice'],
+  ['SAINS-HAIWAN-014', 'imageChoice'],
+  ['SAINS-TUMBUHAN-003', 'imageChoice'],
+  ['SAINS-TUMBUHAN-004', 'imageChoice'],
+  ['SAINS-MANUSIA-002', 'imageChoice'],
+  ['SAINS-MANUSIA-003', 'imageChoice']
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
 assert.equal(reviewedChoiceBatch3Ids.size, 30, 'Batch 3 must contain ten reviewed questions each for BM, Mathematics and Science.');
 assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty deliberately reviewed rich interactions.');
 assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contain fifteen deliberately selected, teacher-reviewed interactions.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -200,6 +218,46 @@ for (const id of reviewedQuestionBatchQ4Ids) {
     assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must retain exactly one accepted option.`);
   }
 }
+
+for (const [id, type] of reviewedInteractiveContentBatch1Types) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing Interactive Content Batch 1 interaction ${id}.`);
+  assert.equal(question.interaction.type, type, `${id} must use the reviewed ${type} renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid Interactive Content Batch 1 schema.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires curriculum, assessment and textbook review notes.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
+  const solution = type === 'money'
+    ? serializeMoneyResponse(question.interaction.targetSen)
+    : question.interaction.options.find(option => smartCheck(option.value, question).status === 'correct')?.value;
+  assert.ok(solution, `${id} must expose a complete authored solution.`);
+  assert.equal(smartCheck(solution, question).status, 'correct', `${id} authored solution must preserve the original answer contract.`);
+  if (type !== 'money') {
+    assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must retain exactly one accepted option.`);
+  }
+}
+
+const batch1Clock = byId.get('MATH-MASA-PILOT-009');
+assert.equal(batch1Clock.interaction.type, 'fillBlank', 'The reviewed time expression must remain a completion task.');
+assert.deepEqual(batch1Clock.interaction.options.map(option => [option.label, option.value]), [
+  ['pukul enam suku', 'pukul enam suku'],
+  ['pukul enam setengah', 'pukul enam setengah'],
+  ['pukul enam tepat', 'pukul enam tepat']
+], 'The reviewed time expression must expose exactly the approved full-response choices.');
+const batch1ClockCorrectOption = batch1Clock.interaction.options.find(option => smartCheck(option.value, batch1Clock).status === 'correct');
+assert.ok(batch1ClockCorrectOption, 'The reviewed time expression must expose an accepted option.');
+assert.equal(batch1Clock.interaction.options.filter(option => smartCheck(option.value, batch1Clock).status === 'correct').length, 1, 'The reviewed time expression must retain exactly one accepted option.');
+const batch1ClockComposedSentence = `${batch1Clock.interaction.sentenceParts[0]}${batch1ClockCorrectOption.value}${batch1Clock.interaction.sentenceParts[1]}`;
+assert.equal(batch1ClockComposedSentence, '6:15 dibaca sebagai pukul enam suku.', 'The selected full response must compose a natural completed sentence.');
+assert.ok(!batch1ClockComposedSentence.includes('pukul enam pukul enam'), 'The completed time sentence must not repeat its hour phrase.');
+assert.ok(batch1Clock.interaction.options.filter(option => option !== batch1ClockCorrectOption).every(option => smartCheck(option.value, batch1Clock).status !== 'correct'), 'Both reviewed time distractors must remain rejected.');
+assert.ok(!batch1Clock.interaction.instruction.includes('pukul enam suku'), 'The reviewed time instruction must not reveal the target phrase.');
+const batch1Comparison = byId.get('MATH-PANJANG-PILOT-010');
+assert.deepEqual(batch1Comparison.interaction.options.map(option => option.value), ['pemadam', 'koridor sekolah'], 'The reviewed cm comparison must preserve exactly the two original concepts.');
+const batch1Money = byId.get('MATH-WANG-PILOT-010');
+assert.equal(batch1Money.interaction.type, 'fillBlank', 'The reviewed money notation must remain a completion task.');
+assert.deepEqual(batch1Money.interaction.options.map(option => option.label), ['RM 7.05', 'RM 7.50', 'RM 7.5'], 'The reviewed money notation must expose exactly the approved visible choices.');
+assert.equal(batch1Money.interaction.options.filter(option => smartCheck(option.value, batch1Money).status === 'correct').length, 1, 'The reviewed money notation must retain exactly one accepted option.');
+assert.ok(!batch1Money.interaction.instruction.includes('RM 7.05'), 'The reviewed money instruction must not reveal the canonical notation.');
 
 const imageChoice = byId.get('MATH-BENTUK-PILOT-001');
 assert.equal(smartCheck('3', imageChoice).status, 'correct', 'Image choice must submit an accepted canonical answer.');
