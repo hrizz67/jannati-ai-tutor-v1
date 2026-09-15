@@ -3380,9 +3380,28 @@ export default function App() {
   async function startInteractivePracticeResume(targetResume, { restart = false } = {}) {
     const subject = await loadSubjectData(targetResume.subjectId);
     if (!subject) return false;
-    const { rehydrateInteractivePracticeQuestions } = await import('./ai/question/interactiveSessionComposer.js');
+    const {
+      rehydrateInteractivePracticeQuestions,
+      resolveInteractivePracticeResumeIndex
+    } = await import('./ai/question/interactiveSessionComposer.js');
+    const savedQuestions = Array.isArray(targetResume.questions) ? targetResume.questions : [];
     const questions = rehydrateInteractivePracticeQuestions(subject, targetResume.questions);
-    if (!questions.length) return false;
+    const savedIndex = Number.isInteger(targetResume.currentIndex)
+      ? targetResume.currentIndex
+      : Number.isInteger(targetResume.questionIndex)
+        ? targetResume.questionIndex
+        : 0;
+    const normalizedSavedIndex = savedIndex >= 0 && savedIndex < savedQuestions.length ? savedIndex : 0;
+    const resolvedIndex = restart
+      ? (questions.length ? 0 : -1)
+      : resolveInteractivePracticeResumeIndex(savedQuestions, questions, savedIndex);
+    if (resolvedIndex < 0) {
+      if (!restart) clearResumeData(setResume, targetResume, learningIdentity);
+      return false;
+    }
+    const savedQuestionId = String(savedQuestions[normalizedSavedIndex]?.id || savedQuestions[normalizedSavedIndex]?.questionId || '').trim();
+    const restoredQuestionId = String(questions[resolvedIndex]?.id || questions[resolvedIndex]?.questionId || '').trim();
+    const canRestoreQuestionState = !restart && savedQuestionId && savedQuestionId === restoredQuestionId;
     const topic = {
       id: targetResume.topicId || `interactive_${subject.id}`,
       title: targetResume.metadata?.topicTitle || 'Aktiviti Interaktif',
@@ -3393,12 +3412,11 @@ export default function App() {
     syncSelectedSubjectState(subject);
     startTopic(topic, subject, {
       questions,
-      questionIndex: restart
-        ? 0
-        : Number.isInteger(targetResume.currentIndex)
-          ? targetResume.currentIndex
-          : targetResume.questionIndex,
-      ...(restart ? {} : { session: targetResume.session, state: targetResume.state }),
+      questionIndex: resolvedIndex,
+      ...(restart ? {} : {
+        session: targetResume.session,
+        ...(canRestoreQuestionState ? { state: targetResume.state } : {})
+      }),
       preserveQuestions: true,
       mode: 'interactive-practice',
       restoreFromResume: true,

@@ -134,8 +134,27 @@ export function rehydrateInteractivePracticeQuestions(subject = {}, savedQuestio
   return (Array.isArray(savedQuestions) ? savedQuestions : []).map(savedQuestion => {
     const id = String(savedQuestion?.id || savedQuestion?.questionId || '').trim();
     const currentQuestion = sourceById.get(id);
-    return currentQuestion ? { ...currentQuestion } : { ...savedQuestion };
+    return currentQuestion ? { ...currentQuestion } : null;
+  }).filter(Boolean);
+}
+
+export function resolveInteractivePracticeResumeIndex(savedQuestions = [], rehydratedQuestions = [], savedIndex = 0) {
+  const saved = Array.isArray(savedQuestions) ? savedQuestions : [];
+  const rehydrated = Array.isArray(rehydratedQuestions) ? rehydratedQuestions : [];
+  const normalizedIndex = Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < saved.length
+    ? savedIndex
+    : 0;
+  const rehydratedIndexById = new Map();
+  rehydrated.forEach((question, index) => {
+    const id = String(question?.id || question?.questionId || '').trim();
+    if (id && !rehydratedIndexById.has(id)) rehydratedIndexById.set(id, index);
   });
+
+  for (let index = normalizedIndex; index < saved.length; index += 1) {
+    const id = String(saved[index]?.id || saved[index]?.questionId || '').trim();
+    if (id && rehydratedIndexById.has(id)) return rehydratedIndexById.get(id);
+  }
+  return -1;
 }
 
 export function buildInteractivePracticeSession(subject = {}, {
