@@ -7,6 +7,7 @@ import { supportsInteractiveQuestion } from '../../src/utils/acceptedAnswers.js'
 import { smartCheck } from '../../src/utils/smartCheck.js';
 import {
   getInteractiveQuestionConfig,
+  INTERACTIVE_QUESTION_TYPES,
   prioritizeInteractiveQuestions,
   serializeDragDropResponse,
   serializeMatchingResponse,
@@ -451,6 +452,20 @@ assert.equal(smartCheck('11 cm', measurement).status, 'correct', 'Ruler measurem
 assert.notEqual(smartCheck('14 cm', measurement).status, 'correct', 'Reading only the ruler endpoint must remain incorrect.');
 
 assert.ok(validateInteractiveQuestionConfig({ version: 2, type: 'imageChoice', instruction: 'x', options: [] }).length, 'Unsupported or malformed configs must be rejected.');
+const equalGroupsConfig = visual => ({
+  version: 1,
+  type: 'visualMath',
+  instruction: 'Perhatikan kumpulan dan pilih jawapan.',
+  visual,
+  options: [
+    { id: 'a', label: 'A', value: '1' },
+    { id: 'b', label: 'B', value: '2' }
+  ]
+});
+assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'equalGroups', mode: 'multiplication', groups: 3, itemsPerGroup: 4 })), [], 'Equal groups must remain a valid visualMath visual.');
+assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'equalGroups', mode: 'divisionSharing', total: 24, groups: 4, itemsPerGroup: 6 })).includes('invalid_equal_groups_visual'), 'Sharing metadata must not store the unknown per-group answer.');
+assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'equalGroups', mode: 'divisionGrouping', total: 25, itemsPerGroup: 5, groups: 5 })).includes('invalid_equal_groups_visual'), 'Grouping metadata must not store the unknown group-count answer.');
+assert.equal(INTERACTIVE_QUESTION_TYPES.includes('equalGroups'), false, 'Equal groups must remain a visualMath kind rather than a new interaction type.');
 assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'MATH-MASA-PILOT-021')), null, 'A constructed-response time problem must remain on the standard input path when a richer interaction could alter the assessed construct.');
 const derivedObjective = questions.find(question => question.id === 'PJ-PERGERAKAN_ASAS-001');
 assert.equal(getInteractiveQuestionConfig(derivedObjective)?.type, 'choice', 'A safe legacy objective question must render as a tappable choice.');
@@ -485,6 +500,10 @@ assert.ok(engineSource.includes('onDragStart') && engineSource.includes('onClick
 assert.ok(engineSource.includes('useId') && engineSource.includes('aria-labelledby={instructionId}') && engineSource.includes('aria-describedby={helpId}'), 'Interactive instructions and help must be associated with the activity for assistive technology.');
 assert.ok(engineSource.includes('ke atas') && engineSource.includes('ke bawah') && engineSource.includes('↑') && engineSource.includes('↓'), 'Vertical ordering must provide explicit up/down keyboard and touch controls.');
 assert.ok(visualSource.includes('lang={visual.lang}') && visualSource.includes('dir={visual.dir}'), 'Arabic and Jawi symbols must expose language and reading direction metadata.');
+assert.ok(visualSource.includes("visual.kind === 'equalGroups'") && visualSource.includes('role="img"') && visualSource.includes('aria-hidden="true"'), 'QuestionVisual must render equal groups as one safe semantic image with hidden counters.');
+assert.ok(styleSource.includes('.equal-groups-grid') && styleSource.includes('.equal-groups-counter'), 'Equal groups must use tightly scoped responsive counter styles.');
+assert.match(engineSource, /config\.type === 'visualMath'\) content = <ChoiceGrid[\s\S]{0,180}visualMath/, 'Equal groups must retain the existing visualMath ChoiceGrid answer mechanism.');
+assert.doesNotMatch(engineSource, /config\.type === 'equalGroups'/, 'Equal groups must not introduce a new interaction-engine branch.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
 assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');
