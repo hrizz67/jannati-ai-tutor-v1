@@ -21,6 +21,38 @@ function hasUniqueIds(rows) {
   return ids.every(Boolean) && new Set(ids).size === ids.length;
 }
 
+const EQUAL_GROUPS_ALLOWED_KEYS = Object.freeze({
+  multiplication: new Set(['kind', 'mode', 'groups', 'itemsPerGroup']),
+  divisionSharing: new Set(['kind', 'mode', 'total', 'groups']),
+  divisionGrouping: new Set(['kind', 'mode', 'total', 'itemsPerGroup'])
+});
+
+function isBoundedInteger(value, maximum) {
+  return Number.isInteger(value) && value >= 1 && value <= maximum;
+}
+
+function isValidEqualGroupsVisual(visual) {
+  if (!visual || typeof visual !== 'object' || Array.isArray(visual)) return false;
+  const allowedKeys = EQUAL_GROUPS_ALLOWED_KEYS[visual.mode];
+  if (!allowedKeys
+    || Object.keys(visual).length !== allowedKeys.size
+    || Object.keys(visual).some(key => !allowedKeys.has(key))) return false;
+
+  if (visual.mode === 'multiplication') {
+    return isBoundedInteger(visual.groups, 10)
+      && isBoundedInteger(visual.itemsPerGroup, 10)
+      && visual.groups * visual.itemsPerGroup <= 40;
+  }
+  if (visual.mode === 'divisionSharing') {
+    return isBoundedInteger(visual.total, 40)
+      && isBoundedInteger(visual.groups, 10)
+      && visual.total % visual.groups === 0;
+  }
+  return isBoundedInteger(visual.total, 40)
+    && isBoundedInteger(visual.itemsPerGroup, 10)
+    && visual.total % visual.itemsPerGroup === 0;
+}
+
 export function validateInteractiveQuestionConfig(config = {}) {
   const issues = [];
   if (Number(config.version) !== 1) issues.push('unsupported_version');
@@ -106,6 +138,11 @@ export function validateInteractiveQuestionConfig(config = {}) {
 
   if (config.type === 'visualMath' && (!config.visual || !String(config.visual.kind || '').trim())) {
     issues.push('invalid_visual');
+  }
+  if (config.type === 'visualMath'
+    && config.visual?.kind === 'equalGroups'
+    && !isValidEqualGroupsVisual(config.visual)) {
+    issues.push('invalid_equal_groups_visual');
   }
 
   return [...new Set(issues)];

@@ -6500,6 +6500,42 @@ input:focus {
   font-size: 2.7rem;
 }
 
+.equal-groups-visual {
+  width: 100%;
+  padding: 10px;
+}
+
+.equal-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.equal-groups-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 76px;
+  padding: 12px;
+  border: 2px solid rgba(15, 138, 67, .32);
+  border-radius: 18px;
+  background: #f6fff9;
+}
+
+.equal-groups-counter {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 2px solid #0a4229;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
 .place-value-model {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7146,6 +7182,21 @@ input:focus {
     grid-template-columns: 1fr;
     min-height: 58px;
     text-align: center;
+  }
+
+  .equal-groups-visual {
+    padding: 4px 0;
+  }
+
+  .equal-groups-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .equal-groups-group {
+    min-height: 68px;
+    padding: 10px;
+    gap: 7px;
   }
 
   .type-clock .interactive-choice {

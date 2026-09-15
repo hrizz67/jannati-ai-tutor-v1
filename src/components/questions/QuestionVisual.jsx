@@ -23,6 +23,30 @@ function PlaceValueVisual({ columns = [] }) {
   </div>;
 }
 
+function EqualGroupsVisual({ visual }) {
+  const groupCount = visual.mode === 'divisionGrouping'
+    ? visual.total / visual.itemsPerGroup
+    : visual.groups;
+  const itemsPerGroup = visual.mode === 'divisionSharing'
+    ? visual.total / visual.groups
+    : visual.itemsPerGroup;
+  let description = `${visual.groups} kumpulan, setiap kumpulan mempunyai ${visual.itemsPerGroup} pembilang.`;
+  if (visual.mode === 'divisionSharing') {
+    description = `${visual.total} pembilang dibahagi sama rata kepada ${visual.groups} kumpulan. Kira bilangan pembilang dalam setiap kumpulan.`;
+  }
+  if (visual.mode === 'divisionGrouping') {
+    description = `${visual.total} pembilang disusun dengan ${visual.itemsPerGroup} pembilang dalam setiap kumpulan. Kira bilangan kumpulan.`;
+  }
+
+  return <div className={`equal-groups-visual mode-${visual.mode}`} role="img" aria-label={description}>
+    <div className="equal-groups-grid" aria-hidden="true">
+      {Array.from({ length: groupCount }, (_, groupIndex) => <div className="equal-groups-group" key={groupIndex}>
+        {Array.from({ length: itemsPerGroup }, (_, itemIndex) => <span className="equal-groups-counter" aria-hidden="true" key={itemIndex} />)}
+      </div>)}
+    </div>
+  </div>;
+}
+
 function ClockVisual({ hour = 12, minute = 0, label }) {
   const normalizedMinute = Math.max(0, Math.min(59, Number(minute) || 0));
   const hourAngle = ((Number(hour) || 0) % 12) * 30 + normalizedMinute * .5;
@@ -83,6 +107,7 @@ function RulerVisual({ visual }) {
 export default function QuestionVisual({ visual, className = '' }) {
   if (!visual) return null;
   if (visual.kind === 'placeValue') return <PlaceValueVisual columns={visual.columns} />;
+  if (visual.kind === 'equalGroups') return <EqualGroupsVisual visual={visual} />;
   if (visual.kind === 'clock') return <ClockVisual hour={visual.hour} minute={visual.minute} label={visual.label} />;
   if (visual.kind === 'plantDiagram') return <PlantDiagram label={visual.label} />;
   if (visual.kind === 'ruler') return <RulerVisual visual={visual} />;
