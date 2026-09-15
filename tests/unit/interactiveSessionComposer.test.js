@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildInteractivePracticeSession,
-  rehydrateInteractivePracticeQuestions
+  rehydrateInteractivePracticeQuestions,
+  resolveInteractivePracticeResumeIndex
 } from '../../src/ai/question/interactiveSessionComposer.js';
 import { loadSubjectData } from '../../src/data/subjects/index.js';
 import { isInteractiveQuestion } from '../../src/utils/interactiveQuestion.js';
@@ -234,6 +235,117 @@ describe('interactive practice rehydration', () => {
     expect(restored.map(question => question.topicTitle)).toEqual(['Topik c', 'Topik a', 'Topik b']);
     expect(restored.every(question => question.subjectId === 'math')).toBe(true);
     expect(restored.every(question => question.answer === 'betul')).toBe(true);
+  });
+
+  it('drops one stale middle question while preserving current-bank order and metadata', () => {
+    const subject = makeBalancedSubject();
+    const before = JSON.stringify(subject);
+    const saved = [
+      { id: 'a-standard-3', answer: 'lama' },
+      {
+        id: 'removed-question',
+        answer: 'jawapan lapuk',
+        topicId: 'topik-lapuk',
+        interaction: { version: 1, type: 'choice', instruction: 'Interaksi lapuk', options: [] }
+      },
+      { id: 'c-authored-rich-1', answer: 'lama' }
+    ];
+    const savedBefore = JSON.stringify(saved);
+    const restored = rehydrateInteractivePracticeQuestions(subject, saved);
+
+    expect(restored.map(question => question.id)).toEqual(['a-standard-3', 'c-authored-rich-1']);
+    expect(restored.map(question => question.topicId)).toEqual(['a', 'c']);
+    expect(restored.every(question => question.answer === 'betul')).toBe(true);
+    expect(restored.some(question => question.answer === 'jawapan lapuk')).toBe(false);
+    expect(restored.some(question => question.topicId === 'topik-lapuk')).toBe(false);
+    expect(restored.some(question => question.interaction?.instruction === 'Interaksi lapuk')).toBe(false);
+    expect(JSON.stringify(subject)).toBe(before);
+    expect(JSON.stringify(saved)).toBe(savedBefore);
+  });
+
+  it('drops several stale IDs and returns an empty list when all saved IDs are stale', () => {
+    const subject = makeBalancedSubject();
+    expect(rehydrateInteractivePracticeQuestions(subject, [
+      { id: 'removed-a' },
+      { id: 'b-derived-2' },
+      { questionId: 'removed-b' },
+      { questionId: 'c-standard-3' }
+    ]).map(question => question.id)).toEqual(['b-derived-2', 'c-standard-3']);
+    expect(rehydrateInteractivePracticeQuestions(subject, [
+      { id: 'removed-a' },
+      { questionId: 'removed-b' }
+    ])).toEqual([]);
+  });
+});
+
+describe('interactive practice resume index resolution', () => {
+  const questions = (...ids) => ids.map(id => ({ id }));
+
+  it('keeps the saved current question when it survives after an earlier stale item is dropped', () => {
+    expect(resolveInteractivePracticeResumeIndex(
+      questions('stale', 'current', 'later'),
+      questions('current', 'later'),
+      1
+    )).toBe(0);
+  });
+
+  it('advances from a stale current question to the first surviving later question', () => {
+    expect(resolveInteractivePracticeResumeIndex(
+      questions('earlier', 'stale-current', 'next', 'later'),
+      questions('earlier', 'next', 'later'),
+      1
+    )).toBe(1);
+  });
+
+  it('never moves backwards when there is no current-or-later survivor', () => {
+    expect(resolveInteractivePracticeResumeIndex(
+      questions('earlier', 'stale-current', 'stale-later'),
+      questions('earlier'),
+      1
+    )).toBe(-1);
+  });
+
+  it.each([undefined, null, -1, 99, 1.5, '1'])(
+    'normalizes invalid saved index %s conservatively to zero',
+    savedIndex => {
+      expect(resolveInteractivePracticeResumeIndex(
+        questions('first', 'second'),
+        questions('first', 'second'),
+        savedIndex
+      )).toBe(0);
+    }
+  );
+
+  it('returns minus one deterministically for empty or all-stale resumed sets', () => {
+    const saved = questions('stale-a', 'stale-b');
+    expect(resolveInteractivePracticeResumeIndex(saved, [], 0)).toBe(-1);
+    expect(resolveInteractivePracticeResumeIndex(saved, [], 0)).toBe(-1);
+    expect(resolveInteractivePracticeResumeIndex([], [], 0)).toBe(-1);
+  });
+
+  it('uses the first current-bank survivor for restart without recomposing a session', () => {
+    const subject = makeBalancedSubject();
+    const saved = questions('stale', 'b-derived-2', 'a-standard-3');
+    const restored = rehydrateInteractivePracticeQuestions(subject, saved);
+    expect(restored.map(question => question.id)).toEqual(['b-derived-2', 'a-standard-3']);
+    expect(restored[0].id).toBe('b-derived-2');
+  });
+
+  it('preserves a current question mapping for normal state restoration', () => {
+    const saved = questions('first', 'current', 'later');
+    const restored = questions('first', 'current', 'later');
+    const index = resolveInteractivePracticeResumeIndex(saved, restored, 1);
+    expect(index).toBe(1);
+    expect(restored[index].id).toBe(saved[1].id);
+  });
+
+  it('maps a stale current question to a different ID so stale answer state is isolated', () => {
+    const saved = questions('first', 'stale-current', 'later');
+    const restored = questions('first', 'later');
+    const index = resolveInteractivePracticeResumeIndex(saved, restored, 1);
+    expect(index).toBe(1);
+    expect(restored[index].id).toBe('later');
+    expect(restored[index].id).not.toBe(saved[1].id);
   });
 });
 
