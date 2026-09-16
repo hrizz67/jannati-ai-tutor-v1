@@ -47,6 +47,50 @@ function EqualGroupsVisual({ visual }) {
   </div>;
 }
 
+function NumberLineVisual({ visual }) {
+  const isRepeatedJumps = visual.mode === 'repeatedJumps';
+  const jumpCount = isRepeatedJumps ? visual.jumps : visual.end / visual.step;
+  const left = 48;
+  const right = 632;
+  const baselineY = 154;
+  const point = index => left + (index / jumpCount) * (right - left);
+  const description = isRepeatedJumps
+    ? `Bermula pada 0. Buat ${visual.jumps} lompatan sama besar, setiap lompatan bernilai ${visual.step}. Tentukan titik akhir.`
+    : `Bermula pada 0 hingga ${visual.end} dengan lompatan ${visual.step}. Tentukan bilangan lompatan.`;
+
+  return <div className={`number-line-visual mode-${visual.mode}`} role="img" aria-label={description}>
+    <svg className="number-line-svg" viewBox="0 0 680 210" aria-hidden="true" focusable="false">
+      <line className="number-line-baseline" x1={left} y1={baselineY} x2={right} y2={baselineY} />
+      {Array.from({ length: jumpCount + 1 }, (_, index) => <line
+        className="number-line-tick"
+        key={`tick-${index}`}
+        x1={point(index)}
+        y1={baselineY - 10}
+        x2={point(index)}
+        y2={baselineY + 10}
+      />)}
+      {Array.from({ length: jumpCount }, (_, index) => {
+        const startX = point(index);
+        const endX = point(index + 1);
+        const arcHeight = Math.max(25, Math.min(48, (endX - startX) * .5));
+        return <g className="number-line-jump" key={`jump-${index}`}>
+          <path
+            className="number-line-arc"
+            d={`M ${startX} ${baselineY - 5} Q ${(startX + endX) / 2} ${baselineY - arcHeight} ${endX} ${baselineY - 5}`}
+          />
+          <path
+            className="number-line-arrowhead"
+            d={`M ${endX - 9} ${baselineY - 11} L ${endX} ${baselineY - 5} L ${endX - 10} ${baselineY - 2}`}
+          />
+          <text className="number-line-jump-label" x={(startX + endX) / 2} y={baselineY - arcHeight - 7}>+{visual.step}</text>
+        </g>;
+      })}
+      <text className="number-line-tick-label" x={left} y={baselineY + 34}>0</text>
+      {!isRepeatedJumps && <text className="number-line-tick-label" x={right} y={baselineY + 34}>{visual.end}</text>}
+    </svg>
+  </div>;
+}
+
 function ClockVisual({ hour = 12, minute = 0, label }) {
   const normalizedMinute = Math.max(0, Math.min(59, Number(minute) || 0));
   const hourAngle = ((Number(hour) || 0) % 12) * 30 + normalizedMinute * .5;
@@ -108,6 +152,7 @@ export default function QuestionVisual({ visual, className = '' }) {
   if (!visual) return null;
   if (visual.kind === 'placeValue') return <PlaceValueVisual columns={visual.columns} />;
   if (visual.kind === 'equalGroups') return <EqualGroupsVisual visual={visual} />;
+  if (visual.kind === 'numberLine') return <NumberLineVisual visual={visual} />;
   if (visual.kind === 'clock') return <ClockVisual hour={visual.hour} minute={visual.minute} label={visual.label} />;
   if (visual.kind === 'plantDiagram') return <PlantDiagram label={visual.label} />;
   if (visual.kind === 'ruler') return <RulerVisual visual={visual} />;
