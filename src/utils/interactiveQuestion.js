@@ -27,6 +27,11 @@ const EQUAL_GROUPS_ALLOWED_KEYS = Object.freeze({
   divisionGrouping: new Set(['kind', 'mode', 'total', 'itemsPerGroup'])
 });
 
+const NUMBER_LINE_ALLOWED_KEYS = Object.freeze({
+  repeatedJumps: new Set(['kind', 'mode', 'jumps', 'step']),
+  countJumps: new Set(['kind', 'mode', 'end', 'step'])
+});
+
 function isBoundedInteger(value, maximum) {
   return Number.isInteger(value) && value >= 1 && value <= maximum;
 }
@@ -51,6 +56,23 @@ function isValidEqualGroupsVisual(visual) {
   return isBoundedInteger(visual.total, 40)
     && isBoundedInteger(visual.itemsPerGroup, 10)
     && visual.total % visual.itemsPerGroup === 0;
+}
+
+function isValidNumberLineVisual(visual) {
+  if (!visual || typeof visual !== 'object' || Array.isArray(visual)) return false;
+  const allowedKeys = NUMBER_LINE_ALLOWED_KEYS[visual.mode];
+  if (!allowedKeys
+    || Object.keys(visual).length !== allowedKeys.size
+    || Object.keys(visual).some(key => !allowedKeys.has(key))
+    || !isBoundedInteger(visual.step, 10)) return false;
+
+  if (visual.mode === 'repeatedJumps') {
+    return isBoundedInteger(visual.jumps, 10)
+      && visual.jumps * visual.step <= 100;
+  }
+  return isBoundedInteger(visual.end, 100)
+    && visual.end % visual.step === 0
+    && visual.end / visual.step <= 10;
 }
 
 export function validateInteractiveQuestionConfig(config = {}) {
@@ -143,6 +165,11 @@ export function validateInteractiveQuestionConfig(config = {}) {
     && config.visual?.kind === 'equalGroups'
     && !isValidEqualGroupsVisual(config.visual)) {
     issues.push('invalid_equal_groups_visual');
+  }
+  if (config.type === 'visualMath'
+    && config.visual?.kind === 'numberLine'
+    && !isValidNumberLineVisual(config.visual)) {
+    issues.push('invalid_number_line_visual');
   }
 
   return [...new Set(issues)];

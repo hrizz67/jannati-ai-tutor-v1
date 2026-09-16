@@ -520,6 +520,10 @@ assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'eq
 assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'equalGroups', mode: 'divisionSharing', total: 24, groups: 4, itemsPerGroup: 6 })).includes('invalid_equal_groups_visual'), 'Sharing metadata must not store the unknown per-group answer.');
 assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'equalGroups', mode: 'divisionGrouping', total: 25, itemsPerGroup: 5, groups: 5 })).includes('invalid_equal_groups_visual'), 'Grouping metadata must not store the unknown group-count answer.');
 assert.equal(INTERACTIVE_QUESTION_TYPES.includes('equalGroups'), false, 'Equal groups must remain a visualMath kind rather than a new interaction type.');
+assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'numberLine', mode: 'repeatedJumps', jumps: 5, step: 8 })), [], 'Repeated jumps must be accepted through the existing visualMath path.');
+assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'numberLine', mode: 'countJumps', end: 35, step: 5 })), [], 'Counting jumps must be accepted through the existing visualMath path.');
+assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'numberLine', mode: 'countJumps', end: 35, step: 5, jumps: 7 })).includes('invalid_number_line_visual'), 'Count-jump metadata must not store the unknown jump count.');
+assert.equal(INTERACTIVE_QUESTION_TYPES.includes('numberLine'), false, 'Number line must remain a visualMath kind rather than a new interaction type.');
 assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'MATH-MASA-PILOT-021')), null, 'A constructed-response time problem must remain on the standard input path when a richer interaction could alter the assessed construct.');
 const derivedObjective = questions.find(question => question.id === 'PJ-PERGERAKAN_ASAS-001');
 assert.equal(getInteractiveQuestionConfig(derivedObjective)?.type, 'choice', 'A safe legacy objective question must render as a tappable choice.');
@@ -558,6 +562,9 @@ assert.ok(visualSource.includes("visual.kind === 'equalGroups'") && visualSource
 assert.ok(styleSource.includes('.equal-groups-grid') && styleSource.includes('.equal-groups-counter'), 'Equal groups must use tightly scoped responsive counter styles.');
 assert.match(engineSource, /config\.type === 'visualMath'\) content = <ChoiceGrid[\s\S]{0,180}visualMath/, 'Equal groups must retain the existing visualMath ChoiceGrid answer mechanism.');
 assert.doesNotMatch(engineSource, /config\.type === 'equalGroups'/, 'Equal groups must not introduce a new interaction-engine branch.');
+assert.ok(visualSource.includes("visual.kind === 'numberLine'") && visualSource.includes('number-line-svg'), 'QuestionVisual must route number lines through the existing visual component.');
+assert.ok(styleSource.includes('.number-line-visual') && styleSource.includes('.number-line-arc'), 'Number lines must use tightly scoped responsive SVG styles.');
+assert.doesNotMatch(engineSource, /config\.type === 'numberLine'/, 'Number line must not introduce a new interaction-engine branch.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
 assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');
