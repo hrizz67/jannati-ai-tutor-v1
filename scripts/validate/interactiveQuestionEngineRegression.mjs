@@ -180,6 +180,16 @@ const reviewedInteractiveContentBatch2Contracts = new Map([
   ['SAINS-TUMBUHAN-005', { answer: 'melindungi biji benih', accepted: ['melindungi biji benih'] }],
   ['SAINS-TUMBUHAN-021', { answer: 'anak pokok', accepted: ['anak pokok'] }]
 ]);
+const equalGroupsPilotContracts = new Map([
+  ['MATH-DARAB-PILOT-002', { stem: 'Berapakah hasil darab 5 dengan 4?', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 4, itemsPerGroup: 5 }, optionValues: ['20', '9', '16'] }],
+  ['MATH-DARAB-PILOT-004', { stem: 'Selesaikan 3 x 4.', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 3, itemsPerGroup: 4 }, optionValues: ['12', '7', '16'] }],
+  ['MATH-DARAB-PILOT-006', { stem: 'Apakah hasil 1 x 8?', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 1, itemsPerGroup: 8 }, optionValues: ['8', '9', '1'] }],
+  ['MATH-DARAB-PILOT-008', { stem: 'Kira 7 x 2.', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 7, itemsPerGroup: 2 }, optionValues: ['14', '9', '7'] }],
+  ['MATH-BAHAGI-PILOT-004', { stem: 'Selesaikan 25 ÷ 5.', visual: { kind: 'equalGroups', mode: 'divisionGrouping', total: 25, itemsPerGroup: 5 }, optionValues: ['5', '4', '6'] }],
+  ['MATH-BAHAGI-PILOT-007', { stem: 'Lengkapkan 24 ÷ 4 = ___.', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 24, groups: 4 }, optionValues: ['6', '4', '8'] }],
+  ['MATH-BAHAGI-PILOT-009', { stem: 'Apakah hasil bagi 16 ÷ 2?', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 16, groups: 2 }, optionValues: ['8', '2', '14'] }],
+  ['MATH-BAHAGI-PILOT-047', { stem: 'Satu jadual menunjukkan 3 dulang × ___ kuih = 27 kuih. Gunakan maklumat itu untuk mencari kuih pada setiap dulang.', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 27, groups: 3 }, optionValues: ['9', '8', '10'] }]
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
@@ -188,9 +198,10 @@ assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty delibe
 assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contain fifteen deliberately selected, teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch2Types.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen teacher-reviewed interactions.');
+assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -293,6 +304,49 @@ for (const [id, type] of reviewedInteractiveContentBatch2Types) {
   assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject every important authored distractor.`);
   assert.ok(!question.interaction.instruction.toLocaleLowerCase('ms-MY').includes(String(correctOptions[0].value).toLocaleLowerCase('ms-MY')), `${id} instruction must not reveal its accepted response.`);
 }
+
+for (const [id, contract] of equalGroupsPilotContracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the runtime Mathematics collection.`);
+  assert.ok(question, `Missing reviewed Equal Groups pilot interaction ${id}.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.interaction.type, 'visualMath', `${id} must remain a visualMath interaction.`);
+  assert.deepEqual(question.interaction.visual, contract.visual, `${id} must use the approved strict Equal Groups metadata.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must use the three reviewed option values.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must provide exactly three options.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass strict Equal Groups validation.`);
+  const correctOptions = question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct');
+  assert.equal(correctOptions.length, 1, `${id} must have exactly one option accepted by the original answer contract.`);
+  assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject both reviewed distractors.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires specific curriculum, assessment and textbook review notes.`);
+  assert.ok(question.learningIntelligence?.skillId && question.learningIntelligence?.responseMode, `${id} requires reviewed skill and response metadata.`);
+  assert.ok(question.learningIntelligence?.conceptTags?.length && question.learningIntelligence?.misconceptionTags?.length, `${id} requires reviewed concept and misconception tags.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive reviewed hints.`);
+  assert.ok(!Object.keys(question.interaction.visual).some(key => ['answer', 'result', 'equation', 'caption', 'label'].includes(key)), `${id} visual metadata must not carry an answer-leak field.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps].join(' ');
+  const escapedAnswer = correctOptions[0].value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  assert.doesNotMatch(guidance, new RegExp(`(?:jawapan|hasil(?:nya)?|ialah|menjadi|=)\\s*${escapedAnswer}(?:\\D|$)`, 'i'), `${id} guidance must not state the derived result.`);
+}
+
+for (const [id] of equalGroupsPilotContracts) {
+  const question = byId.get(id);
+  const correctValue = question.interaction.options.find(option => smartCheck(option.value, question).status === 'correct').value;
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps].join(' ').toLocaleLowerCase('ms-MY');
+  assert.ok([
+    `jawapan ${correctValue}`,
+    `hasilnya ${correctValue}`,
+    `ialah ${correctValue}`,
+    `menjadi ${correctValue}`,
+    `= ${correctValue}`
+  ].every(phrase => !guidance.includes(phrase)), `${id} instruction and hints must not state the derived result.`);
+}
+
+assert.deepEqual(byId.get('MATH-DARAB-PILOT-001').interaction.options.map(option => option.value), ['5', '6', '8'], 'Existing reviewed multiplication choice must remain unchanged.');
+assert.deepEqual(byId.get('MATH-DARAB-PILOT-047').interaction.correctOrder, ['product-25', 'product-27', 'product-32'], 'Existing reviewed multiplication ordering must remain unchanged.');
+assert.deepEqual(byId.get('MATH-BAHAGI-PILOT-002').interaction.options.map(option => option.value), ['3', '5', '12'], 'Existing reviewed division choice must remain unchanged.');
+assert.deepEqual(byId.get('MATH-BAHAGI-PILOT-040').interaction.correctOrder, ['quotient-4', 'quotient-5', 'quotient-6'], 'Existing reviewed division ordering must remain unchanged.');
 
 const batch2PlaceValue = byId.get('MATH-NOMBOR-PILOT-004');
 assert.deepEqual(batch2PlaceValue.interaction.visual.columns.map(column => [column.label, column.value]), [['Ratus', 5], ['Puluh', 8], ['Sa', 2]], 'The reviewed place-value visual must preserve the 582 structure.');

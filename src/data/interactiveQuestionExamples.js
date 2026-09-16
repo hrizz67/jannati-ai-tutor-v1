@@ -1559,6 +1559,208 @@ const REVIEWED_CONTENT_BATCH_2_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
+  'MATH-DARAB-PILOT-002': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan kumpulan pembilang. Kira semua pembilang, kemudian pilih hasil darab yang betul.',
+      visual: { kind: 'equalGroups', mode: 'multiplication', groups: 4, itemsPerGroup: 5 },
+      options: [
+        { id: 'twenty', label: '20', value: '20' },
+        { id: 'nine', label: '9', value: '9' },
+        { id: 'sixteen', label: '16', value: '16' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mentafsir pendaraban sebagai empat kumpulan sama yang mengandungi lima objek bagi setiap kumpulan.',
+      assessment: 'Visual menilai pengiraan semua pembilang; distraktor mengesan penambahan dua faktor dan penggunaan saiz kumpulan yang salah.',
+      textbook: 'Pembilang dalam empat bekas berbatas memberikan perwakilan konkrit kumpulan sama sambil mengekalkan tugasan darab asal.'
+    },
+    intelligence: {
+      skillId: 'darab.kumpulan_sama_5_darab_4', responseMode: 'visual_counting',
+      conceptTags: ['darab', 'kumpulan_sama', 'tambah_berulang'],
+      misconceptionTags: ['menambah_operan', 'salah_bilangan_dalam_kumpulan'],
+      hintSteps: ['Kenal pasti berapa banyak kumpulan yang ditunjukkan.', 'Setiap kumpulan mempunyai bilangan pembilang yang sama.', 'Kira semua pembilang kumpulan demi kumpulan.']
+    }
+  },
+  'MATH-DARAB-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan 3 kumpulan pembilang. Kira jumlah semuanya dan pilih jawapan.',
+      visual: { kind: 'equalGroups', mode: 'multiplication', groups: 3, itemsPerGroup: 4 },
+      options: [
+        { id: 'twelve', label: '12', value: '12' },
+        { id: 'seven', label: '7', value: '7' },
+        { id: 'sixteen', label: '16', value: '16' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan fakta darab tiga dengan model tiga kumpulan sama yang mempunyai empat objek setiap satu.',
+      assessment: 'Distraktor membezakan murid yang menambah faktor daripada murid yang mengulang faktor kedua secara berlebihan.',
+      textbook: 'Tiga kumpulan pembilang berbatas menyokong tambah berulang tanpa menulis hasil darab dalam rajah.'
+    },
+    intelligence: {
+      skillId: 'darab.tiga_kumpulan_empat', responseMode: 'visual_counting',
+      conceptTags: ['darab', 'kumpulan_sama', 'tambah_berulang'],
+      misconceptionTags: ['menambah_operan', 'mengulang_faktor_yang_salah'],
+      hintSteps: ['Terdapat 3 kumpulan yang sama.', 'Kira 4 pembilang dalam setiap kumpulan.', 'Tambah 4 sebanyak 3 kali.']
+    }
+  },
+  'MATH-DARAB-PILOT-006': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan satu kumpulan pembilang dan pilih jumlah pembilang yang betul.',
+      visual: { kind: 'equalGroups', mode: 'multiplication', groups: 1, itemsPerGroup: 8 },
+      options: [
+        { id: 'eight', label: '8', value: '8' },
+        { id: 'nine', label: '9', value: '9' },
+        { id: 'one', label: '1', value: '1' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami fakta identiti pendaraban apabila hanya satu kumpulan objek ditunjukkan.',
+      assessment: 'Pilihan mengesan penambahan faktor dan kekeliruan antara bilangan kumpulan dengan jumlah pembilang.',
+      textbook: 'Satu bekas pembilang memberikan model konkrit faktor satu tanpa menambahkan petunjuk jawapan pada metadata.'
+    },
+    intelligence: {
+      skillId: 'darab.identiti_satu_kumpulan', responseMode: 'visual_counting',
+      conceptTags: ['darab', 'satu_kumpulan', 'fakta_satu'],
+      misconceptionTags: ['menambah_operan', 'memilih_bilangan_kumpulan'],
+      hintSteps: ['Hanya satu kumpulan ditunjukkan.', 'Kira semua pembilang di dalam kumpulan itu.', 'Mendarab dengan 1 mengekalkan bilangan dalam satu kumpulan.']
+    }
+  },
+  'MATH-DARAB-PILOT-008': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Kira pembilang dalam semua kumpulan, kemudian pilih hasil darab yang betul.',
+      visual: { kind: 'equalGroups', mode: 'multiplication', groups: 7, itemsPerGroup: 2 },
+      options: [
+        { id: 'fourteen', label: '14', value: '14' },
+        { id: 'nine', label: '9', value: '9' },
+        { id: 'seven', label: '7', value: '7' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mewakilkan fakta darab tujuh dengan dua sebagai tujuh kumpulan sama untuk dikira secara berulang.',
+      assessment: 'Distraktor mengesan penambahan dua faktor serta kecenderungan mengira bekas sahaja dan bukan semua pembilang.',
+      textbook: 'Kumpulan kecil yang tersusun membolehkan kiraan dua-dua dibuat secara konkrit tanpa memaparkan hasil akhir.'
+    },
+    intelligence: {
+      skillId: 'darab.tujuh_kumpulan_dua', responseMode: 'visual_counting',
+      conceptTags: ['darab', 'kumpulan_sama', 'tambah_berulang'],
+      misconceptionTags: ['menambah_operan', 'mengira_kumpulan_bukan_pembilang'],
+      hintSteps: ['Lihat tujuh kumpulan yang sama.', 'Setiap kumpulan mempunyai dua pembilang.', 'Kira dua-dua sehingga semua kumpulan selesai.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan pembilang yang disusun 5 dalam setiap kumpulan. Kira bilangan kumpulan.',
+      visual: { kind: 'equalGroups', mode: 'divisionGrouping', total: 25, itemsPerGroup: 5 },
+      options: [
+        { id: 'five', label: '5', value: '5' },
+        { id: 'four', label: '4', value: '4' },
+        { id: 'six', label: '6', value: '6' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mentafsir bahagi sebagai pengumpulan apabila jumlah dan bilangan objek dalam setiap kumpulan diketahui.',
+      assessment: 'Murid mengira bekas lengkap; pilihan bersebelahan mengesan kesilapan menambah atau tertinggal satu kumpulan.',
+      textbook: 'Pembilang dibahagi kepada bekas sama saiz sebagai model konkrit pengumpulan tanpa menyimpan bilangan kumpulan jawapan.'
+    },
+    intelligence: {
+      skillId: 'bahagi.pengumpulan_25_dengan_5', responseMode: 'visual_counting',
+      conceptTags: ['bahagi', 'pengumpulan', 'kumpulan_sama'],
+      misconceptionTags: ['tersalah_mengira_kumpulan', 'keliru_jumlah_dan_saiz_kumpulan'],
+      hintSteps: ['Setiap kumpulan mesti mempunyai lima pembilang.', 'Jejaki satu kumpulan pada satu masa.', 'Kira berapa kumpulan yang diperlukan untuk menggunakan semua pembilang.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-007': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan 24 pembilang yang dibahagi sama rata kepada 4 kumpulan. Pilih bilangan pembilang dalam setiap kumpulan.',
+      visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 24, groups: 4 },
+      options: [
+        { id: 'six', label: '6', value: '6' },
+        { id: 'four', label: '4', value: '4' },
+        { id: 'eight', label: '8', value: '8' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mentafsir bahagi sebagai perkongsian sama rata apabila jumlah dan bilangan kumpulan diketahui.',
+      assessment: 'Pilihan membezakan hasil perkongsian daripada bilangan kumpulan dan agihan yang tidak sepadan dengan jumlah asal.',
+      textbook: 'Empat bekas pembilang menunjukkan perkongsian sama rata sambil mengekalkan bilangan setiap kumpulan sebagai perkara yang perlu dikira.'
+    },
+    intelligence: {
+      skillId: 'bahagi.perkongsian_24_kepada_4', responseMode: 'visual_counting',
+      conceptTags: ['bahagi', 'perkongsian_sama_rata', 'kumpulan_sama'],
+      misconceptionTags: ['memilih_bilangan_kumpulan', 'agihan_tidak_sama_rata'],
+      hintSteps: ['Semua kumpulan mesti menerima bilangan yang sama.', 'Perhatikan satu kumpulan selepas pembahagian sama rata.', 'Kira pembilang di dalam satu kumpulan sahaja.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-009': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan pembahagian sama rata kepada 2 kumpulan. Kira pembilang dalam satu kumpulan.',
+      visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 16, groups: 2 },
+      options: [
+        { id: 'eight', label: '8', value: '8' },
+        { id: 'two', label: '2', value: '2' },
+        { id: 'fourteen', label: '14', value: '14' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membahagi jumlah kepada dua kumpulan sama rata dan menentukan bilangan objek dalam satu kumpulan.',
+      assessment: 'Distraktor mengesan penyalinan bilangan kumpulan dan penolakan pembahagi sekali sahaja sebagai ganti bahagi.',
+      textbook: 'Dua bekas berbatas memberi bukti visual perkongsian sama rata tanpa menyatakan hasil bahagi dalam teks rajah.'
+    },
+    intelligence: {
+      skillId: 'bahagi.perkongsian_16_kepada_2', responseMode: 'visual_counting',
+      conceptTags: ['bahagi', 'perkongsian_sama_rata', 'dua_kumpulan'],
+      misconceptionTags: ['memilih_bilangan_kumpulan', 'menolak_sekali'],
+      hintSteps: ['Bahagikan semua pembilang kepada dua kumpulan yang sama.', 'Kedua-dua kumpulan mesti mempunyai bilangan pembilang yang sama.', 'Kira pembilang dalam salah satu kumpulan.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-047': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Anggap setiap kumpulan sebagai satu dulang. Kira bilangan kuih dalam setiap dulang.',
+      visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 27, groups: 3 },
+      options: [
+        { id: 'nine', label: '9 kuih', value: '9' },
+        { id: 'eight', label: '8 kuih', value: '8' },
+        { id: 'ten', label: '10 kuih', value: '10' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menyelesaikan masalah bahagi Tahun 2 sebagai perkongsian sama rata dalam konteks tiga dulang.',
+      assessment: 'Kumpulan mewakili dulang dan pilihan bersebelahan mengesan agihan tidak sama rata atau kesilapan satu ketika mengira.',
+      textbook: 'Bekas equal-group bertindak sebagai dulang secara konseptual tanpa ikon tambahan atau perubahan pada masalah berkonteks asal.'
+    },
+    intelligence: {
+      skillId: 'bahagi.perkongsian_kuih_27_kepada_3', responseMode: 'visual_counting_context',
+      conceptTags: ['bahagi', 'perkongsian_sama_rata', 'masalah_berkonteks', 'dulang'],
+      misconceptionTags: ['agihan_tidak_sama_rata', 'tersalah_satu_ketika_mengira'],
+      hintSteps: ['Terdapat 3 dulang untuk 27 kuih.', 'Setiap dulang mesti menerima bilangan kuih yang sama.', 'Kira pembilang di dalam satu kumpulan selepas pembahagian sama rata.']
+    }
+  }
+});
+
+const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -1573,6 +1775,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_Q4_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
+  ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -1840,6 +2043,10 @@ const REVIEWED_CONTENT_BATCH_2_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -1886,6 +2093,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_Q4_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
+  ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
