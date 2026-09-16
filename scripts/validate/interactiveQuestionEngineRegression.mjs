@@ -180,6 +180,24 @@ const reviewedInteractiveContentBatch2Contracts = new Map([
   ['SAINS-TUMBUHAN-005', { answer: 'melindungi biji benih', accepted: ['melindungi biji benih'] }],
   ['SAINS-TUMBUHAN-021', { answer: 'anak pokok', accepted: ['anak pokok'] }]
 ]);
+const languageFillBlankBatch3Contracts = new Map([
+  ['BM-KATA_SENDI-002', { stem: 'Baca situasi: Aina berjalan ______ kantin kerana dia lapar.', answer: 'ke', questionType: 'short_answer', sentenceParts: ['Baca situasi: Aina berjalan ', ' kantin kerana dia lapar.'], optionValues: ['di', 'ke', 'dari'] }],
+  ['BM-KATA_HUBUNG-003', { stem: 'Lengkapkan ayat ini: Sara membawa payung ____ hari hujan pada pagi itu.', answer: 'kerana', questionType: 'short_answer', sentenceParts: ['Lengkapkan ayat ini: Sara membawa payung ', ' hari hujan pada pagi itu.'], optionValues: ['kerana', 'tetapi', 'atau'] }],
+  ['BM-TATABAHASA-018', { stem: 'Di rumah, kami ___ menyiapkan latihan dan kini boleh berehat.', answer: 'sudah', questionType: 'short_answer', sentenceParts: ['Di rumah, kami ', ' menyiapkan latihan dan kini boleh berehat.'], optionValues: ['sedang', 'akan', 'sudah'] }],
+  ['BM-SIMPULAN_BAHASA-021', { stem: "Lengkapkan ayat dengan simpulan bahasa yang tepat: 'Nora ______ kerana selalu membantu guru menyusun buku.'", answer: 'ringan tulang', questionType: 'short_answer', sentenceParts: ["Lengkapkan ayat dengan simpulan bahasa yang tepat: 'Nora ", " kerana selalu membantu guru menyusun buku.'"], optionValues: ['kaki ayam', 'ringan tulang', 'ulat buku'] }],
+  ['ENG-NOUNS-004', { stem: 'We play football at the ________.', answer: 'field', questionType: 'short_answer', sentenceParts: ['We play football at the ', '.'], optionValues: ['classroom', 'kitchen', 'field'] }],
+  ['ENG-COLOURS-001', { stem: 'A ripe banana is ________.', answer: 'yellow', questionType: 'short_answer', sentenceParts: ['A ripe banana is ', '.'], optionValues: ['yellow', 'red', 'blue'] }],
+  ['ENG-ANIMALS-003', { stem: "The farm animal that says 'moo' and gives us milk is a ________.", answer: 'cow', questionType: 'short_answer', sentenceParts: ["The farm animal that says 'moo' and gives us milk is a ", '.'], optionValues: ['goat', 'cow', 'horse'] }],
+  ['ENG-FOOD-003', { stem: 'The clear drink with no colour that our body needs is ________.', answer: 'water', questionType: 'short_answer', sentenceParts: ['The clear drink with no colour that our body needs is ', '.'], optionValues: ['milk', 'juice', 'water'] }],
+  ['ARAB-NOMBOR_ARAB-001', { stem: 'Simbol ١ mewakili nombor ________ dalam Bahasa Melayu.', answer: 'satu', questionType: 'fill_blank', sentenceParts: ['Simbol ١ mewakili nombor ', ' dalam Bahasa Melayu.'], optionValues: ['dua', 'satu', 'tiga'] }],
+  ['ARAB-HAIWAN_ARAB-001', { stem: 'قِطٌّ bermaksud ________.', answer: 'kucing', questionType: 'short_answer', sentenceParts: ['قِطٌّ bermaksud ', '.'], optionValues: ['kucing', 'anjing', 'arnab'] }],
+  ['ARAB-AYAT_MUDAH_ARAB-001', { stem: 'Ayat هَذَا كِتَابٌ bermaksud ________.', answer: 'Ini buku', questionType: 'short_answer', sentenceParts: ['Ayat هَذَا كِتَابٌ bermaksud ', '.'], optionValues: ['Ini pen', 'Ini beg', 'Ini buku'] }],
+  ['ARAB-HIWAR-004', { stem: 'Ungkapan اِسْمِي أَحْمَدُ bermaksud ________.', answer: 'Nama saya Ahmad', questionType: 'short_answer', sentenceParts: ['Ungkapan اِسْمِي أَحْمَدُ bermaksud ', '.'], optionValues: ['Nama saya Ahmad', 'Nama saya Fatimah', 'Apakah nama kamu?'] }],
+  ['ISLAM-IBADAH-001', { stem: 'Solat fardu sehari semalam ada ________ waktu.', answer: 'lima', questionType: 'fill_blank', sentenceParts: ['Solat fardu sehari semalam ada ', ' waktu.'], optionValues: ['empat', 'lima', 'enam'] }],
+  ['ISLAM-SIRAH-001', { stem: 'Nabi Muhammad SAW dilahirkan di kota ________.', answer: 'Mekah', questionType: 'fill_blank', sentenceParts: ['Nabi Muhammad SAW dilahirkan di kota ', '.'], optionValues: ['Mekah', 'Madinah', 'Taif'] }],
+  ['ISLAM-QURAN-003', { stem: 'Malaikat yang menyampaikan wahyu Al-Quran ialah ________ AS.', answer: 'Jibril', questionType: 'fill_blank', sentenceParts: ['Malaikat yang menyampaikan wahyu Al-Quran ialah ', ' AS.'], optionValues: ['Mikail', 'Israfil', 'Jibril'] }],
+  ['ISLAM-ADAB-001', { stem: 'Sebelum makan, kita membaca ________.', answer: 'Bismillah', questionType: 'fill_blank', sentenceParts: ['Sebelum makan, kita membaca ', '.'], optionValues: ['Alhamdulillah', 'Bismillah', 'Subhanallah'] }]
+]);
 const equalGroupsPilotContracts = new Map([
   ['MATH-DARAB-PILOT-002', { stem: 'Berapakah hasil darab 5 dengan 4?', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 4, itemsPerGroup: 5 }, optionValues: ['20', '9', '16'] }],
   ['MATH-DARAB-PILOT-004', { stem: 'Selesaikan 3 x 4.', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 3, itemsPerGroup: 4 }, optionValues: ['12', '7', '16'] }],
@@ -227,13 +245,30 @@ assert.equal(reviewedRichBatch4Ids.size, 20, 'Batch 4 must contain twenty delibe
 assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contain fifteen deliberately selected, teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch2Types.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen teacher-reviewed interactions.');
+assert.equal(languageFillBlankBatch3Contracts.size, 16, 'Language FillBlank Batch 3 must contain exactly sixteen approved questions.');
+assert.deepEqual(
+  [...languageFillBlankBatch3Contracts.keys()].reduce((counts, id) => {
+    const subject = id.split('-')[0];
+    counts[subject] = (counts[subject] || 0) + 1;
+    return counts;
+  }, {}),
+  { BM: 4, ENG: 4, ARAB: 4, ISLAM: 4 },
+  'Language FillBlank Batch 3 must contain exactly four BM, English, Arabic and Islamic questions.'
+);
 assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
 assert.equal(arrayPilotContracts.size, 2, 'The Array pilot must contain exactly two reviewed questions.');
 assert.equal(numberLinePilotContracts.size, 7, 'The Number Line pilot must contain exactly seven reviewed questions.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
+const priorReviewedIds = [
+  ...expectedTypes.keys(), ...reviewedFillBlankBatchIds, ...allReviewedChoiceBatchIds,
+  ...reviewedRichBatch4Ids, ...reviewedQuestionBatchQ4Ids,
+  ...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys(),
+  ...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()
+];
+assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size, 'Language FillBlank Batch 3 IDs must be disjoint from every existing reviewed batch and pilot.');
 assert.equal(new Set([...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()]).size, equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Equal Groups, Array and Number Line pilot IDs must remain disjoint.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -335,6 +370,42 @@ for (const [id, type] of reviewedInteractiveContentBatch2Types) {
   assert.equal(correctOptions.length, 1, `${id} must retain exactly one accepted authored response.`);
   assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject every important authored distractor.`);
   assert.ok(!question.interaction.instruction.toLocaleLowerCase('ms-MY').includes(String(correctOptions[0].value).toLocaleLowerCase('ms-MY')), `${id} instruction must not reveal its accepted response.`);
+}
+
+for (const [id, contract] of languageFillBlankBatch3Contracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the normalized runtime collection.`);
+  assert.ok(question, `Missing Language FillBlank Batch 3 interaction ${id}.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its canonical answer.`);
+  assert.deepEqual(question.accepted, [contract.answer], `${id} must preserve its original accepted answers.`);
+  assert.deepEqual(question.acceptedAnswers, [contract.answer], `${id} must preserve its normalized accepted-answer contract.`);
+  assert.equal(question.questionType, contract.questionType, `${id} must preserve its original question type.`);
+  assert.equal(question.marks, 1, `${id} must remain a one-mark question.`);
+  assert.equal(question.interaction.version, 1, `${id} must use interaction version 1.`);
+  assert.equal(question.interaction.type, 'fillBlank', `${id} must use the existing fillBlank interaction.`);
+  assert.ok(question.interaction.instruction, `${id} requires a reviewed instruction.`);
+  assert.deepEqual(question.interaction.sentenceParts, contract.sentenceParts, `${id} must preserve the approved two-part sentence contract.`);
+  assert.equal(question.interaction.sentenceParts.length, 2, `${id} must contain exactly two sentence parts.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must preserve the approved option order.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must expose exactly three reviewed options.`);
+  assert.equal(new Set(question.interaction.options.map(option => option.id)).size, 3, `${id} must use three unique option IDs.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass the existing fillBlank schema.`);
+  const optionStatuses = question.interaction.options.map(option => smartCheck(option.value, question).status);
+  assert.equal(optionStatuses.filter(status => status === 'correct').length, 1, `${id} must have exactly one smartCheck-correct option.`);
+  assert.equal(optionStatuses.filter(status => status !== 'correct').length, 2, `${id} must reject exactly two distractors.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires item-specific curriculum, assessment and textbook review notes.`);
+  assert.equal(question.learningIntelligence?.responseMode, 'completion', `${id} must use the established fillBlank response mode.`);
+  assert.ok(question.learningIntelligence?.skillId, `${id} requires an item-specific skill ID.`);
+  assert.ok(question.learningIntelligence?.conceptTags?.length && question.learningIntelligence?.misconceptionTags?.length, `${id} requires reviewed concept and misconception tags.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive hints.`);
+  const guidance = [question.interaction.instruction, ...question.interaction.sentenceParts, ...question.learningIntelligence.hintSteps]
+    .join(' ')
+    .toLocaleLowerCase('ms-MY');
+  const escapedAnswer = contract.answer.toLocaleLowerCase('ms-MY').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  assert.doesNotMatch(guidance, new RegExp(`(^|[^\\p{L}\\p{N}])${escapedAnswer}($|[^\\p{L}\\p{N}])`, 'u'), `${id} instruction, blank sentence and hints must not reveal the canonical answer.`);
 }
 
 for (const [id, contract] of equalGroupsPilotContracts) {

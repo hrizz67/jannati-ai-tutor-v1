@@ -1559,6 +1559,400 @@ const REVIEWED_CONTENT_BATCH_2_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_SPECS = Object.freeze({
+  'BM-KATA_SENDI-002': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kata sendi yang melengkapkan ayat.',
+      sentenceParts: ['Baca situasi: Aina berjalan ', ' kantin kerana dia lapar.'],
+      options: [
+        { id: 'location', label: 'di', value: 'di' },
+        { id: 'destination', label: 'ke', value: 'ke' },
+        { id: 'origin', label: 'dari', value: 'dari' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan kata sendi nama untuk menunjukkan arah pergerakan menuju sesuatu tempat.',
+      assessment: 'Pilihan di dan dari mengesan kekeliruan lokasi tetap dan tempat asal berbanding arah tujuan.',
+      textbook: 'Tempat kosong selepas kata kerja berjalan mengekalkan tugasan kata sendi Tahun 2 dalam konteks ayat asal.'
+    },
+    intelligence: {
+      skillId: 'kata_sendi.arah_tujuan', responseMode: 'completion',
+      conceptTags: ['kata_sendi_nama', 'arah_pergerakan', 'tempat_tujuan'],
+      misconceptionTags: ['keliru_lokasi_dan_tujuan', 'keliru_tujuan_dan_asal'],
+      hintSteps: ['Perhatikan bahawa Aina sedang bergerak, bukan berada tetap di satu tempat.', 'Kenal pasti kantin sebagai tempat yang dituju.', 'Pilih kata sendi yang menunjukkan arah menuju sesuatu tempat.']
+    }
+  },
+  'BM-KATA_HUBUNG-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kata hubung yang melengkapkan ayat.',
+      sentenceParts: ['Lengkapkan ayat ini: Sara membawa payung ', ' hari hujan pada pagi itu.'],
+      options: [
+        { id: 'cause', label: 'kerana', value: 'kerana' },
+        { id: 'contrast', label: 'tetapi', value: 'tetapi' },
+        { id: 'choice', label: 'atau', value: 'atau' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan kata hubung yang menyatakan hubungan sebab dalam ayat mudah.',
+      assessment: 'Pilihan tetapi dan atau mengesan kekeliruan hubungan pertentangan atau pilihan dengan hubungan sebab.',
+      textbook: 'Tempat kosong menghubungkan perbuatan dan sebab sambil mengekalkan struktur ayat Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'kata_hubung.hubungan_sebab', responseMode: 'completion',
+      conceptTags: ['kata_hubung', 'hubungan_sebab', 'ayat_majmuk'],
+      misconceptionTags: ['keliru_sebab_dan_pertentangan', 'keliru_sebab_dan_pilihan'],
+      hintSteps: ['Tentukan hubungan antara membawa payung dengan keadaan cuaca.', 'Ayat selepas tempat kosong menerangkan sebab tindakan Sara.', 'Pilih kata hubung yang menyambungkan perbuatan dengan sebabnya.']
+    }
+  },
+  'BM-TATABAHASA-018': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan ayat.',
+      sentenceParts: ['Di rumah, kami ', ' menyiapkan latihan dan kini boleh berehat.'],
+      options: [
+        { id: 'ongoing', label: 'sedang', value: 'sedang' },
+        { id: 'future', label: 'akan', value: 'akan' },
+        { id: 'completed', label: 'sudah', value: 'sudah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih kata bantu aspek yang menunjukkan sesuatu perbuatan telah selesai.',
+      assessment: 'Pilihan sedang dan akan mengesan kekeliruan antara perbuatan yang berlangsung, belum berlaku dan telah selesai.',
+      textbook: 'Petunjuk konteks kini boleh berehat menyokong pemilihan kata bantu tanpa mengubah tugasan tatabahasa asal.'
+    },
+    intelligence: {
+      skillId: 'tatabahasa.kata_bantu_aspek_selesai', responseMode: 'completion',
+      conceptTags: ['kata_bantu_aspek', 'perbuatan_selesai', 'petunjuk_masa'],
+      misconceptionTags: ['keliru_selesai_dan_sedang', 'keliru_selesai_dan_akan'],
+      hintSteps: ['Perhatikan frasa yang menunjukkan mereka kini boleh berehat.', 'Fikir sama ada latihan masih dibuat, akan dibuat atau telah siap.', 'Pilih kata yang menunjukkan perbuatan telah selesai.']
+    }
+  },
+  'BM-SIMPULAN_BAHASA-021': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih simpulan bahasa yang melengkapkan ayat.',
+      sentenceParts: ["Lengkapkan ayat dengan simpulan bahasa yang tepat: 'Nora ", " kerana selalu membantu guru menyusun buku.'"],
+      options: [
+        { id: 'barefoot', label: 'kaki ayam', value: 'kaki ayam' },
+        { id: 'helpful', label: 'ringan tulang', value: 'ringan tulang' },
+        { id: 'reader', label: 'ulat buku', value: 'ulat buku' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami simpulan bahasa yang menggambarkan sikap rajin membantu orang lain.',
+      assessment: 'Kaki ayam dan ulat buku ialah simpulan bahasa lazim tetapi masing-masing merujuk keadaan tidak berkasut dan orang yang suka membaca.',
+      textbook: 'Konteks membantu guru memberi petunjuk makna sambil mengekalkan latihan simpulan bahasa Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'simpulan_bahasa.rajin_membantu', responseMode: 'completion',
+      conceptTags: ['simpulan_bahasa', 'makna_kiasan', 'sikap_rajin'],
+      misconceptionTags: ['keliru_makna_kaki_ayam', 'keliru_makna_ulat_buku'],
+      hintSteps: ['Fokus pada perbuatan Nora yang selalu membantu guru.', 'Cari simpulan bahasa tentang orang yang rajin membantu.', 'Singkirkan pilihan yang berkaitan dengan tidak berkasut atau suka membaca.']
+    }
+  },
+  'ENG-NOUNS-004': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the place noun that completes the sentence.',
+      sentenceParts: ['We play football at the ', '.'],
+      options: [
+        { id: 'classroom', label: 'classroom', value: 'classroom' },
+        { id: 'kitchen', label: 'kitchen', value: 'kitchen' },
+        { id: 'field', label: 'field', value: 'field' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Identifies a place noun by using the activity described in a simple sentence.',
+      assessment: 'Classroom and kitchen are familiar places, but neither normally matches the football activity in the sentence.',
+      textbook: 'The blank preserves the original Year 2 noun-completion task and supplies a clear everyday context.'
+    },
+    intelligence: {
+      skillId: 'nouns.place_from_activity', responseMode: 'completion',
+      conceptTags: ['nouns', 'places', 'context_clues'],
+      misconceptionTags: ['chooses_indoor_place', 'ignores_activity_context'],
+      hintSteps: ['Notice the activity in the sentence.', 'Think about where football is normally played.', 'Choose the outdoor place that fits after the word before the blank.']
+    }
+  },
+  'ENG-COLOURS-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the colour that completes the sentence.',
+      sentenceParts: ['A ripe banana is ', '.'],
+      options: [
+        { id: 'yellow', label: 'yellow', value: 'yellow' },
+        { id: 'red', label: 'red', value: 'red' },
+        { id: 'blue', label: 'blue', value: 'blue' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Uses familiar object knowledge to identify an English colour word.',
+      assessment: 'Red and blue are valid colour words but do not describe the usual appearance of the named ripe fruit.',
+      textbook: 'A single blank keeps the original Year 2 vocabulary recall task in a familiar concrete sentence.'
+    },
+    intelligence: {
+      skillId: 'colours.ripe_fruit', responseMode: 'completion',
+      conceptTags: ['colours', 'fruit', 'describing_words'],
+      misconceptionTags: ['confuses_familiar_colours', 'ignores_ripe_clue'],
+      hintSteps: ['Picture a banana that is ready to eat.', 'Compare its usual colour with the three choices.', 'Choose the familiar colour of the fruit when it is ripe.']
+    }
+  },
+  'ENG-ANIMALS-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the animal that completes the sentence.',
+      sentenceParts: ["The farm animal that says 'moo' and gives us milk is a ", '.'],
+      options: [
+        { id: 'goat', label: 'goat', value: 'goat' },
+        { id: 'cow', label: 'cow', value: 'cow' },
+        { id: 'horse', label: 'horse', value: 'horse' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Identifies an English animal noun from its sound and a familiar product.',
+      assessment: 'Goat and horse are plausible farm animals, but they do not satisfy both the sound and milk clues together.',
+      textbook: 'The clue-based blank preserves the original Year 2 animal-vocabulary assessment in sentence form.'
+    },
+    intelligence: {
+      skillId: 'animals.identify_from_sound_and_product', responseMode: 'completion',
+      conceptTags: ['animals', 'animal_sounds', 'farm_products'],
+      misconceptionTags: ['uses_only_farm_clue', 'uses_only_milk_clue'],
+      hintSteps: ['Use both clues, not only one.', 'Listen in your mind for the animal sound in the sentence.', 'Choose the farm animal that matches the sound and the milk clue.']
+    }
+  },
+  'ENG-FOOD-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the drink that completes the sentence.',
+      sentenceParts: ['The clear drink with no colour that our body needs is ', '.'],
+      options: [
+        { id: 'milk', label: 'milk', value: 'milk' },
+        { id: 'juice', label: 'juice', value: 'juice' },
+        { id: 'water', label: 'water', value: 'water' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Identifies an everyday English drink word from descriptive clues.',
+      assessment: 'Milk and juice are familiar drinks, but their usual appearance conflicts with the clear and colourless clues.',
+      textbook: 'The descriptive sentence and one blank preserve the original Year 2 food-and-drink vocabulary task.'
+    },
+    intelligence: {
+      skillId: 'food.identify_clear_drink', responseMode: 'completion',
+      conceptTags: ['food_and_drink', 'descriptive_clues', 'everyday_needs'],
+      misconceptionTags: ['chooses_any_drink', 'ignores_clear_colourless_clues'],
+      hintSteps: ['Look for a drink with no colour.', 'Compare which choices are usually cloudy or coloured.', 'Choose the clear drink the body needs every day.']
+    }
+  },
+  'ARAB-NOMBOR_ARAB-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nombor Bahasa Melayu yang sepadan dengan simbol Arab.',
+      sentenceParts: ['Simbol ١ mewakili nombor ', ' dalam Bahasa Melayu.'],
+      options: [
+        { id: 'two', label: 'dua', value: 'dua' },
+        { id: 'one', label: 'satu', value: 'satu' },
+        { id: 'three', label: 'tiga', value: 'tiga' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan simbol nombor Arab asas dengan nama nombor dalam Bahasa Melayu.',
+      assessment: 'Dua dan tiga ialah nombor berdekatan yang mengesan kekeliruan urutan atau bentuk simbol Arab awal.',
+      textbook: 'Simbol sumber dikekalkan tepat dan tempat kosong mengekalkan latihan padanan nombor Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'nombor_arab.simbol_asas', responseMode: 'completion',
+      conceptTags: ['nombor_arab', 'simbol_nombor', 'padanan_bahasa'],
+      misconceptionTags: ['keliru_simbol_berdekatan', 'keliru_urutan_nombor_arab'],
+      hintSteps: ['Perhatikan bentuk simbol Arab yang diberi.', 'Ingat urutan tiga nombor Arab yang paling awal.', 'Padankan simbol itu dengan nama nombornya dalam Bahasa Melayu.']
+    }
+  },
+  'ARAB-HAIWAN_ARAB-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih maksud perkataan Arab yang melengkapkan ayat.',
+      sentenceParts: ['قِطٌّ bermaksud ', '.'],
+      options: [
+        { id: 'cat', label: 'kucing', value: 'kucing' },
+        { id: 'dog', label: 'anjing', value: 'anjing' },
+        { id: 'rabbit', label: 'arnab', value: 'arnab' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami makna kosa kata Arab asas dalam tema haiwan.',
+      assessment: 'Anjing dan arnab ialah nama haiwan yang munasabah tetapi mengesan kekeliruan antara kosa kata Arab dalam tema yang sama.',
+      textbook: 'Perkataan Arab berharakat dikekalkan tepat dan tempat kosong mengekalkan tugasan terjemahan kosa kata asal.'
+    },
+    intelligence: {
+      skillId: 'haiwan_arab.makna_qittun', responseMode: 'completion',
+      conceptTags: ['bahasa_arab', 'kosa_kata_haiwan', 'makna_perkataan'],
+      misconceptionTags: ['keliru_nama_haiwan_arab', 'meneka_daripada_tema'],
+      hintSteps: ['Baca perkataan Arab itu dari kanan ke kiri dan perhatikan barisnya.', 'Ingat semula kumpulan kosa kata haiwan yang telah dipelajari.', 'Bandingkan tiga nama haiwan Bahasa Melayu dengan perkataan Arab pada ayat.']
+    }
+  },
+  'ARAB-AYAT_MUDAH_ARAB-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih maksud ayat Arab yang betul.',
+      sentenceParts: ['Ayat هَذَا كِتَابٌ bermaksud ', '.'],
+      options: [
+        { id: 'this-is-a-pen', label: 'Ini pen', value: 'Ini pen' },
+        { id: 'this-is-a-bag', label: 'Ini beg', value: 'Ini beg' },
+        { id: 'this-is-a-book', label: 'Ini buku', value: 'Ini buku' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menterjemah ayat nama Arab mudah yang menggabungkan kata tunjuk dan kata nama.',
+      assessment: 'Pilihan pen dan beg mengekalkan pola ayat yang sama tetapi mengesan kekeliruan makna kata nama Arab.',
+      textbook: 'Ayat Arab asal dikekalkan utuh dan tempat kosong menilai terjemahan keseluruhan ayat Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'ayat_mudah_arab.kata_tunjuk_dan_benda', responseMode: 'completion',
+      conceptTags: ['bahasa_arab', 'ayat_mudah', 'kata_tunjuk', 'kata_nama'],
+      misconceptionTags: ['keliru_makna_kata_nama', 'menterjemah_sebahagian_ayat'],
+      hintSteps: ['Baca dua perkataan Arab dalam ayat dari kanan ke kiri.', 'Kenal pasti kata tunjuk dan benda yang disebut.', 'Pilih terjemahan yang mengekalkan kedua-dua makna itu.']
+    }
+  },
+  'ARAB-HIWAR-004': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih maksud ungkapan Arab yang betul.',
+      sentenceParts: ['Ungkapan اِسْمِي أَحْمَدُ bermaksud ', '.'],
+      options: [
+        { id: 'my-name-ahmad', label: 'Nama saya Ahmad', value: 'Nama saya Ahmad' },
+        { id: 'my-name-fatimah', label: 'Nama saya Fatimah', value: 'Nama saya Fatimah' },
+        { id: 'ask-name', label: 'Apakah nama kamu?', value: 'Apakah nama kamu?' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami ungkapan perkenalan diri yang mudah dalam hiwar Bahasa Arab.',
+      assessment: 'Nama Fatimah mengesan kekeliruan nama, manakala ayat tanya mengesan kekeliruan antara memperkenalkan diri dan bertanya.',
+      textbook: 'Ungkapan Arab berharakat dikekalkan tepat dan tempat kosong mengekalkan tugasan memahami hiwar asal.'
+    },
+    intelligence: {
+      skillId: 'hiwar.memperkenalkan_nama', responseMode: 'completion',
+      conceptTags: ['bahasa_arab', 'hiwar', 'perkenalan_diri'],
+      misconceptionTags: ['keliru_nama_dalam_ungkapan', 'keliru_pernyataan_dan_soalan'],
+      hintSteps: ['Baca ungkapan itu sebagai ayat memperkenalkan diri.', 'Bezakan ayat memperkenalkan nama daripada ayat bertanya nama.', 'Semak bahawa nama orang dalam terjemahan sepadan dengan tulisan Arab.']
+    }
+  },
+  'ISLAM-IBADAH-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bilangan yang melengkapkan fakta ibadah.',
+      sentenceParts: ['Solat fardu sehari semalam ada ', ' waktu.'],
+      options: [
+        { id: 'four', label: 'empat', value: 'empat' },
+        { id: 'five', label: 'lima', value: 'lima' },
+        { id: 'six', label: 'enam', value: 'enam' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengingat bilangan waktu solat fardu dalam sehari semalam.',
+      assessment: 'Empat dan enam ialah bilangan berdekatan yang mengesan kesilapan mengira atau tertinggal satu waktu solat.',
+      textbook: 'Ayat fakta dengan satu tempat kosong mengekalkan tugasan asas ibadah Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'ibadah.bilangan_solat_fardu', responseMode: 'completion',
+      conceptTags: ['ibadah', 'solat_fardu', 'waktu_solat'],
+      misconceptionTags: ['tertinggal_satu_waktu', 'terlebih_kira_waktu'],
+      hintSteps: ['Ingat semula solat wajib dari Subuh hingga Isyak.', 'Kira setiap waktu solat fardu sekali sahaja.', 'Pilih bilangan yang sama dengan jumlah waktu sehari semalam.']
+    }
+  },
+  'ISLAM-SIRAH-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nama kota yang melengkapkan fakta Sirah.',
+      sentenceParts: ['Nabi Muhammad SAW dilahirkan di kota ', '.'],
+      options: [
+        { id: 'makkah', label: 'Mekah', value: 'Mekah' },
+        { id: 'madinah', label: 'Madinah', value: 'Madinah' },
+        { id: 'taif', label: 'Taif', value: 'Taif' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kota kelahiran Nabi Muhammad SAW dalam Sirah asas.',
+      assessment: 'Madinah dan Taif ialah kota penting dalam Sirah tetapi mengesan kekeliruan antara peristiwa kehidupan baginda.',
+      textbook: 'Tempat kosong pada fakta ringkas mengekalkan tugasan pengetahuan Sirah Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'sirah.tempat_kelahiran_nabi', responseMode: 'completion',
+      conceptTags: ['sirah', 'kelahiran_nabi', 'kota_dalam_sirah'],
+      misconceptionTags: ['keliru_kelahiran_dan_hijrah', 'keliru_kota_dalam_sirah'],
+      hintSteps: ['Ingat peristiwa awal kehidupan Nabi Muhammad SAW.', 'Bezakan kota kelahiran baginda daripada kota hijrah dan kota lain dalam Sirah.', 'Pilih kota yang dikaitkan dengan kelahiran baginda.']
+    }
+  },
+  'ISLAM-QURAN-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nama malaikat yang melengkapkan fakta Al-Quran.',
+      sentenceParts: ['Malaikat yang menyampaikan wahyu Al-Quran ialah ', ' AS.'],
+      options: [
+        { id: 'mikail', label: 'Mikail', value: 'Mikail' },
+        { id: 'israfil', label: 'Israfil', value: 'Israfil' },
+        { id: 'jibril', label: 'Jibril', value: 'Jibril' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti malaikat yang ditugaskan menyampaikan wahyu Al-Quran.',
+      assessment: 'Mikail dan Israfil ialah nama malaikat yang dipelajari tetapi mengesan kekeliruan antara tugas-tugas malaikat.',
+      textbook: 'Ayat fakta dengan satu tempat kosong mengekalkan tugasan pengetahuan Al-Quran Tahun 2 yang asal.'
+    },
+    intelligence: {
+      skillId: 'quran.malaikat_penyampai_wahyu', responseMode: 'completion',
+      conceptTags: ['al_quran', 'wahyu', 'tugas_malaikat'],
+      misconceptionTags: ['keliru_tugas_malaikat', 'memilih_nama_tanpa_memadankan_tugas'],
+      hintSteps: ['Ingat bahawa setiap malaikat mempunyai tugas tertentu.', 'Fokus pada tugas membawa wahyu kepada para nabi.', 'Pilih malaikat yang ditugaskan menyampaikan wahyu Al-Quran.']
+    }
+  },
+  'ISLAM-ADAB-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih ungkapan yang melengkapkan adab sebelum makan.',
+      sentenceParts: ['Sebelum makan, kita membaca ', '.'],
+      options: [
+        { id: 'praise', label: 'Alhamdulillah', value: 'Alhamdulillah' },
+        { id: 'begin', label: 'Bismillah', value: 'Bismillah' },
+        { id: 'glorify', label: 'Subhanallah', value: 'Subhanallah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengamalkan bacaan yang sesuai sebagai adab sebelum makan.',
+      assessment: 'Alhamdulillah dan Subhanallah ialah ungkapan Islam yang lazim tetapi tidak sepadan dengan konteks memulakan makan.',
+      textbook: 'Tempat kosong dalam rutin harian mengekalkan tugasan adab Tahun 2 yang asal dan mudah difahami.'
+    },
+    intelligence: {
+      skillId: 'adab.bacaan_sebelum_makan', responseMode: 'completion',
+      conceptTags: ['adab_makan', 'bacaan_harian', 'memulakan_perbuatan'],
+      misconceptionTags: ['keliru_bacaan_sebelum_dan_selepas', 'memilih_ungkapan_umum'],
+      hintSteps: ['Perhatikan masa dalam ayat: sebelum makan.', 'Bezakan bacaan memulakan sesuatu daripada ucapan selepas selesai.', 'Pilih ungkapan yang digunakan untuk memulakan makan dengan nama Allah.']
+    }
+  }
+});
+
+const REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-002': {
     interaction: {
@@ -2011,6 +2405,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_Q4_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
+  ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
@@ -2281,6 +2676,10 @@ const REVIEWED_CONTENT_BATCH_2_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -2339,6 +2738,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_Q4_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
+  ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,

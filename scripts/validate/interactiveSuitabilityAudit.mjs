@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 184, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 200, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2746, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2730, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -49,6 +49,12 @@ const interactiveContentBatch2Types = new Map([
   ['SAINS-HAIWAN-016', 'imageChoice'],
   ['SAINS-TUMBUHAN-005', 'imageChoice'],
   ['SAINS-TUMBUHAN-021', 'fillBlank']
+]);
+const languageFillBlankBatch3Ids = new Set([
+  'BM-KATA_SENDI-002', 'BM-KATA_HUBUNG-003', 'BM-TATABAHASA-018', 'BM-SIMPULAN_BAHASA-021',
+  'ENG-NOUNS-004', 'ENG-COLOURS-001', 'ENG-ANIMALS-003', 'ENG-FOOD-003',
+  'ARAB-NOMBOR_ARAB-001', 'ARAB-HAIWAN_ARAB-001', 'ARAB-AYAT_MUDAH_ARAB-001', 'ARAB-HIWAR-004',
+  'ISLAM-IBADAH-001', 'ISLAM-SIRAH-001', 'ISLAM-QURAN-003', 'ISLAM-ADAB-001'
 ]);
 const equalGroupsPilotIds = new Set([
   'MATH-DARAB-PILOT-002',
@@ -79,6 +85,15 @@ for (const [id, type] of interactiveContentBatch2Types) {
   assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah kepada laluan interaktif disemak.`);
   assert.equal(row?.recommendedType, type, `${id} mesti mengekalkan jenis interaksi Batch 2 yang diluluskan.`);
   assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai konfigurasi authored yang sepadan.`);
+}
+
+assert.equal(languageFillBlankBatch3Ids.size, 16, 'Language FillBlank Batch 3 mesti mengandungi tepat enam belas ID yang diluluskan.');
+for (const id of languageFillBlankBatch3Ids) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'fillBlank', `${id} mesti kekal pada interaksi fillBlank sedia ada.`);
+  assert.equal(question?.interaction?.type, 'fillBlank', `${id} mesti mempunyai overlay fillBlank yang disemak.`);
 }
 
 assert.equal(equalGroupsPilotIds.size, 8, 'Pilot Equal Groups mesti mengandungi tepat lapan ID yang diluluskan.');
