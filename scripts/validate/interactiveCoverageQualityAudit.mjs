@@ -45,6 +45,12 @@ const batch2Ids = new Set([
   'SAINS-HAIWAN-015', 'SAINS-HAIWAN-016',
   'SAINS-TUMBUHAN-005', 'SAINS-TUMBUHAN-021'
 ]);
+const languageFillBlankBatch3Ids = new Set([
+  'BM-KATA_SENDI-002', 'BM-KATA_HUBUNG-003', 'BM-TATABAHASA-018', 'BM-SIMPULAN_BAHASA-021',
+  'ENG-NOUNS-004', 'ENG-COLOURS-001', 'ENG-ANIMALS-003', 'ENG-FOOD-003',
+  'ARAB-NOMBOR_ARAB-001', 'ARAB-HAIWAN_ARAB-001', 'ARAB-AYAT_MUDAH_ARAB-001', 'ARAB-HIWAR-004',
+  'ISLAM-IBADAH-001', 'ISLAM-SIRAH-001', 'ISLAM-QURAN-003', 'ISLAM-ADAB-001'
+]);
 const equalGroupsPilotIds = new Set([
   'MATH-DARAB-PILOT-002', 'MATH-DARAB-PILOT-004',
   'MATH-DARAB-PILOT-006', 'MATH-DARAB-PILOT-008',
@@ -271,11 +277,11 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1176, TEACHER_REVIEW: 2746, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 184, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1192, TEACHER_REVIEW: 2730, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 200, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1176, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3354, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.interactive, 1192, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3338, 'All remaining questions must stay on the standard response path.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -300,6 +306,17 @@ assert.ok([...batch2Ids].every(id => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every Interactive Content Batch 2 question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(languageFillBlankBatch3Ids.size, 16, 'Language FillBlank Batch 3 must contain exactly sixteen approved question IDs.');
+assert.equal(new Set([...batch1Ids, ...batch2Ids, ...languageFillBlankBatch3Ids]).size, batch1Ids.size + batch2Ids.size + languageFillBlankBatch3Ids.size, 'Language FillBlank Batch 3 must remain disjoint from Interactive Content Batches 1 and 2.');
+assert.ok([...languageFillBlankBatch3Ids].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactionType === 'fillBlank'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Language FillBlank Batch 3 question must be authored, valid, accessible and AUTO_SAFE.');
 assert.equal(equalGroupsPilotIds.size, 8, 'The Equal Groups pilot must contain exactly eight approved question IDs.');
 assert.ok([...equalGroupsPilotIds].every(id => {
   const row = rows.find(item => item.questionId === id);
