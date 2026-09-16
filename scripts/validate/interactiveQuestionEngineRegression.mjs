@@ -190,6 +190,15 @@ const equalGroupsPilotContracts = new Map([
   ['MATH-BAHAGI-PILOT-009', { stem: 'Apakah hasil bagi 16 ÷ 2?', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 16, groups: 2 }, optionValues: ['8', '2', '14'] }],
   ['MATH-BAHAGI-PILOT-047', { stem: 'Satu jadual menunjukkan 3 dulang × ___ kuih = 27 kuih. Gunakan maklumat itu untuk mencari kuih pada setiap dulang.', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 27, groups: 3 }, optionValues: ['9', '8', '10'] }]
 ]);
+const numberLinePilotContracts = new Map([
+  ['MATH-DARAB-PILOT-009', { stem: 'Apakah hasil bagi 5 x 8?', answer: '40', visual: { kind: 'numberLine', mode: 'repeatedJumps', jumps: 8, step: 5 }, optionValues: ['40', '13', '35'] }],
+  ['MATH-DARAB-PILOT-020', { stem: 'Lengkapkan 5 x ___ = 35.', answer: '7', visual: { kind: 'numberLine', mode: 'countJumps', end: 35, step: 5 }, optionValues: ['7', '5', '6'] }],
+  ['MATH-DARAB-PILOT-025', { stem: 'Lengkapkan 10 x 10 = ___.', answer: '100', visual: { kind: 'numberLine', mode: 'repeatedJumps', jumps: 10, step: 10 }, optionValues: ['100', '20', '90'] }],
+  ['MATH-DARAB-PILOT-032', { stem: 'Isi faktor yang hilang: ___ x 4 = 32.', answer: '8', visual: { kind: 'numberLine', mode: 'countJumps', end: 32, step: 4 }, optionValues: ['8', '4', '7'] }],
+  ['MATH-DARAB-PILOT-033', { stem: 'Lengkapkan 6 x ___ = 54.', answer: '9', visual: { kind: 'numberLine', mode: 'countJumps', end: 54, step: 6 }, optionValues: ['9', '6', '8'] }],
+  ['MATH-BAHAGI-PILOT-008', { stem: 'Kira 40 ÷ 10.', answer: '4', visual: { kind: 'numberLine', mode: 'countJumps', end: 40, step: 10 }, optionValues: ['4', '10', '30'] }],
+  ['MATH-BAHAGI-PILOT-025', { stem: 'Lengkapkan 72 ÷ 8 = ___.', answer: '9', visual: { kind: 'numberLine', mode: 'countJumps', end: 72, step: 8 }, optionValues: ['9', '8', '10'] }]
+]);
 const allReviewedChoiceBatchIds = new Set([...reviewedChoiceBatchIds, ...reviewedChoiceBatch3Ids]);
 
 assert.equal(questions.length, 4530, 'Interactive enrichment must not add or remove bank questions.');
@@ -199,9 +208,10 @@ assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contai
 assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch2Types.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
+assert.equal(numberLinePilotContracts.size, 7, 'The Number Line pilot must contain exactly seven reviewed questions.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -342,6 +352,44 @@ for (const [id] of equalGroupsPilotContracts) {
     `= ${correctValue}`
   ].every(phrase => !guidance.includes(phrase)), `${id} instruction and hints must not state the derived result.`);
 }
+
+for (const [id, contract] of numberLinePilotContracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the runtime Mathematics collection.`);
+  assert.ok(question, `Missing reviewed Number Line pilot interaction ${id}.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its original canonical answer.`);
+  assert.deepEqual(question.accepted, [contract.answer], `${id} must preserve its original accepted answers.`);
+  assert.deepEqual(question.acceptedAnswers, [contract.answer], `${id} must preserve its normalized answer contract.`);
+  assert.equal(question.interaction.type, 'visualMath', `${id} must remain a visualMath interaction.`);
+  assert.deepEqual(question.interaction.visual, contract.visual, `${id} must use the approved strict Number Line metadata.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must use the three reviewed option values.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must provide exactly three options.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass strict Number Line validation.`);
+  const correctOptions = question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct');
+  assert.equal(correctOptions.length, 1, `${id} must have exactly one option accepted by the original answer contract.`);
+  assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject both reviewed distractors.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires specific curriculum, assessment and textbook review notes.`);
+  assert.ok(question.learningIntelligence?.skillId && question.learningIntelligence?.responseMode, `${id} requires reviewed skill and response metadata.`);
+  assert.ok(question.learningIntelligence?.conceptTags?.length && question.learningIntelligence?.misconceptionTags?.length, `${id} requires reviewed concept and misconception tags.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive reviewed hints.`);
+  const prohibitedKeys = contract.visual.mode === 'repeatedJumps'
+    ? ['end', 'answer', 'result', 'solution', 'correctAnswer', 'equation', 'caption', 'label', 'answerLabel']
+    : ['jumps', 'answer', 'result', 'solution', 'correctAnswer', 'equation', 'caption', 'label', 'answerLabel'];
+  assert.ok(!Object.keys(question.interaction.visual).some(key => prohibitedKeys.includes(key)), `${id} visual metadata must not carry its derived unknown or an answer-leak field.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps].join(' ').toLocaleLowerCase('ms-MY');
+  assert.ok([
+    `jawapan ${contract.answer}`,
+    `hasilnya ${contract.answer}`,
+    `ialah ${contract.answer}`,
+    `menjadi ${contract.answer}`,
+    `= ${contract.answer}`
+  ].every(phrase => !guidance.includes(phrase)), `${id} instruction and hints must not state the derived answer.`);
+}
+
+assert.notEqual(byId.get('MATH-BAHAGI-PILOT-020')?.interaction?.visual?.kind, 'numberLine', 'The unsupported unknown-step division construct must remain unauthored as Number Line content.');
 
 assert.deepEqual(byId.get('MATH-DARAB-PILOT-001').interaction.options.map(option => option.value), ['5', '6', '8'], 'Existing reviewed multiplication choice must remain unchanged.');
 assert.deepEqual(byId.get('MATH-DARAB-PILOT-047').interaction.correctOrder, ['product-25', 'product-27', 'product-32'], 'Existing reviewed multiplication ordering must remain unchanged.');

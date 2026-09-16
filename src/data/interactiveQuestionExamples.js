@@ -1754,8 +1754,186 @@ const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_NUMBER_LINE_PILOT_SPECS = Object.freeze({
+  'MATH-DARAB-PILOT-009': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Ikuti 8 lompatan lima-lima pada garis nombor. Tentukan titik akhir dan pilih hasil darab yang betul.',
+      visual: { kind: 'numberLine', mode: 'repeatedJumps', jumps: 8, step: 5 },
+      options: [
+        { id: 'forty', label: '40', value: '40' },
+        { id: 'thirteen', label: '13', value: '13' },
+        { id: 'thirty-five', label: '35', value: '35' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mentafsir pendaraban sebagai lapan lompatan sama besar sambil mengukuhkan kiraan lima-lima dan tambah berulang Tahun 2.',
+      assessment: 'Garis nombor menilai sama ada murid mengikuti semua lompatan; distraktor mengesan penambahan operan dan berhenti satu lompatan terlalu awal.',
+      textbook: 'Lompatan sama besar menghubungkan kiraan lima-lima dengan ungkapan darab asal tanpa menulis titik akhir sebagai jawapan.'
+    },
+    intelligence: {
+      skillId: 'darab.lompatan_lima_5_darab_8', responseMode: 'visual_number_line',
+      conceptTags: ['darab', 'garis_nombor', 'kira_lima_lima', 'tambah_berulang'],
+      misconceptionTags: ['menambah_operan', 'berhenti_satu_lompatan_awal'],
+      hintSteps: ['Mulakan pada 0 dan perhatikan saiz setiap lompatan.', 'Setiap lompatan bergerak 5 nilai ke hadapan.', 'Ikuti semua 8 lompatan dan tentukan titik akhirnya.']
+    }
+  },
+  'MATH-DARAB-PILOT-020': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan lompatan lima-lima dari 0 hingga 35. Kira bilangan lompatan untuk melengkapkan ayat darab.',
+      visual: { kind: 'numberLine', mode: 'countJumps', end: 35, step: 5 },
+      options: [
+        { id: 'seven', label: '7', value: '7' },
+        { id: 'five', label: '5', value: '5' },
+        { id: 'six', label: '6', value: '6' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan faktor yang hilang melalui bilangan lompatan lima-lima yang diperlukan untuk mencapai nilai diberi.',
+      assessment: 'Pilihan membezakan bilangan lompatan daripada saiz lompatan dan mengesan murid yang berhenti satu lompatan sebelum titik akhir.',
+      textbook: 'Kiraan lompatan dari sifar ke nilai diberi menjembatani kiraan lompat dengan ayat darab faktor hilang asal.'
+    },
+    intelligence: {
+      skillId: 'darab.faktor_hilang_lompatan_lima', responseMode: 'visual_count_jumps',
+      conceptTags: ['darab', 'faktor_hilang', 'garis_nombor', 'kira_lima_lima'],
+      misconceptionTags: ['memilih_saiz_lompatan', 'kurang_satu_lompatan'],
+      hintSteps: ['Nilai setiap lompatan ialah 5.', 'Jejak lompatan dari 0 sehingga 35.', 'Kira berapa lompatan diperlukan untuk sampai ke 35.']
+    }
+  },
+  'MATH-DARAB-PILOT-025': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Ikuti 10 lompatan sepuluh-sepuluh pada garis nombor. Tentukan titik akhir.',
+      visual: { kind: 'numberLine', mode: 'repeatedJumps', jumps: 10, step: 10 },
+      options: [
+        { id: 'one-hundred', label: '100', value: '100' },
+        { id: 'twenty', label: '20', value: '20' },
+        { id: 'ninety', label: '90', value: '90' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan sepuluh lompatan bernilai sepuluh untuk memahami fakta darab sepuluh dan kiraan sepuluh-sepuluh Tahun 2.',
+      assessment: 'Distraktor mengesan penambahan dua operan dan penghentian satu lompatan awal ketika menentukan titik akhir.',
+      textbook: 'Garis nombor menghubungkan tambah berulang sepuluh-sepuluh dengan fakta darab simbolik tanpa memaparkan hasil terbitan.'
+    },
+    intelligence: {
+      skillId: 'darab.sepuluh_lompatan_sepuluh', responseMode: 'visual_number_line',
+      conceptTags: ['darab', 'garis_nombor', 'kira_sepuluh_sepuluh', 'fakta_darab_10'],
+      misconceptionTags: ['menambah_operan', 'berhenti_satu_lompatan_awal'],
+      hintSteps: ['Mulakan pada 0.', 'Setiap lompatan bergerak 10 nilai.', 'Ikuti kesemua 10 lompatan dan tentukan titik akhir.']
+    }
+  },
+  'MATH-DARAB-PILOT-032': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan lompatan empat-empat dari 0 hingga 32. Kira bilangan lompatan untuk mencari faktor yang hilang.',
+      visual: { kind: 'numberLine', mode: 'countJumps', end: 32, step: 4 },
+      options: [
+        { id: 'eight', label: '8', value: '8' },
+        { id: 'four', label: '4', value: '4' },
+        { id: 'seven', label: '7', value: '7' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mencari faktor pertama yang hilang dengan mengira bilangan kumpulan empat pada garis nombor.',
+      assessment: 'Pilihan mendiagnosis kekeliruan antara saiz lompatan dengan bilangan lompatan serta kesilapan kurang satu lompatan.',
+      textbook: 'Lompatan empat-empat dari sifar mengekalkan ayat darab asal sambil memberikan perwakilan konkrit faktor yang belum diketahui.'
+    },
+    intelligence: {
+      skillId: 'darab.faktor_pertama_hilang_lompatan_empat', responseMode: 'visual_count_jumps',
+      conceptTags: ['darab', 'faktor_hilang', 'garis_nombor', 'kira_empat_empat'],
+      misconceptionTags: ['memilih_saiz_lompatan', 'kurang_satu_lompatan'],
+      hintSteps: ['Setiap lompatan bernilai 4.', 'Ikuti garis nombor dari 0 hingga 32.', 'Kira jumlah lompatan untuk mendapatkan faktor yang hilang.']
+    }
+  },
+  'MATH-DARAB-PILOT-033': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan lompatan enam-enam dari 0 hingga 54. Kira bilangan lompatan untuk mencari faktor yang hilang.',
+      visual: { kind: 'numberLine', mode: 'countJumps', end: 54, step: 6 },
+      options: [
+        { id: 'nine', label: '9', value: '9' },
+        { id: 'six', label: '6', value: '6' },
+        { id: 'eight', label: '8', value: '8' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan faktor kedua yang hilang melalui kiraan bilangan lompatan enam-enam hingga nilai sasaran.',
+      assessment: 'Distraktor membezakan faktor hilang daripada saiz lompatan dan mengesan kiraan yang berhenti satu lompatan awal.',
+      textbook: 'Model garis nombor menyambungkan kiraan enam-enam kepada ayat darab faktor hilang tanpa mengubah konstruk simbolik asal.'
+    },
+    intelligence: {
+      skillId: 'darab.faktor_kedua_hilang_lompatan_enam', responseMode: 'visual_count_jumps',
+      conceptTags: ['darab', 'faktor_hilang', 'garis_nombor', 'kira_enam_enam'],
+      misconceptionTags: ['memilih_saiz_lompatan', 'kurang_satu_lompatan'],
+      hintSteps: ['Setiap lompatan bernilai 6.', 'Ikuti lompatan sehingga sampai ke 54.', 'Kira jumlah lompatan untuk mendapatkan faktor yang hilang.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-008': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan lompatan sepuluh-sepuluh dari 0 hingga 40. Kira berapa lompatan diperlukan.',
+      visual: { kind: 'numberLine', mode: 'countJumps', end: 40, step: 10 },
+      options: [
+        { id: 'four', label: '4', value: '4' },
+        { id: 'ten', label: '10', value: '10' },
+        { id: 'thirty', label: '30', value: '30' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mentafsir bahagi sebagai pengumpulan dengan mengira bilangan lompatan bersaiz sepuluh dalam jumlah diberi.',
+      assessment: 'Pilihan mengesan murid yang memilih pembahagi sebagai jawapan atau menolak pembahagi sekali sahaja dan bukannya mengumpul berulang.',
+      textbook: 'Lompatan sepuluh-sepuluh menghubungkan pengumpulan berulang dengan ayat bahagi asal tanpa menyatakan hasil bahagi.'
+    },
+    intelligence: {
+      skillId: 'bahagi.pengumpulan_40_dengan_10_garis_nombor', responseMode: 'visual_count_jumps',
+      conceptTags: ['bahagi', 'pengumpulan', 'garis_nombor', 'kira_sepuluh_sepuluh'],
+      misconceptionTags: ['memilih_pembahagi', 'menolak_sekali'],
+      hintSteps: ['Setiap lompatan mewakili 10.', 'Jejak dari 0 sehingga 40.', 'Kira bilangan lompatan yang digunakan.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-025': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan lompatan lapan-lapan dari 0 hingga 72. Kira bilangan lompatan untuk mendapatkan hasil bahagi.',
+      visual: { kind: 'numberLine', mode: 'countJumps', end: 72, step: 8 },
+      options: [
+        { id: 'nine', label: '9', value: '9' },
+        { id: 'eight', label: '8', value: '8' },
+        { id: 'ten', label: '10', value: '10' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan hasil bahagi sebagai bilangan kumpulan lapan yang terkandung dalam jumlah diberi menggunakan garis nombor.',
+      assessment: 'Distraktor membezakan hasil bahagi daripada pembahagi dan mengesan kiraan yang terlebih satu lompatan.',
+      textbook: 'Kiraan lompatan lapan-lapan memodelkan pengumpulan bahagi sambil mengekalkan ayat simbolik dan jawapan asal.'
+    },
+    intelligence: {
+      skillId: 'bahagi.pengumpulan_72_dengan_8_garis_nombor', responseMode: 'visual_count_jumps',
+      conceptTags: ['bahagi', 'pengumpulan', 'garis_nombor', 'kira_lapan_lapan'],
+      misconceptionTags: ['memilih_pembahagi', 'terlebih_satu_lompatan'],
+      hintSteps: ['Setiap lompatan mewakili 8.', 'Jejak lompatan dari 0 hingga 72.', 'Kira semua lompatan untuk menentukan hasil bahagi.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
+const REVIEWED_NUMBER_LINE_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
     qualityReview: spec.qualityReview
   }])
@@ -1776,6 +1954,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
+  ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -2047,6 +2226,10 @@ const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -2094,6 +2277,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
+  ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
