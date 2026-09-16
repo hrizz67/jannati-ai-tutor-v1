@@ -1754,6 +1754,57 @@ const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_ARRAY_PILOT_SPECS = Object.freeze({
+  'MATH-DARAB-PILOT-003': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan tatasusunan baris dan lajur. Kira jumlah objek dan pilih jawapan yang betul.',
+      visual: { kind: 'array', mode: 'multiplication', rows: 10, columns: 6 },
+      options: [
+        { id: 'sixty', label: '60', value: '60' },
+        { id: 'sixteen', label: '16', value: '16' },
+        { id: 'fifty-four', label: '54', value: '54' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mewakilkan fakta darab 10 × 6 sebagai 10 baris dengan 6 objek pada setiap baris.',
+      assessment: 'Distraktor 16 mengesan penambahan faktor, manakala 54 mengesan pengiraan yang tertinggal satu baris.',
+      textbook: 'Tatasusunan segi empat 10 baris × 6 lajur mengekalkan struktur fakta darab asal tanpa memaparkan hasil.'
+    },
+    intelligence: {
+      skillId: 'darab.tatasusunan_10_baris_6_lajur', responseMode: 'visual_array',
+      conceptTags: ['darab', 'tatasusunan', 'baris_dan_lajur', 'fakta_darab'],
+      misconceptionTags: ['menambah_faktor', 'kurang_satu_baris'],
+      hintSteps: ['Perhatikan bahawa tatasusunan mempunyai 10 baris.', 'Setiap baris mempunyai 6 objek.', 'Kira semua objek mengikut susunan baris dan lajur sebelum memilih jawapan.']
+    }
+  },
+  'MATH-DARAB-PILOT-005': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan tatasusunan baris dan lajur. Kira jumlah objek dan pilih jawapan yang betul.',
+      visual: { kind: 'array', mode: 'multiplication', rows: 4, columns: 6 },
+      options: [
+        { id: 'twenty-four', label: '24', value: '24' },
+        { id: 'ten', label: '10', value: '10' },
+        { id: 'eighteen', label: '18', value: '18' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mewakilkan fakta darab 4 × 6 sebagai 4 baris dengan 6 objek pada setiap baris.',
+      assessment: 'Distraktor 10 mengesan penambahan faktor, manakala 18 mengesan pengiraan yang tertinggal satu baris.',
+      textbook: 'Tatasusunan segi empat 4 baris × 6 lajur mengekalkan struktur fakta darab asal tanpa memaparkan hasil.'
+    },
+    intelligence: {
+      skillId: 'darab.tatasusunan_4_baris_6_lajur', responseMode: 'visual_array',
+      conceptTags: ['darab', 'tatasusunan', 'baris_dan_lajur', 'fakta_darab'],
+      misconceptionTags: ['menambah_faktor', 'kurang_satu_baris'],
+      hintSteps: ['Perhatikan bahawa tatasusunan mempunyai 4 baris.', 'Setiap baris mempunyai 6 objek.', 'Kira semua objek mengikut susunan baris dan lajur sebelum memilih jawapan.']
+    }
+  }
+});
+
 const REVIEWED_NUMBER_LINE_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-009': {
     interaction: {
@@ -1932,6 +1983,13 @@ const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_ARRAY_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_ARRAY_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_NUMBER_LINE_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -1954,6 +2012,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
+  ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
@@ -2226,6 +2285,10 @@ const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_ARRAY_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_ARRAY_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -2277,6 +2340,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
+  ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
