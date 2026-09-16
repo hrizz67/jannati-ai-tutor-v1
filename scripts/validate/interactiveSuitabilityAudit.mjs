@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 167, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 175, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2763, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2755, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -50,12 +50,32 @@ const interactiveContentBatch2Types = new Map([
   ['SAINS-TUMBUHAN-005', 'imageChoice'],
   ['SAINS-TUMBUHAN-021', 'fillBlank']
 ]);
+const equalGroupsPilotIds = new Set([
+  'MATH-DARAB-PILOT-002',
+  'MATH-DARAB-PILOT-004',
+  'MATH-DARAB-PILOT-006',
+  'MATH-DARAB-PILOT-008',
+  'MATH-BAHAGI-PILOT-004',
+  'MATH-BAHAGI-PILOT-007',
+  'MATH-BAHAGI-PILOT-009',
+  'MATH-BAHAGI-PILOT-047'
+]);
 for (const [id, type] of interactiveContentBatch2Types) {
   const row = report.questionClassifications.find(item => item.questionId === id);
   const question = questionMap.get(id);
   assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah kepada laluan interaktif disemak.`);
   assert.equal(row?.recommendedType, type, `${id} mesti mengekalkan jenis interaksi Batch 2 yang diluluskan.`);
   assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai konfigurasi authored yang sepadan.`);
+}
+
+assert.equal(equalGroupsPilotIds.size, 8, 'Pilot Equal Groups mesti mengandungi tepat lapan ID yang diluluskan.');
+for (const id of equalGroupsPilotIds) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'visualMath', `${id} mesti kekal pada konstruk visualMath.`);
+  assert.equal(question?.interaction?.type, 'visualMath', `${id} mesti mempunyai interaksi visualMath yang disemak.`);
+  assert.equal(question?.interaction?.visual?.kind, 'equalGroups', `${id} mesti menggunakan visual equalGroups yang dibekukan.`);
 }
 
 for (const row of report.questionClassifications.filter(item => item.category === 'auto_safe')) {
