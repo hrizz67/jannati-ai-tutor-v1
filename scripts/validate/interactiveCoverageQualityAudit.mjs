@@ -51,6 +51,12 @@ const equalGroupsPilotIds = new Set([
   'MATH-BAHAGI-PILOT-004', 'MATH-BAHAGI-PILOT-007',
   'MATH-BAHAGI-PILOT-009', 'MATH-BAHAGI-PILOT-047'
 ]);
+const numberLinePilotIds = new Set([
+  'MATH-DARAB-PILOT-009', 'MATH-DARAB-PILOT-020',
+  'MATH-DARAB-PILOT-025', 'MATH-DARAB-PILOT-032',
+  'MATH-DARAB-PILOT-033', 'MATH-BAHAGI-PILOT-008',
+  'MATH-BAHAGI-PILOT-025'
+]);
 
 function metricTemplate() {
   return {
@@ -99,7 +105,7 @@ function visualNodes(config = {}) {
 
 function hasSemanticVisualLabel(visual = {}) {
   if (String(visual.label || '').trim()) return true;
-  return ['equalGroups', 'placeValue', 'ruler'].includes(visual.kind);
+  return ['equalGroups', 'numberLine', 'placeValue', 'ruler'].includes(visual.kind);
 }
 
 function normalized(value) {
@@ -262,11 +268,11 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1167, TEACHER_REVIEW: 2755, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 175, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1174, TEACHER_REVIEW: 2748, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 182, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1167, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3363, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.interactive, 1174, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3356, 'All remaining questions must stay on the standard response path.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -301,6 +307,17 @@ assert.ok([...equalGroupsPilotIds].every(id => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every Equal Groups pilot question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(numberLinePilotIds.size, 7, 'The Number Line pilot must contain exactly seven approved question IDs.');
+assert.ok([...numberLinePilotIds].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactionType === 'visualMath'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Number Line pilot question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(rows.find(row => row.questionId === 'MATH-BAHAGI-PILOT-020')?.classification, 'TEACHER_REVIEW', 'The unsupported unknown-step division construct must remain in teacher review.');
 assert.equal(rows.find(row => row.questionId === 'MATH-MASA-PILOT-021')?.classification, 'KEEP_STANDARD', 'Constructed-response time reasoning must remain standard.');
 
 const report = {
