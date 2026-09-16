@@ -91,6 +91,28 @@ function NumberLineVisual({ visual }) {
   </div>;
 }
 
+function ArrayVisual({ visual }) {
+  const description = `Tatasusunan mempunyai ${visual.rows} baris dengan ${visual.columns} objek pada setiap baris. Tentukan jumlah objek.`;
+
+  return <div className="array-visual mode-multiplication" role="img" aria-label={description}>
+    <div
+      className="array-grid"
+      aria-hidden="true"
+      data-rows={visual.rows}
+      data-columns={visual.columns}
+      style={{ '--array-columns': visual.columns, '--array-width': `${visual.columns * 34}px` }}
+    >
+      {Array.from({ length: visual.rows }, (_, rowIndex) => <div className="array-row" key={rowIndex}>
+        {Array.from({ length: visual.columns }, (_, columnIndex) => <span
+          className="array-counter"
+          aria-hidden="true"
+          key={columnIndex}
+        />)}
+      </div>)}
+    </div>
+  </div>;
+}
+
 function ClockVisual({ hour = 12, minute = 0, label }) {
   const normalizedMinute = Math.max(0, Math.min(59, Number(minute) || 0));
   const hourAngle = ((Number(hour) || 0) % 12) * 30 + normalizedMinute * .5;
@@ -153,6 +175,7 @@ export default function QuestionVisual({ visual, className = '' }) {
   if (visual.kind === 'placeValue') return <PlaceValueVisual columns={visual.columns} />;
   if (visual.kind === 'equalGroups') return <EqualGroupsVisual visual={visual} />;
   if (visual.kind === 'numberLine') return <NumberLineVisual visual={visual} />;
+  if (visual.kind === 'array') return <ArrayVisual visual={visual} />;
   if (visual.kind === 'clock') return <ClockVisual hour={visual.hour} minute={visual.minute} label={visual.label} />;
   if (visual.kind === 'plantDiagram') return <PlantDiagram label={visual.label} />;
   if (visual.kind === 'ruler') return <RulerVisual visual={visual} />;

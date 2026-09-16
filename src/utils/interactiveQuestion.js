@@ -32,6 +32,10 @@ const NUMBER_LINE_ALLOWED_KEYS = Object.freeze({
   countJumps: new Set(['kind', 'mode', 'end', 'step'])
 });
 
+const ARRAY_ALLOWED_KEYS = Object.freeze({
+  multiplication: new Set(['kind', 'mode', 'rows', 'columns'])
+});
+
 function isBoundedInteger(value, maximum) {
   return Number.isInteger(value) && value >= 1 && value <= maximum;
 }
@@ -73,6 +77,18 @@ function isValidNumberLineVisual(visual) {
   return isBoundedInteger(visual.end, 100)
     && visual.end % visual.step === 0
     && visual.end / visual.step <= 10;
+}
+
+function isValidArrayVisual(visual) {
+  if (!visual || typeof visual !== 'object' || Array.isArray(visual)) return false;
+  const allowedKeys = ARRAY_ALLOWED_KEYS[visual.mode];
+  if (!allowedKeys
+    || Object.keys(visual).length !== allowedKeys.size
+    || Object.keys(visual).some(key => !allowedKeys.has(key))) return false;
+
+  return isBoundedInteger(visual.rows, 10)
+    && isBoundedInteger(visual.columns, 10)
+    && visual.rows * visual.columns <= 60;
 }
 
 export function validateInteractiveQuestionConfig(config = {}) {
@@ -170,6 +186,11 @@ export function validateInteractiveQuestionConfig(config = {}) {
     && config.visual?.kind === 'numberLine'
     && !isValidNumberLineVisual(config.visual)) {
     issues.push('invalid_number_line_visual');
+  }
+  if (config.type === 'visualMath'
+    && config.visual?.kind === 'array'
+    && !isValidArrayVisual(config.visual)) {
+    issues.push('invalid_array_visual');
   }
 
   return [...new Set(issues)];
