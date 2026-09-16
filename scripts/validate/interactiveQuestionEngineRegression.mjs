@@ -572,6 +572,9 @@ assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'nu
 assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'numberLine', mode: 'countJumps', end: 35, step: 5 })), [], 'Counting jumps must be accepted through the existing visualMath path.');
 assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'numberLine', mode: 'countJumps', end: 35, step: 5, jumps: 7 })).includes('invalid_number_line_visual'), 'Count-jump metadata must not store the unknown jump count.');
 assert.equal(INTERACTIVE_QUESTION_TYPES.includes('numberLine'), false, 'Number line must remain a visualMath kind rather than a new interaction type.');
+assert.deepEqual(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'array', mode: 'multiplication', rows: 4, columns: 5 })), [], 'Arrays must be accepted through the existing visualMath path.');
+assert.ok(validateInteractiveQuestionConfig(equalGroupsConfig({ kind: 'array', mode: 'multiplication', rows: 4, columns: 5, total: 20 })).includes('invalid_array_visual'), 'Array metadata must not store an answer-bearing total.');
+assert.equal(INTERACTIVE_QUESTION_TYPES.includes('array'), false, 'Arrays must remain a visualMath kind rather than a new interaction type.');
 assert.equal(getInteractiveQuestionConfig(questions.find(question => question.id === 'MATH-MASA-PILOT-021')), null, 'A constructed-response time problem must remain on the standard input path when a richer interaction could alter the assessed construct.');
 const derivedObjective = questions.find(question => question.id === 'PJ-PERGERAKAN_ASAS-001');
 assert.equal(getInteractiveQuestionConfig(derivedObjective)?.type, 'choice', 'A safe legacy objective question must render as a tappable choice.');
@@ -613,6 +616,9 @@ assert.doesNotMatch(engineSource, /config\.type === 'equalGroups'/, 'Equal group
 assert.ok(visualSource.includes("visual.kind === 'numberLine'") && visualSource.includes('number-line-svg'), 'QuestionVisual must route number lines through the existing visual component.');
 assert.ok(styleSource.includes('.number-line-visual') && styleSource.includes('.number-line-arc'), 'Number lines must use tightly scoped responsive SVG styles.');
 assert.doesNotMatch(engineSource, /config\.type === 'numberLine'/, 'Number line must not introduce a new interaction-engine branch.');
+assert.ok(visualSource.includes("visual.kind === 'array'") && visualSource.includes('array-grid') && visualSource.includes('array-counter'), 'QuestionVisual must route arrays through the existing visual component.');
+assert.ok(styleSource.includes('.array-visual') && styleSource.includes('.array-grid') && styleSource.includes('.array-counter'), 'Arrays must use tightly scoped responsive grid styles.');
+assert.doesNotMatch(engineSource, /config\.type === 'array'/, 'Arrays must not introduce a new interaction-engine branch.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
 assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');

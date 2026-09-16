@@ -6584,6 +6584,34 @@ input:focus {
   font-size: 15px;
 }
 
+.array-visual {
+  width: 100%;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.array-grid {
+  display: grid;
+  gap: clamp(5px, 1.6vw, 10px);
+  width: min(100%, var(--array-width));
+  margin: 0 auto;
+}
+
+.array-row {
+  display: grid;
+  grid-template-columns: repeat(var(--array-columns), minmax(0, 1fr));
+  gap: clamp(5px, 1.6vw, 10px);
+}
+
+.array-counter {
+  width: min(100%, 24px);
+  aspect-ratio: 1;
+  justify-self: center;
+  border: 2px solid #0a4229;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
 .place-value-model {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7250,6 +7278,15 @@ input:focus {
   .number-line-visual {
     padding: 2px;
     border-radius: 16px;
+  }
+
+  .array-visual {
+    padding: 4px 0;
+  }
+
+  .array-grid,
+  .array-row {
+    gap: 5px;
   }
 
   .type-clock .interactive-choice {
