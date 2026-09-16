@@ -190,6 +190,26 @@ const equalGroupsPilotContracts = new Map([
   ['MATH-BAHAGI-PILOT-009', { stem: 'Apakah hasil bagi 16 ÷ 2?', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 16, groups: 2 }, optionValues: ['8', '2', '14'] }],
   ['MATH-BAHAGI-PILOT-047', { stem: 'Satu jadual menunjukkan 3 dulang × ___ kuih = 27 kuih. Gunakan maklumat itu untuk mencari kuih pada setiap dulang.', visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 27, groups: 3 }, optionValues: ['9', '8', '10'] }]
 ]);
+const arrayPilotContracts = new Map([
+  ['MATH-DARAB-PILOT-003', {
+    stem: 'Cari hasil bagi 10 x 6.',
+    answer: '60',
+    accepted: ['60'],
+    operands: [10, 6],
+    visual: { kind: 'array', mode: 'multiplication', rows: 10, columns: 6 },
+    optionValues: ['60', '16', '54'],
+    hints: ['Perhatikan bahawa tatasusunan mempunyai 10 baris.', 'Setiap baris mempunyai 6 objek.', 'Kira semua objek mengikut susunan baris dan lajur sebelum memilih jawapan.']
+  }],
+  ['MATH-DARAB-PILOT-005', {
+    stem: 'Nyatakan jawapan bagi 4 x 6.',
+    answer: '24',
+    accepted: ['24'],
+    operands: [4, 6],
+    visual: { kind: 'array', mode: 'multiplication', rows: 4, columns: 6 },
+    optionValues: ['24', '10', '18'],
+    hints: ['Perhatikan bahawa tatasusunan mempunyai 4 baris.', 'Setiap baris mempunyai 6 objek.', 'Kira semua objek mengikut susunan baris dan lajur sebelum memilih jawapan.']
+  }]
+]);
 const numberLinePilotContracts = new Map([
   ['MATH-DARAB-PILOT-009', { stem: 'Apakah hasil bagi 5 x 8?', answer: '40', visual: { kind: 'numberLine', mode: 'repeatedJumps', jumps: 8, step: 5 }, optionValues: ['40', '13', '35'] }],
   ['MATH-DARAB-PILOT-020', { stem: 'Lengkapkan 5 x ___ = 35.', answer: '7', visual: { kind: 'numberLine', mode: 'countJumps', end: 35, step: 5 }, optionValues: ['7', '5', '6'] }],
@@ -208,10 +228,12 @@ assert.equal(reviewedQuestionBatchQ4Ids.size, 15, 'Question Batch Q4 must contai
 assert.equal(reviewedInteractiveContentBatch1Types.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(reviewedInteractiveContentBatch2Types.size, 15, 'Interactive Content Batch 2 must contain exactly fifteen teacher-reviewed interactions.');
 assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
+assert.equal(arrayPilotContracts.size, 2, 'The Array pilot must contain exactly two reviewed questions.');
 assert.equal(numberLinePilotContracts.size, 7, 'The Number Line pilot must contain exactly seven reviewed questions.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
+assert.equal(new Set([...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()]).size, equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Equal Groups, Array and Number Line pilot IDs must remain disjoint.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -353,6 +375,44 @@ for (const [id] of equalGroupsPilotContracts) {
   ].every(phrase => !guidance.includes(phrase)), `${id} instruction and hints must not state the derived result.`);
 }
 
+for (const [id, contract] of arrayPilotContracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the runtime Mathematics collection.`);
+  assert.ok(question, `Missing reviewed Array pilot interaction ${id}.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its original canonical answer.`);
+  assert.deepEqual(question.accepted, contract.accepted, `${id} must preserve its original accepted answers.`);
+  assert.deepEqual(question.acceptedAnswers, contract.accepted, `${id} must preserve its normalized answer contract.`);
+  assert.deepEqual(question.operands, contract.operands, `${id} must preserve its original multiplication operands.`);
+  assert.equal(question.questionType, 'short_answer', `${id} must preserve its original short-answer question type.`);
+  assert.equal(question.marks, 1, `${id} must preserve its original mark value.`);
+  assert.equal(question.interaction.type, 'visualMath', `${id} must remain a visualMath interaction.`);
+  assert.equal(question.interaction.instruction, 'Perhatikan tatasusunan baris dan lajur. Kira jumlah objek dan pilih jawapan yang betul.', `${id} must use the approved Array instruction.`);
+  assert.deepEqual(question.interaction.visual, contract.visual, `${id} must use the approved strict Array metadata.`);
+  assert.deepEqual(Object.keys(question.interaction.visual), ['kind', 'mode', 'rows', 'columns'], `${id} Array metadata must contain only the four approved keys.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must preserve the approved option order.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must provide exactly three options.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass strict Array validation.`);
+  const correctOptions = question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct');
+  assert.equal(correctOptions.length, 1, `${id} must have exactly one option accepted by the original answer contract.`);
+  assert.ok(question.interaction.options.filter(option => option !== correctOptions[0]).every(option => smartCheck(option.value, question).status !== 'correct'), `${id} must reject both reviewed distractors.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires item-specific curriculum, assessment and textbook review notes.`);
+  assert.equal(question.learningIntelligence?.responseMode, 'visual_array', `${id} must use the approved visual Array response mode.`);
+  assert.deepEqual(question.learningIntelligence?.conceptTags, ['darab', 'tatasusunan', 'baris_dan_lajur', 'fakta_darab'], `${id} must preserve the reviewed Array concepts.`);
+  assert.deepEqual(question.learningIntelligence?.misconceptionTags, ['menambah_faktor', 'kurang_satu_baris'], `${id} must preserve the reviewed Array misconceptions.`);
+  assert.deepEqual(question.learningIntelligence?.hintSteps, contract.hints, `${id} must use the three approved progressive hints.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps].join(' ').toLocaleLowerCase('ms-MY');
+  assert.ok([
+    `jawapan ${contract.answer}`,
+    `hasilnya ${contract.answer}`,
+    `ialah ${contract.answer}`,
+    `menjadi ${contract.answer}`,
+    `= ${contract.answer}`
+  ].every(phrase => !guidance.includes(phrase)), `${id} instruction and hints must not state the derived answer.`);
+}
+
 for (const [id, contract] of numberLinePilotContracts) {
   const matches = questions.filter(question => question.id === id);
   const question = byId.get(id);
@@ -390,6 +450,15 @@ for (const [id, contract] of numberLinePilotContracts) {
 }
 
 assert.notEqual(byId.get('MATH-BAHAGI-PILOT-020')?.interaction?.visual?.kind, 'numberLine', 'The unsupported unknown-step division construct must remain unauthored as Number Line content.');
+
+for (const id of [
+  'MATH-DARAB-PILOT-007', 'MATH-DARAB-PILOT-010', 'MATH-DARAB-PILOT-017',
+  'MATH-DARAB-PILOT-021', 'MATH-DARAB-PILOT-022', 'MATH-DARAB-PILOT-023',
+  'MATH-DARAB-PILOT-024', 'MATH-DARAB-PILOT-028', 'MATH-DARAB-PILOT-038',
+  'MATH-DARAB-PILOT-039', 'MATH-DARAB-PILOT-040', 'MATH-DARAB-PILOT-060'
+]) {
+  assert.notEqual(byId.get(id)?.interaction?.visual?.kind, 'array', `${id} must remain outside the exact two-question Array pilot.`);
+}
 
 assert.deepEqual(byId.get('MATH-DARAB-PILOT-001').interaction.options.map(option => option.value), ['5', '6', '8'], 'Existing reviewed multiplication choice must remain unchanged.');
 assert.deepEqual(byId.get('MATH-DARAB-PILOT-047').interaction.correctOrder, ['product-25', 'product-27', 'product-32'], 'Existing reviewed multiplication ordering must remain unchanged.');
