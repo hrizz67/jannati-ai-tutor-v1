@@ -51,6 +51,13 @@ const languageFillBlankBatch3Ids = new Set([
   'ARAB-NOMBOR_ARAB-001', 'ARAB-HAIWAN_ARAB-001', 'ARAB-AYAT_MUDAH_ARAB-001', 'ARAB-HIWAR-004',
   'ISLAM-IBADAH-001', 'ISLAM-SIRAH-001', 'ISLAM-QURAN-003', 'ISLAM-ADAB-001'
 ]);
+const scienceFillBlankPilotIds = new Set([
+  'SAINS-HAIWAN-001', 'SAINS-TUMBUHAN-043',
+  'SAINS-MANUSIA-031', 'SAINS-AIR-005',
+  'SAINS-CAHAYA-028', 'SAINS-BUNYI-041',
+  'SAINS-BUMI-008', 'SAINS-BAHAN-025',
+  'SAINS-TEKNOLOGI-031', 'SAINS-KEMAHIRAN_SAINTIFIK-025'
+]);
 const equalGroupsPilotIds = new Set([
   'MATH-DARAB-PILOT-002', 'MATH-DARAB-PILOT-004',
   'MATH-DARAB-PILOT-006', 'MATH-DARAB-PILOT-008',
@@ -277,11 +284,11 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1192, TEACHER_REVIEW: 2730, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 200, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1202, TEACHER_REVIEW: 2720, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 210, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1192, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3338, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.interactive, 1202, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3328, 'All remaining questions must stay on the standard response path.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -317,6 +324,22 @@ assert.ok([...languageFillBlankBatch3Ids].every(id => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every Language FillBlank Batch 3 question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(scienceFillBlankPilotIds.size, 10, 'Science FillBlank Pilot must contain exactly ten approved question IDs.');
+assert.equal(
+  new Set([...batch1Ids, ...batch2Ids, ...languageFillBlankBatch3Ids, ...scienceFillBlankPilotIds, ...equalGroupsPilotIds, ...arrayPilotIds, ...numberLinePilotIds]).size,
+  batch1Ids.size + batch2Ids.size + languageFillBlankBatch3Ids.size + scienceFillBlankPilotIds.size + equalGroupsPilotIds.size + arrayPilotIds.size + numberLinePilotIds.size,
+  'Science FillBlank Pilot must remain disjoint from every existing content batch and visual pilot.'
+);
+assert.ok([...scienceFillBlankPilotIds].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactionType === 'fillBlank'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Science FillBlank Pilot question must be authored, valid, accessible and AUTO_SAFE.');
+assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive).length, 37, 'Science must contain exactly 37 reviewed interactions after the FillBlank pilot.');
 assert.equal(equalGroupsPilotIds.size, 8, 'The Equal Groups pilot must contain exactly eight approved question IDs.');
 assert.ok([...equalGroupsPilotIds].every(id => {
   const row = rows.find(item => item.questionId === id);
