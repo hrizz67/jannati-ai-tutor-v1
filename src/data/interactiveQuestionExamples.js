@@ -1953,6 +1953,256 @@ const REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_PILOT_SPECS = Object.freeze({
+  'SAINS-HAIWAN-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih keperluan asas yang melengkapkan ayat.',
+      sentenceParts: ['Keperluan asas yang memberikan tenaga kepada kucing ialah ', '.'],
+      options: [
+        { id: 'food', label: 'makanan', value: 'makanan' },
+        { id: 'water', label: 'air', value: 'air' },
+        { id: 'breathing-air', label: 'udara', value: 'udara' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti makanan sebagai keperluan asas haiwan yang membekalkan tenaga.',
+      assessment: 'Air dan udara ialah keperluan asas haiwan yang sebenar tetapi tidak memberikan tenaga seperti makanan.',
+      textbook: 'Satu tempat kosong mengekalkan konstruk Sains Tahun 2 tentang fungsi setiap keperluan asas haiwan.'
+    },
+    intelligence: {
+      skillId: 'haiwan.keperluan_asas_pemberi_tenaga', responseMode: 'completion',
+      conceptTags: ['haiwan', 'keperluan_asas', 'tenaga'],
+      misconceptionTags: ['keliru_makan_dan_minum', 'keliru_keperluan_bernafas_dengan_tenaga'],
+      hintSteps: ['Fikirkan perkara asas yang diperlukan oleh semua haiwan untuk hidup.', 'Bezakan perkara yang memberi tenaga daripada perkara untuk minum atau bernafas.', 'Pilih keperluan yang digunakan badan selepas dimakan.']
+    }
+  },
+  'SAINS-TUMBUHAN-043': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan ayat tentang penjagaan tumbuhan.',
+      sentenceParts: ['Membaja membekalkan ', ' kepada tumbuhan.'],
+      options: [
+        { id: 'nutrients', label: 'nutrien', value: 'nutrien' },
+        { id: 'water', label: 'air', value: 'air' },
+        { id: 'light', label: 'cahaya', value: 'cahaya' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa pembajaan membekalkan nutrien yang membantu pertumbuhan tumbuhan.',
+      assessment: 'Air dan cahaya ialah keperluan tumbuhan tetapi masing-masing diperoleh melalui siraman dan persekitaran, bukan pembajaan.',
+      textbook: 'Ayat asal tentang penjagaan tumbuhan dikekalkan dan satu pilihan melengkapkan fungsi pembajaan dengan tepat.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.pembajaan_membekalkan_bahan_pertumbuhan', responseMode: 'completion',
+      conceptTags: ['tumbuhan', 'penjagaan_tumbuhan', 'pembajaan'],
+      misconceptionTags: ['keliru_membaja_dan_menyiram', 'keliru_baja_dan_cahaya'],
+      hintSteps: ['Perhatikan aktiviti penjagaan yang disebut pada awal ayat.', 'Fikirkan bahan berguna dalam baja yang membantu tumbuhan membesar.', 'Bezakan perkara yang datang daripada baja dengan perkara yang diperoleh melalui siraman atau cahaya.']
+    }
+  },
+  'SAINS-MANUSIA-031': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih peringkat pertumbuhan manusia yang melengkapkan ayat.',
+      sentenceParts: ['Bayi akan membesar menjadi ', '.'],
+      options: [
+        { id: 'child', label: 'kanak-kanak', value: 'kanak-kanak' },
+        { id: 'teenager', label: 'remaja', value: 'remaja' },
+        { id: 'adult', label: 'dewasa', value: 'dewasa' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti urutan pertumbuhan manusia daripada bayi kepada peringkat seterusnya.',
+      assessment: 'Remaja dan dewasa ialah peringkat pertumbuhan sebenar tetapi mengesan murid yang melangkau peringkat selepas bayi.',
+      textbook: 'Pilihan peringkat hidup melengkapkan stem asal tanpa mengubah urutan pertumbuhan manusia yang dinilai.'
+    },
+    intelligence: {
+      skillId: 'manusia.urutan_peringkat_selepas_bayi', responseMode: 'completion',
+      conceptTags: ['manusia', 'pertumbuhan', 'peringkat_hidup'],
+      misconceptionTags: ['melangkau_peringkat_kanak_kanak', 'keliru_urutan_pertumbuhan'],
+      hintSteps: ['Ingat urutan peringkat hidup manusia dari lahir hingga dewasa.', 'Cari peringkat yang datang sejurus selepas bayi.', 'Jangan melangkau terus kepada peringkat remaja atau dewasa.']
+    }
+  },
+  'SAINS-AIR-005': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan arah aliran air.',
+      sentenceParts: ['Air mengalir dari tempat tinggi ke tempat ', '.'],
+      options: [
+        { id: 'low', label: 'rendah', value: 'rendah' },
+        { id: 'high', label: 'tinggi', value: 'tinggi' },
+        { id: 'same-height', label: 'sama tinggi', value: 'sama tinggi' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa air mengalir menuruni cerun dari tempat tinggi ke tempat rendah.',
+      assessment: 'Tinggi dan sama tinggi mengesan kekeliruan tentang arah aliran air pada permukaan yang tidak rata.',
+      textbook: 'Tempat kosong asal mengekalkan fakta arah aliran air dan membolehkan perbandingan tiga aras yang munasabah.'
+    },
+    intelligence: {
+      skillId: 'air.arah_aliran_mengikut_cerun', responseMode: 'completion',
+      conceptTags: ['air', 'aliran', 'tinggi_dan_rendah'],
+      misconceptionTags: ['air_mengalir_ke_tempat_tinggi', 'air_kekal_pada_aras_sama'],
+      hintSteps: ['Bayangkan air dicurahkan di atas permukaan yang condong.', 'Perhatikan arah air bergerak apabila permukaan tidak rata.', 'Pilih tempat yang dituju air secara semula jadi daripada kawasan tinggi.']
+    }
+  },
+  'SAINS-CAHAYA-028': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bentuk laluan cahaya yang melengkapkan ayat.',
+      sentenceParts: ['Cahaya bergerak dalam garis ', '.'],
+      options: [
+        { id: 'straight', label: 'lurus', value: 'lurus' },
+        { id: 'curved', label: 'melengkung', value: 'melengkung' },
+        { id: 'zigzag', label: 'zigzag', value: 'zigzag' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menyatakan bahawa cahaya bergerak dalam garis lurus.',
+      assessment: 'Melengkung dan zigzag mengesan gambaran salah tentang bentuk laluan cahaya daripada satu sumber.',
+      textbook: 'Pilihan bentuk garis melengkapkan fakta asal tanpa menambah rajah atau petunjuk yang mendedahkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'cahaya.bentuk_laluan_pancaran', responseMode: 'completion',
+      conceptTags: ['cahaya', 'laluan_cahaya', 'garis'],
+      misconceptionTags: ['cahaya_melengkung', 'cahaya_bergerak_zigzag'],
+      hintSteps: ['Bayangkan pancaran lampu suluh di dalam bilik gelap.', 'Perhatikan sama ada laluan pancaran itu membelok atau kekal pada satu arah.', 'Pilih bentuk garis yang tidak membengkok.']
+    }
+  },
+  'SAINS-BUNYI-041': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan fakta tentang penghasilan bunyi.',
+      sentenceParts: ['Bunyi terhasil apabila objek ', '.'],
+      options: [
+        { id: 'vibrates', label: 'bergetar', value: 'bergetar' },
+        { id: 'moves', label: 'bergerak', value: 'bergerak' },
+        { id: 'still', label: 'diam', value: 'diam' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa bunyi terhasil apabila sesuatu objek bergetar.',
+      assessment: 'Bergerak mengesan pengitlakan semua gerakan sebagai punca bunyi, manakala diam mengesan kegagalan menghubungkan getaran dengan bunyi.',
+      textbook: 'Satu tempat kosong mengekalkan fakta mekanisme penghasilan bunyi dalam bahasa yang sesuai untuk Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'bunyi.gerakan_objek_penghasil_bunyi', responseMode: 'completion',
+      conceptTags: ['bunyi', 'penghasilan_bunyi', 'gerakan_berulang'],
+      misconceptionTags: ['semua_pergerakan_menghasilkan_bunyi', 'objek_diam_menghasilkan_bunyi'],
+      hintSteps: ['Fikirkan apa yang berlaku pada tali gitar apabila dipetik.', 'Perhatikan gerakan kecil berulang pada objek yang menghasilkan bunyi.', 'Pilih perubahan pada objek yang menjadi punca bunyi.']
+    }
+  },
+  'SAINS-BUMI-008': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih ciri pulau yang melengkapkan ayat.',
+      sentenceParts: ['Pulau ialah daratan yang dikelilingi ', '.'],
+      options: [
+        { id: 'water', label: 'air', value: 'air' },
+        { id: 'sand', label: 'pasir', value: 'pasir' },
+        { id: 'mountain', label: 'gunung', value: 'gunung' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti pulau sebagai daratan yang dikelilingi air.',
+      assessment: 'Pasir dan gunung ialah ciri permukaan Bumi yang munasabah tetapi tidak menentukan maksud pulau.',
+      textbook: 'Definisi asal dikekalkan dengan satu tempat kosong dan tiga istilah dalam domain permukaan Bumi.'
+    },
+    intelligence: {
+      skillId: 'bumi.ciri_daratan_pulau', responseMode: 'completion',
+      conceptTags: ['bumi', 'bentuk_muka_bumi', 'pulau'],
+      misconceptionTags: ['pulau_ditentukan_oleh_pasir', 'pulau_ditentukan_oleh_gunung'],
+      hintSteps: ['Bayangkan sebuah pulau dilihat dari atas.', 'Fikirkan apakah yang memisahkan pulau daripada daratan besar.', 'Pilih perkara yang mengelilingi seluruh kawasan daratan itu.']
+    }
+  },
+  'SAINS-BAHAN-025': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kedudukan objek yang terapung.',
+      sentenceParts: ['Objek yang terapung berada di ', ' air.'],
+      options: [
+        { id: 'surface', label: 'permukaan', value: 'permukaan' },
+        { id: 'bottom', label: 'dasar', value: 'dasar' },
+        { id: 'middle', label: 'tengah', value: 'tengah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membezakan kedudukan objek terapung daripada objek yang tenggelam di dalam air.',
+      assessment: 'Dasar mengesan kekeliruan terapung dengan tenggelam, manakala tengah mengesan kedudukan objek yang tidak sampai ke bahagian atas.',
+      textbook: 'Pilihan kedudukan melengkapkan stem asal dan mengekalkan pemerhatian terapung sebagai konstruk yang dinilai.'
+    },
+    intelligence: {
+      skillId: 'bahan.kedudukan_objek_terapung', responseMode: 'completion',
+      conceptTags: ['bahan', 'terapung', 'kedudukan_dalam_air'],
+      misconceptionTags: ['keliru_terapung_dan_tenggelam', 'objek_terapung_di_tengah'],
+      hintSteps: ['Bandingkan kedudukan objek yang terapung dengan objek yang tenggelam.', 'Objek itu kekal pada bahagian paling atas, bukan turun ke dasar.', 'Pilih nama kedudukan di bahagian atas air.']
+    }
+  },
+  'SAINS-TEKNOLOGI-031': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih fungsi roda yang melengkapkan ayat.',
+      sentenceParts: ['Roda membantu untuk ', '.'],
+      options: [
+        { id: 'movement', label: 'memudahkan pergerakan', value: 'memudahkan pergerakan' },
+        { id: 'split', label: 'membelah bahan', value: 'membelah bahan' },
+        { id: 'filter', label: 'menapis air', value: 'menapis air' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti roda sebagai mesin ringkas yang memudahkan pergerakan objek.',
+      assessment: 'Membelah bahan dan menapis air ialah fungsi teknologi yang sah tetapi bukan fungsi roda.',
+      textbook: 'Pilihan fungsi melengkapkan stem asal dan mengekalkan pengetahuan mesin ringkas Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'teknologi.fungsi_roda', responseMode: 'completion',
+      conceptTags: ['teknologi', 'mesin_ringkas', 'roda'],
+      misconceptionTags: ['keliru_roda_dan_baji', 'keliru_roda_dan_penapis'],
+      hintSteps: ['Bayangkan troli ditolak dengan dan tanpa roda.', 'Fikirkan perubahan pada cara objek bergerak apabila roda dipasang.', 'Pilih fungsi yang membantu objek bergerak dengan lebih senang.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-025': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kuantiti yang diukur oleh silinder penyukat.',
+      sentenceParts: ['Silinder penyukat digunakan untuk mengukur ', '.'],
+      options: [
+        { id: 'liquid-volume', label: 'isipadu cecair', value: 'isipadu cecair' },
+        { id: 'mass', label: 'jisim', value: 'jisim' },
+        { id: 'temperature', label: 'suhu', value: 'suhu' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kuantiti yang diukur menggunakan silinder penyukat.',
+      assessment: 'Jisim dan suhu ialah kuantiti boleh ukur tetapi masing-masing memerlukan penimbang dan termometer.',
+      textbook: 'Nama alat dan tempat kosong asal dikekalkan supaya murid memadankan alat pengukuran dengan kuantiti yang betul.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.kuantiti_silinder_penyukat', responseMode: 'completion',
+      conceptTags: ['kemahiran_saintifik', 'alat_pengukuran', 'silinder_penyukat'],
+      misconceptionTags: ['keliru_silinder_dan_penimbang', 'keliru_silinder_dan_termometer'],
+      hintSteps: ['Perhatikan bentuk dan tanda skala pada alat itu.', 'Fikirkan bahan yang biasanya dituangkan ke dalam alat tersebut.', 'Bezakan kuantiti yang dibaca pada skala alat ini daripada jisim atau suhu.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-002': {
     interaction: {
@@ -2406,6 +2656,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_EXAMPLES,
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES,
+  ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
@@ -2680,6 +2931,10 @@ const REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -2739,6 +2994,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_1_INTELLIGENCE,
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,

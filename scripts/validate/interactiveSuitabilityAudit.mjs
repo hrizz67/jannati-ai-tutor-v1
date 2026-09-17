@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 200, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 210, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2730, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2720, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -55,6 +55,18 @@ const languageFillBlankBatch3Ids = new Set([
   'ENG-NOUNS-004', 'ENG-COLOURS-001', 'ENG-ANIMALS-003', 'ENG-FOOD-003',
   'ARAB-NOMBOR_ARAB-001', 'ARAB-HAIWAN_ARAB-001', 'ARAB-AYAT_MUDAH_ARAB-001', 'ARAB-HIWAR-004',
   'ISLAM-IBADAH-001', 'ISLAM-SIRAH-001', 'ISLAM-QURAN-003', 'ISLAM-ADAB-001'
+]);
+const scienceFillBlankPilotIds = new Set([
+  'SAINS-HAIWAN-001',
+  'SAINS-TUMBUHAN-043',
+  'SAINS-MANUSIA-031',
+  'SAINS-AIR-005',
+  'SAINS-CAHAYA-028',
+  'SAINS-BUNYI-041',
+  'SAINS-BUMI-008',
+  'SAINS-BAHAN-025',
+  'SAINS-TEKNOLOGI-031',
+  'SAINS-KEMAHIRAN_SAINTIFIK-025'
 ]);
 const equalGroupsPilotIds = new Set([
   'MATH-DARAB-PILOT-002',
@@ -95,6 +107,20 @@ for (const id of languageFillBlankBatch3Ids) {
   assert.equal(row?.recommendedType, 'fillBlank', `${id} mesti kekal pada interaksi fillBlank sedia ada.`);
   assert.equal(question?.interaction?.type, 'fillBlank', `${id} mesti mempunyai overlay fillBlank yang disemak.`);
 }
+
+assert.equal(scienceFillBlankPilotIds.size, 10, 'Science FillBlank Pilot mesti mengandungi tepat sepuluh ID yang diluluskan.');
+for (const id of scienceFillBlankPilotIds) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'fillBlank', `${id} mesti kekal pada interaksi fillBlank sedia ada.`);
+  assert.equal(question?.interaction?.type, 'fillBlank', `${id} mesti mempunyai overlay fillBlank yang disemak.`);
+}
+assert.equal(
+  report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
+  37,
+  'Science mesti mempunyai tepat 37 interaksi disemak selepas pilot FillBlank.'
+);
 
 assert.equal(equalGroupsPilotIds.size, 8, 'Pilot Equal Groups mesti mengandungi tepat lapan ID yang diluluskan.');
 for (const id of equalGroupsPilotIds) {
