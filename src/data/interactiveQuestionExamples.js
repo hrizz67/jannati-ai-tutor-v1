@@ -2203,6 +2203,154 @@ const REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS = Object.freeze({
+  'SAINS-TUMBUHAN-050': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan terbaik terhadap daun tumbuhan yang kering.',
+      options: [
+        { id: 'remove-dry-leaf', label: 'memotong dan membuangnya', value: 'memotong dan membuangnya' },
+        { id: 'leave-dry-leaf', label: 'membiarkannya pada tumbuhan', value: 'membiarkannya pada tumbuhan' },
+        { id: 'remove-green-leaf', label: 'memotong daun yang masih hijau', value: 'memotong daun yang masih hijau' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih tindakan penjagaan yang sesuai apabila terdapat daun kering pada tumbuhan.',
+      assessment: 'Membiarkan daun kering mengesan pengabaian penjagaan, manakala memotong daun hijau mengesan tindakan yang menjejaskan bahagian tumbuhan yang sihat.',
+      textbook: 'Tiga pilihan tindakan mengekalkan konstruk satu respons tentang penjagaan tumbuhan tanpa mengubah stem asal.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.penjagaan_daun_kering', responseMode: 'choice_selection',
+      conceptTags: ['tumbuhan', 'penjagaan_tumbuhan', 'daun_kering'],
+      misconceptionTags: ['membiarkan_bahagian_rosak', 'membuang_bahagian_sihat'],
+      hintSteps: ['Perhatikan keadaan daun dan fikirkan kesannya kepada kebersihan tumbuhan.', 'Bezakan tindakan menjaga bahagian yang sihat daripada membiarkan bahagian yang telah rosak.', 'Pilih tindakan yang menyingkirkan bahagian rosak tanpa mengganggu daun yang masih sihat.']
+    }
+  },
+  'SAINS-MANUSIA-050': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan paling selamat.',
+      options: [
+        { id: 'tell-adult', label: 'memberitahu orang dewasa', value: 'memberitahu orang dewasa' },
+        { id: 'ignore-fire', label: 'membiarkannya sahaja', value: 'membiarkannya sahaja' },
+        { id: 'join-fire-play', label: 'ikut bermain api', value: 'ikut bermain api' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membuat keputusan selamat apabila melihat kanak-kanak lain bermain dengan api.',
+      assessment: 'Membiarkan keadaan mengesan kegagalan mendapatkan bantuan, manakala ikut bermain api mengesan kecenderungan menyertai perbuatan berbahaya.',
+      textbook: 'Pilihan tindakan ringkas mengekalkan keputusan keselamatan satu respons dalam situasi asal tanpa menerangkan cara melakukan perbuatan berbahaya.'
+    },
+    intelligence: {
+      skillId: 'manusia.tindak_balas_bahaya_api', responseMode: 'choice_selection',
+      conceptTags: ['manusia', 'keselamatan_api', 'mendapatkan_bantuan'],
+      misconceptionTags: ['mengabaikan_bahaya_api', 'menyertai_perbuatan_berbahaya'],
+      hintSteps: ['Jauhkan diri daripada api dan fikirkan siapa boleh membantu.', 'Kanak-kanak tidak patut mengendalikan bahaya ini sendiri.', 'Pilih tindakan mendapatkan bantuan penjaga yang dipercayai dengan segera.']
+    }
+  },
+  'SAINS-BUNYI-035': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan terbaik untuk melindungi pendengaran.',
+      options: [
+        { id: 'lower-sound', label: 'memperlahankan bunyi', value: 'memperlahankan bunyi' },
+        { id: 'raise-sound', label: 'menaikkan bunyi', value: 'menaikkan bunyi' },
+        { id: 'leave-sound-loud', label: 'membiarkan bunyi kuat', value: 'membiarkan bunyi kuat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengamalkan tindakan yang melindungi pendengaran apabila menggunakan fon telinga.',
+      assessment: 'Menaikkan bunyi mengesan tindakan yang memburukkan risiko, manakala membiarkan bunyi kuat mengesan kegagalan membuat perubahan untuk melindungi telinga.',
+      textbook: 'Tiga pilihan mengekalkan keputusan penjagaan pendengaran satu respons yang dinilai oleh stem asal.'
+    },
+    intelligence: {
+      skillId: 'bunyi.melindungi_pendengaran', responseMode: 'choice_selection',
+      conceptTags: ['bunyi', 'pendengaran', 'fon_telinga'],
+      misconceptionTags: ['bunyi_lebih_kuat_lebih_baik', 'tidak_mengubah_bunyi_berlebihan'],
+      hintSteps: ['Fikirkan kesan bunyi yang terlalu kuat pada telinga.', 'Tindakan yang baik perlu menjadikan pendengaran lebih selesa.', 'Pilih tindakan yang melindungi telinga daripada bunyi kuat.']
+    }
+  },
+  'SAINS-TEKNOLOGI-021': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih cara yang selamat ketika menggunakan gunting.',
+      options: [
+        { id: 'careful', label: 'berhati-hati', value: 'berhati-hati' },
+        { id: 'play-around', label: 'bermain-main', value: 'bermain-main' },
+        { id: 'rush', label: 'tergesa-gesa', value: 'tergesa-gesa' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengamalkan penggunaan gunting secara selamat sebagai alat teknologi harian.',
+      assessment: 'Bermain-main mengesan penggunaan alat sebagai permainan, manakala tergesa-gesa mengesan tindakan tanpa kawalan ketika mengendalikan alat tajam.',
+      textbook: 'Pilihan sikap penggunaan mengekalkan konstruk satu respons tentang keselamatan gunting tanpa menambah kemahiran baharu.'
+    },
+    intelligence: {
+      skillId: 'teknologi.keselamatan_gunting', responseMode: 'choice_selection',
+      conceptTags: ['teknologi', 'gunting', 'penggunaan_selamat'],
+      misconceptionTags: ['alat_tajam_sebagai_permainan', 'menggunakan_alat_secara_tergesa'],
+      hintSteps: ['Ingat bahawa gunting mempunyai bahagian yang tajam.', 'Cara menggunakan alat perlu melindungi diri dan rakan.', 'Pilih sikap yang tenang dan terkawal semasa menggunakan gunting.']
+    }
+  },
+  'SAINS-TEKNOLOGI-023': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan yang menjaga kesihatan mata.',
+      options: [
+        { id: 'rest-eyes', label: 'merehatkan mata', value: 'merehatkan mata' },
+        { id: 'continue-screen', label: 'terus melihat skrin', value: 'terus melihat skrin' },
+        { id: 'move-phone-closer', label: 'mendekatkan telefon ke mata', value: 'mendekatkan telefon ke mata' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengamalkan penjagaan mata selepas menggunakan telefon atau melihat skrin untuk suatu tempoh.',
+      assessment: 'Terus melihat skrin mengesan kegagalan mengambil jeda, manakala mendekatkan telefon mengesan jarak penggunaan yang tidak menjaga keselesaan mata.',
+      textbook: 'Pilihan tindakan mengekalkan keputusan penjagaan mata satu respons dalam konteks penggunaan telefon yang asal.'
+    },
+    intelligence: {
+      skillId: 'teknologi.rehat_mata_selepas_skrin', responseMode: 'choice_selection',
+      conceptTags: ['teknologi', 'telefon', 'kesihatan_mata'],
+      misconceptionTags: ['meneruskan_penggunaan_skrin', 'jarak_skrin_terlalu_dekat'],
+      hintSteps: ['Fikirkan bagaimana mata terasa selepas melihat skrin agak lama.', 'Penjagaan yang baik memberi masa kepada mata untuk pulih.', 'Pilih tindakan yang menghentikan pandangan pada skrin buat sementara.']
+    }
+  },
+  'SAINS-TEKNOLOGI-026': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan paling selamat apabila nampak wayar rosak.',
+      options: [
+        { id: 'tell-adult', label: 'memberitahu orang dewasa', value: 'memberitahu orang dewasa' },
+        { id: 'ignore-wire', label: 'membiarkannya sahaja', value: 'membiarkannya sahaja' },
+        { id: 'touch-wire', label: 'menyentuh wayar itu', value: 'menyentuh wayar itu' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membuat keputusan selamat apabila mengenal pasti wayar elektrik yang rosak.',
+      assessment: 'Membiarkan wayar mengesan kegagalan mendapatkan bantuan, manakala menyentuh wayar mengesan tindakan langsung yang membahayakan diri.',
+      textbook: 'Pilihan pendek mengekalkan keputusan keselamatan elektrik satu respons dan tidak menerangkan cara berinteraksi dengan bahaya.'
+    },
+    intelligence: {
+      skillId: 'teknologi.tindak_balas_wayar_rosak', responseMode: 'choice_selection',
+      conceptTags: ['teknologi', 'keselamatan_elektrik', 'wayar_rosak'],
+      misconceptionTags: ['mengabaikan_bahaya_elektrik', 'menyentuh_bahagian_rosak'],
+      hintSteps: ['Jangan dekati bahagian elektrik yang rosak.', 'Kanak-kanak tidak patut memeriksa bahaya elektrik sendiri.', 'Pilih tindakan mendapatkan bantuan penjaga yang dipercayai.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-002': {
     interaction: {
@@ -2657,6 +2805,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES,
+  ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
@@ -2935,6 +3084,10 @@ const REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_FILL_BLANK_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -2995,6 +3148,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,

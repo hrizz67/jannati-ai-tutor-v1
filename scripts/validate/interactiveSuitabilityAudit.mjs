@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 210, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 216, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2720, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2714, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -68,6 +68,15 @@ const scienceFillBlankPilotIds = new Set([
   'SAINS-TEKNOLOGI-031',
   'SAINS-KEMAHIRAN_SAINTIFIK-025'
 ]);
+const scienceChoiceMiniPilotIds = new Set([
+  'SAINS-TUMBUHAN-050',
+  'SAINS-MANUSIA-050',
+  'SAINS-BUNYI-035',
+  'SAINS-TEKNOLOGI-021',
+  'SAINS-TEKNOLOGI-023',
+  'SAINS-TEKNOLOGI-026'
+]);
+const rejectedScienceChoiceIds = new Set(['SAINS-CAHAYA-050', 'SAINS-TEKNOLOGI-028']);
 const equalGroupsPilotIds = new Set([
   'MATH-DARAB-PILOT-002',
   'MATH-DARAB-PILOT-004',
@@ -118,9 +127,42 @@ for (const id of scienceFillBlankPilotIds) {
 }
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
-  37,
-  'Science mesti mempunyai tepat 37 interaksi disemak selepas pilot FillBlank.'
+  43,
+  'Science mesti mempunyai tepat 43 interaksi disemak selepas Mini-Pilot Choice.'
 );
+assert.equal(
+  report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'teacher_review').length,
+  447,
+  'Science mesti mempunyai tepat 447 calon teacher_review selepas Mini-Pilot Choice.'
+);
+
+assert.equal(scienceChoiceMiniPilotIds.size, 6, 'Science Choice Mini-Pilot mesti mengandungi tepat enam ID yang diluluskan.');
+assert.deepEqual(
+  [...scienceChoiceMiniPilotIds].reduce((counts, id) => {
+    const row = report.questionClassifications.find(item => item.questionId === id);
+    counts[row?.topicId] = (counts[row?.topicId] || 0) + 1;
+    return counts;
+  }, {}),
+  { tumbuhan: 1, manusia: 1, bunyi: 1, teknologi: 3 },
+  'Science Choice Mini-Pilot mesti mengekalkan imbangan topik yang diluluskan.'
+);
+assert.equal(new Set([...scienceFillBlankPilotIds, ...scienceChoiceMiniPilotIds]).size, scienceFillBlankPilotIds.size + scienceChoiceMiniPilotIds.size, 'Science Choice Mini-Pilot tidak boleh bertindih dengan Science FillBlank Pilot.');
+for (const id of scienceChoiceMiniPilotIds) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'choice', `${id} mesti menggunakan interaksi choice sedia ada.`);
+  assert.equal(question?.interaction?.type, 'choice', `${id} mesti mempunyai overlay Choice yang disemak.`);
+  assert.equal(question?.interaction?.options?.length, 3, `${id} mesti mempunyai tepat tiga pilihan.`);
+  assert.deepEqual(getInteractiveQuestionConfig(question), question.interaction, `${id} mesti menggunakan konfigurasi authored yang sah.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} mesti mempunyai tepat satu pilihan yang diterima.`);
+}
+for (const id of rejectedScienceChoiceIds) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'teacher_review', `${id} mesti kekal dalam teacher_review.`);
+  assert.equal(question?.interaction, undefined, `${id} tidak boleh menerima overlay authored.`);
+}
 
 assert.equal(equalGroupsPilotIds.size, 8, 'Pilot Equal Groups mesti mengandungi tepat lapan ID yang diluluskan.');
 for (const id of equalGroupsPilotIds) {
