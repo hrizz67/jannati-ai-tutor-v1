@@ -213,6 +213,15 @@ const scienceFillBlankPilotContracts = new Map([
   ['SAINS-TEKNOLOGI-031', { topic: 'teknologi', stem: 'Roda membantu untuk ________.', answer: 'memudahkan pergerakan', accepted: ['memudahkan pergerakan'], questionType: 'short_answer', sentenceParts: ['Roda membantu untuk ', '.'], optionValues: ['memudahkan pergerakan', 'membelah bahan', 'menapis air'] }],
   ['SAINS-KEMAHIRAN_SAINTIFIK-025', { topic: 'kemahiran_saintifik', stem: 'Silinder penyukat digunakan untuk mengukur ________.', answer: 'isipadu cecair', accepted: ['isipadu cecair', 'isipadu air'], questionType: 'short_answer', sentenceParts: ['Silinder penyukat digunakan untuk mengukur ', '.'], optionValues: ['isipadu cecair', 'jisim', 'suhu'] }]
 ]);
+const scienceChoiceMiniPilotContracts = new Map([
+  ['SAINS-TUMBUHAN-050', { topic: 'tumbuhan', stem: 'Tindakan terbaik terhadap daun tumbuhan yang kering ialah ________.', answer: 'memotong dan membuangnya', accepted: ['memotong dan membuangnya', 'memotong daun kering', 'membuang daun kering'], questionType: 'short_answer', instruction: 'Pilih tindakan terbaik terhadap daun tumbuhan yang kering.', optionValues: ['memotong dan membuangnya', 'membiarkannya pada tumbuhan', 'memotong daun yang masih hijau'] }],
+  ['SAINS-MANUSIA-050', { topic: 'manusia', stem: 'Tindakan paling selamat apabila ternampak kanak-kanak bermain api ialah ________.', answer: 'memberitahu orang dewasa', accepted: ['memberitahu orang dewasa', 'beritahu orang dewasa', 'memanggil orang dewasa'], questionType: 'short_answer', instruction: 'Pilih tindakan paling selamat.', optionValues: ['memberitahu orang dewasa', 'membiarkannya sahaja', 'ikut bermain api'] }],
+  ['SAINS-BUNYI-035', { topic: 'bunyi', stem: 'Tindakan terbaik apabila bunyi fon telinga terlalu kuat ialah ________.', answer: 'memperlahankan bunyi', accepted: ['memperlahankan bunyi', 'merendahkan bunyi', 'mengurangkan kelantangan'], questionType: 'short_answer', instruction: 'Pilih tindakan terbaik untuk melindungi pendengaran.', optionValues: ['memperlahankan bunyi', 'menaikkan bunyi', 'membiarkan bunyi kuat'] }],
+  ['SAINS-TEKNOLOGI-021', { topic: 'teknologi', stem: 'Ketika menggunakan gunting, kita perlu ________.', answer: 'berhati-hati', accepted: ['berhati-hati'], questionType: 'short_answer', instruction: 'Pilih cara yang selamat ketika menggunakan gunting.', optionValues: ['berhati-hati', 'bermain-main', 'tergesa-gesa'] }],
+  ['SAINS-TEKNOLOGI-023', { topic: 'teknologi', stem: 'Selepas menggunakan telefon beberapa ketika, kita perlu ________.', answer: 'merehatkan mata', accepted: ['merehatkan mata'], questionType: 'short_answer', instruction: 'Pilih tindakan yang menjaga kesihatan mata.', optionValues: ['merehatkan mata', 'terus melihat skrin', 'mendekatkan telefon ke mata'] }],
+  ['SAINS-TEKNOLOGI-026', { topic: 'teknologi', stem: 'Jika nampak wayar rosak, kita perlu ________.', answer: 'memberitahu orang dewasa', accepted: ['memberitahu orang dewasa', 'beritahu orang dewasa'], questionType: 'short_answer', instruction: 'Pilih tindakan paling selamat apabila nampak wayar rosak.', optionValues: ['memberitahu orang dewasa', 'membiarkannya sahaja', 'menyentuh wayar itu'] }]
+]);
+const rejectedScienceChoiceIds = new Set(['SAINS-CAHAYA-050', 'SAINS-TEKNOLOGI-028']);
 const equalGroupsPilotContracts = new Map([
   ['MATH-DARAB-PILOT-002', { stem: 'Berapakah hasil darab 5 dengan 4?', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 4, itemsPerGroup: 5 }, optionValues: ['20', '9', '16'] }],
   ['MATH-DARAB-PILOT-004', { stem: 'Selesaikan 3 x 4.', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 3, itemsPerGroup: 4 }, optionValues: ['12', '7', '16'] }],
@@ -280,6 +289,17 @@ assert.deepEqual(
   { haiwan: 1, tumbuhan: 1, manusia: 1, air: 1, cahaya: 1, bunyi: 1, bumi: 1, bahan: 1, teknologi: 1, kemahiran_saintifik: 1 },
   'Science FillBlank Pilot must contain exactly one approved question from each Science topic.'
 );
+assert.equal(scienceChoiceMiniPilotContracts.size, 6, 'Science Choice Mini-Pilot must contain exactly six approved questions.');
+assert.deepEqual(
+  [...scienceChoiceMiniPilotContracts.keys()].reduce((counts, id) => {
+    const topic = topicByQuestionId.get(id);
+    counts[topic] = (counts[topic] || 0) + 1;
+    return counts;
+  }, {}),
+  { tumbuhan: 1, manusia: 1, bunyi: 1, teknologi: 3 },
+  'Science Choice Mini-Pilot must preserve the approved topic balance.'
+);
+assert.equal(rejectedScienceChoiceIds.size, 2, 'Exactly two near-duplicate Science Choice IDs must remain rejected.');
 assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
 assert.equal(arrayPilotContracts.size, 2, 'The Array pilot must contain exactly two reviewed questions.');
 assert.equal(numberLinePilotContracts.size, 7, 'The Number Line pilot must contain exactly seven reviewed questions.');
@@ -292,9 +312,10 @@ const priorReviewedIds = [
 ];
 assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size, 'Language FillBlank Batch 3 IDs must be disjoint from every existing reviewed batch and pilot.');
 assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys(), ...scienceFillBlankPilotContracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size, 'Science FillBlank Pilot IDs must be disjoint from every existing reviewed batch and pilot.');
+assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys(), ...scienceFillBlankPilotContracts.keys(), ...scienceChoiceMiniPilotContracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceChoiceMiniPilotContracts.size, 'Science Choice Mini-Pilot IDs must be disjoint from every existing reviewed batch and pilot.');
 assert.equal(new Set([...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()]).size, equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Equal Groups, Array and Number Line pilot IDs must remain disjoint.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceChoiceMiniPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -476,6 +497,58 @@ for (const [id, contract] of scienceFillBlankPilotContracts) {
 const scienceMeasuringCylinder = byId.get('SAINS-KEMAHIRAN_SAINTIFIK-025');
 assert.equal(smartCheck('isipadu air', scienceMeasuringCylinder).status, 'correct', 'The original alternate measuring-cylinder response must remain accepted.');
 assert.ok(!scienceMeasuringCylinder.interaction.options.some(option => option.value === 'isipadu air'), 'The alternate accepted response must not become a fourth visible option.');
+
+const scienceChoiceSkillIds = new Set();
+for (const [id, contract] of scienceChoiceMiniPilotContracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the normalized runtime collection.`);
+  assert.ok(question, `Missing Science Choice Mini-Pilot interaction ${id}.`);
+  assert.equal(topicByQuestionId.get(id), contract.topic, `${id} must remain in its approved Science topic.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its canonical answer.`);
+  assert.deepEqual(question.accepted, contract.accepted, `${id} must preserve its original accepted answers exactly.`);
+  assert.deepEqual(question.acceptedAnswers, contract.accepted, `${id} must preserve its normalized accepted-answer contract exactly.`);
+  assert.equal(question.questionType, contract.questionType, `${id} must preserve its original question type.`);
+  assert.equal(question.marks, 1, `${id} must remain a one-mark question.`);
+  assert.equal(question.interaction.version, 1, `${id} must use interaction version 1.`);
+  assert.equal(question.interaction.type, 'choice', `${id} must use the existing choice interaction.`);
+  assert.equal(question.interaction.instruction, contract.instruction, `${id} must preserve the exact approved instruction.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must preserve the exact approved option order.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must expose exactly three reviewed options.`);
+  assert.equal(new Set(question.interaction.options.map(option => option.id)).size, 3, `${id} must use three unique option IDs.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass the existing choice schema.`);
+  const optionStatuses = question.interaction.options.map(option => smartCheck(option.value, question).status);
+  assert.equal(optionStatuses.filter(status => status === 'correct').length, 1, `${id} must have exactly one visible smartCheck-correct option.`);
+  assert.equal(optionStatuses.filter(status => status !== 'correct').length, 2, `${id} must reject exactly two visible distractors.`);
+  for (const acceptedResponse of new Set([...question.accepted, ...question.acceptedAnswers])) {
+    assert.equal(smartCheck(acceptedResponse, question).status, 'correct', `${id} must preserve every original accepted response.`);
+  }
+  const alternateAccepted = contract.accepted.filter(response => response !== contract.optionValues[0]);
+  assert.ok(alternateAccepted.every(response => !contract.optionValues.includes(response)), `${id} accepted synonyms must not become extra visible options.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires item-specific curriculum, assessment and textbook review notes.`);
+  assert.equal(question.learningIntelligence?.responseMode, 'choice_selection', `${id} must use the established choice response mode.`);
+  assert.ok(question.learningIntelligence?.skillId, `${id} requires an item-specific skill ID.`);
+  scienceChoiceSkillIds.add(question.learningIntelligence.skillId);
+  assert.ok(question.learningIntelligence?.conceptTags?.length && question.learningIntelligence?.misconceptionTags?.length, `${id} requires reviewed concept and misconception tags.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive hints.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps]
+    .join(' ')
+    .toLocaleLowerCase('ms-MY');
+  for (const acceptedResponse of new Set([...question.accepted, ...question.acceptedAnswers])) {
+    const escapedAnswer = acceptedResponse.toLocaleLowerCase('ms-MY').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.doesNotMatch(guidance, new RegExp(`(^|[^\\p{L}\\p{N}])${escapedAnswer}($|[^\\p{L}\\p{N}])`, 'u'), `${id} guidance must not reveal any accepted response.`);
+  }
+}
+assert.equal(scienceChoiceSkillIds.size, scienceChoiceMiniPilotContracts.size, 'Every Science Choice Mini-Pilot item must use a unique skill ID.');
+
+for (const id of rejectedScienceChoiceIds) {
+  const question = questions.find(item => item.id === id);
+  assert.ok(question, `Missing rejected Science Choice question ${id}.`);
+  assert.equal(question.interaction, undefined, `${id} must remain unauthored after the Mini-Pilot.`);
+  assert.ok(!byId.has(id), `${id} must not receive a reviewed Choice interaction.`);
+}
 
 for (const [id, contract] of equalGroupsPilotContracts) {
   const matches = questions.filter(question => question.id === id);
