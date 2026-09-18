@@ -213,6 +213,33 @@ const scienceFillBlankPilotContracts = new Map([
   ['SAINS-TEKNOLOGI-031', { topic: 'teknologi', stem: 'Roda membantu untuk ________.', answer: 'memudahkan pergerakan', accepted: ['memudahkan pergerakan'], questionType: 'short_answer', sentenceParts: ['Roda membantu untuk ', '.'], optionValues: ['memudahkan pergerakan', 'membelah bahan', 'menapis air'] }],
   ['SAINS-KEMAHIRAN_SAINTIFIK-025', { topic: 'kemahiran_saintifik', stem: 'Silinder penyukat digunakan untuk mengukur ________.', answer: 'isipadu cecair', accepted: ['isipadu cecair', 'isipadu air'], questionType: 'short_answer', sentenceParts: ['Silinder penyukat digunakan untuk mengukur ', '.'], optionValues: ['isipadu cecair', 'jisim', 'suhu'] }]
 ]);
+const scienceFillBlankBatch2Contracts = new Map([
+  ['SAINS-HAIWAN-004', { topic: 'haiwan', stem: 'Sarang menjadi ________ bagi arnab daripada cuaca dan bahaya.', answer: 'tempat perlindungan', accepted: ['tempat perlindungan'], questionType: 'short_answer', sentenceParts: ['Sarang menjadi ', ' bagi arnab daripada cuaca dan bahaya.'], optionValues: ['tempat perlindungan', 'makanan', 'udara'] }],
+  ['SAINS-HAIWAN-034', { topic: 'haiwan', stem: 'Anak bagi katak dipanggil ________.', answer: 'berudu', accepted: ['berudu'], questionType: 'short_answer', sentenceParts: ['Anak bagi katak dipanggil ', '.'], optionValues: ['berudu', 'anak ayam', 'ulat beluncas'] }],
+  ['SAINS-TUMBUHAN-007', { topic: 'tumbuhan', stem: 'Akar membantu tumbuhan berdiri tegak dengan cara ________.', answer: 'mencengkam tanah', accepted: ['mencengkam tanah'], questionType: 'short_answer', sentenceParts: ['Akar membantu tumbuhan berdiri tegak dengan cara ', '.'], optionValues: ['mencengkam tanah', 'membuat makanan', 'menghasilkan bunga'] }],
+  ['SAINS-TUMBUHAN-047', { topic: 'tumbuhan', stem: 'Tumbuhan yang tidak disiram boleh menjadi ________.', answer: 'layu', accepted: ['layu'], questionType: 'short_answer', sentenceParts: ['Tumbuhan yang tidak disiram boleh menjadi ', '.'], optionValues: ['layu', 'subur', 'segar'] }],
+  ['SAINS-MANUSIA-039', { topic: 'manusia', stem: 'Makanan berkhasiat membantu ________.', answer: 'tumbesaran', accepted: ['tumbesaran'], questionType: 'short_answer', sentenceParts: ['Makanan berkhasiat membantu ', '.'], optionValues: ['tumbesaran', 'kecederaan', 'jangkitan'] }],
+  ['SAINS-MANUSIA-045', { topic: 'manusia', stem: 'Air panas boleh menyebabkan kulit ________.', answer: 'melecur', accepted: ['melecur'], questionType: 'short_answer', sentenceParts: ['Air panas boleh menyebabkan kulit ', '.'], optionValues: ['melecur', 'membeku', 'menjadi sejuk'] }],
+  ['SAINS-AIR-007', { topic: 'air', stem: 'Air yang dipanaskan boleh menjadi ________.', answer: 'wap air', accepted: ['wap air'], questionType: 'short_answer', sentenceParts: ['Air yang dipanaskan boleh menjadi ', '.'], optionValues: ['wap air', 'ais', 'air hujan'] }],
+  ['SAINS-AIR-048', { topic: 'air', stem: 'Membuang sampah ke sungai menyebabkan ________.', answer: 'pencemaran', accepted: ['pencemaran'], questionType: 'short_answer', sentenceParts: ['Membuang sampah ke sungai menyebabkan ', '.'], optionValues: ['pencemaran', 'penyejatan', 'pembekuan'] }],
+  ['SAINS-CAHAYA-020', { topic: 'cahaya', stem: 'Cermin mata hitam mengurangkan ________.', answer: 'silau', accepted: ['silau'], questionType: 'short_answer', sentenceParts: ['Cermin mata hitam mengurangkan ', '.'], optionValues: ['silau', 'bayang-bayang', 'bunyi'] }],
+  ['SAINS-CAHAYA-039', { topic: 'cahaya', stem: 'Cermin ________ cahaya yang mengenainya.', answer: 'memantulkan', accepted: ['memantulkan'], questionType: 'short_answer', sentenceParts: ['Cermin ', ' cahaya yang mengenainya.'], optionValues: ['memantulkan', 'menyerap', 'menghasilkan'] }],
+  ['SAINS-BUNYI-040', { topic: 'bunyi', stem: 'Bunyi loceng sekolah menandakan perubahan ________.', answer: 'waktu', accepted: ['waktu', 'masa'], questionType: 'short_answer', sentenceParts: ['Bunyi loceng sekolah menandakan perubahan ', '.'], optionValues: ['waktu', 'arah', 'warna'] }],
+  ['SAINS-BUNYI-044', { topic: 'bunyi', stem: 'Bunyi suara guru sampai ke telinga melalui ________.', answer: 'udara', accepted: ['udara'], questionType: 'short_answer', sentenceParts: ['Bunyi suara guru sampai ke telinga melalui ', '.'], optionValues: ['udara', 'cahaya', 'bayang-bayang'] }],
+  ['SAINS-BUMI-028', { topic: 'bumi', stem: 'Humus membantu menjadikan tanah ________.', answer: 'subur', accepted: ['subur'], questionType: 'short_answer', sentenceParts: ['Humus membantu menjadikan tanah ', '.'], optionValues: ['subur', 'keras', 'kering'] }],
+  ['SAINS-BUMI-046', { topic: 'bumi', stem: 'Angin ialah udara yang ________.', answer: 'bergerak', accepted: ['bergerak'], questionType: 'short_answer', sentenceParts: ['Angin ialah udara yang ', '.'], optionValues: ['bergerak', 'pegun', 'beku'] }],
+  ['SAINS-BAHAN-021', { topic: 'bahan', stem: 'Bahan kalis air bermaksud ________.', answer: 'tidak menyerap air', accepted: ['tidak menyerap air'], questionType: 'short_answer', sentenceParts: ['Bahan kalis air bermaksud ', '.'], optionValues: ['tidak menyerap air', 'mudah menyerap air', 'mudah koyak'] }],
+  ['SAINS-BAHAN-024', { topic: 'bahan', stem: 'Bahan magnetik boleh ________ oleh magnet.', answer: 'ditarik', accepted: ['ditarik'], questionType: 'short_answer', sentenceParts: ['Bahan magnetik boleh ', ' oleh magnet.'], optionValues: ['ditarik', 'dicairkan', 'dilarutkan'] }],
+  ['SAINS-TEKNOLOGI-042', { topic: 'teknologi', stem: 'Jambatan kertas perlu cukup kuat untuk ________.', answer: 'menampung beban', accepted: ['menampung beban'], questionType: 'short_answer', sentenceParts: ['Jambatan kertas perlu cukup kuat untuk ', '.'], optionValues: ['menampung beban', 'menyerap air', 'menghasilkan cahaya'] }],
+  ['SAINS-TEKNOLOGI-047', { topic: 'teknologi', stem: 'Menara blok lebih stabil jika mempunyai ________.', answer: 'tapak luas', accepted: ['tapak luas'], questionType: 'short_answer', sentenceParts: ['Menara blok lebih stabil jika mempunyai ', '.'], optionValues: ['tapak luas', 'tapak sempit', 'bahagian atas berat'] }],
+  ['SAINS-KEMAHIRAN_SAINTIFIK-034', { topic: 'kemahiran_saintifik', stem: 'Graf gambar membantu kita ________ data.', answer: 'membandingkan', accepted: ['membandingkan'], questionType: 'short_answer', sentenceParts: ['Graf gambar membantu kita ', ' data.'], optionValues: ['membandingkan', 'memadam', 'menyembunyikan'] }],
+  ['SAINS-KEMAHIRAN_SAINTIFIK-044', { topic: 'kemahiran_saintifik', stem: 'Dalam ujian yang adil, hanya ________ diubah pada satu masa.', answer: 'satu perkara', accepted: ['satu perkara'], questionType: 'short_answer', sentenceParts: ['Dalam ujian yang adil, hanya ', ' diubah pada satu masa.'], optionValues: ['satu perkara', 'semua perkara', 'tiada perkara'] }]
+]);
+const rejectedScienceFillBlankBatch2Ids = new Set([
+  'SAINS-HAIWAN-041', 'SAINS-TUMBUHAN-045', 'SAINS-MANUSIA-042', 'SAINS-AIR-043',
+  'SAINS-CAHAYA-050', 'SAINS-BUNYI-042', 'SAINS-BUMI-015', 'SAINS-BAHAN-032',
+  'SAINS-TEKNOLOGI-028', 'SAINS-KEMAHIRAN_SAINTIFIK-046'
+]);
 const scienceChoiceMiniPilotContracts = new Map([
   ['SAINS-TUMBUHAN-050', { topic: 'tumbuhan', stem: 'Tindakan terbaik terhadap daun tumbuhan yang kering ialah ________.', answer: 'memotong dan membuangnya', accepted: ['memotong dan membuangnya', 'memotong daun kering', 'membuang daun kering'], questionType: 'short_answer', instruction: 'Pilih tindakan terbaik terhadap daun tumbuhan yang kering.', optionValues: ['memotong dan membuangnya', 'membiarkannya pada tumbuhan', 'memotong daun yang masih hijau'] }],
   ['SAINS-MANUSIA-050', { topic: 'manusia', stem: 'Tindakan paling selamat apabila ternampak kanak-kanak bermain api ialah ________.', answer: 'memberitahu orang dewasa', accepted: ['memberitahu orang dewasa', 'beritahu orang dewasa', 'memanggil orang dewasa'], questionType: 'short_answer', instruction: 'Pilih tindakan paling selamat.', optionValues: ['memberitahu orang dewasa', 'membiarkannya sahaja', 'ikut bermain api'] }],
@@ -289,6 +316,16 @@ assert.deepEqual(
   { haiwan: 1, tumbuhan: 1, manusia: 1, air: 1, cahaya: 1, bunyi: 1, bumi: 1, bahan: 1, teknologi: 1, kemahiran_saintifik: 1 },
   'Science FillBlank Pilot must contain exactly one approved question from each Science topic.'
 );
+assert.equal(scienceFillBlankBatch2Contracts.size, 20, 'Science FillBlank Batch 2 must contain exactly twenty approved questions.');
+assert.deepEqual(
+  [...scienceFillBlankBatch2Contracts.keys()].reduce((counts, id) => {
+    const topic = topicByQuestionId.get(id);
+    counts[topic] = (counts[topic] || 0) + 1;
+    return counts;
+  }, {}),
+  { haiwan: 2, tumbuhan: 2, manusia: 2, air: 2, cahaya: 2, bunyi: 2, bumi: 2, bahan: 2, teknologi: 2, kemahiran_saintifik: 2 },
+  'Science FillBlank Batch 2 must contain exactly two approved questions from each Science topic.'
+);
 assert.equal(scienceChoiceMiniPilotContracts.size, 6, 'Science Choice Mini-Pilot must contain exactly six approved questions.');
 assert.deepEqual(
   [...scienceChoiceMiniPilotContracts.keys()].reduce((counts, id) => {
@@ -313,9 +350,19 @@ const priorReviewedIds = [
 assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size, 'Language FillBlank Batch 3 IDs must be disjoint from every existing reviewed batch and pilot.');
 assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys(), ...scienceFillBlankPilotContracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size, 'Science FillBlank Pilot IDs must be disjoint from every existing reviewed batch and pilot.');
 assert.equal(new Set([...priorReviewedIds, ...languageFillBlankBatch3Contracts.keys(), ...scienceFillBlankPilotContracts.keys(), ...scienceChoiceMiniPilotContracts.keys()]).size, priorReviewedIds.length + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceChoiceMiniPilotContracts.size, 'Science Choice Mini-Pilot IDs must be disjoint from every existing reviewed batch and pilot.');
+const scienceFillBlankBatch2PriorIds = [
+  ...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys(),
+  ...languageFillBlankBatch3Contracts.keys(), ...scienceFillBlankPilotContracts.keys(), ...scienceChoiceMiniPilotContracts.keys(),
+  ...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()
+];
+assert.equal(
+  new Set([...scienceFillBlankBatch2PriorIds, ...scienceFillBlankBatch2Contracts.keys()]).size,
+  scienceFillBlankBatch2PriorIds.length + scienceFillBlankBatch2Contracts.size,
+  'Science FillBlank Batch 2 IDs must be disjoint from every protected prior content batch and visual pilot.'
+);
 assert.equal(new Set([...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()]).size, equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Equal Groups, Array and Number Line pilot IDs must remain disjoint.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceChoiceMiniPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceChoiceMiniPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -492,6 +539,66 @@ for (const [id, contract] of scienceFillBlankPilotContracts) {
     const escapedAnswer = acceptedResponse.toLocaleLowerCase('ms-MY').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     assert.doesNotMatch(guidance, new RegExp(`(^|[^\\p{L}\\p{N}])${escapedAnswer}($|[^\\p{L}\\p{N}])`, 'u'), `${id} guidance must not reveal any accepted response.`);
   }
+}
+
+const scienceFillBlankBatch2SkillIds = new Set();
+for (const [id, contract] of scienceFillBlankBatch2Contracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the normalized runtime collection.`);
+  assert.ok(question, `Missing Science FillBlank Batch 2 interaction ${id}.`);
+  assert.equal(topicByQuestionId.get(id), contract.topic, `${id} must remain in its approved Science topic.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its canonical answer.`);
+  assert.deepEqual(question.accepted, contract.accepted, `${id} must preserve its original accepted answers exactly.`);
+  assert.deepEqual(question.acceptedAnswers, contract.accepted, `${id} must preserve its normalized accepted-answer contract exactly.`);
+  assert.equal(question.questionType, contract.questionType, `${id} must preserve its original question type.`);
+  assert.equal(question.marks, 1, `${id} must remain a one-mark question.`);
+  assert.equal(question.interaction.version, 1, `${id} must use interaction version 1.`);
+  assert.equal(question.interaction.type, 'fillBlank', `${id} must use the existing fillBlank interaction.`);
+  assert.ok(question.interaction.instruction, `${id} requires a reviewed instruction.`);
+  assert.deepEqual(question.interaction.sentenceParts, contract.sentenceParts, `${id} must preserve the approved two-part sentence contract.`);
+  assert.equal(question.interaction.sentenceParts.length, 2, `${id} must contain exactly two sentence parts.`);
+  assert.deepEqual(question.interaction.options.map(option => option.value), contract.optionValues, `${id} must preserve the approved option values and order.`);
+  assert.equal(question.interaction.options.length, 3, `${id} must expose exactly three visible options.`);
+  assert.equal(new Set(question.interaction.options.map(option => option.id)).size, 3, `${id} must use three unique option IDs.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass the existing fillBlank schema.`);
+  const optionStatuses = question.interaction.options.map(option => smartCheck(option.value, question).status);
+  assert.deepEqual(optionStatuses.map(status => status === 'correct'), [true, false, false], `${id} must preserve the approved correct/wrong/wrong visible pattern.`);
+  for (const acceptedResponse of new Set([...question.accepted, ...question.acceptedAnswers])) {
+    assert.equal(smartCheck(acceptedResponse, question).status, 'correct', `${id} must preserve every original accepted response.`);
+  }
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires item-specific curriculum, assessment and textbook review notes.`);
+  assert.equal(question.learningIntelligence?.responseMode, 'completion', `${id} must use the established fillBlank response mode.`);
+  assert.ok(question.learningIntelligence?.skillId, `${id} requires an item-specific skill ID.`);
+  scienceFillBlankBatch2SkillIds.add(question.learningIntelligence.skillId);
+  assert.ok(question.learningIntelligence?.conceptTags?.length, `${id} requires non-empty concept tags.`);
+  assert.ok(question.learningIntelligence?.misconceptionTags?.length, `${id} requires non-empty misconception tags.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive hints.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps]
+    .join(' ')
+    .toLocaleLowerCase('ms-MY');
+  for (const acceptedResponse of new Set([...question.accepted, ...question.acceptedAnswers])) {
+    const escapedAnswer = acceptedResponse.toLocaleLowerCase('ms-MY').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.doesNotMatch(guidance, new RegExp(`(^|[^\\p{L}\\p{N}])${escapedAnswer}($|[^\\p{L}\\p{N}])`, 'u'), `${id} instruction and hints must not reveal any accepted response.`);
+  }
+}
+assert.equal(scienceFillBlankBatch2SkillIds.size, scienceFillBlankBatch2Contracts.size, 'Every Science FillBlank Batch 2 item must use a unique skill ID.');
+
+const scienceBellSchedule = byId.get('SAINS-BUNYI-040');
+assert.equal(smartCheck('waktu', scienceBellSchedule).status, 'correct', 'SAINS-BUNYI-040 must continue accepting its canonical response.');
+assert.equal(smartCheck('masa', scienceBellSchedule).status, 'correct', 'SAINS-BUNYI-040 must continue accepting its original synonym.');
+assert.deepEqual(scienceBellSchedule.interaction.options.map(option => option.value), ['waktu', 'arah', 'warna'], 'SAINS-BUNYI-040 must expose exactly the approved three visible options.');
+assert.equal(scienceBellSchedule.interaction.options.length, 3, 'SAINS-BUNYI-040 must expose exactly three options.');
+assert.ok(!scienceBellSchedule.interaction.options.some(option => option.value === 'masa'), 'SAINS-BUNYI-040 must not expose its accepted synonym as a fourth option.');
+
+assert.equal(rejectedScienceFillBlankBatch2Ids.size, 10, 'Exactly ten discovery finalists must remain rejected from Science FillBlank Batch 2.');
+for (const id of rejectedScienceFillBlankBatch2Ids) {
+  const question = questions.find(item => item.id === id);
+  assert.ok(question, `Missing rejected Science FillBlank Batch 2 finalist ${id}.`);
+  assert.equal(question.interaction, undefined, `${id} must remain unauthored after Science FillBlank Batch 2.`);
+  assert.ok(!byId.has(id), `${id} must not receive a reviewed interaction.`);
 }
 
 const scienceMeasuringCylinder = byId.get('SAINS-KEMAHIRAN_SAINTIFIK-025');

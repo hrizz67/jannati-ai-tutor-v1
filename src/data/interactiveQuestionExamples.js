@@ -2203,6 +2203,496 @@ const REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_SPECS = Object.freeze({
+  'SAINS-HAIWAN-004': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih fungsi sarang yang melengkapkan ayat.',
+      sentenceParts: ['Sarang menjadi ', ' bagi arnab daripada cuaca dan bahaya.'],
+      options: [
+        { id: 'shelter', label: 'tempat perlindungan', value: 'tempat perlindungan' },
+        { id: 'food', label: 'makanan', value: 'makanan' },
+        { id: 'air', label: 'udara', value: 'udara' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti sarang sebagai keperluan yang melindungi haiwan daripada cuaca dan bahaya.',
+      assessment: 'Makanan dan udara ialah keperluan asas haiwan tetapi bukan fungsi sarang yang dinyatakan dalam stem.',
+      textbook: 'Ayat asal dikekalkan sebagai satu pelengkapan fakta tentang kegunaan sarang kepada arnab.'
+    },
+    intelligence: {
+      skillId: 'haiwan.fungsi_sarang_arnab', responseMode: 'completion',
+      conceptTags: ['haiwan', 'sarang', 'keselamatan'],
+      misconceptionTags: ['keliru_sarang_dan_makanan', 'keliru_sarang_dan_pernafasan'],
+      hintSteps: ['Bayangkan keadaan arnab ketika hujan atau ada ancaman.', 'Fikirkan sebab arnab masuk dan berlindung di dalam sarangnya.', 'Pilih fungsi sarang yang membantu arnab kekal selamat.']
+    }
+  },
+  'SAINS-HAIWAN-034': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih nama anak haiwan yang melengkapkan ayat.',
+      sentenceParts: ['Anak bagi katak dipanggil ', '.'],
+      options: [
+        { id: 'tadpole', label: 'berudu', value: 'berudu' },
+        { id: 'chick', label: 'anak ayam', value: 'anak ayam' },
+        { id: 'caterpillar', label: 'ulat beluncas', value: 'ulat beluncas' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti peringkat awal kitar hidup katak selepas telur menetas.',
+      assessment: 'Anak ayam dan ulat beluncas ialah peringkat muda haiwan lain dan mengesan kekeliruan antara kitar hidup.',
+      textbook: 'Istilah anak katak dinilai melalui satu tempat kosong tanpa mengubah fakta asal.'
+    },
+    intelligence: {
+      skillId: 'haiwan.nama_anak_katak', responseMode: 'completion',
+      conceptTags: ['haiwan', 'katak', 'kitar_hidup'],
+      misconceptionTags: ['keliru_anak_katak_dan_ayam', 'keliru_kitar_hidup_katak_dan_rama_rama'],
+      hintSteps: ['Ingat peringkat yang hidup di dalam air selepas telur katak menetas.', 'Anak ini mempunyai ekor dan belum menyerupai katak dewasa.', 'Pilih nama khusus bagi peringkat awal kitar hidup katak itu.']
+    }
+  },
+  'SAINS-TUMBUHAN-007': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih cara akar menyokong tumbuhan.',
+      sentenceParts: ['Akar membantu tumbuhan berdiri tegak dengan cara ', '.'],
+      options: [
+        { id: 'grip-soil', label: 'mencengkam tanah', value: 'mencengkam tanah' },
+        { id: 'make-food', label: 'membuat makanan', value: 'membuat makanan' },
+        { id: 'make-flower', label: 'menghasilkan bunga', value: 'menghasilkan bunga' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami fungsi akar dalam memegang tumbuhan supaya kekal tegak.',
+      assessment: 'Membuat makanan dan menghasilkan bunga ialah fungsi bahagian tumbuhan lain, bukan cara akar menyokong pokok.',
+      textbook: 'Stem asal dan konstruk fungsi akar dikekalkan dengan tiga pilihan dalam domain tumbuhan.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.akar_menyokong_pokok', responseMode: 'completion',
+      conceptTags: ['tumbuhan', 'akar', 'sokongan'],
+      misconceptionTags: ['keliru_fungsi_akar_dan_daun', 'keliru_fungsi_akar_dan_bunga'],
+      hintSteps: ['Perhatikan bahagian akar yang berada di bawah permukaan bumi.', 'Fikirkan bagaimana akar memegang pokok ketika ditiup angin.', 'Pilih tindakan akar yang mengikat pokok pada tempatnya.']
+    }
+  },
+  'SAINS-TUMBUHAN-047': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih keadaan tumbuhan apabila kekurangan siraman.',
+      sentenceParts: ['Tumbuhan yang tidak disiram boleh menjadi ', '.'],
+      options: [
+        { id: 'wilted', label: 'layu', value: 'layu' },
+        { id: 'fertile', label: 'subur', value: 'subur' },
+        { id: 'fresh', label: 'segar', value: 'segar' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan kekurangan air dengan perubahan keadaan tumbuhan.',
+      assessment: 'Subur dan segar menggambarkan tumbuhan yang mendapat keperluan mencukupi, bertentangan dengan keadaan dalam stem.',
+      textbook: 'Satu tempat kosong mengekalkan hubungan sebab-akibat antara siraman dan keadaan tumbuhan.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.kesan_kekurangan_siraman', responseMode: 'completion',
+      conceptTags: ['tumbuhan', 'air', 'penjagaan_tumbuhan'],
+      misconceptionTags: ['tumbuhan_tanpa_air_kekal_segar', 'tumbuhan_tanpa_air_menjadi_subur'],
+      hintSteps: ['Bayangkan daun selepas pokok lama tidak mendapat air.', 'Daun dan batang kehilangan ketegangan apabila air tidak mencukupi.', 'Pilih keadaan tumbuhan yang kelihatan lemah dan tidak segar.']
+    }
+  },
+  'SAINS-MANUSIA-039': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih manfaat makanan berkhasiat.',
+      sentenceParts: ['Makanan berkhasiat membantu ', '.'],
+      options: [
+        { id: 'growth', label: 'tumbesaran', value: 'tumbesaran' },
+        { id: 'injury', label: 'kecederaan', value: 'kecederaan' },
+        { id: 'infection', label: 'jangkitan', value: 'jangkitan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan pengambilan makanan berkhasiat dengan perkembangan badan manusia.',
+      assessment: 'Kecederaan dan jangkitan ialah keadaan kesihatan yang tidak menjadi manfaat pengambilan makanan berkhasiat.',
+      textbook: 'Ayat asal dikekalkan untuk menilai satu manfaat pemakanan sihat dalam bahasa Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'manusia.manfaat_makanan_berkhasiat', responseMode: 'completion',
+      conceptTags: ['manusia', 'pemakanan', 'perkembangan_badan'],
+      misconceptionTags: ['makanan_sihat_menyebabkan_kecederaan', 'makanan_sihat_menyebabkan_jangkitan'],
+      hintSteps: ['Fikirkan perubahan badan kanak-kanak apabila mendapat makanan yang baik.', 'Nutrien membantu badan menjadi lebih besar dan kuat.', 'Pilih proses perkembangan badan yang disokong oleh pemakanan sihat.']
+    }
+  },
+  'SAINS-MANUSIA-045': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kesan air panas pada kulit.',
+      sentenceParts: ['Air panas boleh menyebabkan kulit ', '.'],
+      options: [
+        { id: 'scalded', label: 'melecur', value: 'melecur' },
+        { id: 'frozen', label: 'membeku', value: 'membeku' },
+        { id: 'cool', label: 'menjadi sejuk', value: 'menjadi sejuk' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti bahaya sentuhan air panas terhadap kulit manusia.',
+      assessment: 'Membeku dan menjadi sejuk bercanggah dengan kesan haba tinggi pada kulit.',
+      textbook: 'Pilihan kesan melengkapkan amaran keselamatan asal tanpa menukar konstruk pentaksiran.'
+    },
+    intelligence: {
+      skillId: 'manusia.bahaya_air_panas', responseMode: 'completion',
+      conceptTags: ['manusia', 'kulit', 'keselamatan_haba'],
+      misconceptionTags: ['air_panas_menyejukkan_kulit', 'air_panas_membekukan_kulit'],
+      hintSteps: ['Fikirkan bahaya apabila kulit terkena cecair yang sangat panas.', 'Haba tinggi boleh mencederakan permukaan kulit.', 'Pilih keadaan kecederaan kulit yang disebabkan oleh haba.']
+    }
+  },
+  'SAINS-AIR-007': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perubahan air apabila dipanaskan.',
+      sentenceParts: ['Air yang dipanaskan boleh menjadi ', '.'],
+      options: [
+        { id: 'water-vapour', label: 'wap air', value: 'wap air' },
+        { id: 'ice', label: 'ais', value: 'ais' },
+        { id: 'rain-water', label: 'air hujan', value: 'air hujan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami perubahan air kepada bentuk gas apabila menerima haba.',
+      assessment: 'Ais terhasil melalui penyejukan, manakala air hujan bukan hasil langsung pemanasan air dalam bekas.',
+      textbook: 'Stem asal mengekalkan perubahan keadaan air sebagai satu fakta Sains Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'air.perubahan_apabila_dipanaskan', responseMode: 'completion',
+      conceptTags: ['air', 'pemanasan', 'perubahan_keadaan'],
+      misconceptionTags: ['pemanasan_menghasilkan_ais', 'pemanasan_menghasilkan_hujan'],
+      hintSteps: ['Perhatikan apa yang naik dari permukaan cecair ketika mendidih.', 'Pemanasan menukarkan sebahagian cecair kepada bentuk gas.', 'Pilih bentuk air yang boleh naik dan bercampur dengan ruang sekeliling.']
+    }
+  },
+  'SAINS-AIR-048': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kesan membuang sampah ke sungai.',
+      sentenceParts: ['Membuang sampah ke sungai menyebabkan ', '.'],
+      options: [
+        { id: 'pollution', label: 'pencemaran', value: 'pencemaran' },
+        { id: 'evaporation', label: 'penyejatan', value: 'penyejatan' },
+        { id: 'freezing', label: 'pembekuan', value: 'pembekuan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan pembuangan sampah dengan kemerosotan kebersihan dan kualiti sungai.',
+      assessment: 'Penyejatan dan pembekuan ialah perubahan keadaan air, bukan kesan sampah yang dibuang ke sungai.',
+      textbook: 'Hubungan tindakan dan kesan alam sekitar dalam stem asal dikekalkan.'
+    },
+    intelligence: {
+      skillId: 'air.kesan_sampah_dalam_sungai', responseMode: 'completion',
+      conceptTags: ['air', 'sungai', 'alam_sekitar'],
+      misconceptionTags: ['sampah_menyebabkan_penyejatan', 'sampah_menyebabkan_pembekuan'],
+      hintSteps: ['Bayangkan keadaan sungai selepas banyak sampah dibuang ke dalamnya.', 'Sampah menjadikan sungai kotor dan boleh membahayakan hidupan.', 'Pilih masalah alam sekitar yang berlaku apabila kebersihan sungai rosak.']
+    }
+  },
+  'SAINS-CAHAYA-020': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kesan memakai cermin mata hitam.',
+      sentenceParts: ['Cermin mata hitam mengurangkan ', '.'],
+      options: [
+        { id: 'glare', label: 'silau', value: 'silau' },
+        { id: 'shadow', label: 'bayang-bayang', value: 'bayang-bayang' },
+        { id: 'sound', label: 'bunyi', value: 'bunyi' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kegunaan cermin mata hitam apabila cahaya terlalu terang.',
+      assessment: 'Bayang-bayang dan bunyi bukan gangguan pada mata yang dikurangkan oleh kanta gelap.',
+      textbook: 'Pilihan kesan mengekalkan fungsi cermin mata hitam yang dinilai dalam stem asal.'
+    },
+    intelligence: {
+      skillId: 'cahaya.fungsi_cermin_mata_hitam', responseMode: 'completion',
+      conceptTags: ['cahaya', 'mata', 'kanta_gelap'],
+      misconceptionTags: ['cermin_mata_mengurangkan_bayang', 'cermin_mata_mengurangkan_bunyi'],
+      hintSteps: ['Bayangkan melihat kawasan yang sangat terang pada tengah hari.', 'Kanta gelap mengurangkan cahaya kuat yang masuk ke mata.', 'Pilih gangguan penglihatan akibat cahaya terlalu terang.']
+    }
+  },
+  'SAINS-CAHAYA-039': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih tindakan cermin terhadap cahaya.',
+      sentenceParts: ['Cermin ', ' cahaya yang mengenainya.'],
+      options: [
+        { id: 'reflects', label: 'memantulkan', value: 'memantulkan' },
+        { id: 'absorbs', label: 'menyerap', value: 'menyerap' },
+        { id: 'produces', label: 'menghasilkan', value: 'menghasilkan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa permukaan cermin mengubah arah cahaya yang mengenainya.',
+      assessment: 'Menyerap dan menghasilkan mengesan kekeliruan antara fungsi cermin, bahan gelap dan sumber cahaya.',
+      textbook: 'Ayat asal dikekalkan untuk menilai interaksi cahaya dengan cermin.'
+    },
+    intelligence: {
+      skillId: 'cahaya.tindakan_cermin_pada_cahaya', responseMode: 'completion',
+      conceptTags: ['cahaya', 'cermin', 'arah_cahaya'],
+      misconceptionTags: ['cermin_menyerap_cahaya', 'cermin_menghasilkan_cahaya'],
+      hintSteps: ['Halakan lampu suluh kepada cermin dan perhatikan arah pancaran selepas itu.', 'Cermin bukan sumber cahaya dan tidak menyimpan semua cahaya yang datang.', 'Pilih tindakan yang menghantar cahaya kembali ke arah lain.']
+    }
+  },
+  'SAINS-BUNYI-040': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkara yang ditandakan oleh bunyi loceng sekolah.',
+      sentenceParts: ['Bunyi loceng sekolah menandakan perubahan ', '.'],
+      options: [
+        { id: 'schedule-period', label: 'waktu', value: 'waktu' },
+        { id: 'direction', label: 'arah', value: 'arah' },
+        { id: 'colour', label: 'warna', value: 'warna' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan bunyi loceng sekolah dengan pertukaran aktiviti dalam jadual harian.',
+      assessment: 'Arah dan warna tidak berubah hanya kerana loceng sekolah berbunyi.',
+      textbook: 'Stem asal dan kedua-dua respons diterima dikekalkan, manakala UI memaparkan hanya tiga pilihan yang disemak.'
+    },
+    intelligence: {
+      skillId: 'bunyi.isyarat_loceng_sekolah', responseMode: 'completion',
+      conceptTags: ['bunyi', 'loceng_sekolah', 'isyarat'],
+      misconceptionTags: ['loceng_menandakan_arah', 'loceng_menandakan_warna'],
+      hintSteps: ['Fikirkan apa yang murid lakukan apabila loceng sekolah berbunyi.', 'Bunyi itu memisahkan satu aktiviti sekolah daripada aktiviti berikutnya.', 'Pilih perkara dalam jadual sekolah yang berubah selepas isyarat berbunyi.']
+    }
+  },
+  'SAINS-BUNYI-044': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bahan perantara yang membawa suara guru.',
+      sentenceParts: ['Bunyi suara guru sampai ke telinga melalui ', '.'],
+      options: [
+        { id: 'air', label: 'udara', value: 'udara' },
+        { id: 'light', label: 'cahaya', value: 'cahaya' },
+        { id: 'shadow', label: 'bayang-bayang', value: 'bayang-bayang' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa bunyi suara bergerak melalui bahan perantara di dalam ruang.',
+      assessment: 'Cahaya dan bayang-bayang ialah fenomena optik dan bukan bahan yang membawa bunyi suara.',
+      textbook: 'Ayat asal dikekalkan untuk menilai medium bunyi dalam situasi bilik darjah.'
+    },
+    intelligence: {
+      skillId: 'bunyi.perantara_suara_dalam_kelas', responseMode: 'completion',
+      conceptTags: ['bunyi', 'suara', 'bahan_perantara'],
+      misconceptionTags: ['bunyi_dibawa_cahaya', 'bunyi_dibawa_bayang_bayang'],
+      hintSteps: ['Bayangkan ruang di antara mulut guru dengan telinga murid.', 'Bunyi memerlukan bahan di sekeliling kita untuk sampai kepada pendengar.', 'Pilih bahan berbentuk gas yang memenuhi ruang bilik darjah.']
+    }
+  },
+  'SAINS-BUMI-028': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kesan humus pada tanah.',
+      sentenceParts: ['Humus membantu menjadikan tanah ', '.'],
+      options: [
+        { id: 'fertile', label: 'subur', value: 'subur' },
+        { id: 'hard', label: 'keras', value: 'keras' },
+        { id: 'dry', label: 'kering', value: 'kering' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan humus dengan keadaan tanah yang baik untuk pertumbuhan tumbuhan.',
+      assessment: 'Keras dan kering ialah keadaan tanah yang kurang sesuai untuk pertumbuhan dan bukan manfaat humus.',
+      textbook: 'Fungsi humus dalam stem asal dikekalkan sebagai satu pelengkapan fakta.'
+    },
+    intelligence: {
+      skillId: 'bumi.humus_memperbaiki_tanah', responseMode: 'completion',
+      conceptTags: ['bumi', 'tanah', 'humus'],
+      misconceptionTags: ['humus_mengeraskan_tanah', 'humus_mengeringkan_tanah'],
+      hintSteps: ['Humus berasal daripada bahan reput yang bercampur dengan tanah.', 'Bahan ini menambah nutrien yang membantu pokok hidup dengan baik.', 'Pilih keadaan tanah yang sesuai untuk pertumbuhan tumbuhan.']
+    }
+  },
+  'SAINS-BUMI-046': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih ciri udara yang menghasilkan angin.',
+      sentenceParts: ['Angin ialah udara yang ', '.'],
+      options: [
+        { id: 'moving', label: 'bergerak', value: 'bergerak' },
+        { id: 'still', label: 'pegun', value: 'pegun' },
+        { id: 'frozen', label: 'beku', value: 'beku' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami angin sebagai aliran udara dari satu kawasan ke kawasan lain.',
+      assessment: 'Pegun dan beku bercanggah dengan pemerhatian kesan angin pada objek di sekeliling.',
+      textbook: 'Definisi ringkas angin dalam stem asal dikekalkan untuk murid Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'bumi.ciri_asas_angin', responseMode: 'completion',
+      conceptTags: ['bumi', 'angin', 'aliran_udara'],
+      misconceptionTags: ['angin_ialah_udara_pegun', 'angin_ialah_udara_beku'],
+      hintSteps: ['Perhatikan daun atau bendera apabila angin bertiup.', 'Kita merasai angin apabila aliran di sekeliling melalui kulit.', 'Pilih keadaan udara yang berubah kedudukan dari satu tempat ke tempat lain.']
+    }
+  },
+  'SAINS-BAHAN-021': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih maksud bahan kalis air.',
+      sentenceParts: ['Bahan kalis air bermaksud ', '.'],
+      options: [
+        { id: 'does-not-absorb', label: 'tidak menyerap air', value: 'tidak menyerap air' },
+        { id: 'absorbs-easily', label: 'mudah menyerap air', value: 'mudah menyerap air' },
+        { id: 'tears-easily', label: 'mudah koyak', value: 'mudah koyak' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti sifat bahan kalis air melalui tindakannya terhadap titisan air.',
+      assessment: 'Mudah menyerap air ialah sifat bertentangan, manakala mudah koyak berkaitan kekuatan bahan.',
+      textbook: 'Definisi asal dikekalkan dengan pilihan sifat bahan yang boleh dibandingkan.'
+    },
+    intelligence: {
+      skillId: 'bahan.maksud_kalis_air', responseMode: 'completion',
+      conceptTags: ['bahan', 'kalis_air', 'penyerapan'],
+      misconceptionTags: ['kalis_air_mudah_menyerap', 'kalis_air_bermaksud_tahan_koyak'],
+      hintSteps: ['Bayangkan titisan diletakkan pada permukaan payung.', 'Titisan kekal di luar dan tidak masuk ke dalam bahan itu.', 'Pilih sifat bahan yang menghalang cecair daripada masuk.']
+    }
+  },
+  'SAINS-BAHAN-024': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih tindak balas bahan magnetik terhadap magnet.',
+      sentenceParts: ['Bahan magnetik boleh ', ' oleh magnet.'],
+      options: [
+        { id: 'attracted', label: 'ditarik', value: 'ditarik' },
+        { id: 'melted', label: 'dicairkan', value: 'dicairkan' },
+        { id: 'dissolved', label: 'dilarutkan', value: 'dilarutkan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti tindak balas bahan magnetik apabila didekatkan kepada magnet.',
+      assessment: 'Dicairkan dan dilarutkan ialah perubahan bahan yang tidak disebabkan oleh daya magnet.',
+      textbook: 'Stem asal mengekalkan hubungan antara magnet dengan bahan magnetik.'
+    },
+    intelligence: {
+      skillId: 'bahan.tindak_balas_bahan_magnetik', responseMode: 'completion',
+      conceptTags: ['bahan', 'magnet', 'daya'],
+      misconceptionTags: ['magnet_mencairkan_bahan', 'magnet_melarutkan_bahan'],
+      hintSteps: ['Dekatkan magnet kepada klip kertas tanpa menyentuhnya.', 'Perhatikan klip menghampiri magnet apabila jaraknya dekat.', 'Pilih tindakan daya magnet terhadap bahan yang sesuai.']
+    }
+  },
+  'SAINS-TEKNOLOGI-042': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih fungsi kekuatan jambatan kertas.',
+      sentenceParts: ['Jambatan kertas perlu cukup kuat untuk ', '.'],
+      options: [
+        { id: 'support-load', label: 'menampung beban', value: 'menampung beban' },
+        { id: 'absorb-water', label: 'menyerap air', value: 'menyerap air' },
+        { id: 'make-light', label: 'menghasilkan cahaya', value: 'menghasilkan cahaya' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan kekuatan struktur jambatan dengan keupayaannya menyokong objek.',
+      assessment: 'Menyerap air dan menghasilkan cahaya bukan tujuan kekuatan struktur jambatan.',
+      textbook: 'Konstruk reka bentuk struktur asal dikekalkan melalui satu pilihan fungsi yang tepat.'
+    },
+    intelligence: {
+      skillId: 'teknologi.kekuatan_jambatan_kertas', responseMode: 'completion',
+      conceptTags: ['teknologi', 'jambatan', 'kekuatan_struktur'],
+      misconceptionTags: ['jambatan_untuk_menyerap_air', 'jambatan_untuk_menghasilkan_cahaya'],
+      hintSteps: ['Bayangkan beberapa objek diletakkan di atas jambatan kertas.', 'Struktur yang kuat boleh menahan berat tanpa runtuh.', 'Pilih tugas utama jambatan apabila objek berada di atasnya.']
+    }
+  },
+  'SAINS-TEKNOLOGI-047': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih ciri asas menara blok yang stabil.',
+      sentenceParts: ['Menara blok lebih stabil jika mempunyai ', '.'],
+      options: [
+        { id: 'wide-base', label: 'tapak luas', value: 'tapak luas' },
+        { id: 'narrow-base', label: 'tapak sempit', value: 'tapak sempit' },
+        { id: 'heavy-top', label: 'bahagian atas berat', value: 'bahagian atas berat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti hubungan antara bentuk bahagian bawah struktur dengan kestabilannya.',
+      assessment: 'Tapak sempit dan bahagian atas berat menjadikan struktur lebih mudah tumbang.',
+      textbook: 'Stem asal mengekalkan prinsip asas kestabilan dalam aktiviti membina menara blok.'
+    },
+    intelligence: {
+      skillId: 'teknologi.kestabilan_menara_blok', responseMode: 'completion',
+      conceptTags: ['teknologi', 'struktur', 'kestabilan'],
+      misconceptionTags: ['tapak_sempit_lebih_stabil', 'bahagian_atas_berat_lebih_stabil'],
+      hintSteps: ['Bandingkan menara yang bahagian bawahnya lebar dengan yang sempit.', 'Bahagian bawah yang lebih lebar memberi sokongan pada lebih banyak kawasan.', 'Pilih bentuk bahagian bawah yang menjadikan menara sukar tumbang.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-034': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kegunaan graf gambar.',
+      sentenceParts: ['Graf gambar membantu kita ', ' data.'],
+      options: [
+        { id: 'compare', label: 'membandingkan', value: 'membandingkan' },
+        { id: 'erase', label: 'memadam', value: 'memadam' },
+        { id: 'hide', label: 'menyembunyikan', value: 'menyembunyikan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan graf gambar untuk melihat persamaan dan perbezaan antara data.',
+      assessment: 'Memadam dan menyembunyikan tidak menerangkan tujuan menyusun data dalam graf gambar.',
+      textbook: 'Fungsi graf gambar dalam stem asal dikekalkan tanpa menambah pengiraan baharu.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.kegunaan_graf_gambar', responseMode: 'completion',
+      conceptTags: ['kemahiran_saintifik', 'graf_gambar', 'data'],
+      misconceptionTags: ['graf_untuk_memadam_data', 'graf_untuk_menyembunyikan_data'],
+      hintSteps: ['Lihat dua baris simbol dalam graf dan perhatikan bilangannya.', 'Graf memudahkan kita melihat data mana yang lebih banyak atau kurang.', 'Pilih kemahiran yang digunakan apabila melihat perbezaan antara dua data.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-044': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bilangan faktor yang diubah dalam ujian adil.',
+      sentenceParts: ['Dalam ujian yang adil, hanya ', ' diubah pada satu masa.'],
+      options: [
+        { id: 'one-factor', label: 'satu perkara', value: 'satu perkara' },
+        { id: 'all-factors', label: 'semua perkara', value: 'semua perkara' },
+        { id: 'no-factor', label: 'tiada perkara', value: 'tiada perkara' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami bahawa ujian adil mengubah satu faktor sambil mengekalkan faktor lain.',
+      assessment: 'Mengubah semua faktor menghalang perbandingan yang adil, manakala tidak mengubah apa-apa tidak menguji kesan faktor.',
+      textbook: 'Prinsip ujian adil dalam stem asal dikekalkan sebagai pelengkapan satu respons.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.faktor_dalam_ujian_adil', responseMode: 'completion',
+      conceptTags: ['kemahiran_saintifik', 'ujian_adil', 'pemboleh_ubah'],
+      misconceptionTags: ['ubah_semua_faktor_serentak', 'tiada_faktor_perlu_diubah'],
+      hintSteps: ['Ujian adil memastikan faktor lain kekal sama semasa pemerhatian dibuat.', 'Jika terlalu banyak faktor berubah, kita tidak tahu punca hasil ujian.', 'Pilih bilangan faktor yang patut berbeza supaya keputusan boleh dinilai dengan adil.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS = Object.freeze({
   'SAINS-TUMBUHAN-050': {
     interaction: {
@@ -2805,6 +3295,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_2_EXAMPLES,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES,
+  ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
@@ -3084,6 +3575,10 @@ const REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_FILL_BLANK_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -3148,6 +3643,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_CONTENT_BATCH_2_INTELLIGENCE,
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
