@@ -2841,6 +2841,154 @@ const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_CHOICE_BATCH_2_SPECS = Object.freeze({
+  'SAINS-HAIWAN-042': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih cara pembiakan ayam yang betul.',
+      options: [
+        { id: 'lays-eggs', label: 'bertelur', value: 'bertelur' },
+        { id: 'gives-birth', label: 'beranak', value: 'beranak' },
+        { id: 'grows-shoots', label: 'bertunas', value: 'bertunas' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti cara pembiakan ayam sebagai haiwan yang menghasilkan telur.',
+      assessment: 'Beranak mengesan kekeliruan dengan mamalia, manakala bertunas mengesan kekeliruan antara pembiakan haiwan dengan tumbuhan.',
+      textbook: 'Tiga pilihan cara pembiakan mengekalkan konstruk fakta tunggal dalam stem asal.'
+    },
+    intelligence: {
+      skillId: 'haiwan.cara_pembiakan_ayam', responseMode: 'choice_selection',
+      conceptTags: ['haiwan', 'pembiakan', 'ayam'],
+      misconceptionTags: ['ayam_melahirkan_anak', 'ayam_membiak_seperti_tumbuhan'],
+      hintSteps: ['Fikirkan bagaimana anak ayam mula berkembang.', 'Bezakan cara pembiakan burung daripada mamalia dan tumbuhan.', 'Pilih cara pembiakan yang sepadan dengan ayam.']
+    }
+  },
+  'SAINS-AIR-050': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih perkara yang banyak dibunuh apabila air direbus.',
+      options: [
+        { id: 'germs', label: 'kuman', value: 'kuman' },
+        { id: 'stones', label: 'batu', value: 'batu' },
+        { id: 'leaves', label: 'daun', value: 'daun' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami tujuan merebus air untuk mengurangkan organisma berbahaya dan menjadikan air lebih selamat.',
+      assessment: 'Batu dan daun ialah bendasing yang tidak dibunuh melalui pemanasan, lalu membezakan kesan merebus daripada penapisan fizikal.',
+      textbook: 'Pilihan kata nama mengekalkan hubungan sebab-akibat dalam stem asal tanpa menambah proses rawatan air lain.'
+    },
+    intelligence: {
+      skillId: 'air.kesan_merebus_air', responseMode: 'choice_selection',
+      conceptTags: ['air', 'merebus', 'keselamatan_air'],
+      misconceptionTags: ['merebus_menghapuskan_batu', 'merebus_menghapuskan_daun'],
+      hintSteps: ['Fikirkan perubahan yang berlaku apabila air dipanaskan sehingga mendidih.', 'Merebus membantu menangani organisma sangat kecil, bukan menapis benda pepejal.', 'Pilih hidupan halus yang boleh menyebabkan penyakit.']
+    }
+  },
+  'SAINS-CAHAYA-041': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih anggota badan yang boleh cedera apabila melihat Matahari secara terus.',
+      options: [
+        { id: 'eyes', label: 'mata', value: 'mata' },
+        { id: 'ears', label: 'telinga', value: 'telinga' },
+        { id: 'nose', label: 'hidung', value: 'hidung' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan cahaya Matahari yang sangat terang dengan amalan menjaga deria penglihatan.',
+      assessment: 'Telinga dan hidung ialah organ deria yang tidak menerima cahaya ketika seseorang memandang sumber cahaya.',
+      textbook: 'Pilihan anggota badan mengekalkan konstruk keselamatan cahaya satu respons dalam stem asal.'
+    },
+    intelligence: {
+      skillId: 'cahaya.keselamatan_melihat_matahari', responseMode: 'choice_selection',
+      conceptTags: ['cahaya', 'matahari', 'keselamatan_deria'],
+      misconceptionTags: ['cahaya_mencederakan_telinga', 'cahaya_mencederakan_hidung'],
+      hintSteps: ['Fikirkan deria yang digunakan untuk melihat.', 'Cahaya yang sangat terang memasuki organ penglihatan.', 'Pilih anggota badan yang perlu dilindungi daripada cahaya terlalu terang.']
+    }
+  },
+  'SAINS-BUMI-020': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih kejadian yang boleh berlaku selepas hujan lebat.',
+      options: [
+        { id: 'flood', label: 'banjir', value: 'banjir' },
+        { id: 'drought', label: 'kemarau', value: 'kemarau' },
+        { id: 'haze', label: 'jerebu', value: 'jerebu' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan hujan lebat dengan kejadian cuaca dan keadaan permukaan Bumi yang berkaitan.',
+      assessment: 'Kemarau mengesan hubungan terbalik dengan kekurangan hujan, manakala jerebu mengesan kekeliruan dengan pencemaran udara.',
+      textbook: 'Tiga kejadian alam mengekalkan hubungan sebab-akibat cuaca yang diuji oleh stem asal.'
+    },
+    intelligence: {
+      skillId: 'bumi.kesan_hujan_lebat', responseMode: 'choice_selection',
+      conceptTags: ['bumi', 'cuaca', 'hujan_lebat'],
+      misconceptionTags: ['hujan_lebat_menyebabkan_kemarau', 'hujan_lebat_menyebabkan_jerebu'],
+      hintSteps: ['Bayangkan air turun dengan banyak dalam masa yang lama.', 'Singkirkan kejadian yang berkaitan dengan cuaca terlalu kering atau udara berasap.', 'Pilih kejadian apabila air terkumpul lebih cepat daripada dapat mengalir.']
+    }
+  },
+  'SAINS-BAHAN-031': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih sifat bahan yang paling sesuai untuk membuat payung.',
+      options: [
+        { id: 'waterproof', label: 'kalis air', value: 'kalis air' },
+        { id: 'absorbent', label: 'menyerap air', value: 'menyerap air' },
+        { id: 'tears-easily', label: 'mudah koyak', value: 'mudah koyak' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih sifat bahan berdasarkan fungsi payung untuk melindungi pengguna daripada hujan.',
+      assessment: 'Menyerap air mengesan pemilihan sifat yang bertentangan dengan fungsi payung, manakala mudah koyak mengesan pengabaian ketahanan bahan.',
+      textbook: 'Pilihan sifat bahan mengekalkan aplikasi harian satu respons yang terdapat dalam stem asal.'
+    },
+    intelligence: {
+      skillId: 'bahan.sifat_bahan_payung', responseMode: 'choice_selection',
+      conceptTags: ['bahan', 'sifat_bahan', 'payung'],
+      misconceptionTags: ['payung_perlu_menyerap_air', 'payung_sesuai_mudah_koyak'],
+      hintSteps: ['Fikirkan fungsi payung ketika hujan.', 'Air tidak sepatutnya menembusi bahan atau sampai kepada pengguna.', 'Pilih sifat yang menolak air dan membantu pengguna kekal kering.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-024': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih kuantiti yang diukur menggunakan termometer.',
+      options: [
+        { id: 'temperature', label: 'suhu', value: 'suhu' },
+        { id: 'time', label: 'masa', value: 'masa' },
+        { id: 'length', label: 'panjang', value: 'panjang' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan termometer dengan kuantiti yang diukur dalam penyiasatan saintifik.',
+      assessment: 'Masa dan panjang ialah kuantiti boleh ukur tetapi memerlukan jam dan alat pengukur panjang, bukan termometer.',
+      textbook: 'Nama alat dalam stem asal dipadankan dengan tiga kuantiti lazim tanpa mengubah kemahiran pengukuran yang diuji.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.kuantiti_termometer', responseMode: 'choice_selection',
+      conceptTags: ['kemahiran_saintifik', 'alat_pengukuran', 'termometer'],
+      misconceptionTags: ['termometer_mengukur_masa', 'termometer_mengukur_panjang'],
+      hintSteps: ['Fikirkan keadaan yang dibandingkan apabila sesuatu benda terasa panas atau sejuk.', 'Jam dan pembaris mengukur kuantiti lain.', 'Pilih kuantiti yang menunjukkan tahap kepanasan atau kesejukan.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_CHOICE_BATCH_2_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_CHOICE_BATCH_2_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-002': {
     interaction: {
@@ -3297,6 +3445,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES,
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES,
+  ...REVIEWED_SCIENCE_CHOICE_BATCH_2_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
@@ -3583,6 +3732,10 @@ const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_CHOICE_BATCH_2_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_CHOICE_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -3645,6 +3798,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE,
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_CHOICE_BATCH_2_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
