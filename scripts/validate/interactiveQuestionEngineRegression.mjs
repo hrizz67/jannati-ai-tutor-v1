@@ -256,6 +256,30 @@ const scienceChoiceBatch2Contracts = new Map([
   ['SAINS-BAHAN-031', { topic: 'bahan', stem: 'Bahan untuk payung sesuai jika bersifat ________.', answer: 'kalis air', accepted: ['kalis air'], questionType: 'short_answer', instruction: 'Pilih sifat bahan yang paling sesuai untuk membuat payung.', optionValues: ['kalis air', 'menyerap air', 'mudah koyak'] }],
   ['SAINS-KEMAHIRAN_SAINTIFIK-024', { topic: 'kemahiran_saintifik', stem: 'Termometer digunakan untuk mengukur ________.', answer: 'suhu', accepted: ['suhu'], questionType: 'short_answer', instruction: 'Pilih kuantiti yang diukur menggunakan termometer.', optionValues: ['suhu', 'masa', 'panjang'] }]
 ]);
+const scienceHotspotPilotContracts = new Map([
+  ['SAINS-BAHAN-026', {
+    topic: 'bahan', stem: 'Objek yang tenggelam bergerak ke ________ bekas berisi air.', answer: 'dasar', accepted: ['dasar'],
+    questionType: 'short_answer', instruction: 'Tekan kedudukan objek selepas objek itu tenggelam.',
+    visual: { kind: 'waterContainerDiagram', label: 'Rajah neutral bekas berisi air tanpa objek' },
+    hotspots: [
+      { id: 'surface', label: 'Permukaan air', value: 'permukaan', x: 50, y: 20 },
+      { id: 'middle', label: 'Tengah air', value: 'tengah', x: 50, y: 50 },
+      { id: 'bottom', label: 'Dasar bekas', value: 'dasar', x: 50, y: 82 }
+    ],
+    correctHotspotId: 'bottom'
+  }],
+  ['SAINS-MANUSIA-047', {
+    topic: 'manusia', stem: 'Topi keledar melindungi ________.', answer: 'kepala', accepted: ['kepala'],
+    questionType: 'short_answer', instruction: 'Tekan bahagian badan yang dilindungi oleh topi keledar.',
+    visual: { kind: 'bodyDiagram', label: 'Rajah neutral badan manusia tanpa topi keledar' },
+    hotspots: [
+      { id: 'head', label: 'Kepala', value: 'kepala', x: 50, y: 18 },
+      { id: 'hand', label: 'Tangan', value: 'tangan', x: 23, y: 53 },
+      { id: 'foot', label: 'Kaki', value: 'kaki', x: 66, y: 87 }
+    ],
+    correctHotspotId: 'head'
+  }]
+]);
 const rejectedScienceChoiceIds = new Set(['SAINS-CAHAYA-050', 'SAINS-TEKNOLOGI-028']);
 const equalGroupsPilotContracts = new Map([
   ['MATH-DARAB-PILOT-002', { stem: 'Berapakah hasil darab 5 dengan 4?', visual: { kind: 'equalGroups', mode: 'multiplication', groups: 4, itemsPerGroup: 5 }, optionValues: ['20', '9', '16'] }],
@@ -354,6 +378,16 @@ assert.deepEqual(
   { haiwan: 1, air: 1, cahaya: 1, bumi: 1, bahan: 1, kemahiran_saintifik: 1 },
   'Science Choice Batch 2 must preserve the six approved topic selections.'
 );
+assert.equal(scienceHotspotPilotContracts.size, 2, 'Science Hotspot Pilot must contain exactly two approved questions.');
+assert.deepEqual(
+  [...scienceHotspotPilotContracts.keys()].reduce((counts, id) => {
+    const topic = topicByQuestionId.get(id);
+    counts[topic] = (counts[topic] || 0) + 1;
+    return counts;
+  }, {}),
+  { bahan: 1, manusia: 1 },
+  'Science Hotspot Pilot must preserve exactly the approved Bahan and Manusia selections.'
+);
 assert.equal(rejectedScienceChoiceIds.size, 2, 'Exactly two near-duplicate Science Choice IDs must remain rejected.');
 assert.equal(equalGroupsPilotContracts.size, 8, 'The Equal Groups pilot must contain exactly eight reviewed questions.');
 assert.equal(arrayPilotContracts.size, 2, 'The Array pilot must contain exactly two reviewed questions.');
@@ -387,9 +421,14 @@ assert.equal(
   scienceChoiceBatch2PriorIds.length + scienceChoiceBatch2Contracts.size,
   'Science Choice Batch 2 IDs must be disjoint from every protected prior content batch and visual pilot.'
 );
+assert.equal(
+  new Set([...scienceChoiceBatch2PriorIds, ...scienceChoiceBatch2Contracts.keys(), ...scienceHotspotPilotContracts.keys()]).size,
+  scienceChoiceBatch2PriorIds.length + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size,
+  'Science Hotspot Pilot IDs must be disjoint from every protected prior content batch and visual pilot.'
+);
 assert.equal(new Set([...equalGroupsPilotContracts.keys(), ...arrayPilotContracts.keys(), ...numberLinePilotContracts.keys()]).size, equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Equal Groups, Array and Number Line pilot IDs must remain disjoint.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -718,6 +757,65 @@ for (const [id, contract] of scienceChoiceBatch2Contracts) {
   }
 }
 assert.equal(scienceChoiceBatch2SkillIds.size, scienceChoiceBatch2Contracts.size, 'Every Science Choice Batch 2 item must use a unique skill ID.');
+
+for (const [id, contract] of scienceHotspotPilotContracts) {
+  const matches = questions.filter(question => question.id === id);
+  const question = byId.get(id);
+  assert.equal(matches.length, 1, `${id} must exist exactly once in the normalized runtime collection.`);
+  assert.ok(question, `Missing Science Hotspot Pilot interaction ${id}.`);
+  assert.equal(topicByQuestionId.get(id), contract.topic, `${id} must remain in its approved Science topic.`);
+  assert.equal(question.q, contract.stem, `${id} must preserve its original runtime stem.`);
+  assert.equal(question.question, contract.stem, `${id} must expose its unchanged stem consistently.`);
+  assert.equal(question.answer, contract.answer, `${id} must preserve its canonical answer.`);
+  assert.deepEqual(question.accepted, contract.accepted, `${id} must preserve its original accepted answers exactly.`);
+  assert.deepEqual(question.acceptedAnswers, contract.accepted, `${id} must preserve its normalized accepted-answer contract exactly.`);
+  assert.equal(question.questionType, contract.questionType, `${id} must preserve its original question type.`);
+  assert.equal(question.marks, 1, `${id} must remain a one-mark question.`);
+  assert.equal(question.interaction.version, 1, `${id} must use interaction version 1.`);
+  assert.equal(question.interaction.type, 'hotspot', `${id} must use the existing Hotspot interaction.`);
+  assert.equal(question.interaction.instruction, contract.instruction, `${id} must preserve the approved Hotspot instruction.`);
+  assert.deepEqual(question.interaction.visual, contract.visual, `${id} must use its neutral approved diagram.`);
+  assert.deepEqual(question.interaction.hotspots, contract.hotspots, `${id} must preserve the approved semantic hotspot order and coordinates.`);
+  assert.equal(question.interaction.correctHotspotId, contract.correctHotspotId, `${id} must map the approved hotspot as correct.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} must pass the existing Hotspot schema.`);
+  assert.equal(new Set(question.interaction.hotspots.map(hotspot => hotspot.id)).size, 3, `${id} must use three unique hotspot IDs.`);
+  assert.equal(new Set(question.interaction.hotspots.map(hotspot => hotspot.label)).size, 3, `${id} must expose three specific screen-reader labels.`);
+  assert.ok(question.interaction.hotspots.every(hotspot => hotspot.x >= 0 && hotspot.x <= 100 && hotspot.y >= 0 && hotspot.y <= 100), `${id} hotspot coordinates must remain responsive percentages.`);
+  assert.deepEqual(
+    question.interaction.hotspots.map(hotspot => hotspot.y),
+    [...question.interaction.hotspots].sort((left, right) => left.y - right.y).map(hotspot => hotspot.y),
+    `${id} keyboard focus order must follow the visual top-to-bottom order.`
+  );
+  for (const viewportWidth of [320, 375, 430]) {
+    const viewportHeight = viewportWidth * 1.25;
+    const centers = question.interaction.hotspots.map(hotspot => ({
+      x: viewportWidth * hotspot.x / 100,
+      y: viewportHeight * hotspot.y / 100
+    }));
+    for (let left = 0; left < centers.length; left += 1) {
+      for (let right = left + 1; right < centers.length; right += 1) {
+        assert.ok(Math.hypot(centers[left].x - centers[right].x, centers[left].y - centers[right].y) >= 50, `${id} hotspot targets must not overlap at ${viewportWidth}px.`);
+      }
+    }
+  }
+  const correctHotspot = question.interaction.hotspots.find(hotspot => hotspot.id === question.interaction.correctHotspotId);
+  assert.equal(correctHotspot?.value, contract.answer, `${id} correct hotspot must submit the unchanged canonical answer.`);
+  assert.equal(smartCheck(correctHotspot.value, question).status, 'correct', `${id} canonical hotspot response must pass smartCheck.`);
+  assert.ok(question.interaction.hotspots.filter(hotspot => hotspot !== correctHotspot).every(hotspot => smartCheck(hotspot.value, question).status !== 'correct'), `${id} must reject both semantic distractor hotspots.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires item-specific curriculum, assessment and textbook review notes.`);
+  assert.equal(question.learningIntelligence?.responseMode, 'spatial_selection', `${id} must use the established spatial-selection response mode.`);
+  assert.ok(question.learningIntelligence?.skillId, `${id} requires an item-specific skill ID.`);
+  assert.equal(question.learningIntelligence?.hintSteps?.length, 3, `${id} requires exactly three progressive hints.`);
+  assert.ok(!question.interaction.visual.label.toLocaleLowerCase('ms-MY').includes(contract.answer), `${id} visual description must not reveal the canonical answer.`);
+  const guidance = [question.interaction.instruction, ...question.learningIntelligence.hintSteps].join(' ').toLocaleLowerCase('ms-MY');
+  const escapedAnswer = contract.answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  assert.doesNotMatch(guidance, new RegExp(`(^|[^\\p{L}\\p{N}])${escapedAnswer}($|[^\\p{L}\\p{N}])`, 'u'), `${id} guidance must not state the canonical response.`);
+}
+assert.deepEqual(
+  authoredInteractiveQuestions.filter(question => question.interaction.visual?.kind === 'waterContainerDiagram' || question.interaction.visual?.kind === 'bodyDiagram').map(question => question.id).sort(),
+  [...scienceHotspotPilotContracts.keys()].sort(),
+  'Only the two approved Science IDs may receive the new neutral Hotspot diagrams.'
+);
 
 for (const id of rejectedScienceChoiceIds) {
   const question = questions.find(item => item.id === id);
@@ -1077,6 +1175,12 @@ assert.doesNotMatch(engineSource, /config\.type === 'numberLine'/, 'Number line 
 assert.ok(visualSource.includes("visual.kind === 'array'") && visualSource.includes('array-grid') && visualSource.includes('array-counter'), 'QuestionVisual must route arrays through the existing visual component.');
 assert.ok(styleSource.includes('.array-visual') && styleSource.includes('.array-grid') && styleSource.includes('.array-counter'), 'Arrays must use tightly scoped responsive grid styles.');
 assert.doesNotMatch(engineSource, /config\.type === 'array'/, 'Arrays must not introduce a new interaction-engine branch.');
+assert.ok(visualSource.includes("visual.kind === 'waterContainerDiagram'") && visualSource.includes("visual.kind === 'bodyDiagram'"), 'Science Hotspot Pilot must route both neutral diagrams through QuestionVisual.');
+assert.ok(visualSource.includes('interactive-water-container-svg') && visualSource.includes('interactive-body-svg'), 'Science Hotspot Pilot must render scoped semantic SVG diagrams.');
+assert.ok(styleSource.includes('.water-diagram-container') && styleSource.includes('.body-diagram-torso'), 'Science Hotspot Pilot diagrams must use tightly scoped styles.');
+assert.doesNotMatch(engineSource, /config\.type === '(?:waterContainerDiagram|bodyDiagram)'/, 'Science Hotspot Pilot must not introduce a new interaction-engine branch.');
+assert.ok(engineSource.includes('aria-label={`Pilih ${hotspot.label}`}'), 'Every Hotspot target must expose its authored semantic label to assistive technology.');
+assert.ok(styleSource.includes('width: 50px') && styleSource.includes('height: 50px') && styleSource.includes('min-width: 50px') && styleSource.includes('min-height: 50px'), 'Hotspot targets must remain at least 50px for touch input.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
 assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');

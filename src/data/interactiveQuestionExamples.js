@@ -2989,6 +2989,66 @@ const REVIEWED_SCIENCE_CHOICE_BATCH_2_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_HOTSPOT_PILOT_SPECS = Object.freeze({
+  'SAINS-BAHAN-026': {
+    interaction: {
+      version: 1,
+      type: 'hotspot',
+      instruction: 'Tekan kedudukan objek selepas objek itu tenggelam.',
+      visual: { kind: 'waterContainerDiagram', label: 'Rajah neutral bekas berisi air tanpa objek' },
+      hotspots: [
+        { id: 'surface', label: 'Permukaan air', value: 'permukaan', x: 50, y: 20 },
+        { id: 'middle', label: 'Tengah air', value: 'tengah', x: 50, y: 50 },
+        { id: 'bottom', label: 'Dasar bekas', value: 'dasar', x: 50, y: 82 }
+      ],
+      correctHotspotId: 'bottom'
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kedudukan akhir objek yang tenggelam di dalam bekas berisi air.',
+      assessment: 'Tiga aras kedudukan mengekalkan konstruk lokasi asal; rajah tidak menunjukkan objek atau pergerakan yang membocorkan jawapan.',
+      textbook: 'Bekas air neutral menghubungkan istilah permukaan, tengah dan dasar dengan kedudukan relatif dalam air.'
+    },
+    intelligence: {
+      skillId: 'bahan.kedudukan_objek_tenggelam', responseMode: 'spatial_selection',
+      conceptTags: ['bahan', 'tenggelam', 'kedudukan_dalam_air'],
+      misconceptionTags: ['keliru_tenggelam_dan_terapung', 'objek_tenggelam_berhenti_di_tengah'],
+      hintSteps: ['Fikirkan arah pergerakan apabila objek tidak kekal di permukaan air.', 'Bayangkan objek terus bergerak turun melepasi bahagian tengah.', 'Tekan kedudukan paling bawah di dalam bekas.']
+    }
+  },
+  'SAINS-MANUSIA-047': {
+    interaction: {
+      version: 1,
+      type: 'hotspot',
+      instruction: 'Tekan bahagian badan yang dilindungi oleh topi keledar.',
+      visual: { kind: 'bodyDiagram', label: 'Rajah neutral badan manusia tanpa topi keledar' },
+      hotspots: [
+        { id: 'head', label: 'Kepala', value: 'kepala', x: 50, y: 18 },
+        { id: 'hand', label: 'Tangan', value: 'tangan', x: 23, y: 53 },
+        { id: 'foot', label: 'Kaki', value: 'kaki', x: 66, y: 87 }
+      ],
+      correctHotspotId: 'head'
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti bahagian badan yang dilindungi oleh topi keledar dalam amalan keselamatan diri.',
+      assessment: 'Tiga bahagian badan yang berjauhan mengekalkan respons lokasi tunggal; rajah manusia tidak memakai topi keledar atau membawa petunjuk jawapan.',
+      textbook: 'Rajah badan neutral membantu murid memadankan fungsi alat keselamatan dengan bahagian badan yang berkaitan.'
+    },
+    intelligence: {
+      skillId: 'manusia.fungsi_topi_keledar', responseMode: 'spatial_selection',
+      conceptTags: ['manusia', 'keselamatan_diri', 'alat_pelindung'],
+      misconceptionTags: ['topi_keledar_melindungi_tangan', 'topi_keledar_melindungi_kaki'],
+      hintSteps: ['Fikirkan tempat topi keledar dipakai sebelum menunggang basikal.', 'Bahagian itu berada paling atas pada badan.', 'Tekan bahagian bulat di atas badan.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_HOTSPOT_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_HOTSPOT_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_SPECS = Object.freeze({
   'MATH-DARAB-PILOT-002': {
     interaction: {
@@ -3446,6 +3506,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_BATCH_2_EXAMPLES,
+  ...REVIEWED_SCIENCE_HOTSPOT_PILOT_EXAMPLES,
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
@@ -3736,6 +3797,10 @@ const REVIEWED_SCIENCE_CHOICE_BATCH_2_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_CHOICE_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_HOTSPOT_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_HOTSPOT_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -3799,6 +3864,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_BATCH_2_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_HOTSPOT_PILOT_INTELLIGENCE,
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,

@@ -149,6 +149,29 @@ function PlantDiagram({ label }) {
   </svg>;
 }
 
+function WaterContainerDiagram({ label }) {
+  return <svg className="interactive-water-container-svg" viewBox="0 0 320 400" role="img" aria-label={label || 'Rajah neutral bekas berisi air tanpa objek'} focusable="false">
+    <rect className="water-diagram-background" width="320" height="400" rx="26" />
+    <path className="water-diagram-fill" d="M76 80H244V318Q244 336 226 336H94Q76 336 76 318Z" />
+    <path className="water-diagram-container" d="M66 58V316Q66 348 98 348H222Q254 348 254 316V58" />
+    <line className="water-diagram-surface" x1="76" y1="80" x2="244" y2="80" />
+    <line className="water-diagram-guide" x1="88" y1="200" x2="232" y2="200" />
+    <line className="water-diagram-guide" x1="88" y1="328" x2="232" y2="328" />
+  </svg>;
+}
+
+function BodyDiagram({ label }) {
+  return <svg className="interactive-body-svg" viewBox="0 0 320 400" role="img" aria-label={label || 'Rajah neutral badan manusia tanpa topi keledar'} focusable="false">
+    <rect className="body-diagram-background" width="320" height="400" rx="26" />
+    <circle className="body-diagram-head" cx="160" cy="72" r="38" />
+    <path className="body-diagram-torso" d="M118 120Q160 102 202 120L218 244Q190 260 160 260T102 244Z" />
+    <path className="body-diagram-limb" d="M119 137 74 211M201 137l45 74M132 249l-22 99M188 249l24 99" />
+    <circle className="body-diagram-joint" cx="74" cy="211" r="11" />
+    <circle className="body-diagram-joint" cx="246" cy="211" r="11" />
+    <path className="body-diagram-foot" d="M88 352h30M202 352h30" />
+  </svg>;
+}
+
 function RulerVisual({ visual }) {
   const maxCm = Math.max(1, Math.round(Number(visual.maxCm) || 15));
   const startCm = Math.max(0, Math.min(maxCm, Number(visual.startCm) || 0));
@@ -178,6 +201,8 @@ export default function QuestionVisual({ visual, className = '' }) {
   if (visual.kind === 'array') return <ArrayVisual visual={visual} />;
   if (visual.kind === 'clock') return <ClockVisual hour={visual.hour} minute={visual.minute} label={visual.label} />;
   if (visual.kind === 'plantDiagram') return <PlantDiagram label={visual.label} />;
+  if (visual.kind === 'waterContainerDiagram') return <WaterContainerDiagram label={visual.label} />;
+  if (visual.kind === 'bodyDiagram') return <BodyDiagram label={visual.label} />;
   if (visual.kind === 'ruler') return <RulerVisual visual={visual} />;
   if (visual.kind === 'shape') return <ShapeSvg shape={visual.shape} label={visual.label} />;
   if (visual.kind === 'object') {

@@ -78,6 +78,7 @@ const scienceChoiceBatch2Ids = new Set([
   'SAINS-HAIWAN-042', 'SAINS-AIR-050', 'SAINS-CAHAYA-041',
   'SAINS-BUMI-020', 'SAINS-BAHAN-031', 'SAINS-KEMAHIRAN_SAINTIFIK-024'
 ]);
+const scienceHotspotPilotIds = new Set(['SAINS-BAHAN-026', 'SAINS-MANUSIA-047']);
 const rejectedScienceChoiceIds = new Set(['SAINS-CAHAYA-050', 'SAINS-TEKNOLOGI-028']);
 const rejectedScienceFillBlankBatch2Ids = new Set([
   'SAINS-HAIWAN-041', 'SAINS-TUMBUHAN-045', 'SAINS-MANUSIA-042', 'SAINS-AIR-043',
@@ -310,11 +311,12 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1234, TEACHER_REVIEW: 2688, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 242, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1236, TEACHER_REVIEW: 2686, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 244, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1234, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3296, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.interactive, 1236, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3294, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.visual, 86, 'The two approved Science Hotspot diagrams must be the only new visual interactions.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -410,9 +412,35 @@ assert.ok([...scienceChoiceBatch2Ids].every(id => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every Science Choice Batch 2 question must be authored, valid, accessible and AUTO_SAFE.');
-assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive).length, 69, 'Science must contain exactly 69 reviewed interactions after Science Choice Batch 2.');
+assert.equal(scienceHotspotPilotIds.size, 2, 'Science Hotspot Pilot must contain exactly two approved question IDs.');
+const scienceHotspotPriorIds = [
+  ...batch1Ids, ...batch2Ids, ...languageFillBlankBatch3Ids,
+  ...scienceFillBlankPilotIds, ...scienceFillBlankBatch2Ids,
+  ...scienceChoiceMiniPilotIds, ...scienceChoiceBatch2Ids,
+  ...equalGroupsPilotIds, ...arrayPilotIds, ...numberLinePilotIds
+];
+assert.equal(
+  new Set([...scienceHotspotPriorIds, ...scienceHotspotPilotIds]).size,
+  scienceHotspotPriorIds.length + scienceHotspotPilotIds.size,
+  'Science Hotspot Pilot must remain disjoint from every protected content batch and visual pilot.'
+);
+assert.ok([...scienceHotspotPilotIds].every(id => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.interactionType === 'hotspot'
+    && row.interactive
+    && row.authoredInteractive
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every Science Hotspot Pilot question must be authored, valid, accessible and AUTO_SAFE.');
+assert.deepEqual(
+  rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive && row.interactionType === 'hotspot').map(row => row.questionId).sort(),
+  ['SAINS-BAHAN-026', 'SAINS-MANUSIA-047', 'SAINS-TUMBUHAN-009'].sort(),
+  'Only the existing plant Hotspot and the two approved Science Hotspot Pilot IDs may be authored as Science Hotspots.'
+);
+assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive).length, 71, 'Science must contain exactly 71 reviewed interactions after Science Hotspot Pilot.');
 assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive && row.interactionType === 'choice').length, 12, 'Science must contain exactly twelve reviewed authored Choice interactions.');
-assert.equal(rows.filter(row => row.subjectId === 'sains' && row.classification === 'TEACHER_REVIEW').length, 421, 'Science must retain exactly 421 teacher-review questions.');
+assert.equal(rows.filter(row => row.subjectId === 'sains' && row.classification === 'TEACHER_REVIEW').length, 419, 'Science must retain exactly 419 teacher-review questions.');
 for (const id of rejectedScienceChoiceIds) {
   const row = rows.find(item => item.questionId === id);
   assert.equal(row?.classification, 'TEACHER_REVIEW', `${id} must remain in teacher review.`);
