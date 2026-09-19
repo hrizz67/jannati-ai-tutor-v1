@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 244, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 250, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2686, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2680, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -79,6 +79,11 @@ const scienceFillBlankBatch2Ids = new Set([
   'SAINS-BAHAN-021', 'SAINS-BAHAN-024',
   'SAINS-TEKNOLOGI-042', 'SAINS-TEKNOLOGI-047',
   'SAINS-KEMAHIRAN_SAINTIFIK-034', 'SAINS-KEMAHIRAN_SAINTIFIK-044'
+]);
+const scienceFillBlankBatch3Ids = new Set([
+  'SAINS-AIR-025', 'SAINS-AIR-031',
+  'SAINS-CAHAYA-031', 'SAINS-CAHAYA-044',
+  'SAINS-BUMI-029', 'SAINS-BUMI-050'
 ]);
 const scienceChoiceMiniPilotIds = new Set([
   'SAINS-TUMBUHAN-050',
@@ -164,15 +169,25 @@ for (const id of scienceFillBlankBatch2Ids) {
   assert.equal(row?.recommendedType, 'fillBlank', `${id} mesti menggunakan interaksi fillBlank sedia ada.`);
   assert.equal(question?.interaction?.type, 'fillBlank', `${id} mesti mempunyai overlay fillBlank yang disemak.`);
 }
+assert.equal(scienceFillBlankBatch3Ids.size, 6, 'Science FillBlank Batch 3 mesti mengandungi tepat enam ID yang diluluskan.');
+const scienceFillBlankBatch3PriorIds = [...languageFillBlankBatch3Ids, ...scienceFillBlankPilotIds, ...scienceFillBlankBatch2Ids, ...scienceChoiceMiniPilotIds, ...scienceChoiceBatch2Ids, ...scienceHotspotPilotIds, ...equalGroupsPilotIds, ...arrayPilotIds, ...numberLinePilotIds];
+assert.equal(new Set([...scienceFillBlankBatch3PriorIds, ...scienceFillBlankBatch3Ids]).size, scienceFillBlankBatch3PriorIds.length + scienceFillBlankBatch3Ids.size, 'Science FillBlank Batch 3 tidak boleh bertindih dengan kandungan terdahulu yang dilindungi.');
+for (const id of scienceFillBlankBatch3Ids) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'fillBlank', `${id} mesti menggunakan interaksi FillBlank sedia ada.`);
+  assert.equal(question?.interaction?.type, 'fillBlank', `${id} mesti mempunyai overlay yang disemak.`);
+}
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
-  71,
-  'Science mesti mempunyai tepat 71 interaksi disemak selepas Science Hotspot Pilot.'
+  77,
+  'Science mesti mempunyai tepat 77 interaksi disemak selepas Science FillBlank Batch 3.'
 );
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'teacher_review').length,
-  419,
-  'Science mesti mempunyai tepat 419 calon teacher_review selepas Science Hotspot Pilot.'
+  413,
+  'Science mesti mempunyai tepat 413 calon teacher_review selepas Science FillBlank Batch 3.'
 );
 
 assert.equal(scienceChoiceMiniPilotIds.size, 6, 'Science Choice Mini-Pilot mesti mengandungi tepat enam ID yang diluluskan.');

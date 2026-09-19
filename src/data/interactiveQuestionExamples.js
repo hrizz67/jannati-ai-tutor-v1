@@ -2693,6 +2693,148 @@ const REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_SPECS = Object.freeze({
+  'SAINS-AIR-025': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih tempat asal air telaga.',
+      sentenceParts: ['Air telaga diperoleh dari ', '.'],
+      options: [
+        { id: 'groundwater', label: 'bawah tanah', value: 'bawah tanah' },
+        { id: 'river', label: 'sungai', value: 'sungai' },
+        { id: 'sea', label: 'laut', value: 'laut' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti asal air yang diperoleh melalui telaga.',
+      assessment: 'Sungai dan laut ialah sumber air lain, tetapi bukan sumber yang dicapai dengan menggali telaga.',
+      textbook: 'Stem runtime tentang air telaga dikekalkan sebagai satu pelengkapan fakta sumber air.'
+    },
+    intelligence: {
+      skillId: 'air.sumber_air_telaga', responseMode: 'completion',
+      conceptTags: ['air', 'telaga', 'sumber_air'],
+      misconceptionTags: ['keliru_telaga_dan_sungai', 'keliru_telaga_dan_laut'],
+      hintSteps: ['Telaga digali untuk mendapatkan air.', 'Fikirkan lokasi air yang dicapai apabila telaga digali.', 'Pilih tempat asal air yang dikeluarkan melalui telaga.']
+    }
+  },
+  'SAINS-AIR-031': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih kesan menutup paip selepas digunakan.',
+      sentenceParts: ['Menutup paip selepas digunakan dapat ', '.'],
+      options: [
+        { id: 'save-water', label: 'menjimatkan air', value: 'menjimatkan air' },
+        { id: 'waste-water', label: 'membazir air', value: 'membazir air' },
+        { id: 'pollute-water', label: 'mencemarkan air', value: 'mencemarkan air' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menghubungkan amalan menutup paip dengan penggunaan air yang berhemah.',
+      assessment: 'Membazir dan mencemarkan air ialah kesan yang salah bagi tindakan menutup paip.',
+      textbook: 'Ayat asal menilai kesan tindakan harian yang mudah difahami murid Tahun 2.'
+    },
+    intelligence: {
+      skillId: 'air.kesan_menutup_paip', responseMode: 'completion',
+      conceptTags: ['air', 'paip', 'penggunaan_berhemah'],
+      misconceptionTags: ['keliru_jimat_dan_bazir', 'keliru_penggunaan_dan_pencemaran'],
+      hintSteps: ['Perhatikan bahawa paip ditutup selepas digunakan.', 'Air tidak lagi mengalir keluar tanpa keperluan.', 'Pilih kesan tindakan yang mengelakkan air terbuang.']
+    }
+  },
+  'SAINS-CAHAYA-031': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih sifat kaca jernih.',
+      sentenceParts: ['Kaca jernih ialah bahan ', '.'],
+      options: [
+        { id: 'transparent', label: 'lutsinar', value: 'lutsinar' },
+        { id: 'translucent', label: 'lut cahaya', value: 'lut cahaya' },
+        { id: 'opaque', label: 'legap', value: 'legap' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Membezakan bahan yang membenarkan objek di belakangnya dilihat dengan jelas.',
+      assessment: 'Lut cahaya hanya membenarkan imej kabur, manakala legap menghalang pandangan melalui bahan.',
+      textbook: 'Kaca jernih dan tiga istilah sifat cahaya mengekalkan konstruk pengelasan bahan asal.'
+    },
+    intelligence: {
+      skillId: 'cahaya.sifat_kaca_jernih', responseMode: 'completion',
+      conceptTags: ['cahaya', 'kaca_jernih', 'sifat_bahan'],
+      misconceptionTags: ['keliru_jernih_dan_kabur', 'keliru_jernih_dan_legap'],
+      hintSteps: ['Bayangkan melihat objek di sebalik kaca jernih.', 'Objek itu dapat dilihat dengan jelas kerana cahaya melaluinya.', 'Pilih sifat bahan yang membenarkan pandangan jelas.']
+    }
+  },
+  'SAINS-CAHAYA-044': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih kesan memadamkan lampu yang tidak digunakan.',
+      sentenceParts: ['Memadamkan lampu apabila tidak digunakan dapat ', '.'],
+      options: [
+        { id: 'save-electricity', label: 'menjimatkan elektrik', value: 'menjimatkan elektrik' },
+        { id: 'waste-electricity', label: 'membazir elektrik', value: 'membazir elektrik' },
+        { id: 'generate-electricity', label: 'menghasilkan elektrik', value: 'menghasilkan elektrik' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengaitkan amalan memadamkan lampu dengan penggunaan elektrik secara berhemah.',
+      assessment: 'Memadamkan lampu tidak membazirkan atau menghasilkan elektrik; hanya satu kesan sesuai dengan tindakan.',
+      textbook: 'Stem runtime mengekalkan hubungan sebab-akibat antara memadamkan lampu dan penggunaan tenaga.'
+    },
+    intelligence: {
+      skillId: 'cahaya.kesan_memadam_lampu', responseMode: 'completion',
+      conceptTags: ['cahaya', 'lampu', 'elektrik'],
+      misconceptionTags: ['keliru_jimat_dan_bazir_elektrik', 'menganggap_lampu_menghasilkan_elektrik'],
+      hintSteps: ['Lampu yang tidak diperlukan boleh dimatikan.', 'Lampu yang padam tidak menggunakan tenaga untuk menyala.', 'Pilih kesan tindakan itu terhadap penggunaan elektrik.']
+    }
+  },
+  'SAINS-BUMI-029': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih tekstur pasir.',
+      sentenceParts: ['Pasir mempunyai tekstur ', '.'],
+      options: [
+        { id: 'grainy', label: 'berbutir', value: 'berbutir' },
+        { id: 'smooth', label: 'licin', value: 'licin' },
+        { id: 'elastic', label: 'kenyal', value: 'kenyal' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti tekstur pasir daripada butiran kecil yang dapat diperhatikan.',
+      assessment: 'Licin dan kenyal menggambarkan sifat bahan lain, bukan tekstur utama pasir.',
+      textbook: 'Stem runtime yang khusus kepada tekstur pasir mengekalkan pemerhatian bahan semula jadi.'
+    },
+    intelligence: {
+      skillId: 'bumi.tekstur_pasir', responseMode: 'completion',
+      conceptTags: ['bumi', 'pasir', 'tekstur'],
+      misconceptionTags: ['keliru_pasir_dan_permukaan_licin', 'keliru_pasir_dan_bahan_kenyal'],
+      hintSteps: ['Perhatikan pasir dengan dekat.', 'Pasir terdiri daripada banyak butiran kecil.', 'Pilih perkataan yang menerangkan rasa butiran itu apabila disentuh.']
+    }
+  },
+  'SAINS-BUMI-050': {
+    interaction: {
+      version: 1, type: 'fillBlank', instruction: 'Pilih keadaan cuaca ketika kilat boleh kelihatan.',
+      sentenceParts: ['Kilat boleh kelihatan semasa ', '.'],
+      options: [
+        { id: 'thunderstorm', label: 'ribut petir', value: 'ribut petir' },
+        { id: 'clear-weather', label: 'cuaca cerah', value: 'cuaca cerah' },
+        { id: 'drought', label: 'kemarau', value: 'kemarau' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti keadaan cuaca yang lazim dikaitkan dengan kilat.',
+      assessment: 'Cuaca cerah dan kemarau tidak menerangkan keadaan cuaca yang lazim disertai kilat.',
+      textbook: 'Ayat asal mengekalkan pemerhatian kilat sebagai petunjuk jenis cuaca.'
+    },
+    intelligence: {
+      skillId: 'bumi.cuaca_kilat', responseMode: 'completion',
+      conceptTags: ['bumi', 'cuaca', 'kilat'],
+      misconceptionTags: ['keliru_kilat_dan_cuaca_cerah', 'keliru_kilat_dan_kemarau'],
+      hintSteps: ['Perhatikan peristiwa kilat di langit.', 'Kilat lazim berlaku bersama guruh dan hujan lebat.', 'Pilih keadaan cuaca yang sepadan dengan petunjuk itu.']
+    }
+  }
+});
+
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS = Object.freeze({
   'SAINS-TUMBUHAN-050': {
     interaction: {
@@ -3504,6 +3646,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_EXAMPLES,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_EXAMPLES,
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_EXAMPLES,
+  ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_EXAMPLES,
   ...REVIEWED_SCIENCE_CHOICE_BATCH_2_EXAMPLES,
   ...REVIEWED_SCIENCE_HOTSPOT_PILOT_EXAMPLES,
@@ -3789,6 +3932,10 @@ const REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_SCIENCE_CHOICE_MINI_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
@@ -3862,6 +4009,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_LANGUAGE_FILL_BLANK_BATCH_3_INTELLIGENCE,
   ...REVIEWED_SCIENCE_FILL_BLANK_PILOT_INTELLIGENCE,
   ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_2_INTELLIGENCE,
+  ...REVIEWED_SCIENCE_FILL_BLANK_BATCH_3_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_MINI_PILOT_INTELLIGENCE,
   ...REVIEWED_SCIENCE_CHOICE_BATCH_2_INTELLIGENCE,
   ...REVIEWED_SCIENCE_HOTSPOT_PILOT_INTELLIGENCE,
