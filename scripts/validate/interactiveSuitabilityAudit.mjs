@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 242, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 244, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2688, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2686, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -96,6 +96,7 @@ const scienceChoiceBatch2Ids = new Set([
   'SAINS-BAHAN-031',
   'SAINS-KEMAHIRAN_SAINTIFIK-024'
 ]);
+const scienceHotspotPilotIds = new Set(['SAINS-BAHAN-026', 'SAINS-MANUSIA-047']);
 const rejectedScienceChoiceIds = new Set(['SAINS-CAHAYA-050', 'SAINS-TEKNOLOGI-028']);
 const rejectedScienceFillBlankBatch2Ids = new Set([
   'SAINS-HAIWAN-041', 'SAINS-TUMBUHAN-045', 'SAINS-MANUSIA-042', 'SAINS-AIR-043',
@@ -165,13 +166,13 @@ for (const id of scienceFillBlankBatch2Ids) {
 }
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
-  69,
-  'Science mesti mempunyai tepat 69 interaksi disemak selepas Science Choice Batch 2.'
+  71,
+  'Science mesti mempunyai tepat 71 interaksi disemak selepas Science Hotspot Pilot.'
 );
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'teacher_review').length,
-  421,
-  'Science mesti mempunyai tepat 421 calon teacher_review selepas Science Choice Batch 2.'
+  419,
+  'Science mesti mempunyai tepat 419 calon teacher_review selepas Science Hotspot Pilot.'
 );
 
 assert.equal(scienceChoiceMiniPilotIds.size, 6, 'Science Choice Mini-Pilot mesti mengandungi tepat enam ID yang diluluskan.');
@@ -223,6 +224,23 @@ for (const id of scienceChoiceBatch2Ids) {
     [true, false, false],
     `${id} mesti mengekalkan corak betul/salah/salah yang diluluskan.`
   );
+}
+assert.equal(scienceHotspotPilotIds.size, 2, 'Science Hotspot Pilot mesti mengandungi tepat dua ID yang diluluskan.');
+assert.equal(
+  new Set([...languageFillBlankBatch3Ids, ...scienceFillBlankPilotIds, ...scienceFillBlankBatch2Ids, ...scienceChoiceMiniPilotIds, ...scienceChoiceBatch2Ids, ...equalGroupsPilotIds, ...arrayPilotIds, ...numberLinePilotIds, ...scienceHotspotPilotIds]).size,
+  languageFillBlankBatch3Ids.size + scienceFillBlankPilotIds.size + scienceFillBlankBatch2Ids.size + scienceChoiceMiniPilotIds.size + scienceChoiceBatch2Ids.size + equalGroupsPilotIds.size + arrayPilotIds.size + numberLinePilotIds.size + scienceHotspotPilotIds.size,
+  'Science Hotspot Pilot tidak boleh bertindih dengan kandungan dan pilot terdahulu yang dilindungi.'
+);
+for (const id of scienceHotspotPilotIds) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berpindah daripada teacher_review kepada reviewed_interactive.`);
+  assert.equal(row?.recommendedType, 'hotspot', `${id} mesti menggunakan interaksi Hotspot sedia ada.`);
+  assert.equal(question?.interaction?.type, 'hotspot', `${id} mesti mempunyai overlay Hotspot yang disemak.`);
+  assert.equal(question?.interaction?.hotspots?.length, 3, `${id} mesti mempunyai tepat tiga hotspot semantik.`);
+  assert.deepEqual(getInteractiveQuestionConfig(question), question.interaction, `${id} mesti menggunakan konfigurasi authored yang sah.`);
+  const correctHotspot = question.interaction.hotspots.find(hotspot => hotspot.id === question.interaction.correctHotspotId);
+  assert.equal(smartCheck(correctHotspot?.value, question).status, 'correct', `${id} mesti menghantar jawapan kanonik melalui hotspot yang betul.`);
 }
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive' && item.recommendedType === 'choice').length,

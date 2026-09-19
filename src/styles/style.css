@@ -7053,7 +7053,9 @@ input:focus {
   overflow: hidden;
 }
 
-.interactive-plant-svg {
+.interactive-plant-svg,
+.interactive-water-container-svg,
+.interactive-body-svg {
   display: block;
   width: 100%;
   height: 100%;
@@ -7072,6 +7074,45 @@ input:focus {
 .plant-leaves { fill: #54b96f; stroke: #13713d; stroke-width: 4; }
 .plant-flower ellipse { fill: #ffd75e; stroke: #bd8500; stroke-width: 3; }
 .plant-flower circle { fill: #f1a61b; stroke: #9d6900; stroke-width: 3; }
+
+.water-diagram-background,
+.body-diagram-background { fill: #f7fbfc; }
+.water-diagram-fill { fill: #dff4fb; }
+.water-diagram-container {
+  fill: none;
+  stroke: #526b78;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 8;
+}
+.water-diagram-surface {
+  stroke: #2798bd;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+.water-diagram-guide {
+  stroke: rgba(39, 152, 189, .32);
+  stroke-dasharray: 8 10;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.body-diagram-head,
+.body-diagram-torso {
+  fill: #d8e5e9;
+  stroke: #526b78;
+  stroke-width: 5;
+}
+.body-diagram-limb,
+.body-diagram-foot {
+  fill: none;
+  stroke: #526b78;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 20;
+}
+.body-diagram-foot { stroke-width: 16; }
+.body-diagram-joint { fill: #d8e5e9; stroke: #526b78; stroke-width: 4; }
 
 .hotspot-button {
   position: absolute;
