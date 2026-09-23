@@ -17,6 +17,7 @@ const metadata = getReleaseMetadata();
 const packageJson = JSON.parse(read('package.json'));
 const deployWorkflow = read('.github/workflows/deploy.yml');
 const ciWorkflow = read('.github/workflows/ci.yml');
+const releaseRunner = read('scripts/release/release.js');
 const versionGenerator = read('scripts/release/generateVersion.js');
 const smokeTest = read('scripts/release/smokeTestDeployment.mjs');
 
@@ -33,6 +34,11 @@ assert.equal(packageJson.scripts?.release, 'node scripts/release/prepareRelease.
 assert.equal(packageJson.scripts?.['release:check'], 'node scripts/release/verifyReleaseVersion.js');
 assert.equal(packageJson.scripts?.['release:build-check'], 'node scripts/release/verifyBuildOutput.js');
 assert.equal(packageJson.scripts?.['release:smoke'], 'node scripts/release/smokeTestDeployment.mjs');
+assert.match(
+  releaseRunner,
+  /Release step 2\/10: validate'[\s\S]{0,200}runNpmScript\('validate', \['--write-reports'\]\)[\s\S]{0,200}Release step 3\/10: verify validation gate'[\s\S]{0,200}verifyValidation\(\)/,
+  'Release validation must refresh canonical reports before the validation gate reads them.'
+);
 assert.match(ciWorkflow, /actions\/checkout@v7/, 'CI must use the current Node 24 checkout action.');
 assert.match(deployWorkflow, /actions\/checkout@v7/, 'Deploy must use the current Node 24 checkout action.');
 assert.match(ciWorkflow, /actions\/setup-node@v7/, 'CI must use the current setup-node action.');

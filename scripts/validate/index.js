@@ -27,13 +27,17 @@ function ensureReportDir() {
 }
 
 function summarizeReport(report) {
+  const reportFileName = `${report.validator === 'questions' ? 'question' : report.validator}-report.json`;
   return {
     validator: report.validator,
     status: report.status,
     infos: report.totals?.infos || 0,
     errors: report.totals?.errors || 0,
     warnings: report.totals?.warnings || 0,
-    reportFile: `reports/validation/${report.validator === 'questions' ? 'question' : report.validator}-report.json`
+    reportFile: path
+      .relative(process.cwd(), path.join(REPORT_DIR, reportFileName))
+      .split(path.sep)
+      .join('/')
   };
 }
 

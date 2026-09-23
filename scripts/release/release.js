@@ -3,22 +3,30 @@ const fs = require('fs');
 const { execFileSync } = require('child_process');
 const { ROOT_DIR, assertVersionAlignment } = require('./releaseMetadata');
 
-function runNpmScript(script) {
+function runNpmScript(script, args = []) {
   if (!/^[a-z0-9:_-]+$/i.test(script)) throw new Error(`Unsafe npm script name: ${script}`);
+  if (!Array.isArray(args) || args.some(arg => !/^--[a-z0-9-]+$/i.test(arg))) {
+    throw new Error(`Unsafe npm script arguments: ${args.join(' ')}`);
+  }
 
   const options = { cwd: ROOT_DIR, stdio: 'inherit' };
+  const npmArgs = ['run', script, ...(args.length ? ['--', ...args] : [])];
   const npmCli = process.env.npm_execpath;
   if (npmCli && fs.existsSync(npmCli)) {
-    execFileSync(process.execPath, [npmCli, 'run', script], options);
+    execFileSync(process.execPath, [npmCli, ...npmArgs], options);
     return;
   }
 
   if (process.platform === 'win32') {
-    execFileSync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', `npm.cmd run ${script}`], options);
+    execFileSync(
+      process.env.ComSpec || 'cmd.exe',
+      ['/d', '/s', '/c', ['npm.cmd', ...npmArgs].join(' ')],
+      options
+    );
     return;
   }
 
-  execFileSync('npm', ['run', script], options);
+  execFileSync('npm', npmArgs, options);
 }
 
 function runNodeScript(relativePath) {
@@ -51,7 +59,7 @@ function runRelease() {
   assertVersionAlignment();
 
   console.log('Release step 2/10: validate');
-  runNpmScript('validate');
+  runNpmScript('validate', ['--write-reports']);
 
   console.log('Release step 3/10: verify validation gate');
   verifyValidation();
