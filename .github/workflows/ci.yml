@@ -43,6 +43,10 @@ jobs:
         id: validation
         run: npm run validate
 
+      - name: Generate subject coverage reports
+        id: subject-coverage
+        run: npm run audit:subjects
+
       - name: Build production application
         id: build
         run: npm run build
@@ -73,6 +77,7 @@ jobs:
             echo "| --- | --- |"
             echo "| Release metadata | ${{ steps.release-metadata.outcome }} |"
             echo "| Validation suite | ${{ steps.validation.outcome }} |"
+            echo "| Subject coverage reports | ${{ steps.subject-coverage.outcome }} |"
             echo "| Production build | ${{ steps.build.outcome }} |"
             echo "| Build assets | ${{ steps.build-assets.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"
