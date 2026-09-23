@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
-const REPORT_DIR = path.resolve('reports/validation');
+const REPORT_DIR = path.resolve(process.env.VALIDATION_REPORT_DIR || 'reports/validation');
 const REPORT_PATH = path.join(REPORT_DIR, 'curriculum-report.json');
 const VALID_DIFFICULTIES = new Set(['mudah', 'sederhana', 'sukar', 'easy', 'medium', 'hard']);
 const VALID_QUESTION_TYPES = new Set(['short_answer', 'objective', 'multiple_response', 'matching', 'ordering', 'fill_blank', 'true_false', 'structured', 'oral', 'practical']);

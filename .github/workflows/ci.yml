@@ -41,7 +41,7 @@ jobs:
 
       - name: Run validation suite
         id: validation
-        run: npm run validate
+        run: npm run validate -- --write-reports
 
       - name: Generate subject coverage reports
         id: subject-coverage

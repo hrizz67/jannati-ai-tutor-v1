@@ -1,29 +1,43 @@
 const fs = require('fs');
 const path = require('path');
+
+const WRITE_TRACKED_REPORTS = process.argv.includes('--write-reports');
+const DEFAULT_REPORT_DIR = WRITE_TRACKED_REPORTS
+  ? 'reports/validation'
+  : 'reports/validation/local';
+const REPORT_DIR = path.resolve(process.env.VALIDATION_REPORT_DIR || DEFAULT_REPORT_DIR);
+
+process.env.VALIDATION_REPORT_DIR = REPORT_DIR;
+
 const { runQuestionValidation } = require('./questionValidator');
 const { runCurriculumValidation } = require('./curriculumValidator');
 const { runMetadataValidation } = require('./metadataValidator');
 const { runStorageValidation } = require('./storageValidator');
 const { runContentQualityValidation } = require('./contentQualityValidator');
 
-const REPORT_DIR = path.resolve('reports/validation');
 const SUMMARY_JSON = path.join(REPORT_DIR, 'summary.json');
 const SUMMARY_MD = path.join(REPORT_DIR, 'summary.md');
 const VALIDATION_SUMMARY_MD = path.join(REPORT_DIR, 'validation-summary.md');
-const ROOT_VALIDATION_SUMMARY_MD = path.resolve('validation-summary.md');
+const ROOT_VALIDATION_SUMMARY_MD = WRITE_TRACKED_REPORTS
+  ? path.resolve('validation-summary.md')
+  : VALIDATION_SUMMARY_MD;
 
 function ensureReportDir() {
   fs.mkdirSync(REPORT_DIR, { recursive: true });
 }
 
 function summarizeReport(report) {
+  const reportFileName = `${report.validator === 'questions' ? 'question' : report.validator}-report.json`;
   return {
     validator: report.validator,
     status: report.status,
     infos: report.totals?.infos || 0,
     errors: report.totals?.errors || 0,
     warnings: report.totals?.warnings || 0,
-    reportFile: `reports/validation/${report.validator === 'questions' ? 'question' : report.validator}-report.json`
+    reportFile: path
+      .relative(process.cwd(), path.join(REPORT_DIR, reportFileName))
+      .split(path.sep)
+      .join('/')
   };
 }
 

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const REPORT_DIR = path.resolve('reports/validation');
+const REPORT_DIR = path.resolve(process.env.VALIDATION_REPORT_DIR || 'reports/validation');
 const REPORT_PATH = path.join(REPORT_DIR, 'storage-report.json');
 const VALID_MASTERY_STATES = new Set(['NOT_STARTED', 'LEARNING', 'NEEDS_PRACTICE', 'MASTERED']);
 const EXPECTED_KEYS = {

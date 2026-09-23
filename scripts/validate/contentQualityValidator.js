@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
-const REPORT_DIR = path.resolve('reports/validation');
+const REPORT_DIR = path.resolve(process.env.VALIDATION_REPORT_DIR || 'reports/validation');
 const REPORT_PATH = path.join(REPORT_DIR, 'content-quality-report.json');
 const REQUIRED_COGNITIVE_LEVELS = ['mengingat', 'memahami', 'mengaplikasi', 'menganalisis', 'menilai'];
 
