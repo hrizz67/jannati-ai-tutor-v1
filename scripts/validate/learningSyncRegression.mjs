@@ -692,7 +692,8 @@ assert.match(dashboardSource, /Log masuk untuk Sync/, 'The dashboard must give l
 assert.match(dashboardSource, /Keluar Free/, 'The dashboard must provide an explicit exit action for a local Free profile.');
 assert.match(appSource, /rememberCloudEnvelope\(operationAccountId, \{ \.\.\.syncResult, data: payload \}\)/, 'An acknowledged upload must expose its exact server revision and resulting payload.');
 assert.match(egressSource, /if \(result\.migrationRequired\) onMigrationRequired[\s\S]{0,120}else if \(result\.error\) onError/, 'A network or RPC error must not be mislabeled as a migration problem.');
-assert.match(dashboardSource, /Revision server:/, 'The dashboard must show a comparable server revision for desktop/mobile verification.');
+assert.match(dashboardSource, /Kemas kini terakhir:/, 'The dashboard must show the latest cloud update time without exposing implementation jargon.');
+assert.doesNotMatch(dashboardSource, /Revision server:|Sync revisioned|Migration Data Integrity v3|RPC lama/, 'Learner-facing cloud status must not expose implementation jargon.');
 assert.match(appSource, /applyCloudRestoreResult\([\s\S]{0,180}restoreResult\.childId === activeChildBeforeCloudRestore/, 'A cloud pull must refresh active profile state without blindly resetting the active quiz UI.');
 assert.match(appSource, /preserveLocalChildIds = dirtyChildIds\.filter[\s\S]{0,500}applyMergedCloudMetadata\(payload, activeChildId, preserveLocalChildIds\)[\s\S]{0,350}reloadCloudLearningState\(resolvedActiveChildId, resolvedActiveChildId === activeChildId\)/, 'A server-acknowledged same-child merge must preserve the active quiz UI.');
 const reloadActiveChildSource = appSource.slice(

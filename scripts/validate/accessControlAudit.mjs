@@ -115,6 +115,7 @@ assert.match(app, /activeScopedAccountId === previousAccountId[\s\S]{0,100}captu
 assert.match(app, /const feature = PREMIUM_SCREEN_FEATURES\[screen\][\s\S]{0,200}if \(!feature \|\| isPremiumUser\) return;/, 'Protected screens must close when verified Premium access is absent or revoked.');
 assert.ok(!dashboard.includes('profile?.isPremium'), 'Dashboard must not render Premium from local learning profile data.');
 assert.match(dashboard, /hasAccountSession && accessProfile\?\.isPremium/, 'Dashboard Premium badge must require an authenticated account and authoritative access.');
+assert.equal((dashboard.match(/<PremiumFeatureBadge visible=\{!isPremiumAccount\} \/>/g) || []).length, 7, 'Every currently gated dashboard entry point must disclose Premium access before click.');
 assert.match(schema, /values \(new\.id, coalesce\([\s\S]{0,100}, 'free'\)/, 'New auth users must be inserted explicitly as Free.');
 assert.match(schema, /revoke insert, update, delete on table public\.profiles from anon, authenticated;/, 'Client roles must not write entitlement rows directly.');
 assert.match(learningSql, /values \(auth\.uid\(\), 'Murid', 'free'\)/, 'Learning-data fallback profile creation must be explicitly Free.');

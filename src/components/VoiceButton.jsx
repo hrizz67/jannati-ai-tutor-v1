@@ -4,7 +4,7 @@ import { supportsVoice } from '../ai/voice/voiceCapability.js';
 import GameBadge from './GameBadge.jsx';
 import mendengarBadge from '../assets/icons/3d/mendengar-badge.webp';
 
-export default function VoiceButton({ text = '', label = 'Baca', className = '', title = 'Baca kuat', size = 'sm', lang = 'ms-MY' }) {
+export default function VoiceButton({ text = '', label = 'Dengar', className = '', title = 'Dengar audio', size = 'sm', lang = 'ms-MY' }) {
   if (!supportsVoice() || !String(text || '').trim()) return null;
   return <VoiceButtonControl text={text} label={label} className={className} title={title} size={size} lang={lang} />;
 }
@@ -14,7 +14,7 @@ function VoiceButtonControl({ text, label, className, title, size, lang }) {
 
   function getFailureMessage(code) {
     if (code === VOICE_RESULT_CODES.SPEECH_NOT_SUPPORTED) {
-      return 'Pelayar ini tidak menyokong bacaan suara. Cuba Safari atau Chrome biasa.';
+      return 'Bacaan suara tidak tersedia pada peranti ini.';
     }
     if (code === VOICE_RESULT_CODES.VOICE_NOT_AVAILABLE) {
       return 'Voice bahasa ini tiada pada peranti. Pasang pek suara bahasa dalam tetapan peranti.';

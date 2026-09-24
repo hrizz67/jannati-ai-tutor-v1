@@ -254,14 +254,14 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
           ? `${nameLead}berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`
           : `Berdasarkan kemajuan kamu, topik yang paling perlu dikuatkan dalam ${focus.subjectLabel} ialah ${focus.label}.`)
       : (nameLead
-          ? `${nameLead}saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`
-          : `Saya belum mempunyai cukup rekod latihan untuk menentukan topik paling lemah dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`);
+          ? `${nameLead}saya belum mempunyai cukup rekod latihan untuk menentukan topik yang paling perlu diperkukuh dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`
+          : `Saya belum mempunyai cukup rekod latihan untuk menentukan topik yang paling perlu diperkukuh dengan tepat. Hari ini saya cadangkan kita mula dengan ${focus.label} dalam ${focus.subjectLabel}.`);
     return {
       text: `${opening} ${shortPlan} Kamu mahu saya mula dengan penerangan atau latihan?`,
       quickReplies: [
         `Boleh ajar saya ${focus.label}?`,
         `Apa itu ${focus.label}?`,
-        'Lihat topik lemah saya'
+        'Lihat perkara yang perlu saya latih'
       ],
       grounded: true
     };
@@ -271,7 +271,7 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
     text: nameLead
       ? `${nameLead}hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`
       : `Hari ini kita boleh mula dengan ${focus.subjectLabel}. Saya boleh memilih satu topik asas, menerangkannya dengan contoh, kemudian memberi latihan ringkas. Kamu mahu saya pilih topik atau kamu mahu pilih sendiri?`,
-    quickReplies: ['Pilih topik untuk saya', 'Mulakan latihan ringkas', 'Lihat topik lemah saya'],
+    quickReplies: ['Pilih topik untuk saya', 'Mulakan latihan ringkas', 'Lihat perkara yang perlu saya latih'],
     grounded: Boolean(subject?.id)
   };
 }
@@ -385,18 +385,18 @@ function buildSuggestionList(intent, context = {}) {
       return [
         'Pilih topik untuk saya.',
         'Mulakan sesi belajar ringkas.',
-        'Lihat topik lemah saya.'
+        'Lihat perkara yang perlu saya latih.'
       ];
     case 'weak_topic':
       return [
-        'Latih topik lemah ini sekali lagi.',
+        'Latih topik ini sekali lagi.',
         'Cuba 10 soalan ulang kaji.',
         'Minta penjelasan langkah demi langkah.'
       ];
     case 'revision_plan':
       return [
         'Ikut cadangan ulang kaji hari ini.',
-        'Mulakan dengan topik paling lemah.',
+        'Mulakan dengan topik yang paling perlu diperkukuh.',
         'Tamatkan dengan satu sesi latihan ringkas.'
       ];
     case 'uasa_summary':
@@ -745,7 +745,7 @@ function buildContextualSections({
         ].filter(Boolean).join(' ')
       : intent === 'weak_topic'
         ? [
-            weakTopicLabel ? `Topik lemah kamu ialah ${weakTopicLabel}.` : 'Topik lemah kamu memerlukan latihan lagi.',
+            weakTopicLabel ? `${weakTopicLabel} perlu latihan tambahan.` : 'Ada topik yang masih perlu latihan tambahan.',
             resolvedInstruction ? `Arahan: ${resolvedInstruction}.` : '',
             subjectLabel ? `Subjek: ${subjectLabel}.` : ''
           ].filter(Boolean).join(' ')
@@ -797,7 +797,7 @@ function buildContextualSections({
         : intent === 'hint'
           ? 'Cuba guna petunjuk ini untuk mencari jawapan.'
           : intent === 'weak_topic'
-            ? 'Mari fokus pada topik lemah ini sedikit demi sedikit.'
+            ? 'Mari kukuhkan topik ini sedikit demi sedikit.'
             : intent === 'revision_plan'
               ? 'Ikut cadangan ulang kaji ini untuk kemajuan yang lebih baik.'
               : intent === 'uasa_summary'

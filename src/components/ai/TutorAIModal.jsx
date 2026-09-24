@@ -532,7 +532,7 @@ export default function TutorAIModal({
     { label: 'Beri contoh mudah', intent: 'example_request' }
   ].filter(item => !item.hidden);
   const analyticsPrompts = [
-    { label: 'Apa topik lemah saya?', intent: 'weak_topic' },
+    { label: 'Apa yang perlu saya latih?', intent: 'weak_topic' },
     { label: 'Apa cadangan ulang kaji?', intent: 'revision_plan' },
     { label: 'Bagaimana UASA saya?', intent: 'uasa_summary' }
   ];
@@ -713,7 +713,7 @@ export default function TutorAIModal({
               }
             }}
             placeholder="Tanya Janna..."
-            aria-label="Tanya Tutor AI"
+            aria-label="Tanya Janna"
             maxLength={700}
           />
           <button

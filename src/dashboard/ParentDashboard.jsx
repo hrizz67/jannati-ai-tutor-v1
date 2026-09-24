@@ -322,7 +322,7 @@ export default function ParentDashboard({
             <b>{primaryFocus
               ? `${formatTopicName(primaryFocus.topicId)} · ${formatSubjectName(primaryFocus.subjectId)}`
               : evidenceState.meaningful
-                ? 'Tiada topik lemah dikesan berdasarkan data semasa.'
+                ? 'Tiada topik memerlukan latihan tambahan berdasarkan data semasa.'
                 : 'Kumpulkan beberapa jawapan dahulu.'}</b>
             <p>{primaryFocus
               ? 'Mulakan latihan berfokus untuk mengukuhkan topik ini.'
@@ -423,8 +423,8 @@ export default function ParentDashboard({
                     <p>{selectedTimeline.body}</p>
                   </div>
                   <div className="timeline-item">
-                    <span>Topik Lemah</span>
-                    <b>{evidenceState.meaningful && selectedSubject.analytics.weakTopics.length ? selectedSubject.analytics.weakTopics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : selectedSubject.hasData ? 'Tiada topik lemah dikesan' : 'Subjek belum bermula'}</b>
+                    <span>Perlu Latihan</span>
+                    <b>{evidenceState.meaningful && selectedSubject.analytics.weakTopics.length ? selectedSubject.analytics.weakTopics.slice(0, 3).map(topic => formatTopicName(topic.topicId)).join(', ') : selectedSubject.hasData ? 'Tiada topik memerlukan latihan tambahan' : 'Subjek belum bermula'}</b>
                     <em>{evidenceState.meaningful ? `${selectedSubject.analytics.weakTopics.length} topik` : 'Belum cukup bukti'}</em>
                     <p>{evidenceState.meaningful && selectedSubject.analytics.weakTopics[0]
                       ? `Fokus pada ${formatTopicName(selectedSubject.analytics.weakTopics[0].topicId)}.`
@@ -471,8 +471,8 @@ export default function ParentDashboard({
           <>
             <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
             <div className="metric-grid">
-              <MetricCard value={safeText(weakestSubject?.label, 'Belum tersedia')} label="Subjek Paling Lemah" subtitle={weakestSubject ? `${safePercent(weakestSubject.mastery)}%` : 'Tiada data'} />
-              <MetricCard value={safeText(strongestSubject?.label, 'Belum tersedia')} label="Subjek Terkuat" subtitle={strongestSubject ? `${safePercent(strongestSubject.mastery)}%` : 'Tiada data'} />
+              <MetricCard value={safeText(weakestSubject?.label, 'Belum tersedia')} label="Subjek Perlu Fokus" subtitle={weakestSubject ? `${safePercent(weakestSubject.mastery)}%` : 'Tiada data'} />
+              <MetricCard value={safeText(strongestSubject?.label, 'Belum tersedia')} label="Penguasaan Tertinggi Semasa" subtitle={strongestSubject ? `${safePercent(strongestSubject.mastery)}%` : 'Tiada data'} />
               <MetricCard value={safeText(focusTopics[0]?.topicId ? formatTopicName(focusTopics[0].topicId) : '', 'Belum tersedia')} label="Topik Fokus" subtitle={focusTopics[0] ? `${safePercent(focusTopics[0].mastery)}%` : 'Tiada data'} />
               <MetricCard value={aiRecommendationText || 'Belum tersedia'} label="Cadangan AI" subtitle={canonicalAnalytics.status} />
             </div>
@@ -498,7 +498,7 @@ export default function ParentDashboard({
                 ))}
               </div>
             ) : (
-              <EmptyState title="Tiada topik lemah dikesan" message="Prestasi semasa adalah baik. Teruskan latihan pengukuhan untuk mengekalkan kemajuan." actionLabel="Buka latihan adaptif" onAction={() => startParentPractice()} showMascot={false} />
+              <EmptyState title="Tiada topik memerlukan latihan tambahan" message="Prestasi semasa adalah baik. Teruskan latihan pengukuhan untuk mengekalkan kemajuan." actionLabel="Buka latihan adaptif" onAction={() => startParentPractice()} showMascot={false} />
             )}
           </>
         ) : (

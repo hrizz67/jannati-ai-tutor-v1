@@ -198,7 +198,7 @@ export function buildLearningObservation(profile = {}, memory = {}, options = {}
     riskLevel: risk,
     dailyMission: {
       title: 'Hari Ini',
-      items: mission.length ? mission : ['10 soalan BM', 'Ketepatan >80%', 'Ulang topik lemah']
+      items: mission.length ? mission : ['10 soalan BM', 'Ketepatan >80%', 'Latih topik yang perlu diperkukuh']
     },
     memorySpeech: buildMemorySpeech(profile, memory, insight),
     recommendation,

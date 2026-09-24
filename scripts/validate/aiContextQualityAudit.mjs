@@ -386,7 +386,7 @@ async function main() {
 
   const modalSource = fileMap.get('src/components/ai/TutorAIModal.jsx') || '';
   assert.ok(containsAny(modalSource, ['Beri saya petunjuk', 'Terangkan soalan ini', 'Kenapa jawapan saya salah?', 'Beri contoh mudah']), 'Tutor AI exercise chips missing');
-  assert.ok(containsAny(modalSource, ['Lihat kemajuan saya', 'Apa topik lemah saya?', 'Apa cadangan ulang kaji?', 'Bagaimana UASA saya?']), 'Tutor AI analytics chips missing');
+  assert.ok(containsAny(modalSource, ['Lihat kemajuan saya', 'Apa yang perlu saya latih?', 'Apa cadangan ulang kaji?', 'Bagaimana UASA saya?']), 'Tutor AI analytics chips missing');
 
   const explainSource = fileMap.get('src/components/ai/AIExplainModal.jsx') || '';
   assert.ok(containsAny(explainSource, ['max-height: min(88dvh, 820px)', 'Lihat penerangan lanjut', '×']), 'AIExplain modal layout contract incomplete');

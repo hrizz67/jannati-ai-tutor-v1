@@ -13,7 +13,7 @@ check(/<details[^>]*className="quick-prompts-analytics"[^>]*>[\s\S]*analyticsPro
 check(/<details[^>]*className="tutor-ai-actions"[^>]*>/.test(modal) && !/<details[^>]*open/.test(modal), 'Action disclosures must be collapsed by default.');
 for (const intent of ['hint', 'question_help', 'wrong_answer_coaching', 'example_request', 'weak_topic', 'revision_plan', 'uasa_summary']) check(modal.includes(`intent: '${intent}'`), `Intent removed: ${intent}`);
 check(modal.includes('className="ai-chat-body"') && styles.includes('.ai-chat-body') && styles.includes('overflow-y: auto'), 'Conversation area must scroll and keep available height.');
-check(modal.includes('aria-label="Tanya Guru AI"'), 'Tutor input must remain accessible.');
+check(modal.includes('aria-label="Tanya Janna"'), 'Tutor input must remain accessible.');
 check(modal.includes('focus') && modal.includes('body.scrollTop = body.scrollHeight'), 'Response focus/scroll behavior is missing.');
 check(styles.includes('prefers-reduced-motion') && styles.includes('tutor-ai-actions'), 'Disclosure chevron/reduced-motion styling is missing.');
 

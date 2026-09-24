@@ -57,13 +57,16 @@ import ganjaranBadge from '../assets/icons/3d/ganjaran-badge.webp';
 import targetBadge from '../assets/icons/3d/target-badge.webp';
 import clockBadge from '../assets/icons/3d/clock-badge.webp';
 import fireBadge from '../assets/icons/3d/fire-badge.webp';
-import bellBadge from '../assets/icons/3d/bell-badge.webp';
 import { DEFAULT_STUDENT_YEAR, getStudentYearSupportLabel, SUPPORTED_STUDENT_YEARS } from '../config/studentYears.js';
 
 // Legacy motion tokens remain documented while the resume UI uses the 3D replacements: IconGlyph name="play" and IconGlyph name="repeat".
 
 function GameBadge({ src, alt = '', className = '' }) {
   return <img className={`game-badge-icon ${className}`.trim()} src={src} alt={alt} aria-hidden={!alt} loading="lazy" decoding="async" draggable="false" />;
+}
+
+function PremiumFeatureBadge({ visible }) {
+  return visible ? <small className="premium-feature-badge"><span aria-hidden="true">🔒</span> Premium</small> : null;
 }
 
 const subjectBadges = { bm: bmBadge, math: mathBadge, english: englishBadge, sains: sainsBadge, arab: arabBadge, islam: islamBadge, pj: pjBadge, pk: pkBadge };
@@ -133,23 +136,22 @@ function ChildProfileSwitcher({ profiles = [], archivedChildren = {}, activeChil
 function getCloudSyncPresentation(hasAccountSession, status, revision = 0, serverUpdatedAt = '') {
   if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.', retryable: true };
   const presentation = {
-    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan sedang dihantar menggunakan revision server.', retryable: false },
-    saved: { label: 'Telah sync', tone: 'saved', detail: 'Server telah mengakui revision terkini peranti ini.', retryable: false },
-    loaded: { label: 'Cloud terkini', tone: 'saved', detail: 'Peranti ini menggunakan revision cloud terkini.', retryable: false },
+    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan kamu sedang disimpan ke cloud.', retryable: false },
+    saved: { label: 'Telah sync', tone: 'saved', detail: 'Perubahan terkini sudah disimpan ke cloud.', retryable: false },
+    loaded: { label: 'Cloud terkini', tone: 'saved', detail: 'Data terkini daripada cloud sudah dimuatkan.', retryable: false },
     empty: { label: 'Cloud baharu', tone: 'syncing', detail: 'Data pertama sedang disediakan untuk akaun ini.', retryable: false },
-    offline: { label: 'Menunggu internet', tone: 'offline', detail: 'Data kekal dalam outbox peranti. Tekan untuk cuba semula.', retryable: true },
-    error: { label: 'Sync gagal', tone: 'error', detail: 'Tekan untuk cuba menghantar perubahan tertangguh sahaja.', retryable: true },
-    conflict: { label: 'Menyelaras konflik', tone: 'syncing', detail: 'Server mengesan revision baharu dan sedang menyelaraskan semula.', retryable: true },
-    'upgrade-required': { label: 'Sync dilindungi', tone: 'offline', detail: 'Migration Data Integrity v3 perlu dipasang. Perubahan tidak akan dihantar melalui RPC lama.', retryable: false },
-    idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false }
-  }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Sync revisioned aktif untuk akaun ini.', retryable: false };
+    offline: { label: 'Menunggu internet', tone: 'offline', detail: 'Menunggu internet untuk sync. Data kamu masih selamat pada peranti ini.', retryable: true },
+    error: { label: 'Sync gagal', tone: 'error', detail: 'Data kamu masih selamat pada peranti ini. Tekan untuk cuba semula.', retryable: true },
+    conflict: { label: 'Sedang menyelaras', tone: 'syncing', detail: 'Perubahan daripada peranti lain sedang diselaraskan dengan selamat.', retryable: true },
+    'upgrade-required': { label: 'Sync perlu dikemas kini', tone: 'offline', detail: 'Sync memerlukan kemas kini. Data kamu masih selamat pada peranti ini.', retryable: false },
+    idle: { label: 'Cloud bersedia', tone: 'idle', detail: 'Data akan diselaraskan apabila ada perubahan.', retryable: false }
+  }[status] || { label: 'Cloud bersedia', tone: 'idle', detail: 'Data akan diselaraskan apabila ada perubahan.', retryable: false };
   const safeRevision = Math.max(0, Number(revision) || 0);
   const updatedLabel = serverUpdatedAt && !Number.isNaN(Date.parse(serverUpdatedAt))
     ? new Date(serverUpdatedAt).toLocaleString('ms-MY')
     : '';
   if (safeRevision > 0) {
-    presentation.label = `${presentation.label} · r${safeRevision}`;
-    presentation.detail = `${presentation.detail} Revision server: ${safeRevision}${updatedLabel ? ` · ${updatedLabel}` : ''}.`;
+    presentation.detail = `${presentation.detail}${updatedLabel ? ` Kemas kini terakhir: ${updatedLabel}.` : ' Data cloud terkini telah dikenal pasti.'}`;
   }
   return presentation;
 }
@@ -426,10 +428,10 @@ export default function HomeDashboard(props) {
         <div className="brand"><BrandLogo iconOnly /><div><h2>Jannati</h2><p>AI Tutor Rasmi</p></div></div>
         <button type="button" className="nav active"><GameBadge src={homeBadge} /> <span>Papan Utama</span></button>
         <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('nota')}><GameBadge src={notaBadge} /> <span>Nota</span></button>
-        <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('buku')}><GameBadge src={bukuTeksBadge} /> <span>Buku Teks</span></button>
-        <button type="button" className="nav" onClick={onOpenAi}><GameBadge src={tutorAiBadge} /> <span>Tutor AI</span></button>
-        <button type="button" className="nav" onClick={onOpenUasa}><GameBadge src={uasaBadge} /> <span>Pentaksiran</span></button>
-        <button type="button" className="nav" onClick={onOpenParent}><GameBadge src={ibuBapaBadge} /> <span>Ibu Bapa</span></button>
+        <button type="button" className="nav nav-learning" onClick={() => props.onOpenLearning?.('buku')}><GameBadge src={bukuTeksBadge} /> <span>Panduan Buku Teks</span></button>
+        <button type="button" className="nav" onClick={onOpenAi}><GameBadge src={tutorAiBadge} /> <span>Tutor AI</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+        <button type="button" className="nav" onClick={onOpenUasa}><GameBadge src={uasaBadge} /> <span>Pentaksiran</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+        <button type="button" className="nav" onClick={onOpenParent}><GameBadge src={ibuBapaBadge} /> <span>Ibu Bapa</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
       </aside>
       <section className="dashboard-main">
         <header className="brand-app-header">
@@ -443,13 +445,12 @@ export default function HomeDashboard(props) {
               <span className="achievement-chip">XP {canonicalGamification.globalXp}</span>
               {canonicalGamification.starCount > 0 ? <span className="achievement-chip">Bintang {canonicalGamification.starCount}</span> : null}
               <span className="achievement-chip">Streak {canonicalGamification.currentStreak}</span>
-              <span className="achievement-chip">Akurasi {clampPercent(studentData.overallAccuracy)}%</span>
+              <span className="achievement-chip">Ketepatan {clampPercent(studentData.overallAccuracy)}%</span>
               <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
                 <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
               </span>
               <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout} disabled={!cloudSyncActionEnabled}>{cloudSyncPresentation.label}</button>
               {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Konsol Admin</button> : null}
-              <button type="button" className="icon-button" aria-label="Notifikasi"><GameBadge src={bellBadge} /></button>
               {hasAccountSession
                 ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
                 : <>
@@ -529,10 +530,10 @@ export default function HomeDashboard(props) {
         <section className="quick-actions" aria-label="Aktiviti pembelajaran">
           {!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}
           {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { preserveQuestions: true, mode: 'interactive-practice', displayTitle: `Aktiviti Interaktif: ${selectedSubject.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Aktiviti Interaktif</span></button> : null}
-          <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span></button>
-          <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span></button>
-          <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span></button>
-          <button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span></button>
+          <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+          <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+          <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+          <button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
         </section>
         <section className="card adaptive-practice-card">
           <h2>Latihan AI</h2>
@@ -582,8 +583,8 @@ export default function HomeDashboard(props) {
           {aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> · {clampPercent(aiMemory.lastLesson.score)}%</p>}
           {canonicalAnalytics.hasEvidence ? (
             <div className="recommend-meta">
-              <span>{canonicalAnalytics.weakTopics.length} topik lemah</span>
-              <span>{canonicalAnalytics.strongTopics.length} topik kuat</span>
+              <span>{canonicalAnalytics.weakTopics.length} perlu latihan</span>
+              <span>{canonicalAnalytics.strongTopics.length} sudah dikuasai</span>
               <span>Penguasaan {canonicalAnalytics.masteryPercent}%</span>
               <span>Masa belajar {formatDuration(canonicalAnalytics.studyMinutes, { unit: 'minutes' })}</span>
               <span>{formatStreakLabel(canonicalAnalytics.currentStreak)}</span>

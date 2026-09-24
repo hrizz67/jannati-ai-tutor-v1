@@ -232,14 +232,14 @@ export default function AnalyticsDashboard({
           <>
             <div className="metric-grid">
               <MetricCard value={formatDurationLabel(adaptivePracticePreview?.summary?.estimatedMinutes || 0)} label="Cadangan Latihan" subtitle={studyRecommendation} />
-              <MetricCard value={canonicalAnalytics.weakTopics.length} label="Topik Lemah" subtitle={canonicalAnalytics.weakTopics[0] ? formatTopicName(canonicalAnalytics.weakTopics[0].topicId) : 'Tiada data'} />
-              <MetricCard value={canonicalAnalytics.strongTopics.length} label="Topik Kuat" subtitle={canonicalAnalytics.strongTopics[0] ? formatTopicName(canonicalAnalytics.strongTopics[0].topicId) : 'Tiada data'} />
+              <MetricCard value={canonicalAnalytics.weakTopics.length} label="Perlu Latihan" subtitle={canonicalAnalytics.weakTopics[0] ? formatTopicName(canonicalAnalytics.weakTopics[0].topicId) : 'Tiada data'} />
+              <MetricCard value={canonicalAnalytics.strongTopics.length} label="Sudah Dikuasai" subtitle={canonicalAnalytics.strongTopics[0] ? formatTopicName(canonicalAnalytics.strongTopics[0].topicId) : 'Tiada data'} />
               <MetricCard value={`${canonicalAnalytics.masteryPercent}%`} label="Penguasaan" subtitle={`Masa belajar ${formatDuration(canonicalAnalytics.studyMinutes, { unit: 'minutes' })}`} />
             </div>
             {aiMemory.lastLesson && <p className="memory-last">Latihan terakhir: <b>{aiMemory.lastLesson.title}</b> - {aiMemory.lastLesson.score}%</p>}
             <div className="recommend-meta">
-              <span>{canonicalAnalytics.weakTopics.length} topik lemah</span>
-              <span>{canonicalAnalytics.strongTopics.length} topik kuat</span>
+              <span>{canonicalAnalytics.weakTopics.length} perlu latihan</span>
+              <span>{canonicalAnalytics.strongTopics.length} sudah dikuasai</span>
               <span>Penguasaan {canonicalAnalytics.masteryPercent}%</span>
               <span>Masa belajar {formatDuration(canonicalAnalytics.studyMinutes, { unit: 'minutes' })}</span>
               <span>{formatStreakLabel(canonicalAnalytics.currentStreak)}</span>
@@ -256,14 +256,14 @@ export default function AnalyticsDashboard({
         <button type="button" onClick={() => smartTopic && onStartAdaptiveLesson(learningJourney.todayLesson || smartLesson)} disabled={!smartTopic && !learningJourney.todayLesson}>{analyticsRecommendationCta}</button>
       </section>
 
-      <CommunicationSummarySection eyebrow="Kemajuan Bacaan" title="Jurulatih Bacaan" summary={readingSummary} onStart={onStartBacaan} buttonLabel="Mula Latihan Bacaan" />
+      <CommunicationSummarySection eyebrow="Kemajuan Bacaan" title="Latihan Bacaan" summary={readingSummary} onStart={onStartBacaan} buttonLabel="Mula Latihan Bacaan" />
 
       <details className="quick-prompts-analytics analytics-communication-options">
         <summary><span>Pilihan kemahiran komunikasi lain</span><small>Mendengar, bertutur dan menulis</small></summary>
         <div className="analytics-communication-options-body">
-          <CommunicationSummarySection eyebrow="Kemajuan Mendengar" title="Makmal Mendengar" summary={listeningSummary} onStart={onStartMendengar} buttonLabel="Mula Latihan Mendengar" />
-          <CommunicationSummarySection eyebrow="Kemajuan Bertutur" title="Jurulatih Bertutur" summary={speakingSummary} onStart={onStartBertutur} buttonLabel="Mula Latihan Bertutur" />
-          <CommunicationSummarySection eyebrow="Kemajuan Menulis" title="Jurulatih Menulis" summary={writingSummary} onStart={onStartMenulis} buttonLabel="Mula Latihan Menulis" />
+          <CommunicationSummarySection eyebrow="Kemajuan Mendengar" title="Latihan Mendengar" summary={listeningSummary} onStart={onStartMendengar} buttonLabel="Mula Latihan Mendengar" />
+          <CommunicationSummarySection eyebrow="Kemajuan Bertutur" title="Latihan Bertutur" summary={speakingSummary} onStart={onStartBertutur} buttonLabel="Mula Latihan Bertutur" />
+          <CommunicationSummarySection eyebrow="Kemajuan Menulis" title="Latihan Menulis" summary={writingSummary} onStart={onStartMenulis} buttonLabel="Mula Latihan Menulis" />
         </div>
       </details>
 

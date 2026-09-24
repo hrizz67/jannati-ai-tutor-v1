@@ -11,7 +11,7 @@ const checks = {
   tutorWired: /<TutorAIModal/.test(app) && /onOpenAi/.test(app),
   teacherWired: /<AITeacherModal/.test(app) && /openTeacher|onTeach/.test(app),
   explainWired: /<AIExplainModal/.test(app) && /openExplain/.test(app),
-  distinctTutorTeacher: /Tanya Guru AI|TutorAIModal/.test(tutor) && /Ajar|teacher|Terangkan/.test(teacher),
+  distinctTutorTeacher: /Tanya Janna|TutorAIModal/.test(tutor) && /Ajar|teacher|Terangkan/.test(teacher),
   normalizedTeacherFields: /explanation|steps|examples|commonMistakes|memoryTip/i.test(teacherEngine),
   safeTeacherFallback: /fallback|default|cuba|tidak/i.test(teacherEngine),
   noTechnicalLeakInModals: !/(questionId|topicId|subjectId)\s*\}|JSON\.stringify/.test(`${tutor}\n${teacher}\n${explain}`)
