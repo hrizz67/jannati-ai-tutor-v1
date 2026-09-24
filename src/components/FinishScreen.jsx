@@ -84,8 +84,8 @@ export default function FinishScreen({
         {journeySummary && <p className="memory-last">{journeySummary}</p>}
         <VoiceButton
           text={voiceSummaryText || journeySummary || personality?.farewell || personality?.achievementMessage || ''}
-          label="Baca Ringkasan"
-          title="Baca ringkasan akhir"
+          label="Dengar Ringkasan"
+          title="Dengar ringkasan akhir"
           className="voice-inline finish-voice-button"
         />
       </header>
@@ -118,7 +118,7 @@ export default function FinishScreen({
       <div className="actions finish-actions">
         <button type="button" onClick={primaryAction}><IconGlyph name={primaryIcon} decorative /> <span>{primaryLabel}</span></button>
         <button type="button" className="secondary" onClick={onDashboard}><IconGlyph name="home" decorative /> <span>Papan Utama</span></button>
-        <button type="button" className="secondary" onClick={onOpenAi}><IconGlyph name="bot" decorative /> <span>Tanya Guru AI</span></button>
+        <button type="button" className="secondary" onClick={onOpenAi}><IconGlyph name="bot" decorative /> <span>Tanya Janna</span></button>
       </div>
     </section>
   </main>;

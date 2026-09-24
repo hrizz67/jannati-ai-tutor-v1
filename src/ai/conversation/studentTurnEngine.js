@@ -114,7 +114,7 @@ export function understandStudentTurn({
     return makeTurn('learning_recommendation', 'learning_plan_question', 0.99, {
       ...conversation,
       isQuestion: true,
-      quickReplies: ['Pilih topik untuk saya', 'Mulakan sesi ringkas', 'Lihat topik lemah saya']
+      quickReplies: ['Pilih topik untuk saya', 'Mulakan sesi ringkas', 'Lihat perkara yang perlu dilatih']
     });
   }
   if (TUTOR_IDENTITY_PATTERN.test(lower)) {

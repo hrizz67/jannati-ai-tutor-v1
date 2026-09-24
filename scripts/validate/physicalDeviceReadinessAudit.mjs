@@ -106,8 +106,8 @@ check('speech-and-audio-fallback', () => {
   assertIncludes(voiceButton, 'supportsVoice()', 'Audio controls must detect device voice support.');
   assertIncludes(voiceButton, 'Voice bahasa ini tiada pada peranti.', 'Unavailable device voice needs a visible fallback.');
   assertIncludes(app, 'isIOSSafari', 'iOS Safari speech handling is missing.');
-  assertIncludes(app, 'Gunakan transkrip manual.', 'Safari speech failure must expose manual transcription.');
-  assertIncludes(app, 'Pelayar ini tidak menyokong pengecaman suara. Taip bacaan kamu di bawah.', 'Unsupported recognition must retain manual input.');
+  assertIncludes(app, 'Jawapan suara tidak tersedia. Taip jawapan kamu.', 'Safari speech failure must expose typed-answer fallback.');
+  assertIncludes(app, 'Taip teks bacaan kamu di bawah.', 'Unsupported recognition must retain typed reading input.');
 });
 
 check('reduced-motion-contract', () => {

@@ -108,9 +108,9 @@ function buildStudyAdvice(profile = {}) {
     advice.push('Latihan 15 minit sehari.');
   }
   if (focus?.topicId) {
-    advice.push(`Fokus kepada 2 topik lemah dahulu, termasuk ${focus.topicId}.`);
+    advice.push(`Fokus kepada 2 topik yang perlu latihan dahulu, termasuk ${focus.topicId}.`);
   } else {
-    advice.push('Fokus kepada 2 topik lemah dahulu.');
+    advice.push('Fokus kepada 2 topik yang perlu latihan dahulu.');
   }
   advice.push('Ulang kaji sebelum mencuba UASA.');
   return advice;

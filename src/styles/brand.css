@@ -1053,6 +1053,22 @@ body:has(.v4-redesign) {
   border-color: #d9e8de;
 }
 
+.premium-feature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 1px solid rgba(218, 160, 19, .55);
+  border-radius: 999px;
+  color: #6b4a00;
+  background: #fff3bd;
+  font-size: .68rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 @media (max-width: 980px) {
   .brand-student-strip {
     width: 100%;

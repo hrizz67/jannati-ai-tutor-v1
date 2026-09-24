@@ -197,8 +197,8 @@ export default function AITeacherModal({ open, data, context = null, character =
   });
   const pronounContext = answerRevealPolicy.canRevealAnswer ? getPronounContext(context) : null;
   const labels = isEnglish
-    ? { offline: `${characterName} Offline Tutor`, title: 'Teach Me', focus: 'Learning focus', simple: 'Simple explanation', hint: 'Hint', steps: 'Step by step', additional: 'View more help', examples: 'Examples', extra: 'More examples', mistakes: 'Common mistakes', memory: 'Memory tip', practice: 'Try again', train: 'Practise', close: 'Close', read: 'Read lesson' }
-    : { offline: `${characterName} AI Luar Talian`, title: 'Ajar Saya', focus: 'Fokus pembelajaran', simple: 'Penerangan mudah', hint: 'Petunjuk', steps: 'Langkah demi langkah', additional: 'Lihat bahan tambahan', examples: 'Contoh', extra: 'Contoh lain', mistakes: 'Kesilapan biasa', memory: 'Tip ingatan', practice: 'Latih semula', train: 'Latih', close: 'Tutup', read: 'Baca Ajaran' };
+    ? { offline: `${characterName} Offline Tutor`, title: 'Teach Me', focus: 'Learning focus', simple: 'Simple explanation', hint: 'Hint', steps: 'Step by step', additional: 'View more help', examples: 'Examples', extra: 'More examples', mistakes: 'Common mistakes', memory: 'Memory tip', practice: 'Try again', train: 'Practise', close: 'Close', read: 'Listen to Explanation' }
+    : { offline: `${characterName} AI Luar Talian`, title: 'Ajar Saya', focus: 'Fokus pembelajaran', simple: 'Penerangan mudah', hint: 'Petunjuk', steps: 'Langkah demi langkah', additional: 'Lihat bahan tambahan', examples: 'Contoh', extra: 'Contoh lain', mistakes: 'Kesilapan biasa', memory: 'Tip ingatan', practice: 'Latih semula', train: 'Latih', close: 'Tutup', read: 'Dengar Penerangan' };
   const rawFocus = pickLearningFocus(
     context,
     subjectId,

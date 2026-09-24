@@ -52,7 +52,7 @@ export function buildRecommendation(profile = {}, subject = {}) {
       ? `Ulang ${weakTopics[0].title} kerana skor terbaik masih ${weakTopics[0].best}%.`
       : untouchedTopic
         ? `Cuba topik baharu: ${untouchedTopic.title}.`
-        : 'Tiada topik lemah dikesan sekarang.',
+        : 'Tiada topik memerlukan latihan tambahan sekarang.',
     updatedAt: new Date().toISOString()
   };
 }
