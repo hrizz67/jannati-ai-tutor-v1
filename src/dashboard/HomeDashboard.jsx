@@ -3,7 +3,6 @@ import BrandLogo from '../components/BrandLogo';
 import MascotCard from '../components/MascotCard';
 import IconGlyph, { SubjectIcon } from '../components/IconGlyph.jsx';
 import JannaAvatar from '../components/JannaAvatar';
-import GamificationSummary from '../components/GamificationSummary.jsx';
 import ResumePracticeCard from '../components/ResumePracticeCard.jsx';
 import VoiceButton from '../components/VoiceButton.jsx';
 import DashboardLayout from './DashboardLayout.jsx';
@@ -440,30 +439,84 @@ export default function HomeDashboard(props) {
               <JannaAvatar size={48} className="student-avatar" />
               <div className="student-identity-copy"><b title={studentName}>{studentName}</b><small>{getStudentYearSupportLabel(profile?.year)}</small></div>
             </div>
-            <div className="student-achievement-chips">
+            <div className="student-achievement-chips student-primary-metrics" aria-label="Ringkasan utama murid">
               <span className="achievement-chip">Tahap {canonicalGamification.globalLevel}</span>
-              <span className="achievement-chip">XP {canonicalGamification.globalXp}</span>
-              {canonicalGamification.starCount > 0 ? <span className="achievement-chip">Bintang {canonicalGamification.starCount}</span> : null}
               <span className="achievement-chip">Streak {canonicalGamification.currentStreak}</span>
-              <span className="achievement-chip">Ketepatan {clampPercent(studentData.overallAccuracy)}%</span>
-              <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
-                <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
-              </span>
               <button type="button" className={`cloud-sync-chip ${cloudSyncPresentation.tone}`} title={cloudSyncPresentation.detail} onClick={hasAccountSession ? onSyncLearningData : onLogout} disabled={!cloudSyncActionEnabled}>{cloudSyncPresentation.label}</button>
-              {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Konsol Admin</button> : null}
-              {hasAccountSession
-                ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
-                : <>
-                  <button type="button" className="secondary header-account-action" onClick={onLogout}>Log masuk untuk Sync</button>
-                  <button type="button" className="secondary header-account-action local-exit-action" onClick={onExitLocalProfile}>Keluar Free</button>
-                </>}
             </div>
           </div>
+          <details className="header-secondary-disclosure">
+            <summary>Akaun &amp; pencapaian</summary>
+            <div className="header-secondary-content">
+              <div className="student-secondary-metrics" aria-label="Pencapaian tambahan">
+                <span className="achievement-chip">XP {canonicalGamification.globalXp}</span>
+                <span className="achievement-chip">Bintang {canonicalGamification.starCount}</span>
+                <span className="achievement-chip">Ketepatan {clampPercent(studentData.overallAccuracy)}%</span>
+                <span className={`access-chip ${isPremiumAccount ? 'premium' : 'free'}`} title="Status akses akaun">
+                  <span aria-hidden="true">{isPremiumAccount ? '✦' : '•'}</span>{accessLabel}
+                </span>
+              </div>
+              <div className="header-account-actions">
+                {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Konsol Admin</button> : null}
+                {hasAccountSession
+                  ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
+                  : <>
+                    <button type="button" className="secondary header-account-action" onClick={onLogout}>Log masuk untuk Sync</button>
+                    <button type="button" className="secondary header-account-action local-exit-action" onClick={onExitLocalProfile}>Keluar Free</button>
+                  </>}
+              </div>
+              {childProfiles?.length ? <ChildProfileSwitcher profiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={onSelectChild} onCreateChild={onCreateChild} onRenameChild={onRenameChild} onArchiveChild={onArchiveChild} onRestoreArchivedChild={onRestoreArchivedChild} /> : null}
+            </div>
+          </details>
         </header>
-        {childProfiles?.length ? <ChildProfileSwitcher profiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={onSelectChild} onCreateChild={onCreateChild} onRenameChild={onRenameChild} onArchiveChild={onArchiveChild} onRestoreArchivedChild={onRestoreArchivedChild} /> : null}
-        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div><h2>{personalityGreeting || `Assalamualaikum, ${studentName}`}</h2><p>{personalityMotivation}</p><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /></div></section>
-        <GamificationSummary profile={gamificationProfile} canonical={canonicalGamification} className="home-gamification-summary" />
+        <section className="profile hero-card"><MascotCard character={dashboardCharacter} mood={personalityMood} size="md" animation="gentle" message={personalityMotivation} /><div><h2>{personalityGreeting || `Assalamualaikum, ${studentName}`}</h2><VoiceButton text={voiceGreetingText || personalityGreeting || personalityMotivation} label="Dengar Salam" title="Dengar salam" /></div></section>
+
+        <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
+
+        <section className="card janna-today-card" aria-labelledby="janna-today-title">
+          <div className="janna-today-copy">
+            <p className="eyebrow">Cadangan Janna Hari Ini</p>
+            <h2 id="janna-today-title">{smartTargetTopicLabel || 'Mulakan latihan hari ini'}</h2>
+            <p>Janna pilih langkah ini berdasarkan kemajuan pembelajaran kamu.</p>
+            <div className="recommend-meta">
+              {smartCrossSubject ? <span className="badge cross-subject-badge">Cadangan lintas subjek</span> : null}
+              <span className="badge target-subject-badge"><SubjectBadge className="target-subject-badge-icon" subjectId={smartTargetSubjectId || smartSubject?.id} /> {smartTargetSubjectLabel}</span>
+            </div>
+          </div>
+          <button type="button" className={resume && !resume.completed ? 'secondary janna-today-cta' : 'janna-today-cta'} onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)} disabled={!todayLesson && !smartLesson?.nextQuestionId}>Mula</button>
+        </section>
+
+        <section className="card compact-progress-summary" aria-labelledby="compact-progress-title">
+          <div className="compact-section-heading">
+            <p className="eyebrow">Kemajuan Ringkas</p>
+            <h2 id="compact-progress-title">Langkah kamu setakat ini</h2>
+          </div>
+          <div className="compact-progress-grid">
+            <div><b>{canonicalGamification.globalXp}</b><span>XP</span></div>
+            <div><b>{canonicalGamification.starCount}</b><span>Bintang</span></div>
+            <div><b>{canonicalAnalytics.hasEvidence ? `${canonicalAnalytics.masteryPercent}%` : 'Baharu'}</b><span>Penguasaan</span></div>
+          </div>
+        </section>
+
+        <section className="home-learning-tools" aria-labelledby="learning-tools-title">
+          <div className="compact-section-heading">
+            <p className="eyebrow">Aktiviti</p>
+            <h2 id="learning-tools-title">Pilih cara belajar</h2>
+          </div>
+          <div className="quick-actions compact-learning-actions" aria-label="Aktiviti pembelajaran">
+            {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { preserveQuestions: true, mode: 'interactive-practice', displayTitle: `Aktiviti Interaktif: ${selectedSubject.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span className="quick-action-label">Aktiviti Interaktif</span></button> : null}
+            <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span className="quick-action-label">Bacaan</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+            <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span className="quick-action-label">Mendengar</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+            <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span className="quick-action-label">Bertutur</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+            <button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span className="quick-action-label">Menulis</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
+          </div>
+        </section>
+
         <div className="subject-rail-wrap">
+        <div className="compact-section-heading subject-rail-heading">
+          <p className="eyebrow">Subjek</p>
+          <h2>Pilih subjek</h2>
+        </div>
         <div className="subject-quick-switch-shell">
           <button
             type="button"
@@ -511,31 +564,25 @@ export default function HomeDashboard(props) {
         </div>
         <p className="subject-rail-hint" aria-live="polite">Leret atau guna anak panah untuk subjek lain.</p>
         </div>
-        <Suspense fallback={<section className="card"><p className="eyebrow">Memuat</p><h2><IconGlyph name="spark" motion="load" /> <span>Dashboard sedang dimuat</span></h2><p>Sebentar ya, kandungan sedang disiapkan.</p></section>}>
-          <details className="dashboard-disclosure" open>
-            <summary><span>Ringkasan Murid</span><small>Maklumat utama, prestasi dan cadangan hari ini</small></summary>
-            <StudentDashboard {...studentData} />
-          </details>
-          <details className="dashboard-disclosure">
-            <summary><span>Jadual Ulang Kaji</span><small>Topik perlu ulang kaji dan keutamaan harian</small></summary>
-            <RevisionDashboard {...revisionData} />
-          </details>
-          <details className="dashboard-disclosure">
-            <summary><span>Analitik & Kemajuan</span><small>Subjek, kemahiran bahasa, gamifikasi dan pentaksiran</small></summary>
-            <AnalyticsDashboard {...analyticsData} />
-          </details>
-        </Suspense>
 
-        <ResumePracticeCard resume={resume} selectedSubjectId={selectedSubjectId} resumeTitle={resumeTitle} crossSubjectLabel={resumeCrossSubjectLabel || 'Sambung lintas subjek'} onResume={onResume} onRestartResume={onRestartResume} />
-        <section className="quick-actions" aria-label="Aktiviti pembelajaran">
-          {!resume || resume.completed ? <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Mula Belajar</span></button> : null}
-          {interactiveActivityTopic ? <button type="button" className="secondary interactive-practice-action" onClick={() => onStartTopic(interactiveActivityTopic, selectedSubject, { preserveQuestions: true, mode: 'interactive-practice', displayTitle: `Aktiviti Interaktif: ${selectedSubject.title}` })}><span className="quick-action-icon"><GameBadge src={ganjaranBadge} /></span><span>Aktiviti Interaktif</span></button> : null}
-          <button type="button" className="secondary" onClick={onStartBacaan}><span className="quick-action-icon"><GameBadge src={bacaanBadge} /></span><span>Bacaan</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
-          <button type="button" className="secondary" onClick={onStartMendengar}><span className="quick-action-icon"><GameBadge src={mendengarBadge} /></span><span>Mendengar</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
-          <button type="button" className="secondary" onClick={onStartBertutur}><span className="quick-action-icon"><GameBadge src={bertuturBadge} /></span><span>Bertutur</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
-          <button type="button" className="secondary" onClick={onStartMenulis}><span className="quick-action-icon"><GameBadge src={menulisBadge} /></span><span>Menulis</span><PremiumFeatureBadge visible={!isPremiumAccount} /></button>
-        </section>
-        <section className="card adaptive-practice-card">
+        <details className="dashboard-disclosure dashboard-advanced-disclosure">
+          <summary><span>Lagi untuk Pembelajaran</span><small>Ulang kaji, analitik dan pilihan lanjutan</small></summary>
+          <div className="dashboard-advanced-content">
+            <Suspense fallback={<section className="card"><p className="eyebrow">Memuat</p><h2><IconGlyph name="spark" motion="load" /> <span>Dashboard sedang dimuat</span></h2><p>Sebentar ya, kandungan sedang disiapkan.</p></section>}>
+              <details className="dashboard-disclosure">
+                <summary><span>Ringkasan Murid</span><small>Maklumat prestasi yang lebih terperinci</small></summary>
+                <StudentDashboard {...studentData} />
+              </details>
+              <details className="dashboard-disclosure">
+                <summary><span>Jadual Ulang Kaji</span><small>Topik perlu ulang kaji dan keutamaan harian</small></summary>
+                <RevisionDashboard {...revisionData} />
+              </details>
+              <details className="dashboard-disclosure">
+                <summary><span>Analitik & Kemajuan</span><small>Subjek, kemahiran bahasa, gamifikasi dan pentaksiran</small></summary>
+                <AnalyticsDashboard {...analyticsData} />
+              </details>
+            </Suspense>
+            <section className="card adaptive-practice-card">
           <h2>Latihan AI</h2>
           <p>{adaptivePracticePreview?.summary?.metadata?.insufficientEvidence ? 'Belum cukup data. Latihan permulaan seimbang akan digunakan.' : 'Fokus diberikan pada topik yang paling memerlukan perhatian.'}</p>
           <div className="mastery-summary-grid">
@@ -556,10 +603,10 @@ export default function HomeDashboard(props) {
               <span key={`${topic.subjectId}-${topic.topicId}`}>{formatSubjectName(topic.subjectId)} · {formatTopicName(topic.topicId)}</span>
             ))}
           </div>
-        </section>
-        <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>{canonicalAnalytics.hasEvidence ? <div className="mastery-summary-grid"><div><b>{canonicalAnalytics.masteryPercent}%</b><span>Skor Penguasaan</span></div><div><b>{canonicalAnalytics.masteredTopics.length}</b><span>Dikuasai</span></div><div><b>{canonicalAnalytics.learningTopics.length}</b><span>Sedang Belajar</span></div><div><b>{canonicalAnalytics.weakTopics.length}</b><span>Perlu Latihan</span></div></div> : <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
-        <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + PBD</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
-        <section className="card smart-lesson-card">
+            </section>
+            <section className="card mastery-summary-card"><p className="eyebrow">Ringkasan Penguasaan</p><h2>Penguasaan Topik</h2><p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>{canonicalAnalytics.hasEvidence ? <div className="mastery-summary-grid"><div><b>{canonicalAnalytics.masteryPercent}%</b><span>Skor Penguasaan</span></div><div><b>{canonicalAnalytics.masteredTopics.length}</b><span>Dikuasai</span></div><div><b>{canonicalAnalytics.learningTopics.length}</b><span>Sedang Belajar</span></div><div><b>{canonicalAnalytics.weakTopics.length}</b><span>Perlu Latihan</span></div></div> : <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />}</section>
+            <section className="card curriculum-coverage-card"><p className="eyebrow">Liputan Kurikulum</p><h2>Analisis DSKP + PBD</h2>{curriculumCoverageState.state === 'available' || curriculumCoverageState.state === 'partial' ? <><div className="mastery-summary-grid">{curriculumCoverageState.metrics.map(metric => <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span>{metric.subtitle ? <small>{metric.subtitle}</small> : null}</div>)}</div>{curriculumCoverageState.message ? <p className="memory-last">{curriculumCoverageState.message}</p> : null}{missingSkSpRecommendation && curriculumCoverageState.state === 'available' && <p className="memory-last">{missingSkSpRecommendation.reason}</p>}</> : <div className="curriculum-coverage-state" data-state={curriculumCoverageState.state} role="status" aria-live="polite"><p>{curriculumCoverageState.message || curriculumNoMappingMessage}</p></div>}</section>
+            <section className="card smart-lesson-card">
           <p className="eyebrow">Laluan Belajar Hari Ini</p>
           <h2>{smartTargetTopicLabel || 'Enjin Pembelajaran Adaptif'}</h2>
           <p>{learningJourney.reason || smartLesson?.reason || 'Teruskan dengan langkah yang seimbang.'}</p>
@@ -575,8 +622,8 @@ export default function HomeDashboard(props) {
             <div><span>Ulang Kaji</span><b>{learningJourney.recommendedReview?.title || 'Tiada ulang kaji'}</b><small>{formatStatus(learningJourney.recommendedReview?.masteryStatus || 'clear')}</small></div>
           </div>
           <button type="button" onClick={() => onStartAdaptiveLesson(todayLesson || smartLesson)} disabled={!todayLesson && !smartLesson?.nextQuestionId}>{smartLessonCta}</button>
-        </section>
-        <section className="card ai-recommend-card">
+            </section>
+            <section className="card ai-recommend-card">
           <h2>Cadangan Guru AI</h2>
           <p>{aiRecommendation.reason}</p>
           <p className="memory-last">{formatScopeLabel(canonicalAnalytics.scopeLabel)}</p>
@@ -597,7 +644,9 @@ export default function HomeDashboard(props) {
             <EmptyState title={dashboardNoData.title} message={dashboardNoData.message} actionLabel={dashboardNoData.actionLabel} onAction={() => onStartAdaptivePractice(adaptivePracticeCount)} />
           )}
           <button type="button" onClick={() => recommendationUsesResume ? onResume() : (recommendedPracticeTopic && onStartTopic(recommendedPracticeTopic))} disabled={!recommendedPracticeTopic && !recommendationUsesResume}>{aiRecommendationCta}</button>
-        </section>
+            </section>
+          </div>
+        </details>
       </section>
     </DashboardLayout>
   );
