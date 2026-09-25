@@ -2,6 +2,7 @@ import { readAdaptiveInsights, buildParentSummary, buildRecommendationSummary, b
 import { buildDailyStudyPlan } from './dailyPlanBuilder.js';
 import { buildWeeklyStudyPlan } from './weeklyPlanBuilder.js';
 import { buildStudyPriorityMap, getSubjectLabel } from './studyPriority.js';
+import { getAvailableStudyDuration } from './durationAllocator.js';
 
 function safeText(value, fallback = '') {
   const text = String(value ?? '').trim();
@@ -15,6 +16,28 @@ function safeNumber(value, fallback = 0) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function firstPositiveNumber(...values) {
+  for (const value of values) {
+    const number = Number(value);
+    if (Number.isFinite(number) && number > 0) return number;
+  }
+  return null;
+}
+
+function resolveAvailableStudyMinutes(parentProfile = null, options = {}) {
+  const preferredMinutes = firstPositiveNumber(
+    options.availableStudyMinutes,
+    options.preferredMinutes,
+    parentProfile?.availableStudyMinutes,
+    parentProfile?.preferredMinutes
+  );
+
+  return getAvailableStudyDuration(
+    preferredMinutes === null ? {} : { availableStudyMinutes: preferredMinutes },
+    options.date || new Date()
+  );
 }
 
 function normalizeRecentActivity(history = []) {
@@ -57,7 +80,7 @@ function buildOnboardingSignals(options = {}) {
       }
     ],
     recentSubjects: [],
-    availableStudyMinutes: safeNumber(options.availableStudyMinutes, 20)
+    availableStudyMinutes: resolveAvailableStudyMinutes(null, options)
   };
 }
 
@@ -114,7 +137,7 @@ function collectSignals(profile = {}, options = {}) {
       recentActivity: [],
       candidates: [],
       recentSubjects: [],
-      availableStudyMinutes: safeNumber(options.availableStudyMinutes, 20),
+      availableStudyMinutes: resolveAvailableStudyMinutes(null, options),
       onboarding: true
     };
   }
@@ -124,17 +147,7 @@ function collectSignals(profile = {}, options = {}) {
   const recommendationSummary = buildRecommendationSummary(parentProfile);
   const revisionSummary = buildRevisionSummary(parentProfile, { now: options.date || new Date() });
   const recentActivity = normalizeRecentActivity(parentProfile.history || []);
-  const availableStudyMinutes = clamp(
-    safeNumber(
-      options.availableStudyMinutes ??
-      options.studyMinutes ??
-      parentProfile.availableStudyMinutes ??
-      parentSummary.studyTime,
-      0
-    ),
-    5,
-    60
-  );
+  const availableStudyMinutes = resolveAvailableStudyMinutes(parentProfile, options);
 
   const candidates = [
     ...extractDirectSubjectSignals(parentProfile),
@@ -216,7 +229,11 @@ function collectSignals(profile = {}, options = {}) {
 
 export function buildStudyPlanner(profile = null, options = {}) {
   const signals = collectSignals(profile || {}, options);
-  const dailyPlan = buildDailyStudyPlan(signals, options);
+  const resolvedOptions = {
+    ...options,
+    availableStudyMinutes: signals.availableStudyMinutes
+  };
+  const dailyPlan = buildDailyStudyPlan(signals, resolvedOptions);
   const weeklyPlan = buildWeeklyStudyPlan(signals, options);
   const parentSummary = signals.parentSummary || buildParentSummary(null);
   const recommendationSummary = signals.recommendationSummary || buildRecommendationSummary(null);

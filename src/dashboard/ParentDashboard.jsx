@@ -177,7 +177,6 @@ export default function ParentDashboard({
   const studyPlannerPayload = useMemo(() => {
     try {
       return createStudyPlannerPayload(insightsProfile, {
-        availableStudyMinutes: canonicalAnalytics.studyMinutes || summary.studyTime || 20,
         date: new Date()
       });
     } catch (error) {
@@ -198,7 +197,7 @@ export default function ParentDashboard({
         }
       };
     }
-  }, [insightsProfile, canonicalAnalytics.studyMinutes, summary]);
+  }, [insightsProfile, summary]);
 
   const initialSelectedSubjectId = useMemo(
     () => resolveInitialSubjectId(insightsProfile || sourceProfile, subjectCatalog),
@@ -276,7 +275,7 @@ export default function ParentDashboard({
   const primaryActionSubjectId = primaryFocus?.subjectId || weakestSubject?.id || selectedSubject?.id || subjectCatalog[0]?.id || 'bm';
   const primaryActionTopicId = primaryFocus?.topicId || '';
   const primaryActionLabel = evidenceState.level === 'none'
-    ? 'Mulakan latihan 10 minit'
+    ? 'Mulakan latihan ringkas'
     : primaryFocus
       ? 'Latih topik ini'
       : 'Buka latihan adaptif';
@@ -502,7 +501,7 @@ export default function ParentDashboard({
             )}
           </>
         ) : (
-          <EmptyState title={evidenceState.level === 'none' ? 'Belum cukup data untuk analisis.' : 'Data masih terlalu sedikit untuk membuat kesimpulan.'} message="Lengkapkan beberapa latihan sebelum topik fokus ditentukan." actionLabel="Mulakan latihan 10 minit" onAction={() => startParentPractice()} showMascot={false} />
+          <EmptyState title={evidenceState.level === 'none' ? 'Belum cukup data untuk analisis.' : 'Data masih terlalu sedikit untuk membuat kesimpulan.'} message="Lengkapkan beberapa latihan sebelum topik fokus ditentukan." actionLabel="Mulakan latihan ringkas" onAction={() => startParentPractice()} showMascot={false} />
         )}
       </section>
 
