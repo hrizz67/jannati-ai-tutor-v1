@@ -44,6 +44,7 @@ import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
 import { buildQuestionSession } from './ai/question/questionEngine';
 import { PERSONALITY_MESSAGES, getPersonalityForSubject } from './brand/personalities';
 import { clampPercent, formatScopeLabel, formatStatus, formatTopicName, getStudentDisplayName, isPlaceholderStudentName } from './utils/displayFormatter';
+import { appendCreditedQuizAttempt, canRetryQuizAnswer, getBestCreditedQuizOutcome, isQuizAnswerChecked, reconcileQuizSessionCredits, summarizeCreditedQuizOutcomes } from './utils/quizSessionOutcome.js';
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { acknowledgeResumeTombstones, clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
@@ -1407,6 +1408,7 @@ export default function App() {
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [session, setSession] = useState({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
+  const sessionRef = useRef(session);
   const [chatOpen, setChatOpen] = useState(false);
   const [explainOpen, setExplainOpen] = useState(false);
   const [explainData, setExplainData] = useState(null);
@@ -1421,6 +1423,10 @@ export default function App() {
   const modalOpen = chatOpen || explainOpen || teacherOpen;
   const { effectiveAccess, isPremiumUser, applyAuthoritativeProfileAccess } = usePremiumAccess({ accountUser, accessProfile });
   const dailyQuestionCount = getDailyQuestionCount(profile, adaptiveProfile, todayKey(), activeSubject?.id || selectedSubjectId);
+
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   useEffect(() => {
     const syncAdminRoute = () => setAdminRouteActive(['#/admin', '#/admin/premium'].includes(window.location.hash));
@@ -1818,7 +1824,9 @@ export default function App() {
     setQuestionIndex(0);
     setAnswer('');
     setFeedback(null);
-    setSession({ correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] });
+    const emptySession = { correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [] };
+    sessionRef.current = emptySession;
+    setSession(emptySession);
     adaptiveSessionRef.current = null;
     quizSubmitKeyRef.current = '';
     resetQuestionSupport(null);
@@ -3414,7 +3422,10 @@ export default function App() {
       questions,
       questionIndex: resolvedIndex,
       ...(restart ? {} : {
-        session: targetResume.session,
+        session: {
+          ...(targetResume.session || {}),
+          answers: Array.isArray(targetResume.answers) ? targetResume.answers : targetResume.session?.answers || []
+        },
         ...(canRestoreQuestionState ? { state: targetResume.state } : {})
       }),
       preserveQuestions: true,
@@ -3492,7 +3503,10 @@ export default function App() {
       ? options.state
       : null;
     const adaptiveSessionId = options.session?.adaptiveSessionId || `adaptive_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const startSession = { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) };
+    const startSession = reconcileQuizSessionCredits(
+      { mode: resumeMode, correct: 0, almost: 0, wrong: 0, xp: 0, coins: 0, percent: 0, stars: '☆☆☆', answers: [], questions: [], diversityScore: diversity.score, diversityDebug: diversity.debug, ...(options.session || {}) },
+      { questionIds: questions.map(item => item.id).filter(Boolean) }
+    );
     startSession.adaptiveSessionId = adaptiveSessionId;
 
     setActiveSubject(subject);
@@ -3508,6 +3522,7 @@ export default function App() {
     questionStartedAtRef.current = Date.now();
     quizSubmitKeyRef.current = '';
     resetQuestionSupport(questions[startIndex]?.id || null);
+    sessionRef.current = startSession;
     setSession(startSession);
     setScreen('quiz');
     adaptiveSessionRef.current = {
@@ -3586,6 +3601,10 @@ export default function App() {
     }[targetResume.mode];
     if (premiumResumeFeature && !requirePremium(premiumResumeFeature)) return;
     if (isQuestionResumeMode(targetResume.mode || 'quiz')) {
+      const restoredQuestionSession = {
+        ...(targetResume.session || {}),
+        answers: Array.isArray(targetResume.answers) ? targetResume.answers : targetResume.session?.answers || []
+      };
       if ((targetResume.mode || 'quiz') === 'interactive-practice') {
         await startInteractivePracticeResume(targetResume);
         return;
@@ -3614,7 +3633,7 @@ export default function App() {
         startTopic(practiceTopic, practiceSubject, {
           questions: targetResume.questions,
           questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
-          session: targetResume.session,
+          session: restoredQuestionSession,
           state: targetResume.state,
           preserveQuestions: true,
           mode: 'adaptive-practice',
@@ -3638,7 +3657,7 @@ export default function App() {
       startTopic(topic, subject, {
         questions,
         questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
-        session: targetResume.session,
+        session: restoredQuestionSession,
         state: targetResume.state,
         preserveQuestions: true,
         mode: targetResume.mode || 'quiz',
@@ -4063,6 +4082,8 @@ export default function App() {
 
   function checkAnswer() {
     const question = currentQuestion();
+    const liveSession = sessionRef.current || session;
+    if (!question || getBestCreditedQuizOutcome(liveSession.answers, question.id) === 'correct') return;
     const subjectDailyQuestionCount = getSubjectDailyQuestionCount(activeSubject?.id || selectedSubjectId);
     if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
       openAccessNotice('daily-limit', 'Latihan harian');
@@ -4087,15 +4108,13 @@ export default function App() {
     if (result.status !== 'correct' && (isSpecificAcceptedAnswer(question, answer) || shortCorrectionAnswer)) {
       result = { status: 'correct', title: 'Betul!', message: 'Jawapan kamu diterima.' };
     }
-    let xp = 0;
-    let coins = 0;
-    const nextSession = { ...session, answers: [...(session.answers || [])] };
     const answeredAt = new Date().toISOString();
     const timeSpent = Math.max(1, Math.round((Date.now() - questionStartedAtRef.current) / 1000));
-    const attemptNumber = (nextSession.answers || []).filter(item => item.questionId === question.id).length + 1;
-    const sessionId = session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId;
+    const attemptNumber = (liveSession.answers || []).filter(item => item.questionId === question.id).length + 1;
+    const sessionId = liveSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId;
+    const submitPrefix = [sessionId || 'session', question.id || 'question', ''].join('|');
+    if (quizSubmitKeyRef.current.startsWith(submitPrefix)) return;
     const submitKey = [sessionId || 'session', question.id || 'question', attemptNumber].join('|');
-    if (quizSubmitKeyRef.current === submitKey) return;
     quizSubmitKeyRef.current = submitKey;
     const recordedSupport = readQuestionSupport(question.id);
     const supportUsage = {
@@ -4128,17 +4147,7 @@ export default function App() {
       }
     }
 
-    if (result.status === 'correct') {
-      xp = 10; coins = 5; nextSession.correct += 1; beep('good');
-    } else if (result.status === 'almost') {
-      xp = 5; coins = 2; nextSession.almost += 1; beep('mid');
-    } else {
-      nextSession.wrong += 1; beep('bad');
-    }
-
-    nextSession.xp += xp;
-    nextSession.coins += coins;
-    nextSession.answers.push({
+    const attempt = {
       questionId: question.id,
       subjectId: question.subjectId || activeSubject?.id || null,
       subjectTitle: question.subjectTitle || activeSubject?.title || null,
@@ -4154,8 +4163,19 @@ export default function App() {
       misconceptionType,
       timeSpentMs: timeSpent * 1000,
       answeredAt
+    };
+    const creditResult = appendCreditedQuizAttempt(liveSession, attempt, {
+      questionIds: activeTopic.questions.map(item => item.id).filter(Boolean)
     });
-    nextSession.questions = [...(nextSession.questions || []), question];
+    if (!creditResult.accepted) return;
+    const { xp, coins } = creditResult.rewardDelta;
+    const nextSession = {
+      ...creditResult.session,
+      questions: [...(creditResult.session.questions || []), question]
+    };
+    if (result.status === 'correct') beep('good');
+    else if (result.status === 'almost') beep('mid');
+    else beep('bad');
     saveQuestionHistory(question, learningIdentity);
     const adaptiveSubjectId = question.subjectId || activeSubject?.id;
     const adaptiveTopicId = question.topicId || activeTopic?.id;
@@ -4190,6 +4210,7 @@ export default function App() {
     refreshAdaptiveProfile();
     resetQuestionSupport(question.id);
 
+    sessionRef.current = nextSession;
     setSession(nextSession);
     const answerRevealPolicy = getAnswerRevealPolicy({
       status: result.status,
@@ -4367,8 +4388,13 @@ export default function App() {
   }
 
   function tryAgainQuestion() {
+    const question = currentQuestion();
+    if (!question
+      || feedback?.status === 'correct'
+      || getBestCreditedQuizOutcome(sessionRef.current?.answers, question.id) === 'correct') return;
     coachRequestRef.current = { ...coachRequestRef.current, open: false };
     questionStartedAtRef.current = Date.now();
+    quizSubmitKeyRef.current = '';
     setAnswer('');
     setFeedback(null);
     setExplainOpen(false);
@@ -4382,7 +4408,25 @@ export default function App() {
     });
   }
 
+  function showQuestionHint() {
+    const question = currentQuestion();
+    if (!question
+      || feedback?.status === 'correct'
+      || getBestCreditedQuizOutcome(sessionRef.current?.answers, question.id) === 'correct') return;
+    markQuestionSupport('usedHint');
+    if (isQuizAnswerChecked(feedback)) quizSubmitKeyRef.current = '';
+    const hint = buildChildSafeHint(question, activeSubject, [coachKnowledgeData?.hint, coachingDecision?.hint, teachingStrategy?.hint, question?.hint]);
+    setFeedback({
+      status: 'hint',
+      title: 'Petunjuk',
+      message: hint,
+      teachingStyle: teachingStrategy?.teachingStyle || 'guided',
+      explanationDepth: teachingStrategy?.explanationDepth || 1
+    });
+  }
+
   function nextQuestion() {
+    if (!isQuizAnswerChecked(feedback)) return;
     coachRequestRef.current = { ...coachRequestRef.current, open: false };
     if (questionIndex + 1 >= activeTopic.questions.length) {
       finishTopic();
@@ -4403,21 +4447,25 @@ export default function App() {
 
   function finishTopic() {
     const total = activeTopic.questions.length;
-    const score = session.correct + session.almost * 0.5;
-    const percent = Math.round((score / total) * 100);
+    const questionIds = activeTopic.questions.map(item => item.id).filter(Boolean);
+    const liveSession = sessionRef.current || session;
+    const creditedSummary = summarizeCreditedQuizOutcomes(liveSession.answers, { questionIds, totalQuestions: total });
+    const creditedSession = reconcileQuizSessionCredits(liveSession, { questionIds });
+    const percent = creditedSummary.percent;
     const stars = getStars(percent);
     const today = todayKey();
     const key = progressKey(activeSubject.id, activeTopic.id);
     const studySeconds = Math.max(1, Math.round((Date.now() - quizStartedAt) / 1000));
-    const finishedSessionId = session.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || '';
+    const finishedSessionId = creditedSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || '';
     const adaptiveSessionResult = recordSessionEnd(getAdaptiveProfile(learningIdentity), {
       sessionId: finishedSessionId,
       subjectId: activeSubject.id,
       topicId: activeTopic.id,
-      questions: (session.answers || []).map(item => item.questionId).filter(Boolean),
+      questions: [...creditedSummary.bestByQuestion.keys()],
       plannedQuestionCount: total,
-      correct: session.correct || 0,
-      wrong: session.wrong || 0,
+      correct: creditedSummary.correct,
+      // Adaptive session accuracy is binary: "almost" remains not fully correct at session end.
+      wrong: creditedSummary.almost + creditedSummary.wrong,
       durationSeconds: studySeconds,
       completed: true,
       endedAt: new Date().toISOString()
@@ -4441,21 +4489,23 @@ export default function App() {
       const oldProgress = prev.progress?.[key] || {};
       const updatedProfile = updateStoredRecommendation({
         ...prev,
-        xp: (prev.xp || 0) + session.xp,
-        coins: (prev.coins || 0) + session.coins,
+        xp: (prev.xp || 0) + creditedSession.xp,
+        coins: (prev.coins || 0) + creditedSession.coins,
         streak: prev.lastStudy === today ? prev.streak : (prev.streak || 0) + 1,
         lastStudy: today,
         badges: [...badges],
         history: [{ date: today, subjectId: activeSubject.id, subject: activeSubject.short, topicId: activeTopic.id, topic: activeTopic.title, percent, stars }, ...(prev.history || [])].slice(0, 50),
         progress: { ...prev.progress, [key]: { subjectId: activeSubject.id, topicId: activeTopic.id, best: Math.max(oldProgress.best || 0, percent), last: percent, stars, attempts: (oldProgress.attempts || 0) + 1, lastDate: today } }
       }, activeSubject);
-      saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session, studySeconds });
+      saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session: creditedSession, studySeconds });
       return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
 
-    setSession({ ...session, percent, stars });
+    const completedSession = { ...creditedSession, percent, stars };
+    sessionRef.current = completedSession;
+    setSession(completedSession);
     clearResumeData(setResume, {
-      mode: session.mode || activeTopic.resumeMode || 'quiz',
+      mode: creditedSession.mode || activeTopic.resumeMode || 'quiz',
       subjectId: activeSubject.id,
       topicId: activeTopic.id
     }, learningIdentity);
@@ -4723,10 +4773,9 @@ export default function App() {
 
   if (screen === 'quiz') {
     const question = currentQuestion();
-    const safeHint = buildChildSafeHint(question, activeSubject, [coachKnowledgeData?.hint, coachingDecision?.hint, teachingStrategy?.hint, question?.hint]);
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={() => setFeedback({ status: 'hint', title: 'Petunjuk', message: safeHint, teachingStyle: teachingStrategy?.teachingStyle || 'guided', explanationDepth: teachingStrategy?.explanationDepth || 1 })} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '), { subjectId: activeSubject?.id })} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={showQuestionHint} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '), { subjectId: activeSubject?.id })} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -5039,7 +5088,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         ? (isEnglishSubject ? 'Answer first' : 'Tulis jawapan dahulu')
       : quizUi.title;
   const isEmptyFeedback = feedback?.status === 'empty';
-  const answerChecked = Boolean(feedback && !['hint', 'empty'].includes(feedback.status));
+  const answerChecked = isQuizAnswerChecked(feedback);
   const progressWidth = clampPercent(progress);
   const safeCoachingDecision = coachDecision || teachingStrategy?.coachingDecision || null;
   const safeHint = buildChildSafeHint(question, subject, [coachKnowledgeData?.hint, safeCoachingDecision?.hint, question?.hint]);
@@ -5127,7 +5176,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       'upgrade-required': isEnglishSubject ? 'Cloud safety upgrade is required; this answer remains on this device.' : 'Naik taraf keselamatan cloud diperlukan; jawapan kekal pada peranti ini.'
     })[cloudSyncStatus] || (isEnglishSubject ? 'Cloud sync is active.' : 'Sync cloud aktif untuk akaun ini.');
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); feedback ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={quizUi.microphone}>{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk}>Petunjuk</button></div>{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{feedback.status !== 'hint' && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button><button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button><button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); answerChecked ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={quizUi.microphone}>{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk} disabled={feedback?.status === 'correct'}>Petunjuk</button></div>{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked}>Semak Jawapan</button><details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details><p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <section className={`feedback ${feedback.status}`}><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2>{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{answerChecked && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button>{canRetryQuizAnswer(feedback) && <button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button>}<button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section>}</main>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
