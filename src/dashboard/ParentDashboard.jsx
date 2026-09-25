@@ -369,21 +369,19 @@ export default function ParentDashboard({
         )}
       </section>
 
-      <section className="card">
+      <section className="card parent-subject-section" data-parent-section="subjects">
         <h2>Subjek dan Penguasaan</h2>
-        {subjectInsights.some(subject => subject.hasData) ? (
+        {subjectInsights.length ? (
           <>
-            <div className="metric-grid">
-              {subjectInsights.map(subject => (
-                <MetricCard
-                  key={subject.id}
-                  value={subject.hasData ? `${safePercent(subject.mastery)}%` : 'Belum tersedia'}
-                  label={subject.label}
-                  subtitle={subject.hasData ? `${subject.attempts} soalan` : 'Belum ada penguasaan'}
-                />
-              ))}
-            </div>
-            <div className="subject-report-grid">
+            {!subjectInsights.some(subject => subject.hasData) && (
+              <p className="parent-subject-empty-note">Belum ada penguasaan subjek. Pilih satu subjek untuk memulakan.</p>
+            )}
+            <div
+              className="subject-report-grid parent-subject-chooser"
+              role="group"
+              aria-label="Pilih subjek untuk laporan"
+              data-parent-subject-chooser="true"
+            >
               {subjectInsights.map(subject => (
                 <button
                   type="button"
@@ -414,7 +412,7 @@ export default function ParentDashboard({
             </div>
             {selectedSubject && (
               <>
-                <div className="timeline">
+                <div className="timeline parent-subject-detail">
                   <div className="timeline-item">
                     <span>{selectedSubject.label}</span>
                     <b>{selectedTimeline.headline}</b>
@@ -464,7 +462,7 @@ export default function ParentDashboard({
         )}
       </section>
 
-      <section className="card">
+      <section className="card" data-parent-section="focus">
         <h2>Fokus dan Cadangan</h2>
         {evidenceState.meaningful ? (
           <>
@@ -505,70 +503,78 @@ export default function ParentDashboard({
         )}
       </section>
 
-      <section className="card">
-        <h2>Jadual Ulang Kaji</h2>
-        {revisionItems.length ? (
-          <div className="parent-topic-list">
-            {revisionItems.slice(0, 8).map(item => (
-              <div className={`parent-topic-item ${item.isOverdue ? 'strong' : ''}`} key={`${item.subjectId}-${item.topicId}-${item.nextReviewAt}`}>
-                <div>
-                  <b>{formatTopicName(item.topicId)}</b>
-                  <span>{formatSubjectName(item.subjectId)}</span>
-                  <em>{formatReviewQueueMeta(item)}</em>
+      <details className="parent-secondary-disclosure parent-advanced-disclosure" data-parent-advanced="true">
+        <summary>
+          <span>Perancangan &amp; Sejarah</span>
+          <small>Ulang kaji, pelan belajar, pentaksiran dan aktiviti</small>
+        </summary>
+        <div className="parent-advanced-content">
+          <section className="card parent-advanced-section" data-parent-section="revision">
+            <h2>Jadual Ulang Kaji</h2>
+            {revisionItems.length ? (
+              <div className="parent-topic-list">
+                {revisionItems.slice(0, 8).map(item => (
+                  <div className={`parent-topic-item ${item.isOverdue ? 'strong' : ''}`} key={`${item.subjectId}-${item.topicId}-${item.nextReviewAt}`}>
+                    <div>
+                      <b>{formatTopicName(item.topicId)}</b>
+                      <span>{formatSubjectName(item.subjectId)}</span>
+                      <em>{formatReviewQueueMeta(item)}</em>
+                    </div>
+                    <button
+                      type="button"
+                      className="ghost parent-topic-action print-hide"
+                      onClick={() => startParentPractice({
+                        subjectId: item.subjectId,
+                        topicId: item.topicId,
+                        mastery: item.mastery,
+                        source: 'parent-revision'
+                      })}
+                    >Mulakan ulang kaji</button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState title="Belum ada jadual ulang kaji" message={evidenceState.meaningful ? 'Tiada ulang kaji diperlukan pada masa ini.' : 'Jadual akan muncul selepas murid mempunyai data penguasaan.'} actionLabel="Mulakan ulang kaji" onAction={() => startParentPractice({ source: 'parent-empty-revision' })} showMascot={false} />
+            )}
+          </section>
+
+          <StudyPlannerPanel planner={studyPlannerPayload} className="parent-advanced-section parent-advanced-planner" />
+
+          <section className="card parent-advanced-section" data-parent-section="assessment-history">
+            <h2>Sejarah Pentaksiran</h2>
+            <div className="timeline">
+              {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
+                <div className="timeline-item" key={index}>
+                  <span>{formatFriendlyDate(item.date)}</span>
+                  <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
+                  <em>{safePercent(item.score)}% · {safeNumber(item.total, 0)} soalan · {formatModeLabel('uasa')}</em>
                 </div>
-                <button
-                  type="button"
-                  className="ghost parent-topic-action print-hide"
-                  onClick={() => startParentPractice({
-                    subjectId: item.subjectId,
-                    topicId: item.topicId,
-                    mastery: item.mastery,
-                    source: 'parent-revision'
-                  })}
-                >Mulakan ulang kaji</button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState title="Belum ada jadual ulang kaji" message={evidenceState.meaningful ? 'Tiada ulang kaji diperlukan pada masa ini.' : 'Jadual akan muncul selepas murid mempunyai data penguasaan.'} actionLabel="Mulakan ulang kaji" onAction={() => startParentPractice({ source: 'parent-empty-revision' })} showMascot={false} />
-        )}
-      </section>
-
-      <StudyPlannerPanel planner={studyPlannerPayload} />
-
-      <section className="card">
-        <h2>Sejarah Pentaksiran</h2>
-        <div className="timeline">
-          {(sourceProfile?.uasaHistory || sourceProfile?.uasa?.history || []).length ? (sourceProfile.uasaHistory || sourceProfile.uasa.history).slice(0, 8).map((item, index) => (
-            <div className="timeline-item" key={index}>
-              <span>{formatFriendlyDate(item.date)}</span>
-              <b>{formatSubjectName(item.subjectShort || item.subjectId)} - Gred {safeText(item.grade)}</b>
-              <em>{safePercent(item.score)}% · {safeNumber(item.total, 0)} soalan · {formatModeLabel('uasa')}</em>
+              )) : (
+                <EmptyState title="Belum ada sejarah pentaksiran" message="Percubaan pentaksiran yang disimpan akan muncul di sini." showMascot={false} />
+              )}
             </div>
-          )) : (
-            <EmptyState title="Belum ada sejarah pentaksiran" message="Percubaan pentaksiran yang disimpan akan muncul di sini." showMascot={false} />
-          )}
-        </div>
-      </section>
+          </section>
 
-      <section className="card">
-        <h2>Aktiviti Terkini</h2>
-        <div className="timeline">
-          {(sourceProfile?.history || []).length === 0 ? (
-            <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." showMascot={false} />
-          ) : (
-            sourceProfile.history.slice(0, 10).map((item, index) => (
-              <div className="timeline-item" key={index}>
-                <span>{formatFriendlyDate(item.date)}</span>
-                <b>{formatSubjectName(item.subject || item.subjectId)} - {formatTopicName(item.topicId || item.topic)}</b>
-                <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% · ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
-              </div>
-            ))
-          )}
+          <section className="card parent-advanced-section" data-parent-section="recent-activity">
+            <h2>Aktiviti Terkini</h2>
+            <div className="timeline">
+              {(sourceProfile?.history || []).length === 0 ? (
+                <EmptyState title="Belum ada aktiviti" message="Latihan terkini dan sesi kemahiran yang disimpan akan muncul di sini." showMascot={false} />
+              ) : (
+                sourceProfile.history.slice(0, 10).map((item, index) => (
+                  <div className="timeline-item" key={index}>
+                    <span>{formatFriendlyDate(item.date)}</span>
+                    <b>{formatSubjectName(item.subject || item.subjectId)} - {formatTopicName(item.topicId || item.topic)}</b>
+                    <em>{Number.isFinite(Number(item.percent)) ? `${safePercent(item.percent)}% · ${formatActivityStatus(item.percent)}` : 'Belum cukup data'}</em>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
         </div>
-      </section>
+      </details>
 
-      <section className="card">
+      <section className="card" data-parent-section="print">
         <button type="button" className="full print-hide" onClick={() => printParentReport('parent-print-report')}>Cetak Laporan</button>
         <p className="parent-report-footer">Laporan untuk {studentName} · {childYear}</p>
       </section>

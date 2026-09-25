@@ -6257,6 +6257,62 @@ input:focus {
   display: none;
 }
 
+.parent-subject-empty-note {
+  margin: 0 0 10px;
+  color: var(--muted, #64748b);
+}
+
+.parent-page .parent-subject-chooser {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 12px 0 14px;
+}
+
+.parent-page .parent-subject-chooser .report-box {
+  min-width: 0;
+  min-height: 0 !important;
+  align-content: start;
+  gap: 6px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.parent-page .parent-subject-chooser .report-box h3 {
+  min-height: 2.4em;
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.2;
+}
+
+.parent-page .parent-subject-chooser .report-box b {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.parent-page .parent-subject-chooser .report-box > span {
+  font-size: .78rem;
+  line-height: 1.3;
+}
+
+.parent-subject-detail {
+  margin-top: 14px;
+}
+
+.parent-advanced-disclosure {
+  margin: 0 0 16px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: var(--shadow);
+}
+
+.parent-advanced-content {
+  display: grid;
+  gap: 12px;
+}
+
+.parent-advanced-content > .card {
+  margin: 0;
+}
+
 @media (max-width: 650px) {
   .parent-page > .card {
     margin-bottom: 10px;
@@ -6271,6 +6327,21 @@ input:focus {
   .parent-page .metric-grid,
   .parent-page .subject-report-grid {
     gap: 8px;
+  }
+
+  .parent-page .parent-subject-chooser {
+    grid-template-columns: none !important;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(228px, 86%);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 6px;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: thin;
+  }
+
+  .parent-page .parent-subject-chooser .report-box {
+    scroll-snap-align: start;
   }
 
   .parent-secondary-disclosure > summary {
@@ -6859,6 +6930,19 @@ input:focus {
 
   .parent-print-report details > :not(summary) {
     display: block !important;
+  }
+
+  .parent-print-report .parent-advanced-disclosure {
+    overflow: visible !important;
+  }
+
+  .parent-print-report .parent-advanced-disclosure > summary {
+    display: none !important;
+  }
+
+  .parent-print-report .parent-advanced-disclosure > .parent-advanced-content {
+    display: grid !important;
+    padding: 0 !important;
   }
 
   .parent-print-report .card,
