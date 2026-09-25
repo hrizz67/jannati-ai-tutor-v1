@@ -165,6 +165,22 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
   );
 }
 
+export function TutorAINoticeStack({ status = 'idle', statusLabel = '' }) {
+  const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
+  return (
+    <div className="tutor-ai-notice-stack" data-modal-region="notices">
+      {showStatus && (
+        <div className={`chat-status chat-status-${status}`} aria-live="polite">
+          {statusLabel}
+        </div>
+      )}
+      <p className="tutor-ai-disclosure">
+        Tutor AI membantu pembelajaran dan boleh tersilap. Jangan kongsi maklumat peribadi; semak perkara penting bersama guru atau penjaga.
+      </p>
+    </div>
+  );
+}
+
 export default function TutorAIModal({
   open,
   conversationKey = '',
@@ -546,7 +562,6 @@ export default function TutorAIModal({
       : status === 'fallback'
         ? (typeof import.meta !== 'undefined' && import.meta.env?.DEV ? FALLBACK_STATE_MESSAGE : fallbackMessage)
         : 'Tutor AI sedia membantu.';
-  const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
   const speechButtonLabel = speechState === 'listening'
     ? '🎤 Mendengar…'
     : speechState === 'processing'
@@ -591,14 +606,7 @@ export default function TutorAIModal({
           />
         </header>
 
-        {showStatus && (
-          <div className={`chat-status chat-status-${status}`} aria-live="polite">
-            {statusLabel}
-          </div>
-        )}
-        <p className="tutor-ai-disclosure">
-          Tutor AI membantu pembelajaran dan boleh tersilap. Jangan kongsi maklumat peribadi; semak perkara penting bersama guru atau penjaga.
-        </p>
+        <TutorAINoticeStack status={status} statusLabel={statusLabel} />
 
         <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
           {hasVisibleQuestionContext && (

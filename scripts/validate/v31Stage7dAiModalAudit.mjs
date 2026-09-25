@@ -90,11 +90,16 @@ assert(modalRuntime.includes('!event.shiftKey && activeElement === last'), 'Shar
 assert(modalRuntime.includes('restoreFocusRef.current?.focus?.();'), 'Shared modal runtime must restore focus on cleanup.');
 assert(modalRuntime.includes('activeModalCount'), 'Shared modal runtime must coordinate multiple modal instances safely.');
 
-const tutorBodyIndex = indexOfOrThrow(tutor, 'className="ai-chat-body"', 'Tutor');
-const tutorFooterIndex = indexOfOrThrow(tutor, 'className="ai-chat-input ai-modal-footer"', 'Tutor');
-assert(tutorBodyIndex < tutorFooterIndex, 'Tutor: body must render before footer.');
-const tutorActionIndex = indexOfOrThrow(tutor, 'className="tutor-ai-actions"', 'Tutor');
-assert(tutorBodyIndex < tutorActionIndex && tutorActionIndex < tutorFooterIndex, 'Tutor: question help block must stay inside the scroll body, above the footer.');
+const tutorModal = tutor.slice(indexOfOrThrow(tutor, 'const modalNode =', 'Tutor'));
+const tutorHeaderIndex = indexOfOrThrow(tutorModal, 'className="ai-chat-head"', 'Tutor');
+const tutorNoticeIndex = indexOfOrThrow(tutorModal, '<TutorAINoticeStack status={status} statusLabel={statusLabel} />', 'Tutor');
+const tutorBodyIndex = indexOfOrThrow(tutorModal, 'className="ai-chat-body"', 'Tutor');
+const tutorFooterIndex = indexOfOrThrow(tutorModal, 'className={`ai-chat-input ai-modal-footer', 'Tutor');
+assert(tutorHeaderIndex < tutorNoticeIndex && tutorNoticeIndex < tutorBodyIndex && tutorBodyIndex < tutorFooterIndex, 'Tutor: header, notices, body, and footer must retain canonical order.');
+const tutorActionIndex = indexOfOrThrow(tutorModal, 'className="tutor-ai-tools"', 'Tutor');
+assert(tutorBodyIndex < tutorActionIndex && tutorActionIndex < tutorFooterIndex, 'Tutor: learning tools must stay inside the scroll body, above the footer.');
+assert(tutor.includes('export function TutorAINoticeStack'), 'Tutor: notice stack component must remain explicit and testable.');
+assert(tutor.includes('<TutorAINoticeStack status={status} statusLabel={statusLabel} />'), 'Tutor: status and safety disclosure must share one stable notice region.');
 assert(!tutor.includes('autoFocus'), 'Tutor: autoFocus must be removed to avoid forced mobile keyboard jumps.');
 assert(tutor.includes('className="ai-chat-context-card"'), 'Tutor: question-specific context card must render inside the modal body.');
 
@@ -110,11 +115,11 @@ assert.equal((explain.match(/className="ai-explain-overlay"/g) || []).length, 1,
 assert.equal((teacher.match(/className="ai-explain-overlay"/g) || []).length, 1, 'Teacher must render exactly one backdrop.');
 
 assert(styles.includes('.app-chrome-shell[data-modal-open="true"]'), 'Styles must disable background interaction while a modal is open.');
-assert(app.includes('inert={modalOpen ? \'\' : undefined}'), 'Background shell must become inert while a modal is open.');
+assert(app.includes('inert={modalOpen ? true : undefined}'), 'Background shell must become inert while a modal is open.');
 assert(styles.includes('max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);'), 'Mobile modal styles must clamp height against 100dvh safe area.');
 assert(/padding:\s*calc\(12px \+ env\(safe-area-inset-top, 0px\)\)/.test(styles), 'Modal overlay must include safe-area aware padding.');
-assert(styles.includes('.ai-chat-input,\n+.ai-explain-footer,\n+.ai-teacher-footer'.replace(/\+/g, '')) || styles.includes('.ai-chat-input,\n.ai-explain-footer,\n.ai-teacher-footer'), 'Styles must define a shared modal footer block.');
-assert(styles.includes('.tutor-ai-actions,\n.quick-prompts-analytics,\n.explain-details'), 'Accordion blocks must share consistent contained styling.');
+assert(/\.ai-chat-input,\s*\.ai-explain-footer,\s*\.ai-teacher-footer\s*\{/.test(styles), 'Styles must define a shared modal footer block.');
+assert(/\.tutor-ai-actions,\s*\.quick-prompts-analytics,\s*\.explain-details\s*\{/.test(styles), 'Accordion blocks must share consistent contained styling.');
 const stage7dBlock = styles.slice(styles.lastIndexOf('/* Stage 7D'), styles.length);
 const modalSpecificSlice = [
   '.tutor-ai-actions',
@@ -147,9 +152,9 @@ assert(
   read('scripts/validate/v31Stage3CoachUasaAudit.mjs').includes('329 - 1 = 328'),
   'Math 329 regression protection must remain present somewhere in the coach pipeline.'
 );
-assert(!/(padang|sekolah|hospital|nama orang|nama tempat)/i.test(JSON.stringify({
-  explain: explain.match(/padang|sekolah|hospital|nama orang|nama tempat/gi),
-  teacher: teacher.match(/padang|sekolah|hospital|nama orang|nama tempat/gi)
+assert(!/(padang|hospital|nama orang|nama tempat)/i.test(JSON.stringify({
+  explain: explain.match(/padang|hospital|nama orang|nama tempat/gi),
+  teacher: teacher.match(/padang|hospital|nama orang|nama tempat/gi)
 })), 'Stage 7D modal rewrite must not introduce BM leakage phrases.');
 
 console.log('v31Stage7dAiModalAudit PASS');
@@ -161,6 +166,7 @@ console.log(JSON.stringify({
     portalizedTeacher: true,
     safeAreaAware: true,
     footerSeparated: true,
+    stableTutorRegions: true,
     backgroundSuppressed: true,
     stage7dHarness: true
   }

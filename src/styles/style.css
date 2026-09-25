@@ -4857,6 +4857,15 @@ input:focus {
   font-size: 1.1rem;
 }
 
+.tutor-ai-notice-stack {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: 10px 18px 12px;
+  border-bottom: 1px solid rgba(15, 138, 67, 0.12);
+  background: rgba(249, 252, 248, 0.96);
+}
+
 .chat-status,
 .ai-explain-footer,
 .ai-teacher-footer,
@@ -4869,6 +4878,18 @@ input:focus {
   background: rgba(234, 245, 236, 0.94);
   color: #18442b;
   font-weight: 700;
+}
+
+.tutor-ai-notice-stack .chat-status {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.tutor-ai-notice-stack .tutor-ai-disclosure {
+  margin: 0;
 }
 
 .ai-chat-body,
@@ -5113,6 +5134,10 @@ input:focus {
   .ai-teacher-footer {
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  .tutor-ai-notice-stack {
+    padding: 9px 14px 10px;
   }
 
   .ai-chat-input {
