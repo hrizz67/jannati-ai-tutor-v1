@@ -54,7 +54,7 @@ export default function StudyPlannerPanel({ planner = null, className = '' }) {
       <h2 id={titleId}>Pelan Belajar</h2>
       <p className="memory-last" role="status">{buildSectionMessage(planner)}</p>
       <div className="mastery-summary-grid study-planner-summary">
-        <div><b>{formatDurationLabel(availableMinutes)}</b><span>Masa Belajar</span></div>
+        <div><b>{formatDurationLabel(availableMinutes)}</b><span>Masa Pelan Hari Ini</span></div>
         <div><b>{dailyBlocks.length}</b><span>Blok Hari Ini</span></div>
         <div><b>{weeklyDays.length}</b><span>Hari Dirancang</span></div>
         <div><b>{onboarding ? 'Aktif' : 'Tidak'}</b><span>Pelan Permulaan</span></div>

@@ -39,7 +39,6 @@ export function getAvailableStudyDuration(input = {}, date = new Date()) {
   const raw = toNumber(
     input.availableStudyMinutes ??
     input.availableMinutes ??
-    input.studyMinutes ??
     input.preferredMinutes,
     0
   );
