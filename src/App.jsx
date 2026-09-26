@@ -35,9 +35,13 @@ import { loadGamificationProfile as loadGamificationState, recordGamificationEve
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { classifyMistake } from './ai/mistakes/index.js';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
-import { createSpeechSession, extractSpeechTranscript as extractSpeechTranscriptShared, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
-import { createReadingSpeechSession } from './ai/speech/speechSession.js';
-import { mergeSpeechTranscript } from './ai/speech/speechEngine.js';
+import { createSpeechSession, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
+import {
+  assessCommunicationText,
+  confirmCommunicationSpeechCandidate,
+  createCommunicationSpeechSession,
+  playCommunicationAudio
+} from './ai/speech/communicationSpeech.js';
 import { sanitizeAiText } from './ai/learningCopy';
 import { loadAIMemory, saveQuizMemory, saveQuestionHistory, saveReadingMemory, saveListeningMemory, saveSpeakingMemory, saveWritingMemory } from './ai/memoryEngine';
 import { loadStudentCore, saveStudentCore } from './ai/studentIntelligence';
@@ -5528,6 +5532,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const recordedSessionRef = useRef(new Set());
   const speechSessionRef = useRef(null);
   const passageChangeRef = useRef(passageId);
+  const bacaanContextKeyRef = useRef('');
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
   const passageBase = readingPassages.find(item => item.id === passageId) || readingPassages[0] || {
@@ -5539,6 +5544,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     questions: []
   };
   const passage = passageBase.sessionItems?.[sessionIndex % passageBase.sessionItems.length] || passageBase;
+  const bacaanContextKey = `reading:${passageId}:${sessionIndex}`;
+  bacaanContextKeyRef.current = bacaanContextKey;
   const safeResult = normalizeBacaanResult(result);
   const communicationResult = normalizeCommunicationResult(result);
   const hasResult = Boolean(result);
@@ -5676,16 +5683,18 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     stopVoice();
     clearBacaanSession();
     resetBacaanState();
-    const session = createReadingSpeechSession({
-      lang: passage.speechLang,
+    const recognitionContextKey = bacaanContextKey;
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: passage,
+      fallbackId: passageId,
+      contextKey: recognitionContextKey,
+      getCurrentContextKey: () => bacaanContextKeyRef.current,
       resultFactory: spokenTranscript => createBacaanResult(spokenTranscript),
       onChange(nextState) {
         const safeTranscript = typeof nextState?.transcript === 'string' ? nextState.transcript : '';
         setTranscript(safeTranscript);
         setMendengar(nextState?.status === 'listening' || nextState?.status === 'processing');
-        if (nextState?.result && typeof nextState.result === 'object') {
-          setResult(normalizeBacaanResult(nextState.result));
-        }
       },
       onTranscript(nextTranscript) {
         setTranscript(typeof nextTranscript === 'string' ? nextTranscript : '');
@@ -5694,13 +5703,9 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
           recordBacaanResult(nextResult);
         setMendengar(false);
       },
-      onEmpty(nextResult) {
+      onFailure(nextResult) {
         setResult(normalizeBacaanResult(nextResult));
         setTranscript('');
-        setMendengar(false);
-      },
-      onError(error) {
-        if (error === 'aborted') return;
         setMendengar(false);
       },
       onStopped() {
@@ -5792,7 +5797,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     onClearResume?.();
   }
 
-  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Boleh digunakan tanpa internet</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="book" /></div><div><p className="eyebrow">Latihan Bacaan</p><h1>{passage.title}</h1><p>Baca petikan dengan kuat. Janna akan membantu semak bacaan kamu.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Taip teks bacaan kamu di bawah.</p>}<label>Teks bacaan kamu</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Taip teks bacaan kamu..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{safeResult.message || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={retryBacaan}>Cuba Lagi</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} petikan selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
+  return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Pilihan menaip tersedia</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="book" /></div><div><p className="eyebrow">Latihan Bacaan</p><h1>{passage.title}</h1><p>Baca petikan dengan kuat. Janna akan membantu semak bacaan kamu.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={!recognitionSupported || listening}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual}>Semak Teks</button></div>{!recognitionSupported && <p className="autosave-note">Taip teks bacaan kamu di bawah.</p>}<label>Teks bacaan kamu</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Taip teks bacaan kamu..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{safeResult.message || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={retryBacaan}>Cuba Lagi</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} petikan selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
 }
 const listeningSets = semanticListeningSets;
 
@@ -5905,11 +5910,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm']) ? resume.state.sessionIndexes[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
   const [mode, setMode] = useState(() => resume?.state?.mode || 'intro');
   const [transcript, setTranscript] = useState(() => resume?.state?.transcript || '');
-  const [confirmedTranscript, setConfirmedTranscript] = useState(() => resume?.state?.transcript || '');
-  const [manualTranscript, setManualTranscript] = useState(() => resume?.state?.transcript || '');
-  const [recognizedDraft, setRecognizedDraft] = useState('');
   const [transcriptSource, setTranscriptSource] = useState(() => resume?.state?.transcript ? 'manual' : '');
-  const [recognitionConfidence, setRecognitionConfidence] = useState(0);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [speechCandidate, setSpeechCandidate] = useState(null);
   const [listening, setMendengar] = useState(false);
@@ -5921,21 +5922,18 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const languageInitializedRef = useRef(false);
   const subjectInitializedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
-  const recognitionRef = useRef(null);
-  const readingSpeechSessionRef = useRef(null);
-  const speechTimeoutRef = useRef(null);
-  const receivedResultRef = useRef(false);
-  const finalizedRef = useRef(false);
-  const abortedRef = useRef(false);
-  const speechSeenResultKeysRef = useRef(new Set());
-  const speechFinalTranscriptRef = useRef('');
-  const speechFinalCandidateRef = useRef(null);
+  const speechSessionRef = useRef(null);
   const recognitionContextKeyRef = useRef('');
   const safariEmptyFailureRef = useRef(0);
   const [safariMicDisabled, setSafariMicDisabled] = useState(false);
   const setBase = speakingPrompts.find(item => item.id === setId) || speakingPrompts[0];
   const rawSet = setBase?.sessionItems?.[sessionIndex % setBase.sessionItems.length]
-    ? { ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length], id: setBase.id }
+    ? {
+        ...setBase.sessionItems[sessionIndex % setBase.sessionItems.length],
+        id: setBase.id,
+        language: setBase.language,
+        speechLang: setBase.speechLang
+      }
     : setBase;
   const rawSetTitle = rawSet?.title || '';
   const set = rawSet ? { ...rawSet, title: formatScopeLabel(rawSetTitle) } : rawSet;
@@ -5981,7 +5979,6 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const safeWords = Array.isArray(safeResult.words) ? safeResult.words : [];
   const speechMessage = typeof safeResult.message === 'string' ? safeResult.message : '';
   const reviewCopy = getBertuturReviewCopy(set?.id || setId);
-  const selectedRecognitionLanguage = set?.speechLang || (setId === 'bm' ? 'ms-MY' : setId === 'english' ? 'en-US' : 'ar-SA');
   const modes = useMemo(() => safeModeKeys.map(id => ({ id, label: promptBank?.[id]?.label || id })), [promptBank, safeModeKey]);
   const createEmptySpeechResult = (errorCode = 'no-result', message = 'Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.') => ({
     status: 'empty',
@@ -5999,86 +5996,15 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     score: 0
   });
 
-  const extractSpeechTranscript = extractSpeechTranscriptShared;
-
-  const clearSpeechTimeout = () => {
-    if (speechTimeoutRef.current) {
-      clearTimeout(speechTimeoutRef.current);
-      speechTimeoutRef.current = null;
-    }
-  };
-
-  const disposeRecognition = () => {
-    const recognition = recognitionRef.current;
-    clearSpeechTimeout();
-    if (!recognition) return;
-    try {
-      recognition.onstart = null;
-      recognition.onresult = null;
-      recognition.onerror = null;
-      recognition.onend = null;
-      recognition.onnomatch = null;
-    } catch {}
-    try {
-      recognition.stop?.();
-    } catch {}
-    try {
-      recognition.abort?.();
-    } catch {}
-    recognitionRef.current = null;
-  };
-
   const resetSpeechSession = () => {
-    clearSpeechTimeout();
-    receivedResultRef.current = false;
-    finalizedRef.current = false;
-    abortedRef.current = false;
-    speechSeenResultKeysRef.current = new Set();
-    speechFinalTranscriptRef.current = '';
-    speechFinalCandidateRef.current = null;
     setInterimTranscript('');
     setSpeechCandidate(null);
-    setRecognizedDraft('');
-    setRecognitionConfidence(0);
   };
 
   const stopRecognitionSilently = () => {
-    abortedRef.current = true;
-    finalizedRef.current = true;
     setMendengar(false);
-    readingSpeechSessionRef.current?.cancel?.();
-    readingSpeechSessionRef.current = null;
-    disposeRecognition();
-  };
-
-  const finishSpeechSession = nextResult => {
-    finalizedRef.current = true;
-    clearSpeechTimeout();
-    return nextResult;
-  };
-
-  const finalizeBertuturSession = (nextResult, nextTranscript = '', shouldCountFailure = false) => {
-    finalizedRef.current = true;
-    clearSpeechTimeout();
-    if (shouldCountFailure && isIOSSafari) {
-      safariEmptyFailureRef.current += 1;
-      if (safariEmptyFailureRef.current >= 2) setSafariMicDisabled(true);
-    } else if (isIOSSafari && (typeof nextResult?.transcript === 'string' ? nextResult.transcript.trim() : Boolean(nextResult?.correct))) {
-      safariEmptyFailureRef.current = 0;
-    }
-    setTranscript(nextTranscript);
-    setMendengar(false);
-    const normalized = { ...nextResult, status: nextResult?.status || 'completed' };
-    if (typeof normalized.transcript === 'string' && normalized.transcript.trim()) {
-      recordCommunicationScore({
-        ref: recordedSessionRef,
-        itemKey: `${setId}:${mode}:${sessionIndex}`,
-        result: normalized,
-        setScoreHistory
-      });
-    }
-    setResult(normalized);
-    disposeRecognition();
+    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current = null;
   };
 
   useEffect(() => {
@@ -6091,7 +6017,6 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     stopRecognitionSilently();
     setTranscript('');
     setResult(null);
-    setRecognizedDraft('');
     setSpeechCandidate(null);
     setInterimTranscript('');
   }, [setId, mode]);
@@ -6102,10 +6027,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       return;
     }
     stopRecognitionSilently();
-    setRecognizedDraft('');
     setSpeechCandidate(null);
     setInterimTranscript('');
-    setRecognitionConfidence(0);
     setTranscript('');
     setTranscriptSource('');
     setResult(null);
@@ -6172,14 +6095,15 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const commitBertuturTranscript = nextTranscript => {
     const normalizedTranscript = normalizeBertuturTranscript(nextTranscript);
     if (!normalizedTranscript) return;
+    const normalized = confirmCommunicationSpeechCandidate(
+      { text: normalizedTranscript },
+      confirmedText => scoreBertutur(safePrompt, confirmedText)
+    );
+    if (!normalized) return;
     setSpeechCandidate(null);
     setInterimTranscript('');
-    setRecognizedDraft(normalizedTranscript);
-    setRecognitionConfidence(0);
     setTranscriptSource('speech-confirmed');
     setTranscript(normalizedTranscript);
-    setConfirmedTranscript(normalizedTranscript);
-    const normalized = { ...scoreBertutur(safePrompt, normalizedTranscript), status: 'completed', transcript: normalizedTranscript };
     recordCommunicationScore({
       ref: recordedSessionRef,
       itemKey: `${setId}:${mode}:${sessionIndex}`,
@@ -6189,189 +6113,68 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setResult(normalized);
   };
 
-  const offerSpeechCandidate = candidate => {
-    const nextCandidate = {
-      text: normalizeBertuturTranscript(candidate?.text),
-      confidence: Number.isFinite(Number(candidate?.confidence)) ? Number(candidate.confidence) : 0
-    };
-    if (!nextCandidate.text) return;
-    setRecognizedDraft(nextCandidate.text);
-    setRecognitionConfidence(nextCandidate.confidence);
-    setSpeechCandidate(nextCandidate);
-    setResult({ status: 'needs-confirmation', transcript: '', score: 0, correct: false, matched: [], matchedKeywords: [], tertinggal: [], missingWords: [], missed: [], words: [], confidence: nextCandidate.confidence, errorCode: 'low-confidence', message: '' });
+  const offerSpeechCandidate = review => {
+    if (!review?.candidate?.text) return;
+    setSpeechCandidate(review.candidate);
+    setResult(review.result);
   };
 
   function startBertutur() {
-    const latestSet = speakingPrompts.find(item => item.id === setId) || setBase;
-    const latestSpeechLang = latestSet?.speechLang || (setId === 'bm' ? 'ms-MY' : setId === 'english' ? 'en-US' : 'ar-SA');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition || (isIOSSafari && safariMicDisabled)) return;
+    if (!recognitionSupported || (isIOSSafari && safariMicDisabled)) return;
     stopRecognitionSilently();
     resetSpeechSession();
     setTranscript('');
+    setTranscriptSource('');
     setResult(null);
-
-    // iPhone Safari is more reliable with the same continuous session used by
-    // Bacaan: keep the reference passage visible, stream the transcript, then
-    // let the learner confirm the captured text before scoring it.
-    if (SpeechRecognition) {
-      const session = createReadingSpeechSession({
-        lang: latestSpeechLang,
-        resultFactory: spokenTranscript => ({
-          ...scoreBertutur(safePrompt, spokenTranscript),
-          status: 'completed',
-          transcript: normalizeBertuturTranscript(spokenTranscript)
-        }),
-        onChange(nextState) {
-          const nextTranscript = normalizeBertuturTranscript(nextState?.transcript || '');
-          setMendengar(nextState?.status === 'listening' || nextState?.status === 'processing');
-          if (nextTranscript) {
-            setTranscript(nextTranscript);
-            setRecognizedDraft(nextTranscript);
-            setInterimTranscript(nextTranscript);
-            setTranscriptSource('speech-draft');
-          }
-        },
-        onTranscript(nextTranscript) {
-          const normalized = normalizeBertuturTranscript(nextTranscript);
-          if (!normalized) return;
-          setTranscript(normalized);
-          setRecognizedDraft(normalized);
-          setInterimTranscript(normalized);
-          setTranscriptSource('speech-draft');
-        },
-        onResult(nextResult) {
-          const normalized = normalizeBertuturTranscript(nextResult?.transcript || '');
-          setMendengar(false);
-          setInterimTranscript('');
-          if (normalized) {
-            offerSpeechCandidate({ text: normalized, confidence: nextResult?.confidence });
-          } else {
-            setResult(nextResult || createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
-          }
-        },
-        onEmpty(nextResult) {
-          setMendengar(false);
-          setInterimTranscript('');
-          setResult(nextResult || createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
-        },
-        onError(error) {
-          if (error !== 'aborted') setSpeechCandidate(null);
-          setMendengar(false);
-        },
-        onStopped() {
-          setMendengar(false);
-        }
-      });
-      readingSpeechSessionRef.current = session;
-      session.start();
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
     const recognitionContextKey = communicationContextKey;
-    const longSpeechMode = /huraikan|ceritakan|terangkan|jelaskan|describe|explain|talk|tell/i.test(`${mode} ${safePrompt?.label || ''} ${safePrompt?.text || ''}`);
-    recognition.lang = latestSpeechLang;
-    recognition.interimResults = true;
-    recognition.continuous = longSpeechMode;
-    recognition.maxAlternatives = 3;
-    if (import.meta?.env?.DEV) console.debug('[Bertutur speech]', { selectedLanguage: latestSpeechLang, recognitionLanguage: recognition.lang, continuous: recognition.continuous, interimResults: recognition.interimResults, maxAlternatives: recognition.maxAlternatives });
-    recognition.onstart = () => {
-      setMendengar(true);
-    };
-    recognition.onerror = event => {
-      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
-      if (finalizedRef.current || abortedRef.current) return;
-      const error = event?.error || 'unknown_error';
-      if (import.meta?.env?.DEV) console.debug('[Bertutur speech error]', error);
-      if (error === 'aborted') {
-        abortedRef.current = true;
-        return;
-      }
-      if (error === 'no-speech' && !receivedResultRef.current) {
-        finalizeBertuturSession(createEmptySpeechResult('no-speech', getBertuturSpeechErrorMessage('no-speech')), '', true);
-        return;
-      }
-      if (error === 'audio-capture') {
-        finalizeBertuturSession({ ...createEmptySpeechResult('audio-capture', getBertuturSpeechErrorMessage('audio-capture')), status: 'technical-error' });
-        return;
-      }
-      if (error === 'not-allowed' || error === 'service-not-allowed') {
-        finalizeBertuturSession(createEmptySpeechResult(error, getBertuturSpeechErrorMessage(error)));
-        return;
-      }
-      finalizeBertuturSession({
-        status: 'technical-error',
-        score: 0,
-        matched: [],
-        matchedKeywords: [],
-        tertinggal: [],
-        missingWords: [],
-        missed: [],
-        words: [],
-        transcript: '',
-        confidence: 0,
-        correct: false,
-        errorCode: error,
-        message: getBertuturSpeechErrorMessage(error)
-      });
-    };
-    recognition.onresult = event => {
-      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
-      if (finalizedRef.current || abortedRef.current) return;
-      const extracted = collectBertuturSpeechResults(event, speechSeenResultKeysRef.current);
-      if (import.meta?.env?.DEV) console.debug('[Bertutur speech result]', { resultIndex: event?.resultIndex, alternatives: [...extracted.finalCandidates, ...extracted.interimCandidates], isFinal: extracted.finalCandidates.length > 0 });
-      if (extracted.interimText) setInterimTranscript(extracted.interimText);
-      if (!extracted.finalCandidates.length) return;
-      receivedResultRef.current = true;
-      const candidate = chooseBertuturCandidate(extracted.finalCandidates, { languageId: set.id, prompt: safePrompt });
-      speechFinalCandidateRef.current = candidate;
-      speechFinalTranscriptRef.current = mergeSpeechTranscript(speechFinalTranscriptRef.current, candidate.text);
-      if (!longSpeechMode) offerSpeechCandidate({ ...candidate, text: speechFinalTranscriptRef.current });
-      if (!longSpeechMode) setMendengar(false);
-    };
-    recognition.onend = () => {
-      if (recognitionContextKeyRef.current !== recognitionContextKey) return;
-      clearSpeechTimeout();
-      if (import.meta?.env?.DEV) console.debug('[Bertutur speech end]', { transcript: speechFinalTranscriptRef.current });
-      if (finalizedRef.current || abortedRef.current) {
-        recognitionRef.current = null;
-        return;
-      }
-      if (receivedResultRef.current && speechFinalTranscriptRef.current) {
-        const candidate = speechFinalCandidateRef.current || {};
-        offerSpeechCandidate({ ...candidate, text: speechFinalTranscriptRef.current });
-        recognitionRef.current = null;
-        return;
-      }
-      if (!receivedResultRef.current) {
-        finalizedRef.current = true;
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: set,
+      fallbackId: setId,
+      contextKey: recognitionContextKey,
+      getCurrentContextKey: () => recognitionContextKeyRef.current,
+      resultFactory: spokenTranscript => ({
+        status: 'captured',
+        transcript: normalizeBertuturTranscript(spokenTranscript),
+        confidence: 0
+      }),
+      onChange(nextState) {
+        setMendengar(nextState?.status === 'listening' || nextState?.status === 'processing');
+      },
+      onTranscript(nextTranscript) {
+        const normalized = normalizeBertuturTranscript(nextTranscript);
+        if (!normalized) return;
+        setTranscript(normalized);
+        setInterimTranscript(normalized);
+        setTranscriptSource('speech-draft');
+      },
+      onCandidate(review) {
+        safariEmptyFailureRef.current = 0;
         setMendengar(false);
-        setResult(createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
-        disposeRecognition();
-      }
-      recognitionRef.current = null;
-    };
-    try {
-      speechTimeoutRef.current = window.setTimeout(() => {
-        if (!receivedResultRef.current && !finalizedRef.current) {
-          try {
-            recognition?.stop?.();
-          } catch {}
-          finalizedRef.current = true;
-          setMendengar(false);
-          setResult(createEmptySpeechResult('no-result', getBertuturSpeechErrorMessage('no-result')));
-          disposeRecognition();
-          recognitionRef.current = null;
+        setInterimTranscript('');
+        offerSpeechCandidate(review);
+      },
+      onFailure(nextResult) {
+        if (isIOSSafari && ['no-result', 'no-speech'].includes(nextResult?.errorCode)) {
+          safariEmptyFailureRef.current += 1;
+          if (safariEmptyFailureRef.current >= 2) setSafariMicDisabled(true);
         }
-      }, 9000);
-      recognition.start();
-    } catch {
-      clearSpeechTimeout();
-      recognitionRef.current = null;
+        setMendengar(false);
+        setInterimTranscript('');
+        setSpeechCandidate(null);
+        setTranscript('');
+        setTranscriptSource('');
+        setResult(nextResult);
+      },
+      onStopped() {
+        setMendengar(false);
+      }
+    });
+    speechSessionRef.current = session;
+    const started = session.start();
+    if (started?.unsupported) {
+      setRecognitionSupported(false);
       setMendengar(false);
-      setResult({ ...createEmptySpeechResult('speech-unavailable', getBertuturSpeechErrorMessage('speech-unavailable')), status: 'technical-error' });
     }
   }
 
@@ -6383,7 +6186,6 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   function editSpeechCandidate() {
     if (!speechCandidate?.text) return;
     setTranscript(speechCandidate.text);
-    setManualTranscript(speechCandidate.text);
     setTranscriptSource('manual');
     setSpeechCandidate(null);
     setResult(null);
@@ -6391,8 +6193,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
 
   function clearSpeechCandidate() {
     setSpeechCandidate(null);
-    setRecognizedDraft('');
-    setRecognitionConfidence(0);
+    setTranscript('');
+    setTranscriptSource('');
     setResult(null);
   }
 
@@ -6401,8 +6203,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setResult(null);
     setInterimTranscript('');
     setTranscript('');
-    setManualTranscript('');
-    setConfirmedTranscript('');
+    setTranscriptSource('');
     resetSpeechSession();
     startBertutur();
   }
@@ -6415,9 +6216,11 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       return;
     }
     setTranscript(normalizedTranscript);
-    setManualTranscript(normalizedTranscript);
     setTranscriptSource('manual');
-    const normalized = { ...scoreBertutur(safePrompt, normalizedTranscript), status: 'completed', transcript: normalizedTranscript };
+    const normalized = assessCommunicationText(
+      normalizedTranscript,
+      manualText => scoreBertutur(safePrompt, manualText)
+    );
     recordCommunicationScore({
       ref: recordedSessionRef,
       itemKey: `${setId}:${mode}:${sessionIndex}`,
@@ -6463,14 +6266,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     onClearResume?.();
   }
 
-  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Boleh digunakan tanpa internet</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="mic" /></div><div><p className="eyebrow">Latihan Bertutur</p><h1>{set.title}</h1><p>Jawab dengan suara kamu. Jika mikrofon tidak tersedia, kamu masih boleh menaip jawapan.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safePromptText}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)} aria-label={reviewCopy.title}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur} disabled={listening || !safeTranscript || Boolean(speechCandidate) || !['manual', 'speech-confirmed'].includes(transcriptSource)}>{reviewCopy.confirmed === 'Transkrip disahkan' ? 'Semak Teks' : reviewCopy.confirmed === 'Transcript confirmed' ? 'Check text' : 'فحص النص'}</button></div>{!recognitionSupported && <p className="autosave-note" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'}>{reviewCopy.manual}</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Jawapan suara tidak tersedia. Taip jawapan kamu.</p>}{interimTranscript && <p className="autosave-note" aria-live="polite">Sedang mendengar: {interimTranscript}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechCandidate?.text && <section className="speech-candidate" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'} dir={set.id === 'arab' ? 'rtl' : 'ltr'} aria-live="polite"><h2>{reviewCopy.title}</h2><p>{reviewCopy.helper}</p><p className="autosave-note">{reviewCopy.warning}</p><textarea aria-label={reviewCopy.title} value={speechCandidate.text} onChange={event => setSpeechCandidate(current => ({ ...current, text: event.target.value }))} /><div className="actions"><button onClick={acceptSpeechCandidate}>{reviewCopy.use}</button><button className="secondary" onClick={editSpeechCandidate}>{reviewCopy.edit}</button><button className="secondary" onClick={retrySpeechRecognition}>{reviewCopy.retry}</button><button className="secondary" onClick={clearSpeechCandidate}>{reviewCopy.clear}</button></div></section>}<label htmlFor="bertutur-transcript">{set.id === 'arab' ? 'نص إجابتك' : set.id === 'english' ? 'Your answer text' : 'Teks jawapan kamu'}</label><textarea id="bertutur-transcript" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'} dir={set.id === 'arab' ? 'rtl' : 'ltr'} value={transcript} onChange={event => { setTranscript(event.target.value); setManualTranscript(event.target.value); setTranscriptSource('manual'); }} placeholder={reviewCopy.manual} /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<div className="actions"><button onClick={nextBertutur}>Seterusnya</button><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{speechMessage || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} item selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
+  return <main className="app speaking-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Pilihan menaip tersedia</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="mic" /></div><div><p className="eyebrow">Latihan Bertutur</p><h1>{set.title}</h1><p>Jawab dengan suara kamu. Jika mikrofon tidak tersedia, kamu masih boleh menaip jawapan.</p></div></section><section className="card"><p className="eyebrow">Bahasa</p><div className="reading-tabs">{speakingPrompts.map(item => <button key={item.id} className={item.id === setId ? '' : 'secondary'} onClick={() => setSetId(item.id)}>{item.language}</button>)}</div><p className="eyebrow">Jenis Soalan</p><div className="speaking-mode-grid">{modes.map(item => <button key={item.id} className={item.id === mode ? '' : 'secondary'} onClick={() => setMode(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${set.id === 'arab' ? 'rtl' : ''}`} lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safePromptText}</div><div className="actions"><button onClick={startBertutur} disabled={!recognitionSupported || listening || (isIOSSafari && safariMicDisabled)} aria-label={reviewCopy.title}>{listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkBertutur} disabled={listening || !safeTranscript || Boolean(speechCandidate) || !['manual', 'speech-confirmed'].includes(transcriptSource)}>{reviewCopy.confirmed === 'Transkrip disahkan' ? 'Semak Teks' : reviewCopy.confirmed === 'Transcript confirmed' ? 'Check text' : 'فحص النص'}</button></div>{!recognitionSupported && <p className="autosave-note" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'}>{reviewCopy.manual}</p>}{isIOSSafari && safariMicDisabled && <p className="autosave-note">Jawapan suara tidak tersedia. Taip jawapan kamu.</p>}{interimTranscript && <p className="autosave-note" aria-live="polite">Sedang mendengar: {interimTranscript}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechCandidate?.text && <section className="speech-candidate" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'} dir={set.id === 'arab' ? 'rtl' : 'ltr'} aria-live="polite"><h2>{reviewCopy.title}</h2><p>{reviewCopy.helper}</p><p className="autosave-note">{reviewCopy.warning}</p><textarea aria-label={reviewCopy.title} value={speechCandidate.text} onChange={event => setSpeechCandidate(current => ({ ...current, text: event.target.value }))} /><div className="actions"><button onClick={acceptSpeechCandidate}>{reviewCopy.use}</button><button className="secondary" onClick={editSpeechCandidate}>{reviewCopy.edit}</button><button className="secondary" onClick={retrySpeechRecognition}>{reviewCopy.retry}</button><button className="secondary" onClick={clearSpeechCandidate}>{reviewCopy.clear}</button></div></section>}<label htmlFor="bertutur-transcript">{set.id === 'arab' ? 'نص إجابتك' : set.id === 'english' ? 'Your answer text' : 'Teks jawapan kamu'}</label><textarea id="bertutur-transcript" lang={set.id === 'arab' ? 'ar' : set.id === 'english' ? 'en' : 'ms'} dir={set.id === 'arab' ? 'rtl' : 'ltr'} value={transcript} onChange={event => { setTranscript(event.target.value); setTranscriptSource('manual'); }} placeholder={reviewCopy.manual} /></section>{result && <section className="card reading-result"><p className="eyebrow">Keputusan Bertutur</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="recommend-meta"><span>{safeMatched.length}/{safeKeywords.length} kata kunci</span><span>Mod {mode}</span><span>{set.language}</span></div><div className="word-check reading-word-check" lang={set.id === 'arab' ? 'ar' : undefined} dir={set.id === 'arab' ? 'rtl' : undefined}>{safeWords.length ? safeWords.map(word => <span key={word.text || word} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text || word}</span>) : safeKeywords.map(keyword => <span key={keyword} className={safeMatched.includes(keyword) ? 'word-good' : 'word-miss'}>{keyword}</span>)}</div>{safeMissing.length > 0 && <p>Cuba masukkan: <b>{safeMissing.join(', ')}</b></p>}{speechMessage && <p>{speechMessage}</p>}<div className="actions"><button onClick={nextBertutur}>Seterusnya</button><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{speechMessage || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={saveBertutur}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} item selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
 }
-
-const BERTUTUR_RELEVANCE_WORDS = {
-  bm: new Set('saya makan minum nasi roti susu sarapan pagi telur mee mi buah cerita bilik darjah kucing sekolah makanan sihat'.split(/\s+/)),
-  english: new Set('i eat drink bread milk breakfast morning egg eggs fruit school classroom cat food'.split(/\s+/)),
-  arab: new Set()
-};
 
 function getBertuturReviewCopy(languageId = 'bm') {
   if (languageId === 'english') return {
@@ -6513,69 +6310,6 @@ function getBertuturReviewCopy(languageId = 'bm') {
 
 function normalizeBertuturTranscript(value) {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
-}
-
-function chooseBertuturCandidate(candidates = [], { languageId = 'bm', prompt = {} } = {}) {
-  const safeCandidates = candidates
-    .map(candidate => ({ ...candidate, text: normalizeBertuturTranscript(candidate?.text) }))
-    .filter(candidate => candidate.text);
-  if (!safeCandidates.length) return { text: '', confidence: 0, alternatives: [] };
-  const promptWords = new Set((Array.isArray(prompt?.keywords) ? prompt.keywords : [])
-    .flatMap(value => String(value).toLowerCase().split(/\s+/))
-    .filter(Boolean));
-  const vocabulary = new Set([...(BERTUTUR_RELEVANCE_WORDS[languageId] || []), ...promptWords]);
-  const ranked = safeCandidates.map((candidate, index) => {
-    const words = normalizeBacaanWord(candidate.text).split(/\s+/).filter(Boolean);
-    const relevance = words.filter(word => vocabulary.has(word)).length;
-    const confidence = Number(candidate.confidence);
-    const meaningfulConfidence = Number.isFinite(confidence) && confidence > 0 ? confidence : 0;
-    return { ...candidate, index, relevance, confidence: meaningfulConfidence };
-  }).sort((a, b) => (b.confidence - a.confidence) || (b.relevance - a.relevance) || (a.index - b.index));
-  return { ...ranked[0], alternatives: ranked };
-}
-
-function collectBertuturSpeechResults(event, seenKeys = new Set()) {
-  const results = event?.results ? Array.from(event.results) : [];
-  const startIndex = Number.isInteger(event?.resultIndex) && event.resultIndex >= 0 ? event.resultIndex : 0;
-  const finalCandidates = [];
-  const interimCandidates = [];
-  for (let index = startIndex; index < results.length; index += 1) {
-    const result = results[index];
-    if (!result) continue;
-    const alternatives = Array.from(result).slice(0, 3).map((alternative, alternativeIndex) => ({
-      text: normalizeBertuturTranscript(alternative?.transcript),
-      confidence: alternative?.confidence,
-      alternativeIndex
-    })).filter(candidate => candidate.text);
-    const key = `${result.isFinal ? 'final' : 'interim'}:${alternatives.map(candidate => candidate.text).join('|')}`;
-    if (!alternatives.length || seenKeys.has(key)) continue;
-    seenKeys.add(key);
-    (result.isFinal ? finalCandidates : interimCandidates).push(...alternatives);
-  }
-  return {
-    finalCandidates,
-    interimCandidates,
-    interimText: normalizeBertuturTranscript(interimCandidates.map(candidate => candidate.text).join(' '))
-  };
-}
-
-function getBertuturSpeechErrorMessage(errorCode = '') {
-  switch (String(errorCode || '').toLowerCase()) {
-    case 'not-allowed':
-    case 'service-not-allowed':
-      return 'Mikrofon tidak dibenarkan. Benarkan akses mikrofon dalam tetapan peranti.';
-    case 'no-speech':
-    case 'no-result':
-      return 'Tiada suara dikesan. Cuba bercakap semula.';
-    case 'audio-capture':
-      return 'Mikrofon tidak dapat dikesan. Semak mikrofon dan tetapan sistem.';
-    case 'network':
-      return 'Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet dan cuba semula.';
-    case 'aborted':
-      return 'Pengecaman suara dihentikan. Cuba bercakap semula.';
-    default:
-      return 'Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet dan cuba semula.';
-  }
 }
 // Semantic communication banks are the only active source for listening, speaking, and writing.
 const writingSets = semanticWritingSets;
@@ -7046,19 +6780,13 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   async function playAudio() {
-    try {
-      stopAudio();
-      setAudioMessage('');
-      const played = await speak(item.prompt, { language: item.speechLang });
-      if (!played.success) {
-        const languageLabel = base.language === 'BM'
-          ? 'Bahasa Melayu'
-          : base.language;
-        setAudioMessage(`Suara ${languageLabel} tidak tersedia pada peranti ini. Pasang voice pack ${languageLabel} dalam tetapan Text-to-speech peranti atau cuba Chrome/Edge yang terkini.`);
-      }
-    } catch {
-      setAudioMessage('Audio tidak dapat dimainkan sekarang. Semak volume, voice pack dan kebenaran bunyi peranti.');
-    }
+    stopAudio();
+    setAudioMessage('');
+    const languageLabel = base.language === 'BM'
+      ? 'Bahasa Melayu'
+      : base.language;
+    const played = await playCommunicationAudio({ item, languageLabel, speak });
+    if (!played.success) setAudioMessage(played.message);
   }
 
   function submit() {
