@@ -1,21 +1,20 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {
+  confirmCommunicationSpeechCandidate,
+  createCommunicationSpeechSession
+} from '../../src/ai/speech/communicationSpeech.js';
+import { normalizeCommunicationResult } from '../../src/utils/communicationResult.js';
 
 const app = fs.readFileSync('src/App.jsx', 'utf8');
 const content = fs.readFileSync('src/data/communicationContent.js', 'utf8');
+const bertuturSource = app.slice(app.indexOf('function BertuturCoach'), app.indexOf('const writingSets'));
 
 for (const locale of ["'ms-MY'", "'en-US'", "'ar-SA'"]) assert.ok(content.includes(locale), `missing locale ${locale}`);
-assert.match(app, /const latestSpeechLang[\s\S]{0,240}latestSet\?\.speechLang/);
-assert.match(app, /recognition\.lang = latestSpeechLang/);
-assert.match(app, /const \[recognizedDraft, setRecognizedDraft\]/);
-assert.match(app, /const \[confirmedTranscript, setConfirmedTranscript\]/);
-assert.match(app, /const \[manualTranscript, setManualTranscript\]/);
 assert.match(app, /const \[transcriptSource, setTranscriptSource\]/);
 assert.match(app, /speech-confirmed/);
 assert.match(app, /setTranscriptSource\('manual'\)/);
-assert.match(app, /collectBertuturSpeechResults/);
-assert.match(app, /setRecognizedDraft\(nextCandidate\.text\)/);
-assert.match(app, /setSpeechCandidate\(nextCandidate\)/);
+assert.match(app, /setSpeechCandidate\(review\.candidate\)/);
 assert.match(app, /function acceptSpeechCandidate/);
 assert.match(app, /function editSpeechCandidate/);
 assert.match(app, /function clearSpeechCandidate/);
@@ -26,14 +25,33 @@ assert.match(app, /dir=\{set\.id === 'arab' \? 'rtl'/);
 assert.match(app, /lang=\{set\.id === 'arab' \? 'ar' : set\.id === 'english' \? 'en' : 'ms'\}/);
 assert.match(app, /disabled=\{listening \|\| !safeTranscript \|\| Boolean\(speechCandidate\)/);
 assert.match(app, /setTranscriptSource\('manual'\)/);
-assert.match(app, /setRecognizedDraft\('\'\)/);
-assert.match(app, /recognition\.maxAlternatives = 3/);
-assert.match(app, /event\.resultIndex/);
-assert.match(app, /result\.isFinal/);
-assert.match(app, /getBertuturSpeechErrorMessage/);
+assert.match(app, /createCommunicationSpeechSession\(\{/);
+assert.doesNotMatch(bertuturSource, /new SpeechRecognition|recognition\.maxAlternatives/);
 
-const resultHandler = app.slice(app.indexOf('recognition.onresult = event =>'), app.indexOf('recognition.onend = () =>', app.indexOf('recognition.onresult = event =>')));
-assert.doesNotMatch(resultHandler, /recordCommunicationScore|scoreBertutur|finalizeBertuturSession/);
-const endHandler = app.slice(app.indexOf('recognition.onend = () =>'), app.indexOf('try {', app.indexOf('recognition.onend = () =>')));
-assert.doesNotMatch(endHandler, /recordCommunicationScore|scoreBertutur/);
+for (const [id, speechLang, transcript] of [
+  ['bm', 'ms-MY', 'Saya makan nasi'],
+  ['english', 'en-US', 'I eat rice'],
+  ['arab', 'ar-SA', 'أنا آكل الأرز']
+]) {
+  let callbacks = null;
+  let review = null;
+  const session = createCommunicationSpeechSession({
+    activity: 'speaking',
+    selectedSet: { id, speechLang },
+    contextKey: id,
+    getCurrentContextKey: () => id,
+    sessionFactory(options) {
+      callbacks = options;
+      return { supported: true, start: () => ({ status: 'listening' }), cancel() {} };
+    },
+    onCandidate: nextReview => { review = nextReview; }
+  });
+  session.start();
+  assert.equal(callbacks.lang, speechLang);
+  callbacks.onComplete({ transcript, confidence: 0.8 });
+  assert.equal(review.candidate.text, transcript);
+  assert.equal(normalizeCommunicationResult(review.result).isAssessed, false);
+  const confirmed = confirmCommunicationSpeechCandidate(review.candidate, () => ({ score: 100, correct: true }));
+  assert.equal(normalizeCommunicationResult(confirmed).isAssessed, true);
+}
 console.log('v31BertuturMultilingualAssistedTranscriptAudit: PASS');

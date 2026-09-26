@@ -3,7 +3,7 @@ import { semanticReadingPassages, semanticListeningSets, semanticSpeakingPrompts
 
 const app = fs.readFileSync('src/App.jsx', 'utf8');
 const communicationContent = fs.readFileSync('src/data/communicationContent.js', 'utf8');
-const emptyReadingHandler = app.match(/onEmpty\(nextResult\) \{([\s\S]*?)\r?\n\s*\},\r?\n\s*onError/)?.[1] || '';
+const emptyReadingHandler = app.match(/onFailure\(nextResult\) \{([\s\S]*?)\r?\n\s*\},\r?\n\s*onStopped/)?.[1] || '';
 const count = (pattern) => (app.match(pattern) || []).length;
 const arabic = /[\u0600-\u06ff]/;
 const normalizeReadingContract = value => {
