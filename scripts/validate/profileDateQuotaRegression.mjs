@@ -40,7 +40,13 @@ assert.equal(getDailyQuestionCount({}, {
     projectedAttempt,
     { ...projectedAttempt, attemptNumber: 2, answeredAt: '2026-08-28T01:01:00Z' }
   ]
-}, day, 'bm'), 2, 'Two genuine attempts at the same question must both count.');
+}, day, 'bm'), 1, 'Retries of the same question occurrence must consume one unit.');
+assert.equal(getDailyQuestionCount({}, {
+  learningHistory: [
+    projectedAttempt,
+    { ...projectedAttempt, sessionId: 'session-2', answeredAt: '2026-08-28T01:01:00Z' }
+  ]
+}, day, 'bm'), 2, 'The same question in two sessions may consume two units.');
 
 const multipleSubjects = {
   learningHistory: [
@@ -54,7 +60,10 @@ assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'bm'), 2);
 assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'math'), 1);
 
 const childFayyadh = { history: [{ ...projectedAttempt, eventId: 'fayyadh-event-1' }] };
-const childAina = { history: [{ ...projectedAttempt, eventId: 'aina-event-1' }, { ...projectedAttempt, eventId: 'aina-event-2' }] };
+const childAina = { history: [
+  { ...projectedAttempt, eventId: 'aina-event-1' },
+  { ...projectedAttempt, eventId: 'aina-event-2', sessionId: 'session-2', questionId: 'bm-2' }
+] };
 assert.equal(getDailyQuestionCount(childFayyadh, {}, day, 'bm'), 1);
 assert.equal(getDailyQuestionCount(childAina, {}, day, 'bm'), 2);
 assert.equal(getDailyQuestionCount({}, {}, day, 'bm'), 0);

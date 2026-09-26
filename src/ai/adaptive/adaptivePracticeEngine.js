@@ -14,7 +14,8 @@ function toNumber(value, fallback = 0) {
 }
 
 function clampCount(value) {
-  const parsed = toNumber(value, 10);
+  const parsed = Math.floor(toNumber(value, 10));
+  if (parsed > 0 && parsed < 10) return parsed;
   if (ALLOWED_COUNTS.includes(parsed)) return parsed;
   return parsed <= 10 ? 10 : parsed <= 20 ? 20 : parsed <= 30 ? 30 : parsed <= 40 ? 40 : 50;
 }

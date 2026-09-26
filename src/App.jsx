@@ -89,7 +89,7 @@ import {
   recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox
 } from './services/learningSync.js';
-import { FREE_DAILY_QUESTION_LIMIT, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess } from './services/accessControl.js';
+import { FREE_DAILY_QUESTION_LIMIT, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId } from './services/accessControl.js';
 import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 import { normalizeSupportedStudentYear, SUPPORTED_STUDENT_YEARS } from './config/studentYears.js';
@@ -3438,23 +3438,38 @@ export default function App() {
   }
 
   function startTopic(topic, subject = selectedSubject, options = {}) {
-    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(subject?.id);
-    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
-      openAccessNotice('daily-limit', 'Latihan harian');
-      return;
-    }
     const resumeMode = options.mode || 'quiz';
+    const quotaSubjectId = resolveQuestionQuotaSubjectId(
+      {},
+      options.quotaSubjectId,
+      options.session?.quotaSubjectId,
+      subject?.id,
+      selectedSubjectId
+    );
+    const resumeSubjectId = resolveQuestionQuotaSubjectId(
+      {},
+      options.resumeSubjectId,
+      options.session?.resumeSubjectId,
+      quotaSubjectId,
+      subject?.id
+    );
     const matchingResume = !options.restoreFromResume && isQuestionResumeMode(resumeMode)
-      ? loadResume({ ...learningIdentity, mode: resumeMode, subjectId: subject.id, topicId: topic.id })
+      ? loadResume({ ...learningIdentity, mode: resumeMode, subjectId: resumeSubjectId, topicId: topic.id })
       : null;
     if (matchingResume && !matchingResume.completed) {
-      const sameSubject = matchingResume.subjectId === subject.id;
+      const sameSubject = matchingResume.subjectId === resumeSubjectId;
       const sameTopic = matchingResume.topicId === topic.id;
       const hasResumeQuestions = Array.isArray(matchingResume.questions) && matchingResume.questions.length > 0;
       if (sameSubject && sameTopic && hasResumeQuestions) {
         startResume(matchingResume);
         return;
       }
+    }
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(quotaSubjectId);
+    const isExistingQuestionResume = Boolean(options.restoreFromResume && options.resumeExistingSession);
+    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT && !isExistingQuestionResume) {
+      openAccessNotice('daily-limit', 'Latihan harian');
+      return;
     }
     const sourceQuestions = options.questions || topic.questions;
     const smartSession = options.preserveQuestions
@@ -3508,6 +3523,8 @@ export default function App() {
       { questionIds: questions.map(item => item.id).filter(Boolean) }
     );
     startSession.adaptiveSessionId = adaptiveSessionId;
+    startSession.quotaSubjectId = quotaSubjectId || null;
+    startSession.resumeSubjectId = resumeSubjectId || quotaSubjectId || null;
 
     setActiveSubject(subject);
     setActiveTopic({ ...topic, questions, resumeMode, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
@@ -3527,7 +3544,7 @@ export default function App() {
     setScreen('quiz');
     adaptiveSessionRef.current = {
       sessionId: adaptiveSessionId,
-      subjectId: subject.id,
+      subjectId: quotaSubjectId || subject.id,
       topicId: topic.id,
       startedAt: new Date().toISOString()
     };
@@ -3544,7 +3561,7 @@ export default function App() {
     recordSessionStart(getAdaptiveProfile(learningIdentity), {
       sessionId: adaptiveSessionId,
       startedAt: adaptiveSessionRef.current.startedAt,
-      subjectId: subject.id,
+      subjectId: quotaSubjectId || subject.id,
       topicId: topic.id,
       questions: questions.map(item => item.id).filter(Boolean),
       plannedQuestionCount: questions.length,
@@ -3557,7 +3574,7 @@ export default function App() {
       mode: resumeMode,
       screen: resumeMode,
       sessionId: adaptiveSessionId,
-      subjectId: subject.id,
+      subjectId: resumeSubjectId || subject.id,
       topicId: topic.id,
       currentIndex: startIndex,
       questionIndex: startIndex,
@@ -3610,8 +3627,18 @@ export default function App() {
         return;
       }
       if ((targetResume.mode || 'quiz') === 'adaptive-practice') {
+        const resumedQuestionIndex = Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex;
+        const resumedQuestion = targetResume.questions?.[resumedQuestionIndex] || targetResume.questions?.[0] || {};
+        const quotaSubjectId = resolveQuestionQuotaSubjectId(
+          resumedQuestion,
+          targetResume.session?.quotaSubjectId,
+          targetResume.session?.adaptivePracticeMetadata?.requestedSubjectId,
+          targetResume.metadata?.adaptiveMetadata?.requestedSubjectId,
+          targetResume.subjectId,
+          selectedSubjectId
+        );
         const practiceSubject = {
-          id: targetResume.subjectId || 'adaptive',
+          id: 'adaptive',
           title: targetResume.metadata?.displayTitle || 'Latihan AI',
           short: 'AI',
           icon: <AdaptivePracticeBadgeIcon />,
@@ -3629,15 +3656,20 @@ export default function App() {
           ]
         };
         const practiceTopic = practiceSubject.topics[0];
-        syncSelectedSubjectState(practiceSubject);
+        const quotaSubject = allSubjects.find(item => item.id === quotaSubjectId)
+          || (quotaSubjectId ? await loadSubjectData(quotaSubjectId) : null);
+        if (quotaSubject) syncSelectedSubjectState(quotaSubject);
         startTopic(practiceTopic, practiceSubject, {
           questions: targetResume.questions,
-          questionIndex: Number.isInteger(targetResume.currentIndex) ? targetResume.currentIndex : targetResume.questionIndex,
+          questionIndex: resumedQuestionIndex,
           session: restoredQuestionSession,
           state: targetResume.state,
           preserveQuestions: true,
           mode: 'adaptive-practice',
-          restoreFromResume: true
+          restoreFromResume: true,
+          resumeExistingSession: true,
+          quotaSubjectId,
+          resumeSubjectId: quotaSubjectId || targetResume.subjectId
         });
         return;
       }
@@ -3661,7 +3693,10 @@ export default function App() {
         state: targetResume.state,
         preserveQuestions: true,
         mode: targetResume.mode || 'quiz',
-        restoreFromResume: true
+        restoreFromResume: true,
+        resumeExistingSession: true,
+        quotaSubjectId: targetResume.subjectId,
+        resumeSubjectId: targetResume.subjectId
       });
       return;
     }
@@ -3746,6 +3781,26 @@ export default function App() {
     const targetSubjectId = String(options.subjectId || selectedSubjectId || '').trim();
     const targetTopicId = String(options.topicId || '').trim();
     const targetDifficulty = String(options.difficulty || 'medium').trim().toLowerCase();
+    const directPracticeResume = options.forceFresh
+      ? null
+      : loadResume({ ...learningIdentity, mode: 'adaptive-practice', subjectId: targetSubjectId });
+    const practiceResume = directPracticeResume || (options.forceFresh
+      ? null
+      : loadResume({ ...learningIdentity, mode: 'adaptive-practice' }));
+    const resumeQuestionIndex = Number.isInteger(practiceResume?.currentIndex) ? practiceResume.currentIndex : practiceResume?.questionIndex;
+    const resumeQuestion = practiceResume?.questions?.[resumeQuestionIndex] || practiceResume?.questions?.[0] || {};
+    const resumeSubjectId = resolveQuestionQuotaSubjectId(
+      resumeQuestion,
+      practiceResume?.session?.quotaSubjectId,
+      practiceResume?.session?.adaptivePracticeMetadata?.requestedSubjectId,
+      practiceResume?.metadata?.adaptiveMetadata?.requestedSubjectId,
+      practiceResume?.subjectId
+    );
+    const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === targetSubjectId);
+    if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
+      await startResume(practiceResume);
+      return true;
+    }
     const subjectDailyQuestionCount = getSubjectDailyQuestionCount(targetSubjectId);
     if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
       openAccessNotice('daily-limit', 'Latihan harian');
@@ -3753,14 +3808,8 @@ export default function App() {
     }
     const allowedQuestionCount = isPremiumUser
       ? questionCount
-      : Math.min(questionCount, Math.max(1, FREE_DAILY_QUESTION_LIMIT - subjectDailyQuestionCount));
-    const practiceResume = options.forceFresh ? null : loadResume({ ...learningIdentity, mode: 'adaptive-practice', subjectId: targetSubjectId });
-    const resumeSubjectId = practiceResume?.subjectId || practiceResume?.metadata?.subjectId || practiceResume?.session?.subjectId;
-    const resumeMatchesSelectedSubject = Boolean(resumeSubjectId && resumeSubjectId === targetSubjectId);
-    if (resumeMatchesSelectedSubject && practiceResume && !practiceResume.completed && Array.isArray(practiceResume.questions) && practiceResume.questions.length) {
-      await startResume(practiceResume);
-      return true;
-    }
+      : capQuestionCountToRemainingQuota(questionCount, subjectDailyQuestionCount);
+    if (allowedQuestionCount <= 0) return false;
     let practiceSubjects = allSubjects;
     if (practiceSubjects.length < subjectList.length) {
       const loadedSubjects = await ensureAllSubjectsLoaded();
@@ -3845,9 +3894,13 @@ export default function App() {
         adaptiveSessionId: session.sessionId,
         adaptivePracticeMode: session.mode,
         adaptivePracticeMetadata: session.metadata,
+        quotaSubjectId: targetSubjectId,
+        resumeSubjectId: targetSubjectId,
         requestedQuestions: session.requestedQuestions,
         estimatedMinutes: session.estimatedMinutes
-      }
+      },
+      quotaSubjectId: targetSubjectId,
+      resumeSubjectId: targetSubjectId
     });
     return true;
   }
@@ -3914,6 +3967,13 @@ export default function App() {
   function autoSave(nextIndex = questionIndex, nextSession = session, nextQuestionState = null) {
     if (!activeSubject || !activeTopic) return;
     const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
+    const resumeSubjectId = resolveQuestionQuotaSubjectId(
+      {},
+      nextSession.resumeSubjectId,
+      nextSession.quotaSubjectId,
+      activeSubject.id,
+      selectedSubjectId
+    );
     const savedQuestion = activeTopic.questions?.[nextIndex] || null;
     const state = nextQuestionState || {
       questionId: savedQuestion?.id || null,
@@ -3926,7 +3986,7 @@ export default function App() {
       mode,
       screen: mode,
       sessionId: nextSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId || null,
-      subjectId: activeSubject.id,
+      subjectId: resumeSubjectId || activeSubject.id,
       topicId: activeTopic.id,
       currentIndex: nextIndex,
       questionIndex: nextIndex,
@@ -4084,8 +4144,23 @@ export default function App() {
     const question = currentQuestion();
     const liveSession = sessionRef.current || session;
     if (!question || getBestCreditedQuizOutcome(liveSession.answers, question.id) === 'correct') return;
-    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(activeSubject?.id || selectedSubjectId);
-    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT) {
+    const sessionId = liveSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId;
+    const quotaSubjectId = resolveQuestionQuotaSubjectId(
+      question,
+      liveSession.quotaSubjectId,
+      activeTopic?.adaptiveMetadata?.requestedSubjectId,
+      activeSubject?.id,
+      selectedSubjectId
+    );
+    const quotaDateKey = todayKey();
+    const subjectDailyQuestionCount = getSubjectDailyQuestionCount(quotaSubjectId);
+    if (!isPremiumUser && !canSubmitFreeQuestion({
+      dailyQuestionCount: subjectDailyQuestionCount,
+      questionId: question.id,
+      sessionId,
+      sessionAnswers: liveSession.answers,
+      dateKey: quotaDateKey
+    })) {
       openAccessNotice('daily-limit', 'Latihan harian');
       return;
     }
@@ -4111,7 +4186,6 @@ export default function App() {
     const answeredAt = new Date().toISOString();
     const timeSpent = Math.max(1, Math.round((Date.now() - questionStartedAtRef.current) / 1000));
     const attemptNumber = (liveSession.answers || []).filter(item => item.questionId === question.id).length + 1;
-    const sessionId = liveSession.adaptiveSessionId || adaptiveSessionRef.current?.sessionId;
     const submitPrefix = [sessionId || 'session', question.id || 'question', ''].join('|');
     if (quizSubmitKeyRef.current.startsWith(submitPrefix)) return;
     const submitKey = [sessionId || 'session', question.id || 'question', attemptNumber].join('|');
@@ -4148,8 +4222,9 @@ export default function App() {
     }
 
     const attempt = {
+      sessionId,
       questionId: question.id,
-      subjectId: question.subjectId || activeSubject?.id || null,
+      subjectId: quotaSubjectId || null,
       subjectTitle: question.subjectTitle || activeSubject?.title || null,
       subjectShort: question.subjectShort || activeSubject?.short || null,
       topicId: question.topicId || activeTopic?.id || null,
@@ -4177,7 +4252,7 @@ export default function App() {
     else if (result.status === 'almost') beep('mid');
     else beep('bad');
     saveQuestionHistory(question, learningIdentity);
-    const adaptiveSubjectId = question.subjectId || activeSubject?.id;
+    const adaptiveSubjectId = quotaSubjectId || question.subjectId || activeSubject?.id;
     const adaptiveTopicId = question.topicId || activeTopic?.id;
     const adaptiveResult = recordQuestionResult(getAdaptiveProfile(learningIdentity), {
       sessionId,

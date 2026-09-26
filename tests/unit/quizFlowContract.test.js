@@ -45,4 +45,20 @@ describe('Quiz rendered and controller contracts', () => {
     expect(checkAnswer).toMatch(/recordQuestionResult\([\s\S]*?attemptNumber,/);
     expect(checkAnswer).toContain('appendCreditedQuizAttempt(liveSession, attempt, {');
   });
+
+  it('reopens valid resumes before fresh quota gates and guards new submissions by real subject', () => {
+    const startTopic = sourceBetween('  function startTopic(', '\n  async function startResume(');
+    const startResume = sourceBetween('  async function startResume(', '\n  async function restartResume(');
+    const startAdaptivePractice = sourceBetween('  async function startAdaptivePractice(', '\n  function currentQuestion(');
+    const checkAnswer = sourceBetween('  function checkAnswer()', '\n  function createCoachSnapshot(');
+
+    expect(startTopic.indexOf('const matchingResume')).toBeLessThan(startTopic.indexOf('const subjectDailyQuestionCount'));
+    expect(startTopic).toContain('options.restoreFromResume && options.resumeExistingSession');
+    expect(startResume).toContain('resumeExistingSession: true');
+    expect(startAdaptivePractice.indexOf('const practiceResume')).toBeLessThan(startAdaptivePractice.indexOf('const subjectDailyQuestionCount'));
+    expect(startAdaptivePractice).toContain('capQuestionCountToRemainingQuota(questionCount, subjectDailyQuestionCount)');
+    expect(checkAnswer).toMatch(/resolveQuestionQuotaSubjectId\(\s*question,/);
+    expect(checkAnswer).toContain('canSubmitFreeQuestion({');
+    expect(checkAnswer).toContain('subjectId: quotaSubjectId || null');
+  });
 });
