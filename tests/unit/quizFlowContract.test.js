@@ -76,4 +76,18 @@ describe('Quiz rendered and controller contracts', () => {
     expect(finishTopic).toContain('resolveSessionResumeSubjectId(');
     expect(finishTopic).toMatch(/clearResumeData\(setResume, \{[\s\S]*?subjectId: resumeSubjectId \|\| activeSubject\.id,[\s\S]*?topicId: activeTopic\.id/);
   });
+
+  it('preflights fresh question restarts before clearing the existing resume', () => {
+    const restartResume = sourceBetween('  async function restartResume()', '\n  async function startAdaptiveLesson(');
+    const preflightIndex = restartResume.indexOf('canRestartQuestionResume({');
+    const clearIndex = restartResume.indexOf('clearResumeData(setResume, targetResume, learningIdentity);');
+
+    expect(restartResume).toContain('resolveQuestionResumeQuotaSubjectId(targetResume)');
+    expect(restartResume).toContain('getSubjectDailyQuestionCount(quotaSubjectId)');
+    expect(restartResume).toContain("openAccessNotice('daily-limit', 'Latihan harian');");
+    expect(restartResume).toMatch(/if \(!canRestart\) \{[\s\S]*?openAccessNotice\([\s\S]*?return;/);
+    expect(preflightIndex).toBeGreaterThanOrEqual(0);
+    expect(preflightIndex).toBeLessThan(clearIndex);
+    expect(restartResume).not.toContain('resumeExistingSession: true');
+  });
 });

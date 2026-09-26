@@ -89,7 +89,7 @@ import {
   recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox
 } from './services/learningSync.js';
-import { FREE_DAILY_QUESTION_LIMIT, canStartFreeQuestionSession, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId, resolveSessionResumeSubjectId } from './services/accessControl.js';
+import { FREE_DAILY_QUESTION_LIMIT, canRestartQuestionResume, canStartFreeQuestionSession, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId, resolveQuestionResumeQuotaSubjectId, resolveSessionResumeSubjectId } from './services/accessControl.js';
 import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 import { normalizeSupportedStudentYear, SUPPORTED_STUDENT_YEARS } from './config/studentYears.js';
@@ -3735,6 +3735,18 @@ export default function App() {
     if (!resume) return;
     const targetResume = resume;
     const mode = targetResume.mode || 'quiz';
+    if (isQuestionResumeMode(mode)) {
+      const quotaSubjectId = resolveQuestionResumeQuotaSubjectId(targetResume);
+      const subjectDailyQuestionCount = getSubjectDailyQuestionCount(quotaSubjectId);
+      const canRestart = canRestartQuestionResume({
+        dailyQuestionCount: subjectDailyQuestionCount,
+        isPremiumUser
+      });
+      if (!canRestart) {
+        openAccessNotice('daily-limit', 'Latihan harian');
+        return;
+      }
+    }
     clearResumeData(setResume, targetResume, learningIdentity);
     if (mode === 'interactive-practice') {
       await startInteractivePracticeResume(targetResume, { restart: true });

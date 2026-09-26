@@ -209,6 +209,24 @@ export function resolveSessionResumeSubjectId(session = {}, question = {}, ...fa
   );
 }
 
+export function resolveQuestionResumeQuotaSubjectId(resume = {}) {
+  const questions = Array.isArray(resume?.questions) ? resume.questions : [];
+  const savedIndex = Number.isInteger(resume?.currentIndex)
+    ? resume.currentIndex
+    : Number.isInteger(resume?.questionIndex)
+      ? resume.questionIndex
+      : 0;
+  const savedQuestion = questions[savedIndex] || questions[0] || {};
+  return resolveSessionResumeSubjectId(
+    resume?.session,
+    savedQuestion,
+    resume?.session?.adaptivePracticeMetadata?.requestedSubjectId,
+    resume?.metadata?.adaptiveMetadata?.requestedSubjectId,
+    resume?.metadata?.requestedSubjectId,
+    resume?.subjectId
+  );
+}
+
 export function hasQuestionAttemptInSession(answers = [], questionId = '', sessionId = '', dateKey = '') {
   const targetQuestionId = normalizeQuotaIdentity(questionId);
   const targetSessionId = normalizeQuotaIdentity(sessionId);
@@ -248,6 +266,20 @@ export function canStartFreeQuestionSession({
   const safeCount = Math.max(0, Number(dailyQuestionCount) || 0);
   const safeLimit = Math.max(0, Number(limit) || 0);
   return safeCount < safeLimit || Boolean(restoreFromResume && resumeExistingSession);
+}
+
+export function canRestartQuestionResume({
+  dailyQuestionCount = 0,
+  isPremiumUser = false,
+  limit = FREE_DAILY_QUESTION_LIMIT
+} = {}) {
+  if (isPremiumUser) return true;
+  return canStartFreeQuestionSession({
+    dailyQuestionCount,
+    restoreFromResume: true,
+    resumeExistingSession: false,
+    limit
+  });
 }
 
 export function capQuestionCountToRemainingQuota(requestedCount, dailyQuestionCount, limit = FREE_DAILY_QUESTION_LIMIT) {
