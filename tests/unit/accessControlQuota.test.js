@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { buildAdaptivePracticeSession } from '../../src/ai/adaptive/adaptivePracticeEngine.js';
 import {
   FREE_DAILY_QUESTION_LIMIT,
+  canStartFreeQuestionSession,
   canSubmitFreeQuestion,
   capQuestionCountToRemainingQuota,
   getDailyQuestionCount,
-  resolveQuestionQuotaSubjectId
+  resolveQuestionQuotaSubjectId,
+  resolveSessionResumeSubjectId
 } from '../../src/services/accessControl.js';
 
 const today = '2026-09-06';
@@ -119,9 +121,35 @@ describe('Free answer-time quota decisions', () => {
     })).toBe(false);
   });
 
+  it('allows an existing interactive resume at the limit but blocks restart as fresh work', () => {
+    expect(canStartFreeQuestionSession({
+      dailyQuestionCount: FREE_DAILY_QUESTION_LIMIT,
+      restoreFromResume: true,
+      resumeExistingSession: true
+    })).toBe(true);
+    expect(canStartFreeQuestionSession({
+      dailyQuestionCount: FREE_DAILY_QUESTION_LIMIT,
+      restoreFromResume: true,
+      resumeExistingSession: false
+    })).toBe(false);
+  });
+
   it('prefers the real question subject over a synthetic adaptive fallback', () => {
     expect(resolveQuestionQuotaSubjectId({ subjectId: 'math' }, 'adaptive', 'bm')).toBe('math');
     expect(resolveQuestionQuotaSubjectId({}, 'adaptive', 'bm')).toBe('bm');
+  });
+
+  it('uses the persisted resume subject before other completion fallbacks', () => {
+    expect(resolveSessionResumeSubjectId(
+      { resumeSubjectId: 'math', quotaSubjectId: 'bm' },
+      { subjectId: 'science' },
+      'adaptive'
+    )).toBe('math');
+    expect(resolveSessionResumeSubjectId(
+      { resumeSubjectId: 'adaptive', quotaSubjectId: 'math' },
+      { subjectId: 'science' },
+      'adaptive'
+    )).toBe('math');
   });
 });
 

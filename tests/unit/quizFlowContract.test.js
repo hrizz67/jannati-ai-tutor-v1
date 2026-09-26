@@ -49,16 +49,31 @@ describe('Quiz rendered and controller contracts', () => {
   it('reopens valid resumes before fresh quota gates and guards new submissions by real subject', () => {
     const startTopic = sourceBetween('  function startTopic(', '\n  async function startResume(');
     const startResume = sourceBetween('  async function startResume(', '\n  async function restartResume(');
+    const startInteractivePracticeResume = sourceBetween('  async function startInteractivePracticeResume(', '\n  function startTopic(');
     const startAdaptivePractice = sourceBetween('  async function startAdaptivePractice(', '\n  function currentQuestion(');
     const checkAnswer = sourceBetween('  function checkAnswer()', '\n  function createCoachSnapshot(');
 
     expect(startTopic.indexOf('const matchingResume')).toBeLessThan(startTopic.indexOf('const subjectDailyQuestionCount'));
-    expect(startTopic).toContain('options.restoreFromResume && options.resumeExistingSession');
+    expect(startTopic).toContain('canStartFreeQuestionSession({');
+    expect(startTopic).toContain('restoreFromResume: options.restoreFromResume');
+    expect(startTopic).toContain('resumeExistingSession: options.resumeExistingSession');
     expect(startResume).toContain('resumeExistingSession: true');
+    expect(startInteractivePracticeResume).toContain('...(restart ? {} : { resumeExistingSession: true })');
+    expect(startInteractivePracticeResume).toContain('quotaSubjectId,');
+    expect(startInteractivePracticeResume).toContain('resumeSubjectId,');
     expect(startAdaptivePractice.indexOf('const practiceResume')).toBeLessThan(startAdaptivePractice.indexOf('const subjectDailyQuestionCount'));
     expect(startAdaptivePractice).toContain('capQuestionCountToRemainingQuota(questionCount, subjectDailyQuestionCount)');
     expect(checkAnswer).toMatch(/resolveQuestionQuotaSubjectId\(\s*question,/);
     expect(checkAnswer).toContain('canSubmitFreeQuestion({');
     expect(checkAnswer).toContain('subjectId: quotaSubjectId || null');
+  });
+
+  it('clears a completed adaptive resume with the same canonical real subject used by autosave', () => {
+    const autoSave = sourceBetween('  function autoSave(', '\n  function changeQuizAnswer(');
+    const finishTopic = sourceBetween('  function finishTopic()', '\n  function completeDailyChallenge()');
+
+    expect(autoSave).toContain('resolveSessionResumeSubjectId(');
+    expect(finishTopic).toContain('resolveSessionResumeSubjectId(');
+    expect(finishTopic).toMatch(/clearResumeData\(setResume, \{[\s\S]*?subjectId: resumeSubjectId \|\| activeSubject\.id,[\s\S]*?topicId: activeTopic\.id/);
   });
 });

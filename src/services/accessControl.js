@@ -199,6 +199,16 @@ export function resolveQuestionQuotaSubjectId(question = {}, ...fallbacks) {
   return '';
 }
 
+export function resolveSessionResumeSubjectId(session = {}, question = {}, ...fallbacks) {
+  return resolveQuestionQuotaSubjectId(
+    {},
+    session?.resumeSubjectId,
+    session?.quotaSubjectId,
+    question?.subjectId,
+    ...fallbacks
+  );
+}
+
 export function hasQuestionAttemptInSession(answers = [], questionId = '', sessionId = '', dateKey = '') {
   const targetQuestionId = normalizeQuotaIdentity(questionId);
   const targetSessionId = normalizeQuotaIdentity(sessionId);
@@ -227,6 +237,17 @@ export function canSubmitFreeQuestion({
   const safeLimit = Math.max(0, Number(limit) || 0);
   return safeCount < safeLimit
     || hasQuestionAttemptInSession(sessionAnswers, questionId, sessionId, dateKey);
+}
+
+export function canStartFreeQuestionSession({
+  dailyQuestionCount = 0,
+  restoreFromResume = false,
+  resumeExistingSession = false,
+  limit = FREE_DAILY_QUESTION_LIMIT
+} = {}) {
+  const safeCount = Math.max(0, Number(dailyQuestionCount) || 0);
+  const safeLimit = Math.max(0, Number(limit) || 0);
+  return safeCount < safeLimit || Boolean(restoreFromResume && resumeExistingSession);
 }
 
 export function capQuestionCountToRemainingQuota(requestedCount, dailyQuestionCount, limit = FREE_DAILY_QUESTION_LIMIT) {

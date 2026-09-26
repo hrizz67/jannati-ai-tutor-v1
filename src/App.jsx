@@ -89,7 +89,7 @@ import {
   recoverMonotonicCloudGap,
   recoverOrphanedCloudOutbox
 } from './services/learningSync.js';
-import { FREE_DAILY_QUESTION_LIMIT, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId } from './services/accessControl.js';
+import { FREE_DAILY_QUESTION_LIMIT, canStartFreeQuestionSession, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId, resolveSessionResumeSubjectId } from './services/accessControl.js';
 import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
 import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 import { normalizeSupportedStudentYear, SUPPORTED_STUDENT_YEARS } from './config/studentYears.js';
@@ -3400,6 +3400,21 @@ export default function App() {
         ? targetResume.questionIndex
         : 0;
     const normalizedSavedIndex = savedIndex >= 0 && savedIndex < savedQuestions.length ? savedIndex : 0;
+    const savedQuestion = savedQuestions[normalizedSavedIndex] || {};
+    const quotaSubjectId = resolveQuestionQuotaSubjectId(
+      {},
+      targetResume.session?.quotaSubjectId,
+      targetResume.session?.resumeSubjectId,
+      targetResume.subjectId,
+      savedQuestion.subjectId,
+      subject.id
+    );
+    const resumeSubjectId = resolveSessionResumeSubjectId(
+      targetResume.session,
+      savedQuestion,
+      targetResume.subjectId,
+      subject.id
+    );
     const resolvedIndex = restart
       ? (questions.length ? 0 : -1)
       : resolveInteractivePracticeResumeIndex(savedQuestions, questions, savedIndex);
@@ -3431,6 +3446,9 @@ export default function App() {
       preserveQuestions: true,
       mode: 'interactive-practice',
       restoreFromResume: true,
+      ...(restart ? {} : { resumeExistingSession: true }),
+      quotaSubjectId,
+      resumeSubjectId,
       displayTitle: targetResume.metadata?.displayTitle || `Aktiviti Interaktif: ${subject.title}`,
       displayNote: targetResume.metadata?.displayNote || 'Latihan interaktif merentas topik'
     });
@@ -3466,8 +3484,12 @@ export default function App() {
       }
     }
     const subjectDailyQuestionCount = getSubjectDailyQuestionCount(quotaSubjectId);
-    const isExistingQuestionResume = Boolean(options.restoreFromResume && options.resumeExistingSession);
-    if (!isPremiumUser && subjectDailyQuestionCount >= FREE_DAILY_QUESTION_LIMIT && !isExistingQuestionResume) {
+    const canStartFreeSession = canStartFreeQuestionSession({
+      dailyQuestionCount: subjectDailyQuestionCount,
+      restoreFromResume: options.restoreFromResume,
+      resumeExistingSession: options.resumeExistingSession
+    });
+    if (!isPremiumUser && !canStartFreeSession) {
       openAccessNotice('daily-limit', 'Latihan harian');
       return;
     }
@@ -3967,14 +3989,13 @@ export default function App() {
   function autoSave(nextIndex = questionIndex, nextSession = session, nextQuestionState = null) {
     if (!activeSubject || !activeTopic) return;
     const mode = nextSession.mode || activeTopic.resumeMode || (nextSession.adaptivePractice ? 'adaptive-practice' : 'quiz');
-    const resumeSubjectId = resolveQuestionQuotaSubjectId(
-      {},
-      nextSession.resumeSubjectId,
-      nextSession.quotaSubjectId,
+    const savedQuestion = activeTopic.questions?.[nextIndex] || null;
+    const resumeSubjectId = resolveSessionResumeSubjectId(
+      nextSession,
+      savedQuestion,
       activeSubject.id,
       selectedSubjectId
     );
-    const savedQuestion = activeTopic.questions?.[nextIndex] || null;
     const state = nextQuestionState || {
       questionId: savedQuestion?.id || null,
       answer: nextIndex === questionIndex ? String(answer || '') : '',
@@ -4526,6 +4547,12 @@ export default function App() {
     const liveSession = sessionRef.current || session;
     const creditedSummary = summarizeCreditedQuizOutcomes(liveSession.answers, { questionIds, totalQuestions: total });
     const creditedSession = reconcileQuizSessionCredits(liveSession, { questionIds });
+    const resumeSubjectId = resolveSessionResumeSubjectId(
+      creditedSession,
+      activeTopic.questions?.[questionIndex] || {},
+      activeSubject.id,
+      selectedSubjectId
+    );
     const percent = creditedSummary.percent;
     const stars = getStars(percent);
     const today = todayKey();
@@ -4581,7 +4608,7 @@ export default function App() {
     setSession(completedSession);
     clearResumeData(setResume, {
       mode: creditedSession.mode || activeTopic.resumeMode || 'quiz',
-      subjectId: activeSubject.id,
+      subjectId: resumeSubjectId || activeSubject.id,
       topicId: activeTopic.id
     }, learningIdentity);
     setScreen('finish');
