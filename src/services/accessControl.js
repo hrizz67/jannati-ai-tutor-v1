@@ -100,41 +100,191 @@ export function getAccessFeatureLabel(feature) {
   return PREMIUM_FEATURES[feature] || 'Ciri Premium';
 }
 
+function normalizeQuotaIdentity(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function getQuotaRecordAliases(item, day) {
+  const questionId = normalizeQuotaIdentity(item?.questionId);
+  const sessionId = normalizeQuotaIdentity(item?.sessionId);
+  const subjectId = normalizeQuotaIdentity(item?.subjectId || item?.subject);
+  const topicId = normalizeQuotaIdentity(item?.topicId || item?.topic);
+  const aliases = [];
+
+  if (sessionId && questionId) aliases.push(`session-question:${sessionId}:${questionId}`);
+  for (const [label, value] of [
+    ['event', item?.eventId],
+    ['attempt', item?.attemptId],
+    ['result', item?.resultId]
+  ]) {
+    const normalized = normalizeQuotaIdentity(value);
+    if (normalized) aliases.push(`${label}:${normalized}`);
+  }
+
+  // Older records have no session dimension. Collapse the same question within
+  // the same subject/topic/day so missing legacy metadata cannot overcharge a
+  // learner. Distinct old sessions may therefore be conservatively undercounted.
+  if (!sessionId && questionId) {
+    aliases.push(`legacy-question:${day}:${subjectId}:${topicId}:${questionId}`);
+  }
+
+  if (!questionId && item?.eventType === 'quiz-answer') {
+    const timestamp = String(item?.answeredAt || item?.date || item?.createdAt || '').trim();
+    const attemptNumber = Number.isFinite(Number(item?.attemptNumber))
+      ? Math.max(1, Math.floor(Number(item.attemptNumber)))
+      : 1;
+    aliases.push(`legacy-event:${day}:${subjectId}:${topicId}:${timestamp}:${attemptNumber}`);
+  }
+
+  return aliases;
+}
+
+function countIdentityGroups(records = []) {
+  const parents = records.map((_, index) => index);
+  const find = index => {
+    let root = index;
+    while (parents[root] !== root) root = parents[root];
+    while (parents[index] !== index) {
+      const parent = parents[index];
+      parents[index] = root;
+      index = parent;
+    }
+    return root;
+  };
+  const unite = (left, right) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parents[rightRoot] = leftRoot;
+  };
+  const firstIndexByAlias = new Map();
+
+  records.forEach((record, index) => {
+    record.aliases.forEach(alias => {
+      if (firstIndexByAlias.has(alias)) unite(index, firstIndexByAlias.get(alias));
+      else firstIndexByAlias.set(alias, index);
+    });
+  });
+
+  return new Set(records.map((_, index) => find(index))).size;
+}
+
 export function getDailyQuestionCount(profile = {}, adaptiveProfile = {}, dateKey = '', subjectId = '') {
   const day = getLocalDateKey(dateKey || new Date());
   if (!day) return 0;
-  const subject = String(subjectId || '').trim().toLowerCase();
+  const subject = normalizeQuotaIdentity(subjectId);
   const records = [
     ...(Array.isArray(profile.history) ? profile.history : []),
     ...(Array.isArray(adaptiveProfile.learningHistory) ? adaptiveProfile.learningHistory : [])
   ];
-  const seenAttempts = new Set();
-  return records.filter(item => {
+  const eligibleRecords = records.flatMap(item => {
     const timestamp = item?.answeredAt || item?.date || item?.createdAt;
-    const questionId = String(item?.questionId || '').trim();
-    const itemSubject = String(item?.subjectId || item?.subject || '').trim().toLowerCase();
+    const questionId = normalizeQuotaIdentity(item?.questionId);
+    const itemSubject = normalizeQuotaIdentity(item?.subjectId || item?.subject);
     if (!timestamp
       || getLocalDateKey(timestamp) !== day
       || (subject && itemSubject !== subject)
-      || (!questionId && item?.eventType !== 'quiz-answer')) return false;
+      || (!questionId && item?.eventType !== 'quiz-answer')) return [];
+    const aliases = getQuotaRecordAliases(item, day);
+    return aliases.length ? [{ aliases }] : [];
+  });
+  return countIdentityGroups(eligibleRecords);
+}
 
-    const parsedTimestamp = new Date(timestamp);
-    const exactTimestamp = String(timestamp).includes('T') && !Number.isNaN(parsedTimestamp.getTime())
-      ? parsedTimestamp.toISOString()
-      : '';
-    const attemptKey = item?.eventId
-      ? `event:${item.eventId}`
-      : item?.attemptId
-        ? `attempt:${item.attemptId}`
-        : item?.resultId
-          ? `result:${item.resultId}`
-          : item?.sessionId && questionId && exactTimestamp
-            ? `session:${item.sessionId}:${questionId}:${exactTimestamp}`
-            : questionId && itemSubject && item?.topicId && exactTimestamp
-              ? `question:${questionId}:${itemSubject}:${item.topicId}:${exactTimestamp}`
-              : '';
-    if (attemptKey && seenAttempts.has(attemptKey)) return false;
-    if (attemptKey) seenAttempts.add(attemptKey);
-    return true;
-  }).length;
+export function resolveQuestionQuotaSubjectId(question = {}, ...fallbacks) {
+  const candidates = [question?.subjectId, ...fallbacks];
+  for (const candidate of candidates) {
+    const normalized = normalizeQuotaIdentity(candidate?.id || candidate);
+    if (normalized && normalized !== 'adaptive') return normalized;
+  }
+  return '';
+}
+
+export function resolveSessionResumeSubjectId(session = {}, question = {}, ...fallbacks) {
+  return resolveQuestionQuotaSubjectId(
+    {},
+    session?.resumeSubjectId,
+    session?.quotaSubjectId,
+    question?.subjectId,
+    ...fallbacks
+  );
+}
+
+export function resolveQuestionResumeQuotaSubjectId(resume = {}) {
+  const questions = Array.isArray(resume?.questions) ? resume.questions : [];
+  const savedIndex = Number.isInteger(resume?.currentIndex)
+    ? resume.currentIndex
+    : Number.isInteger(resume?.questionIndex)
+      ? resume.questionIndex
+      : 0;
+  const savedQuestion = questions[savedIndex] || questions[0] || {};
+  return resolveSessionResumeSubjectId(
+    resume?.session,
+    savedQuestion,
+    resume?.session?.adaptivePracticeMetadata?.requestedSubjectId,
+    resume?.metadata?.adaptiveMetadata?.requestedSubjectId,
+    resume?.metadata?.requestedSubjectId,
+    resume?.subjectId
+  );
+}
+
+export function hasQuestionAttemptInSession(answers = [], questionId = '', sessionId = '', dateKey = '') {
+  const targetQuestionId = normalizeQuotaIdentity(questionId);
+  const targetSessionId = normalizeQuotaIdentity(sessionId);
+  const targetDay = dateKey ? getLocalDateKey(dateKey) : '';
+  if (!targetQuestionId) return false;
+  return (Array.isArray(answers) ? answers : []).some(attempt => {
+    const status = normalizeQuotaIdentity(attempt?.status);
+    const attemptSessionId = normalizeQuotaIdentity(attempt?.sessionId);
+    const attemptDay = targetDay ? getLocalDateKey(attempt?.answeredAt || attempt?.date || '') : '';
+    return normalizeQuotaIdentity(attempt?.questionId) === targetQuestionId
+      && ['wrong', 'almost', 'correct'].includes(status)
+      && (!targetSessionId || !attemptSessionId || attemptSessionId === targetSessionId)
+      && (!targetDay || attemptDay === targetDay);
+  });
+}
+
+export function canSubmitFreeQuestion({
+  dailyQuestionCount = 0,
+  questionId = '',
+  sessionId = '',
+  sessionAnswers = [],
+  dateKey = '',
+  limit = FREE_DAILY_QUESTION_LIMIT
+} = {}) {
+  const safeCount = Math.max(0, Number(dailyQuestionCount) || 0);
+  const safeLimit = Math.max(0, Number(limit) || 0);
+  return safeCount < safeLimit
+    || hasQuestionAttemptInSession(sessionAnswers, questionId, sessionId, dateKey);
+}
+
+export function canStartFreeQuestionSession({
+  dailyQuestionCount = 0,
+  restoreFromResume = false,
+  resumeExistingSession = false,
+  limit = FREE_DAILY_QUESTION_LIMIT
+} = {}) {
+  const safeCount = Math.max(0, Number(dailyQuestionCount) || 0);
+  const safeLimit = Math.max(0, Number(limit) || 0);
+  return safeCount < safeLimit || Boolean(restoreFromResume && resumeExistingSession);
+}
+
+export function canRestartQuestionResume({
+  dailyQuestionCount = 0,
+  isPremiumUser = false,
+  limit = FREE_DAILY_QUESTION_LIMIT
+} = {}) {
+  if (isPremiumUser) return true;
+  return canStartFreeQuestionSession({
+    dailyQuestionCount,
+    restoreFromResume: true,
+    resumeExistingSession: false,
+    limit
+  });
+}
+
+export function capQuestionCountToRemainingQuota(requestedCount, dailyQuestionCount, limit = FREE_DAILY_QUESTION_LIMIT) {
+  const requested = Math.max(0, Math.floor(Number(requestedCount) || 0));
+  const used = Math.max(0, Math.floor(Number(dailyQuestionCount) || 0));
+  const safeLimit = Math.max(0, Math.floor(Number(limit) || 0));
+  return Math.min(requested, Math.max(0, safeLimit - used));
 }

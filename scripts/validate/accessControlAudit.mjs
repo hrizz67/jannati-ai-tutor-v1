@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import {
   FREE_DAILY_QUESTION_LIMIT,
+  canSubmitFreeQuestion,
+  capQuestionCountToRemainingQuota,
   getAccessFeatureLabel,
   getAccessLabel,
   getDailyQuestionCount,
   isPremiumAccess,
-  resolveAuthoritativeAccess
+  resolveAuthoritativeAccess,
+  resolveQuestionQuotaSubjectId
 } from '../../src/services/accessControl.js';
 import fs from 'node:fs';
 
@@ -30,6 +33,23 @@ assert.equal(getDailyQuestionCount({}, {
     { questionId: 'math-1', subjectId: 'math', answeredAt: `${today}T02:00:00Z` }
   ]
 }, today, 'bm'), 1);
+assert.equal(getDailyQuestionCount({}, {
+  learningHistory: [
+    { sessionId: 'session-1', questionId: 'math-retry', subjectId: 'math', topicId: 'nombor', attemptNumber: 1, answeredAt: `${today}T01:00:00Z` },
+    { sessionId: 'session-1', questionId: 'math-retry', subjectId: 'math', topicId: 'nombor', attemptNumber: 2, answeredAt: `${today}T01:01:00Z` }
+  ]
+}, today, 'math'), 1, 'Retries of one session/question occurrence must consume one daily unit.');
+assert.equal(getDailyQuestionCount({}, {
+  learningHistory: [
+    { sessionId: 'session-1', questionId: 'math-repeat', subjectId: 'math', topicId: 'nombor', answeredAt: `${today}T01:00:00Z` },
+    { sessionId: 'session-2', questionId: 'math-repeat', subjectId: 'math', topicId: 'nombor', answeredAt: `${today}T01:01:00Z` }
+  ]
+}, today, 'math'), 2, 'The same question in different sessions may consume separate units.');
+const countedRetry = { sessionId: 'session-10', questionId: 'math-10', status: 'wrong', answeredAt: `${today}T02:00:00Z` };
+assert.equal(canSubmitFreeQuestion({ dailyQuestionCount: 10, questionId: 'math-10', sessionId: 'session-10', sessionAnswers: [countedRetry], dateKey: today }), true);
+assert.equal(canSubmitFreeQuestion({ dailyQuestionCount: 10, questionId: 'math-11', sessionId: 'session-10', sessionAnswers: [countedRetry], dateKey: today }), false);
+assert.equal(resolveQuestionQuotaSubjectId({ subjectId: 'math' }, 'adaptive', 'bm'), 'math');
+assert.equal(capQuestionCountToRemainingQuota(10, 7), 3);
 
 const matchingPremium = resolveAuthoritativeAccess('account-premium', {
   id: 'account-premium',
@@ -100,9 +120,16 @@ const integrityFunctionFixMigration = fs.readFileSync(new URL(integrityFunctionF
 const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/public/tables/profiles.sql', import.meta.url), 'utf8');
 const declarativeIntegrityFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/learning_data_v3.sql', import.meta.url), 'utf8');
 const integrityTableNames = ['learning_data_backups', 'learning_sync_operations', 'learner_profiles', 'learning_states', 'learning_events'];
+const startTopicSource = app.slice(app.indexOf('  function startTopic('), app.indexOf('\n  async function startResume('));
+const startAdaptivePracticeSource = app.slice(app.indexOf('  async function startAdaptivePractice('), app.indexOf('\n  function currentQuestion('));
+const checkAnswerSource = app.slice(app.indexOf('  function checkAnswer()'), app.indexOf('\n  function createCoachSnapshot('));
 for (const token of ['openTutorAi', 'openPremiumScreen', 'FREE_DAILY_QUESTION_LIMIT', 'onOpenUasa={() => openPremiumScreen']) {
   assert.ok(app.includes(token), `Missing access gate token: ${token}`);
 }
+assert.ok(startTopicSource.indexOf('const matchingResume') < startTopicSource.indexOf('const subjectDailyQuestionCount'), 'Normal quiz resumes must be checked before the fresh-session quota gate.');
+assert.ok(startAdaptivePracticeSource.indexOf('const practiceResume') < startAdaptivePracticeSource.indexOf('const subjectDailyQuestionCount'), 'Adaptive-practice resumes must be checked before the fresh-session quota gate.');
+assert.match(checkAnswerSource, /resolveQuestionQuotaSubjectId\(\s*question,/, 'Answer-time quota subject must prefer question.subjectId.');
+assert.match(checkAnswerSource, /canSubmitFreeQuestion\(\{/, 'Answer-time quota must distinguish a counted retry from a new question.');
 assert.ok(!app.includes("onOpenUasa={() => setScreen('uasa')}"));
 assert.ok(!app.includes("onStartBacaan={() => setScreen('reading')}"));
 assert.match(app, /usePremiumAccess\(\{ accountUser, accessProfile \}\)/, 'App access must use the isolated authoritative access hook.');
