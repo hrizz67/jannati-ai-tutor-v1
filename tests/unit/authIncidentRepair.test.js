@@ -11,7 +11,10 @@ import {
 import { getServiceWorkerUrl } from '../../src/services/serviceWorkerRegistration.js';
 
 const require = createRequire(import.meta.url);
-const { inspectProductionSupabaseBundle } = require('../../scripts/release/supabaseProductionGuard.cjs');
+const {
+  assertNoServiceCredentials,
+  inspectProductionSupabaseBundle
+} = require('../../scripts/release/supabaseProductionGuard.cjs');
 const appSource = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
 const connectivitySource = readFileSync(new URL('../../src/components/ConnectivityNotice.jsx', import.meta.url), 'utf8');
 
@@ -54,6 +57,15 @@ describe('account error copy', () => {
 });
 
 describe('production Supabase guard', () => {
+  it('allows explicit CI fixtures only through the credential-safety check', () => {
+    expect(() => assertNoServiceCredentials(
+      'https://ci-placeholder.supabase.co sb_publishable_ci-placeholder'
+    )).not.toThrow();
+    expect(() => inspectProductionSupabaseBundle(
+      'https://ci-placeholder.supabase.co sb_publishable_ci-placeholder'
+    )).toThrow(/placeholder/i);
+  });
+
   it('accepts one canonical HTTPS host and one browser publishable key', () => {
     const result = inspectProductionSupabaseBundle(validBundle);
     expect(result.hostname).toBe('abcdefghijklmnopqrst.supabase.co');
@@ -88,4 +100,3 @@ describe('service worker build revision', () => {
       .toBe('/jannati-ai-tutor-v1/service-worker.js?v=3.13.4-commit-abc123');
   });
 });
-

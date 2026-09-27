@@ -30,12 +30,16 @@ function findServiceRoleCredential(source) {
   return null;
 }
 
+function assertNoServiceCredentials(source) {
+  const serviceCredential = findServiceRoleCredential(String(source || ''));
+  if (serviceCredential) {
+    throw new Error(`Build contains a forbidden service credential (${serviceCredential}).`);
+  }
+}
+
 function inspectProductionSupabaseBundle(source) {
   const bundle = String(source || '');
-  const serviceCredential = findServiceRoleCredential(bundle);
-  if (serviceCredential) {
-    throw new Error(`Production bundle contains a forbidden service credential (${serviceCredential}).`);
-  }
+  assertNoServiceCredentials(bundle);
 
   const foundPlaceholder = PLACEHOLDER_VALUES.find(value => bundle.includes(value));
   if (foundPlaceholder) {
@@ -71,5 +75,6 @@ function inspectProductionSupabaseBundle(source) {
 module.exports = {
   CANONICAL_SUPABASE_HOST,
   PLACEHOLDER_VALUES,
+  assertNoServiceCredentials,
   inspectProductionSupabaseBundle
 };
