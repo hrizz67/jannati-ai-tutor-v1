@@ -10,7 +10,11 @@ import {
   resolveCommunicationSpeechLocale
 } from '../../src/ai/speech/communicationSpeech.js';
 import { cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
-import { isIOSWebKitBrowser } from '../../src/ai/speech/speechCapability.js';
+import {
+  isAndroidBrowser,
+  isIOSWebKitBrowser,
+  shouldRecoverMobileSpeechStartup
+} from '../../src/ai/speech/speechCapability.js';
 import { createReadingSpeechSession } from '../../src/ai/speech/speechSession.js';
 import {
   appendUniqueCommunicationResult,
@@ -84,6 +88,7 @@ beforeEach(() => {
 afterEach(() => {
   cancelActiveSpeechRecognition();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
   delete globalThis.window;
 });
 
@@ -107,6 +112,29 @@ describe('iOS WebKit browser detection', () => {
   it('leaves Android Chrome outside the iOS recovery policy', () => {
     const androidChrome = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
     expect(isIOSWebKitBrowser(androidChrome, 5)).toBe(false);
+  });
+});
+
+describe('Android mobile browser detection', () => {
+  const androidChrome = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
+
+  it.each([
+    ['Chrome', androidChrome],
+    ['Samsung Internet', 'Mozilla/5.0 (Linux; Android 14; SM-S921B) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36 SamsungBrowser/26.0'],
+    ['Edge', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36 EdgA/130.0']
+  ])('recognizes Android %s user agents', (_browser, userAgent) => {
+    expect(isAndroidBrowser(userAgent)).toBe(true);
+    expect(shouldRecoverMobileSpeechStartup(userAgent, 5)).toBe(true);
+  });
+
+  it('does not classify iPhone or desktop browsers as Android', () => {
+    const iPhone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
+    const desktopChrome = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36';
+
+    expect(isAndroidBrowser(iPhone)).toBe(false);
+    expect(isAndroidBrowser(desktopChrome)).toBe(false);
+    expect(shouldRecoverMobileSpeechStartup(iPhone, 5)).toBe(true);
+    expect(shouldRecoverMobileSpeechStartup(desktopChrome, 0)).toBe(false);
   });
 });
 
@@ -459,6 +487,124 @@ describe('mobile speech startup recovery', () => {
     startRetryDelayMs: 20,
     hardTimeoutMs: 1000
   };
+
+  function installAndroidNavigator() {
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+      maxTouchPoints: 5
+    });
+  }
+
+  it('accepts a normal Android startup without retrying or aborting', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started']);
+    const accepted = [];
+    const session = createReadingSpeechSession({
+      ...speechOptions,
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onComplete: result => accepted.push(result.transcript)
+    });
+
+    session.start();
+    const active = session.recognition;
+    active.emitResult('jawapan android');
+    active.emitEnd();
+    vi.runOnlyPendingTimers();
+
+    expect(Recognition.instances).toHaveLength(1);
+    expect(active.abortCalls).toBe(0);
+    expect(accepted).toEqual(['jawapan android']);
+  });
+
+  it('recovers Android Bacaan Q1 success then Q2 silent startup with one fresh instance', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started', 'silent', 'started']);
+    const accepted = [];
+    const options = {
+      ...speechOptions,
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onComplete: result => accepted.push(result.transcript)
+    };
+
+    const q1 = createReadingSpeechSession(options);
+    q1.start();
+    q1.recognition.emitResult('jawapan 1');
+    q1.recognition.emitEnd();
+
+    const q2 = createReadingSpeechSession(options);
+    q2.start();
+    const stalledQ2 = q2.recognition;
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    expect(stalledQ2.abortCalls).toBe(1);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recoveredQ2 = q2.recognition;
+    expect(recoveredQ2).not.toBe(stalledQ2);
+    recoveredQ2.emitResult('jawapan 2');
+    recoveredQ2.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(3);
+    expect(accepted).toEqual(['jawapan 1', 'jawapan 2']);
+    expect(recoveredQ2.abortCalls).toBe(0);
+  });
+
+  it('ends two silent Android startups with start-timeout and manual fallback', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['silent', 'silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:reading:0',
+      getCurrentContextKey: () => 'android:reading:0',
+      speechOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(Recognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toMatchObject({
+      errorCode: 'start-timeout',
+      manualFallbackAvailable: true
+    });
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(2);
+  });
+
+  it('does not retry Android permission-denied errors after startup begins', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:permission',
+      getCurrentContextKey: () => 'android:permission',
+      speechOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    session.recognition.emitError('not-allowed');
+    vi.runOnlyPendingTimers();
+
+    expect(Recognition.instances).toHaveLength(1);
+    expect(Recognition.instances[0].abortCalls).toBe(0);
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('not-allowed');
+  });
 
   it('fails a silent startup without leaving the recognition instance stuck', () => {
     vi.useFakeTimers();
