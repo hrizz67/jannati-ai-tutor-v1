@@ -187,6 +187,46 @@ describe('Bacaan recognition flow', () => {
   });
 });
 
+describe('Android transcript revision integrity', () => {
+  it('replaces revised result indexes and de-duplicates overlapping final fragments', () => {
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+      maxTouchPoints: 5
+    });
+    const transcripts = [];
+    const results = [];
+    const session = createReadingSpeechSession({
+      lang: 'ms-MY',
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onTranscript: transcript => transcripts.push(transcript),
+      onComplete: result => results.push(result)
+    });
+    const speechResult = transcript => {
+      const result = [{ transcript, confidence: 0.9 }];
+      result.isFinal = true;
+      return result;
+    };
+
+    session.start();
+    const recognition = session.recognition;
+    const first = speechResult('Saya membaca');
+    recognition.onresult?.({ resultIndex: 0, results: [first] });
+    recognition.onresult?.({
+      resultIndex: 1,
+      results: [first, speechResult('membaca buku')]
+    });
+    recognition.onresult?.({
+      resultIndex: 1,
+      results: [first, speechResult('membaca buku baharu')]
+    });
+    recognition.emitEnd();
+
+    expect(transcripts.at(-1)).toBe('Saya membaca buku baharu');
+    expect(results).toHaveLength(1);
+    expect(results[0].transcript).toBe('Saya membaca buku baharu');
+  });
+});
+
 describe('Bertutur review and confirmation flow', () => {
   it.each([
     ['bm', 'ms-MY', 'Saya makan nasi'],
