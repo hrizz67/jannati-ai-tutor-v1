@@ -135,6 +135,9 @@ export function createSpeechSession({
   continuous = false,
   interimResults = false,
   multiUtterance = false,
+  startTimeoutMs = 9000,
+  startRetryLimit = 0,
+  startRetryDelayMs = 250,
   silenceDelayMs = 9000,
   hardTimeoutMs = 9000,
   resultFactory = defaultResultFactory,
@@ -162,6 +165,8 @@ export function createSpeechSession({
   let seenResultKeys = new Set();
   let finalized = false;
   let emptyResultEmitted = false;
+  let startTimeoutId = null;
+  let retryTimeoutId = null;
   let silenceTimeoutId = null;
   let hardTimeoutId = null;
 
@@ -184,7 +189,15 @@ export function createSpeechSession({
     return safeTranscript;
   }
 
-  function clearTimers() {
+  function clearStartTimeout() {
+    if (startTimeoutId) {
+      clearTimeout(startTimeoutId);
+      startTimeoutId = null;
+    }
+  }
+
+  function clearAttemptTimers() {
+    clearStartTimeout();
     if (silenceTimeoutId) {
       clearTimeout(silenceTimeoutId);
       silenceTimeoutId = null;
@@ -192,6 +205,14 @@ export function createSpeechSession({
     if (hardTimeoutId) {
       clearTimeout(hardTimeoutId);
       hardTimeoutId = null;
+    }
+  }
+
+  function clearTimers() {
+    clearAttemptTimers();
+    if (retryTimeoutId) {
+      clearTimeout(retryTimeoutId);
+      retryTimeoutId = null;
     }
   }
 
@@ -339,6 +360,7 @@ export function createSpeechSession({
     } catch {
       // Ignore global cancellation errors.
     }
+    clearTimers();
     receivedResult = false;
     transcriptBuffer = '';
     finalFragments = [];
@@ -347,157 +369,206 @@ export function createSpeechSession({
     seenResultKeys = new Set();
     finalized = false;
     emptyResultEmitted = false;
-    const nextRecognition = new Recognition();
-    recognition = nextRecognition;
-    activeSpeechRecognitionCancel = cancel;
-    nextRecognition.lang = lang;
-    nextRecognition.interimResults = multiUtterance ? true : Boolean(interimResults);
-    nextRecognition.continuous = multiUtterance ? true : Boolean(continuous);
-    nextRecognition.maxAlternatives = 1;
 
-    nextRecognition.onstart = () => {
-      if (recognition !== nextRecognition || finalized) return;
-      emit({ status: 'listening', error: '' });
-      onListening?.(state);
-    };
-    nextRecognition.onresult = event => {
-      if (recognition !== nextRecognition || finalized) return;
-      if (multiUtterance) {
-        const results = event?.results ? Array.from(event.results) : [];
-        const safeStartIndex = Number.isInteger(event?.resultIndex) && event.resultIndex > 0 ? event.resultIndex : 0;
-        const eventFragmentKeys = new Set();
-        let hasTranscript = false;
-        results.slice(safeStartIndex).forEach((result, offset) => {
-          if (!result) return;
-          const absoluteIndex = safeStartIndex + offset;
-          const transcript = Array.from(result)
-            .map(alternative => typeof alternative?.transcript === 'string' ? alternative.transcript.trim() : '')
-            .filter(Boolean)
-            .join(' ')
-            .trim();
-          if (!transcript) return;
-          const fragmentKey = `${result.isFinal ? '1' : '0'}|${transcript}`;
-          if (eventFragmentKeys.has(fragmentKey)) return;
-          eventFragmentKeys.add(fragmentKey);
-          hasTranscript = true;
-          resultFragmentsByIndex.set(absoluteIndex, {
-            transcript,
-            isFinal: Boolean(result.isFinal)
-          });
-        });
-        if (!hasTranscript) return;
-        receivedResult = true;
-        const orderedFragments = [...resultFragmentsByIndex.entries()]
-          .sort(([leftIndex], [rightIndex]) => leftIndex - rightIndex)
-          .map(([, fragment]) => fragment);
-        finalFragments = orderedFragments.filter(fragment => fragment.isFinal).map(fragment => fragment.transcript);
-        interimTranscript = orderedFragments.filter(fragment => !fragment.isFinal).map(fragment => fragment.transcript).join(' ').trim();
-        transcriptBuffer = getBufferedTranscript();
-        emitTranscript(transcriptBuffer);
-        if (silenceTimeoutId) {
-          clearTimeout(silenceTimeoutId);
+    const startupTimeout = Math.max(0, Number(startTimeoutMs) || 0);
+    const retryDelay = Math.max(0, Number(startRetryDelayMs) || 0);
+    const maximumStartRetries = Math.min(1, Math.max(0, Math.trunc(Number(startRetryLimit) || 0)));
+    const recognitionHardTimeout = Math.max(0, Number(hardTimeoutMs) || 0);
+    let startAttemptCount = 0;
+
+    function acknowledgeLifecycleEvent(instance) {
+      if (recognition !== instance || finalized) return false;
+      clearStartTimeout();
+      return true;
+    }
+
+    function handleStartTimeout(stalledRecognition) {
+      if (recognition !== stalledRecognition || finalized) return;
+      clearAttemptTimers();
+      releaseRecognition(stalledRecognition, { abort: true });
+
+      if (startAttemptCount <= maximumStartRetries) {
+        activeSpeechRecognitionCancel = cancel;
+        retryTimeoutId = setTimeout(() => {
+          retryTimeoutId = null;
+          if (finalized) return;
+          startRecognitionAttempt();
+        }, retryDelay);
+        return;
+      }
+
+      emitEmptyResult(
+        'Mikrofon tidak berjaya dimulakan. Cuba sekali lagi atau gunakan jawapan manual.',
+        'start-timeout'
+      );
+    }
+
+    function startRecognitionAttempt() {
+      if (finalized) return state;
+      startAttemptCount += 1;
+      let nextRecognition = null;
+
+      try {
+        nextRecognition = new Recognition();
+        recognition = nextRecognition;
+        activeSpeechRecognitionCancel = cancel;
+        nextRecognition.lang = lang;
+        nextRecognition.interimResults = multiUtterance ? true : Boolean(interimResults);
+        nextRecognition.continuous = multiUtterance ? true : Boolean(continuous);
+        nextRecognition.maxAlternatives = 1;
+
+        nextRecognition.onstart = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          emit({ status: 'listening', error: '' });
+          onListening?.(state);
+        };
+        nextRecognition.onresult = event => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          if (multiUtterance) {
+            const results = event?.results ? Array.from(event.results) : [];
+            const safeStartIndex = Number.isInteger(event?.resultIndex) && event.resultIndex > 0 ? event.resultIndex : 0;
+            const eventFragmentKeys = new Set();
+            let hasTranscript = false;
+            results.slice(safeStartIndex).forEach((result, offset) => {
+              if (!result) return;
+              const absoluteIndex = safeStartIndex + offset;
+              const transcript = Array.from(result)
+                .map(alternative => typeof alternative?.transcript === 'string' ? alternative.transcript.trim() : '')
+                .filter(Boolean)
+                .join(' ')
+                .trim();
+              if (!transcript) return;
+              const fragmentKey = `${result.isFinal ? '1' : '0'}|${transcript}`;
+              if (eventFragmentKeys.has(fragmentKey)) return;
+              eventFragmentKeys.add(fragmentKey);
+              hasTranscript = true;
+              resultFragmentsByIndex.set(absoluteIndex, {
+                transcript,
+                isFinal: Boolean(result.isFinal)
+              });
+            });
+            if (!hasTranscript) return;
+            receivedResult = true;
+            const orderedFragments = [...resultFragmentsByIndex.entries()]
+              .sort(([leftIndex], [rightIndex]) => leftIndex - rightIndex)
+              .map(([, fragment]) => fragment);
+            finalFragments = orderedFragments.filter(fragment => fragment.isFinal).map(fragment => fragment.transcript);
+            interimTranscript = orderedFragments.filter(fragment => !fragment.isFinal).map(fragment => fragment.transcript).join(' ').trim();
+            transcriptBuffer = getBufferedTranscript();
+            emitTranscript(transcriptBuffer);
+            if (silenceTimeoutId) {
+              clearTimeout(silenceTimeoutId);
+            }
+            silenceTimeoutId = setTimeout(() => {
+              if (finalized || recognition !== nextRecognition) return;
+              const bufferedTranscript = getBufferedTranscript();
+              if (bufferedTranscript) {
+                try {
+                  nextRecognition.stop?.();
+                } catch {
+                  // Ignore silence-stop errors.
+                }
+                return;
+              }
+              emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
+            }, Math.max(0, Number(silenceDelayMs) || 0));
+            return;
+          }
+          const transcript = extractSpeechTranscript(event);
+          if (transcript) {
+            receivedResult = true;
+            transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
+            emit({ status: 'processing', transcript: transcriptBuffer });
+            emitTranscript(transcriptBuffer);
+            finalize(transcriptBuffer, 'completed');
+            return;
+          }
+          emit({ status: 'processing', transcript: transcriptBuffer });
+        };
+        nextRecognition.onerror = event => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          const error = event?.error || 'unknown_error';
+          if (error === 'aborted') {
+            emit({ status: 'idle', error: '' });
+            onError?.(error);
+            return;
+          }
+          if (error === 'no-speech' && !receivedResult) {
+            emitEmptyResult('Suara belum dapat dikesan. Cuba sekali lagi.', 'no-speech');
+            return;
+          }
+          if (error === 'audio-capture') {
+            emitEmptyResult('Mikrofon tidak dapat digunakan.', 'audio-capture');
+            return;
+          }
+          if (error === 'not-allowed' || error === 'service-not-allowed') {
+            emitEmptyResult('Kebenaran mikrofon diperlukan untuk latihan ini.', error);
+            return;
+          }
+          if (multiUtterance && transcriptBuffer) {
+            try {
+              nextRecognition.stop?.();
+            } catch {
+              // Ignore soft stop errors.
+            }
+            return;
+          }
+          emit({ status: 'error', error });
+          onError?.(error);
+        };
+        nextRecognition.onend = () => {
+          if (recognition !== nextRecognition) return;
+          clearStartTimeout();
+          clearTimers();
+          if (finalized) {
+            cleanup({ instance: nextRecognition });
+            return;
+          }
+          const bufferedTranscript = getBufferedTranscript();
+          if (bufferedTranscript) {
+            finalize(bufferedTranscript, 'completed');
+          } else if (!receivedResult || state.status === 'listening' || state.status === 'processing' || state.status === 'starting') {
+            emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
+          } else {
+            emit({ status: 'idle' });
+          }
+          cleanup({ instance: nextRecognition });
+        };
+
+        if (startupTimeout > 0) {
+          startTimeoutId = setTimeout(() => {
+            handleStartTimeout(nextRecognition);
+          }, startupTimeout);
         }
-        silenceTimeoutId = setTimeout(() => {
+        hardTimeoutId = setTimeout(() => {
           if (finalized || recognition !== nextRecognition) return;
           const bufferedTranscript = getBufferedTranscript();
           if (bufferedTranscript) {
             try {
               nextRecognition.stop?.();
             } catch {
-              // Ignore silence-stop errors.
+              // Ignore timeout stop errors.
             }
             return;
           }
-          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
-        }, Math.max(0, Number(silenceDelayMs) || 0));
-        return;
-      }
-      const transcript = extractSpeechTranscript(event);
-      if (transcript) {
-        receivedResult = true;
-        transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
-        emit({ status: 'processing', transcript: transcriptBuffer });
-        emitTranscript(transcriptBuffer);
-        finalize(transcriptBuffer, 'completed');
-        return;
-      }
-      emit({ status: 'processing', transcript: transcriptBuffer });
-    };
-    nextRecognition.onerror = event => {
-      if (recognition !== nextRecognition || finalized) return;
-      const error = event?.error || 'unknown_error';
-      if (error === 'aborted') {
-        emit({ status: 'idle', error: '' });
-        onError?.(error);
-        return;
-      }
-      if (error === 'no-speech' && !receivedResult) {
-        emitEmptyResult('Suara belum dapat dikesan. Cuba sekali lagi.', 'no-speech');
-        return;
-      }
-      if (error === 'audio-capture') {
-        emitEmptyResult('Mikrofon tidak dapat digunakan.', 'audio-capture');
-        return;
-      }
-      if (error === 'not-allowed' || error === 'service-not-allowed') {
-        emitEmptyResult('Kebenaran mikrofon diperlukan untuk latihan ini.', error);
-        return;
-      }
-      if (multiUtterance && transcriptBuffer) {
-        try {
-          nextRecognition.stop?.();
-        } catch {
-          // Ignore soft stop errors.
-        }
-        return;
-      }
-      emit({ status: 'error', error });
-      onError?.(error);
-    };
-    nextRecognition.onend = () => {
-      if (recognition !== nextRecognition) return;
-      clearTimers();
-      if (finalized) {
-        cleanup({ instance: nextRecognition });
-        return;
-      }
-      const bufferedTranscript = getBufferedTranscript();
-      if (bufferedTranscript) {
-        finalize(bufferedTranscript, 'completed');
-      } else if (!receivedResult || state.status === 'listening' || state.status === 'processing') {
-        emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
-      } else {
-        emit({ status: 'idle' });
-      }
-      cleanup({ instance: nextRecognition });
-    };
-
-    try {
-      hardTimeoutId = setTimeout(() => {
-        if (finalized) return;
-        const bufferedTranscript = getBufferedTranscript();
-        if (bufferedTranscript) {
-          try {
-            recognition?.stop?.();
-          } catch {
-            // Ignore timeout stop errors.
+          if (state.status === 'listening' && !receivedResult) {
+            emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
           }
-          return;
-        }
-        if (state.status === 'listening' && !receivedResult) {
-          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
-        }
-      }, Math.max(0, Number(hardTimeoutMs) || 0));
-      nextRecognition.start();
-      return state;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'start_failed';
-      clearTimers();
-      emit({ status: 'idle', error: message });
-      onError?.(message);
-      cleanup({ abort: true, instance: nextRecognition });
-      return state;
+        }, recognitionHardTimeout);
+        emit({ status: 'starting', error: '' });
+        nextRecognition.start();
+        return state;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'start_failed';
+        clearAttemptTimers();
+        emit({ status: 'idle', error: message });
+        onError?.(message);
+        cleanup({ abort: true, instance: nextRecognition });
+        return state;
+      }
     }
+
+    return startRecognitionAttempt();
   }
 
   function getState() {

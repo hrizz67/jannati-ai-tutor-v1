@@ -10,6 +10,11 @@ import {
   resolveCommunicationSpeechLocale
 } from '../../src/ai/speech/communicationSpeech.js';
 import { cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
+import {
+  isAndroidBrowser,
+  isIOSWebKitBrowser,
+  shouldRecoverMobileSpeechStartup
+} from '../../src/ai/speech/speechCapability.js';
 import { createReadingSpeechSession } from '../../src/ai/speech/speechSession.js';
 import {
   appendUniqueCommunicationResult,
@@ -83,7 +88,54 @@ beforeEach(() => {
 afterEach(() => {
   cancelActiveSpeechRecognition();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
   delete globalThis.window;
+});
+
+describe('iOS WebKit browser detection', () => {
+  it.each([
+    ['Safari', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'],
+    ['Chrome', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 CriOS/130.0 Mobile/15E148 Safari/604.1'],
+    ['Firefox', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 FxiOS/131.0 Mobile/15E148 Safari/605.1.15'],
+    ['Edge', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 EdgiOS/130.0 Mobile/15E148 Safari/605.1.15'],
+    ['Opera', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 OPiOS/5.0 Mobile/15E148 Safari/9537.53']
+  ])('treats iPhone %s as the iOS WebKit family', (_browser, userAgent) => {
+    expect(isIOSWebKitBrowser(userAgent, 5)).toBe(true);
+  });
+
+  it('recognizes iPad desktop-mode user agents without classifying desktop Safari', () => {
+    const desktopSafari = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15';
+    expect(isIOSWebKitBrowser(desktopSafari, 0)).toBe(false);
+    expect(isIOSWebKitBrowser(desktopSafari, 5)).toBe(true);
+  });
+
+  it('leaves Android Chrome outside the iOS recovery policy', () => {
+    const androidChrome = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
+    expect(isIOSWebKitBrowser(androidChrome, 5)).toBe(false);
+  });
+});
+
+describe('Android mobile browser detection', () => {
+  const androidChrome = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
+
+  it.each([
+    ['Chrome', androidChrome],
+    ['Samsung Internet', 'Mozilla/5.0 (Linux; Android 14; SM-S921B) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36 SamsungBrowser/26.0'],
+    ['Edge', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36 EdgA/130.0']
+  ])('recognizes Android %s user agents', (_browser, userAgent) => {
+    expect(isAndroidBrowser(userAgent)).toBe(true);
+    expect(shouldRecoverMobileSpeechStartup(userAgent, 5)).toBe(true);
+  });
+
+  it('does not classify iPhone or desktop browsers as Android', () => {
+    const iPhone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
+    const desktopChrome = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36';
+
+    expect(isAndroidBrowser(iPhone)).toBe(false);
+    expect(isAndroidBrowser(desktopChrome)).toBe(false);
+    expect(shouldRecoverMobileSpeechStartup(iPhone, 5)).toBe(true);
+    expect(shouldRecoverMobileSpeechStartup(desktopChrome, 0)).toBe(false);
+  });
 });
 
 describe('communication speech locale integrity', () => {
@@ -132,6 +184,46 @@ describe('Bacaan recognition flow', () => {
     expect(transcripts.at(-1)).toBe(spokenText);
     expect(results).toHaveLength(1);
     expect(results[0].transcript).toBe(spokenText);
+  });
+});
+
+describe('Android transcript revision integrity', () => {
+  it('replaces revised result indexes and de-duplicates overlapping final fragments', () => {
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+      maxTouchPoints: 5
+    });
+    const transcripts = [];
+    const results = [];
+    const session = createReadingSpeechSession({
+      lang: 'ms-MY',
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onTranscript: transcript => transcripts.push(transcript),
+      onComplete: result => results.push(result)
+    });
+    const speechResult = transcript => {
+      const result = [{ transcript, confidence: 0.9 }];
+      result.isFinal = true;
+      return result;
+    };
+
+    session.start();
+    const recognition = session.recognition;
+    const first = speechResult('Saya membaca');
+    recognition.onresult?.({ resultIndex: 0, results: [first] });
+    recognition.onresult?.({
+      resultIndex: 1,
+      results: [first, speechResult('membaca buku')]
+    });
+    recognition.onresult?.({
+      resultIndex: 1,
+      results: [first, speechResult('membaca buku baharu')]
+    });
+    recognition.emitEnd();
+
+    expect(transcripts.at(-1)).toBe('Saya membaca buku baharu');
+    expect(results).toHaveLength(1);
+    expect(results[0].transcript).toBe('Saya membaca buku baharu');
   });
 });
 
@@ -405,6 +497,292 @@ describe('session isolation and retry', () => {
     runs[1].options.onComplete({ transcript: 'fresh result' });
     expect(runs[0].cancelled).toBe(true);
     expect(accepted).toEqual(['fresh result']);
+  });
+});
+
+describe('mobile speech startup recovery', () => {
+  function installSequencedRecognition(startBehaviors = []) {
+    class SequencedSpeechRecognition extends FakeSpeechRecognition {
+      static instances = [];
+      static startBehaviors = [...startBehaviors];
+
+      constructor() {
+        super();
+        SequencedSpeechRecognition.instances.push(this);
+      }
+
+      start() {
+        this.startCalls += 1;
+        const behavior = SequencedSpeechRecognition.startBehaviors.shift() || 'started';
+        if (behavior === 'started') this.onstart?.();
+      }
+    }
+
+    globalThis.window.SpeechRecognition = SequencedSpeechRecognition;
+    return SequencedSpeechRecognition;
+  }
+
+  const speechOptions = {
+    startTimeoutMs: 40,
+    startRetryDelayMs: 20,
+    hardTimeoutMs: 1000
+  };
+
+  function installAndroidNavigator() {
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+      maxTouchPoints: 5
+    });
+  }
+
+  it('accepts a normal Android startup without retrying or aborting', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started']);
+    const accepted = [];
+    const session = createReadingSpeechSession({
+      ...speechOptions,
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onComplete: result => accepted.push(result.transcript)
+    });
+
+    session.start();
+    const active = session.recognition;
+    active.emitResult('jawapan android');
+    active.emitEnd();
+    vi.runOnlyPendingTimers();
+
+    expect(Recognition.instances).toHaveLength(1);
+    expect(active.abortCalls).toBe(0);
+    expect(accepted).toEqual(['jawapan android']);
+  });
+
+  it('recovers Android Bacaan Q1 success then Q2 silent startup with one fresh instance', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started', 'silent', 'started']);
+    const accepted = [];
+    const options = {
+      ...speechOptions,
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onComplete: result => accepted.push(result.transcript)
+    };
+
+    const q1 = createReadingSpeechSession(options);
+    q1.start();
+    q1.recognition.emitResult('jawapan 1');
+    q1.recognition.emitEnd();
+
+    const q2 = createReadingSpeechSession(options);
+    q2.start();
+    const stalledQ2 = q2.recognition;
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    expect(stalledQ2.abortCalls).toBe(1);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recoveredQ2 = q2.recognition;
+    expect(recoveredQ2).not.toBe(stalledQ2);
+    recoveredQ2.emitResult('jawapan 2');
+    recoveredQ2.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(3);
+    expect(accepted).toEqual(['jawapan 1', 'jawapan 2']);
+    expect(recoveredQ2.abortCalls).toBe(0);
+  });
+
+  it('ends two silent Android startups with start-timeout and manual fallback', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['silent', 'silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:reading:0',
+      getCurrentContextKey: () => 'android:reading:0',
+      speechOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(Recognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toMatchObject({
+      errorCode: 'start-timeout',
+      manualFallbackAvailable: true
+    });
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(2);
+  });
+
+  it('does not retry Android permission-denied errors after startup begins', () => {
+    vi.useFakeTimers();
+    installAndroidNavigator();
+    const Recognition = installSequencedRecognition(['started']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:permission',
+      getCurrentContextKey: () => 'android:permission',
+      speechOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    session.recognition.emitError('not-allowed');
+    vi.runOnlyPendingTimers();
+
+    expect(Recognition.instances).toHaveLength(1);
+    expect(Recognition.instances[0].abortCalls).toBe(0);
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('not-allowed');
+  });
+
+  it('fails a silent startup without leaving the recognition instance stuck', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:0',
+      getCurrentContextKey: () => 'reading:bm:0',
+      speechOptions: { ...speechOptions, startRetryLimit: 0 },
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    expect(stalled.startCalls).toBe(1);
+
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(stalled.abortCalls).toBe(1);
+    expect(session.recognition).toBeNull();
+    expect(session.getState()?.status).toBe('empty');
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('start-timeout');
+    expect(failures[0].manualFallbackAvailable).toBe(true);
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(1);
+    expect(stalled.abortCalls).toBe(1);
+    expect(failures).toHaveLength(1);
+  });
+
+  it('recovers Bacaan Q1 success then Q2 silent startup with one fresh instance', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['started', 'silent', 'started']);
+    const accepted = [];
+
+    const q1 = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:0',
+      getCurrentContextKey: () => 'reading:bm:0',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onResult: result => accepted.push(result.transcript)
+    });
+    q1.start();
+    q1.recognition.emitResult('jawapan 1');
+    q1.recognition.emitEnd();
+
+    const q2 = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:1',
+      getCurrentContextKey: () => 'reading:bm:1',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onResult: result => accepted.push(result.transcript)
+    });
+    q2.start();
+    const stalledQ2 = q2.recognition;
+
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    expect(stalledQ2.abortCalls).toBe(1);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recoveredQ2 = q2.recognition;
+    expect(recoveredQ2).not.toBe(stalledQ2);
+    recoveredQ2.emitResult('jawapan 2');
+    recoveredQ2.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(3);
+    expect(accepted).toEqual(['jawapan 1', 'jawapan 2']);
+    expect(recoveredQ2.abortCalls).toBe(0);
+    expect(q2.recognition).toBeNull();
+  });
+
+  it('recovers Bertutur from one silent startup before offering the transcript candidate', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent', 'started']);
+    const candidates = [];
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:1',
+      getCurrentContextKey: () => 'speaking:english:intro:1',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'captured', transcript }),
+      onCandidate: review => candidates.push(review.candidate.text),
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recovered = session.recognition;
+    recovered.emitResult('I read a book');
+    recovered.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(stalled.abortCalls).toBe(1);
+    expect(recovered.abortCalls).toBe(0);
+    expect(candidates).toEqual(['I read a book']);
+    expect(failures).toEqual([]);
+  });
+
+  it('stops after one Bertutur restart and exposes manual fallback when both startups stall', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent', 'silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:2',
+      getCurrentContextKey: () => 'speaking:english:intro:2',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(Recognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('start-timeout');
+    expect(failures[0].manualFallbackAvailable).toBe(true);
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(2);
+    expect(failures).toHaveLength(1);
   });
 });
 

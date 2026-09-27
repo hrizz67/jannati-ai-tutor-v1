@@ -25,6 +25,8 @@ const [
   serviceWorker,
   manifestSource,
   voiceButton,
+  speechCapability,
+  speechSession,
   protocol
 ] = await Promise.all([
   read('index.html'),
@@ -37,6 +39,8 @@ const [
   read('public/service-worker.js'),
   read('public/manifest.webmanifest'),
   read('src/components/VoiceButton.jsx'),
+  read('src/ai/speech/speechCapability.js'),
+  read('src/ai/speech/speechSession.js'),
   read('docs/PHYSICAL_DEVICE_ACCEPTANCE_V1_PROTOCOL.md')
 ]);
 
@@ -107,8 +111,11 @@ check('offline-cloud-deferral', () => {
 check('speech-and-audio-fallback', () => {
   assertIncludes(voiceButton, 'supportsVoice()', 'Audio controls must detect device voice support.');
   assertIncludes(voiceButton, 'Voice bahasa ini tiada pada peranti.', 'Unavailable device voice needs a visible fallback.');
-  assertIncludes(app, 'isIOSSafari', 'iOS Safari speech handling is missing.');
-  assertIncludes(app, 'Jawapan suara tidak tersedia. Taip jawapan kamu.', 'Safari speech failure must expose typed-answer fallback.');
+  assertIncludes(app, 'isIOSWebKit', 'iOS WebKit-family no-result handling is missing.');
+  assertIncludes(speechCapability, 'isAndroidBrowser', 'Android speech capability detection is missing.');
+  assertIncludes(speechSession, 'shouldRecoverMobileSpeechStartup', 'Shared mobile speech startup recovery policy is missing.');
+  assertIncludes(speechSession, 'startRetryLimit: recoverMobileStartup ? 1 : 0', 'Mobile startup recovery must stay bounded to one retry.');
+  assertIncludes(app, 'Jawapan suara tidak tersedia. Taip jawapan kamu.', 'iOS speech failure must expose typed-answer fallback.');
   assertIncludes(app, 'Taip teks bacaan kamu di bawah.', 'Unsupported recognition must retain typed reading input.');
 });
 
