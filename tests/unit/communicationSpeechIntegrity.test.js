@@ -408,6 +408,174 @@ describe('session isolation and retry', () => {
   });
 });
 
+describe('mobile speech startup recovery', () => {
+  function installSequencedRecognition(startBehaviors = []) {
+    class SequencedSpeechRecognition extends FakeSpeechRecognition {
+      static instances = [];
+      static startBehaviors = [...startBehaviors];
+
+      constructor() {
+        super();
+        SequencedSpeechRecognition.instances.push(this);
+      }
+
+      start() {
+        this.startCalls += 1;
+        const behavior = SequencedSpeechRecognition.startBehaviors.shift() || 'started';
+        if (behavior === 'started') this.onstart?.();
+      }
+    }
+
+    globalThis.window.SpeechRecognition = SequencedSpeechRecognition;
+    return SequencedSpeechRecognition;
+  }
+
+  const speechOptions = {
+    startTimeoutMs: 40,
+    startRetryDelayMs: 20,
+    hardTimeoutMs: 1000
+  };
+
+  it('fails a silent startup without leaving the recognition instance stuck', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:0',
+      getCurrentContextKey: () => 'reading:bm:0',
+      speechOptions: { ...speechOptions, startRetryLimit: 0 },
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    expect(stalled.startCalls).toBe(1);
+
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(stalled.abortCalls).toBe(1);
+    expect(session.recognition).toBeNull();
+    expect(session.getState()?.status).toBe('empty');
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('start-timeout');
+    expect(failures[0].manualFallbackAvailable).toBe(true);
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(1);
+    expect(stalled.abortCalls).toBe(1);
+    expect(failures).toHaveLength(1);
+  });
+
+  it('recovers Bacaan Q1 success then Q2 silent startup with one fresh instance', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['started', 'silent', 'started']);
+    const accepted = [];
+
+    const q1 = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:0',
+      getCurrentContextKey: () => 'reading:bm:0',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onResult: result => accepted.push(result.transcript)
+    });
+    q1.start();
+    q1.recognition.emitResult('jawapan 1');
+    q1.recognition.emitEnd();
+
+    const q2 = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'reading:bm:1',
+      getCurrentContextKey: () => 'reading:bm:1',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onResult: result => accepted.push(result.transcript)
+    });
+    q2.start();
+    const stalledQ2 = q2.recognition;
+
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    expect(stalledQ2.abortCalls).toBe(1);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recoveredQ2 = q2.recognition;
+    expect(recoveredQ2).not.toBe(stalledQ2);
+    recoveredQ2.emitResult('jawapan 2');
+    recoveredQ2.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(3);
+    expect(accepted).toEqual(['jawapan 1', 'jawapan 2']);
+    expect(recoveredQ2.abortCalls).toBe(0);
+    expect(q2.recognition).toBeNull();
+  });
+
+  it('recovers Bertutur from one silent startup before offering the transcript candidate', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent', 'started']);
+    const candidates = [];
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:1',
+      getCurrentContextKey: () => 'speaking:english:intro:1',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      resultFactory: transcript => ({ status: 'captured', transcript }),
+      onCandidate: review => candidates.push(review.candidate.text),
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+
+    const recovered = session.recognition;
+    recovered.emitResult('I read a book');
+    recovered.emitEnd();
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(stalled.abortCalls).toBe(1);
+    expect(recovered.abortCalls).toBe(0);
+    expect(candidates).toEqual(['I read a book']);
+    expect(failures).toEqual([]);
+  });
+
+  it('stops after one Bertutur restart and exposes manual fallback when both startups stall', () => {
+    vi.useFakeTimers();
+    const Recognition = installSequencedRecognition(['silent', 'silent']);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:2',
+      getCurrentContextKey: () => 'speaking:english:intro:2',
+      speechOptions: { ...speechOptions, startRetryLimit: 1 },
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+    vi.advanceTimersByTime(speechOptions.startRetryDelayMs);
+    vi.advanceTimersByTime(speechOptions.startTimeoutMs);
+
+    expect(Recognition.instances).toHaveLength(2);
+    expect(Recognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('start-timeout');
+    expect(failures[0].manualFallbackAvailable).toBe(true);
+
+    vi.runOnlyPendingTimers();
+    expect(Recognition.instances).toHaveLength(2);
+    expect(failures).toHaveLength(1);
+  });
+});
+
 describe('Mendengar TTS locale and failure integrity', () => {
   it.each([
     ['BM', 'ms-MY'],
