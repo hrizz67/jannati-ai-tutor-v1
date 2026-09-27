@@ -20,6 +20,7 @@ const ciWorkflow = read('.github/workflows/ci.yml');
 const releaseRunner = read('scripts/release/release.js');
 const versionGenerator = read('scripts/release/generateVersion.js');
 const smokeTest = read('scripts/release/smokeTestDeployment.mjs');
+const buildVerifier = read('scripts/release/verifyBuildOutput.js');
 
 assert.equal(assertVersionAlignment().version, packageJson.version, 'Package and lock versions must align.');
 assert.equal(assertVersionAlignment({ tag: metadata.expectedTag }).version, metadata.version, 'Expected release tag must pass.');
@@ -61,7 +62,13 @@ assert.match(deployWorkflow, /npm run release:smoke/, 'Deploy workflow must smok
 assert.match(deployWorkflow, /npm run release:build-check/, 'Deploy workflow must verify local build assets.');
 assert.match(deployWorkflow, /secrets\.VITE_SUPABASE_URL/, 'Deploy must receive the production Supabase URL from GitHub Secrets.');
 assert.match(deployWorkflow, /secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Deploy must receive the production Supabase key from GitHub Secrets.');
+assert.match(ciWorkflow, /secrets\.VITE_SUPABASE_URL/, 'CI must build with the production Supabase URL secret.');
+assert.match(ciWorkflow, /secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'CI must build with the production Supabase publishable key secret.');
+assert.doesNotMatch(ciWorkflow, /ci-placeholder\.supabase\.co|sb_publishable_ci-placeholder/, 'CI must not produce a deployable placeholder artifact.');
 assert.match(smokeTest, /assetUrl\.pathname !== expectedAssetPath/, 'Smoke test must reject a stale production entry hash.');
+assert.match(smokeTest, /\/auth\/v1\/health/, 'Smoke test must verify safe Supabase Auth reachability.');
+assert.match(smokeTest, /inspectProductionSupabaseBundle/, 'Smoke test must reject placeholder or secret-bearing production bundles.');
+assert.match(buildVerifier, /inspectProductionSupabaseBundle/, 'Production build verification must inspect the entry bundle configuration.');
 assert.match(ciWorkflow, /npm run release:check/, 'CI must validate release metadata.');
 assert.doesNotMatch(versionGenerator, /2\.0\.0-alpha\.1/, 'Version generation must not contain the retired hardcoded version.');
 

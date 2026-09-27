@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { ROOT_DIR, getReleaseMetadata } = require('./releaseMetadata');
+const { inspectProductionSupabaseBundle } = require('./supabaseProductionGuard.cjs');
 
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const DIST_INDEX_PATH = path.join(DIST_DIR, 'index.html');
+const DIST_ASSETS_DIR = path.join(DIST_DIR, 'assets');
 
 function extractAssetReferences(html) {
   return [...String(html).matchAll(/(?:src|href)=["']([^"']+\/assets\/[^"']+)["']/gi)]
@@ -44,8 +46,15 @@ function verifyBuildOutput() {
   });
   if (missing.length) throw new Error(`dist/index.html references missing assets: ${missing.join(', ')}`);
 
+  const javascriptSource = fs.readdirSync(DIST_ASSETS_DIR)
+    .filter(file => file.endsWith('.js'))
+    .map(file => fs.readFileSync(path.join(DIST_ASSETS_DIR, file), 'utf8'))
+    .join('\n');
+  const supabase = inspectProductionSupabaseBundle(javascriptSource);
+
   console.log(`Build output PASS: ${assets.length} referenced asset(s), entry ${entryAsset}.`);
-  return { assets, entryAsset };
+  console.log(`Production Supabase configuration PASS: ${supabase.hostname}.`);
+  return { assets, entryAsset, supabaseHost: supabase.hostname };
 }
 
 if (require.main === module) {

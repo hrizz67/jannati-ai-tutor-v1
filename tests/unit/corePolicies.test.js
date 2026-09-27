@@ -95,8 +95,10 @@ describe('student identity and normalized analytics', () => {
 });
 
 describe('service worker cache version', () => {
-  it('derives the registration URL from the application version', () => {
+  it('derives the registration URL from the application version and optional build revision', () => {
     expect(getServiceWorkerUrl('/jannati-ai-tutor-v1/', '3.10.0'))
       .toBe('/jannati-ai-tutor-v1/service-worker.js?v=3.10.0');
+    expect(getServiceWorkerUrl('/jannati-ai-tutor-v1/', '3.10.0', 'build-42'))
+      .toBe('/jannati-ai-tutor-v1/service-worker.js?v=3.10.0-build-42');
   });
 });
