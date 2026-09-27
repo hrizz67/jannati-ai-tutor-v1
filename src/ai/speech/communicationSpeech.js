@@ -39,6 +39,8 @@ export function getCommunicationSpeechErrorMessage(errorCode = '') {
       return 'Bahasa suara ini tidak disokong oleh pelayar atau peranti. Cuba pelayar lain atau taip jawapan secara manual.';
     case 'bad-grammar':
       return 'Perkhidmatan pengecaman tidak dapat memproses bahasa ini. Cuba semula atau taip jawapan secara manual.';
+    case 'start-timeout':
+      return 'Mikrofon tidak berjaya dimulakan pada peranti ini. Cuba sekali lagi atau taip jawapan secara manual.';
     case 'speech-unavailable':
     case 'start-failed':
       return 'Pengecaman suara tidak tersedia pada pelayar ini. Anda masih boleh menaip jawapan secara manual.';
@@ -122,6 +124,7 @@ export function createCommunicationSpeechSession({
   getCurrentContextKey = null,
   resultFactory = undefined,
   sessionFactory = createReadingSpeechSession,
+  speechOptions = null,
   onChange = null,
   onTranscript = null,
   onResult = null,
@@ -148,6 +151,7 @@ export function createCommunicationSpeechSession({
   };
 
   session = sessionFactory({
+    ...(speechOptions && typeof speechOptions === 'object' ? speechOptions : {}),
     lang: speechLang,
     resultFactory,
     onChange(nextState) {

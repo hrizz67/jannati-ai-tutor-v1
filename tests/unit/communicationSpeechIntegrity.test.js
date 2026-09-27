@@ -10,6 +10,7 @@ import {
   resolveCommunicationSpeechLocale
 } from '../../src/ai/speech/communicationSpeech.js';
 import { cancelActiveSpeechRecognition } from '../../src/ai/speech/speechEngine.js';
+import { isIOSWebKitBrowser } from '../../src/ai/speech/speechCapability.js';
 import { createReadingSpeechSession } from '../../src/ai/speech/speechSession.js';
 import {
   appendUniqueCommunicationResult,
@@ -84,6 +85,29 @@ afterEach(() => {
   cancelActiveSpeechRecognition();
   vi.useRealTimers();
   delete globalThis.window;
+});
+
+describe('iOS WebKit browser detection', () => {
+  it.each([
+    ['Safari', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'],
+    ['Chrome', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 CriOS/130.0 Mobile/15E148 Safari/604.1'],
+    ['Firefox', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 FxiOS/131.0 Mobile/15E148 Safari/605.1.15'],
+    ['Edge', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 EdgiOS/130.0 Mobile/15E148 Safari/605.1.15'],
+    ['Opera', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 OPiOS/5.0 Mobile/15E148 Safari/9537.53']
+  ])('treats iPhone %s as the iOS WebKit family', (_browser, userAgent) => {
+    expect(isIOSWebKitBrowser(userAgent, 5)).toBe(true);
+  });
+
+  it('recognizes iPad desktop-mode user agents without classifying desktop Safari', () => {
+    const desktopSafari = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15';
+    expect(isIOSWebKitBrowser(desktopSafari, 0)).toBe(false);
+    expect(isIOSWebKitBrowser(desktopSafari, 5)).toBe(true);
+  });
+
+  it('leaves Android Chrome outside the iOS recovery policy', () => {
+    const androidChrome = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
+    expect(isIOSWebKitBrowser(androidChrome, 5)).toBe(false);
+  });
 });
 
 describe('communication speech locale integrity', () => {
