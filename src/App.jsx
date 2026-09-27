@@ -5222,11 +5222,11 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   }, [question]);
 
   useEffect(() => () => {
-    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current?.cancel?.('component-unmount');
   }, []);
 
   useEffect(() => {
-    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current?.cancel?.('context-changed');
     setSpeechState('idle');
     setSpeechTranscript('');
     setSpeechResult(null);
@@ -5235,7 +5235,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   function handleSpeechStart() {
     if (!speechSupported || !speechAnswer) return;
     stopVoice();
-    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current?.cancel?.('restart');
     const session = createSpeechSession({
       expectedAnswer: speechAnswer,
       acceptedAnswers: getAcceptedAnswers(question),
@@ -5588,8 +5588,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     });
   };
 
-  const clearBacaanSession = () => {
-    speechSessionRef.current?.cancel?.();
+  const clearBacaanSession = (reason = '') => {
+    speechSessionRef.current?.cancel?.(reason);
     speechSessionRef.current = null;
     setMendengar(false);
   };
@@ -5619,7 +5619,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   useEffect(() => {
     if (passageChangeRef.current === passageId) return;
     passageChangeRef.current = passageId;
-    clearBacaanSession();
+    clearBacaanSession('context-changed');
     setSessionIndex(Number.isInteger(sessionIndexes[passageId]) ? sessionIndexes[passageId] : 0);
     resetBacaanState();
   }, [passageId]);
@@ -5676,13 +5676,13 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   }, [passageId, sessionIndex, sessionIndexes, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, scoreHistory, passage.id, passage.title]);
 
   useEffect(() => () => {
-    clearBacaanSession();
+    clearBacaanSession('component-unmount');
   }, []);
 
   function startMendengar() {
     if (!recognitionSupported) return;
     stopVoice();
-    clearBacaanSession();
+    clearBacaanSession('restart');
     resetBacaanState();
     const recognitionContextKey = bacaanContextKey;
     const session = createCommunicationSpeechSession({
@@ -5996,9 +5996,9 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setSpeechCandidate(null);
   };
 
-  const stopRecognitionSilently = () => {
+  const stopRecognitionSilently = (reason = '') => {
     setMendengar(false);
-    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current?.cancel?.(reason);
     speechSessionRef.current = null;
   };
 
@@ -6009,7 +6009,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   useEffect(() => {
     if (modeResetRef.current.setId === setId && modeResetRef.current.mode === mode) return;
     modeResetRef.current = { setId, mode };
-    stopRecognitionSilently();
+    stopRecognitionSilently('context-changed');
     setTranscript('');
     setResult(null);
     setSpeechCandidate(null);
@@ -6021,7 +6021,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       languageInitializedRef.current = true;
       return;
     }
-    stopRecognitionSilently();
+    stopRecognitionSilently('context-changed');
     setSpeechCandidate(null);
     setInterimTranscript('');
     setTranscript('');
@@ -6084,7 +6084,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }, [setId, sessionIndex, sessionIndexes, mode, transcript, result, scoreHistory, set.title, safeModeKey]);
 
   useEffect(() => () => {
-    stopRecognitionSilently();
+    stopRecognitionSilently('component-unmount');
   }, []);
 
   const commitBertuturTranscript = nextTranscript => {
@@ -6116,7 +6116,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
 
   function startBertutur() {
     if (!recognitionSupported || (isIOSWebKit && iosMicDisabled)) return;
-    stopRecognitionSilently();
+    stopRecognitionSilently('restart');
     resetSpeechSession();
     setTranscript('');
     setTranscriptSource('');

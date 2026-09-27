@@ -24,7 +24,7 @@ function result(code, details = {}) {
 function stopCurrentSession({ recognition = true } = {}) {
   sessionId += 1;
   cancellationGeneration += 1;
-  if (recognition) cancelActiveSpeechRecognition();
+  if (recognition) cancelActiveSpeechRecognition('tts-session-cancel');
   browserVoiceProvider.cancel();
   activeStatus = { ...activeStatus, state: 'idle', code: VOICE_RESULT_CODES.CANCELLED };
 }
@@ -105,7 +105,7 @@ export function speak(text, options = {}) {
 
   const request = waitingFor.then(() => {
     if (!interrupt && queuedGeneration !== cancellationGeneration) return result(VOICE_RESULT_CODES.CANCELLED);
-    cancelActiveSpeechRecognition();
+    cancelActiveSpeechRecognition('tts-speak-call');
     const currentSession = ++sessionId;
     return executeSpeech(value, options, currentSession);
   });

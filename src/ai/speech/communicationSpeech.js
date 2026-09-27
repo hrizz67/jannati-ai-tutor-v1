@@ -10,6 +10,15 @@ function normalizeTranscript(value = '') {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
 }
 
+function resolveQuestionIndex(contextKey = '') {
+  const segments = String(contextKey || '').split(':');
+  for (let index = segments.length - 1; index >= 0; index -= 1) {
+    const value = Number(segments[index]);
+    if (Number.isInteger(value) && value >= 0) return value;
+  }
+  return null;
+}
+
 export function resolveCommunicationSpeechLocale(selectedSet = {}, fallbackId = 'bm') {
   const explicitLocale = typeof selectedSet?.speechLang === 'string'
     ? selectedSet.speechLang.trim()
@@ -153,6 +162,9 @@ export function createCommunicationSpeechSession({
   session = sessionFactory({
     ...(speechOptions && typeof speechOptions === 'object' ? speechOptions : {}),
     lang: speechLang,
+    activity,
+    contextKey,
+    questionIndex: resolveQuestionIndex(contextKey),
     resultFactory,
     canRecover: isCurrent,
     onChange(nextState) {
@@ -195,12 +207,18 @@ export function createCommunicationSpeechSession({
       if (started?.unsupported) emitFailure('speech-unavailable');
       return started;
     },
-    stop() {
-      session?.stop?.();
+    stop(reason = 'communication-stop') {
+      session?.stop?.(reason);
     },
-    cancel() {
+    cancel(reason = '') {
+      const currentContextKey = typeof getCurrentContextKey === 'function'
+        ? getCurrentContextKey()
+        : contextKey;
+      const resolvedReason = reason || (
+        currentContextKey !== contextKey ? 'context-changed' : 'communication-cancel'
+      );
       active = false;
-      session?.cancel?.();
+      session?.cancel?.(resolvedReason);
     },
     getState() {
       return session?.getState?.() || null;
