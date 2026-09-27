@@ -3,17 +3,32 @@ export function getSpeechRecognitionConstructor() {
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
 }
 
-export function isIOSWebKitBrowser(userAgent, maxTouchPoints) {
+function resolveBrowserSignals(userAgent, maxTouchPoints) {
   const browserNavigator = typeof globalThis !== 'undefined' ? globalThis.navigator : null;
-  const resolvedUserAgent = typeof userAgent === 'string'
-    ? userAgent
-    : String(browserNavigator?.userAgent || '');
-  const resolvedTouchPoints = Number.isFinite(Number(maxTouchPoints))
-    ? Number(maxTouchPoints)
-    : Number(browserNavigator?.maxTouchPoints) || 0;
-  const explicitIOSDevice = /iP(hone|ad|od)/i.test(resolvedUserAgent);
-  const desktopModeIPad = /Macintosh/i.test(resolvedUserAgent) && resolvedTouchPoints > 1;
+  return {
+    userAgent: typeof userAgent === 'string'
+      ? userAgent
+      : String(browserNavigator?.userAgent || ''),
+    maxTouchPoints: Number.isFinite(Number(maxTouchPoints))
+      ? Number(maxTouchPoints)
+      : Number(browserNavigator?.maxTouchPoints) || 0
+  };
+}
+
+export function isAndroidBrowser(userAgent) {
+  const signals = resolveBrowserSignals(userAgent);
+  return /Android/i.test(signals.userAgent);
+}
+
+export function isIOSWebKitBrowser(userAgent, maxTouchPoints) {
+  const signals = resolveBrowserSignals(userAgent, maxTouchPoints);
+  const explicitIOSDevice = /iP(hone|ad|od)/i.test(signals.userAgent);
+  const desktopModeIPad = /Macintosh/i.test(signals.userAgent) && signals.maxTouchPoints > 1;
   return explicitIOSDevice || desktopModeIPad;
+}
+
+export function shouldRecoverMobileSpeechStartup(userAgent, maxTouchPoints) {
+  return isIOSWebKitBrowser(userAgent, maxTouchPoints) || isAndroidBrowser(userAgent);
 }
 
 export function supportsSpeechRecognition() {
@@ -26,7 +41,9 @@ export function isMalaySpeechSupported() {
 
 export default {
   getSpeechRecognitionConstructor,
+  isAndroidBrowser,
   isIOSWebKitBrowser,
   isMalaySpeechSupported,
+  shouldRecoverMobileSpeechStartup,
   supportsSpeechRecognition
 };

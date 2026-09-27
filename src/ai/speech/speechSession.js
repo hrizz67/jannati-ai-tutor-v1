@@ -1,4 +1,4 @@
-import { isIOSWebKitBrowser } from './speechCapability.js';
+import { shouldRecoverMobileSpeechStartup } from './speechCapability.js';
 import { createSpeechSession } from './speechEngine.js';
 
 export function createSpeechActivitySession(options = {}) {
@@ -6,15 +6,15 @@ export function createSpeechActivitySession(options = {}) {
 }
 
 export function createReadingSpeechSession(options = {}) {
-  const recoverIOSWebKitStartup = isIOSWebKitBrowser();
+  const recoverMobileStartup = shouldRecoverMobileSpeechStartup();
   return createSpeechSession({
     continuous: true,
     interimResults: true,
     multiUtterance: true,
     silenceDelayMs: 1800,
     hardTimeoutMs: 15000,
-    startTimeoutMs: recoverIOSWebKitStartup ? 6000 : 9000,
-    startRetryLimit: recoverIOSWebKitStartup ? 1 : 0,
+    startTimeoutMs: recoverMobileStartup ? 6000 : 9000,
+    startRetryLimit: recoverMobileStartup ? 1 : 0,
     startRetryDelayMs: 300,
     ...options
   });
