@@ -1,11 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8'));
 const DIST_INDEX_PATH = path.join(ROOT_DIR, 'dist/index.html');
+const require = createRequire(import.meta.url);
+const { inspectProductionSupabaseBundle } = require('./supabaseProductionGuard.cjs');
 
 function readOption(argv, name, fallback = '') {
   const direct = argv.find(value => value.startsWith(`${name}=`));
@@ -47,10 +50,31 @@ async function smokeTestDeployment(argv = process.argv.slice(2)) {
       }
       const assetResponse = await fetch(assetUrl, { redirect: 'follow', cache: 'no-store' });
       if (!assetResponse.ok) throw new Error(`JavaScript asset returned HTTP ${assetResponse.status}.`);
+      const assetSource = await assetResponse.text();
+      const supabase = inspectProductionSupabaseBundle(assetSource);
+      const authHealthUrl = new URL('/auth/v1/health', supabase.url);
+      const targetOrigin = new URL(target).origin;
+      const authHealthResponse = await fetch(authHealthUrl, {
+        redirect: 'follow',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          apikey: supabase.publishableKey,
+          Origin: targetOrigin
+        }
+      });
+      if (!authHealthResponse.ok) {
+        throw new Error(`Supabase Auth health returned HTTP ${authHealthResponse.status} from ${supabase.hostname}.`);
+      }
+      const allowOrigin = authHealthResponse.headers.get('access-control-allow-origin');
+      if (allowOrigin && !['*', targetOrigin].includes(allowOrigin)) {
+        throw new Error(`Supabase Auth CORS does not allow the production origin (${allowOrigin}).`);
+      }
 
       console.log(`Deployment smoke test PASS: ${pageResponse.url}`);
       console.log(`Asset PASS: ${assetUrl.href}`);
-      return { pageUrl: pageResponse.url, assetUrl: assetUrl.href };
+      console.log(`Supabase Auth PASS: ${supabase.hostname}.`);
+      return { pageUrl: pageResponse.url, assetUrl: assetUrl.href, supabaseHost: supabase.hostname };
     } catch (error) {
       lastError = error;
       console.warn(`Smoke test attempt ${attempt}/${attempts} failed: ${error.message || error}`);

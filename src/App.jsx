@@ -71,6 +71,7 @@ import { EmptyState } from './dashboard/EmptyState.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
 import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient.js';
+import { announceAccountConnectivity, describeAccountError } from './services/accountErrorMessages.js';
 import { settleAccountHydration } from './services/accountHydration.js';
 import {
   createSafeFreeEntitlement,
@@ -967,18 +968,14 @@ function getEmailRedirectUrl() {
 }
 
 function formatAccountError(error) {
-  const message = String(error?.message || '').trim();
-  const normalized = message.toLowerCase();
-  if (normalized.includes('email rate limit exceeded') || normalized.includes('rate limit exceeded')) {
-    return 'Terlalu banyak e-mel pengesahan dihantar. Tunggu sehingga had e-mel reset sebelum cuba lagi.';
+  const description = describeAccountError(error, {
+    online: typeof navigator === 'undefined' || navigator.onLine !== false
+  });
+  announceAccountConnectivity(description.connectivity);
+  if (import.meta.env.DEV) {
+    console.warn('[Jannati] Diagnostik akaun selamat.', description.diagnostic);
   }
-  if (normalized.includes('user already registered') || normalized.includes('already been registered')) {
-    return 'E-mel ini sudah berdaftar. Tukar kepada Log masuk atau gunakan e-mel lain.';
-  }
-  if (normalized.includes('invalid login credentials')) {
-    return 'E-mel atau kata laluan tidak betul. Semak semula dan cuba lagi.';
-  }
-  return message || 'Akaun tidak dapat diproses. Cuba lagi.';
+  return description.message;
 }
 
 function loadSelectedStudentName() {
@@ -5130,6 +5127,7 @@ function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }
         setAccountMessage(formatAccountError(result.error));
         return;
       }
+      announceAccountConnectivity('reachable');
       if (result.data.session?.user) {
         setAccountMessage('Log masuk berjaya. Memuatkan profil dan data pembelajaran akaun...');
       } else {

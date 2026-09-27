@@ -45,6 +45,7 @@ export default [
         ...globals.browser,
         ...globals.es2025,
         __APP_BUILD_DATE__: 'readonly',
+        __APP_BUILD_REVISION__: 'readonly',
         __APP_VERSION__: 'readonly',
         process: 'readonly'
       }

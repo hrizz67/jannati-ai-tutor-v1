@@ -51,9 +51,9 @@ jobs:
         id: build
         run: npm run build
 
-      - name: Verify production build assets
+      - name: Verify build structure and credential safety
         id: build-assets
-        run: npm run release:build-check
+        run: npm run build:structure-check
 
       - name: Upload QA reports
         uses: actions/upload-artifact@v7

@@ -71,6 +71,7 @@ check('offline-shell-contract', () => {
   assertIncludes(main, 'registerAppServiceWorker', 'The application entry must use the shared service-worker registration boundary.');
   assertIncludes(serviceWorkerRegistration, 'import.meta.env.BASE_URL', 'Service-worker registration must use the build base URL.');
   assertIncludes(serviceWorkerRegistration, '__APP_VERSION__', 'Service-worker registration must use the injected application version.');
+  assertIncludes(serviceWorkerRegistration, '__APP_BUILD_REVISION__', 'Service-worker registration must include the injected build revision.');
   assertIncludes(main, 'import.meta.env.PROD', 'Service worker must not cache source modules during local development.');
   assertIncludes(serviceWorker, "new URL(self.location.href).searchParams.get('v')", 'Physical-device cache must derive its version from registration.');
   assert.doesNotMatch(serviceWorker, /device-v\d+/, 'Physical-device cache must not depend on a hand-maintained suffix.');
@@ -92,7 +93,8 @@ check('connectivity-announcement', () => {
     assertIncludes(connectivityNotice, token, `Connectivity accessibility token is missing: ${token}`);
   }
   assertIncludes(connectivityNotice, 'simpanan pada peranti masih boleh diteruskan', 'Offline continuation copy is missing.');
-  assertIncludes(connectivityNotice, 'Perubahan akaun akan disegerakkan semula', 'Reconnect copy is missing.');
+  assertIncludes(connectivityNotice, 'pelayan akaun belum dapat dicapai', 'Account-server reachability copy is missing.');
+  assertIncludes(connectivityNotice, 'Pelayan akaun akan diperiksa apabila diperlukan', 'Reconnect copy must not claim account reachability from navigator.onLine alone.');
 });
 
 check('offline-cloud-deferral', () => {

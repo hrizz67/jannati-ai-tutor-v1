@@ -72,6 +72,7 @@
     "audit:subjects": "node scripts/audit/subjectCoverage.js",
     "release": "node scripts/release/prepareRelease.js",
     "release:artifacts": "node scripts/release/release.js",
+    "build:structure-check": "node scripts/release/verifyBuildStructure.js",
     "release:build-check": "node scripts/release/verifyBuildOutput.js",
     "release:check": "node scripts/release/verifyReleaseVersion.js",
     "release:smoke": "node scripts/release/smokeTestDeployment.mjs",
