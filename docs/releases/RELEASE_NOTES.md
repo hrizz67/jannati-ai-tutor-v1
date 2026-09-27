@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.13.7 Release Notes
+# Jannati AI Tutor 3.13.8 Release Notes
 
 Status: stable
-Tag: v3.13.7
-Build date: 2026-09-27T10:36:54.928Z
+Tag: v3.13.8
+Build date: 2026-09-27T14:37:16.852Z
 
 ## Release Readiness
 
