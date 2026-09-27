@@ -5935,7 +5935,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     : setBase;
   const rawSetTitle = rawSet?.title || '';
   const set = rawSet ? { ...rawSet, title: formatScopeLabel(rawSetTitle) } : rawSet;
-  const communicationContextKey = `speaking:${setId}:${mode}:${rawSet?.id || sessionIndex}`;
+  const communicationContextKey = `speaking:${setId}:${mode}:${sessionIndex}`;
   recognitionContextKeyRef.current = communicationContextKey;
   const isIOSSafari = useMemo(() => {
     if (typeof navigator === 'undefined') return false;

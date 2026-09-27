@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { loadBrowserVoices, selectBestVoice } from '../../src/ai/voice/browserVoiceProvider.js';
+import { playCommunicationAudio } from '../../src/ai/speech/communicationSpeech.js';
 import {
   detectArabicScript,
   normalizeVoiceLanguage,
@@ -136,6 +137,23 @@ const secondQueued = speak('Kedua', { language: 'ms', interrupt: false });
 assert.equal((await firstQueued).success, true);
 assert.equal((await secondQueued).success, true);
 assert.equal(spoken.length, beforeQueued + 2, 'Non-interrupt requests must wait without overlapping or being lost.');
+
+const beforeSequentialListening = spoken.length;
+const sequentialListeningItems = [
+  { prompt: 'Item pertama', speechLang: 'ms-MY', languageLabel: 'Bahasa Melayu' },
+  { prompt: 'Second item', speechLang: 'en-US', languageLabel: 'Bahasa Inggeris' },
+  { prompt: 'العنصر الثالث', speechLang: 'ar-SA', languageLabel: 'Bahasa Arab' }
+];
+for (const item of sequentialListeningItems) {
+  stop();
+  const played = await playCommunicationAudio({ item, languageLabel: item.languageLabel, speak });
+  assert.equal(played.success, true, `Sequential Mendengar audio must play for ${item.speechLang}.`);
+}
+assert.deepEqual(
+  spoken.slice(beforeSequentialListening).map(item => item.text),
+  sequentialListeningItems.map(item => item.prompt),
+  'Mendengar item 1, item 2 and item 3 must each reach a fresh TTS utterance.'
+);
 
 availableVoices = [];
 const delayedVoices = loadBrowserVoices({ timeoutMs: 100 });

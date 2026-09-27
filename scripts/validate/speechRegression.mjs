@@ -346,7 +346,9 @@ async function main() {
   readingAttempt1.recognition.emitEnd();
   assert.equal(readingAttempt1.onResults.at(-1)?.transcript, 'Ayah pergi ke pasar', 'Attempt 1 transcript should be preserved.');
   assert.equal(readingAttempt1.onResults.at(-1)?.status, 'completed', 'Attempt 1 should complete successfully.');
-  assert.equal(readingAttempt1.recognition.stopCalls >= 1 || readingAttempt1.recognition.abortCalls >= 1, true, 'Attempt 1 microphone should be disposed after completion.');
+  assert.equal(readingAttempt1.recognition.stopCalls, 0, 'Natural completion must not stop an already-ended recognition instance.');
+  assert.equal(readingAttempt1.recognition.abortCalls, 0, 'Natural completion must not abort an already-ended recognition instance.');
+  assert.equal(readingAttempt1.recognition.onresult, null, 'Natural completion must detach handlers from the completed instance.');
   readingAttempt1.dispose();
 
   const readingAttempt2 = createReadingSessionHarness();
