@@ -27,8 +27,12 @@ export function isIOSWebKitBrowser(userAgent, maxTouchPoints) {
   return explicitIOSDevice || desktopModeIPad;
 }
 
-export function shouldRecoverMobileSpeechStartup(userAgent, maxTouchPoints) {
+export function shouldRecoverMobileSpeech(userAgent, maxTouchPoints) {
   return isIOSWebKitBrowser(userAgent, maxTouchPoints) || isAndroidBrowser(userAgent);
+}
+
+export function shouldRecoverMobileSpeechStartup(userAgent, maxTouchPoints) {
+  return shouldRecoverMobileSpeech(userAgent, maxTouchPoints);
 }
 
 export function supportsSpeechRecognition() {
@@ -44,6 +48,7 @@ export default {
   isAndroidBrowser,
   isIOSWebKitBrowser,
   isMalaySpeechSupported,
+  shouldRecoverMobileSpeech,
   shouldRecoverMobileSpeechStartup,
   supportsSpeechRecognition
 };

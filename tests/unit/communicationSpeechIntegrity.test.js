@@ -786,6 +786,387 @@ describe('mobile speech startup recovery', () => {
   });
 });
 
+describe('mobile speech post-start recovery', () => {
+  const mobileDevices = [
+    [
+      'Android',
+      'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+      5
+    ],
+    [
+      'iOS',
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1',
+      5
+    ]
+  ];
+  const postStartOptions = {
+    startTimeoutMs: 40,
+    startRetryDelayMs: 20,
+    postStartRetryDelayMs: 20,
+    hardTimeoutMs: 60,
+    silenceDelayMs: 30
+  };
+
+  function installMobileNavigator(userAgent, maxTouchPoints) {
+    vi.stubGlobal('navigator', { userAgent, maxTouchPoints });
+  }
+
+  function createReadingCommunicationSession({ contextKey, accepted, failures = [], states = [] }) {
+    return createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey,
+      getCurrentContextKey: () => contextKey,
+      speechOptions: postStartOptions,
+      resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+      onChange: state => states.push({ ...state }),
+      onResult: result => accepted.push(result.transcript),
+      onFailure: result => failures.push(result)
+    });
+  }
+
+  it.each(mobileDevices)('recovers %s Bacaan Q2 after onstart/listening produces no transcript',
+    (_device, userAgent, maxTouchPoints) => {
+      vi.useFakeTimers();
+      installMobileNavigator(userAgent, maxTouchPoints);
+      const accepted = [];
+
+      const q1 = createReadingCommunicationSession({
+        contextKey: 'reading:bm:0',
+        accepted
+      });
+      q1.start();
+      q1.recognition.emitResult('jawapan 1');
+      q1.recognition.emitEnd();
+
+      const states = [];
+      const q2 = createReadingCommunicationSession({
+        contextKey: 'reading:bm:1',
+        accepted,
+        states
+      });
+      q2.start();
+      const stalledQ2 = q2.recognition;
+      expect(q2.getState()?.status).toBe('listening');
+
+      vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+      expect(stalledQ2.abortCalls).toBe(1);
+      expect(states.some(state => state.recoveryReason === 'post-start-timeout')).toBe(true);
+      vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+      const recoveredQ2 = q2.recognition;
+      expect(recoveredQ2).not.toBe(stalledQ2);
+      recoveredQ2.emitResult('jawapan 2');
+      recoveredQ2.emitEnd();
+
+      expect(FakeSpeechRecognition.instances).toHaveLength(3);
+      expect(accepted).toEqual(['jawapan 1', 'jawapan 2']);
+      expect(stalledQ2.abortCalls).toBe(1);
+      expect(recoveredQ2.abortCalls).toBe(0);
+      expect(q2.recognition).toBeNull();
+    });
+
+  it.each(mobileDevices)('bounds %s Bacaan post-start recovery to two recognition instances',
+    (_device, userAgent, maxTouchPoints) => {
+      vi.useFakeTimers();
+      installMobileNavigator(userAgent, maxTouchPoints);
+      const failures = [];
+      const session = createReadingCommunicationSession({
+        contextKey: 'reading:bm:double-stall',
+        accepted: [],
+        failures
+      });
+
+      session.start();
+      const first = session.recognition;
+      expect(session.getState()?.status).toBe('listening');
+      vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+      vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+      const second = session.recognition;
+      expect(second).not.toBe(first);
+      expect(session.getState()?.status).toBe('listening');
+      vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+
+      expect(FakeSpeechRecognition.instances).toHaveLength(2);
+      expect(FakeSpeechRecognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+      expect(session.recognition).toBeNull();
+      expect(failures).toHaveLength(1);
+      expect(failures[0]).toMatchObject({
+        errorCode: 'no-result',
+        manualFallbackAvailable: true
+      });
+
+      vi.runOnlyPendingTimers();
+      expect(FakeSpeechRecognition.instances).toHaveLength(2);
+      expect(failures).toHaveLength(1);
+    });
+
+  it('recovers Bertutur after listening stalls before offering the transcript candidate', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+    const candidates = [];
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:post-start',
+      getCurrentContextKey: () => 'speaking:english:intro:post-start',
+      speechOptions: postStartOptions,
+      resultFactory: transcript => ({ status: 'captured', transcript, confidence: 0.8 }),
+      onCandidate: review => candidates.push(review.candidate.text),
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    expect(session.getState()?.status).toBe('listening');
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    const recovered = session.recognition;
+    recovered.emitResult('I read a book');
+    recovered.emitEnd();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(stalled.abortCalls).toBe(1);
+    expect(recovered.abortCalls).toBe(0);
+    expect(candidates).toEqual(['I read a book']);
+    expect(failures).toEqual([]);
+  });
+
+  it('ends Bertutur with manual fallback after the single post-start retry also stalls', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    const candidates = [];
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: 'speaking:english:intro:double-post-start',
+      getCurrentContextKey: () => 'speaking:english:intro:double-post-start',
+      speechOptions: postStartOptions,
+      resultFactory: transcript => ({ status: 'captured', transcript }),
+      onCandidate: review => candidates.push(review.candidate.text),
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(FakeSpeechRecognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(candidates).toEqual([]);
+    expect(failures).toHaveLength(1);
+    expect(failures[0]).toMatchObject({
+      errorCode: 'no-result',
+      manualFallbackAvailable: true
+    });
+  });
+
+  it('keeps desktop post-start no-result behavior terminal without an automatic retry', () => {
+    vi.useFakeTimers();
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36',
+      maxTouchPoints: 0
+    });
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'desktop:reading:0',
+      getCurrentContextKey: () => 'desktop:reading:0',
+      speechOptions: postStartOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    expect(session.getState()?.status).toBe('listening');
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(1);
+    expect(stalled.abortCalls).toBe(1);
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('no-result');
+  });
+
+  it.each([
+    'not-allowed',
+    'service-not-allowed',
+    'audio-capture',
+    'network',
+    'language-not-supported',
+    'bad-grammar'
+  ])('does not retry the explicit mobile error %s', errorCode => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:explicit-error',
+      getCurrentContextKey: () => 'android:explicit-error',
+      speechOptions: postStartOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    session.recognition.emitError(errorCode);
+    vi.runOnlyPendingTimers();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(1);
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe(errorCode);
+  });
+
+  it('does not retry after an explicit user cancel', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+    const failures = [];
+    const session = createReadingCommunicationSession({
+      contextKey: 'android:cancelled',
+      accepted: [],
+      failures
+    });
+
+    session.start();
+    const cancelled = session.recognition;
+    session.cancel();
+    vi.runOnlyPendingTimers();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(1);
+    expect(cancelled.abortCalls).toBe(1);
+    expect(session.recognition).toBeNull();
+    expect(failures).toEqual([]);
+  });
+
+  it('does not retry a mobile post-start stall after its context becomes stale', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    let currentContext = 'speaking:english:intro:4';
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'english', speechLang: 'en-US' },
+      contextKey: currentContext,
+      getCurrentContextKey: () => currentContext,
+      speechOptions: postStartOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    const stale = session.recognition;
+    currentContext = 'speaking:english:intro:5';
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(1);
+    expect(stale.abortCalls).toBe(1);
+    expect(session.recognition).toBeNull();
+    expect(failures).toEqual([]);
+  });
+  it('recovers a mobile no-speech error only after the lifecycle has started', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+    const accepted = [];
+    const failures = [];
+    const session = createReadingCommunicationSession({
+      contextKey: 'android:no-speech-after-start',
+      accepted,
+      failures
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    stalled.emitError('no-speech');
+    expect(stalled.abortCalls).toBe(1);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    const recovered = session.recognition;
+    expect(recovered).not.toBe(stalled);
+    recovered.emitResult('jawapan selepas retry');
+    recovered.emitEnd();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(accepted).toEqual(['jawapan selepas retry']);
+    expect(failures).toEqual([]);
+  });
+
+  it('recovers when mobile recognition ends after onstart with no transcript', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    const accepted = [];
+    const failures = [];
+    const session = createReadingCommunicationSession({
+      contextKey: 'ios:end-after-start',
+      accepted,
+      failures
+    });
+
+    session.start();
+    const ended = session.recognition;
+    ended.emitEnd();
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    const recovered = session.recognition;
+    expect(recovered).not.toBe(ended);
+    recovered.emitResult('jawapan selepas end');
+    recovered.emitEnd();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(ended.abortCalls).toBe(0);
+    expect(accepted).toEqual(['jawapan selepas end']);
+    expect(failures).toEqual([]);
+  });
+
+  it('shares one automatic recovery budget across startup and post-start stalls', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+
+    class StartupThenListeningRecognition extends FakeSpeechRecognition {
+      static instances = [];
+
+      constructor() {
+        super();
+        StartupThenListeningRecognition.instances.push(this);
+      }
+
+      start() {
+        this.startCalls += 1;
+        if (StartupThenListeningRecognition.instances.length > 1) this.onstart?.();
+      }
+    }
+
+    globalThis.window.SpeechRecognition = StartupThenListeningRecognition;
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:shared-recovery-budget',
+      getCurrentContextKey: () => 'android:shared-recovery-budget',
+      speechOptions: postStartOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(postStartOptions.startTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.startRetryDelayMs);
+    expect(session.getState()?.status).toBe('listening');
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    expect(StartupThenListeningRecognition.instances).toHaveLength(2);
+    expect(StartupThenListeningRecognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('no-result');
+  });
+});
+
 describe('Mendengar TTS locale and failure integrity', () => {
   it.each([
     ['BM', 'ms-MY'],

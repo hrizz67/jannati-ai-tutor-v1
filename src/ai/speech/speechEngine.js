@@ -10,7 +10,9 @@ function createState() {
     confidence: 0,
     correct: false,
     error: '',
-    result: null
+    result: null,
+    recoveryReason: '',
+    recoveryAttempt: 0
   };
 }
 
@@ -138,8 +140,11 @@ export function createSpeechSession({
   startTimeoutMs = 9000,
   startRetryLimit = 0,
   startRetryDelayMs = 250,
+  postStartRetryLimit = 0,
+  postStartRetryDelayMs = startRetryDelayMs,
   silenceDelayMs = 9000,
   hardTimeoutMs = 9000,
+  canRecover = null,
   resultFactory = defaultResultFactory,
   onChange = null,
   onListening = null,
@@ -372,9 +377,16 @@ export function createSpeechSession({
 
     const startupTimeout = Math.max(0, Number(startTimeoutMs) || 0);
     const retryDelay = Math.max(0, Number(startRetryDelayMs) || 0);
+    const postStartRetryDelay = Math.max(0, Number(postStartRetryDelayMs) || 0);
     const maximumStartRetries = Math.min(1, Math.max(0, Math.trunc(Number(startRetryLimit) || 0)));
+    const maximumPostStartRetries = Math.min(1, Math.max(0, Math.trunc(Number(postStartRetryLimit) || 0)));
+    // Startup and post-start recovery share one automatic retry budget.
+    // A question therefore creates at most two recognition instances.
+    const maximumAutomaticRecoveries = Math.min(1, Math.max(maximumStartRetries, maximumPostStartRetries));
     const recognitionHardTimeout = Math.max(0, Number(hardTimeoutMs) || 0);
-    let startAttemptCount = 0;
+    let startRetriesUsed = 0;
+    let postStartRetriesUsed = 0;
+    let automaticRecoveryCount = 0;
 
     function acknowledgeLifecycleEvent(instance) {
       if (recognition !== instance || finalized) return false;
@@ -382,21 +394,70 @@ export function createSpeechSession({
       return true;
     }
 
+    function recoveryContextIsCurrent() {
+      if (typeof canRecover !== 'function') return true;
+      try {
+        return Boolean(canRecover());
+      } catch {
+        return false;
+      }
+    }
+
+    function scheduleRecognitionRetry(stalledRecognition, {
+      kind = 'post-start',
+      reason = 'post-start-timeout',
+      abort = false
+    } = {}) {
+      if (
+        recognition !== stalledRecognition
+        || finalized
+        || receivedResult
+        || getBufferedTranscript()
+        || !recoveryContextIsCurrent()
+        || automaticRecoveryCount >= maximumAutomaticRecoveries
+      ) {
+        return false;
+      }
+
+      if (kind === 'startup') {
+        if (startRetriesUsed >= maximumStartRetries) return false;
+        startRetriesUsed += 1;
+      } else {
+        if (postStartRetriesUsed >= maximumPostStartRetries) return false;
+        postStartRetriesUsed += 1;
+      }
+
+      clearAttemptTimers();
+      releaseRecognition(stalledRecognition, { abort });
+      automaticRecoveryCount += 1;
+      emit({
+        status: 'starting',
+        transcript: '',
+        error: '',
+        recoveryReason: reason,
+        recoveryAttempt: automaticRecoveryCount
+      });
+      activeSpeechRecognitionCancel = cancel;
+      retryTimeoutId = setTimeout(() => {
+        retryTimeoutId = null;
+        if (finalized || !recoveryContextIsCurrent()) return;
+        startRecognitionAttempt();
+      }, kind === 'startup' ? retryDelay : postStartRetryDelay);
+      return true;
+    }
+
     function handleStartTimeout(stalledRecognition) {
       if (recognition !== stalledRecognition || finalized) return;
-      clearAttemptTimers();
-      releaseRecognition(stalledRecognition, { abort: true });
-
-      if (startAttemptCount <= maximumStartRetries) {
-        activeSpeechRecognitionCancel = cancel;
-        retryTimeoutId = setTimeout(() => {
-          retryTimeoutId = null;
-          if (finalized) return;
-          startRecognitionAttempt();
-        }, retryDelay);
+      if (scheduleRecognitionRetry(stalledRecognition, {
+        kind: 'startup',
+        reason: 'start-timeout-retry',
+        abort: true
+      })) {
         return;
       }
 
+      clearAttemptTimers();
+      releaseRecognition(stalledRecognition, { abort: true });
       emitEmptyResult(
         'Mikrofon tidak berjaya dimulakan. Cuba sekali lagi atau gunakan jawapan manual.',
         'start-timeout'
@@ -405,8 +466,8 @@ export function createSpeechSession({
 
     function startRecognitionAttempt() {
       if (finalized) return state;
-      startAttemptCount += 1;
       let nextRecognition = null;
+      let lifecycleStarted = false;
 
       try {
         nextRecognition = new Recognition();
@@ -419,6 +480,7 @@ export function createSpeechSession({
 
         nextRecognition.onstart = () => {
           if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          lifecycleStarted = true;
           emit({ status: 'listening', error: '' });
           onListening?.(state);
         };
@@ -494,6 +556,12 @@ export function createSpeechSession({
             return;
           }
           if (error === 'no-speech' && !receivedResult) {
+            if (lifecycleStarted && scheduleRecognitionRetry(nextRecognition, {
+              reason: 'post-start-no-speech',
+              abort: true
+            })) {
+              return;
+            }
             emitEmptyResult('Suara belum dapat dikesan. Cuba sekali lagi.', 'no-speech');
             return;
           }
@@ -528,6 +596,11 @@ export function createSpeechSession({
           if (bufferedTranscript) {
             finalize(bufferedTranscript, 'completed');
           } else if (!receivedResult || state.status === 'listening' || state.status === 'processing' || state.status === 'starting') {
+            if (lifecycleStarted && scheduleRecognitionRetry(nextRecognition, {
+              reason: 'post-start-end'
+            })) {
+              return;
+            }
             emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
           } else {
             emit({ status: 'idle' });
@@ -551,11 +624,22 @@ export function createSpeechSession({
             }
             return;
           }
-          if (state.status === 'listening' && !receivedResult) {
+          if (lifecycleStarted && state.status === 'listening' && !receivedResult) {
+            if (scheduleRecognitionRetry(nextRecognition, {
+              reason: 'post-start-timeout',
+              abort: true
+            })) {
+              return;
+            }
             emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
           }
         }, recognitionHardTimeout);
-        emit({ status: 'starting', error: '' });
+        emit({
+          status: 'starting',
+          error: '',
+          recoveryReason: automaticRecoveryCount > 0 ? state.recoveryReason : '',
+          recoveryAttempt: automaticRecoveryCount
+        });
         nextRecognition.start();
         return state;
       } catch (error) {

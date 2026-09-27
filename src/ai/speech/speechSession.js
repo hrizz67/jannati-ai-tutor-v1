@@ -16,6 +16,8 @@ export function createReadingSpeechSession(options = {}) {
     startTimeoutMs: recoverMobileStartup ? 6000 : 9000,
     startRetryLimit: recoverMobileStartup ? 1 : 0,
     startRetryDelayMs: 300,
+    postStartRetryLimit: recoverMobileStartup ? 1 : 0,
+    postStartRetryDelayMs: 300,
     ...options
   });
 }
