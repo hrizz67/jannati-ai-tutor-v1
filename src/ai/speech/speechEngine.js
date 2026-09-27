@@ -1,5 +1,14 @@
 import { getSpeechRecognitionConstructor } from './speechCapability.js';
 import { matchSpeechAnswer } from './speechMatcher.js';
+import {
+  createSpeechDiagnosticSession,
+  createSpeechResultMetadata,
+  initializeSpeechDiagnostics,
+  resolveSpeechDiagnosticCaptureMode,
+  traceSpeechDiagnostic
+} from './speechDiagnostics.js';
+
+initializeSpeechDiagnostics();
 
 let activeSpeechRecognitionCancel = null;
 
@@ -109,15 +118,21 @@ export function collectSpeechTranscriptFragments(event, seenResultKeys = new Set
 
 const disposedRecognitionInstances = new WeakSet();
 
-function disposeRecognitionInstance(instance, { abort = false } = {}) {
+function disposeRecognitionInstance(instance, { abort = false, onReleasedEnd = null } = {}) {
   if (!instance) return;
   if (disposedRecognitionInstances.has(instance)) return;
   disposedRecognitionInstances.add(instance);
   try {
     instance.onstart = null;
+    instance.onaudiostart = null;
+    instance.onsoundstart = null;
+    instance.onspeechstart = null;
     instance.onresult = null;
+    instance.onspeechend = null;
+    instance.onsoundend = null;
+    instance.onaudioend = null;
     instance.onerror = null;
-    instance.onend = null;
+    instance.onend = typeof onReleasedEnd === 'function' ? onReleasedEnd : null;
     instance.onnomatch = null;
   } catch {
     // Ignore handler cleanup errors.
@@ -145,6 +160,9 @@ export function createSpeechSession({
   silenceDelayMs = 9000,
   hardTimeoutMs = 9000,
   canRecover = null,
+  activity = 'speech',
+  questionIndex = null,
+  contextKey = '',
   resultFactory = defaultResultFactory,
   onChange = null,
   onListening = null,
@@ -174,6 +192,38 @@ export function createSpeechSession({
   let retryTimeoutId = null;
   let silenceTimeoutId = null;
   let hardTimeoutId = null;
+  const captureMode = resolveSpeechDiagnosticCaptureMode({
+    continuous,
+    interimResults,
+    multiUtterance
+  });
+  const diagnosticSessionId = createSpeechDiagnosticSession({
+    activity,
+    questionIndex,
+    contextKey,
+    language: lang,
+    recognitionState: state.status,
+    ...captureMode
+  });
+  let recognitionAttempt = 0;
+  let contextChangedTraced = false;
+  let pendingRecovery = null;
+  const attemptByRecognition = new WeakMap();
+  const nativeEndAcknowledgedAttempts = new Set();
+
+  function trace(event, details = {}) {
+    return traceSpeechDiagnostic(event, {
+      activity,
+      questionIndex,
+      contextKey,
+      sessionId: diagnosticSessionId,
+      attempt: recognitionAttempt,
+      language: lang,
+      recognitionState: state.status,
+      ...captureMode,
+      ...details
+    });
+  }
 
   function emit(nextState) {
     state = {
@@ -190,7 +240,19 @@ export function createSpeechSession({
       transcript: safeTranscript,
       error: ''
     });
+    const transcriptMetadata = {
+      nonEmptyTranscriptCount: safeTranscript ? 1 : 0,
+      totalCharacterCount: safeTranscript.length
+    };
+    trace('ui-callback-start', {
+      ...transcriptMetadata,
+      reason: 'onTranscript'
+    });
     onTranscript?.(safeTranscript, state);
+    trace('ui-callback-return', {
+      ...transcriptMetadata,
+      reason: 'onTranscript'
+    });
     return safeTranscript;
   }
 
@@ -250,10 +312,30 @@ export function createSpeechSession({
     }
   }
 
-  function releaseRecognition(instance = recognition, { abort = false } = {}) {
+  function releaseRecognition(instance = recognition, { abort = false, reason = 'release' } = {}) {
+    if (!instance) return;
+    const releasedAttempt = attemptByRecognition.get(instance) || recognitionAttempt;
+    if (abort) {
+      trace('abort-call', {
+        attempt: releasedAttempt,
+        reason,
+        nativeEndAcknowledged: nativeEndAcknowledgedAttempts.has(releasedAttempt)
+      });
+    }
+    const onReleasedEnd = diagnosticSessionId
+      ? () => {
+          nativeEndAcknowledgedAttempts.add(releasedAttempt);
+          trace('onend', {
+            attempt: releasedAttempt,
+            reason: 'released:' + reason,
+            recognitionState: 'released',
+            nativeEndAcknowledged: true
+          });
+        }
+      : null;
     if (recognition === instance) recognition = null;
     clearActiveCancellation();
-    disposeRecognitionInstance(instance, { abort });
+    disposeRecognitionInstance(instance, { abort, onReleasedEnd });
   }
 
   function finalize(transcript = '', reason = 'completed') {
@@ -261,7 +343,7 @@ export function createSpeechSession({
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
-    releaseRecognition(completedRecognition);
+    releaseRecognition(completedRecognition, { reason: 'finalize:' + reason });
     const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
     transcriptBuffer = safeTranscript;
     const result = safeTranscript ? buildResult(safeTranscript) : createEmptySpeechResult();
@@ -299,7 +381,7 @@ export function createSpeechSession({
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
-    releaseRecognition(completedRecognition, { abort });
+    releaseRecognition(completedRecognition, { abort, reason: 'empty:' + errorCode });
     const result = createEmptySpeechResult(errorCode, message);
     emit({
       status: 'empty',
@@ -315,11 +397,12 @@ export function createSpeechSession({
     return result;
   }
 
-  function cleanup({ abort = false, instance = recognition } = {}) {
-    releaseRecognition(instance, { abort });
+  function cleanup({ abort = false, instance = recognition, reason = 'cleanup' } = {}) {
+    releaseRecognition(instance, { abort, reason });
   }
 
-  function stop() {
+  function stop(reason = 'user-stop') {
+    trace('stop-call', { reason });
     try {
       recognition?.stop?.();
     } catch {
@@ -327,7 +410,10 @@ export function createSpeechSession({
     }
   }
 
-  function cancel() {
+  function cancel(reason = 'user-cancel') {
+    trace('cancel-call', { reason });
+    if (reason === 'component-unmount') trace('component-unmount', { reason });
+    if (reason === 'context-changed') trace('context-changed', { reason });
     clearTimers();
     const cancelledRecognition = recognition;
     finalized = true;
@@ -336,7 +422,7 @@ export function createSpeechSession({
     interimTranscript = '';
     resultFragmentsByIndex = new Map();
     seenResultKeys = new Set();
-    cleanup({ abort: true, instance: cancelledRecognition });
+    cleanup({ abort: true, instance: cancelledRecognition, reason: 'cancel:' + reason });
     emit({ status: 'idle' });
     onStopped?.('cancelled');
   }
@@ -361,7 +447,7 @@ export function createSpeechSession({
     const previousCancel = activeSpeechRecognitionCancel;
     activeSpeechRecognitionCancel = null;
     try {
-      previousCancel?.();
+      previousCancel?.('superseded-by-new-session');
     } catch {
       // Ignore global cancellation errors.
     }
@@ -374,6 +460,10 @@ export function createSpeechSession({
     seenResultKeys = new Set();
     finalized = false;
     emptyResultEmitted = false;
+    recognitionAttempt = 0;
+    contextChangedTraced = false;
+    pendingRecovery = null;
+    nativeEndAcknowledgedAttempts.clear();
 
     const startupTimeout = Math.max(0, Number(startTimeoutMs) || 0);
     const retryDelay = Math.max(0, Number(startRetryDelayMs) || 0);
@@ -396,11 +486,17 @@ export function createSpeechSession({
 
     function recoveryContextIsCurrent() {
       if (typeof canRecover !== 'function') return true;
+      let current = false;
       try {
-        return Boolean(canRecover());
+        current = Boolean(canRecover());
       } catch {
-        return false;
+        current = false;
       }
+      if (!current && !contextChangedTraced) {
+        contextChangedTraced = true;
+        trace('context-changed', { reason: 'recovery-context-stale' });
+      }
+      return current;
     }
 
     function scheduleRecognitionRetry(stalledRecognition, {
@@ -427,9 +523,22 @@ export function createSpeechSession({
         postStartRetriesUsed += 1;
       }
 
+      const stalledAttempt = attemptByRecognition.get(stalledRecognition) || recognitionAttempt;
       clearAttemptTimers();
-      releaseRecognition(stalledRecognition, { abort });
+      releaseRecognition(stalledRecognition, { abort, reason: 'retry:' + reason });
       automaticRecoveryCount += 1;
+      pendingRecovery = {
+        oldAttempt: stalledAttempt,
+        kind,
+        reason
+      };
+      const nativeEndAcknowledged = nativeEndAcknowledgedAttempts.has(stalledAttempt);
+      trace('retry-scheduled', {
+        attempt: stalledAttempt,
+        reason,
+        nativeEndAcknowledged,
+        retryBeforeOldOnend: !nativeEndAcknowledged
+      });
       emit({
         status: 'starting',
         transcript: '',
@@ -441,13 +550,20 @@ export function createSpeechSession({
       retryTimeoutId = setTimeout(() => {
         retryTimeoutId = null;
         if (finalized || !recoveryContextIsCurrent()) return;
-        startRecognitionAttempt();
+        const recovery = pendingRecovery;
+        pendingRecovery = null;
+        startRecognitionAttempt(recovery);
       }, kind === 'startup' ? retryDelay : postStartRetryDelay);
       return true;
     }
 
     function handleStartTimeout(stalledRecognition) {
       if (recognition !== stalledRecognition || finalized) return;
+      const stalledAttempt = attemptByRecognition.get(stalledRecognition) || recognitionAttempt;
+      trace('startup-timeout-fired', {
+        attempt: stalledAttempt,
+        reason: 'no-lifecycle-ack'
+      });
       if (scheduleRecognitionRetry(stalledRecognition, {
         kind: 'startup',
         reason: 'start-timeout-retry',
@@ -457,35 +573,100 @@ export function createSpeechSession({
       }
 
       clearAttemptTimers();
-      releaseRecognition(stalledRecognition, { abort: true });
+      releaseRecognition(stalledRecognition, { abort: true, reason: 'terminal-start-timeout' });
       emitEmptyResult(
         'Mikrofon tidak berjaya dimulakan. Cuba sekali lagi atau gunakan jawapan manual.',
         'start-timeout'
       );
     }
 
-    function startRecognitionAttempt() {
+    function startRecognitionAttempt(retryContext = null) {
       if (finalized) return state;
       let nextRecognition = null;
       let lifecycleStarted = false;
+      recognitionAttempt += 1;
+
+      if (retryContext) {
+        const nativeEndAcknowledged = nativeEndAcknowledgedAttempts.has(retryContext.oldAttempt);
+        trace('retry-started', {
+          attempt: recognitionAttempt,
+          reason: retryContext.reason,
+          nativeEndAcknowledged,
+          retryBeforeOldOnend: !nativeEndAcknowledged
+        });
+      }
 
       try {
         nextRecognition = new Recognition();
         recognition = nextRecognition;
+        attemptByRecognition.set(nextRecognition, recognitionAttempt);
         activeSpeechRecognitionCancel = cancel;
         nextRecognition.lang = lang;
-        nextRecognition.interimResults = multiUtterance ? true : Boolean(interimResults);
-        nextRecognition.continuous = multiUtterance ? true : Boolean(continuous);
+        nextRecognition.interimResults = captureMode.appliedInterim;
+        nextRecognition.continuous = captureMode.appliedContinuous;
         nextRecognition.maxAlternatives = 1;
 
         nextRecognition.onstart = () => {
           if (!acknowledgeLifecycleEvent(nextRecognition)) return;
           lifecycleStarted = true;
+          trace('onstart', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-lifecycle',
+            recognitionState: 'listening'
+          });
           emit({ status: 'listening', error: '' });
           onListening?.(state);
         };
+        nextRecognition.onaudiostart = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onaudiostart', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-capture'
+          });
+        };
+        nextRecognition.onsoundstart = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onsoundstart', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-sound'
+          });
+        };
+        nextRecognition.onspeechstart = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onspeechstart', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-speech'
+          });
+        };
+        nextRecognition.onspeechend = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onspeechend', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-speech'
+          });
+        };
+        nextRecognition.onsoundend = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onsoundend', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-sound'
+          });
+        };
+        nextRecognition.onaudioend = () => {
+          if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          trace('onaudioend', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'native-capture'
+          });
+        };
         nextRecognition.onresult = event => {
           if (!acknowledgeLifecycleEvent(nextRecognition)) return;
+          const resultMetadata = createSpeechResultMetadata(event);
+          trace('onresult', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: 'metadata-only',
+            ...resultMetadata
+          });
           if (multiUtterance) {
             const results = event?.results ? Array.from(event.results) : [];
             const safeStartIndex = Number.isInteger(event?.resultIndex) && event.resultIndex > 0 ? event.resultIndex : 0;
@@ -509,7 +690,14 @@ export function createSpeechSession({
                 isFinal: Boolean(result.isFinal)
               });
             });
-            if (!hasTranscript) return;
+            if (!hasTranscript) {
+              trace('transcript-parsed', {
+                attempt: attemptByRecognition.get(nextRecognition),
+                reason: 'empty-parser-output',
+                ...resultMetadata
+              });
+              return;
+            }
             receivedResult = true;
             const orderedFragments = [...resultFragmentsByIndex.entries()]
               .sort(([leftIndex], [rightIndex]) => leftIndex - rightIndex)
@@ -517,6 +705,12 @@ export function createSpeechSession({
             finalFragments = orderedFragments.filter(fragment => fragment.isFinal).map(fragment => fragment.transcript);
             interimTranscript = orderedFragments.filter(fragment => !fragment.isFinal).map(fragment => fragment.transcript).join(' ').trim();
             transcriptBuffer = getBufferedTranscript();
+            trace('transcript-parsed', {
+              attempt: attemptByRecognition.get(nextRecognition),
+              reason: 'multi-utterance-buffer',
+              nonEmptyTranscriptCount: transcriptBuffer ? 1 : 0,
+              totalCharacterCount: transcriptBuffer.length
+            });
             emitTranscript(transcriptBuffer);
             if (silenceTimeoutId) {
               clearTimeout(silenceTimeoutId);
@@ -525,6 +719,10 @@ export function createSpeechSession({
               if (finalized || recognition !== nextRecognition) return;
               const bufferedTranscript = getBufferedTranscript();
               if (bufferedTranscript) {
+                trace('stop-call', {
+                  attempt: attemptByRecognition.get(nextRecognition),
+                  reason: 'silence-window-complete'
+                });
                 try {
                   nextRecognition.stop?.();
                 } catch {
@@ -537,6 +735,12 @@ export function createSpeechSession({
             return;
           }
           const transcript = extractSpeechTranscript(event);
+          trace('transcript-parsed', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: transcript ? 'single-result' : 'empty-parser-output',
+            nonEmptyTranscriptCount: transcript ? 1 : 0,
+            totalCharacterCount: transcript.length
+          });
           if (transcript) {
             receivedResult = true;
             transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
@@ -550,6 +754,10 @@ export function createSpeechSession({
         nextRecognition.onerror = event => {
           if (!acknowledgeLifecycleEvent(nextRecognition)) return;
           const error = event?.error || 'unknown_error';
+          trace('onerror', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: error
+          });
           if (error === 'aborted') {
             emit({ status: 'idle', error: '' });
             onError?.(error);
@@ -574,6 +782,10 @@ export function createSpeechSession({
             return;
           }
           if (multiUtterance && transcriptBuffer) {
+            trace('stop-call', {
+              attempt: attemptByRecognition.get(nextRecognition),
+              reason: 'error-with-buffer:' + error
+            });
             try {
               nextRecognition.stop?.();
             } catch {
@@ -585,11 +797,18 @@ export function createSpeechSession({
           onError?.(error);
         };
         nextRecognition.onend = () => {
+          const endedAttempt = attemptByRecognition.get(nextRecognition) || recognitionAttempt;
+          nativeEndAcknowledgedAttempts.add(endedAttempt);
+          trace('onend', {
+            attempt: endedAttempt,
+            reason: recognition === nextRecognition ? 'active-instance' : 'stale-instance',
+            nativeEndAcknowledged: true
+          });
           if (recognition !== nextRecognition) return;
           clearStartTimeout();
           clearTimers();
           if (finalized) {
-            cleanup({ instance: nextRecognition });
+            cleanup({ instance: nextRecognition, reason: 'onend-after-finalize' });
             return;
           }
           const bufferedTranscript = getBufferedTranscript();
@@ -605,7 +824,7 @@ export function createSpeechSession({
           } else {
             emit({ status: 'idle' });
           }
-          cleanup({ instance: nextRecognition });
+          cleanup({ instance: nextRecognition, reason: 'onend-complete' });
         };
 
         if (startupTimeout > 0) {
@@ -615,8 +834,16 @@ export function createSpeechSession({
         }
         hardTimeoutId = setTimeout(() => {
           if (finalized || recognition !== nextRecognition) return;
+          trace('hard-timeout-fired', {
+            attempt: attemptByRecognition.get(nextRecognition),
+            reason: lifecycleStarted ? 'post-start-no-terminal-result' : 'pre-start-no-terminal-result'
+          });
           const bufferedTranscript = getBufferedTranscript();
           if (bufferedTranscript) {
+            trace('stop-call', {
+              attempt: attemptByRecognition.get(nextRecognition),
+              reason: 'hard-timeout-with-buffer'
+            });
             try {
               nextRecognition.stop?.();
             } catch {
@@ -640,14 +867,26 @@ export function createSpeechSession({
           recoveryReason: automaticRecoveryCount > 0 ? state.recoveryReason : '',
           recoveryAttempt: automaticRecoveryCount
         });
+        trace('start-call', {
+          attempt: attemptByRecognition.get(nextRecognition),
+          reason: 'native-start'
+        });
         nextRecognition.start();
+        trace('start-return', {
+          attempt: attemptByRecognition.get(nextRecognition),
+          reason: 'native-start-returned'
+        });
         return state;
       } catch (error) {
         const message = error instanceof Error ? error.message : 'start_failed';
+        trace('onerror', {
+          attempt: nextRecognition ? attemptByRecognition.get(nextRecognition) : recognitionAttempt,
+          reason: 'start-exception:' + message
+        });
         clearAttemptTimers();
         emit({ status: 'idle', error: message });
         onError?.(message);
-        cleanup({ abort: true, instance: nextRecognition });
+        cleanup({ abort: true, instance: nextRecognition, reason: 'start-exception' });
         return state;
       }
     }
@@ -667,15 +906,18 @@ export function createSpeechSession({
     getState,
     get recognition() {
       return recognition;
+    },
+    get diagnosticSessionId() {
+      return diagnosticSessionId;
     }
   };
 }
 
-export function cancelActiveSpeechRecognition() {
+export function cancelActiveSpeechRecognition(reason = 'global-cancel') {
   const cancel = activeSpeechRecognitionCancel;
   activeSpeechRecognitionCancel = null;
   try {
-    cancel?.();
+    cancel?.(reason);
   } catch {
     // Ignore cancellation errors.
   }

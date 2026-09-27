@@ -1,5 +1,6 @@
 import { getLanguageConfig, VOICE_RESULT_CODES } from './voiceConfig.js';
 import { normalizeVoiceLanguage } from './languageDetector.js';
+import { traceSpeechDiagnostic } from '../speech/speechDiagnostics.js';
 
 let activeSpeech = null;
 
@@ -80,6 +81,12 @@ export async function loadBrowserVoices({ timeoutMs = 1200 } = {}) {
 export function cancelBrowserSpeech() {
   const synth = getSynthesis();
   const current = activeSpeech;
+  const cancellationState = current || synth?.speaking || synth?.pending ? 'active' : 'idle';
+  traceSpeechDiagnostic('tts-cancel', {
+    activity: 'tts',
+    reason: cancellationState,
+    recognitionState: cancellationState
+  });
   activeSpeech = null;
   try {
     synth?.cancel?.();
@@ -119,6 +126,13 @@ export async function speakBrowserSegment(text, options = {}) {
   const config = getLanguageConfig(language);
   const voices = options.voices || await loadBrowserVoices(options);
   const voice = options.voice || selectBestVoice(voices, language);
+  const characterCount = String(text || '').length;
+  traceSpeechDiagnostic('tts-speak-call', {
+    activity: 'tts',
+    language: voice?.lang || config.locale,
+    recognitionState: 'pending',
+    totalCharacterCount: characterCount
+  });
 
   return new Promise(resolve => {
     let settled = false;
@@ -138,17 +152,41 @@ export async function speakBrowserSegment(text, options = {}) {
     utterance.rate = options.rate;
     utterance.pitch = options.pitch;
     utterance.volume = options.volume;
-    utterance.onstart = () => options.onStart?.({ language, voice });
-    utterance.onend = () => settle({
-      ok: true,
-      success: true,
-      code: VOICE_RESULT_CODES.SPOKEN,
-      language,
-      voiceName: voice?.name || 'Auto peranti',
-      voiceLanguage: voice?.lang || config.locale
-    });
+    utterance.onstart = () => {
+      traceSpeechDiagnostic('tts-start', {
+        activity: 'tts',
+        language: utterance.lang,
+        recognitionState: 'speaking',
+        totalCharacterCount: characterCount
+      });
+      options.onStart?.({ language, voice });
+    };
+    utterance.onend = () => {
+      traceSpeechDiagnostic('tts-end', {
+        activity: 'tts',
+        language: utterance.lang,
+        reason: 'completed',
+        recognitionState: 'idle',
+        totalCharacterCount: characterCount
+      });
+      settle({
+        ok: true,
+        success: true,
+        code: VOICE_RESULT_CODES.SPOKEN,
+        language,
+        voiceName: voice?.name || 'Auto peranti',
+        voiceLanguage: voice?.lang || config.locale
+      });
+    };
     utterance.onerror = event => {
       const error = event?.error || 'speech-error';
+      traceSpeechDiagnostic('tts-error', {
+        activity: 'tts',
+        language: utterance.lang,
+        reason: error,
+        recognitionState: 'error',
+        totalCharacterCount: characterCount
+      });
       const code = error === 'canceled' || error === 'interrupted'
         ? VOICE_RESULT_CODES.CANCELLED
         : ['language-unavailable', 'voice-unavailable', 'synthesis-unavailable'].includes(error)
@@ -170,6 +208,13 @@ export async function speakBrowserSegment(text, options = {}) {
     try {
       synth.speak(utterance);
     } catch (error) {
+      traceSpeechDiagnostic('tts-error', {
+        activity: 'tts',
+        language: utterance.lang,
+        reason: error?.message || 'speech-error',
+        recognitionState: 'start-error',
+        totalCharacterCount: characterCount
+      });
       settle({
         ok: false,
         success: false,
