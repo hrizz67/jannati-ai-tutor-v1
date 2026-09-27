@@ -1069,6 +1069,102 @@ describe('mobile speech post-start recovery', () => {
     expect(session.recognition).toBeNull();
     expect(failures).toEqual([]);
   });
+  it('recovers a mobile no-speech error only after the lifecycle has started', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+    const accepted = [];
+    const failures = [];
+    const session = createReadingCommunicationSession({
+      contextKey: 'android:no-speech-after-start',
+      accepted,
+      failures
+    });
+
+    session.start();
+    const stalled = session.recognition;
+    stalled.emitError('no-speech');
+    expect(stalled.abortCalls).toBe(1);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    const recovered = session.recognition;
+    expect(recovered).not.toBe(stalled);
+    recovered.emitResult('jawapan selepas retry');
+    recovered.emitEnd();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(accepted).toEqual(['jawapan selepas retry']);
+    expect(failures).toEqual([]);
+  });
+
+  it('recovers when mobile recognition ends after onstart with no transcript', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    const accepted = [];
+    const failures = [];
+    const session = createReadingCommunicationSession({
+      contextKey: 'ios:end-after-start',
+      accepted,
+      failures
+    });
+
+    session.start();
+    const ended = session.recognition;
+    ended.emitEnd();
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    const recovered = session.recognition;
+    expect(recovered).not.toBe(ended);
+    recovered.emitResult('jawapan selepas end');
+    recovered.emitEnd();
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(2);
+    expect(ended.abortCalls).toBe(0);
+    expect(accepted).toEqual(['jawapan selepas end']);
+    expect(failures).toEqual([]);
+  });
+
+  it('shares one automatic recovery budget across startup and post-start stalls', () => {
+    vi.useFakeTimers();
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
+
+    class StartupThenListeningRecognition extends FakeSpeechRecognition {
+      static instances = [];
+
+      constructor() {
+        super();
+        StartupThenListeningRecognition.instances.push(this);
+      }
+
+      start() {
+        this.startCalls += 1;
+        if (StartupThenListeningRecognition.instances.length > 1) this.onstart?.();
+      }
+    }
+
+    globalThis.window.SpeechRecognition = StartupThenListeningRecognition;
+    const failures = [];
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      contextKey: 'android:shared-recovery-budget',
+      getCurrentContextKey: () => 'android:shared-recovery-budget',
+      speechOptions: postStartOptions,
+      onFailure: result => failures.push(result)
+    });
+
+    session.start();
+    vi.advanceTimersByTime(postStartOptions.startTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.startRetryDelayMs);
+    expect(session.getState()?.status).toBe('listening');
+    vi.advanceTimersByTime(postStartOptions.hardTimeoutMs);
+    vi.advanceTimersByTime(postStartOptions.postStartRetryDelayMs);
+
+    expect(StartupThenListeningRecognition.instances).toHaveLength(2);
+    expect(StartupThenListeningRecognition.instances.map(instance => instance.abortCalls)).toEqual([1, 1]);
+    expect(session.recognition).toBeNull();
+    expect(failures).toHaveLength(1);
+    expect(failures[0].errorCode).toBe('no-result');
+  });
 });
 
 describe('Mendengar TTS locale and failure integrity', () => {
