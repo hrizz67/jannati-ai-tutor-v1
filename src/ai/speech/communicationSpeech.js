@@ -154,6 +154,7 @@ export function createCommunicationSpeechSession({
     ...(speechOptions && typeof speechOptions === 'object' ? speechOptions : {}),
     lang: speechLang,
     resultFactory,
+    canRecover: isCurrent,
     onChange(nextState) {
       if (isCurrent()) onChange?.(nextState);
     },
