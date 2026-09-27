@@ -268,6 +268,76 @@ describe('visible controlled recognition failures', () => {
 });
 
 describe('session isolation and retry', () => {
+  it('keeps Q1, Q2 and Q3 recognition isolated from an older delayed abort', () => {
+    vi.useFakeTimers();
+
+    class SharedPipelineSpeechRecognition extends FakeSpeechRecognition {
+      static instances = [];
+      static activeInstance = null;
+
+      constructor() {
+        super();
+        SharedPipelineSpeechRecognition.instances.push(this);
+        this.blockedByStaleAbort = false;
+      }
+
+      start() {
+        this.startCalls += 1;
+        SharedPipelineSpeechRecognition.activeInstance = this;
+        this.onstart?.();
+      }
+
+      abort() {
+        this.abortCalls += 1;
+        const activeInstance = SharedPipelineSpeechRecognition.activeInstance;
+        if (activeInstance && activeInstance !== this) {
+          activeInstance.blockedByStaleAbort = true;
+        }
+        if (activeInstance === this) SharedPipelineSpeechRecognition.activeInstance = null;
+      }
+
+      emitResult(transcript, options) {
+        if (this.blockedByStaleAbort) return;
+        super.emitResult(transcript, options);
+      }
+
+      emitEnd() {
+        if (SharedPipelineSpeechRecognition.activeInstance === this) {
+          SharedPipelineSpeechRecognition.activeInstance = null;
+        }
+        super.emitEnd();
+      }
+    }
+
+    globalThis.window.SpeechRecognition = SharedPipelineSpeechRecognition;
+    const transcripts = [];
+    const sessions = [];
+
+    for (let sessionIndex = 0; sessionIndex < 3; sessionIndex += 1) {
+      const contextKey = `reading:bm:${sessionIndex}`;
+      const session = createCommunicationSpeechSession({
+        activity: 'reading',
+        selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+        contextKey,
+        getCurrentContextKey: () => contextKey,
+        resultFactory: transcript => ({ status: 'completed', transcript, score: 100, correct: true }),
+        onTranscript: transcript => transcripts.push(transcript)
+      });
+      sessions.push(session);
+      session.start();
+
+      if (sessionIndex > 0) vi.advanceTimersByTime(150);
+      session.recognition.emitResult(`jawapan ${sessionIndex + 1}`);
+      session.recognition.emitEnd();
+      session.cancel();
+    }
+
+    vi.runOnlyPendingTimers();
+    expect(SharedPipelineSpeechRecognition.instances).toHaveLength(3);
+    expect(transcripts).toEqual(['jawapan 1', 'jawapan 2', 'jawapan 3']);
+    expect(sessions.every(session => session.recognition === null)).toBe(true);
+  });
+
   it('cancels a changed context and ignores its stale transcript and completion callbacks', () => {
     let currentContext = 'speaking:english:intro';
     let callbacks = null;

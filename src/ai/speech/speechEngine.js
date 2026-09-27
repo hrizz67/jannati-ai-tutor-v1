@@ -105,8 +105,12 @@ export function collectSpeechTranscriptFragments(event, seenResultKeys = new Set
   };
 }
 
-function disposeRecognitionInstance(instance, { delayAbortMs = 0 } = {}) {
+const disposedRecognitionInstances = new WeakSet();
+
+function disposeRecognitionInstance(instance, { abort = false } = {}) {
   if (!instance) return;
+  if (disposedRecognitionInstances.has(instance)) return;
+  disposedRecognitionInstances.add(instance);
   try {
     instance.onstart = null;
     instance.onresult = null;
@@ -116,21 +120,7 @@ function disposeRecognitionInstance(instance, { delayAbortMs = 0 } = {}) {
   } catch {
     // Ignore handler cleanup errors.
   }
-  try {
-    instance.stop?.();
-  } catch {
-    // Ignore stop errors.
-  }
-  if (delayAbortMs > 0) {
-    setTimeout(() => {
-      try {
-        instance.abort?.();
-      } catch {
-        // Ignore delayed abort errors.
-      }
-    }, delayAbortMs);
-    return;
-  }
+  if (!abort) return;
   try {
     instance.abort?.();
   } catch {
@@ -228,10 +218,24 @@ export function createSpeechSession({
     return defaultResultFactory(transcript, expectedAnswer, acceptedAnswers);
   }
 
+  function clearActiveCancellation() {
+    if (activeSpeechRecognitionCancel === cancel) {
+      activeSpeechRecognitionCancel = null;
+    }
+  }
+
+  function releaseRecognition(instance = recognition, { abort = false } = {}) {
+    if (recognition === instance) recognition = null;
+    clearActiveCancellation();
+    disposeRecognitionInstance(instance, { abort });
+  }
+
   function finalize(transcript = '', reason = 'completed') {
     if (finalized) return state.result || createEmptySpeechResult();
     finalized = true;
     clearTimers();
+    const completedRecognition = recognition;
+    releaseRecognition(completedRecognition);
     const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
     transcriptBuffer = safeTranscript;
     const result = safeTranscript ? buildResult(safeTranscript) : createEmptySpeechResult();
@@ -259,17 +263,17 @@ export function createSpeechSession({
     } else {
       onEmpty?.(result);
     }
-    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
-    recognition = null;
     onStopped?.(reason);
     return result;
   }
 
-  function emitEmptyResult(message, errorCode = 'no-result') {
+  function emitEmptyResult(message, errorCode = 'no-result', { abort = false } = {}) {
     if (finalized || emptyResultEmitted) return state.result || createEmptySpeechResult(errorCode, message);
     emptyResultEmitted = true;
     finalized = true;
     clearTimers();
+    const completedRecognition = recognition;
+    releaseRecognition(completedRecognition, { abort });
     const result = createEmptySpeechResult(errorCode, message);
     emit({
       status: 'empty',
@@ -281,18 +285,12 @@ export function createSpeechSession({
     });
     onResult?.(result);
     onEmpty?.(result);
-    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
-    recognition = null;
     onStopped?.('empty');
     return result;
   }
 
-  function cleanup() {
-    if (activeSpeechRecognitionCancel === cancel) {
-      activeSpeechRecognitionCancel = null;
-    }
-    disposeRecognitionInstance(recognition);
-    recognition = null;
+  function cleanup({ abort = false, instance = recognition } = {}) {
+    releaseRecognition(instance, { abort });
   }
 
   function stop() {
@@ -304,19 +302,15 @@ export function createSpeechSession({
   }
 
   function cancel() {
-    try {
-      clearTimers();
-    } catch {
-      // Ignore abort errors.
-    }
+    clearTimers();
+    const cancelledRecognition = recognition;
     finalized = true;
     transcriptBuffer = '';
     finalFragments = [];
     interimTranscript = '';
     resultFragmentsByIndex = new Map();
     seenResultKeys = new Set();
-    disposeRecognitionInstance(recognition, { delayAbortMs: multiUtterance ? 150 : 0 });
-    cleanup();
+    cleanup({ abort: true, instance: cancelledRecognition });
     emit({ status: 'idle' });
     onStopped?.('cancelled');
   }
@@ -338,12 +332,13 @@ export function createSpeechSession({
       return unsupported;
     }
 
+    const previousCancel = activeSpeechRecognitionCancel;
+    activeSpeechRecognitionCancel = null;
     try {
-      activeSpeechRecognitionCancel?.();
+      previousCancel?.();
     } catch {
       // Ignore global cancellation errors.
     }
-    activeSpeechRecognitionCancel = cancel;
     receivedResult = false;
     transcriptBuffer = '';
     finalFragments = [];
@@ -354,16 +349,19 @@ export function createSpeechSession({
     emptyResultEmitted = false;
     const nextRecognition = new Recognition();
     recognition = nextRecognition;
+    activeSpeechRecognitionCancel = cancel;
     nextRecognition.lang = lang;
     nextRecognition.interimResults = multiUtterance ? true : Boolean(interimResults);
     nextRecognition.continuous = multiUtterance ? true : Boolean(continuous);
     nextRecognition.maxAlternatives = 1;
 
     nextRecognition.onstart = () => {
+      if (recognition !== nextRecognition || finalized) return;
       emit({ status: 'listening', error: '' });
       onListening?.(state);
     };
     nextRecognition.onresult = event => {
+      if (recognition !== nextRecognition || finalized) return;
       if (multiUtterance) {
         const results = event?.results ? Array.from(event.results) : [];
         const safeStartIndex = Number.isInteger(event?.resultIndex) && event.resultIndex > 0 ? event.resultIndex : 0;
@@ -410,7 +408,7 @@ export function createSpeechSession({
             }
             return;
           }
-          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
+          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
         }, Math.max(0, Number(silenceDelayMs) || 0));
         return;
       }
@@ -426,6 +424,7 @@ export function createSpeechSession({
       emit({ status: 'processing', transcript: transcriptBuffer });
     };
     nextRecognition.onerror = event => {
+      if (recognition !== nextRecognition || finalized) return;
       const error = event?.error || 'unknown_error';
       if (error === 'aborted') {
         emit({ status: 'idle', error: '' });
@@ -456,9 +455,10 @@ export function createSpeechSession({
       onError?.(error);
     };
     nextRecognition.onend = () => {
+      if (recognition !== nextRecognition) return;
       clearTimers();
       if (finalized) {
-        cleanup();
+        cleanup({ instance: nextRecognition });
         return;
       }
       const bufferedTranscript = getBufferedTranscript();
@@ -469,7 +469,7 @@ export function createSpeechSession({
       } else {
         emit({ status: 'idle' });
       }
-      cleanup();
+      cleanup({ instance: nextRecognition });
     };
 
     try {
@@ -485,7 +485,7 @@ export function createSpeechSession({
           return;
         }
         if (state.status === 'listening' && !receivedResult) {
-          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result');
+          emitEmptyResult('Suara belum dapat dikesan. Cuba bercakap lebih dekat dengan mikrofon.', 'no-result', { abort: true });
         }
       }, Math.max(0, Number(hardTimeoutMs) || 0));
       nextRecognition.start();
@@ -495,7 +495,7 @@ export function createSpeechSession({
       clearTimers();
       emit({ status: 'idle', error: message });
       onError?.(message);
-      cleanup();
+      cleanup({ abort: true, instance: nextRecognition });
       return state;
     }
   }
@@ -517,8 +517,10 @@ export function createSpeechSession({
 }
 
 export function cancelActiveSpeechRecognition() {
+  const cancel = activeSpeechRecognitionCancel;
+  activeSpeechRecognitionCancel = null;
   try {
-    activeSpeechRecognitionCancel?.();
+    cancel?.();
   } catch {
     // Ignore cancellation errors.
   }
