@@ -1,4 +1,4 @@
-import { shouldRecoverMobileSpeech } from './speechCapability.js';
+import { shouldRecoverMobileSpeechStartup } from './speechCapability.js';
 import { createSpeechSession } from './speechEngine.js';
 
 export function createSpeechActivitySession(options = {}) {
@@ -6,17 +6,17 @@ export function createSpeechActivitySession(options = {}) {
 }
 
 export function createReadingSpeechSession(options = {}) {
-  const recoverMobileSpeech = shouldRecoverMobileSpeech();
+  const recoverMobileStartup = shouldRecoverMobileSpeechStartup();
   return createSpeechSession({
     continuous: true,
     interimResults: true,
     multiUtterance: true,
     silenceDelayMs: 1800,
     hardTimeoutMs: 15000,
-    startTimeoutMs: recoverMobileSpeech ? 6000 : 9000,
-    startRetryLimit: recoverMobileSpeech ? 1 : 0,
+    startTimeoutMs: recoverMobileStartup ? 6000 : 9000,
+    startRetryLimit: recoverMobileStartup ? 1 : 0,
     startRetryDelayMs: 300,
-    postStartRetryLimit: recoverMobileSpeech ? 1 : 0,
+    postStartRetryLimit: recoverMobileStartup ? 1 : 0,
     postStartRetryDelayMs: 300,
     ...options
   });
