@@ -25,8 +25,9 @@ function stopCurrentSession({ recognition = true } = {}) {
   sessionId += 1;
   cancellationGeneration += 1;
   if (recognition) cancelActiveSpeechRecognition('tts-session-cancel');
-  browserVoiceProvider.cancel();
+  const cancellation = browserVoiceProvider.cancel();
   activeStatus = { ...activeStatus, state: 'idle', code: VOICE_RESULT_CODES.CANCELLED };
+  return { ...cancellation, state: 'idle' };
 }
 
 function buildSpeechSettings(language, options = {}) {
@@ -117,11 +118,11 @@ export function speak(text, options = {}) {
 }
 
 export function stop() {
-  stopCurrentSession();
+  return stopCurrentSession();
 }
 
 export function cancel() {
-  stopCurrentSession();
+  return stopCurrentSession();
 }
 
 export function pause() {
