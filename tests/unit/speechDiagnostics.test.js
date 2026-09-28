@@ -15,6 +15,7 @@ import {
   cancelBrowserSpeech,
   speakBrowserSegment
 } from '../../src/ai/voice/browserVoiceProvider.js';
+import { stop as stopVoice } from '../../src/ai/voice/voiceEngine.js';
 import {
   createMemorySessionStorage,
   SharedNativeOwnerSpeechRecognition
@@ -431,7 +432,7 @@ describe('safe diagnostic trace', () => {
     session.cancel();
   });
 
-  it('exposes PWA controller and runtime-versus-baseline version fields', () => {
+  it('exposes PWA controller and a dynamic bundled-runtime reference', () => {
     installEnvironment({
       standalone: true,
       serviceWorkerController: {
@@ -445,9 +446,13 @@ describe('safe diagnostic trace', () => {
     expect(event.displayMode).toBe('standalone');
     expect(event.serviceWorkerScriptUrl).toContain('service-worker.js?build=old');
     expect(event.serviceWorkerControllerState).toBe('activated');
-    expect(snapshot.baseline.appVersion).toBe('3.13.8');
-    expect(snapshot.runtime).toHaveProperty('versionMatchesBaseline');
-    expect(snapshot.runtime).toHaveProperty('buildMatchesBaseline');
+    expect(snapshot.baseline).toMatchObject({
+      referenceType: 'bundled-runtime',
+      appVersion: snapshot.runtime.appVersion,
+      buildRevision: snapshot.runtime.buildRevision
+    });
+    expect(snapshot.runtime.versionMatchesBaseline).toBe(true);
+    expect(snapshot.runtime.buildMatchesBaseline).toBe(true);
   });
 
   it('marks component unmount separately from cancel and abort', () => {
@@ -467,8 +472,7 @@ describe('safe diagnostic trace', () => {
 });
 
 describe('TTS coupling diagnostics', () => {
-  it('traces cancel while idle, active and after end without storing spoken text', async () => {
-    installEnvironment();
+  function installSynthesis({ speaking = false, pending = false } = {}) {
     class MockUtterance {
       constructor(text) {
         this.text = text;
@@ -476,8 +480,9 @@ describe('TTS coupling diagnostics', () => {
       }
     }
     const synthesis = {
-      speaking: false,
-      pending: false,
+      speaking,
+      pending,
+      cancelCalls: 0,
       lastUtterance: null,
       getVoices: () => [],
       addEventListener() {},
@@ -487,44 +492,136 @@ describe('TTS coupling diagnostics', () => {
         this.speaking = true;
       },
       cancel() {
+        this.cancelCalls += 1;
         this.speaking = false;
         this.pending = false;
       }
     };
     globalThis.window.SpeechSynthesisUtterance = MockUtterance;
     globalThis.window.speechSynthesis = synthesis;
+    return synthesis;
+  }
 
-    cancelBrowserSpeech();
+  it('makes stopVoice an observable no-op when browser TTS is fully idle', () => {
+    installEnvironment();
+    const synthesis = installSynthesis();
 
-    const activePromise = speakBrowserSegment('private spoken words', {
+    const stopped = stopVoice();
+
+    expect(stopped).toEqual({ cancelled: false, reason: 'idle', state: 'idle' });
+    expect(synthesis.cancelCalls).toBe(0);
+    expect(getSpeechDiagnosticSnapshot().events.at(-1)).toMatchObject({
+      event: 'tts-cancel-skipped',
+      reason: 'idle',
+      activity: 'tts',
+      recognitionState: 'idle'
+    });
+  });
+
+  it('cancels one active utterance exactly once and settles it safely', async () => {
+    installEnvironment();
+    const synthesis = installSynthesis();
+    const speechPromise = speakBrowserSegment('private spoken words', {
       language: 'en',
       voices: []
     });
-    const activeUtterance = synthesis.lastUtterance;
-    activeUtterance.onstart?.();
-    cancelBrowserSpeech();
-    await activePromise;
+    synthesis.lastUtterance.onstart?.();
 
-    const completedPromise = speakBrowserSegment('second private phrase', {
+    const cancellation = cancelBrowserSpeech();
+    const speechResult = await speechPromise;
+
+    expect(cancellation).toEqual({ cancelled: true, reason: 'active' });
+    expect(synthesis.cancelCalls).toBe(1);
+    expect(speechResult).toMatchObject({ success: false, code: 'CANCELLED' });
+    const snapshot = getSpeechDiagnosticSnapshot();
+    expect(snapshot.events.filter(event => event.event === 'tts-cancel')).toHaveLength(1);
+    expect(snapshot.events.some(event => (
+      event.event === 'tts-cancel'
+      && event.reason === 'active'
+    ))).toBe(true);
+    expect(JSON.stringify(snapshot)).not.toContain('private spoken words');
+  });
+
+  it('still invokes the platform cancel path for pending synthesis', () => {
+    installEnvironment();
+    const synthesis = installSynthesis({ pending: true });
+
+    const cancellation = cancelBrowserSpeech();
+
+    expect(cancellation).toEqual({ cancelled: true, reason: 'pending' });
+    expect(synthesis.cancelCalls).toBe(1);
+    expect(getSpeechDiagnosticSnapshot().events.at(-1)).toMatchObject({
+      event: 'tts-cancel',
+      reason: 'pending'
+    });
+  });
+
+  it('does not mutate platform TTS between a completed Q1 and the Q2 start call', () => {
+    installEnvironment();
+    const synthesis = installSynthesis();
+    completeQuestion({
+      language: 'ms-MY',
+      contextKey: 'reading:bm:0',
+      transcript: 'jawapan satu'
+    });
+
+    stopVoice();
+    const q2 = createReadingSpeechSession({
+      activity: 'reading',
+      contextKey: 'reading:bm:1',
+      lang: 'ms-MY'
+    });
+    q2.start();
+
+    expect(synthesis.cancelCalls).toBe(0);
+    const events = getSpeechDiagnosticSnapshot().events;
+    const q1EndIndex = events.findIndex(event => (
+      event.event === 'onend'
+      && event.contextKey === 'reading:bm:0'
+    ));
+    const skippedIndex = events.findIndex(event => (
+      event.event === 'tts-cancel-skipped'
+      && event.reason === 'idle'
+    ));
+    const q2StartIndex = events.findIndex(event => (
+      event.event === 'start-call'
+      && event.contextKey === 'reading:bm:1'
+    ));
+    expect(q1EndIndex).toBeGreaterThanOrEqual(0);
+    expect(skippedIndex).toBeGreaterThan(q1EndIndex);
+    expect(q2StartIndex).toBeGreaterThan(skippedIndex);
+    expect(events.slice(q1EndIndex + 1, q2StartIndex).some(event => (
+      event.event === 'tts-cancel'
+    ))).toBe(false);
+    q2.recognition.emitEnd();
+  });
+
+  it('keeps active TTS and recognition interruption semantics intact', async () => {
+    vi.useFakeTimers();
+    installEnvironment();
+    const synthesis = installSynthesis();
+    const recognitionSession = createReadingSpeechSession({
+      activity: 'reading',
+      contextKey: 'reading:bm:interrupt',
+      lang: 'ms-MY'
+    });
+    recognitionSession.start();
+    const recognition = recognitionSession.recognition;
+    const speechPromise = speakBrowserSegment('active interruption', {
       language: 'ms',
       voices: []
     });
-    const completedUtterance = synthesis.lastUtterance;
-    completedUtterance.onstart?.();
-    synthesis.speaking = false;
-    completedUtterance.onend?.();
-    await completedPromise;
-    cancelBrowserSpeech();
+    synthesis.lastUtterance.onstart?.();
 
-    const snapshot = getSpeechDiagnosticSnapshot();
-    const cancellationReasons = snapshot.events
-      .filter(event => event.event === 'tts-cancel')
-      .map(event => event.reason);
-    expect(cancellationReasons).toEqual(['idle', 'active', 'idle']);
-    expect(snapshot.events.some(event => event.event === 'tts-speak-call')).toBe(true);
-    expect(snapshot.events.some(event => event.event === 'tts-start')).toBe(true);
-    expect(snapshot.events.some(event => event.event === 'tts-end')).toBe(true);
-    expect(JSON.stringify(snapshot)).not.toContain('private spoken words');
-    expect(JSON.stringify(snapshot)).not.toContain('second private phrase');
+    const stopped = stopVoice();
+
+    expect(stopped).toEqual({ cancelled: true, reason: 'active', state: 'idle' });
+    expect(recognition.abortCalls).toBe(1);
+    expect(synthesis.cancelCalls).toBe(1);
+    await expect(speechPromise).resolves.toMatchObject({
+      success: false,
+      code: 'CANCELLED'
+    });
+    vi.advanceTimersByTime(500);
   });
 });

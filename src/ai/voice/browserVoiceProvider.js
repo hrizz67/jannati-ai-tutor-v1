@@ -81,7 +81,21 @@ export async function loadBrowserVoices({ timeoutMs = 1200 } = {}) {
 export function cancelBrowserSpeech() {
   const synth = getSynthesis();
   const current = activeSpeech;
-  const cancellationState = current || synth?.speaking || synth?.pending ? 'active' : 'idle';
+  const cancellationState = current || synth?.speaking
+    ? 'active'
+    : synth?.pending
+      ? 'pending'
+      : 'idle';
+
+  if (cancellationState === 'idle') {
+    traceSpeechDiagnostic('tts-cancel-skipped', {
+      activity: 'tts',
+      reason: 'idle',
+      recognitionState: 'idle'
+    });
+    return { cancelled: false, reason: 'idle' };
+  }
+
   traceSpeechDiagnostic('tts-cancel', {
     activity: 'tts',
     reason: cancellationState,
@@ -97,6 +111,7 @@ export function cancelBrowserSpeech() {
     code: VOICE_RESULT_CODES.CANCELLED,
     message: 'Bacaan suara dihentikan.'
   });
+  return { cancelled: true, reason: cancellationState };
 }
 
 export function pauseBrowserSpeech() {
