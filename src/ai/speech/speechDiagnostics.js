@@ -2,10 +2,17 @@ const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
 const MAX_EVENTS = 300;
 const VALID_MODES = new Set(['current', 'single-interim', 'single-final']);
-const BASELINE = Object.freeze({
-  appVersion: '3.13.8',
-  buildRevision: '223c0e188e79705847dfe2727d1bb3bc06bdf054'
-});
+function readBundledReference() {
+  const appVersion = typeof __APP_VERSION__ !== 'undefined' ? String(__APP_VERSION__) : 'local';
+  const buildRevision = typeof __APP_BUILD_REVISION__ !== 'undefined' ? String(__APP_BUILD_REVISION__) : 'local';
+  return {
+    referenceType: 'bundled-runtime',
+    appVersion,
+    buildRevision
+  };
+}
+
+const BUNDLED_REFERENCE = Object.freeze(readBundledReference());
 
 let memoryEnvelope = null;
 let currentSessionId = '';
@@ -350,11 +357,11 @@ export function getSpeechDiagnosticSnapshot() {
       storage: 'bounded sessionStorage and memory only',
       maximumEvents: MAX_EVENTS
     },
-    baseline: { ...BASELINE },
+    baseline: { ...BUNDLED_REFERENCE },
     runtime: {
       ...runtime,
-      versionMatchesBaseline: runtime.appVersion === BASELINE.appVersion,
-      buildMatchesBaseline: runtime.buildRevision === BASELINE.buildRevision
+      versionMatchesBaseline: runtime.appVersion === BUNDLED_REFERENCE.appVersion,
+      buildMatchesBaseline: runtime.buildRevision === BUNDLED_REFERENCE.buildRevision
     },
     diagnostic: {
       enabled: isSpeechDiagnosticsEnabled(),
@@ -497,14 +504,12 @@ function mountPanel() {
   panelRender = () => {
     const snapshot = getSpeechDiagnosticSnapshot();
     const runtime = snapshot.runtime;
-    const versionStatus = runtime.versionMatchesBaseline ? 'MATCH' : 'MISMATCH';
-    const buildStatus = runtime.buildMatchesBaseline ? 'BASELINE' : 'DIAGNOSTIC/DIFFERENT';
     status.textContent = [
       'mode: ' + snapshot.diagnostic.speechMode,
-      'runtime: v' + runtime.appVersion + ' [' + versionStatus + ']',
-      'baseline: v' + snapshot.baseline.appVersion,
-      'build: ' + runtime.buildRevision + ' [' + buildStatus + ']',
-      'baseline build: ' + snapshot.baseline.buildRevision,
+      'runtime: v' + runtime.appVersion,
+      'reference: bundled v' + snapshot.baseline.appVersion,
+      'build: ' + runtime.buildRevision,
+      'reference build: ' + snapshot.baseline.buildRevision,
       'session: ' + (snapshot.diagnostic.currentSessionId || 'none'),
       'display: ' + runtime.displayMode + ' / visibility: ' + runtime.documentVisibility,
       'service worker: ' + (runtime.serviceWorkerScriptUrl || 'none') + ' (' + runtime.serviceWorkerControllerState + ')',
@@ -560,7 +565,8 @@ export function initializeSpeechDiagnostics() {
   return true;
 }
 
-export const SPEECH_DIAGNOSTIC_BASELINE = BASELINE;
+export const SPEECH_DIAGNOSTIC_BASELINE = BUNDLED_REFERENCE;
+export const SPEECH_DIAGNOSTIC_REFERENCE = BUNDLED_REFERENCE;
 export const SPEECH_DIAGNOSTIC_MAX_EVENTS = MAX_EVENTS;
 
 export default {
