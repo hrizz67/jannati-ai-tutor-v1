@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
 const MAX_EVENTS = 300;
-const VALID_MODES = new Set(['current', 'single-interim', 'single-final']);
+const VALID_MODES = new Set(['current', 'single-interim', 'single-final', 'legacy-simple']);
 function readBundledReference() {
   const appVersion = typeof __APP_VERSION__ !== 'undefined' ? String(__APP_VERSION__) : 'local';
   const buildRevision = typeof __APP_BUILD_REVISION__ !== 'undefined' ? String(__APP_BUILD_REVISION__) : 'local';
@@ -457,7 +457,7 @@ function mountPanel() {
   Object.assign(controls.style, { display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' });
 
   const selector = browserDocument.createElement('select');
-  ['current', 'single-interim', 'single-final'].forEach(mode => {
+  ['current', 'single-interim', 'single-final', 'legacy-simple'].forEach(mode => {
     const option = browserDocument.createElement('option');
     option.value = mode;
     option.textContent = mode;
