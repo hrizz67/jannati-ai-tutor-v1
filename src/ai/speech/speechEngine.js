@@ -340,11 +340,16 @@ export function createSpeechSession({
 
   function finalize(transcript = '', reason = 'completed') {
     if (finalized) return state.result || createEmptySpeechResult();
+    const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
+    trace('finalize', {
+      reason,
+      nonEmptyTranscriptCount: safeTranscript ? 1 : 0,
+      totalCharacterCount: safeTranscript.length
+    });
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
     releaseRecognition(completedRecognition, { reason: 'finalize:' + reason });
-    const safeTranscript = typeof transcript === 'string' ? transcript.trim() : '';
     transcriptBuffer = safeTranscript;
     const result = safeTranscript ? buildResult(safeTranscript) : createEmptySpeechResult();
     const nextState = safeTranscript
