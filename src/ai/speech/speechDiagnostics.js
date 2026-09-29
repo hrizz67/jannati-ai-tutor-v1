@@ -1,7 +1,9 @@
+import { createNativeSpeechProbeController } from './nativeSpeechProbe.js';
+
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
 const MAX_EVENTS = 300;
-const VALID_MODES = new Set(['current', 'single-interim', 'single-final', 'legacy-simple']);
+const VALID_MODES = new Set(['current', 'single-interim', 'single-final', 'legacy-simple', 'native-probe']);
 function readBundledReference() {
   const appVersion = typeof __APP_VERSION__ !== 'undefined' ? String(__APP_VERSION__) : 'local';
   const buildRevision = typeof __APP_BUILD_REVISION__ !== 'undefined' ? String(__APP_BUILD_REVISION__) : 'local';
@@ -19,6 +21,7 @@ let currentSessionId = '';
 let sessionSequence = 0;
 let initialized = false;
 let panelRender = null;
+let nativeProbeController = null;
 const subscribers = new Set();
 
 function getWindow() {
@@ -139,7 +142,10 @@ function normalizeStoredEvent(event) {
     nonEmptyTranscriptCount: safeInteger(event.nonEmptyTranscriptCount),
     totalCharacterCount: safeInteger(event.totalCharacterCount),
     nativeEndAcknowledged: safeBoolean(event.nativeEndAcknowledged),
-    retryBeforeOldOnend: safeBoolean(event.retryBeforeOldOnend)
+    retryBeforeOldOnend: safeBoolean(event.retryBeforeOldOnend),
+    probeId: safeString(event.probeId, 100),
+    probeElapsedMs: Math.max(0, safeInteger(event.probeElapsedMs, 0)),
+    errorCode: safeString(event.errorCode, 80)
   };
 }
 
@@ -189,6 +195,37 @@ function notify() {
   } catch {
     // The panel is best-effort only.
   }
+}
+
+function getNativeProbeController() {
+  if (!nativeProbeController) {
+    nativeProbeController = createNativeSpeechProbeController({
+      getWindow,
+      isEnabled: () => (
+        isSpeechDiagnosticsEnabled()
+        && getSpeechDiagnosticMode() === 'native-probe'
+      ),
+      trace: traceSpeechDiagnostic,
+      onStateChange: notify
+    });
+  }
+  return nativeProbeController;
+}
+
+export function startNativeSpeechProbe() {
+  return getNativeProbeController().start();
+}
+
+export function stopNativeSpeechProbe() {
+  return getNativeProbeController().stop();
+}
+
+export function abortNativeSpeechProbe() {
+  return getNativeProbeController().abort();
+}
+
+export function getNativeSpeechProbeState() {
+  return getNativeProbeController().getState();
 }
 
 export function isSpeechDiagnosticsEnabled() {
@@ -319,7 +356,10 @@ export function traceSpeechDiagnostic(event, details = {}) {
     nonEmptyTranscriptCount: details.nonEmptyTranscriptCount,
     totalCharacterCount: details.totalCharacterCount,
     nativeEndAcknowledged: details.nativeEndAcknowledged,
-    retryBeforeOldOnend: details.retryBeforeOldOnend
+    retryBeforeOldOnend: details.retryBeforeOldOnend,
+    probeId: details.probeId,
+    probeElapsedMs: details.probeElapsedMs,
+    errorCode: details.errorCode
   });
   if (!entry) return null;
   if (entry.sessionId) currentSessionId = entry.sessionId;
@@ -366,7 +406,8 @@ export function getSpeechDiagnosticSnapshot() {
     diagnostic: {
       enabled: isSpeechDiagnosticsEnabled(),
       speechMode: getSpeechDiagnosticMode(),
-      currentSessionId
+      currentSessionId,
+      nativeProbe: getNativeSpeechProbeState()
     },
     events: envelope.events.map(event => ({ ...event }))
   };
@@ -457,7 +498,7 @@ function mountPanel() {
   Object.assign(controls.style, { display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' });
 
   const selector = browserDocument.createElement('select');
-  ['current', 'single-interim', 'single-final', 'legacy-simple'].forEach(mode => {
+  ['current', 'single-interim', 'single-final', 'legacy-simple', 'native-probe'].forEach(mode => {
     const option = browserDocument.createElement('option');
     option.value = mode;
     option.textContent = mode;
@@ -495,15 +536,74 @@ function mountPanel() {
     controls.appendChild(control);
   });
 
+  let nativeProbeStatus = null;
+  let startProbeButton = null;
+  let stopProbeButton = null;
+  let abortProbeButton = null;
+  let nativeProbeControls = null;
+  if (getSpeechDiagnosticMode() === 'native-probe') {
+    nativeProbeControls = browserDocument.createElement('section');
+    Object.assign(nativeProbeControls.style, {
+      margin: '8px 0',
+      padding: '8px',
+      border: '1px solid #0f8a43',
+      borderRadius: '8px',
+      background: '#f2fff7'
+    });
+
+    const nativeProbeHeading = browserDocument.createElement('strong');
+    nativeProbeHeading.textContent = 'Native Web Speech probe';
+
+    const nativeProbeHelp = browserDocument.createElement('p');
+    nativeProbeHelp.textContent = 'Direct metadata-only recognizer. No TTS, scoring, retry or transcript display.';
+    nativeProbeHelp.style.margin = '6px 0';
+
+    nativeProbeStatus = browserDocument.createElement('div');
+    nativeProbeStatus.setAttribute('role', 'status');
+    nativeProbeStatus.style.marginBottom = '6px';
+
+    const nativeProbeButtons = browserDocument.createElement('div');
+    Object.assign(nativeProbeButtons.style, { display: 'flex', flexWrap: 'wrap', gap: '6px' });
+
+    startProbeButton = browserDocument.createElement('button');
+    startProbeButton.type = 'button';
+    startProbeButton.textContent = 'Start Native Probe';
+    startProbeButton.addEventListener('click', startNativeSpeechProbe);
+
+    stopProbeButton = browserDocument.createElement('button');
+    stopProbeButton.type = 'button';
+    stopProbeButton.textContent = 'Stop Probe';
+    stopProbeButton.addEventListener('click', stopNativeSpeechProbe);
+
+    abortProbeButton = browserDocument.createElement('button');
+    abortProbeButton.type = 'button';
+    abortProbeButton.textContent = 'Abort Probe';
+    abortProbeButton.addEventListener('click', abortNativeSpeechProbe);
+
+    [startProbeButton, stopProbeButton, abortProbeButton].forEach(control => {
+      control.style.font = 'inherit';
+      nativeProbeButtons.appendChild(control);
+    });
+    nativeProbeControls.append(
+      nativeProbeHeading,
+      nativeProbeHelp,
+      nativeProbeStatus,
+      nativeProbeButtons
+    );
+  }
+
   const events = browserDocument.createElement('ol');
   Object.assign(events.style, { margin: '0', paddingLeft: '22px' });
 
-  panel.append(summary, status, controls, events);
+  panel.append(summary, status, controls);
+  if (nativeProbeControls) panel.appendChild(nativeProbeControls);
+  panel.appendChild(events);
   browserDocument.body.appendChild(panel);
 
   panelRender = () => {
     const snapshot = getSpeechDiagnosticSnapshot();
     const runtime = snapshot.runtime;
+    const probeState = snapshot.diagnostic.nativeProbe;
     status.textContent = [
       'mode: ' + snapshot.diagnostic.speechMode,
       'runtime: v' + runtime.appVersion,
@@ -515,6 +615,14 @@ function mountPanel() {
       'service worker: ' + (runtime.serviceWorkerScriptUrl || 'none') + ' (' + runtime.serviceWorkerControllerState + ')',
       'privacy: metadata only; no transcript/audio/identity; no upload'
     ].join('\n');
+    if (nativeProbeStatus) {
+      nativeProbeStatus.textContent = 'Probe status: ' + probeState.status
+        + ' / outcome: ' + probeState.outcome
+        + ' / elapsed: ' + probeState.elapsedMs + 'ms';
+      startProbeButton.disabled = probeState.active;
+      stopProbeButton.disabled = !probeState.active;
+      abortProbeButton.disabled = !probeState.active;
+    }
     events.replaceChildren();
     snapshot.events.slice(-24).reverse().forEach(entry => {
       const item = browserDocument.createElement('li');
@@ -571,13 +679,17 @@ export const SPEECH_DIAGNOSTIC_MAX_EVENTS = MAX_EVENTS;
 
 export default {
   clearSpeechDiagnosticTrace,
+  abortNativeSpeechProbe,
   createSpeechDiagnosticSession,
   createSpeechResultMetadata,
   getSpeechDiagnosticMode,
   getSpeechDiagnosticSnapshot,
+  getNativeSpeechProbeState,
   initializeSpeechDiagnostics,
   isSpeechDiagnosticsEnabled,
   resolveSpeechDiagnosticCaptureMode,
+  startNativeSpeechProbe,
+  stopNativeSpeechProbe,
   subscribeSpeechDiagnostics,
   traceSpeechDiagnostic
 };
