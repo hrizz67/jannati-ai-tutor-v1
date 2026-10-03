@@ -1,4 +1,6 @@
 import { createReadingSpeechSession } from './speechSession.js';
+import { shouldBypassIOSWebSpeech } from './speechCapability.js';
+import { traceSpeechDiagnostic } from './speechDiagnostics.js';
 
 export const COMMUNICATION_SPEECH_LOCALES = Object.freeze({
   bm: 'ms-MY',
@@ -142,6 +144,8 @@ export function createCommunicationSpeechSession({
   onStopped = null
 } = {}) {
   const speechLang = resolveCommunicationSpeechLocale(selectedSet, fallbackId);
+  const bypassActive = ['reading', 'speaking'].includes(activity)
+    && shouldBypassIOSWebSpeech();
   let active = true;
   let failureEmitted = false;
   let session = null;
@@ -159,7 +163,18 @@ export function createCommunicationSpeechSession({
     return failure;
   };
 
-  session = sessionFactory({
+  if (bypassActive) {
+    traceSpeechDiagnostic('ios-webspeech-bypass', {
+      activity,
+      contextKey,
+      questionIndex: resolveQuestionIndex(contextKey),
+      language: speechLang,
+      recognitionState: 'bypassed',
+      reason: 'explicit-ios-flag',
+      iosSpeechBypass: true,
+      recognizerCreated: false
+    });
+  } else session = sessionFactory({
     ...(speechOptions && typeof speechOptions === 'object' ? speechOptions : {}),
     lang: speechLang,
     activity,
@@ -198,11 +213,25 @@ export function createCommunicationSpeechSession({
   });
 
   return {
-    supported: Boolean(session?.supported),
+    supported: !bypassActive && Boolean(session?.supported),
+    bypassed: bypassActive,
     speechLang,
     start() {
       active = true;
       failureEmitted = false;
+      if (bypassActive) {
+        traceSpeechDiagnostic('ios-webspeech-bypass-start-blocked', {
+          activity,
+          contextKey,
+          questionIndex: resolveQuestionIndex(contextKey),
+          language: speechLang,
+          recognitionState: 'bypassed',
+          reason: 'explicit-ios-flag',
+          iosSpeechBypass: true,
+          recognizerCreated: false
+        });
+        return { unsupported: true, bypassed: true };
+      }
       const started = session?.start?.();
       if (started?.unsupported) emitFailure('speech-unavailable');
       return started;

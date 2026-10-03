@@ -77,6 +77,7 @@ export function createMicInputProbeController({
   getNavigator,
   isEnabled,
   isNativeProbeActive,
+  isMediaProbeActive,
   trace,
   onStateChange,
   sampleDurationMs = DEFAULT_SAMPLE_DURATION_MS,
@@ -402,6 +403,9 @@ export function createMicInputProbeController({
     }
     if (isNativeProbeActive?.()) {
       return { started: false, reason: 'native-probe-active', state: { ...state } };
+    }
+    if (isMediaProbeActive?.()) {
+      return { started: false, reason: 'media-probe-active', state: { ...state } };
     }
 
     const mediaDevices = getNavigator?.()?.mediaDevices;
