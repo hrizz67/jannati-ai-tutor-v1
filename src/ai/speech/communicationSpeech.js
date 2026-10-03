@@ -1,5 +1,5 @@
 import { createReadingSpeechSession } from './speechSession.js';
-import { shouldBypassIOSWebSpeech } from './speechCapability.js';
+import { shouldAvoidIOSWebSpeech } from './speechCapability.js';
 import { traceSpeechDiagnostic } from './speechDiagnostics.js';
 
 export const COMMUNICATION_SPEECH_LOCALES = Object.freeze({
@@ -42,6 +42,7 @@ export function getCommunicationSpeechErrorMessage(errorCode = '') {
     case 'no-result':
       return 'Tiada suara dikesan. Cuba bercakap semula atau taip jawapan secara manual.';
     case 'audio-capture':
+    case 'no-audio':
       return 'Mikrofon tidak dapat dikesan. Semak mikrofon dan tetapan sistem, atau taip jawapan secara manual.';
     case 'network':
       return 'Perkhidmatan pengecaman suara tidak dapat dihubungi. Semak sambungan internet atau taip jawapan secara manual.';
@@ -51,7 +52,17 @@ export function getCommunicationSpeechErrorMessage(errorCode = '') {
     case 'bad-grammar':
       return 'Perkhidmatan pengecaman tidak dapat memproses bahasa ini. Cuba semula atau taip jawapan secara manual.';
     case 'start-timeout':
+    case 'capture-timeout':
       return 'Mikrofon tidak berjaya dimulakan pada peranti ini. Cuba sekali lagi atau taip jawapan secara manual.';
+    case 'stt-unavailable':
+      return 'Transkripsi suara belum tersedia. Anda masih boleh menaip jawapan secara manual.';
+    case 'stt-timeout':
+      return 'Transkripsi suara mengambil masa terlalu lama. Cuba sekali lagi atau taip jawapan secara manual.';
+    case 'cancelled':
+      return 'Rakaman dibatalkan. Kamu masih boleh menaip jawapan secara manual.';
+    case 'stt-error':
+      return 'Transkripsi suara menghadapi masalah. Cuba semula atau taip jawapan secara manual.';
+    case 'unsupported':
     case 'speech-unavailable':
     case 'start-failed':
       return 'Pengecaman suara tidak tersedia pada pelayar ini. Anda masih boleh menaip jawapan secara manual.';
@@ -145,7 +156,7 @@ export function createCommunicationSpeechSession({
 } = {}) {
   const speechLang = resolveCommunicationSpeechLocale(selectedSet, fallbackId);
   const bypassActive = ['reading', 'speaking'].includes(activity)
-    && shouldBypassIOSWebSpeech();
+    && shouldAvoidIOSWebSpeech();
   let active = true;
   let failureEmitted = false;
   let session = null;
