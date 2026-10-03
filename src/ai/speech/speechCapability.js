@@ -27,6 +27,32 @@ export function isIOSWebKitBrowser(userAgent, maxTouchPoints) {
   return explicitIOSDevice || desktopModeIPad;
 }
 
+function resolveSearchParams(search) {
+  const value = typeof search === 'string'
+    ? search
+    : typeof globalThis !== 'undefined' && globalThis.window?.location
+      ? globalThis.window.location.search
+      : '';
+  try {
+    return new URLSearchParams(value || '');
+  } catch {
+    return new URLSearchParams();
+  }
+}
+
+export function isIOSWebSpeechBypassRequested(search) {
+  return resolveSearchParams(search).get('iosSpeechBypass') === '1';
+}
+
+export function shouldBypassIOSWebSpeech({
+  search,
+  userAgent,
+  maxTouchPoints
+} = {}) {
+  return isIOSWebSpeechBypassRequested(search)
+    && isIOSWebKitBrowser(userAgent, maxTouchPoints);
+}
+
 export function shouldRecoverMobileSpeech(userAgent, maxTouchPoints) {
   return isIOSWebKitBrowser(userAgent, maxTouchPoints) || isAndroidBrowser(userAgent);
 }
@@ -47,7 +73,9 @@ export default {
   getSpeechRecognitionConstructor,
   isAndroidBrowser,
   isIOSWebKitBrowser,
+  isIOSWebSpeechBypassRequested,
   isMalaySpeechSupported,
+  shouldBypassIOSWebSpeech,
   shouldRecoverMobileSpeech,
   shouldRecoverMobileSpeechStartup,
   supportsSpeechRecognition
