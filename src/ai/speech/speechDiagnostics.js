@@ -2,8 +2,10 @@ import { createNativeSpeechProbeController } from './nativeSpeechProbe.js';
 import { createMicInputProbeController } from './micInputProbe.js';
 import { createMediaRecorderProbeController } from './mediaRecorderProbe.js';
 import {
+  isIOSMediaSttRequested,
   isIOSWebSpeechBypassRequested,
-  shouldBypassIOSWebSpeech
+  shouldBypassIOSWebSpeech,
+  shouldUseIOSMediaStt
 } from './speechCapability.js';
 
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
@@ -535,6 +537,12 @@ export function getSpeechDiagnosticSnapshot() {
       iosSpeechBypass: {
         requested: isIOSWebSpeechBypassRequested(),
         active: shouldBypassIOSWebSpeech(),
+        scope: 'reading-speaking-only'
+      },
+      iosMediaStt: {
+        requested: isIOSMediaSttRequested(),
+        active: shouldUseIOSMediaStt(),
+        mockTranscriptConfigured: Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1)),
         scope: 'reading-speaking-only'
       }
     },

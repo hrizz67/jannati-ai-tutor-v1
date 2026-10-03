@@ -44,6 +44,19 @@ export function isIOSWebSpeechBypassRequested(search) {
   return resolveSearchParams(search).get('iosSpeechBypass') === '1';
 }
 
+export function isIOSMediaSttRequested(search) {
+  return resolveSearchParams(search).get('iosSpeechMode') === 'media-stt';
+}
+
+export function shouldUseIOSMediaStt({
+  search,
+  userAgent,
+  maxTouchPoints
+} = {}) {
+  return isIOSMediaSttRequested(search)
+    && isIOSWebKitBrowser(userAgent, maxTouchPoints);
+}
+
 export function shouldBypassIOSWebSpeech({
   search,
   userAgent,
@@ -51,6 +64,10 @@ export function shouldBypassIOSWebSpeech({
 } = {}) {
   return isIOSWebSpeechBypassRequested(search)
     && isIOSWebKitBrowser(userAgent, maxTouchPoints);
+}
+
+export function shouldAvoidIOSWebSpeech(options = {}) {
+  return shouldBypassIOSWebSpeech(options) || shouldUseIOSMediaStt(options);
 }
 
 export function shouldRecoverMobileSpeech(userAgent, maxTouchPoints) {
@@ -72,10 +89,13 @@ export function isMalaySpeechSupported() {
 export default {
   getSpeechRecognitionConstructor,
   isAndroidBrowser,
+  isIOSMediaSttRequested,
   isIOSWebKitBrowser,
   isIOSWebSpeechBypassRequested,
   isMalaySpeechSupported,
+  shouldAvoidIOSWebSpeech,
   shouldBypassIOSWebSpeech,
+  shouldUseIOSMediaStt,
   shouldRecoverMobileSpeech,
   shouldRecoverMobileSpeechStartup,
   supportsSpeechRecognition
