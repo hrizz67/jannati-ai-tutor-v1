@@ -42,6 +42,7 @@ function createProbeId(now, sequence) {
 export function createNativeSpeechProbeController({
   getWindow,
   isEnabled,
+  isMicProbeActive,
   trace,
   onStateChange,
   timeoutMs = DEFAULT_TIMEOUT_MS,
@@ -125,6 +126,9 @@ export function createNativeSpeechProbeController({
     }
     if (activeRun) {
       return { started: false, reason: 'probe-active', state: { ...state } };
+    }
+    if (isMicProbeActive?.()) {
+      return { started: false, reason: 'mic-probe-active', state: { ...state } };
     }
 
     const browserWindow = getWindow?.();

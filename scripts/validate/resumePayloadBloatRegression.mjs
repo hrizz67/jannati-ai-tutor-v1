@@ -146,10 +146,12 @@ saveResume(oldStaticResume(17), completionStorage, { accountId: 'account-a', chi
 clearResume({ accountId: 'account-a', childId: 'child-a', mode: 'quiz', subjectId: 'math', topicId: 'topic-17' }, completionStorage);
 const completedTombstones = completionStorage.getItem(RESUME_TOMBSTONES_KEY);
 const completedPendingTombstones = completionStorage.getItem(RESUME_PENDING_TOMBSTONES_KEY);
+const completedTombstone = JSON.parse(completedTombstones || '{}')[completedScope];
+const restartedUpdatedAt = new Date(Date.parse(completedTombstone?.clearedAt || 0) + 1000).toISOString();
 assert.equal(loadResume({ accountId: 'account-a', childId: 'child-a', topicId: 'topic-17' }, completionStorage), null, 'Completion tempatan mesti membuang resume scope A.');
 assert.equal(JSON.parse(completedTombstones || '{}')[completedScope]?.childId, 'child-a', 'clearResume mesti menulis tombstone account/child/scope yang eksplisit.');
 assert.equal(JSON.parse(completedPendingTombstones || '{}')[completedScope]?.childId, 'child-a', 'clearResume mesti menulis niat padam pending mengikut account/child/scope.');
-saveResume({ ...oldStaticResume(17), updatedAt: '2026-10-01T00:00:00.000Z' }, completionStorage, { accountId: 'account-a', childId: 'child-a' });
+saveResume({ ...oldStaticResume(17), updatedAt: restartedUpdatedAt }, completionStorage, { accountId: 'account-a', childId: 'child-a' });
 assert.equal(JSON.parse(completionStorage.getItem(RESUME_TOMBSTONES_KEY) || '{}')[completedScope], undefined, 'Resume baharu tempatan mesti memprun tombstone scope yang sama.');
 assert.equal(JSON.parse(completionStorage.getItem(RESUME_PENDING_TOMBSTONES_KEY) || '{}')[completedScope], undefined, 'Resume baharu tempatan mesti membatalkan pending delete scope yang sama.');
 const boundedTombstoneStorage = new MemoryStorage();
@@ -299,7 +301,7 @@ const restartedResume = {
   ...oldStaticResume(17),
   questionIds: ['RESTARTED-A'],
   questions: [{ id: 'RESTARTED-A', q: 'Sesi baharu A', answer: '17' }],
-  updatedAt: '2026-10-01T00:00:00.000Z'
+  updatedAt: restartedUpdatedAt
 };
 const restartedSync = await syncCapture({
   ...Object.fromEntries(Object.entries(completedLocalPayload).filter(([key]) => key !== RESUME_TOMBSTONES_KEY)),
