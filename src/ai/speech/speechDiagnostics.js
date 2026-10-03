@@ -1,4 +1,5 @@
 import { createNativeSpeechProbeController } from './nativeSpeechProbe.js';
+import { createMicInputProbeController } from './micInputProbe.js';
 
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
@@ -22,6 +23,7 @@ let sessionSequence = 0;
 let initialized = false;
 let panelRender = null;
 let nativeProbeController = null;
+let micInputProbeController = null;
 const subscribers = new Set();
 
 function getWindow() {
@@ -56,6 +58,11 @@ function safeInteger(value, fallback = null) {
 
 function safeBoolean(value) {
   return typeof value === 'boolean' ? value : null;
+}
+
+function safeNumber(value, fallback = null) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
 }
 
 function nowMs() {
@@ -145,7 +152,20 @@ function normalizeStoredEvent(event) {
     retryBeforeOldOnend: safeBoolean(event.retryBeforeOldOnend),
     probeId: safeString(event.probeId, 100),
     probeElapsedMs: Math.max(0, safeInteger(event.probeElapsedMs, 0)),
-    errorCode: safeString(event.errorCode, 80)
+    errorCode: safeString(event.errorCode, 80),
+    sampleCount: Math.max(0, safeInteger(event.sampleCount, 0)),
+    peakLevel: safeNumber(event.peakLevel),
+    averageRms: safeNumber(event.averageRms),
+    activitySampleCount: Math.max(0, safeInteger(event.activitySampleCount, 0)),
+    activityPercentage: safeNumber(event.activityPercentage),
+    activityThreshold: safeNumber(event.activityThreshold),
+    trackReadyState: safeString(event.trackReadyState, 40),
+    trackEnabled: safeBoolean(event.trackEnabled),
+    trackMuted: safeBoolean(event.trackMuted),
+    streamActive: safeBoolean(event.streamActive),
+    audioContextState: safeString(event.audioContextState, 40),
+    contextAvailable: safeBoolean(event.contextAvailable),
+    captureOnly: safeBoolean(event.captureOnly)
   };
 }
 
@@ -205,11 +225,29 @@ function getNativeProbeController() {
         isSpeechDiagnosticsEnabled()
         && getSpeechDiagnosticMode() === 'native-probe'
       ),
+      isMicProbeActive: () => Boolean(micInputProbeController?.getState().active),
       trace: traceSpeechDiagnostic,
       onStateChange: notify
     });
   }
   return nativeProbeController;
+}
+
+function getMicInputProbeController() {
+  if (!micInputProbeController) {
+    micInputProbeController = createMicInputProbeController({
+      getWindow,
+      getNavigator,
+      isEnabled: () => (
+        isSpeechDiagnosticsEnabled()
+        && getSpeechDiagnosticMode() === 'native-probe'
+      ),
+      isNativeProbeActive: () => Boolean(nativeProbeController?.getState().active),
+      trace: traceSpeechDiagnostic,
+      onStateChange: notify
+    });
+  }
+  return micInputProbeController;
 }
 
 export function startNativeSpeechProbe() {
@@ -226,6 +264,18 @@ export function abortNativeSpeechProbe() {
 
 export function getNativeSpeechProbeState() {
   return getNativeProbeController().getState();
+}
+
+export function startMicInputProbe() {
+  return getMicInputProbeController().start();
+}
+
+export function stopMicInputProbe(reason) {
+  return getMicInputProbeController().stop(reason);
+}
+
+export function getMicInputProbeState() {
+  return getMicInputProbeController().getState();
 }
 
 export function isSpeechDiagnosticsEnabled() {
@@ -359,7 +409,20 @@ export function traceSpeechDiagnostic(event, details = {}) {
     retryBeforeOldOnend: details.retryBeforeOldOnend,
     probeId: details.probeId,
     probeElapsedMs: details.probeElapsedMs,
-    errorCode: details.errorCode
+    errorCode: details.errorCode,
+    sampleCount: details.sampleCount,
+    peakLevel: details.peakLevel,
+    averageRms: details.averageRms,
+    activitySampleCount: details.activitySampleCount,
+    activityPercentage: details.activityPercentage,
+    activityThreshold: details.activityThreshold,
+    trackReadyState: details.trackReadyState,
+    trackEnabled: details.trackEnabled,
+    trackMuted: details.trackMuted,
+    streamActive: details.streamActive,
+    audioContextState: details.audioContextState,
+    contextAvailable: details.contextAvailable,
+    captureOnly: details.captureOnly
   });
   if (!entry) return null;
   if (entry.sessionId) currentSessionId = entry.sessionId;
@@ -395,6 +458,9 @@ export function getSpeechDiagnosticSnapshot() {
       audioIncluded: false,
       learnerIdentityIncluded: false,
       storage: 'bounded sessionStorage and memory only',
+      audioSamplesIncluded: false,
+      deviceIdentifiersIncluded: false,
+      deviceLabelsIncluded: false,
       maximumEvents: MAX_EVENTS
     },
     baseline: { ...BUNDLED_REFERENCE },
@@ -407,7 +473,8 @@ export function getSpeechDiagnosticSnapshot() {
       enabled: isSpeechDiagnosticsEnabled(),
       speechMode: getSpeechDiagnosticMode(),
       currentSessionId,
-      nativeProbe: getNativeSpeechProbeState()
+      nativeProbe: getNativeSpeechProbeState(),
+      micInputProbe: getMicInputProbeState()
     },
     events: envelope.events.map(event => ({ ...event }))
   };
@@ -541,6 +608,10 @@ function mountPanel() {
   let stopProbeButton = null;
   let abortProbeButton = null;
   let nativeProbeControls = null;
+  let micProbeStatus = null;
+  let startMicProbeButton = null;
+  let stopMicProbeButton = null;
+  let micProbeControls = null;
   if (getSpeechDiagnosticMode() === 'native-probe') {
     nativeProbeControls = browserDocument.createElement('section');
     Object.assign(nativeProbeControls.style, {
@@ -590,6 +661,50 @@ function mountPanel() {
       nativeProbeStatus,
       nativeProbeButtons
     );
+
+    micProbeControls = browserDocument.createElement('section');
+    Object.assign(micProbeControls.style, {
+      margin: '8px 0',
+      padding: '8px',
+      border: '1px solid #2869a8',
+      borderRadius: '8px',
+      background: '#f2f8ff'
+    });
+
+    const micProbeHeading = browserDocument.createElement('strong');
+    micProbeHeading.textContent = 'Mic input isolation probe';
+
+    const micProbeHelp = browserDocument.createElement('p');
+    micProbeHelp.textContent = 'Explicit getUserMedia input-level check. Metadata only; no recording, playback, transcript or device identifiers.';
+    micProbeHelp.style.margin = '6px 0';
+
+    micProbeStatus = browserDocument.createElement('div');
+    micProbeStatus.setAttribute('role', 'status');
+    micProbeStatus.style.marginBottom = '6px';
+
+    const micProbeButtons = browserDocument.createElement('div');
+    Object.assign(micProbeButtons.style, { display: 'flex', flexWrap: 'wrap', gap: '6px' });
+
+    startMicProbeButton = browserDocument.createElement('button');
+    startMicProbeButton.type = 'button';
+    startMicProbeButton.textContent = 'Run Mic Input Probe';
+    startMicProbeButton.addEventListener('click', startMicInputProbe);
+
+    stopMicProbeButton = browserDocument.createElement('button');
+    stopMicProbeButton.type = 'button';
+    stopMicProbeButton.textContent = 'Stop Mic Probe';
+    stopMicProbeButton.addEventListener('click', () => stopMicInputProbe('manual-stop'));
+
+    [startMicProbeButton, stopMicProbeButton].forEach(control => {
+      control.style.font = 'inherit';
+      micProbeButtons.appendChild(control);
+    });
+    micProbeControls.append(
+      micProbeHeading,
+      micProbeHelp,
+      micProbeStatus,
+      micProbeButtons
+    );
   }
 
   const events = browserDocument.createElement('ol');
@@ -597,6 +712,7 @@ function mountPanel() {
 
   panel.append(summary, status, controls);
   if (nativeProbeControls) panel.appendChild(nativeProbeControls);
+  if (micProbeControls) panel.appendChild(micProbeControls);
   panel.appendChild(events);
   browserDocument.body.appendChild(panel);
 
@@ -604,6 +720,7 @@ function mountPanel() {
     const snapshot = getSpeechDiagnosticSnapshot();
     const runtime = snapshot.runtime;
     const probeState = snapshot.diagnostic.nativeProbe;
+    const micState = snapshot.diagnostic.micInputProbe;
     status.textContent = [
       'mode: ' + snapshot.diagnostic.speechMode,
       'runtime: v' + runtime.appVersion,
@@ -619,9 +736,24 @@ function mountPanel() {
       nativeProbeStatus.textContent = 'Probe status: ' + probeState.status
         + ' / outcome: ' + probeState.outcome
         + ' / elapsed: ' + probeState.elapsedMs + 'ms';
-      startProbeButton.disabled = probeState.active;
+      startProbeButton.disabled = probeState.active || micState.active;
       stopProbeButton.disabled = !probeState.active;
       abortProbeButton.disabled = !probeState.active;
+    }
+    if (micProbeStatus) {
+      const formatLevel = value => value == null ? 'n/a' : Number(value).toFixed(4);
+      const formatPercent = value => value == null ? 'n/a' : Number(value).toFixed(2) + '%';
+      micProbeStatus.textContent = [
+        'Mic status: ' + micState.status + ' / outcome: ' + micState.outcome,
+        'peak: ' + formatLevel(micState.peakLevel)
+          + ' / average RMS: ' + formatLevel(micState.averageRms),
+        'activity: ' + formatPercent(micState.activityPercentage)
+          + ' / samples: ' + micState.sampleCount,
+        'track: ' + (micState.trackReadyState || 'n/a')
+          + ' / context: ' + (micState.audioContextState || (micState.captureOnly ? 'unavailable' : 'n/a'))
+      ].join('\n');
+      startMicProbeButton.disabled = micState.active || probeState.active;
+      stopMicProbeButton.disabled = !micState.active;
     }
     events.replaceChildren();
     snapshot.events.slice(-24).reverse().forEach(entry => {
@@ -651,6 +783,7 @@ export function initializeSpeechDiagnostics() {
       });
     });
     browserWindow.addEventListener('pagehide', event => {
+      stopMicInputProbe(event?.persisted ? 'pagehide-bfcache' : 'pagehide');
       traceSpeechDiagnostic('component-unmount', {
         sessionId: currentSessionId,
         reason: event?.persisted ? 'pagehide-bfcache' : 'pagehide',
@@ -684,11 +817,14 @@ export default {
   createSpeechResultMetadata,
   getSpeechDiagnosticMode,
   getSpeechDiagnosticSnapshot,
+  getMicInputProbeState,
   getNativeSpeechProbeState,
   initializeSpeechDiagnostics,
   isSpeechDiagnosticsEnabled,
   resolveSpeechDiagnosticCaptureMode,
+  startMicInputProbe,
   startNativeSpeechProbe,
+  stopMicInputProbe,
   stopNativeSpeechProbe,
   subscribeSpeechDiagnostics,
   traceSpeechDiagnostic
