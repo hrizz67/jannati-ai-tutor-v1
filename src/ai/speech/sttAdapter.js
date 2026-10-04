@@ -10,6 +10,7 @@ const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
 const READING_MAX_DURATION_MS = 20000;
 const SPEAKING_MAX_DURATION_MS = 25000;
 const DEFAULT_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
+const AUTO_STOP_BOUNDARY_TOLERANCE_MS = 500;
 const CLOUDFLARE_TIMEOUT_MS = 20000;
 const MAX_PROVIDER_RESPONSE_LENGTH = 16 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
@@ -85,7 +86,9 @@ function normalizeContext(context) {
   return {
     contextKey: safeString(context.contextKey || context.key || '', 160),
     activity: safeString(context.activity || '', 40),
-    durationMs: Math.round(Math.max(0, finiteNumber(context.durationMs, 0)))
+    durationMs: Math.round(Math.max(0, finiteNumber(context.durationMs, 0))),
+    captureDurationMs: Math.round(Math.max(0, finiteNumber(context.captureDurationMs, 0))),
+    stopReason: safeString(context.stopReason, 40)
   };
 }
 
@@ -140,7 +143,11 @@ export function createSttAdapter({
       throw new MediaSttError('stt-error', 'max-size-exceeded');
     }
     const safeContext = normalizeContext(context);
-    if (safeContext.durationMs > resolveMaxDurationMs(safeContext.activity, maxDurationMs)) {
+    const resolvedMaxDurationMs = resolveMaxDurationMs(safeContext.activity, maxDurationMs);
+    const acceptedAutoStopBoundary = safeContext.stopReason === 'duration-complete'
+      && safeContext.captureDurationMs === resolvedMaxDurationMs
+      && safeContext.durationMs <= resolvedMaxDurationMs + AUTO_STOP_BOUNDARY_TOLERANCE_MS;
+    if (safeContext.durationMs > resolvedMaxDurationMs && !acceptedAutoStopBoundary) {
       throw new MediaSttError('stt-error', 'max-duration-exceeded');
     }
     if (typeof request !== 'function') {
@@ -346,6 +353,7 @@ export const STT_ADAPTER_MAX_BYTES = DEFAULT_MAX_BYTES;
 export const STT_ADAPTER_MAX_DURATION_MS = DEFAULT_MAX_DURATION_MS;
 export const STT_ADAPTER_READING_MAX_DURATION_MS = READING_MAX_DURATION_MS;
 export const STT_ADAPTER_SPEAKING_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
+export const STT_ADAPTER_AUTO_STOP_TOLERANCE_MS = AUTO_STOP_BOUNDARY_TOLERANCE_MS;
 
 export default {
   createCloudflareWorkersAiSttAdapter,
@@ -362,5 +370,6 @@ export default {
   STT_ADAPTER_MAX_BYTES,
   STT_ADAPTER_MAX_DURATION_MS,
   STT_ADAPTER_READING_MAX_DURATION_MS,
-  STT_ADAPTER_SPEAKING_MAX_DURATION_MS
+  STT_ADAPTER_SPEAKING_MAX_DURATION_MS,
+  STT_ADAPTER_AUTO_STOP_TOLERANCE_MS
 };

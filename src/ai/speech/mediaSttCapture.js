@@ -245,7 +245,14 @@ export function createMediaSttCaptureController({
       chunkCount: run.chunkCount,
       mimeType: resolvedMimeType
     });
-    run.resolve({ blob, mimeType: resolvedMimeType, durationMs, size: blob.size });
+    run.resolve({
+      blob,
+      mimeType: resolvedMimeType,
+      durationMs,
+      captureDurationMs: run.captureDurationMs,
+      stopReason: run.stopReason,
+      size: blob.size
+    });
     return true;
   }
 

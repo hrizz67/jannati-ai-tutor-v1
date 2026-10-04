@@ -10,6 +10,7 @@ import {
   getConfiguredSttEndpoint,
   isCloudflareSttConfigured,
   isDeterministicSttPreviewRequested,
+  STT_ADAPTER_AUTO_STOP_TOLERANCE_MS,
   STT_ADAPTER_MAX_BYTES,
   STT_ADAPTER_MAX_DURATION_MS,
   STT_ADAPTER_READING_MAX_DURATION_MS,
@@ -150,6 +151,43 @@ describe('P1.9 provider-neutral STT adapter', () => {
       context: { activity, durationMs: maximumMs + 1 }
     })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
     expect(STT_ADAPTER_MAX_BYTES).toBe(5 * 1024 * 1024);
+  });
+
+  it.each([
+    ['reading', STT_ADAPTER_READING_MAX_DURATION_MS],
+    ['speaking', STT_ADAPTER_SPEAKING_MAX_DURATION_MS]
+  ])('accepts bounded %s auto-stop jitter but rejects untrusted over-limit durations', async (activity, maximumMs) => {
+    const request = vi.fn(async () => ({ transcript: 'accepted' }));
+    const adapter = createSttAdapter({ request });
+    const blob = audioBlob();
+    const autoStopContext = durationMs => ({
+      activity,
+      durationMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + 1)
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + STT_ADAPTER_AUTO_STOP_TOLERANCE_MS)
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + STT_ADAPTER_AUTO_STOP_TOLERANCE_MS + 1)
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs + 1 }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { ...autoStopContext(maximumMs + 1), stopReason: 'manual-stop' }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    expect(request).toHaveBeenCalledTimes(2);
   });
 
   it('gates deterministic physical preview behind iOS mode, diagnostics and explicit mock text', async () => {

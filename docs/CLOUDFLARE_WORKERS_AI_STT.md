@@ -29,6 +29,8 @@ MediaRecorder Blob
 
 The browser sends no Cloudflare account ID, API token, AI credential, cookie or authorization header. The configured endpoint must be HTTPS (except loopback development) and cannot contain URL credentials, query parameters or fragments. Cloudflare credentials remain behind the Worker AI binding.
 
+The frontend keeps the visible Bacaan and Bertutur hard limits at 20 and 25 seconds. It preserves the measured duration and accepts up to 500 ms of browser scheduling jitter only for a capture marked as the controller's auto-stop at the exact configured activity limit. Manual and externally supplied over-limit durations are still rejected, and the 5 MiB audio limit is unchanged.
+
 ## Request contract and guards
 
 The frontend sends the recorded Blob as the request body with its browser-provided `Content-Type` and an `X-STT-Language` header. The Worker accepts only `POST /v1/transcribe` from an exact origin in `CORS_ALLOW_ORIGINS` and enforces:

@@ -122,7 +122,7 @@ async function flush() {
   await Promise.resolve();
 }
 
-function installEnvironment({ streams = [new FakeStream()], getUserMedia, recorder = FakeMediaRecorder } = {}) {
+function installEnvironment({ streams = [new FakeStream()], getUserMedia, recorder = FakeMediaRecorder, now } = {}) {
   FakeMediaRecorder.reset();
   const browserWindow = new FakeEventTarget();
   Object.assign(browserWindow, {
@@ -139,7 +139,8 @@ function installEnvironment({ streams = [new FakeStream()], getUserMedia, record
   vi.stubGlobal('navigator', { mediaDevices });
   const controller = createMediaSttCaptureController({
     getWindow: () => browserWindow,
-    getNavigator: () => globalThis.navigator
+    getNavigator: () => globalThis.navigator,
+    ...(typeof now === 'function' ? { now } : {})
   });
   return { browserWindow, controller, mediaDevices };
 }
@@ -290,7 +291,11 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     await flush();
     vi.advanceTimersByTime(stopAtMs);
     expect(controller.stop('manual-stop')).toBe(true);
-    await expect(capture).resolves.toMatchObject({ durationMs: stopAtMs });
+    await expect(capture).resolves.toMatchObject({
+      durationMs: stopAtMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'manual-stop'
+    });
     expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
   });
 
@@ -305,7 +310,31 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     vi.advanceTimersByTime(maximumMs - 1);
     expect(controller.getState()).toMatchObject({ status: 'recording', active: true });
     vi.advanceTimersByTime(1);
-    await expect(capture).resolves.toMatchObject({ durationMs: maximumMs });
+    await expect(capture).resolves.toMatchObject({
+      durationMs: maximumMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+    expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s preserves measured auto-stop jitter without extending the configured timer', async (_activity, maximumMs) => {
+    vi.useFakeTimers();
+    let measuredNowMs = 0;
+    const { controller } = installEnvironment({ now: () => measuredNowMs });
+    const capture = controller.capture({ durationMs: maximumMs });
+    await flush();
+    measuredNowMs = maximumMs + 1;
+    vi.advanceTimersByTime(maximumMs);
+
+    await expect(capture).resolves.toMatchObject({
+      durationMs: maximumMs + 1,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
     expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
   });
 

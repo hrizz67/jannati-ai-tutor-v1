@@ -22,7 +22,7 @@ import {
   clearSpeechDiagnosticTrace,
   getSpeechDiagnosticSnapshot
 } from '../../src/ai/speech/speechDiagnostics.js';
-import { createRuntimeSttAdapter } from '../../src/ai/speech/sttAdapter.js';
+import { createRuntimeSttAdapter, createSttAdapter } from '../../src/ai/speech/sttAdapter.js';
 import { createMemorySessionStorage } from '../helpers/sharedNativeSpeechBackend.js';
 
 const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
@@ -451,6 +451,30 @@ describe('P1.12.1 production mobile media-STT integration', () => {
     expect(adapter.transcribe).toHaveBeenCalledWith(expect.objectContaining({
       context: expect.objectContaining({ activity, durationMs: maximumMs })
     }));
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s auto-stop boundary jitter reaches the provider exactly once', async (activity, maximumMs) => {
+    const { browserNavigator, browserWindow } = installEnvironment();
+    const capture = successfulCaptureFactory({
+      durationMs: maximumMs + 1,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+    const request = vi.fn(async () => ({ transcript: 'boundary accepted', confidence: 88 }));
+    const session = createIOSMediaSttSession({
+      activity,
+      getWindow: () => browserWindow,
+      getNavigator: () => browserNavigator,
+      captureFactory: capture.factory,
+      adapterFactory: () => createSttAdapter({ request })
+    });
+
+    await expect(session.start()).resolves.toMatchObject({ transcriptLength: 17 });
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(capture.capture).toHaveBeenCalledWith(expect.objectContaining({ durationMs: maximumMs }));
   });
 
   it('cancel aborts capture and never transcribes or uploads audio', async () => {

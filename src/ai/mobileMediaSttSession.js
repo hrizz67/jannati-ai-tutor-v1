@@ -175,7 +175,9 @@ export function createMobileMediaSttSession({
         context: {
           activity,
           contextKey,
-          durationMs: captured.durationMs
+          durationMs: captured.durationMs,
+          captureDurationMs: captured.captureDurationMs,
+          stopReason: captured.stopReason
         },
         signal: run.controller.signal
       });
