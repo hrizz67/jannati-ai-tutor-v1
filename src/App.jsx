@@ -44,6 +44,10 @@ import {
   MEDIA_STT_SPEAKING_MAX_DURATION_MS
 } from './ai/speech/mediaSttCapture.js';
 import {
+  scoreReadingSpeech,
+  scoreSpeakingKeywords
+} from './ai/speech/speechScoring.js';
+import {
   assessCommunicationText,
   confirmCommunicationSpeechCandidate,
   createCommunicationSpeechSession,
@@ -5491,30 +5495,8 @@ function safeArabicCoachText(value, fallback = '') {
   return containsArabicText(text) ? text : fallback;
 }
 
-function compareBacaan(targetText = '', transcript = '') {
-  const targetWords = splitBacaanWords(targetText);
-  const spokenWords = splitBacaanWords(transcript);
-  const rows = Array.from({ length: targetWords.length + 1 }, () => Array(spokenWords.length + 1).fill(0));
-  for (let i = targetWords.length - 1; i >= 0; i -= 1) {
-    for (let j = spokenWords.length - 1; j >= 0; j -= 1) {
-      rows[i][j] = targetWords[i].normalized === spokenWords[j].normalized ? rows[i + 1][j + 1] + 1 : Math.max(rows[i + 1][j], rows[i][j + 1]);
-    }
-  }
-  const matchedTargetIndexes = new Set();
-  const matchedSpokenIndexes = new Set();
-  let i = 0;
-  let j = 0;
-  while (i < targetWords.length && j < spokenWords.length) {
-    if (targetWords[i].normalized === spokenWords[j].normalized) { matchedTargetIndexes.add(i); matchedSpokenIndexes.add(j); i += 1; j += 1; }
-    else if (rows[i + 1][j] >= rows[i][j + 1]) i += 1;
-    else j += 1;
-  }
-  const correct = matchedTargetIndexes.size;
-  const words = targetWords.map((word, index) => ({ text: word.raw, status: matchedTargetIndexes.has(index) ? 'correct' : 'missed' }));
-  const missed = targetWords.filter((_, index) => !matchedTargetIndexes.has(index)).map(word => word.raw);
-  const extraWords = spokenWords.filter((_, index) => !matchedSpokenIndexes.has(index)).map(word => word.raw);
-  const score = targetWords.length ? Math.max(0, Math.round((correct / targetWords.length) * 100 - extraWords.length * 2 - missed.length)) : 0;
-  return { words, correct, tertinggal: missed.length, missed, incorrect: extraWords.length, incorrectWords: extraWords, extraWords, totalTargetWords: targetWords.length, matchedWordCount: correct, missedWordCount: missed.length, extraWordCount: extraWords.length, passed: score >= 80, score };
+function compareBacaan(targetText = '', transcript = '', language = '') {
+  return scoreReadingSpeech(targetText, transcript, { language });
 }
 
 function nextCommunicationSessionIndex(currentIndex, size) {
@@ -5572,10 +5554,10 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const safeMissingWords = Array.isArray(safeResult.missingWords) ? safeResult.missingWords : safeMissed;
   const safeExtraWords = Array.isArray(safeResult.extraWords) ? safeResult.extraWords : [];
   const createBacaanResult = (spokenTranscript = '') => {
-    const comparison = compareBacaan(passage.text, spokenTranscript);
+    const comparison = compareBacaan(passage.text, spokenTranscript, passage.speechLang);
     const words = Array.isArray(comparison.words) ? comparison.words : [];
     const matchedWords = words.filter(item => item?.status === 'correct').map(item => item?.text).filter(Boolean);
-    const missedWords = words.filter(item => item?.status === 'missed').map(item => item?.text).filter(Boolean);
+    const missedWords = words.filter(item => item?.status === 'missing').map(item => item?.text).filter(Boolean);
     return normalizeBacaanResult({
       status: typeof spokenTranscript === 'string' && spokenTranscript.trim() ? 'completed' : 'empty',
       transcript: spokenTranscript,
@@ -5587,9 +5569,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       matchedWords,
       missed: missedWords,
       missingWords: missedWords,
+      substitutions: Array.isArray(comparison.substitutions) ? comparison.substitutions : [],
       extraWords: Array.isArray(comparison.extraWords) ? comparison.extraWords : [],
       totalTargetWords: comparison.totalTargetWords,
       matchedWordCount: comparison.matchedWordCount,
+      substitutionWordCount: comparison.substitutionWordCount,
       missedWordCount: comparison.missedWordCount,
       extraWordCount: comparison.extraWordCount,
       passed: comparison.passed,
@@ -5858,7 +5842,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       setMendengar(false);
       return;
     }
-    const nextResult = compareBacaan(passage.text, transcript);
+    const nextResult = compareBacaan(passage.text, transcript, passage.speechLang);
     recordBacaanResult({
       ...nextResult,
       status: 'completed',
@@ -5866,9 +5850,10 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       confidence: Number.isFinite(Number(nextResult.score)) && nextResult.score > 0 ? nextResult.score : 0,
       matched: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'correct').map(item => item?.text).filter(Boolean) : [],
       matchedWords: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'correct').map(item => item?.text).filter(Boolean) : [],
-      missed: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missed').map(item => item?.text).filter(Boolean) : [],
-      missingWords: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missed').map(item => item?.text).filter(Boolean) : [],
-      extraWords: Array.isArray(nextResult.incorrectWords) ? nextResult.incorrectWords : []
+      missed: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missing').map(item => item?.text).filter(Boolean) : [],
+      missingWords: Array.isArray(nextResult.words) ? nextResult.words.filter(item => item?.status === 'missing').map(item => item?.text).filter(Boolean) : [],
+      substitutions: Array.isArray(nextResult.substitutions) ? nextResult.substitutions : [],
+      extraWords: Array.isArray(nextResult.extraWords) ? nextResult.extraWords : []
     });
     setMendengar(false);
   }
@@ -5891,7 +5876,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   function saveResult() {
     const nextResult = result && typeof result === 'object'
       ? normalizeBacaanResult(result)
-      : compareBacaan(passage.text, transcript);
+      : compareBacaan(passage.text, transcript, passage.speechLang);
     const contract = normalizeCommunicationResult(nextResult);
     const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
     if (!contract.isAssessed || !completedScores.length) {
@@ -5976,26 +5961,8 @@ function recordCommunicationScore({ ref, itemKey, result, setScoreHistory }) {
 // Deprecated listening implementation removed; MendengarLab is the sole active surface.
 const speakingPrompts = semanticSpeakingPrompts;
 
-function scoreBertutur(prompt, transcript) {
-  const safePrompt = prompt && typeof prompt === 'object' ? prompt : { keywords: [], text: '', title: '' };
-  const safeTranscript = typeof transcript === 'string' ? transcript : '';
-  const safeKeywords = Array.isArray(safePrompt.keywords) ? safePrompt.keywords : [];
-  const normalizedTranscript = normalizeBacaanWord(safeTranscript);
-  const matched = safeKeywords.filter(keyword => normalizedTranscript.includes(normalizeBacaanWord(keyword)));
-  const transcriptWords = safeTranscript.trim().split(/\s+/).filter(Boolean);
-  const keywordScore = safeKeywords.length ? Math.round((matched.length / safeKeywords.length) * 80) : 0;
-  const lengthBonus = transcriptWords.length >= Math.min(5, safeKeywords.length + 2) ? 20 : 8;
-  const missed = safeKeywords.filter(keyword => !matched.includes(keyword));
-  return {
-    score: Math.min(100, keywordScore + lengthBonus),
-    matched,
-    matchedKeywords: matched,
-    tertinggal: missed,
-    missingWords: missed,
-    missed,
-    words: safeKeywords.map(keyword => ({ text: keyword, status: matched.includes(keyword) ? 'correct' : 'missed' })),
-    transcript: safeTranscript
-  };
+function scoreBertutur(prompt, transcript, language = '') {
+  return scoreSpeakingKeywords(prompt, transcript, { language });
 }
 
 function normalizeBacaanResult(value) {
@@ -6005,6 +5972,7 @@ function normalizeBacaanResult(value) {
   const matchedWords = Array.isArray(safeValue.matchedWords) ? safeValue.matchedWords : matched;
   const missed = Array.isArray(safeValue.missed) ? safeValue.missed : [];
   const missingWords = Array.isArray(safeValue.missingWords) ? safeValue.missingWords : missed;
+  const substitutions = Array.isArray(safeValue.substitutions) ? safeValue.substitutions : [];
   const extraWords = Array.isArray(safeValue.extraWords) ? safeValue.extraWords : [];
   const score = Number.isFinite(Number(safeValue.score)) ? Number(safeValue.score) : 0;
   const metric = (candidate, fallback) => Number.isFinite(Number(candidate)) ? Math.max(0, Number(candidate)) : fallback;
@@ -6019,9 +5987,11 @@ function normalizeBacaanResult(value) {
     matchedWords,
     missed,
     missingWords,
+    substitutions,
     extraWords,
     totalTargetWords: metric(safeValue.totalTargetWords, 0),
     matchedWordCount: metric(safeValue.matchedWordCount, matchedWords.length),
+    substitutionWordCount: metric(safeValue.substitutionWordCount, substitutions.length),
     missedWordCount: metric(safeValue.missedWordCount, missed.length),
     extraWordCount: metric(safeValue.extraWordCount, extraWords.length),
     passed: score >= 80,
@@ -6267,7 +6237,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     if (!normalizedTranscript) return;
     const normalized = confirmCommunicationSpeechCandidate(
       { text: normalizedTranscript },
-      confirmedText => scoreBertutur(safePrompt, confirmedText)
+      confirmedText => scoreBertutur(safePrompt, confirmedText, set.speechLang)
     );
     if (!normalized) return;
     setSpeechCandidate(null);
@@ -6454,7 +6424,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setTranscriptSource('manual');
     const normalized = assessCommunicationText(
       normalizedTranscript,
-      manualText => scoreBertutur(safePrompt, manualText)
+      manualText => scoreBertutur(safePrompt, manualText, set.speechLang)
     );
     recordCommunicationScore({
       ref: recordedSessionRef,
@@ -6475,7 +6445,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }
 
   function saveBertutur() {
-    const nextResult = safeResult && typeof safeResult === 'object' ? safeResult : scoreBertutur(safePrompt, safeTranscript);
+    const nextResult = safeResult && typeof safeResult === 'object' ? safeResult : scoreBertutur(safePrompt, safeTranscript, set.speechLang);
     const contract = normalizeCommunicationResult(nextResult);
     const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
     if (!contract.isAssessed || !completedScores.length) {
