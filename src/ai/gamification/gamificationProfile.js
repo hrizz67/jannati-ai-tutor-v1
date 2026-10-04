@@ -1,5 +1,6 @@
 import { getLocalDateKey } from '../../utils/localDate.js';
 import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
+import { reconcileCumulativeLearnerProfile } from '../../utils/learnerProgressIntegrity.js';
 
 export const GAMIFICATION_STORAGE_KEY = 'jannati.gamification.profile';
 export const GAMIFICATION_VERSION = 1;
@@ -108,7 +109,7 @@ export function saveGamificationProfile(profile = createDefaultGamificationProfi
   const identity = getLearningStorageScope(identityInput);
   if (getLearningIdentityMismatch(profile, identity)) return loadGamificationProfile(identity);
   const migrated = migrateGamificationProfile(profile);
-  const safeProfile = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
+  let safeProfile = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
 
   if (hasStorage()) {
     try {
@@ -120,9 +121,14 @@ export function saveGamificationProfile(profile = createDefaultGamificationProfi
           const current = migrateGamificationProfile(currentParsed);
           const currentUpdatedAt = new Date(current.updatedAt || 0).getTime();
           const incomingUpdatedAt = new Date(safeProfile.updatedAt || 0).getTime();
-          if (currentUpdatedAt > incomingUpdatedAt) {
-            return current;
-          }
+          const preferred = currentUpdatedAt > incomingUpdatedAt ? current : safeProfile;
+          const other = preferred === current ? safeProfile : current;
+          safeProfile = reconcileCumulativeLearnerProfile({
+            identity,
+            profile: preferred,
+            gamificationProfile: other
+          });
+          if (identity.explicit) safeProfile = stampLearningIdentity(safeProfile, identity);
         } catch {
           // Ignore corrupted current storage and overwrite below.
         }

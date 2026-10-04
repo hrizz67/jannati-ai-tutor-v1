@@ -7,6 +7,7 @@ import {
   ACCOUNT_SNAPSHOT_PREFIX,
   MAX_LOCAL_CHILD_SNAPSHOT_BYTES,
   buildCompactAccountSnapshot,
+  buildCompactChildRecoverySnapshot,
   captureCompactAccountSnapshot,
   estimateStorageBytes,
   isObject,
@@ -33,6 +34,7 @@ export {
   MAX_LOCAL_ACCOUNT_SNAPSHOT_BYTES,
   MAX_LOCAL_CHILD_SNAPSHOT_BYTES,
   buildCompactAccountSnapshot,
+  buildCompactChildRecoverySnapshot,
   captureCompactAccountSnapshot,
   estimateStorageBytes,
   isRecoverableAccountDataKey,
@@ -143,6 +145,8 @@ export function buildCloudRestorePlan(cloudData = {}, options = {}) {
   const orphanSnapshotKeys = [];
   const rejectedSnapshotKeys = [];
   const skippedLargeSnapshotKeys = [];
+  const compactedSnapshotKeys = [];
+  const compactedSnapshotOmittedKeys = {};
 
   Object.entries(normalizedCloudData).forEach(([key, value]) => {
     const childId = getSnapshotChildId(key);
@@ -160,7 +164,16 @@ export function buildCloudRestorePlan(cloudData = {}, options = {}) {
       }
       if (typeof value !== 'string') return;
       if (estimateStorageBytes(key, value) > (Number(options.maxChildSnapshotBytes) || MAX_LOCAL_CHILD_SNAPSHOT_BYTES)) {
-        skippedLargeSnapshotKeys.push(key);
+        const compact = buildCompactChildRecoverySnapshot(value, key, {
+          maxBytes: options.maxChildSnapshotBytes
+        });
+        if (!compact.ok || !Object.keys(compact.snapshot || {}).some(field => !field.startsWith('__'))) {
+          skippedLargeSnapshotKeys.push(key);
+          return;
+        }
+        snapshotEntries[key] = JSON.stringify(compact.snapshot);
+        compactedSnapshotKeys.push(key);
+        compactedSnapshotOmittedKeys[key] = compact.omittedKeys;
         return;
       }
       snapshotEntries[key] = value;
@@ -197,6 +210,8 @@ export function buildCloudRestorePlan(cloudData = {}, options = {}) {
     orphanSnapshotKeys,
     rejectedSnapshotKeys,
     skippedLargeSnapshotKeys,
+    compactedSnapshotKeys,
+    compactedSnapshotOmittedKeys,
     duplicateNameGroups: findDuplicateNameGroups(profiles)
   };
 }

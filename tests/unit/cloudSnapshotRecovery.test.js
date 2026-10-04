@@ -164,7 +164,7 @@ describe('cloud snapshot recovery hotfix', () => {
     expect(result.failedKey).toBe(CLOUD_CHILD_STATE_KEY);
   });
 
-  it('skips an oversized child cache while retaining its active root projection', () => {
+  it('compacts an oversized child recovery cache while retaining its active root projection', () => {
     const storage = createMemoryStorage();
     const result = hydrateCloudLearningState(storage, createProductionFixture({ largeActiveSnapshot: true }), {
       accountId: ACCOUNT_ID,
@@ -173,10 +173,12 @@ describe('cloud snapshot recovery hotfix', () => {
 
     expect(result.hydrated).toBe(true);
     expect(result.activeStatePersisted).toBe(true);
-    expect(result.snapshotPersisted).toBe(false);
-    expect(result.skippedLargeSnapshotKeys).toContain(`${CHILD_SNAPSHOT_PREFIX}${ACTIVE_CHILD_ID}`);
+    expect(result.snapshotPersisted).toBe(true);
+    expect(result.compactedSnapshotKeys).toContain(`${CHILD_SNAPSHOT_PREFIX}${ACTIVE_CHILD_ID}`);
     expect(storage.getItem('jannati_large_history')).not.toBeNull();
-    expect(storage.getItem(`${CHILD_SNAPSHOT_PREFIX}${ACTIVE_CHILD_ID}`)).toBeNull();
+    const compacted = JSON.parse(storage.getItem(`${CHILD_SNAPSHOT_PREFIX}${ACTIVE_CHILD_ID}`));
+    expect(JSON.parse(compacted.jannati_v151_profile).xp).toBe(970);
+    expect(compacted.jannati_large_history).toBeUndefined();
   });
 
   it('classifies orphan child snapshots without creating ghost profiles', () => {

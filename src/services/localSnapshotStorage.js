@@ -25,6 +25,15 @@ const ACCOUNT_SNAPSHOT_PRIORITY_KEYS = Object.freeze([
   'jannati.adaptive.studentProfile',
   'jannati.gamification.profile'
 ]);
+const CHILD_SNAPSHOT_PRIORITY_KEYS = Object.freeze([
+  'jannati_v151_profile',
+  'jannati_v152_student_core',
+  'jannati.adaptive.studentProfile',
+  'jannati.gamification.profile',
+  'jannati_v151_ai_memory',
+  'jannati_v152_student_profile',
+  'jannati_v152_student_memory'
+]);
 
 export function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -138,6 +147,49 @@ export function captureCompactAccountSnapshot(storage, accountId, localData = {}
   const compact = buildCompactAccountSnapshot(localData, normalizedAccountId, options);
   const result = safeStorageSet(storage, `${ACCOUNT_SNAPSHOT_PREFIX}${normalizedAccountId}`, compact.snapshot);
   return { ...result, persisted: result.ok, omittedKeys: compact.omittedKeys, bounded: compact.bounded };
+}
+
+export function buildCompactChildRecoverySnapshot(rawSnapshot = {}, key = '', options = {}) {
+  let source = rawSnapshot;
+  try {
+    if (typeof rawSnapshot === 'string') source = JSON.parse(rawSnapshot);
+  } catch {
+    return { ok: false, snapshot: null, estimatedBytes: 0, omittedKeys: [], bounded: false, reason: 'serialization_error' };
+  }
+  if (!isObject(source)) {
+    return { ok: false, snapshot: null, estimatedBytes: 0, omittedKeys: [], bounded: false, reason: 'serialization_error' };
+  }
+
+  const maxBytes = Number(options.maxBytes) || MAX_LOCAL_CHILD_SNAPSHOT_BYTES;
+  const maxEntryBytes = Math.min(maxBytes, Number(options.maxEntryBytes) || 256 * 1024);
+  const snapshot = Object.fromEntries(Object.entries(source).filter(([field]) => field.startsWith('__')));
+  let estimatedBytes = estimateStorageBytes(key, JSON.stringify(snapshot));
+  const omittedKeys = [];
+  const orderedKeys = [...CHILD_SNAPSHOT_PRIORITY_KEYS, ...Object.keys(source).sort()];
+  const seen = new Set();
+
+  for (const field of orderedKeys) {
+    if (seen.has(field) || field.startsWith('__') || isSnapshotCacheKey(field)) continue;
+    seen.add(field);
+    const value = source[field];
+    if (typeof value !== 'string') continue;
+    const entryBytes = estimateStorageBytes(field, value);
+    if (entryBytes > maxEntryBytes || estimatedBytes + entryBytes > maxBytes) {
+      omittedKeys.push(field);
+      continue;
+    }
+    snapshot[field] = value;
+    estimatedBytes += entryBytes;
+  }
+
+  return {
+    ok: true,
+    snapshot,
+    estimatedBytes,
+    omittedKeys,
+    bounded: omittedKeys.length > 0,
+    reason: omittedKeys.length ? 'compacted' : 'ok'
+  };
 }
 
 export function persistBoundedChildSnapshot(storage, key, snapshot, options = {}) {

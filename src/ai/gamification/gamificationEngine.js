@@ -6,6 +6,7 @@ import {
   resetGamificationProfile,
   saveGamificationProfile
 } from './gamificationProfile.js';
+import { reconcileCumulativeLearnerProfile } from '../../utils/learnerProgressIntegrity.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
@@ -25,17 +26,25 @@ function getBadgeLabel(badge) {
 export function buildGamificationProfile(profile = {}, memory = {}, context = {}, existingProfile = loadGamificationProfile()) {
   const current = clone(existingProfile);
   const reward = buildGamificationReward(profile, memory, context, current);
-  const next = createDefaultGamificationProfile(current);
-  next.xp = reward.xp;
-  next.level = calculateLevel(reward.xp);
-  next.coins = reward.coins;
+  const cumulativeReward = reconcileCumulativeLearnerProfile({
+    identity: context.studentIdentity || profile,
+    profile: reward,
+    adaptiveProfile: profile,
+    gamificationProfile: current,
+    aiMemory: memory
+  });
+  const next = createDefaultGamificationProfile(cumulativeReward);
+  next.xp = cumulativeReward.xp;
+  next.level = calculateLevel(cumulativeReward.xp);
+  next.coins = cumulativeReward.coins;
   next.currentStreak = reward.currentStreak || 0;
   next.bestStreak = Math.max(toNumber(current.bestStreak, 0), toNumber(reward.bestStreak, 0), next.currentStreak);
   next.brokenStreak = reward.brokenStreak || 0;
   next.recoveryStreak = reward.recoveryStreak || 0;
-  next.badges = reward.badges || [];
-  next.achievements = reward.achievements || [];
-  next.dailyRewards = reward.dailyRewards || [];
+  next.badges = cumulativeReward.badges || [];
+  next.achievements = cumulativeReward.achievements || [];
+  next.dailyRewards = cumulativeReward.dailyRewards || [];
+  next.processedEventKeys = cumulativeReward.processedEventKeys || [];
   next.lastRewardDate = reward.lastRewardDate || current.lastRewardDate || '';
   next.updatedAt = reward.updatedAt || new Date().toISOString();
   return next;

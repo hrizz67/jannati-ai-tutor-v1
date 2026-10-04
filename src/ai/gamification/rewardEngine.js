@@ -5,6 +5,7 @@ import { calculateGamificationXP } from './xpEngine.js';
 import { calculateGamificationCoins } from './coinEngine.js';
 import { updateGamificationStreak } from './streakEngine.js';
 import { getLocalDateKey } from '../../utils/localDate.js';
+import { reconcileCumulativeLearnerProfile } from '../../utils/learnerProgressIntegrity.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value ?? {}));
@@ -101,10 +102,24 @@ export function applyGamificationEvent(profile = {}, memory = {}, context = {}, 
     return current;
   }
 
-  const next = buildGamificationReward(profile, memory, context, current);
-  next.processedEventKeys = [...processed, eventKey].slice(-500);
-  next.updatedAt = new Date().toISOString();
-  return next;
+  const reward = buildGamificationReward(profile, memory, context, current);
+  const reconciled = reconcileCumulativeLearnerProfile({
+    identity: context.studentIdentity || context.profile || profile,
+    profile: reward,
+    adaptiveProfile: context.profile || profile,
+    gamificationProfile: current,
+    aiMemory: memory
+  });
+  return {
+    ...reward,
+    xp: reconciled.xp,
+    coins: reconciled.coins,
+    badges: reconciled.badges,
+    achievements: reconciled.achievements,
+    dailyRewards: reconciled.dailyRewards,
+    processedEventKeys: [...new Set([...reconciled.processedEventKeys, eventKey])].slice(-500),
+    updatedAt: new Date().toISOString()
+  };
 }
 
 export default {

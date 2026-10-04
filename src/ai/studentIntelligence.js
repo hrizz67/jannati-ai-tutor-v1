@@ -1,5 +1,6 @@
 import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../services/studentIdentity.js';
 import { buildLearningObservation } from './observation/learningObservationEngine.js';
+import { reconcileCumulativeLearnerProfile } from '../utils/learnerProgressIntegrity.js';
 
 const STUDENT_CORE_KEY = 'jannati_v152_student_core';
 const LEGACY_STUDENT_CORE_KEYS = ['jannati_v151_student_core', 'jannati_v150_student_core'];
@@ -168,9 +169,14 @@ export function loadStudentCore(defaultProfile = buildDefaultProfile(), identity
         return scopedFallback;
       }
       const storedProfile = migrateProfileShape(snapshot.profile, freshDefault);
-      const selected = profileEvidenceScore(scopedFallback) > profileEvidenceScore(storedProfile)
+      const preferred = profileEvidenceScore(scopedFallback) > profileEvidenceScore(storedProfile)
         ? scopedFallback
         : storedProfile;
+      const selected = reconcileCumulativeLearnerProfile({
+        identity,
+        profile: preferred,
+        sources: [preferred === storedProfile ? scopedFallback : storedProfile]
+      });
       return identity.explicit ? stampLearningIdentity(selected, identity) : selected;
     }
 
@@ -198,7 +204,14 @@ export function saveStudentCore(profile = {}, subjects = [], memory = {}, identi
   const identity = getLearningStorageScope(identityInput);
   if (getLearningIdentityMismatch(profile, identity) || getLearningIdentityMismatch(memory, identity)) return null;
   const migratedProfile = migrateProfileShape(profile);
-  const normalizedProfile = identity.explicit ? stampLearningIdentity(migratedProfile, identity) : migratedProfile;
+  const existingCore = readJson(STUDENT_CORE_KEY);
+  const reconciledProfile = reconcileCumulativeLearnerProfile({
+    identity,
+    profile: migratedProfile,
+    studentCore: getLearningIdentityMismatch(existingCore || {}, identity) ? {} : existingCore || {},
+    aiMemory: memory
+  });
+  const normalizedProfile = identity.explicit ? stampLearningIdentity(reconciledProfile, identity) : reconciledProfile;
   const subjectStats = buildSubjectStats(normalizedProfile, subjects);
   const topicStats = subjectStats.flatMap(subject => subject.topicStats);
   const completedTopics = topicStats.filter(topic => topic.mastered).length;
