@@ -529,6 +529,7 @@ describe('mobile speech startup recovery', () => {
   };
 
   function installAndroidNavigator() {
+    globalThis.window.location = { search: '?speechDiag=1&speechMode=single-final' };
     vi.stubGlobal('navigator', {
       userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
       maxTouchPoints: 5
@@ -787,18 +788,11 @@ describe('mobile speech startup recovery', () => {
 });
 
 describe('mobile speech post-start recovery', () => {
-  const mobileDevices = [
-    [
-      'Android',
-      'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
-      5
-    ],
-    [
-      'iOS',
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1',
-      5
-    ]
-  ];
+  const mobileDevices = [[
+    'Android',
+    'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
+    5
+  ]];
   const postStartOptions = {
     startTimeoutMs: 40,
     startRetryDelayMs: 20,
@@ -808,6 +802,7 @@ describe('mobile speech post-start recovery', () => {
   };
 
   function installMobileNavigator(userAgent, maxTouchPoints) {
+    globalThis.window.location = { search: '?speechDiag=1&speechMode=single-final' };
     vi.stubGlobal('navigator', { userAgent, maxTouchPoints });
   }
 
@@ -937,7 +932,7 @@ describe('mobile speech post-start recovery', () => {
 
   it('ends Bertutur with manual fallback after the single post-start retry also stalls', () => {
     vi.useFakeTimers();
-    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
     const candidates = [];
     const failures = [];
     const session = createCommunicationSpeechSession({
@@ -1046,7 +1041,7 @@ describe('mobile speech post-start recovery', () => {
 
   it('does not retry a mobile post-start stall after its context becomes stale', () => {
     vi.useFakeTimers();
-    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
     let currentContext = 'speaking:english:intro:4';
     const failures = [];
     const session = createCommunicationSpeechSession({
@@ -1098,7 +1093,7 @@ describe('mobile speech post-start recovery', () => {
 
   it('recovers when mobile recognition ends after onstart with no transcript', () => {
     vi.useFakeTimers();
-    installMobileNavigator(mobileDevices[1][1], mobileDevices[1][2]);
+    installMobileNavigator(mobileDevices[0][1], mobileDevices[0][2]);
     const accepted = [];
     const failures = [];
     const session = createReadingCommunicationSession({

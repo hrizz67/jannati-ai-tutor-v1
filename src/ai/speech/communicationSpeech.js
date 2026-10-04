@@ -1,5 +1,5 @@
 import { createReadingSpeechSession } from './speechSession.js';
-import { shouldAvoidIOSWebSpeech } from './speechCapability.js';
+import { resolveMobileMediaSttActivation, shouldAvoidMobileWebSpeech } from './speechCapability.js';
 import { traceSpeechDiagnostic } from './speechDiagnostics.js';
 
 export const COMMUNICATION_SPEECH_LOCALES = Object.freeze({
@@ -40,7 +40,7 @@ export function getCommunicationSpeechErrorMessage(errorCode = '') {
       return 'Mikrofon tidak dibenarkan. Benarkan akses mikrofon dalam tetapan peranti. Anda masih boleh menaip jawapan secara manual.';
     case 'no-speech':
     case 'no-result':
-      return 'Tiada suara dikesan. Cuba bercakap semula atau taip jawapan secara manual.';
+      return 'Tiada suara dikesan. Cuba semula atau taip jawapan.';
     case 'audio-capture':
     case 'no-audio':
       return 'Mikrofon tidak dapat dikesan. Semak mikrofon dan tetapan sistem, atau taip jawapan secara manual.';
@@ -55,13 +55,15 @@ export function getCommunicationSpeechErrorMessage(errorCode = '') {
     case 'capture-timeout':
       return 'Mikrofon tidak berjaya dimulakan pada peranti ini. Cuba sekali lagi atau taip jawapan secara manual.';
     case 'stt-unavailable':
-      return 'Transkripsi suara belum tersedia. Anda masih boleh menaip jawapan secara manual.';
+      return 'Rakaman suara belum tersedia. Kamu masih boleh menaip jawapan.';
     case 'stt-timeout':
-      return 'Transkripsi suara mengambil masa terlalu lama. Cuba sekali lagi atau taip jawapan secara manual.';
+      return 'Rakaman terlalu lama. Cuba semula atau taip jawapan.';
+    case 'stt-rate-limited':
+      return 'Terlalu banyak percubaan. Tunggu atau taip jawapan.';
     case 'cancelled':
       return 'Rakaman dibatalkan. Kamu masih boleh menaip jawapan secara manual.';
     case 'stt-error':
-      return 'Transkripsi suara menghadapi masalah. Cuba semula atau taip jawapan secara manual.';
+      return 'Rakaman gagal. Cuba semula atau taip jawapan.';
     case 'unsupported':
     case 'speech-unavailable':
     case 'start-failed':
@@ -155,8 +157,9 @@ export function createCommunicationSpeechSession({
   onStopped = null
 } = {}) {
   const speechLang = resolveCommunicationSpeechLocale(selectedSet, fallbackId);
+  const mobileMediaActivation = resolveMobileMediaSttActivation();
   const bypassActive = ['reading', 'speaking'].includes(activity)
-    && shouldAvoidIOSWebSpeech();
+    && shouldAvoidMobileWebSpeech();
   let active = true;
   let failureEmitted = false;
   let session = null;
@@ -175,14 +178,17 @@ export function createCommunicationSpeechSession({
   };
 
   if (bypassActive) {
-    traceSpeechDiagnostic('ios-webspeech-bypass', {
+    traceSpeechDiagnostic('mobile-webspeech-bypass', {
       activity,
       contextKey,
       questionIndex: resolveQuestionIndex(contextKey),
       language: speechLang,
       recognitionState: 'bypassed',
-      reason: 'explicit-ios-flag',
-      iosSpeechBypass: true,
+      reason: mobileMediaActivation.activationReason || 'mobile-webspeech-disabled',
+      activationReason: mobileMediaActivation.activationReason,
+      endpointConfigured: mobileMediaActivation.endpointConfigured,
+      platformFamily: mobileMediaActivation.platformFamily,
+      iosSpeechBypass: mobileMediaActivation.platformFamily === 'ios',
       recognizerCreated: false
     });
   } else session = sessionFactory({
@@ -231,14 +237,17 @@ export function createCommunicationSpeechSession({
       active = true;
       failureEmitted = false;
       if (bypassActive) {
-        traceSpeechDiagnostic('ios-webspeech-bypass-start-blocked', {
+        traceSpeechDiagnostic('mobile-webspeech-bypass-start-blocked', {
           activity,
           contextKey,
           questionIndex: resolveQuestionIndex(contextKey),
           language: speechLang,
           recognitionState: 'bypassed',
-          reason: 'explicit-ios-flag',
-          iosSpeechBypass: true,
+          reason: mobileMediaActivation.activationReason || 'mobile-webspeech-disabled',
+          activationReason: mobileMediaActivation.activationReason,
+          endpointConfigured: mobileMediaActivation.endpointConfigured,
+          platformFamily: mobileMediaActivation.platformFamily,
+          iosSpeechBypass: mobileMediaActivation.platformFamily === 'ios',
           recognizerCreated: false
         });
         return { unsupported: true, bypassed: true };

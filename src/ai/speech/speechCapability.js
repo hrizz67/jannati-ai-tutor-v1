@@ -1,3 +1,11 @@
+import { isSttEndpointConfigured } from './sttEndpoint.js';
+
+const IOS_WEB_SPEECH_DIAGNOSTIC_MODES = new Set([
+  'legacy-simple',
+  'single-interim',
+  'single-final'
+]);
+
 export function getSpeechRecognitionConstructor() {
   if (typeof window === 'undefined') return null;
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -48,13 +56,77 @@ export function isIOSMediaSttRequested(search) {
   return resolveSearchParams(search).get('iosSpeechMode') === 'media-stt';
 }
 
+export function isIOSWebSpeechDiagnosticOverrideRequested(search) {
+  const params = resolveSearchParams(search);
+  return params.get('speechDiag') === '1'
+    && IOS_WEB_SPEECH_DIAGNOSTIC_MODES.has(params.get('speechMode'));
+}
+
+function supportsMediaCapture(mediaCaptureSupported) {
+  if (typeof mediaCaptureSupported === 'boolean') return mediaCaptureSupported;
+  return typeof globalThis?.window?.MediaRecorder === 'function'
+    && typeof globalThis?.navigator?.mediaDevices?.getUserMedia === 'function';
+}
+
+export function resolveMobilePlatformFamily(userAgent, maxTouchPoints) {
+  if (isIOSWebKitBrowser(userAgent, maxTouchPoints)) return 'ios';
+  if (isAndroidBrowser(userAgent)) return 'android';
+  return 'desktop';
+}
+
+export function resolveMobileMediaSttActivation({
+  search,
+  userAgent,
+  maxTouchPoints,
+  endpoint,
+  mediaCaptureSupported
+} = {}) {
+  const platformFamily = resolveMobilePlatformFamily(userAgent, maxTouchPoints);
+  const mobilePlatform = platformFamily !== 'desktop';
+  const explicitRequested = platformFamily === 'ios' && isIOSMediaSttRequested(search);
+  const manualBypassRequested = platformFamily === 'ios' && isIOSWebSpeechBypassRequested(search);
+  const webSpeechDiagnosticOverride = mobilePlatform
+    && !explicitRequested
+    && !manualBypassRequested
+    && isIOSWebSpeechDiagnosticOverrideRequested(search);
+  const endpointConfigured = isSttEndpointConfigured(endpoint);
+  const active = mobilePlatform
+    && !manualBypassRequested
+    && !webSpeechDiagnosticOverride
+    && (explicitRequested || (
+      endpointConfigured
+      && (platformFamily === 'ios' || supportsMediaCapture(mediaCaptureSupported))
+    ));
+  const activationReason = !active
+    ? ''
+    : explicitRequested
+      ? 'explicit-ios-media-stt-flag'
+      : platformFamily === 'android'
+        ? 'production-android-auto'
+        : 'production-ios-auto';
+  return {
+    active,
+    activationReason,
+    endpointConfigured,
+    manualBypassRequested,
+    manualFallback: mobilePlatform && !active && !webSpeechDiagnosticOverride,
+    platformFamily
+  };
+}
+
+export const resolveIOSMediaSttActivation = resolveMobileMediaSttActivation;
+
+export function shouldUseMobileMediaStt(options = {}) {
+  return resolveMobileMediaSttActivation(options).active;
+}
+
 export function shouldUseIOSMediaStt({
   search,
   userAgent,
-  maxTouchPoints
+  maxTouchPoints,
+  endpoint
 } = {}) {
-  return isIOSMediaSttRequested(search)
-    && isIOSWebKitBrowser(userAgent, maxTouchPoints);
+  return resolveMobileMediaSttActivation({ search, userAgent, maxTouchPoints, endpoint }).active;
 }
 
 export function shouldBypassIOSWebSpeech({
@@ -67,7 +139,15 @@ export function shouldBypassIOSWebSpeech({
 }
 
 export function shouldAvoidIOSWebSpeech(options = {}) {
-  return shouldBypassIOSWebSpeech(options) || shouldUseIOSMediaStt(options);
+  if (!isIOSWebKitBrowser(options.userAgent, options.maxTouchPoints)) return false;
+  if (isIOSWebSpeechBypassRequested(options.search)) return true;
+  if (isIOSMediaSttRequested(options.search)) return true;
+  return !isIOSWebSpeechDiagnosticOverrideRequested(options.search);
+}
+
+export function shouldAvoidMobileWebSpeech(options = {}) {
+  const activation = resolveMobileMediaSttActivation(options);
+  return activation.active || activation.manualFallback;
 }
 
 export function shouldRecoverMobileSpeech(userAgent, maxTouchPoints) {
@@ -92,10 +172,16 @@ export default {
   isIOSMediaSttRequested,
   isIOSWebKitBrowser,
   isIOSWebSpeechBypassRequested,
+  isIOSWebSpeechDiagnosticOverrideRequested,
   isMalaySpeechSupported,
+  resolveMobileMediaSttActivation,
+  resolveMobilePlatformFamily,
+  resolveIOSMediaSttActivation,
+  shouldAvoidMobileWebSpeech,
   shouldAvoidIOSWebSpeech,
   shouldBypassIOSWebSpeech,
   shouldUseIOSMediaStt,
+  shouldUseMobileMediaStt,
   shouldRecoverMobileSpeech,
   shouldRecoverMobileSpeechStartup,
   supportsSpeechRecognition

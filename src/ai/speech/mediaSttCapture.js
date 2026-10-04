@@ -1,6 +1,8 @@
-const DEFAULT_CAPTURE_DURATION_MS = 6000;
+const READING_MAX_DURATION_MS = 20000;
+const SPEAKING_MAX_DURATION_MS = 25000;
+const DEFAULT_CAPTURE_DURATION_MS = READING_MAX_DURATION_MS;
 const MIN_CAPTURE_DURATION_MS = 4000;
-const MAX_CAPTURE_DURATION_MS = 8000;
+const MAX_CAPTURE_DURATION_MS = SPEAKING_MAX_DURATION_MS;
 const DEFAULT_REQUEST_TIMEOUT_MS = 10000;
 const DEFAULT_STOP_TIMEOUT_MS = 3000;
 
@@ -17,8 +19,10 @@ export const MEDIA_STT_ERROR_CODES = Object.freeze([
   'permission-denied',
   'capture-timeout',
   'no-audio',
+  'no-speech',
   'stt-unavailable',
   'stt-timeout',
+  'stt-rate-limited',
   'stt-error',
   'cancelled'
 ]);
@@ -241,7 +245,14 @@ export function createMediaSttCaptureController({
       chunkCount: run.chunkCount,
       mimeType: resolvedMimeType
     });
-    run.resolve({ blob, mimeType: resolvedMimeType, durationMs, size: blob.size });
+    run.resolve({
+      blob,
+      mimeType: resolvedMimeType,
+      durationMs,
+      captureDurationMs: run.captureDurationMs,
+      stopReason: run.stopReason,
+      size: blob.size
+    });
     return true;
   }
 
@@ -423,6 +434,8 @@ export function createMediaSttCaptureController({
 export const MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS = DEFAULT_CAPTURE_DURATION_MS;
 export const MEDIA_STT_CAPTURE_MIN_DURATION_MS = MIN_CAPTURE_DURATION_MS;
 export const MEDIA_STT_CAPTURE_MAX_DURATION_MS = MAX_CAPTURE_DURATION_MS;
+export const MEDIA_STT_READING_MAX_DURATION_MS = READING_MAX_DURATION_MS;
+export const MEDIA_STT_SPEAKING_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
 export const MEDIA_STT_IOS_MIME_TYPE = IOS_AUDIO_MIME_TYPE;
 
 export default {
@@ -430,6 +443,8 @@ export default {
   MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS,
   MEDIA_STT_CAPTURE_MIN_DURATION_MS,
   MEDIA_STT_CAPTURE_MAX_DURATION_MS,
+  MEDIA_STT_READING_MAX_DURATION_MS,
+  MEDIA_STT_SPEAKING_MAX_DURATION_MS,
   MEDIA_STT_ERROR_CODES,
   MEDIA_STT_IOS_MIME_TYPE,
   MediaSttError,

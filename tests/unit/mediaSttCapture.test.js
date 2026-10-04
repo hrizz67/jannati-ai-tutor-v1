@@ -2,8 +2,11 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createMediaSttCaptureController,
+  MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS,
   MEDIA_STT_CAPTURE_MAX_DURATION_MS,
   MEDIA_STT_CAPTURE_MIN_DURATION_MS,
+  MEDIA_STT_READING_MAX_DURATION_MS,
+  MEDIA_STT_SPEAKING_MAX_DURATION_MS,
   selectMediaRecorderMimeType
 } from '../../src/ai/speech/mediaSttCapture.js';
 
@@ -119,7 +122,7 @@ async function flush() {
   await Promise.resolve();
 }
 
-function installEnvironment({ streams = [new FakeStream()], getUserMedia, recorder = FakeMediaRecorder } = {}) {
+function installEnvironment({ streams = [new FakeStream()], getUserMedia, recorder = FakeMediaRecorder, now } = {}) {
   FakeMediaRecorder.reset();
   const browserWindow = new FakeEventTarget();
   Object.assign(browserWindow, {
@@ -136,7 +139,8 @@ function installEnvironment({ streams = [new FakeStream()], getUserMedia, record
   vi.stubGlobal('navigator', { mediaDevices });
   const controller = createMediaSttCaptureController({
     getWindow: () => browserWindow,
-    getNavigator: () => globalThis.navigator
+    getNavigator: () => globalThis.navigator,
+    ...(typeof now === 'function' ? { now } : {})
   });
   return { browserWindow, controller, mediaDevices };
 }
@@ -157,13 +161,13 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     const capture = controller.capture();
     await flush();
     expect(controller.getState()).toMatchObject({ status: 'recording', active: true });
-    vi.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS);
     const result = await capture;
 
     expect(mediaDevices.getUserMedia).toHaveBeenCalledTimes(1);
     expect(result.blob).toBeInstanceOf(Blob);
     expect(result.mimeType).toBe('audio/mp4;codecs=mp4a.40.2');
-    expect(result.durationMs).toBe(6000);
+    expect(result.durationMs).toBe(MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS);
     expect(stream.getTracks()[0].stopCalls).toBe(1);
     expect(FakeMediaRecorder.instances[0].options).toEqual({ mimeType: 'audio/mp4;codecs=mp4a.40.2' });
     expect(controller.getState()).toMatchObject({ status: 'ready', active: false, errorCode: '' });
@@ -175,7 +179,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     FakeMediaRecorder.chunks = [];
     const emptyCapture = emptyEnvironment.controller.capture();
     await flush();
-    vi.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS);
     await expect(emptyCapture).rejects.toMatchObject({ code: 'no-audio' });
 
     const denial = new DOMException('SECRET denial detail', 'NotAllowedError');
@@ -198,7 +202,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     FakeMediaRecorder[flag] = true;
     const capture = controller.capture();
     await flush();
-    if (_phase === 'stop') vi.advanceTimersByTime(6000);
+    if (_phase === 'stop') vi.advanceTimersByTime(MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS);
     await expect(capture).rejects.toMatchObject({ code: 'stt-error' });
     expect(stream.getTracks()[0].stopCalls).toBe(1);
   });
@@ -233,7 +237,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     expect(environment.controller.getState()).toMatchObject({ active: false });
   });
 
-  it('uses three fresh streams and recorders and ignores stale callbacks', async () => {
+  it('uses fresh streams and recorders for Q1, Q2 and Q3 and ignores stale callbacks', async () => {
     vi.useFakeTimers();
     const streams = [1, 2, 3].map(index => new FakeStream('fresh-' + index));
     const environment = installEnvironment({ streams });
@@ -244,7 +248,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
       await flush();
       const recorder = FakeMediaRecorder.instances[index];
       if (index === 0) staleDataListener = [...recorder.listeners.get('dataavailable')][0];
-      vi.advanceTimersByTime(6000);
+      vi.advanceTimersByTime(MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS);
       await capture;
       if (index === 1) {
         const state = environment.controller.getState();
@@ -254,6 +258,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     }
 
     expect(FakeMediaRecorder.instances).toHaveLength(3);
+    expect(environment.mediaDevices.getUserMedia).toHaveBeenCalledTimes(3);
     expect(new Set(FakeMediaRecorder.instances.map(item => item.stream)).size).toBe(3);
     expect(streams.map(stream => stream.getTracks()[0].stopCalls)).toEqual([1, 1, 1]);
   });
@@ -264,7 +269,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     FakeMediaRecorder.autoStopEvent = false;
     const capture = controller.capture({ durationMs: 99999 });
     await flush();
-    vi.advanceTimersByTime(8000);
+    vi.advanceTimersByTime(MEDIA_STT_CAPTURE_MAX_DURATION_MS);
     const recorder = FakeMediaRecorder.instances[0];
     expect(controller.stop('duplicate-stop')).toBe(true);
     expect(controller.stop('duplicate-stop')).toBe(true);
@@ -274,6 +279,63 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     const result = await capture;
     expect(result.durationMs).toBe(MEDIA_STT_CAPTURE_MAX_DURATION_MS);
     expect(MEDIA_STT_CAPTURE_MIN_DURATION_MS).toBe(4000);
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS, 12000],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS, 14000]
+  ])('%s manual stop returns the real duration below its hard maximum', async (_activity, maximumMs, stopAtMs) => {
+    vi.useFakeTimers();
+    const { controller } = installEnvironment();
+    const capture = controller.capture({ durationMs: maximumMs });
+    await flush();
+    vi.advanceTimersByTime(stopAtMs);
+    expect(controller.stop('manual-stop')).toBe(true);
+    await expect(capture).resolves.toMatchObject({
+      durationMs: stopAtMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'manual-stop'
+    });
+    expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s auto-stops exactly at its hard maximum', async (_activity, maximumMs) => {
+    vi.useFakeTimers();
+    const { controller } = installEnvironment();
+    const capture = controller.capture({ durationMs: maximumMs });
+    await flush();
+    vi.advanceTimersByTime(maximumMs - 1);
+    expect(controller.getState()).toMatchObject({ status: 'recording', active: true });
+    vi.advanceTimersByTime(1);
+    await expect(capture).resolves.toMatchObject({
+      durationMs: maximumMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+    expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s preserves measured auto-stop jitter without extending the configured timer', async (_activity, maximumMs) => {
+    vi.useFakeTimers();
+    let measuredNowMs = 0;
+    const { controller } = installEnvironment({ now: () => measuredNowMs });
+    const capture = controller.capture({ durationMs: maximumMs });
+    await flush();
+    measuredNowMs = maximumMs + 1;
+    vi.advanceTimersByTime(maximumMs);
+
+    await expect(capture).resolves.toMatchObject({
+      durationMs: maximumMs + 1,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+    expect(FakeMediaRecorder.instances[0].stopCalls).toBe(1);
   });
 
   it('clamps configurable automatic capture below the four-second minimum', async () => {

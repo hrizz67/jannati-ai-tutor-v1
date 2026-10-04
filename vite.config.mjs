@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const supabaseUrl = env.VITE_SUPABASE_URL?.trim()
   const supabasePublishableKey = env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim()
+  const sttEndpoint = env.VITE_STT_ENDPOINT?.trim() || ''
   const buildDate = new Date().toISOString()
   const buildRevision = env.VITE_BUILD_REVISION?.trim()
     || process.env.GITHUB_SHA?.trim()
@@ -39,6 +40,9 @@ export default defineConfig(({ mode }) => {
           if (moduleId.includes('/node_modules/@supabase/')) {
             return 'vendor-supabase'
           }
+          if (moduleId.includes('/src/ai/speech/')) {
+            return 'speech-runtime'
+          }
           if (/\/src\/(?:data\/bm(?:BinaAyat|PentaksiranSumatif|SimpulanBahasa)Questions|utils\/bmSentenceQuality)\.js$/.test(moduleId)) {
             return 'bm-enrichment'
           }
@@ -55,7 +59,8 @@ export default defineConfig(({ mode }) => {
     __APP_BUILD_DATE__: JSON.stringify(buildDate),
     __APP_BUILD_REVISION__: JSON.stringify(buildRevision),
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseUrl),
-    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(supabasePublishableKey)
+    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(supabasePublishableKey),
+    'import.meta.env.VITE_STT_ENDPOINT': JSON.stringify(sttEndpoint)
   }
   }
 })

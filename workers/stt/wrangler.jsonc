@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jannati-ai-tutor-stt",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-04",
+  "workers_dev": true,
+  "ai": {
+    "binding": "AI"
+  },
+  "ratelimits": [
+    {
+      "name": "STT_RATE_LIMITER",
+      "namespace_id": "11010",
+      "simple": {
+        "limit": 60,
+        "period": 60
+      }
+    }
+  ],
+  "vars": {
+    "CORS_ALLOW_ORIGINS": "https://hrizz67.github.io"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  }
+}

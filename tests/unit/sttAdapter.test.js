@@ -2,13 +2,19 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MediaSttError } from '../../src/ai/speech/mediaSttCapture.js';
 import {
+  createCloudflareWorkersAiSttAdapter,
   createDeterministicSttAdapter,
   createRuntimeSttAdapter,
   createSttAdapter,
   getDeterministicSttPreviewTranscript,
+  getConfiguredSttEndpoint,
+  isCloudflareSttConfigured,
   isDeterministicSttPreviewRequested,
+  STT_ADAPTER_AUTO_STOP_TOLERANCE_MS,
   STT_ADAPTER_MAX_BYTES,
-  STT_ADAPTER_MAX_DURATION_MS
+  STT_ADAPTER_MAX_DURATION_MS,
+  STT_ADAPTER_READING_MAX_DURATION_MS,
+  STT_ADAPTER_SPEAKING_MAX_DURATION_MS
 } from '../../src/ai/speech/sttAdapter.js';
 
 const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
@@ -106,7 +112,7 @@ describe('P1.9 provider-neutral STT adapter', () => {
     await expect(explicitUnavailable.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'stt-unavailable' });
 
     const empty = createSttAdapter({ request: async () => ({ transcript: '   ' }) });
-    await expect(empty.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'no-audio' });
+    await expect(empty.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'no-speech' });
     await expect(empty.transcribe({ blob: new Blob([]) })).rejects.toMatchObject({ code: 'no-audio' });
   });
 
@@ -126,6 +132,62 @@ describe('P1.9 provider-neutral STT adapter', () => {
       reason: 'max-duration-exceeded'
     });
     expect(request).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['reading', STT_ADAPTER_READING_MAX_DURATION_MS],
+    ['speaking', STT_ADAPTER_SPEAKING_MAX_DURATION_MS]
+  ])('enforces the %s duration guard while preserving the 5 MiB size guard', async (activity, maximumMs) => {
+    const request = vi.fn(async () => ({ transcript: 'accepted' }));
+    const adapter = createSttAdapter({ request });
+    const blob = audioBlob();
+
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs }
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs + 1 }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    expect(STT_ADAPTER_MAX_BYTES).toBe(5 * 1024 * 1024);
+  });
+
+  it.each([
+    ['reading', STT_ADAPTER_READING_MAX_DURATION_MS],
+    ['speaking', STT_ADAPTER_SPEAKING_MAX_DURATION_MS]
+  ])('accepts bounded %s auto-stop jitter but rejects untrusted over-limit durations', async (activity, maximumMs) => {
+    const request = vi.fn(async () => ({ transcript: 'accepted' }));
+    const adapter = createSttAdapter({ request });
+    const blob = audioBlob();
+    const autoStopContext = durationMs => ({
+      activity,
+      durationMs,
+      captureDurationMs: maximumMs,
+      stopReason: 'duration-complete'
+    });
+
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + 1)
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + STT_ADAPTER_AUTO_STOP_TOLERANCE_MS)
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: autoStopContext(maximumMs + STT_ADAPTER_AUTO_STOP_TOLERANCE_MS + 1)
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs + 1 }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { ...autoStopContext(maximumMs + 1), stopReason: 'manual-stop' }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    expect(request).toHaveBeenCalledTimes(2);
   });
 
   it('gates deterministic physical preview behind iOS mode, diagnostics and explicit mock text', async () => {
@@ -192,5 +254,134 @@ describe('P1.9 provider-neutral STT adapter', () => {
       'apiKey',
       'Authorization'
     ].forEach(forbidden => expect(source).not.toContain(forbidden));
+  });
+});
+
+describe('P1.10 Cloudflare Workers AI STT adapter', () => {
+  it('posts the exact audio Blob to the configured endpoint without browser credentials', async () => {
+    const responsePayload = {
+      transcript: '  Saya   membaca buku  ',
+      confidence: 0.93,
+      metadata: {
+        model: '@cf/openai/whisper-large-v3-turbo',
+        language: 'ms'
+      }
+    };
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify(responsePayload), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }));
+    const adapter = createCloudflareWorkersAiSttAdapter({
+      endpoint: 'https://jannati-stt.example.workers.dev/v1/transcribe',
+      fetchImpl
+    });
+    const blob = audioBlob(12);
+
+    await expect(adapter.transcribe({
+      blob,
+      mimeType: blob.type,
+      language: 'ms-MY',
+      context: { activity: 'reading', contextKey: 'reading:bm:0', durationMs: 6000 }
+    })).resolves.toMatchObject({
+      transcript: 'Saya membaca buku',
+      confidence: 93,
+      provider: 'cloudflare-workers-ai',
+      metadata: {
+        model: '@cf/openai/whisper-large-v3-turbo',
+        language: 'ms-MY'
+      }
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const [url, request] = fetchImpl.mock.calls[0];
+    expect(url).toBe('https://jannati-stt.example.workers.dev/v1/transcribe');
+    expect(request).toMatchObject({
+      method: 'POST',
+      body: blob,
+      cache: 'no-store',
+      credentials: 'omit',
+      mode: 'cors',
+      referrerPolicy: 'no-referrer'
+    });
+    expect(request.headers).toMatchObject({
+      'Content-Type': 'audio/mp4;codecs=mp4a.40.2',
+      'X-STT-Language': 'ms-MY'
+    });
+    expect(request.headers).not.toHaveProperty('Authorization');
+  });
+
+  it('allows HTTPS and loopback development endpoints but rejects unsafe endpoint forms', () => {
+    expect(getConfiguredSttEndpoint('https://example.workers.dev/v1/transcribe')).toBe(
+      'https://example.workers.dev/v1/transcribe'
+    );
+    expect(getConfiguredSttEndpoint('http://localhost:8787/v1/transcribe')).toBe(
+      'http://localhost:8787/v1/transcribe'
+    );
+    expect(isCloudflareSttConfigured('http://worker.example/v1/transcribe')).toBe(false);
+    expect(isCloudflareSttConfigured('https://user:secret@example.com/v1/transcribe')).toBe(false);
+    expect(isCloudflareSttConfigured('https://example.com/v1/transcribe?token=secret')).toBe(false);
+    expect(isCloudflareSttConfigured('https://example.com/v1/transcribe#secret')).toBe(false);
+  });
+
+  it.each([
+    [408, 'stt-timeout'],
+    [403, 'stt-unavailable'],
+    [429, 'stt-rate-limited'],
+    [502, 'stt-error']
+  ])('normalizes HTTP %i without exposing provider response details', async (status, code) => {
+    const adapter = createCloudflareWorkersAiSttAdapter({
+      endpoint: 'https://example.workers.dev/v1/transcribe',
+      fetchImpl: async () => new Response(JSON.stringify({ error: 'SECRET provider detail' }), { status })
+    });
+    await expect(adapter.transcribe({ blob: audioBlob(), language: 'en-US' })).rejects.toMatchObject({ code });
+  });
+
+  it('prefers the diagnostics-only mock over a configured real endpoint', async () => {
+    const fetchImpl = vi.fn();
+    const adapter = createRuntimeSttAdapter({
+      search: '?speechDiag=1&mockSpeechTranscript=Ujian%20mock',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5,
+      endpoint: 'https://example.workers.dev/v1/transcribe',
+      fetchImpl
+    });
+    await expect(adapter.transcribe({ blob: audioBlob(), language: 'ms-MY' })).resolves.toMatchObject({
+      transcript: 'Ujian mock',
+      provider: 'deterministic-preview'
+    });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('never selects the mock without speechDiag=1 and uses the configured real endpoint', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ transcript: 'Real speech' }), { status: 200 }));
+    const adapter = createRuntimeSttAdapter({
+      search: '?mockSpeechTranscript=Ujian%20mock',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5,
+      endpoint: 'https://example.workers.dev/v1/transcribe',
+      fetchImpl
+    });
+
+    await expect(adapter.transcribe({ blob: audioBlob(), language: 'ms-MY' })).resolves.toMatchObject({
+      transcript: 'Real speech',
+      provider: 'cloudflare-workers-ai'
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it('selects the real adapter when the endpoint is configured and mock diagnostics are absent', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ transcript: 'Real speech' }), { status: 200 }));
+    const adapter = createRuntimeSttAdapter({
+      search: '',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5,
+      endpoint: 'https://example.workers.dev/v1/transcribe',
+      fetchImpl
+    });
+    await expect(adapter.transcribe({ blob: audioBlob(), language: 'en-US' })).resolves.toMatchObject({
+      transcript: 'Real speech',
+      provider: 'cloudflare-workers-ai'
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 });

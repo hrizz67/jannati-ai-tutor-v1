@@ -4,8 +4,8 @@ import { createMediaRecorderProbeController } from './mediaRecorderProbe.js';
 import {
   isIOSMediaSttRequested,
   isIOSWebSpeechBypassRequested,
-  shouldBypassIOSWebSpeech,
-  shouldUseIOSMediaStt
+  resolveMobileMediaSttActivation,
+  shouldBypassIOSWebSpeech
 } from './speechCapability.js';
 
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
@@ -181,8 +181,13 @@ function normalizeStoredEvent(event) {
     mimeType: safeString(event.mimeType, 120),
     recorderState: safeString(event.recorderState, 40),
     recorderStates: safeString(event.recorderStates, 200),
+    platformFamily: safeString(event.platformFamily, 20),
     iosSpeechBypass: safeBoolean(event.iosSpeechBypass),
-    recognizerCreated: safeBoolean(event.recognizerCreated)
+    recognizerCreated: safeBoolean(event.recognizerCreated),
+    activationReason: safeString(event.activationReason, 80),
+    endpointConfigured: safeBoolean(event.endpointConfigured),
+    provider: safeString(event.provider, 80),
+    remoteUpload: safeBoolean(event.remoteUpload)
   };
 }
 
@@ -479,8 +484,13 @@ export function traceSpeechDiagnostic(event, details = {}) {
     mimeType: details.mimeType,
     recorderState: details.recorderState,
     recorderStates: details.recorderStates,
+    platformFamily: details.platformFamily,
     iosSpeechBypass: details.iosSpeechBypass,
-    recognizerCreated: details.recognizerCreated
+    recognizerCreated: details.recognizerCreated,
+    activationReason: details.activationReason,
+    endpointConfigured: details.endpointConfigured,
+    provider: details.provider,
+    remoteUpload: details.remoteUpload
   });
   if (!entry) return null;
   if (entry.sessionId) currentSessionId = entry.sessionId;
@@ -506,16 +516,27 @@ export function createSpeechDiagnosticSession(details = {}) {
 export function getSpeechDiagnosticSnapshot() {
   const runtime = readRuntimeInfo();
   const envelope = loadEnvelope();
+  const activation = resolveMobileMediaSttActivation();
+  const mediaSttActive = activation.active;
+  const mockTranscriptConfigured = isSpeechDiagnosticsEnabled()
+    && Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1));
+  const remoteUpload = mediaSttActive && activation.endpointConfigured && !mockTranscriptConfigured;
+  const provider = mediaSttActive && mockTranscriptConfigured
+    ? 'deterministic-preview'
+    : remoteUpload
+      ? 'cloudflare-workers-ai'
+      : 'unavailable';
   return {
     schemaVersion: 1,
     traceId: envelope.traceId,
     generatedAt: new Date().toISOString(),
     privacy: {
-      remoteUpload: false,
+      remoteUpload,
       transcriptIncluded: false,
       audioIncluded: false,
       learnerIdentityIncluded: false,
       storage: 'bounded sessionStorage and memory only',
+      audioHandling: remoteUpload ? 'transient-worker-ai-request' : 'local-memory-only',
       audioSamplesIncluded: false,
       deviceIdentifiersIncluded: false,
       deviceLabelsIncluded: false,
@@ -541,8 +562,14 @@ export function getSpeechDiagnosticSnapshot() {
       },
       iosMediaStt: {
         requested: isIOSMediaSttRequested(),
-        active: shouldUseIOSMediaStt(),
-        mockTranscriptConfigured: Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1)),
+        active: mediaSttActive,
+        platformFamily: activation.platformFamily,
+        activationReason: activation.activationReason,
+        mockTranscriptConfigured,
+        endpointConfigured: activation.endpointConfigured,
+        provider,
+        remoteUpload,
+        recognizerCreated: false,
         scope: 'reading-speaking-only'
       }
     },
@@ -851,7 +878,8 @@ function mountPanel() {
       'session: ' + (snapshot.diagnostic.currentSessionId || 'none'),
       'display: ' + runtime.displayMode + ' / visibility: ' + runtime.documentVisibility,
       'service worker: ' + (runtime.serviceWorkerScriptUrl || 'none') + ' (' + runtime.serviceWorkerControllerState + ')',
-      'privacy: metadata only; no transcript/audio/identity; no upload'
+      'privacy: metadata only; no transcript/audio/identity in diagnostics; audio transport: '
+        + snapshot.privacy.audioHandling
     ].join('\n');
     if (nativeProbeStatus) {
       nativeProbeStatus.textContent = 'Probe status: ' + probeState.status
