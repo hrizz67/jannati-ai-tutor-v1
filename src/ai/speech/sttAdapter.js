@@ -1,5 +1,5 @@
 import { MediaSttError, normalizeMediaSttError } from './mediaSttCapture.js';
-import { shouldUseIOSMediaStt } from './speechCapability.js';
+import { shouldUseMobileMediaStt } from './speechCapability.js';
 import {
   getConfiguredSttEndpoint as resolveSttEndpoint,
   isSttEndpointConfigured
@@ -317,7 +317,7 @@ export function isDeterministicSttPreviewRequested({
   endpoint
 } = {}) {
   const resolvedSearch = resolveSearch(search);
-  return shouldUseIOSMediaStt({
+  return shouldUseMobileMediaStt({
     search: resolvedSearch,
     userAgent,
     maxTouchPoints,

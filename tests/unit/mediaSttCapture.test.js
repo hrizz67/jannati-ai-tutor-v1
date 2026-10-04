@@ -236,7 +236,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     expect(environment.controller.getState()).toMatchObject({ active: false });
   });
 
-  it('uses three fresh streams and recorders and ignores stale callbacks', async () => {
+  it('uses fresh streams and recorders for Q1, Q2 and Q3 and ignores stale callbacks', async () => {
     vi.useFakeTimers();
     const streams = [1, 2, 3].map(index => new FakeStream('fresh-' + index));
     const environment = installEnvironment({ streams });
@@ -257,6 +257,7 @@ describe('P1.9 reusable MediaRecorder capture controller', () => {
     }
 
     expect(FakeMediaRecorder.instances).toHaveLength(3);
+    expect(environment.mediaDevices.getUserMedia).toHaveBeenCalledTimes(3);
     expect(new Set(FakeMediaRecorder.instances.map(item => item.stream)).size).toBe(3);
     expect(streams.map(stream => stream.getTracks()[0].stopCalls)).toEqual([1, 1, 1]);
   });

@@ -1,5 +1,5 @@
 import { createReadingSpeechSession } from './speechSession.js';
-import { resolveIOSMediaSttActivation, shouldAvoidIOSWebSpeech } from './speechCapability.js';
+import { resolveMobileMediaSttActivation, shouldAvoidMobileWebSpeech } from './speechCapability.js';
 import { traceSpeechDiagnostic } from './speechDiagnostics.js';
 
 export const COMMUNICATION_SPEECH_LOCALES = Object.freeze({
@@ -157,9 +157,9 @@ export function createCommunicationSpeechSession({
   onStopped = null
 } = {}) {
   const speechLang = resolveCommunicationSpeechLocale(selectedSet, fallbackId);
-  const iosMediaActivation = resolveIOSMediaSttActivation();
+  const mobileMediaActivation = resolveMobileMediaSttActivation();
   const bypassActive = ['reading', 'speaking'].includes(activity)
-    && shouldAvoidIOSWebSpeech();
+    && shouldAvoidMobileWebSpeech();
   let active = true;
   let failureEmitted = false;
   let session = null;
@@ -178,16 +178,17 @@ export function createCommunicationSpeechSession({
   };
 
   if (bypassActive) {
-    traceSpeechDiagnostic('ios-webspeech-bypass', {
+    traceSpeechDiagnostic('mobile-webspeech-bypass', {
       activity,
       contextKey,
       questionIndex: resolveQuestionIndex(contextKey),
       language: speechLang,
       recognitionState: 'bypassed',
-      reason: iosMediaActivation.activationReason || 'ios-webspeech-disabled',
-      activationReason: iosMediaActivation.activationReason,
-      endpointConfigured: iosMediaActivation.endpointConfigured,
-      iosSpeechBypass: true,
+      reason: mobileMediaActivation.activationReason || 'mobile-webspeech-disabled',
+      activationReason: mobileMediaActivation.activationReason,
+      endpointConfigured: mobileMediaActivation.endpointConfigured,
+      platformFamily: mobileMediaActivation.platformFamily,
+      iosSpeechBypass: mobileMediaActivation.platformFamily === 'ios',
       recognizerCreated: false
     });
   } else session = sessionFactory({
@@ -236,16 +237,17 @@ export function createCommunicationSpeechSession({
       active = true;
       failureEmitted = false;
       if (bypassActive) {
-        traceSpeechDiagnostic('ios-webspeech-bypass-start-blocked', {
+        traceSpeechDiagnostic('mobile-webspeech-bypass-start-blocked', {
           activity,
           contextKey,
           questionIndex: resolveQuestionIndex(contextKey),
           language: speechLang,
           recognitionState: 'bypassed',
-          reason: iosMediaActivation.activationReason || 'ios-webspeech-disabled',
-          activationReason: iosMediaActivation.activationReason,
-          endpointConfigured: iosMediaActivation.endpointConfigured,
-          iosSpeechBypass: true,
+          reason: mobileMediaActivation.activationReason || 'mobile-webspeech-disabled',
+          activationReason: mobileMediaActivation.activationReason,
+          endpointConfigured: mobileMediaActivation.endpointConfigured,
+          platformFamily: mobileMediaActivation.platformFamily,
+          iosSpeechBypass: mobileMediaActivation.platformFamily === 'ios',
           recognizerCreated: false
         });
         return { unsupported: true, bypassed: true };

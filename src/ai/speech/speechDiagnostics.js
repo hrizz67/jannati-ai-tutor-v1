@@ -4,7 +4,7 @@ import { createMediaRecorderProbeController } from './mediaRecorderProbe.js';
 import {
   isIOSMediaSttRequested,
   isIOSWebSpeechBypassRequested,
-  resolveIOSMediaSttActivation,
+  resolveMobileMediaSttActivation,
   shouldBypassIOSWebSpeech
 } from './speechCapability.js';
 
@@ -181,6 +181,7 @@ function normalizeStoredEvent(event) {
     mimeType: safeString(event.mimeType, 120),
     recorderState: safeString(event.recorderState, 40),
     recorderStates: safeString(event.recorderStates, 200),
+    platformFamily: safeString(event.platformFamily, 20),
     iosSpeechBypass: safeBoolean(event.iosSpeechBypass),
     recognizerCreated: safeBoolean(event.recognizerCreated),
     activationReason: safeString(event.activationReason, 80),
@@ -483,8 +484,13 @@ export function traceSpeechDiagnostic(event, details = {}) {
     mimeType: details.mimeType,
     recorderState: details.recorderState,
     recorderStates: details.recorderStates,
+    platformFamily: details.platformFamily,
     iosSpeechBypass: details.iosSpeechBypass,
-    recognizerCreated: details.recognizerCreated
+    recognizerCreated: details.recognizerCreated,
+    activationReason: details.activationReason,
+    endpointConfigured: details.endpointConfigured,
+    provider: details.provider,
+    remoteUpload: details.remoteUpload
   });
   if (!entry) return null;
   if (entry.sessionId) currentSessionId = entry.sessionId;
@@ -510,7 +516,7 @@ export function createSpeechDiagnosticSession(details = {}) {
 export function getSpeechDiagnosticSnapshot() {
   const runtime = readRuntimeInfo();
   const envelope = loadEnvelope();
-  const activation = resolveIOSMediaSttActivation();
+  const activation = resolveMobileMediaSttActivation();
   const mediaSttActive = activation.active;
   const mockTranscriptConfigured = isSpeechDiagnosticsEnabled()
     && Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1));
@@ -557,6 +563,7 @@ export function getSpeechDiagnosticSnapshot() {
       iosMediaStt: {
         requested: isIOSMediaSttRequested(),
         active: mediaSttActive,
+        platformFamily: activation.platformFamily,
         activationReason: activation.activationReason,
         mockTranscriptConfigured,
         endpointConfigured: activation.endpointConfigured,

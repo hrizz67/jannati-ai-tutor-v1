@@ -529,6 +529,7 @@ describe('mobile speech startup recovery', () => {
   };
 
   function installAndroidNavigator() {
+    globalThis.window.location = { search: '?speechDiag=1&speechMode=single-final' };
     vi.stubGlobal('navigator', {
       userAgent: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36',
       maxTouchPoints: 5
@@ -801,6 +802,7 @@ describe('mobile speech post-start recovery', () => {
   };
 
   function installMobileNavigator(userAgent, maxTouchPoints) {
+    globalThis.window.location = { search: '?speechDiag=1&speechMode=single-final' };
     vi.stubGlobal('navigator', { userAgent, maxTouchPoints });
   }
 

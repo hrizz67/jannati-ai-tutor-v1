@@ -1,7 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createCommunicationSpeechSession } from '../../src/ai/speech/communicationSpeech.js';
-import { createIOSMediaSttSession } from '../../src/ai/speech/iosMediaSttSession.js';
+import {
+  createCommunicationSpeechSession,
+  resolveCommunicationSpeechLocale
+} from '../../src/ai/speech/communicationSpeech.js';
+import { createIOSMediaSttSession, createMobileMediaSttSession } from '../../src/ai/speech/iosMediaSttSession.js';
 import {
   MEDIA_STT_READING_MAX_DURATION_MS,
   MEDIA_STT_SPEAKING_MAX_DURATION_MS,
@@ -9,7 +12,9 @@ import {
 } from '../../src/ai/speech/mediaSttCapture.js';
 import {
   isIOSMediaSttRequested,
+  resolveMobileMediaSttActivation,
   resolveIOSMediaSttActivation,
+  shouldAvoidMobileWebSpeech,
   shouldAvoidIOSWebSpeech,
   shouldUseIOSMediaStt
 } from '../../src/ai/speech/speechCapability.js';
@@ -17,6 +22,7 @@ import {
   clearSpeechDiagnosticTrace,
   getSpeechDiagnosticSnapshot
 } from '../../src/ai/speech/speechDiagnostics.js';
+import { createRuntimeSttAdapter } from '../../src/ai/speech/sttAdapter.js';
 import { createMemorySessionStorage } from '../helpers/sharedNativeSpeechBackend.js';
 
 const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
@@ -142,7 +148,7 @@ afterEach(() => {
   delete globalThis.window;
 });
 
-describe('P1.12 production iOS media-STT integration', () => {
+describe('P1.12.1 production mobile media-STT integration', () => {
   it('auto-activates on iOS/iPadOS WebKit with a valid endpoint and no query flag', () => {
     expect(isIOSMediaSttRequested('?iosSpeechMode=media-stt')).toBe(true);
     expect(isIOSMediaSttRequested('?iosSpeechMode=default')).toBe(false);
@@ -154,18 +160,62 @@ describe('P1.12 production iOS media-STT integration', () => {
     })).toMatchObject({
       active: true,
       activationReason: 'production-ios-auto',
-      endpointConfigured: true
+      endpointConfigured: true,
+      platformFamily: 'ios'
     });
     expect(shouldUseIOSMediaStt({ search: '', userAgent: IOS_UA, maxTouchPoints: 5, endpoint: VALID_ENDPOINT })).toBe(true);
     expect(shouldUseIOSMediaStt({ search: '', userAgent: IPAD_DESKTOP_UA, maxTouchPoints: 5, endpoint: VALID_ENDPOINT })).toBe(true);
   });
 
-  it('keeps the explicit media flag and rejects non-iOS activation', () => {
+  it('keeps the explicit iOS media flag and leaves desktop unchanged', () => {
     expect(shouldUseIOSMediaStt({ search: '?iosSpeechMode=media-stt', userAgent: IOS_UA, maxTouchPoints: 5 })).toBe(true);
     expect(shouldUseIOSMediaStt({ search: '?iosSpeechMode=media-stt', userAgent: IPAD_DESKTOP_UA, maxTouchPoints: 5 })).toBe(true);
     expect(shouldUseIOSMediaStt({ search: '?iosSpeechMode=media-stt', userAgent: DESKTOP_UA, maxTouchPoints: 0 })).toBe(false);
     expect(shouldUseIOSMediaStt({ search: '', userAgent: DESKTOP_UA, maxTouchPoints: 0, endpoint: VALID_ENDPOINT })).toBe(false);
-    expect(shouldUseIOSMediaStt({ search: '', userAgent: ANDROID_UA, maxTouchPoints: 5, endpoint: VALID_ENDPOINT })).toBe(false);
+  });
+
+  it('auto-activates Android phone/tablet only with a valid endpoint and recording capability', () => {
+    const androidTablet = 'Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 Chrome/130.0 Safari/537.36';
+    [ANDROID_UA, androidTablet].forEach(userAgent => {
+      expect(resolveMobileMediaSttActivation({
+        search: '',
+        userAgent,
+        maxTouchPoints: 5,
+        endpoint: VALID_ENDPOINT,
+        mediaCaptureSupported: true
+      })).toMatchObject({
+        active: true,
+        activationReason: 'production-android-auto',
+        endpointConfigured: true,
+        manualFallback: false,
+        platformFamily: 'android'
+      });
+    });
+    expect(resolveMobileMediaSttActivation({
+      userAgent: ANDROID_UA,
+      endpoint: VALID_ENDPOINT,
+      mediaCaptureSupported: false
+    })).toMatchObject({ active: false, manualFallback: true, platformFamily: 'android' });
+  });
+
+  it.each(['reading', 'speaking'])('uses Android media STT for %s without creating a recognizer', activity => {
+    const { browserWindow } = installEnvironment({ search: '', userAgent: ANDROID_UA, maxTouchPoints: 5 });
+    vi.stubEnv('VITE_STT_ENDPOINT', VALID_ENDPOINT);
+    const sessionFactory = vi.fn();
+    const session = createCommunicationSpeechSession({
+      activity,
+      selectedSet: { id: activity === 'reading' ? 'bm' : 'english', speechLang: activity === 'reading' ? 'ms-MY' : 'en-US' },
+      sessionFactory
+    });
+    expect(resolveMobileMediaSttActivation()).toMatchObject({
+      active: true,
+      activationReason: 'production-android-auto',
+      platformFamily: 'android'
+    });
+    expect(session).toMatchObject({ supported: false, bypassed: true });
+    expect(sessionFactory).not.toHaveBeenCalled();
+    expect(browserWindow.SpeechRecognition).not.toHaveBeenCalled();
+    expect(createRuntimeSttAdapter({ endpoint: VALID_ENDPOINT, fetchImpl: vi.fn() }).provider).toBe('cloudflare-workers-ai');
   });
 
   it('uses safe manual fallback on iOS when the endpoint is absent or invalid', () => {
@@ -202,6 +252,12 @@ describe('P1.12 production iOS media-STT integration', () => {
       userAgent: IOS_UA,
       maxTouchPoints: 5
     })).toBe(false);
+    expect(resolveMobileMediaSttActivation({
+      search: '?speechDiag=1&speechMode=single-final',
+      userAgent: ANDROID_UA,
+      endpoint: VALID_ENDPOINT,
+      mediaCaptureSupported: true
+    })).toMatchObject({ active: false, manualFallback: false, platformFamily: 'android' });
   });
 
   it.each(['reading', 'speaking'])('%s media mode never creates or starts Web Speech', activity => {
@@ -220,7 +276,7 @@ describe('P1.12 production iOS media-STT integration', () => {
     expect(browserWindow.SpeechRecognition).not.toHaveBeenCalled();
   });
 
-  it('never creates Web Speech for iOS without an endpoint and keeps desktop/Android recognizers unchanged', () => {
+  it('never creates Web Speech for mobile without an endpoint and keeps desktop recognizers unchanged', () => {
     installEnvironment({ search: '', userAgent: IOS_UA, maxTouchPoints: 5 });
     const iosSessionFactory = vi.fn();
     const iosSession = createCommunicationSpeechSession({
@@ -231,9 +287,19 @@ describe('P1.12 production iOS media-STT integration', () => {
     expect(iosSession).toMatchObject({ supported: false, bypassed: true });
     expect(iosSessionFactory).not.toHaveBeenCalled();
 
+    installEnvironment({ search: '', userAgent: ANDROID_UA, maxTouchPoints: 5 });
+    const androidSessionFactory = vi.fn();
+    const androidSession = createCommunicationSpeechSession({
+      activity: 'speaking',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      sessionFactory: androidSessionFactory
+    });
+    expect(androidSession).toMatchObject({ supported: false, bypassed: true });
+    expect(androidSessionFactory).not.toHaveBeenCalled();
+    expect(shouldAvoidMobileWebSpeech({ userAgent: ANDROID_UA })).toBe(true);
+
     const cases = [
       { search: '', userAgent: DESKTOP_UA, maxTouchPoints: 0 },
-      { search: '', userAgent: ANDROID_UA, maxTouchPoints: 5 },
       { search: '?iosSpeechMode=media-stt', userAgent: DESKTOP_UA, maxTouchPoints: 0 }
     ];
     cases.forEach(environment => {
@@ -300,6 +366,29 @@ describe('P1.12 production iOS media-STT integration', () => {
       mimeType: 'audio/mp4;codecs=mp4a.40.2'
     }));
     expect(capture.capture).toHaveBeenCalledWith(expect.objectContaining({ durationMs: maximumMs }));
+  });
+
+  it.each([
+    ['bm', 'ms-MY'],
+    ['english', 'en-US'],
+    ['arab', 'ar-SA']
+  ])('keeps Android media-STT %s locale mapped to %s', async (id, expectedLanguage) => {
+    const { browserNavigator, browserWindow } = installEnvironment({ search: '', userAgent: ANDROID_UA });
+    const capture = successfulCaptureFactory();
+    const adapter = {
+      transcribe: vi.fn(async () => ({ transcript: 'mobile answer', confidence: 90, provider: 'test' }))
+    };
+    const session = createMobileMediaSttSession({
+      activity: 'speaking',
+      language: resolveCommunicationSpeechLocale({ id }),
+      platformFamily: 'android',
+      getWindow: () => browserWindow,
+      getNavigator: () => browserNavigator,
+      captureFactory: capture.factory,
+      adapterFactory: () => adapter
+    });
+    await session.start();
+    expect(adapter.transcribe).toHaveBeenCalledWith(expect.objectContaining({ language: expectedLanguage }));
   });
 
   it.each([
@@ -473,14 +562,15 @@ describe('P1.12 production iOS media-STT integration', () => {
     ['provider failure', 'stt-error'],
     ['no speech', 'no-speech']
   ])('recovers %s to a retryable manual-safe state with one attempt per gesture', async (_label, errorCode) => {
-    const { browserNavigator, browserWindow } = installEnvironment();
+    const { browserNavigator, browserWindow } = installEnvironment({ search: '', userAgent: ANDROID_UA });
     const capture = successfulCaptureFactory();
     const onFailure = vi.fn();
     const adapter = {
       transcribe: vi.fn(async () => { throw new MediaSttError(errorCode, 'private-provider-detail'); })
     };
-    const session = createIOSMediaSttSession({
+    const session = createMobileMediaSttSession({
       activity: 'speaking',
+      platformFamily: 'android',
       getWindow: () => browserWindow,
       getNavigator: () => browserNavigator,
       captureFactory: capture.factory,
@@ -520,6 +610,7 @@ describe('P1.12 production iOS media-STT integration', () => {
     expect(snapshot.diagnostic.iosMediaStt).toEqual({
       requested: true,
       active: true,
+      platformFamily: 'ios',
       activationReason: 'explicit-ios-media-stt-flag',
       mockTranscriptConfigured: true,
       endpointConfigured: false,
@@ -565,6 +656,25 @@ describe('P1.12 production iOS media-STT integration', () => {
     });
   });
 
+  it('exports Android production activation without transcript, audio or identity data', () => {
+    installEnvironment({ search: '', userAgent: ANDROID_UA, maxTouchPoints: 5 });
+    vi.stubEnv('VITE_STT_ENDPOINT', VALID_ENDPOINT);
+    const snapshot = getSpeechDiagnosticSnapshot();
+    expect(snapshot.diagnostic.iosMediaStt).toMatchObject({
+      active: true,
+      platformFamily: 'android',
+      activationReason: 'production-android-auto',
+      endpointConfigured: true,
+      provider: 'cloudflare-workers-ai',
+      remoteUpload: true,
+      recognizerCreated: false
+    });
+    const serialized = JSON.stringify(snapshot);
+    ['"transcript":', '"audio":', '"deviceId":', '"learnerIdentity":'].forEach(field => {
+      expect(serialized).not.toContain(field);
+    });
+  });
+
   it('wires Bacaan and Bertutur confirmation/manual fallbacks without storage clearing or alternate TTS', () => {
     const appSource = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
     const bacaan = appSource.slice(appSource.indexOf('function BacaanCoach('), appSource.indexOf('\nconst listeningSets ='));
@@ -576,13 +686,17 @@ describe('P1.12 production iOS media-STT integration', () => {
     const newSources = [
       '../../src/ai/speech/mediaSttCapture.js',
       '../../src/ai/speech/sttAdapter.js',
-      '../../src/ai/speech/iosMediaSttSession.js'
+      '../../src/ai/speech/iosMediaSttSession.js',
+      '../../src/ai/mobileMediaSttSession.js'
     ].map(path => readFileSync(new URL(path, import.meta.url), 'utf8')).join('\n');
 
     expect(bacaan).toContain('if (iosMediaSttEnabled)');
     expect(bertutur).toContain('if (iosMediaSttEnabled)');
-    expect(bacaan).toContain('resolveIOSMediaSttActivation()');
-    expect(bertutur).toContain('resolveIOSMediaSttActivation()');
+    expect(bacaan).toContain('resolveMobileMediaSttActivation()');
+    expect(bertutur).toContain('resolveMobileMediaSttActivation()');
+    expect(appSource).toContain("import('./ai/mobileMediaSttSession.js')");
+    expect(bacaan).toContain('createMediaSttSession({');
+    expect(bertutur).toContain('createMediaSttSession({');
     expect(bacaan).toContain('iosMediaSttActivation.manualFallback');
     expect(bertutur).toContain('iosMediaSttActivation.manualFallback');
     expect(bacaan).toContain('Rakaman suara belum tersedia. Kamu masih boleh menaip jawapan.');

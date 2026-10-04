@@ -1,16 +1,18 @@
 # P1.10 Cloudflare Workers AI real STT path
 
-P1.10 introduced the real Cloudflare Workers AI path for iOS/iPadOS Bacaan and Bertutur. P1.12 activates that path automatically in production when a valid `VITE_STT_ENDPOINT` is present. Desktop and Android retain their existing Web Speech behavior. iOS/iPadOS never silently falls back to Web Speech for these two activities; when media transcription is unavailable, the editable manual input remains available.
+P1.10 introduced the real Cloudflare Workers AI path for Bacaan and Bertutur. P1.12 enabled production iOS/iPadOS activation, and P1.12.1 extends the same safe MediaRecorder path to supported Android phones and tablets when a valid `VITE_STT_ENDPOINT` is present. Desktop retains its existing Web Speech behavior. The selected iOS/Android mobile flow never silently falls back to Web Speech; when media transcription is unavailable, the editable manual input remains available.
+
+P1.12.1 is a production-safe Android workaround for the observed later-question stall/no-transcript symptom. It does not assert that Android and iOS share the same root cause.
 
 ## Runtime flow
 
 The real path is active only when:
 
-1. the browser is iOS/iPadOS WebKit;
+1. the browser is iOS/iPadOS WebKit, or identifies as Android and supports both `MediaRecorder` and `getUserMedia`;
 2. a valid `VITE_STT_ENDPOINT` was configured at frontend build time; and
 3. the learner explicitly presses the voice button.
 
-The diagnostic override `?iosSpeechMode=media-stt` still forces the media path on iOS/iPadOS without changing desktop or Android behavior. `?iosSpeechBypass=1` explicitly forces the manual fallback. Production learners do not need either query parameter.
+The diagnostic override `?iosSpeechMode=media-stt` still forces the media path on iOS/iPadOS. `?iosSpeechBypass=1` explicitly forces the iOS manual fallback. Android production activation requires the configured endpoint and recording capabilities; desktop remains unchanged. Production learners do not need a query parameter.
 
 The flow is:
 
@@ -46,7 +48,7 @@ The language sent to Whisper is normalized to `ms`, `en` or `ar`. Voice activity
 
 Audio exists in the browser only as the in-memory P1.9 Blob, then as the in-memory Worker request and AI binding input. The Worker has no KV, R2, D1 or Durable Object binding, makes no storage call, produces no audio/transcript log, and returns only transcript text plus non-sensitive model/language metadata. The app does not persist the audio.
 
-The speech diagnostics export still excludes transcript text, audio bytes/base64, learner identity, device IDs and device labels. It now reports whether the real remote path is active so the export no longer claims “no upload” during a real transcription.
+The speech diagnostics export still excludes transcript text, audio bytes/base64, learner identity, device IDs and device labels. It reports `platformFamily`, activation reason, endpoint availability, provider, remote-upload state and `recognizerCreated: false`, so it does not claim “no upload” during a real transcription.
 
 Cloudflare documents that Workers AI customer content is not used to train models or improve services without explicit consent, and that content may be stored when a separate storage service is deliberately used with Workers AI. This Worker does not configure such a service: <https://developers.cloudflare.com/workers-ai/platform/data-usage/>.
 
@@ -83,7 +85,9 @@ npm run build
 
 For the strict production build, set `VITE_STT_ENDPOINT` to the final HTTPS Worker URL as well as the existing Supabase build variables.
 
-## Deployment handoff — intentionally not executed in P1.10
+## Deployment handoff
+
+The Worker was deployed earlier for the physical P1.10 test. No new Worker deployment or production frontend deployment was performed in this change.
 
 From the repository root:
 
@@ -106,10 +110,10 @@ Copy the resulting HTTPS URL into the frontend build environment:
 VITE_STT_ENDPOINT=https://jannati-ai-tutor-stt.<workers-subdomain>.workers.dev/v1/transcribe
 ```
 
-Rebuild the frontend, then open the iPhone test URL without a media-mode query parameter:
+Rebuild the frontend, then open the iPhone and Android test URL without a media-mode query parameter:
 
 ```text
 https://<frontend-host>/jannati-ai-tutor-v1/
 ```
 
-Add only `?speechDiag=1` when a privacy-filtered diagnostic export is needed. Verify BM, English and Arabic in both Bacaan and Bertutur. Each recording must show `recording -> transcribing -> ready`, return what was actually spoken as an editable candidate, keep `recognizerCreated: false`, and preserve the manual textarea fallback on every failure. The export reports `production-ios-auto` for ordinary endpoint-backed activation and `explicit-ios-media-stt-flag` when the force flag is present.
+Add only `?speechDiag=1` when a privacy-filtered diagnostic export is needed. Verify BM, English and Arabic in both Bacaan and Bertutur on iPhone and Android. Each recording must show `recording -> transcribing -> ready`, return what was actually spoken as an editable candidate, keep `recognizerCreated: false`, and preserve the manual textarea fallback on every failure. The export reports `production-ios-auto` on iOS, `production-android-auto` on supported Android, and `explicit-ios-media-stt-flag` when the iOS force flag is present. The combined physical iPhone + Android regression remains pending.

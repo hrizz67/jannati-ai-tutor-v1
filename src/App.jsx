@@ -7,6 +7,13 @@ const AIExplainModal = React.lazy(() => import('./components/ai/AIExplainModal')
 const AITeacherModal = React.lazy(() => import('./components/ai/AITeacherModal'));
 const InteractiveQuestionEngine = React.lazy(() => import('./components/questions/InteractiveQuestionEngine.jsx'));
 const Finish = React.lazy(() => import('./components/FinishScreen.jsx'));
+let mobileMediaSessionFactoryPromise;
+function loadMobileMediaSessionFactory() {
+  mobileMediaSessionFactoryPromise ||= import('./ai/mobileMediaSttSession.js')
+    .then(module => module.createMobileMediaSttSession)
+    .catch(() => null);
+  return mobileMediaSessionFactoryPromise;
+}
 import BrandLogo from './components/BrandLogo';
 import MascotCard from './components/MascotCard';
 import JannaAvatar from './components/JannaAvatar';
@@ -35,10 +42,9 @@ import { loadGamificationProfile as loadGamificationState, recordGamificationEve
 import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
 import { classifyMistake } from './ai/mistakes/index.js';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
-import { isIOSWebKitBrowser, resolveIOSMediaSttActivation } from './ai/speech/speechCapability.js';
+import { isIOSWebKitBrowser, resolveMobileMediaSttActivation } from './ai/speech/speechCapability.js';
 import { createSpeechSession, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { traceSpeechDiagnostic } from './ai/speech/speechDiagnostics.js';
-import { createIOSMediaSttSession } from './ai/speech/iosMediaSttSession.js';
 import {
   MEDIA_STT_READING_MAX_DURATION_MS,
   MEDIA_STT_SPEAKING_MAX_DURATION_MS
@@ -5539,7 +5545,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   const passage = passageBase.sessionItems?.[sessionIndex % passageBase.sessionItems.length] || passageBase;
   const bacaanContextKey = `reading:${passageId}:${sessionIndex}`;
   bacaanContextKeyRef.current = bacaanContextKey;
-  const iosMediaSttActivation = useMemo(() => resolveIOSMediaSttActivation(), []);
+  const iosMediaSttActivation = useMemo(() => resolveMobileMediaSttActivation(), []);
   const iosMediaSttEnabled = iosMediaSttActivation.active;
   const iosSpeechBypassEnabled = iosMediaSttActivation.manualFallback;
   const safeResult = normalizeBacaanResult(result);
@@ -5613,27 +5619,29 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   };
 
   useEffect(() => {
+    if (iosMediaSttEnabled) void loadMobileMediaSessionFactory();
     setRecognitionSupported(
       !iosSpeechBypassEnabled
       && !iosMediaSttEnabled
       && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition)
     );
     if (iosSpeechBypassEnabled) {
-      traceSpeechDiagnostic('ios-webspeech-bypass', {
+      traceSpeechDiagnostic('mobile-webspeech-bypass', {
         activity: 'reading',
         contextKey: bacaanContextKey,
         language: passage.speechLang,
         recognitionState: 'bypassed',
         reason: iosMediaSttActivation.manualBypassRequested
           ? 'explicit-ios-webspeech-bypass-flag'
-          : 'ios-manual-fallback-no-endpoint',
-        iosSpeechBypass: true,
+          : 'mobile-manual-fallback',
+        platformFamily: iosMediaSttActivation.platformFamily,
+        iosSpeechBypass: iosMediaSttActivation.platformFamily === 'ios',
         endpointConfigured: iosMediaSttActivation.endpointConfigured,
         recognizerCreated: false
       });
     }
     if (iosMediaSttEnabled) {
-      traceSpeechDiagnostic('ios-media-stt-ready', {
+      traceSpeechDiagnostic('mobile-media-stt-ready', {
         activity: 'reading',
         contextKey: bacaanContextKey,
         language: passage.speechLang,
@@ -5642,7 +5650,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
         reason: iosMediaSttActivation.activationReason,
         activationReason: iosMediaSttActivation.activationReason,
         endpointConfigured: iosMediaSttActivation.endpointConfigured,
-        iosSpeechBypass: true,
+        platformFamily: iosMediaSttActivation.platformFamily,
+        iosSpeechBypass: iosMediaSttActivation.platformFamily === 'ios',
         recognizerCreated: false
       });
     }
@@ -5708,17 +5717,31 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   }, [passageId, sessionIndex, sessionIndexes, safeTranscript, safeResult.status, safeResult.score, safeResult.correct, safeResult.message, safeResult.errorCode, safeResult.words.length, safeResult.matched.length, safeResult.missingWords.length, safeResult.extraWords.length, scoreHistory, passage.id, passage.title]);
 
   useEffect(() => () => {
+    bacaanContextKeyRef.current = '';
     clearBacaanSession('component-unmount');
   }, []);
 
-  function startBacaanMediaStt() {
+  async function startBacaanMediaStt() {
     if (speechSessionRef.current?.getState?.()?.active) return;
+    const captureContextKey = bacaanContextKey;
+    const createMediaSttSession = await loadMobileMediaSessionFactory();
+    if (bacaanContextKeyRef.current !== captureContextKey || speechSessionRef.current?.getState?.()?.active) return;
+    if (!createMediaSttSession) {
+      setMediaSpeechStatus('error');
+      setResult(normalizeBacaanResult({
+        status: 'technical-error',
+        errorCode: 'stt-unavailable',
+        message: getCommunicationSpeechErrorMessage('stt-unavailable'),
+        score: null
+      }));
+      return;
+    }
     clearBacaanSession('restart');
     resetBacaanState();
-    const captureContextKey = bacaanContextKey;
-    const session = createIOSMediaSttSession({
+    const session = createMediaSttSession({
       activity: 'reading',
       language: passage.speechLang,
+      platformFamily: iosMediaSttActivation.platformFamily,
       contextKey: captureContextKey,
       captureDurationMs: MEDIA_STT_READING_MAX_DURATION_MS,
       getCurrentContextKey: () => bacaanContextKeyRef.current,
@@ -5768,7 +5791,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
     }
     if (speechSessionRef.current?.getState?.()?.active) return;
     if (iosMediaSttEnabled) {
-      startBacaanMediaStt();
+      void startBacaanMediaStt();
       return;
     }
     if (!recognitionSupported || iosSpeechBypassEnabled) return;
@@ -5836,7 +5859,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
 
   function retryBacaanSpeechCapture() {
     clearBacaanSpeechCandidate();
-    startBacaanMediaStt();
+    void startBacaanMediaStt();
   }
 
   function checkManual() {
@@ -6061,7 +6084,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const communicationContextKey = `speaking:${setId}:${mode}:${sessionIndex}`;
   recognitionContextKeyRef.current = communicationContextKey;
   const isIOSWebKit = useMemo(() => isIOSWebKitBrowser(), []);
-  const iosMediaSttActivation = useMemo(() => resolveIOSMediaSttActivation(), []);
+  const iosMediaSttActivation = useMemo(() => resolveMobileMediaSttActivation(), []);
   const iosMediaSttEnabled = iosMediaSttActivation.active;
   const iosSpeechBypassEnabled = iosMediaSttActivation.manualFallback;
   // Each speaking session item has its own prompt bank, while `set.id` is
@@ -6128,27 +6151,29 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   };
 
   useEffect(() => {
+    if (iosMediaSttEnabled) void loadMobileMediaSessionFactory();
     setRecognitionSupported(
       !iosSpeechBypassEnabled
       && !iosMediaSttEnabled
       && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition)
     );
     if (iosSpeechBypassEnabled) {
-      traceSpeechDiagnostic('ios-webspeech-bypass', {
+      traceSpeechDiagnostic('mobile-webspeech-bypass', {
         activity: 'speaking',
         contextKey: communicationContextKey,
         language: set.speechLang,
         recognitionState: 'bypassed',
         reason: iosMediaSttActivation.manualBypassRequested
           ? 'explicit-ios-webspeech-bypass-flag'
-          : 'ios-manual-fallback-no-endpoint',
-        iosSpeechBypass: true,
+          : 'mobile-manual-fallback',
+        platformFamily: iosMediaSttActivation.platformFamily,
+        iosSpeechBypass: iosMediaSttActivation.platformFamily === 'ios',
         endpointConfigured: iosMediaSttActivation.endpointConfigured,
         recognizerCreated: false
       });
     }
     if (iosMediaSttEnabled) {
-      traceSpeechDiagnostic('ios-media-stt-ready', {
+      traceSpeechDiagnostic('mobile-media-stt-ready', {
         activity: 'speaking',
         contextKey: communicationContextKey,
         language: set.speechLang,
@@ -6157,7 +6182,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
         reason: iosMediaSttActivation.activationReason,
         activationReason: iosMediaSttActivation.activationReason,
         endpointConfigured: iosMediaSttActivation.endpointConfigured,
-        iosSpeechBypass: true,
+        platformFamily: iosMediaSttActivation.platformFamily,
+        iosSpeechBypass: iosMediaSttActivation.platformFamily === 'ios',
         recognizerCreated: false
       });
     }
@@ -6241,6 +6267,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }, [setId, sessionIndex, sessionIndexes, mode, transcript, result, scoreHistory, set.title, safeModeKey]);
 
   useEffect(() => () => {
+    recognitionContextKeyRef.current = '';
     stopRecognitionSilently('component-unmount');
   }, []);
 
@@ -6271,17 +6298,28 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     setResult(review.result);
   };
 
-  function startBertuturMediaStt() {
+  async function startBertuturMediaStt() {
     if (speechSessionRef.current?.getState?.()?.active) return;
+    const captureContextKey = communicationContextKey;
+    const createMediaSttSession = await loadMobileMediaSessionFactory();
+    if (recognitionContextKeyRef.current !== captureContextKey || speechSessionRef.current?.getState?.()?.active) return;
+    if (!createMediaSttSession) {
+      setMediaSpeechStatus('error');
+      setResult(createEmptySpeechResult(
+        'stt-unavailable',
+        getCommunicationSpeechErrorMessage('stt-unavailable')
+      ));
+      return;
+    }
     stopRecognitionSilently('restart');
     resetSpeechSession();
     setTranscript('');
     setTranscriptSource('');
     setResult(null);
-    const captureContextKey = communicationContextKey;
-    const session = createIOSMediaSttSession({
+    const session = createMediaSttSession({
       activity: 'speaking',
       language: set.speechLang,
+      platformFamily: iosMediaSttActivation.platformFamily,
       contextKey: captureContextKey,
       captureDurationMs: MEDIA_STT_SPEAKING_MAX_DURATION_MS,
       getCurrentContextKey: () => recognitionContextKeyRef.current,
@@ -6334,7 +6372,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
     }
     if (speechSessionRef.current?.getState?.()?.active) return;
     if (iosMediaSttEnabled) {
-      startBertuturMediaStt();
+      void startBertuturMediaStt();
       return;
     }
     if (!recognitionSupported || iosSpeechBypassEnabled || (isIOSWebKit && iosMicDisabled)) return;
