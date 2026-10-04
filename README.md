@@ -33,3 +33,5 @@ npm run release:check -- --tag v3.2.23 --artifacts
 Pushing the matching annotated tag triggers validation, build, GitHub Pages deployment, and a public smoke test. See `docs/RELEASE_CHECKLIST.md` for the complete procedure.
 
 The optional Tutor AI generative gateway is documented in `docs/engineering/TUTOR_AI_GENERATIVE_GATEWAY.md`. Never expose an OpenAI API key through a `VITE_` environment variable.
+
+The opt-in iOS MediaRecorder-to-Cloudflare Workers AI transcription path is documented in `docs/CLOUDFLARE_WORKERS_AI_STT.md`. The frontend accepts only the public Worker endpoint through `VITE_STT_ENDPOINT`; Cloudflare credentials must never be added to a browser environment variable.

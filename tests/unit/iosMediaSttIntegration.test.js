@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createCommunicationSpeechSession } from '../../src/ai/speech/communicationSpeech.js';
 import { createIOSMediaSttSession } from '../../src/ai/speech/iosMediaSttSession.js';
-import { MediaSttError } from '../../src/ai/speech/mediaSttCapture.js';
+import {
+  MEDIA_STT_READING_MAX_DURATION_MS,
+  MEDIA_STT_SPEAKING_MAX_DURATION_MS,
+  MediaSttError
+} from '../../src/ai/speech/mediaSttCapture.js';
 import {
   isIOSMediaSttRequested,
   shouldUseIOSMediaStt
@@ -88,6 +92,46 @@ function successfulCaptureFactory(overrides = {}) {
   };
 }
 
+function controlledCaptureFactory({ durationMs = 10000 } = {}) {
+  const pending = deferred();
+  let captureSignal = null;
+  let settled = false;
+  const result = {
+    blob: new Blob(['audio'], { type: 'audio/mp4;codecs=mp4a.40.2' }),
+    mimeType: 'audio/mp4;codecs=mp4a.40.2',
+    durationMs
+  };
+  const capture = vi.fn(({ signal }) => {
+    captureSignal = signal;
+    signal?.addEventListener?.('abort', () => {
+      if (settled) return;
+      settled = true;
+      pending.reject(new MediaSttError('cancelled', 'abort-signal'));
+    }, { once: true });
+    return pending.promise;
+  });
+  const stop = vi.fn(() => {
+    if (!settled) {
+      settled = true;
+      pending.resolve(result);
+    }
+    return true;
+  });
+  const cancel = vi.fn(() => true);
+  return {
+    factory: vi.fn(() => ({ capture, stop, cancel })),
+    capture,
+    cancel,
+    resolveCapture() {
+      if (settled) return;
+      settled = true;
+      pending.resolve(result);
+    },
+    get signal() { return captureSignal; },
+    stop
+  };
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   delete globalThis.window;
@@ -146,7 +190,10 @@ describe('P1.9 iOS media-STT integration', () => {
     });
   });
 
-  it.each(['reading', 'speaking'])('%s publishes recording/transcribing/ready and returns an unscored candidate', async activity => {
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s publishes recording/transcribing/review and returns an unscored candidate', async (activity, maximumMs) => {
     const { browserNavigator, browserWindow } = installEnvironment();
     const capture = successfulCaptureFactory();
     const states = [];
@@ -172,7 +219,7 @@ describe('P1.9 iOS media-STT integration', () => {
     });
 
     await expect(session.start()).resolves.toMatchObject({ started: true, transcriptLength: 17 });
-    expect(states).toEqual(['recording', 'transcribing', 'ready']);
+    expect(states).toEqual(['recording', 'transcribing', 'review']);
     expect(onCandidate).toHaveBeenCalledWith(expect.objectContaining({
       text: 'Saya suka membaca',
       confidence: 91,
@@ -184,6 +231,89 @@ describe('P1.9 iOS media-STT integration', () => {
       context: expect.objectContaining({ activity, contextKey: activity + ':bm:0', durationMs: 6000 }),
       mimeType: 'audio/mp4;codecs=mp4a.40.2'
     }));
+    expect(capture.capture).toHaveBeenCalledWith(expect.objectContaining({ durationMs: maximumMs }));
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS, 12000],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS, 14000]
+  ])('%s manual stop below %i ms transcribes exactly once and makes double-stop safe', async (activity, maximumMs, durationMs) => {
+    const { browserNavigator, browserWindow } = installEnvironment();
+    const capture = controlledCaptureFactory({ durationMs });
+    const states = [];
+    const adapter = {
+      transcribe: vi.fn(async () => ({ transcript: 'child paced answer', confidence: 90, provider: 'test' }))
+    };
+    const session = createIOSMediaSttSession({
+      activity,
+      getWindow: () => browserWindow,
+      getNavigator: () => browserNavigator,
+      captureFactory: capture.factory,
+      adapterFactory: () => adapter,
+      onStateChange: state => states.push(state.status)
+    });
+
+    const started = session.start();
+    await flush();
+    expect(capture.capture).toHaveBeenCalledWith(expect.objectContaining({ durationMs: maximumMs }));
+    expect(session.stop('manual-stop')).toBe(true);
+    expect(session.stop('manual-stop')).toBe(true);
+    await expect(started).resolves.toMatchObject({ transcriptLength: 18 });
+
+    expect(capture.stop).toHaveBeenCalledTimes(1);
+    expect(adapter.transcribe).toHaveBeenCalledTimes(1);
+    expect(adapter.transcribe).toHaveBeenCalledWith(expect.objectContaining({
+      context: expect.objectContaining({ activity, durationMs })
+    }));
+    expect(states).toEqual(['recording', 'stopping', 'transcribing', 'review']);
+  });
+
+  it.each([
+    ['reading', MEDIA_STT_READING_MAX_DURATION_MS],
+    ['speaking', MEDIA_STT_SPEAKING_MAX_DURATION_MS]
+  ])('%s hard-timeout completion transcribes exactly once', async (activity, maximumMs) => {
+    const { browserNavigator, browserWindow } = installEnvironment();
+    const capture = controlledCaptureFactory({ durationMs: maximumMs });
+    const adapter = {
+      transcribe: vi.fn(async () => ({ transcript: 'automatic stop', confidence: 88, provider: 'test' }))
+    };
+    const session = createIOSMediaSttSession({
+      activity,
+      getWindow: () => browserWindow,
+      getNavigator: () => browserNavigator,
+      captureFactory: capture.factory,
+      adapterFactory: () => adapter
+    });
+
+    const started = session.start();
+    await flush();
+    capture.resolveCapture();
+    await expect(started).resolves.toMatchObject({ transcriptLength: 14 });
+    expect(capture.stop).not.toHaveBeenCalled();
+    expect(adapter.transcribe).toHaveBeenCalledTimes(1);
+    expect(adapter.transcribe).toHaveBeenCalledWith(expect.objectContaining({
+      context: expect.objectContaining({ activity, durationMs: maximumMs })
+    }));
+  });
+
+  it('cancel aborts capture and never transcribes or uploads audio', async () => {
+    const { browserNavigator, browserWindow } = installEnvironment();
+    const capture = controlledCaptureFactory();
+    const adapter = { transcribe: vi.fn() };
+    const session = createIOSMediaSttSession({
+      activity: 'reading',
+      getWindow: () => browserWindow,
+      getNavigator: () => browserNavigator,
+      captureFactory: capture.factory,
+      adapterFactory: () => adapter
+    });
+
+    const started = session.start();
+    await flush();
+    expect(session.cancel('manual-cancel')).toBe(true);
+    await expect(started).resolves.toMatchObject({ stale: true });
+    expect(capture.signal.aborted).toBe(true);
+    expect(adapter.transcribe).not.toHaveBeenCalled();
   });
 
   it('cancels provider work on pagehide and removes the session listener on unmount', async () => {
@@ -290,6 +420,8 @@ describe('P1.9 iOS media-STT integration', () => {
       requested: true,
       active: true,
       mockTranscriptConfigured: true,
+      cloudflareEndpointConfigured: false,
+      provider: 'deterministic-preview',
       scope: 'reading-speaking-only'
     });
     expect(snapshot.events).toEqual(expect.arrayContaining([
@@ -333,6 +465,14 @@ describe('P1.9 iOS media-STT integration', () => {
     expect(bertutur).toContain('id="bertutur-transcript"');
     expect(bacaan).toContain('data-speech-state={mediaSpeechStatus}');
     expect(bertutur).toContain('data-speech-state={mediaSpeechStatus}');
+    expect(bacaan).toContain('captureDurationMs: MEDIA_STT_READING_MAX_DURATION_MS');
+    expect(bertutur).toContain('captureDurationMs: MEDIA_STT_SPEAKING_MAX_DURATION_MS');
+    expect(bacaan).toContain("speechSessionRef.current?.stop?.('manual-stop')");
+    expect(bertutur).toContain("speechSessionRef.current?.stop?.('manual-stop')");
+    expect(bacaan).toContain("? 'Selesai'");
+    expect(bertutur).toContain("? 'Selesai'");
+    expect(bacaan).toContain("review: 'Semak transkrip.'");
+    expect(bertutur).toContain("review: 'Semak transkrip.'");
     expect(alternateStart).not.toContain('stopVoice');
     expect(alternateStart).not.toContain('createCommunicationSpeechSession');
     expect(newSources).not.toContain('SpeechRecognition');

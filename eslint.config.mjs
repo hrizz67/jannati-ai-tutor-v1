@@ -86,5 +86,14 @@ export default [
       globals: { ...globals.node, ...globals.es2025 }
     },
     rules: { ...correctnessRules, ...unusedRules }
+  },
+  {
+    files: ['workers/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.worker, ...globals.es2025 }
+    },
+    rules: { ...correctnessRules, ...unusedRules }
   }
 ];

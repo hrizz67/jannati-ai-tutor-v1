@@ -3,9 +3,14 @@ import { shouldUseIOSMediaStt } from './speechCapability.js';
 
 const DEFAULT_TIMEOUT_MS = 12000;
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
-const DEFAULT_MAX_DURATION_MS = 8000;
+const READING_MAX_DURATION_MS = 20000;
+const SPEAKING_MAX_DURATION_MS = 25000;
+const DEFAULT_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
+const CLOUDFLARE_TIMEOUT_MS = 20000;
+const MAX_PROVIDER_RESPONSE_LENGTH = 16 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
 const MAX_PREVIEW_TRANSCRIPT_LENGTH = 500;
+const CLOUDFLARE_PROVIDER = 'cloudflare-workers-ai';
 
 function finiteNumber(value, fallback) {
   const number = Number(value);
@@ -41,14 +46,69 @@ function normalizeTranscript(value) {
   return safeString(value, MAX_TRANSCRIPT_LENGTH);
 }
 
+function resolveConfiguredEndpoint(endpoint) {
+  const value = typeof endpoint === 'string'
+    ? endpoint
+    : typeof import.meta !== 'undefined'
+      ? import.meta.env?.VITE_STT_ENDPOINT
+      : '';
+  const normalized = safeString(value, 2048);
+  if (!normalized) return '';
+  try {
+    const parsed = new URL(normalized);
+    const isLoopback = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
+    if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && isLoopback)) return '';
+    if (parsed.username || parsed.password || parsed.search || parsed.hash) return '';
+    return parsed.href;
+  } catch {
+    return '';
+  }
+}
+
+function mapProviderResponseError(response) {
+  if ([408, 504].includes(response?.status)) {
+    return new MediaSttError('stt-timeout', 'provider-timeout');
+  }
+  if ([401, 403, 404].includes(response?.status)) {
+    return new MediaSttError('stt-unavailable', 'provider-unavailable');
+  }
+  return new MediaSttError('stt-error', response?.status === 429 ? 'provider-rate-limited' : 'provider-error');
+}
+
+async function parseProviderPayload(response) {
+  let responseText = '';
+  try {
+    responseText = await response.text();
+  } catch {
+    throw new MediaSttError('stt-error', 'invalid-provider-response');
+  }
+  if (responseText.length > MAX_PROVIDER_RESPONSE_LENGTH) {
+    throw new MediaSttError('stt-error', 'provider-response-too-large');
+  }
+  try {
+    const payload = JSON.parse(responseText);
+    return payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
+  } catch {
+    throw new MediaSttError('stt-error', 'invalid-provider-response');
+  }
+}
+
 function normalizeContext(context) {
   if (typeof context === 'string') return { contextKey: safeString(context, 160) };
   if (!context || typeof context !== 'object') return {};
   return {
     contextKey: safeString(context.contextKey || context.key || '', 160),
     activity: safeString(context.activity || '', 40),
-    durationMs: Math.max(0, finiteNumber(context.durationMs, 0))
+    durationMs: Math.round(Math.max(0, finiteNumber(context.durationMs, 0)))
   };
+}
+
+function resolveMaxDurationMs(activity, configuredMaxDurationMs) {
+  const configured = Number(configuredMaxDurationMs);
+  if (Number.isFinite(configured) && configured > 0) return configured;
+  if (activity === 'reading') return READING_MAX_DURATION_MS;
+  if (activity === 'speaking') return SPEAKING_MAX_DURATION_MS;
+  return DEFAULT_MAX_DURATION_MS;
 }
 
 function normalizeProviderMetadata(metadata) {
@@ -80,7 +140,7 @@ export function createSttAdapter({
   request = null,
   timeoutMs = DEFAULT_TIMEOUT_MS,
   maxBytes = DEFAULT_MAX_BYTES,
-  maxDurationMs = DEFAULT_MAX_DURATION_MS
+  maxDurationMs = null
 } = {}) {
   const normalizedProvider = safeString(provider, 80) || 'unconfigured';
 
@@ -94,7 +154,7 @@ export function createSttAdapter({
       throw new MediaSttError('stt-error', 'max-size-exceeded');
     }
     const safeContext = normalizeContext(context);
-    if (safeContext.durationMs > Math.max(1, finiteNumber(maxDurationMs, DEFAULT_MAX_DURATION_MS))) {
+    if (safeContext.durationMs > resolveMaxDurationMs(safeContext.activity, maxDurationMs)) {
       throw new MediaSttError('stt-error', 'max-duration-exceeded');
     }
     if (typeof request !== 'function') {
@@ -206,6 +266,58 @@ export function createDeterministicSttAdapter({
   });
 }
 
+export function getConfiguredSttEndpoint(endpoint) {
+  return resolveConfiguredEndpoint(endpoint);
+}
+
+export function isCloudflareSttConfigured(endpoint) {
+  return Boolean(resolveConfiguredEndpoint(endpoint));
+}
+
+export function createCloudflareWorkersAiSttAdapter({
+  endpoint,
+  fetchImpl = globalThis.fetch,
+  timeoutMs = CLOUDFLARE_TIMEOUT_MS
+} = {}) {
+  const resolvedEndpoint = resolveConfiguredEndpoint(endpoint);
+  if (!resolvedEndpoint || typeof fetchImpl !== 'function') return createUnavailableSttAdapter();
+
+  return createSttAdapter({
+    provider: CLOUDFLARE_PROVIDER,
+    timeoutMs,
+    request: async ({ blob, mimeType, language, signal }) => {
+      let response;
+      try {
+        response = await fetchImpl(resolvedEndpoint, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': mimeType || blob.type || 'application/octet-stream',
+            'X-STT-Language': language
+          },
+          body: blob,
+          cache: 'no-store',
+          credentials: 'omit',
+          mode: 'cors',
+          referrerPolicy: 'no-referrer',
+          signal
+        });
+      } catch (error) {
+        if (signal?.aborted || error?.name === 'AbortError') throw error;
+        throw new MediaSttError('stt-unavailable', 'network-error');
+      }
+      if (!response?.ok) throw mapProviderResponseError(response);
+      const payload = await parseProviderPayload(response);
+      return {
+        transcript: payload.transcript,
+        confidence: payload.confidence,
+        provider: CLOUDFLARE_PROVIDER,
+        metadata: payload.metadata
+      };
+    }
+  });
+}
+
 export function getDeterministicSttPreviewTranscript(search) {
   const params = resolveParams(search);
   if (params.get('speechDiag') !== '1') return '';
@@ -224,26 +336,39 @@ export function isDeterministicSttPreviewRequested({
 
 export function createRuntimeSttAdapter(options = {}) {
   const search = resolveSearch(options.search);
-  if (!isDeterministicSttPreviewRequested({ ...options, search })) {
-    return createUnavailableSttAdapter();
+  if (isDeterministicSttPreviewRequested({ ...options, search })) {
+    return createDeterministicSttAdapter({
+      transcript: getDeterministicSttPreviewTranscript(search)
+    });
   }
-  return createDeterministicSttAdapter({
-    transcript: getDeterministicSttPreviewTranscript(search)
+  return createCloudflareWorkersAiSttAdapter({
+    endpoint: options.endpoint,
+    fetchImpl: options.fetchImpl,
+    timeoutMs: options.timeoutMs
   });
 }
 
 export const STT_ADAPTER_DEFAULT_TIMEOUT_MS = DEFAULT_TIMEOUT_MS;
+export const STT_CLOUDFLARE_TIMEOUT_MS = CLOUDFLARE_TIMEOUT_MS;
 export const STT_ADAPTER_MAX_BYTES = DEFAULT_MAX_BYTES;
 export const STT_ADAPTER_MAX_DURATION_MS = DEFAULT_MAX_DURATION_MS;
+export const STT_ADAPTER_READING_MAX_DURATION_MS = READING_MAX_DURATION_MS;
+export const STT_ADAPTER_SPEAKING_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
 
 export default {
+  createCloudflareWorkersAiSttAdapter,
   createDeterministicSttAdapter,
   createRuntimeSttAdapter,
   createSttAdapter,
   createUnavailableSttAdapter,
   getDeterministicSttPreviewTranscript,
+  getConfiguredSttEndpoint,
+  isCloudflareSttConfigured,
   isDeterministicSttPreviewRequested,
   STT_ADAPTER_DEFAULT_TIMEOUT_MS,
+  STT_CLOUDFLARE_TIMEOUT_MS,
   STT_ADAPTER_MAX_BYTES,
-  STT_ADAPTER_MAX_DURATION_MS
+  STT_ADAPTER_MAX_DURATION_MS,
+  STT_ADAPTER_READING_MAX_DURATION_MS,
+  STT_ADAPTER_SPEAKING_MAX_DURATION_MS
 };

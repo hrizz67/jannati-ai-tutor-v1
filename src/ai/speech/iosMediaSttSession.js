@@ -1,6 +1,7 @@
 import {
   createMediaSttCaptureController,
-  MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS,
+  MEDIA_STT_READING_MAX_DURATION_MS,
+  MEDIA_STT_SPEAKING_MAX_DURATION_MS,
   normalizeMediaSttError,
   supportsMediaSttCapture
 } from './mediaSttCapture.js';
@@ -20,12 +21,20 @@ function resolveQuestionIndex(contextKey = '') {
   return null;
 }
 
+function resolveCaptureDurationMs(activity, captureDurationMs) {
+  const configured = Number(captureDurationMs);
+  if (Number.isFinite(configured) && configured > 0) return configured;
+  return activity === 'speaking'
+    ? MEDIA_STT_SPEAKING_MAX_DURATION_MS
+    : MEDIA_STT_READING_MAX_DURATION_MS;
+}
+
 export function createIOSMediaSttSession({
   activity = 'reading',
   language = 'ms-MY',
   contextKey = '',
   getCurrentContextKey = null,
-  captureDurationMs = MEDIA_STT_CAPTURE_DEFAULT_DURATION_MS,
+  captureDurationMs = null,
   captureFactory = createMediaSttCaptureController,
   adapterFactory = createRuntimeSttAdapter,
   getWindow = () => typeof window !== 'undefined' ? window : null,
@@ -46,12 +55,8 @@ export function createIOSMediaSttSession({
     provider: ''
   };
   const supported = supportsMediaSttCapture({ getWindow, getNavigator });
+  const resolvedCaptureDurationMs = resolveCaptureDurationMs(activity, captureDurationMs);
   const adapter = adapterFactory?.() || createRuntimeSttAdapter();
-  const captureController = captureFactory({
-    getWindow,
-    getNavigator,
-    captureDurationMs
-  });
 
   const isCurrent = run => Boolean(
     run
@@ -62,6 +67,22 @@ export function createIOSMediaSttSession({
       || getCurrentContextKey() === contextKey
     )
   );
+  const captureController = captureFactory({
+    getWindow,
+    getNavigator,
+    captureDurationMs: resolvedCaptureDurationMs,
+    onStateChange(nextCaptureState) {
+      const run = activeRun;
+      if (!isCurrent(run)) return;
+      if (nextCaptureState?.status === 'recording' && state.status !== 'recording') {
+        publish(run, 'recording');
+      } else if (nextCaptureState?.status === 'stopping' && state.status !== 'stopping') {
+        publish(run, 'stopping', {
+          durationMs: Math.max(0, Number(nextCaptureState.durationMs) || 0)
+        });
+      }
+    }
+  });
 
   function publish(run, status, updates = {}) {
     if (run && !isCurrent(run)) return false;
@@ -134,7 +155,7 @@ export function createIOSMediaSttSession({
 
     try {
       const captured = await captureController.capture({
-        durationMs: captureDurationMs,
+        durationMs: resolvedCaptureDurationMs,
         signal: run.controller.signal
       });
       if (!isCurrent(run)) return finishStaleRun(run);
@@ -170,7 +191,7 @@ export function createIOSMediaSttSession({
         mimeType: captured.mimeType
       });
       finishRun(run);
-      publish(null, 'ready', {
+      publish(null, 'review', {
         errorCode: '',
         transcriptLength: transcript.length,
         provider
@@ -206,7 +227,15 @@ export function createIOSMediaSttSession({
 
   function stop(reason = 'manual-stop') {
     if (!activeRun) return false;
-    return captureController.stop(reason);
+    if (state.status === 'stopping') return true;
+    if (state.status !== 'recording') return false;
+    const run = activeRun;
+    const stopped = captureController.stop(reason);
+    if (stopped && isCurrent(run)) {
+      if (state.status !== 'stopping') publish(run, 'stopping');
+      trace('media-stt-capture-stop', { attempt: run.sequence, reason });
+    }
+    return stopped;
   }
 
   function cancel(reason = 'communication-cancel') {
