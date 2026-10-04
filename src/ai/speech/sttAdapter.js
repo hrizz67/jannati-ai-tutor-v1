@@ -3,7 +3,9 @@ import { shouldUseIOSMediaStt } from './speechCapability.js';
 
 const DEFAULT_TIMEOUT_MS = 12000;
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
-const DEFAULT_MAX_DURATION_MS = 8000;
+const READING_MAX_DURATION_MS = 20000;
+const SPEAKING_MAX_DURATION_MS = 25000;
+const DEFAULT_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
 const CLOUDFLARE_TIMEOUT_MS = 20000;
 const MAX_PROVIDER_RESPONSE_LENGTH = 16 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
@@ -97,8 +99,16 @@ function normalizeContext(context) {
   return {
     contextKey: safeString(context.contextKey || context.key || '', 160),
     activity: safeString(context.activity || '', 40),
-    durationMs: Math.max(0, finiteNumber(context.durationMs, 0))
+    durationMs: Math.round(Math.max(0, finiteNumber(context.durationMs, 0)))
   };
+}
+
+function resolveMaxDurationMs(activity, configuredMaxDurationMs) {
+  const configured = Number(configuredMaxDurationMs);
+  if (Number.isFinite(configured) && configured > 0) return configured;
+  if (activity === 'reading') return READING_MAX_DURATION_MS;
+  if (activity === 'speaking') return SPEAKING_MAX_DURATION_MS;
+  return DEFAULT_MAX_DURATION_MS;
 }
 
 function normalizeProviderMetadata(metadata) {
@@ -130,7 +140,7 @@ export function createSttAdapter({
   request = null,
   timeoutMs = DEFAULT_TIMEOUT_MS,
   maxBytes = DEFAULT_MAX_BYTES,
-  maxDurationMs = DEFAULT_MAX_DURATION_MS
+  maxDurationMs = null
 } = {}) {
   const normalizedProvider = safeString(provider, 80) || 'unconfigured';
 
@@ -144,7 +154,7 @@ export function createSttAdapter({
       throw new MediaSttError('stt-error', 'max-size-exceeded');
     }
     const safeContext = normalizeContext(context);
-    if (safeContext.durationMs > Math.max(1, finiteNumber(maxDurationMs, DEFAULT_MAX_DURATION_MS))) {
+    if (safeContext.durationMs > resolveMaxDurationMs(safeContext.activity, maxDurationMs)) {
       throw new MediaSttError('stt-error', 'max-duration-exceeded');
     }
     if (typeof request !== 'function') {
@@ -342,6 +352,8 @@ export const STT_ADAPTER_DEFAULT_TIMEOUT_MS = DEFAULT_TIMEOUT_MS;
 export const STT_CLOUDFLARE_TIMEOUT_MS = CLOUDFLARE_TIMEOUT_MS;
 export const STT_ADAPTER_MAX_BYTES = DEFAULT_MAX_BYTES;
 export const STT_ADAPTER_MAX_DURATION_MS = DEFAULT_MAX_DURATION_MS;
+export const STT_ADAPTER_READING_MAX_DURATION_MS = READING_MAX_DURATION_MS;
+export const STT_ADAPTER_SPEAKING_MAX_DURATION_MS = SPEAKING_MAX_DURATION_MS;
 
 export default {
   createCloudflareWorkersAiSttAdapter,
@@ -356,5 +368,7 @@ export default {
   STT_ADAPTER_DEFAULT_TIMEOUT_MS,
   STT_CLOUDFLARE_TIMEOUT_MS,
   STT_ADAPTER_MAX_BYTES,
-  STT_ADAPTER_MAX_DURATION_MS
+  STT_ADAPTER_MAX_DURATION_MS,
+  STT_ADAPTER_READING_MAX_DURATION_MS,
+  STT_ADAPTER_SPEAKING_MAX_DURATION_MS
 };

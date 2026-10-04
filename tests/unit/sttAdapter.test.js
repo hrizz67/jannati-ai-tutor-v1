@@ -11,7 +11,9 @@ import {
   isCloudflareSttConfigured,
   isDeterministicSttPreviewRequested,
   STT_ADAPTER_MAX_BYTES,
-  STT_ADAPTER_MAX_DURATION_MS
+  STT_ADAPTER_MAX_DURATION_MS,
+  STT_ADAPTER_READING_MAX_DURATION_MS,
+  STT_ADAPTER_SPEAKING_MAX_DURATION_MS
 } from '../../src/ai/speech/sttAdapter.js';
 
 const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
@@ -129,6 +131,25 @@ describe('P1.9 provider-neutral STT adapter', () => {
       reason: 'max-duration-exceeded'
     });
     expect(request).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['reading', STT_ADAPTER_READING_MAX_DURATION_MS],
+    ['speaking', STT_ADAPTER_SPEAKING_MAX_DURATION_MS]
+  ])('enforces the %s duration guard while preserving the 5 MiB size guard', async (activity, maximumMs) => {
+    const request = vi.fn(async () => ({ transcript: 'accepted' }));
+    const adapter = createSttAdapter({ request });
+    const blob = audioBlob();
+
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs }
+    })).resolves.toMatchObject({ transcript: 'accepted' });
+    await expect(adapter.transcribe({
+      blob,
+      context: { activity, durationMs: maximumMs + 1 }
+    })).rejects.toMatchObject({ code: 'stt-error', reason: 'max-duration-exceeded' });
+    expect(STT_ADAPTER_MAX_BYTES).toBe(5 * 1024 * 1024);
   });
 
   it('gates deterministic physical preview behind iOS mode, diagnostics and explicit mock text', async () => {
