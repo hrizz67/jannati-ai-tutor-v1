@@ -1,5 +1,9 @@
 import { MediaSttError, normalizeMediaSttError } from './mediaSttCapture.js';
 import { shouldUseIOSMediaStt } from './speechCapability.js';
+import {
+  getConfiguredSttEndpoint as resolveSttEndpoint,
+  isSttEndpointConfigured
+} from './sttEndpoint.js';
 
 const DEFAULT_TIMEOUT_MS = 12000;
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
@@ -46,25 +50,6 @@ function normalizeTranscript(value) {
   return safeString(value, MAX_TRANSCRIPT_LENGTH);
 }
 
-function resolveConfiguredEndpoint(endpoint) {
-  const value = typeof endpoint === 'string'
-    ? endpoint
-    : typeof import.meta !== 'undefined'
-      ? import.meta.env?.VITE_STT_ENDPOINT
-      : '';
-  const normalized = safeString(value, 2048);
-  if (!normalized) return '';
-  try {
-    const parsed = new URL(normalized);
-    const isLoopback = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
-    if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && isLoopback)) return '';
-    if (parsed.username || parsed.password || parsed.search || parsed.hash) return '';
-    return parsed.href;
-  } catch {
-    return '';
-  }
-}
-
 function mapProviderResponseError(response) {
   if ([408, 504].includes(response?.status)) {
     return new MediaSttError('stt-timeout', 'provider-timeout');
@@ -72,7 +57,8 @@ function mapProviderResponseError(response) {
   if ([401, 403, 404].includes(response?.status)) {
     return new MediaSttError('stt-unavailable', 'provider-unavailable');
   }
-  return new MediaSttError('stt-error', response?.status === 429 ? 'provider-rate-limited' : 'provider-error');
+  if (response?.status === 429) return new MediaSttError('stt-rate-limited', 'provider-rate-limited');
+  return new MediaSttError('stt-error', 'provider-error');
 }
 
 async function parseProviderPayload(response) {
@@ -129,8 +115,8 @@ function normalizeAdapterError(error, { timedOut = false, externallyAborted = fa
   if (externallyAborted) return new MediaSttError('cancelled', 'abort-signal');
   const normalized = normalizeMediaSttError(error, 'stt-error');
   if (normalized.code === 'cancelled') return normalized;
-  if (normalized.code === 'stt-unavailable' || normalized.code === 'stt-timeout') return normalized;
-  return normalized.code === 'no-audio'
+  if (['stt-unavailable', 'stt-timeout', 'stt-rate-limited'].includes(normalized.code)) return normalized;
+  return ['no-audio', 'no-speech'].includes(normalized.code)
     ? normalized
     : new MediaSttError('stt-error', normalized.reason || error?.name || 'provider-error');
 }
@@ -201,7 +187,7 @@ export function createSttAdapter({
       ]);
       if (signal?.aborted || externallyAborted) throw new MediaSttError('cancelled', 'abort-signal');
       const transcript = normalizeTranscript(response?.transcript);
-      if (!transcript) throw new MediaSttError('no-audio', 'empty-transcript');
+      if (!transcript) throw new MediaSttError('no-speech', 'empty-transcript');
       return {
         transcript,
         confidence: normalizeConfidence(response?.confidence),
@@ -267,11 +253,11 @@ export function createDeterministicSttAdapter({
 }
 
 export function getConfiguredSttEndpoint(endpoint) {
-  return resolveConfiguredEndpoint(endpoint);
+  return resolveSttEndpoint(endpoint);
 }
 
 export function isCloudflareSttConfigured(endpoint) {
-  return Boolean(resolveConfiguredEndpoint(endpoint));
+  return isSttEndpointConfigured(endpoint);
 }
 
 export function createCloudflareWorkersAiSttAdapter({
@@ -279,7 +265,7 @@ export function createCloudflareWorkersAiSttAdapter({
   fetchImpl = globalThis.fetch,
   timeoutMs = CLOUDFLARE_TIMEOUT_MS
 } = {}) {
-  const resolvedEndpoint = resolveConfiguredEndpoint(endpoint);
+  const resolvedEndpoint = resolveSttEndpoint(endpoint);
   if (!resolvedEndpoint || typeof fetchImpl !== 'function') return createUnavailableSttAdapter();
 
   return createSttAdapter({
@@ -327,10 +313,16 @@ export function getDeterministicSttPreviewTranscript(search) {
 export function isDeterministicSttPreviewRequested({
   search,
   userAgent,
-  maxTouchPoints
+  maxTouchPoints,
+  endpoint
 } = {}) {
   const resolvedSearch = resolveSearch(search);
-  return shouldUseIOSMediaStt({ search: resolvedSearch, userAgent, maxTouchPoints })
+  return shouldUseIOSMediaStt({
+    search: resolvedSearch,
+    userAgent,
+    maxTouchPoints,
+    endpoint
+  })
     && Boolean(getDeterministicSttPreviewTranscript(resolvedSearch));
 }
 

@@ -5,6 +5,7 @@ import {
 } from '../../src/ai/speech/communicationSpeech.js';
 import {
   isIOSWebSpeechBypassRequested,
+  shouldAvoidIOSWebSpeech,
   shouldBypassIOSWebSpeech
 } from '../../src/ai/speech/speechCapability.js';
 import {
@@ -56,7 +57,7 @@ afterEach(() => {
   delete globalThis.window;
 });
 
-describe('P1.8 opt-in iOS Web Speech bypass', () => {
+describe('P1.12 iOS Web Speech exclusion and explicit bypass', () => {
   it('requires both the explicit flag and an iOS/iPadOS WebKit environment', () => {
     expect(isIOSWebSpeechBypassRequested('?iosSpeechBypass=1')).toBe(true);
     expect(isIOSWebSpeechBypassRequested('?iosSpeechBypass=0')).toBe(false);
@@ -75,6 +76,11 @@ describe('P1.8 opt-in iOS Web Speech bypass', () => {
       userAgent: IOS_UA,
       maxTouchPoints: 5
     })).toBe(false);
+    expect(shouldAvoidIOSWebSpeech({
+      search: '',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5
+    })).toBe(true);
   });
 
   it.each(['reading', 'speaking'])('%s does not create or start a recognizer when flag + iOS are active', activity => {
@@ -106,11 +112,33 @@ describe('P1.8 opt-in iOS Web Speech bypass', () => {
     });
   });
 
-  it.each([
-    ['flag absent on iOS', { search: '?speechDiag=1', userAgent: IOS_UA, maxTouchPoints: 5 }],
-    ['flag present on non-iOS', { search: '?speechDiag=1&iosSpeechBypass=1', userAgent: DESKTOP_UA, maxTouchPoints: 0 }]
-  ])('keeps existing behavior unchanged when %s', (_label, environmentOptions) => {
-    installEnvironment(environmentOptions);
+  it('uses manual fallback without creating Web Speech when the endpoint is absent on iOS', () => {
+    const environment = installEnvironment({
+      search: '?speechDiag=1',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5
+    });
+    const { factory, start } = createSessionFactory();
+    const session = createCommunicationSpeechSession({
+      activity: 'reading',
+      contextKey: 'reading:bm:0',
+      selectedSet: { id: 'bm', speechLang: 'ms-MY' },
+      sessionFactory: factory
+    });
+
+    expect(session).toMatchObject({ supported: false, bypassed: true });
+    expect(session.start()).toEqual({ unsupported: true, bypassed: true });
+    expect(factory).not.toHaveBeenCalled();
+    expect(start).not.toHaveBeenCalled();
+    expect(environment.recognitionConstructor).not.toHaveBeenCalled();
+  });
+
+  it('keeps non-iOS behavior unchanged when the explicit iOS bypass flag is present', () => {
+    installEnvironment({
+      search: '?speechDiag=1&iosSpeechBypass=1',
+      userAgent: DESKTOP_UA,
+      maxTouchPoints: 0
+    });
     const { factory, start } = createSessionFactory();
     const session = createCommunicationSpeechSession({
       activity: 'reading',
@@ -139,8 +167,8 @@ describe('P1.8 opt-in iOS Web Speech bypass', () => {
 
     expect(bacaan).toContain('if (!recognitionSupported || iosSpeechBypassEnabled) return;');
     expect(bertutur).toContain('if (!recognitionSupported || iosSpeechBypassEnabled ||');
-    expect(bacaan).toContain('Pengecaman suara dimatikan untuk ujian iOS. Gunakan input manual.');
-    expect(bertutur).toContain('Pengecaman suara dimatikan untuk ujian iOS. Gunakan input manual.');
+    expect(bacaan).toContain('Rakaman suara belum tersedia. Kamu masih boleh menaip jawapan.');
+    expect(bertutur).toContain('Rakaman suara belum tersedia. Kamu masih boleh menaip jawapan.');
     expect(bacaan).toContain('<textarea');
     expect(bacaan).toContain('onClick={checkManual}');
     expect(bertutur).toContain('id="bertutur-transcript"');

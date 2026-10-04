@@ -4,10 +4,9 @@ import { createMediaRecorderProbeController } from './mediaRecorderProbe.js';
 import {
   isIOSMediaSttRequested,
   isIOSWebSpeechBypassRequested,
-  shouldBypassIOSWebSpeech,
-  shouldUseIOSMediaStt
+  resolveIOSMediaSttActivation,
+  shouldBypassIOSWebSpeech
 } from './speechCapability.js';
-import { isCloudflareSttConfigured } from './sttAdapter.js';
 
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
@@ -183,7 +182,11 @@ function normalizeStoredEvent(event) {
     recorderState: safeString(event.recorderState, 40),
     recorderStates: safeString(event.recorderStates, 200),
     iosSpeechBypass: safeBoolean(event.iosSpeechBypass),
-    recognizerCreated: safeBoolean(event.recognizerCreated)
+    recognizerCreated: safeBoolean(event.recognizerCreated),
+    activationReason: safeString(event.activationReason, 80),
+    endpointConfigured: safeBoolean(event.endpointConfigured),
+    provider: safeString(event.provider, 80),
+    remoteUpload: safeBoolean(event.remoteUpload)
   };
 }
 
@@ -507,11 +510,16 @@ export function createSpeechDiagnosticSession(details = {}) {
 export function getSpeechDiagnosticSnapshot() {
   const runtime = readRuntimeInfo();
   const envelope = loadEnvelope();
-  const mediaSttActive = shouldUseIOSMediaStt();
+  const activation = resolveIOSMediaSttActivation();
+  const mediaSttActive = activation.active;
   const mockTranscriptConfigured = isSpeechDiagnosticsEnabled()
     && Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1));
-  const cloudflareEndpointConfigured = isCloudflareSttConfigured();
-  const remoteUpload = mediaSttActive && cloudflareEndpointConfigured && !mockTranscriptConfigured;
+  const remoteUpload = mediaSttActive && activation.endpointConfigured && !mockTranscriptConfigured;
+  const provider = mediaSttActive && mockTranscriptConfigured
+    ? 'deterministic-preview'
+    : remoteUpload
+      ? 'cloudflare-workers-ai'
+      : 'unavailable';
   return {
     schemaVersion: 1,
     traceId: envelope.traceId,
@@ -549,9 +557,12 @@ export function getSpeechDiagnosticSnapshot() {
       iosMediaStt: {
         requested: isIOSMediaSttRequested(),
         active: mediaSttActive,
+        activationReason: activation.activationReason,
         mockTranscriptConfigured,
-        cloudflareEndpointConfigured,
-        provider: remoteUpload ? 'cloudflare-workers-ai' : mockTranscriptConfigured ? 'deterministic-preview' : 'unavailable',
+        endpointConfigured: activation.endpointConfigured,
+        provider,
+        remoteUpload,
+        recognizerCreated: false,
         scope: 'reading-speaking-only'
       }
     },

@@ -19,8 +19,10 @@ export const MEDIA_STT_ERROR_CODES = Object.freeze([
   'permission-denied',
   'capture-timeout',
   'no-audio',
+  'no-speech',
   'stt-unavailable',
   'stt-timeout',
+  'stt-rate-limited',
   'stt-error',
   'cancelled'
 ]);

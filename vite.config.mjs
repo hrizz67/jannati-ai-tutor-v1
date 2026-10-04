@@ -40,6 +40,9 @@ export default defineConfig(({ mode }) => {
           if (moduleId.includes('/node_modules/@supabase/')) {
             return 'vendor-supabase'
           }
+          if (moduleId.includes('/src/ai/speech/')) {
+            return 'speech-runtime'
+          }
           if (/\/src\/(?:data\/bm(?:BinaAyat|PentaksiranSumatif|SimpulanBahasa)Questions|utils\/bmSentenceQuality)\.js$/.test(moduleId)) {
             return 'bm-enrichment'
           }

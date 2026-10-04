@@ -1,15 +1,16 @@
 # P1.10 Cloudflare Workers AI real STT path
 
-P1.10 replaces the P1.9 unconfigured production adapter with a real, opt-in Cloudflare Workers AI path for iOS/iPadOS Bacaan and Bertutur. It remains stacked on P1.9 and does not change the default Web Speech path on desktop, Android or ordinary iOS sessions.
+P1.10 introduced the real Cloudflare Workers AI path for iOS/iPadOS Bacaan and Bertutur. P1.12 activates that path automatically in production when a valid `VITE_STT_ENDPOINT` is present. Desktop and Android retain their existing Web Speech behavior. iOS/iPadOS never silently falls back to Web Speech for these two activities; when media transcription is unavailable, the editable manual input remains available.
 
 ## Runtime flow
 
 The real path is active only when:
 
 1. the browser is iOS/iPadOS WebKit;
-2. the URL includes `iosSpeechMode=media-stt`;
-3. `VITE_STT_ENDPOINT` was configured at frontend build time; and
-4. the learner explicitly presses the voice button.
+2. a valid `VITE_STT_ENDPOINT` was configured at frontend build time; and
+3. the learner explicitly presses the voice button.
+
+The diagnostic override `?iosSpeechMode=media-stt` still forces the media path on iOS/iPadOS without changing desktop or Android behavior. `?iosSpeechBypass=1` explicitly forces the manual fallback. Production learners do not need either query parameter.
 
 The flow is:
 
@@ -51,13 +52,13 @@ Cloudflare documents that Workers AI customer content is not used to train model
 
 ## Diagnostics-only mock
 
-The P1.9 deterministic mock remains available only when all of these are present:
+The deterministic mock remains diagnostics-only. It requires both `speechDiag=1` and a non-empty `mockSpeechTranscript`. When no production endpoint is configured, add the explicit media flag to force the iOS media path:
 
 ```text
 ?iosSpeechMode=media-stt&speechDiag=1&mockSpeechTranscript=<URL-encoded text>
 ```
 
-That explicit diagnostic mock takes precedence over `VITE_STT_ENDPOINT`. Without `speechDiag=1`, `mockSpeechTranscript` cannot select it.
+When a valid production endpoint is already configured, `iosSpeechMode=media-stt` is optional. The explicit diagnostic mock takes precedence over `VITE_STT_ENDPOINT`, performs no real fetch, and cannot be selected without `speechDiag=1`.
 
 ## Free-tier operating envelope
 
@@ -105,10 +106,10 @@ Copy the resulting HTTPS URL into the frontend build environment:
 VITE_STT_ENDPOINT=https://jannati-ai-tutor-stt.<workers-subdomain>.workers.dev/v1/transcribe
 ```
 
-Rebuild the frontend, then open the iPhone test URL without `mockSpeechTranscript`:
+Rebuild the frontend, then open the iPhone test URL without a media-mode query parameter:
 
 ```text
-https://<frontend-host>/jannati-ai-tutor-v1/?iosSpeechMode=media-stt&speechDiag=1
+https://<frontend-host>/jannati-ai-tutor-v1/
 ```
 
-Verify BM, English and Arabic in both Bacaan and Bertutur. Each recording must show `recording -> transcribing -> ready`, return what was actually spoken as an editable candidate, keep `recognizerCreated: false`, and preserve the manual textarea fallback on every failure.
+Add only `?speechDiag=1` when a privacy-filtered diagnostic export is needed. Verify BM, English and Arabic in both Bacaan and Bertutur. Each recording must show `recording -> transcribing -> ready`, return what was actually spoken as an editable candidate, keep `recognizerCreated: false`, and preserve the manual textarea fallback on every failure. The export reports `production-ios-auto` for ordinary endpoint-backed activation and `explicit-ios-media-stt-flag` when the force flag is present.

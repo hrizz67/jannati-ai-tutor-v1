@@ -111,7 +111,7 @@ describe('P1.9 provider-neutral STT adapter', () => {
     await expect(explicitUnavailable.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'stt-unavailable' });
 
     const empty = createSttAdapter({ request: async () => ({ transcript: '   ' }) });
-    await expect(empty.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'no-audio' });
+    await expect(empty.transcribe({ blob: audioBlob() })).rejects.toMatchObject({ code: 'no-speech' });
     await expect(empty.transcribe({ blob: new Blob([]) })).rejects.toMatchObject({ code: 'no-audio' });
   });
 
@@ -288,7 +288,7 @@ describe('P1.10 Cloudflare Workers AI STT adapter', () => {
   it.each([
     [408, 'stt-timeout'],
     [403, 'stt-unavailable'],
-    [429, 'stt-error'],
+    [429, 'stt-rate-limited'],
     [502, 'stt-error']
   ])('normalizes HTTP %i without exposing provider response details', async (status, code) => {
     const adapter = createCloudflareWorkersAiSttAdapter({
@@ -301,7 +301,7 @@ describe('P1.10 Cloudflare Workers AI STT adapter', () => {
   it('prefers the diagnostics-only mock over a configured real endpoint', async () => {
     const fetchImpl = vi.fn();
     const adapter = createRuntimeSttAdapter({
-      search: '?iosSpeechMode=media-stt&speechDiag=1&mockSpeechTranscript=Ujian%20mock',
+      search: '?speechDiag=1&mockSpeechTranscript=Ujian%20mock',
       userAgent: IOS_UA,
       maxTouchPoints: 5,
       endpoint: 'https://example.workers.dev/v1/transcribe',
@@ -314,10 +314,27 @@ describe('P1.10 Cloudflare Workers AI STT adapter', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
+  it('never selects the mock without speechDiag=1 and uses the configured real endpoint', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ transcript: 'Real speech' }), { status: 200 }));
+    const adapter = createRuntimeSttAdapter({
+      search: '?mockSpeechTranscript=Ujian%20mock',
+      userAgent: IOS_UA,
+      maxTouchPoints: 5,
+      endpoint: 'https://example.workers.dev/v1/transcribe',
+      fetchImpl
+    });
+
+    await expect(adapter.transcribe({ blob: audioBlob(), language: 'ms-MY' })).resolves.toMatchObject({
+      transcript: 'Real speech',
+      provider: 'cloudflare-workers-ai'
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
   it('selects the real adapter when the endpoint is configured and mock diagnostics are absent', async () => {
     const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ transcript: 'Real speech' }), { status: 200 }));
     const adapter = createRuntimeSttAdapter({
-      search: '?iosSpeechMode=media-stt',
+      search: '',
       userAgent: IOS_UA,
       maxTouchPoints: 5,
       endpoint: 'https://example.workers.dev/v1/transcribe',

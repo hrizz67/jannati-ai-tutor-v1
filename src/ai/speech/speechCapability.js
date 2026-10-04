@@ -1,3 +1,11 @@
+import { isSttEndpointConfigured } from './sttEndpoint.js';
+
+const IOS_WEB_SPEECH_DIAGNOSTIC_MODES = new Set([
+  'legacy-simple',
+  'single-interim',
+  'single-final'
+]);
+
 export function getSpeechRecognitionConstructor() {
   if (typeof window === 'undefined') return null;
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -48,13 +56,51 @@ export function isIOSMediaSttRequested(search) {
   return resolveSearchParams(search).get('iosSpeechMode') === 'media-stt';
 }
 
+export function isIOSWebSpeechDiagnosticOverrideRequested(search) {
+  const params = resolveSearchParams(search);
+  return params.get('speechDiag') === '1'
+    && IOS_WEB_SPEECH_DIAGNOSTIC_MODES.has(params.get('speechMode'));
+}
+
+export function resolveIOSMediaSttActivation({
+  search,
+  userAgent,
+  maxTouchPoints,
+  endpoint
+} = {}) {
+  const iosWebKit = isIOSWebKitBrowser(userAgent, maxTouchPoints);
+  const explicitRequested = isIOSMediaSttRequested(search);
+  const manualBypassRequested = isIOSWebSpeechBypassRequested(search);
+  const webSpeechDiagnosticOverride = iosWebKit
+    && !explicitRequested
+    && !manualBypassRequested
+    && isIOSWebSpeechDiagnosticOverrideRequested(search);
+  const endpointConfigured = isSttEndpointConfigured(endpoint);
+  const active = iosWebKit
+    && !manualBypassRequested
+    && !webSpeechDiagnosticOverride
+    && (explicitRequested || endpointConfigured);
+  const activationReason = !active
+    ? ''
+    : explicitRequested
+      ? 'explicit-ios-media-stt-flag'
+      : 'production-ios-auto';
+  return {
+    active,
+    activationReason,
+    endpointConfigured,
+    manualBypassRequested,
+    manualFallback: iosWebKit && !active && !webSpeechDiagnosticOverride
+  };
+}
+
 export function shouldUseIOSMediaStt({
   search,
   userAgent,
-  maxTouchPoints
+  maxTouchPoints,
+  endpoint
 } = {}) {
-  return isIOSMediaSttRequested(search)
-    && isIOSWebKitBrowser(userAgent, maxTouchPoints);
+  return resolveIOSMediaSttActivation({ search, userAgent, maxTouchPoints, endpoint }).active;
 }
 
 export function shouldBypassIOSWebSpeech({
@@ -67,7 +113,10 @@ export function shouldBypassIOSWebSpeech({
 }
 
 export function shouldAvoidIOSWebSpeech(options = {}) {
-  return shouldBypassIOSWebSpeech(options) || shouldUseIOSMediaStt(options);
+  if (!isIOSWebKitBrowser(options.userAgent, options.maxTouchPoints)) return false;
+  if (isIOSWebSpeechBypassRequested(options.search)) return true;
+  if (isIOSMediaSttRequested(options.search)) return true;
+  return !isIOSWebSpeechDiagnosticOverrideRequested(options.search);
 }
 
 export function shouldRecoverMobileSpeech(userAgent, maxTouchPoints) {
@@ -92,7 +141,9 @@ export default {
   isIOSMediaSttRequested,
   isIOSWebKitBrowser,
   isIOSWebSpeechBypassRequested,
+  isIOSWebSpeechDiagnosticOverrideRequested,
   isMalaySpeechSupported,
+  resolveIOSMediaSttActivation,
   shouldAvoidIOSWebSpeech,
   shouldBypassIOSWebSpeech,
   shouldUseIOSMediaStt,
