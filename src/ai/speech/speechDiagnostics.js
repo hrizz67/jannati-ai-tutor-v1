@@ -7,6 +7,7 @@ import {
   shouldBypassIOSWebSpeech,
   shouldUseIOSMediaStt
 } from './speechCapability.js';
+import { isCloudflareSttConfigured } from './sttAdapter.js';
 
 const STORAGE_KEY = 'jannati_speech_diagnostics_v1';
 const PANEL_ID = 'jannati-speech-diagnostic-panel';
@@ -506,16 +507,22 @@ export function createSpeechDiagnosticSession(details = {}) {
 export function getSpeechDiagnosticSnapshot() {
   const runtime = readRuntimeInfo();
   const envelope = loadEnvelope();
+  const mediaSttActive = shouldUseIOSMediaStt();
+  const mockTranscriptConfigured = isSpeechDiagnosticsEnabled()
+    && Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1));
+  const cloudflareEndpointConfigured = isCloudflareSttConfigured();
+  const remoteUpload = mediaSttActive && cloudflareEndpointConfigured && !mockTranscriptConfigured;
   return {
     schemaVersion: 1,
     traceId: envelope.traceId,
     generatedAt: new Date().toISOString(),
     privacy: {
-      remoteUpload: false,
+      remoteUpload,
       transcriptIncluded: false,
       audioIncluded: false,
       learnerIdentityIncluded: false,
       storage: 'bounded sessionStorage and memory only',
+      audioHandling: remoteUpload ? 'transient-worker-ai-request' : 'local-memory-only',
       audioSamplesIncluded: false,
       deviceIdentifiersIncluded: false,
       deviceLabelsIncluded: false,
@@ -541,8 +548,10 @@ export function getSpeechDiagnosticSnapshot() {
       },
       iosMediaStt: {
         requested: isIOSMediaSttRequested(),
-        active: shouldUseIOSMediaStt(),
-        mockTranscriptConfigured: Boolean(safeString(getSearchParams().get('mockSpeechTranscript') || '', 1)),
+        active: mediaSttActive,
+        mockTranscriptConfigured,
+        cloudflareEndpointConfigured,
+        provider: remoteUpload ? 'cloudflare-workers-ai' : mockTranscriptConfigured ? 'deterministic-preview' : 'unavailable',
         scope: 'reading-speaking-only'
       }
     },
@@ -851,7 +860,8 @@ function mountPanel() {
       'session: ' + (snapshot.diagnostic.currentSessionId || 'none'),
       'display: ' + runtime.displayMode + ' / visibility: ' + runtime.documentVisibility,
       'service worker: ' + (runtime.serviceWorkerScriptUrl || 'none') + ' (' + runtime.serviceWorkerControllerState + ')',
-      'privacy: metadata only; no transcript/audio/identity; no upload'
+      'privacy: metadata only; no transcript/audio/identity in diagnostics; audio transport: '
+        + snapshot.privacy.audioHandling
     ].join('\n');
     if (nativeProbeStatus) {
       nativeProbeStatus.textContent = 'Probe status: ' + probeState.status

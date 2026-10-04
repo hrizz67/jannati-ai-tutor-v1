@@ -290,6 +290,8 @@ describe('P1.9 iOS media-STT integration', () => {
       requested: true,
       active: true,
       mockTranscriptConfigured: true,
+      cloudflareEndpointConfigured: false,
+      provider: 'deterministic-preview',
       scope: 'reading-speaking-only'
     });
     expect(snapshot.events).toEqual(expect.arrayContaining([
