@@ -1,5 +1,6 @@
 import { DEFAULT_PROFILE, PROFILE_VERSION, createDefaultProfile } from './studentProfile.js';
 import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../../services/studentIdentity.js';
+import { reconcileCumulativeLearnerProfile } from '../../utils/learnerProgressIntegrity.js';
 
 const STORAGE_KEY = 'jannati.adaptive.studentProfile';
 
@@ -67,7 +68,12 @@ export function loadProfile(identityInput = {}) {
 export function saveProfile(profile = DEFAULT_PROFILE, identityInput = profile) {
   const identity = getLearningStorageScope(identityInput);
   if (getLearningIdentityMismatch(profile, identity)) return loadProfile(identity);
-  const migrated = migrateProfile(profile);
+  const current = loadProfile(identity);
+  const migrated = migrateProfile(reconcileCumulativeLearnerProfile({
+    identity,
+    profile,
+    adaptiveProfile: current
+  }));
   const safeProfile = identity.explicit ? stampLearningIdentity(migrated, identity) : migrated;
 
   if (!hasStorage()) {

@@ -71,6 +71,8 @@ import { appendCreditedQuizAttempt, canRetryQuizAnswer, getBestCreditedQuizOutco
 import { readSubjectScoped, writeSubjectScoped, clearSubjectScoped } from './utils/subjectScopedStorage.js';
 import { acknowledgeResumeTombstones, clearResume, loadResume, normalizeResumeData, saveResume } from './utils/resumeStorage.js';
 import { createCanonicalProgress } from './utils/canonicalProgress.js';
+import { applyCanonicalLearnerReward, reconcileCumulativeLearnerProfile } from './utils/learnerProgressIntegrity.js';
+import { createBoundedRecoveryNoticeTracker } from './utils/recoveryNotice.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { buildChildSafeHint, getAnswerRevealPolicy } from './ai/policy/answerRevealPolicy.js';
 import { getAcceptedAnswers, getCanonicalQuestionAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
@@ -115,7 +117,6 @@ import {
 } from './services/learningSync.js';
 import { FREE_DAILY_QUESTION_LIMIT, canRestartQuestionResume, canStartFreeQuestionSession, canSubmitFreeQuestion, capQuestionCountToRemainingQuota, getAccessFeatureLabel, getDailyQuestionCount, normalizeAccessStatus, resolveAuthoritativeAccess, resolveQuestionQuotaSubjectId, resolveQuestionResumeQuotaSubjectId, resolveSessionResumeSubjectId } from './services/accessControl.js';
 import { PARENT_SECURITY_STORAGE_PREFIX } from './services/parentAccess.js';
-import { buildClassroomPilotReport } from './analytics/classroomPilotEngine.js';
 import { normalizeSupportedStudentYear, SUPPORTED_STUDENT_YEARS } from './config/studentYears.js';
 import { getLocalDateKey } from './utils/localDate.js';
 import { applyScopedLearningSnapshot, scopeChildLearningSnapshot, STUDENT_PROFILE_STORAGE_PREFIX } from './services/childScopedStorage.js';
@@ -123,6 +124,7 @@ import { LEARNING_IDENTITY_MIGRATION_PREFIX, migrateLegacyStudentData } from './
 import { createChildLineageId, createTutorConversationScope, getLearningStorageScope, stampLearningIdentity } from './services/studentIdentity.js';
 import {
   buildCompactAccountSnapshot,
+  buildCompactChildRecoverySnapshot,
   captureCompactAccountSnapshot,
   persistBoundedChildSnapshot
 } from './services/localSnapshotStorage.js';
@@ -214,6 +216,14 @@ function createChildId() {
     return `child-${crypto.randomUUID()}`;
   } catch {
     return `child-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+}
+
+function createActivityCompletionId(prefix = 'activity') {
+  try {
+    return `${prefix}-${crypto.randomUUID()}`;
+  } catch {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 }
 
@@ -501,6 +511,24 @@ function getChildSnapshotContentSignature(snapshot = {}) {
     .map(key => [key, snapshot[key]]));
 }
 
+function persistChildRecoverySnapshot(key, snapshot) {
+  const firstAttempt = persistBoundedChildSnapshot(
+    localStorage,
+    key,
+    snapshot,
+    { removeExistingOnLimit: true }
+  );
+  if (firstAttempt.persisted || firstAttempt.reason !== 'size_limit_exceeded') return firstAttempt;
+  const compact = buildCompactChildRecoverySnapshot(snapshot, key);
+  if (!compact.ok) return firstAttempt;
+  return persistBoundedChildSnapshot(
+    localStorage,
+    key,
+    compact.snapshot,
+    { removeExistingOnLimit: true }
+  );
+}
+
 function captureChildSnapshot(childId, { force = false } = {}) {
   if (!childId) return false;
   try {
@@ -525,13 +553,8 @@ function captureChildSnapshot(childId, { force = false } = {}) {
       && getChildSnapshotContentSignature(existingSnapshot) === getChildSnapshotContentSignature(nextSnapshot)
     ) return true;
     if (!force && existingSnapshot && snapshotEvidenceScore(existingSnapshot) > snapshotEvidenceScore(nextSnapshot)) return true;
-    const persisted = persistBoundedChildSnapshot(
-      localStorage,
-      `${CHILD_SNAPSHOT_PREFIX}${childId}`,
-      nextSnapshot,
-      { removeExistingOnLimit: true }
-    );
-    return persisted.ok;
+    const persisted = persistChildRecoverySnapshot(`${CHILD_SNAPSHOT_PREFIX}${childId}`, nextSnapshot);
+    return persisted.persisted;
   } catch {
     // Child switching must remain usable when storage is unavailable.
     return false;
@@ -615,12 +638,7 @@ function captureOriginalChildSnapshot(childId) {
     };
     const existingSnapshot = readOriginalChildSnapshot(childId);
     if (existingSnapshot && snapshotEvidenceScore(existingSnapshot) > 0) return;
-    persistBoundedChildSnapshot(
-      localStorage,
-      `${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`,
-      nextSnapshot,
-      { removeExistingOnLimit: true }
-    );
+    persistChildRecoverySnapshot(`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}${childId}`, nextSnapshot);
   } catch {
     // Preserve the current child even when the optional backup cannot be written.
   }
@@ -905,26 +923,27 @@ function repairImportedLearningProfile() {
     const memory = readJson('jannati_v151_ai_memory');
     const studentCore = readJson('jannati_v152_student_core');
     const gamification = readJson('jannati.gamification.profile');
-    const xp = Math.max(
-      Number(profile.xp) || 0,
-      Number(adaptive.xp) || 0,
-      Number(memory.xp) || 0,
-      Number(studentCore.profile?.xp) || 0,
-      Number(studentCore.core?.xp) || 0,
-      Number(gamification.xp) || 0
-    );
+    const identity = getStoredLearningIdentity(profile);
+    const reconciled = reconcileCumulativeLearnerProfile({
+      identity,
+      profile,
+      adaptiveProfile: adaptive,
+      gamificationProfile: gamification,
+      studentCore,
+      aiMemory: memory
+    });
+    const xp = reconciled.xp;
     const streak = Math.max(Number(profile.streak) || 0, Number(adaptive.streak) || 0, Number(memory.studyStreak) || 0);
-    if (xp <= 0 && streak <= 0) return null;
+    if (xp <= 0 && reconciled.coins <= 0 && !reconciled.badges.length && !Object.keys(reconciled.progress || {}).length && streak <= 0) return null;
 
     const nextProfile = {
-      ...profile,
-      xp,
+      ...reconciled,
       streak,
       name: profile.name || adaptive.name || 'Fayyadh'
     };
     localStorage.setItem(PROFILE_KEY, JSON.stringify(nextProfile));
     localStorage.setItem('jannati.adaptive.studentProfile', JSON.stringify({ ...adaptive, xp }));
-    localStorage.setItem('jannati_v151_ai_memory', JSON.stringify({ ...memory, xp }));
+    localStorage.setItem('jannati_v151_ai_memory', JSON.stringify({ ...memory, xp, coins: reconciled.coins }));
 
     // The export may contain a stale v152 core profile with xp: 0. Keep the
     // canonical student core aligned so the next state load cannot overwrite
@@ -935,6 +954,8 @@ function repairImportedLearningProfile() {
       core: {
         ...(studentCore.core || {}),
         xp,
+        coins: reconciled.coins,
+        badges: reconciled.badges,
         streak,
         level: Math.max(Number(studentCore.core?.level) || 1, Math.floor(xp / 100) + 1)
       },
@@ -945,6 +966,9 @@ function repairImportedLearningProfile() {
       version: 1,
       ...gamification,
       xp: Math.max(Number(gamification.xp) || 0, xp),
+      coins: Math.max(Number(gamification.coins) || 0, reconciled.coins),
+      badges: reconciled.badges,
+      achievements: reconciled.achievements,
       level: Math.max(Number(gamification.level) || 1, Math.floor(xp / 100) + 1),
       currentStreak: Math.max(Number(gamification.currentStreak) || 0, streak),
       bestStreak: Math.max(Number(gamification.bestStreak) || 0, streak),
@@ -1415,6 +1439,8 @@ export default function App() {
   const lastCloudSignatureRef = useRef('');
   const cloudEnvelopeRef = useRef({});
   const cloudWriteGuardRef = useRef({ accountId: '', blocked: false, serverProfileCount: 0, reason: '' });
+  const recoveryNoticeTrackerRef = useRef(createBoundedRecoveryNoticeTracker());
+  const rewardMutationClaimsRef = useRef(new Set());
   const [accessNotice, setAccessNotice] = useState(null);
   const [accessReturnScreen, setAccessReturnScreen] = useState('dashboard');
   const [selectedSubjectId, setSelectedSubjectId] = useState('bm');
@@ -1507,6 +1533,19 @@ export default function App() {
     if (isPremiumUser) return true;
     openAccessNotice('premium', feature);
     return false;
+  }
+
+  function announceRecoveryCacheWarning(result = {}) {
+    const accountId = accountUser?.id || getActiveStorageScopeId();
+    if (!recoveryNoticeTrackerRef.current.shouldAnnounce({
+      accountId,
+      reason: result.reason,
+      failedKey: result.failedKey
+    })) return;
+    setRecoveryMessages(prev => [
+      ...prev,
+      'Data cloud berjaya dimuatkan, tetapi salinan pemulihan pada peranti tidak dapat disimpan.'
+    ]);
   }
 
   function reloadActiveChildState(child, preserveQuizUi) {
@@ -2415,10 +2454,7 @@ export default function App() {
           return;
         }
         if (!restoreResult.snapshotPersisted) {
-          setRecoveryMessages(prev => [
-            ...prev,
-            'Data cloud berjaya dimuatkan, tetapi salinan pemulihan pada peranti tidak dapat disimpan.'
-          ]);
+          announceRecoveryCacheWarning(restoreResult);
         }
         setCloudSyncStatus(cloudProtocolRequiresUpgrade ? 'upgrade-required' : 'loaded');
       } else if (cloudResult.error) {
@@ -2640,12 +2676,17 @@ export default function App() {
     if (!supabase && profile?.name && !childProfiles.length) ensureChildProfiles(profile);
   }, []);
   const canonicalProgress = useMemo(() => createCanonicalProgress({
-    ...(profile || {}),
     ...(adaptiveProfile || {}),
-    history: profile?.history || adaptiveProfile?.events || [],
+    ...reconcileCumulativeLearnerProfile({
+      identity: learningIdentity,
+      profile,
+      adaptiveProfile,
+      gamificationProfile
+    }),
+    history: profile?.history?.length ? profile.history : adaptiveProfile?.events || [],
     subjects: adaptiveProfile?.subjects || profile?.subjects,
     topics: adaptiveProfile?.topics || profile?.topics
-  }), [profile, adaptiveProfile]);
+  }), [profile, adaptiveProfile, gamificationProfile, learningIdentity.scopeKey]);
   const adaptiveSessionRef = useRef(null);
   const questionStartedAtRef = useRef(Date.now());
   const quizSubmitKeyRef = useRef('');
@@ -2876,6 +2917,43 @@ export default function App() {
     setAdaptiveProfile(loadAdaptiveStudentProfile(learningIdentity));
   }
 
+  function getCanonicalLearnerProfile(currentProfile) {
+    const storedCoreProfile = loadStudentCore(currentProfile, learningIdentity);
+    return reconcileCumulativeLearnerProfile({
+      identity: learningIdentity,
+      profile: currentProfile,
+      adaptiveProfile,
+      gamificationProfile: loadGamificationState(learningIdentity),
+      studentCore: { profile: storedCoreProfile },
+      aiMemory: loadAIMemory(learningIdentity)
+    });
+  }
+
+  function applyLearnerReward(currentProfile, reward = {}) {
+    const storedCoreProfile = loadStudentCore(currentProfile, learningIdentity);
+    const eventKey = String(reward.eventKey || '').trim();
+    const scopeKey = learningIdentity.scopeKey
+      || `${learningIdentity.accountId || ''}:${learningIdentity.childId || learningIdentity.studentId || ''}`;
+    const claimKey = eventKey ? `${scopeKey}::${eventKey}` : '';
+    const claimed = Boolean(claimKey && rewardMutationClaimsRef.current.has(claimKey));
+    const profileWithClaim = claimed
+      ? {
+          ...currentProfile,
+          processedRewardKeys: [...new Set([...(currentProfile?.processedRewardKeys || []), eventKey])]
+        }
+      : currentProfile;
+    const result = applyCanonicalLearnerReward({
+      identity: learningIdentity,
+      profile: profileWithClaim,
+      adaptiveProfile,
+      gamificationProfile: loadGamificationState(learningIdentity),
+      studentCore: { profile: storedCoreProfile },
+      aiMemory: loadAIMemory(learningIdentity)
+    }, reward);
+    if (result.credited && claimKey) rewardMutationClaimsRef.current.add(claimKey);
+    return result;
+  }
+
   function recordGamification(event = {}, sourceProfile = adaptiveProfile, context = {}) {
     const updated = recordGamificationEvent(gamificationProfile, aiMemory, {
       profile: sourceProfile || adaptiveProfile,
@@ -3094,7 +3172,9 @@ export default function App() {
 
   function exportBetaReport(request = {}) {
     if (request?.reportType === 'classroom-pilot') {
-      exportClassroomPilotReport();
+      void exportClassroomPilotReport().catch(() => {
+        setRecoveryMessages(prev => [...prev, 'Laporan pilot belum dapat disediakan. Cuba sekali lagi.']);
+      });
       return;
     }
     const aiMemory = loadAIMemory(learningIdentity);
@@ -3146,7 +3226,8 @@ export default function App() {
     URL.revokeObjectURL(url);
   }
 
-  function exportClassroomPilotReport() {
+  async function exportClassroomPilotReport() {
+    const { buildClassroomPilotReport } = await import('./analytics/classroomPilotEngine.js');
     const scopeId = activeChildId || 'default';
     const storageKey = `${CLASSROOM_PILOT_CODE_PREFIX}${scopeId}`;
     let participantCode = '';
@@ -3321,10 +3402,7 @@ export default function App() {
         return;
       }
       if (!restoreResult.snapshotPersisted) {
-        setRecoveryMessages(prev => [
-          ...prev,
-          'Data cloud berjaya dimuatkan, tetapi salinan pemulihan pada peranti tidak dapat disimpan.'
-        ]);
+        announceRecoveryCacheWarning(restoreResult);
       }
       captureAccountSnapshot(accountUser.id);
     }
@@ -3396,9 +3474,11 @@ export default function App() {
     lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
     captureAccountSnapshot(accountUser.id);
     setCloudSyncStatus(Number(cloudResult.protocolVersion) < CLOUD_SYNC_PROTOCOL_VERSION ? 'upgrade-required' : 'loaded');
-    setRecoveryMessages(prev => [...prev, restoreResult.snapshotPersisted
-      ? 'Data cloud berjaya dimuat ke peranti ini.'
-      : 'Data cloud berjaya dimuatkan, tetapi salinan pemulihan pada peranti tidak dapat disimpan.']);
+    if (restoreResult.snapshotPersisted) {
+      setRecoveryMessages(prev => [...prev, 'Data cloud berjaya dimuat ke peranti ini.']);
+    } else {
+      announceRecoveryCacheWarning(restoreResult);
+    }
   }
 
   function isQuestionResumeMode(mode) {
@@ -4605,34 +4685,47 @@ export default function App() {
       endedAt: new Date().toISOString()
     });
     adaptiveSessionRef.current = null;
+    const canonicalProfile = getCanonicalLearnerProfile(profile);
+    const badges = new Set(canonicalProfile.badges || []);
+    if (percent >= 80) badges.add(`${activeSubject.short}: ${activeTopic.title}`);
+    if (percent >= 100) badges.add(`Skor Penuh: ${activeTopic.title}`);
+    const oldProgress = canonicalProfile.progress?.[key] || {};
+    const rewardEventKey = `quiz::${finishedSessionId || creditedSession.startedAt || `${activeSubject.id}:${activeTopic.id}:${quizStartedAt}`}`;
+    const rewarded = applyLearnerReward(profile, {
+      activityType: 'quiz',
+      eventKey: rewardEventKey,
+      xp: creditedSession.xp,
+      coins: creditedSession.coins,
+      patch: {
+        streak: canonicalProfile.lastStudy === today ? canonicalProfile.streak : (canonicalProfile.streak || 0) + 1,
+        lastStudy: today,
+        badges: [...badges],
+        history: [{ date: today, subjectId: activeSubject.id, subject: activeSubject.short, topicId: activeTopic.id, topic: activeTopic.title, percent, stars }],
+        progress: {
+          [key]: {
+            subjectId: activeSubject.id,
+            topicId: activeTopic.id,
+            best: Math.max(oldProgress.best || 0, percent),
+            last: percent,
+            stars,
+            attempts: (oldProgress.attempts || 0) + 1,
+            lastDate: today
+          }
+        }
+      }
+    });
+    const updatedProfile = updateStoredRecommendation(rewarded.profile, activeSubject);
+    saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session: creditedSession, studySeconds });
+    setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'session-complete',
       sessionId: finishedSessionId,
       date: new Date().toISOString(),
       completedAt: new Date().toISOString()
-    }, adaptiveSessionResult, {
+    }, { ...adaptiveSessionResult, ...updatedProfile }, {
       sessionId: finishedSessionId,
       eventType: 'session-complete',
       sessionCompleted: true
-    });
-
-    setProfile(prev => {
-      const badges = new Set(prev.badges || []);
-      if (percent >= 80) badges.add(`${activeSubject.short}: ${activeTopic.title}`);
-      if (percent >= 100) badges.add(`Skor Penuh: ${activeTopic.title}`);
-      const oldProgress = prev.progress?.[key] || {};
-      const updatedProfile = updateStoredRecommendation({
-        ...prev,
-        xp: (prev.xp || 0) + creditedSession.xp,
-        coins: (prev.coins || 0) + creditedSession.coins,
-        streak: prev.lastStudy === today ? prev.streak : (prev.streak || 0) + 1,
-        lastStudy: today,
-        badges: [...badges],
-        history: [{ date: today, subjectId: activeSubject.id, subject: activeSubject.short, topicId: activeTopic.id, topic: activeTopic.title, percent, stars }, ...(prev.history || [])].slice(0, 50),
-        progress: { ...prev.progress, [key]: { subjectId: activeSubject.id, topicId: activeTopic.id, best: Math.max(oldProgress.best || 0, percent), last: percent, stars, attempts: (oldProgress.attempts || 0) + 1, lastDate: today } }
-      }, activeSubject);
-      saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session: creditedSession, studySeconds });
-      return { ...updatedProfile, badges: autoBadges(updatedProfile) };
     });
 
     const completedSession = { ...creditedSession, percent, stars };
@@ -4649,8 +4742,16 @@ export default function App() {
 
   function completeDailyChallenge() {
     const today = todayKey();
-    if (profile.daily?.[today]?.completed) return;
-    const updatedProfile = { ...profile, xp: (profile.xp || 0) + 50, coins: (profile.coins || 0) + 20, daily: { ...(profile.daily || {}), [today]: { completed: true, xp: 50, coins: 20 } } };
+    const canonicalProfile = getCanonicalLearnerProfile(profile);
+    if (canonicalProfile.daily?.[today]?.completed) return;
+    const reward = applyLearnerReward(profile, {
+      activityType: 'daily-challenge',
+      eventKey: `daily-challenge::${today}`,
+      xp: 50,
+      coins: 20,
+      patch: { daily: { ...(canonicalProfile.daily || {}), [today]: { completed: true, xp: 50, coins: 20 } } }
+    });
+    const updatedProfile = reward.profile;
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'daily-mission',
@@ -4665,23 +4766,28 @@ export default function App() {
   }
 
   function saveUasaResult(result) {
-    const badges = new Set(profile.badges || []);
+    const canonicalProfile = getCanonicalLearnerProfile(profile);
+    const badges = new Set(canonicalProfile.badges || []);
     if (result.score >= 80) badges.add('Pentaksiran Cemerlang');
-    const updatedProfile = {
-      ...profile,
-      xp: (profile.xp || 0) + Math.round(result.score / 2),
-      coins: (profile.coins || 0) + Math.round(result.score / 10),
-      badges: [...badges],
-      uasaHistory: [result, ...(profile.uasaHistory || [])].slice(0, 20),
-      history: [{ date: result.date, subject: result.subjectShort, topic: 'Pentaksiran Sumatif', percent: result.score, stars: getStars(result.score) }, ...(profile.history || [])].slice(0, 50)
-    };
+    const reward = applyLearnerReward(profile, {
+      activityType: 'uasa',
+      eventKey: `uasa::${result.sessionId || `${result.subjectId || result.subjectShort}:${result.date}`}`,
+      xp: Math.round(result.score / 2),
+      coins: Math.round(result.score / 10),
+      patch: {
+        badges: [...badges],
+        uasaHistory: [result],
+        history: [{ date: result.date, subject: result.subjectShort, topic: 'Pentaksiran Sumatif', percent: result.score, stars: getStars(result.score) }]
+      }
+    });
+    const updatedProfile = reward.profile;
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'uasa-result',
-      sessionId: `uasa::${result?.date || todayKey()}`,
+      sessionId: result?.sessionId || `uasa::${result?.date || todayKey()}`,
       questionId: `uasa::${result?.subjectShort || 'subjek'}`,
       date: result?.date || todayKey(),
-      key: `uasa-result::${result?.date || todayKey()}::${result?.subjectShort || 'subjek'}`
+      key: `uasa-result::${result?.sessionId || `${result?.date || todayKey()}::${result?.subjectShort || 'subjek'}`}`
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: adaptiveProfile.studyMinutes || 0 }, {
       eventType: 'uasa-result',
       sessionCompleted: true,
@@ -4706,14 +4812,21 @@ export default function App() {
     const passedCount = aggregateScores.filter(value => value >= 80).length;
     const today = todayKey();
     const memoryResult = { ...result, score, scoreHistory: aggregateScores, completedPassages, averageScore, bestScore, passedCount, finalItemScore: score, date: new Date().toISOString() };
-    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bacaan', topic: result?.title || 'Latihan Bacaan', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    const reward = applyLearnerReward(profile, {
+      activityType: 'reading',
+      eventKey: `reading::${result?.completionId || memoryResult.date}`,
+      xp: Math.round(score / 2),
+      coins: Math.round(score / 10),
+      patch: { lastStudy: today, history: [{ date: today, subject: 'Bacaan', topic: result?.title || 'Latihan Bacaan', percent: score, stars: getStars(score) }] }
+    });
+    const updatedProfile = reward.profile;
     saveReadingMemory(memoryResult, updatedProfile, allSubjects);
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'reading-session',
-      sessionId: `reading::${today}::${result?.title || 'Jurulatih Bacaan'}`,
+      sessionId: result?.completionId || `reading::${today}::${result?.title || 'Jurulatih Bacaan'}`,
       date: memoryResult.date,
-      key: `reading-session::${today}::${result?.title || 'Jurulatih Bacaan'}`
+      key: `reading-session::${result?.completionId || `${today}::${result?.title || 'Jurulatih Bacaan'}`}`
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
       eventType: 'reading-session',
       sessionCompleted: true,
@@ -4731,14 +4844,21 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Mendengar', topic: result?.title || 'Latihan Mendengar', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    const reward = applyLearnerReward(profile, {
+      activityType: 'listening',
+      eventKey: `listening::${result?.completionId || memoryResult.date}`,
+      xp: Math.round(score / 2),
+      coins: Math.round(score / 10),
+      patch: { lastStudy: today, history: [{ date: today, subject: 'Mendengar', topic: result?.title || 'Latihan Mendengar', percent: score, stars: getStars(score) }] }
+    });
+    const updatedProfile = reward.profile;
     saveListeningMemory(memoryResult, updatedProfile, allSubjects);
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'listening-session',
-      sessionId: `listening::${today}::${result?.title || 'Makmal Mendengar'}`,
+      sessionId: result?.completionId || `listening::${today}::${result?.title || 'Makmal Mendengar'}`,
       date: memoryResult.date,
-      key: `listening-session::${today}::${result?.title || 'Makmal Mendengar'}`
+      key: `listening-session::${result?.completionId || `${today}::${result?.title || 'Makmal Mendengar'}`}`
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
       eventType: 'listening-session',
       sessionCompleted: true,
@@ -4752,14 +4872,21 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Bertutur', topic: result?.title || 'Latihan Bertutur', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    const reward = applyLearnerReward(profile, {
+      activityType: 'speaking',
+      eventKey: `speaking::${result?.completionId || memoryResult.date}`,
+      xp: Math.round(score / 2),
+      coins: Math.round(score / 10),
+      patch: { lastStudy: today, history: [{ date: today, subject: 'Bertutur', topic: result?.title || 'Latihan Bertutur', percent: score, stars: getStars(score) }] }
+    });
+    const updatedProfile = reward.profile;
     saveSpeakingMemory(memoryResult, updatedProfile, allSubjects);
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'speaking-session',
-      sessionId: `speaking::${today}::${result?.title || 'Jurulatih Bertutur'}`,
+      sessionId: result?.completionId || `speaking::${today}::${result?.title || 'Jurulatih Bertutur'}`,
       date: memoryResult.date,
-      key: `speaking-session::${today}::${result?.title || 'Jurulatih Bertutur'}`
+      key: `speaking-session::${result?.completionId || `${today}::${result?.title || 'Jurulatih Bertutur'}`}`
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
       eventType: 'speaking-session',
       sessionCompleted: true,
@@ -4773,14 +4900,21 @@ export default function App() {
     const score = result?.score || 0;
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
-    const updatedProfile = { ...profile, xp: (profile.xp || 0) + Math.round(score / 2), coins: (profile.coins || 0) + Math.round(score / 10), lastStudy: today, history: [{ date: today, subject: 'Menulis', topic: result?.title || 'Latihan Menulis', percent: score, stars: getStars(score) }, ...(profile.history || [])].slice(0, 50) };
+    const reward = applyLearnerReward(profile, {
+      activityType: 'writing',
+      eventKey: `writing::${result?.completionId || memoryResult.date}`,
+      xp: Math.round(score / 2),
+      coins: Math.round(score / 10),
+      patch: { lastStudy: today, history: [{ date: today, subject: 'Menulis', topic: result?.title || 'Latihan Menulis', percent: score, stars: getStars(score) }] }
+    });
+    const updatedProfile = reward.profile;
     saveWritingMemory(memoryResult, updatedProfile, allSubjects);
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
     recordGamification({
       type: 'writing-session',
-      sessionId: `writing::${today}::${result?.title || 'Jurulatih Menulis'}`,
+      sessionId: result?.completionId || `writing::${today}::${result?.title || 'Jurulatih Menulis'}`,
       date: memoryResult.date,
-      key: `writing-session::${today}::${result?.title || 'Jurulatih Menulis'}`
+      key: `writing-session::${result?.completionId || `${today}::${result?.title || 'Jurulatih Menulis'}`}`
     }, { ...adaptiveProfile, ...updatedProfile, studyMinutes: (adaptiveProfile.studyMinutes || 0) + Math.max(1, Math.round(score / 2)) }, {
       eventType: 'writing-session',
       sessionCompleted: true,
@@ -5332,6 +5466,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   const [score, setScore] = useState(() => subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
   const [uasaStateSubjectId, setUasaStateSubjectId] = useState(() => subject?.id || '');
   const completedRef = useRef(Boolean(subjectResume?.completed));
+  const uasaSessionIdRef = useRef(subjectResume?.sessionId || createActivityCompletionId(`uasa-${subject?.id || 'subject'}`));
 
   useEffect(() => {
     setUasaStateSubjectId(null);
@@ -5341,6 +5476,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
     setValidationMessage('');
     setScore(subjectResume?.state?.score || { correct: Number(subjectResume?.correct || 0), wrong: Number(subjectResume?.wrong || 0) });
     completedRef.current = Boolean(subjectResume?.completed);
+    uasaSessionIdRef.current = subjectResume?.sessionId || createActivityCompletionId(`uasa-${subject?.id || 'subject'}`);
   }, [subject?.id]);
 
   useEffect(() => {
@@ -5359,7 +5495,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
       version: 1,
       mode: 'uasa',
       screen: 'uasa',
-      sessionId: subjectResume?.sessionId || subjectResume?.session?.sessionId || `uasa_${subject.id}_${questions.length}`,
+      sessionId: uasaSessionIdRef.current,
       subjectId: subject.id,
       topicId: subjectResume?.topicId || `uasa_${subject.id}`,
       questions,
@@ -5398,6 +5534,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
 
   function submitAnswer() {
     if (!question) return;
+    if (completedRef.current) return;
     if (result) return;
     if (!String(answer || '').trim()) {
       setValidationMessage('Tulis jawapan dahulu ya.');
@@ -5440,6 +5577,7 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
       const percent = Math.round((nextScore.correct / Math.max(1, total)) * 100);
       completedRef.current = true;
       onSave({
+        sessionId: uasaSessionIdRef.current,
         date: todayKey(),
         subjectId: subject.id,
         subjectShort: subject.short,
@@ -5529,6 +5667,8 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   });
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
+  const completionIdRef = useRef(resume?.sessionId || createActivityCompletionId('reading'));
+  const completionSavedRef = useRef(false);
   const speechSessionRef = useRef(null);
   const passageChangeRef = useRef(passageId);
   const bacaanContextKeyRef = useRef('');
@@ -5695,7 +5835,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       version: 1,
       mode: 'reading',
       screen: 'reading',
-      sessionId: resume?.sessionId || `reading_${passage.id}`,
+      sessionId: completionIdRef.current,
       subjectId: resume?.subjectId || 'reading',
       topicId: resume?.topicId || passage.id,
       metadata: {
@@ -5903,6 +6043,7 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
   }
 
   function saveResult() {
+    if (completionSavedRef.current) return;
     const nextResult = result && typeof result === 'object'
       ? normalizeBacaanResult(result)
       : compareBacaan(passage.text, transcript, passage.speechLang);
@@ -5913,9 +6054,11 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
       onBack?.();
       return;
     }
+    completionSavedRef.current = true;
     const averageScore = Math.round(completedScores.reduce((sum, value) => sum + Number(value || 0), 0) / completedScores.length);
     const passedCount = completedScores.filter(value => Number(value) >= 80).length;
     onFinish({
+      completionId: completionIdRef.current,
       language: passage.language,
       title: passage.title,
       targetText: passage.text,
@@ -6062,6 +6205,8 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   const [result, setResult] = useState(() => resume?.state?.result || null);
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
+  const completionIdRef = useRef(resume?.sessionId || createActivityCompletionId('speaking'));
+  const completionSavedRef = useRef(false);
   const modeResetRef = useRef({ setId, mode });
   const languageInitializedRef = useRef(false);
   const subjectInitializedRef = useRef(false);
@@ -6241,7 +6386,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       version: 1,
       mode: 'speaking',
       screen: 'speaking',
-      sessionId: resume?.sessionId || `speaking_${setId}_${mode}`,
+      sessionId: completionIdRef.current,
       subjectId: resume?.subjectId || 'speaking',
       topicId: resume?.topicId || `${setId}_${mode}`,
       metadata: {
@@ -6495,6 +6640,7 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
   }
 
   function saveBertutur() {
+    if (completionSavedRef.current) return;
     const nextResult = safeResult && typeof safeResult === 'object' ? safeResult : scoreBertutur(safePrompt, safeTranscript, set.speechLang);
     const contract = normalizeCommunicationResult(nextResult);
     const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
@@ -6503,7 +6649,9 @@ function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish
       onBack?.();
       return;
     }
+    completionSavedRef.current = true;
     onFinish({
+      completionId: completionIdRef.current,
       language: set.language,
       title: rawSetTitle,
       mode,
@@ -6631,6 +6779,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [result, setResult] = useState(() => resume?.state?.result || null);
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
+  const completionIdRef = useRef(resume?.sessionId || createActivityCompletionId('writing'));
+  const completionSavedRef = useRef(false);
   const modeResetRef = useRef({ setId, mode });
   const subjectInitializedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
@@ -6708,7 +6858,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
       version: 1,
       mode: 'writing',
       screen: 'writing',
-      sessionId: resume?.sessionId || `writing_${setId}_${mode}`,
+      sessionId: completionIdRef.current,
       subjectId: resume?.subjectId || 'writing',
       topicId: resume?.topicId || `${setId}_${mode}`,
       metadata: {
@@ -6775,6 +6925,7 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   function saveMenulis() {
+    if (completionSavedRef.current) return;
     if (!safeTask || !set) return;
     const nextResult = safeResult || scoreMenulis(safeTask, currentAnswer(), set.dictionary || [], mode);
     const contract = normalizeCommunicationResult(nextResult);
@@ -6784,7 +6935,9 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
       onBack?.();
       return;
     }
+    completionSavedRef.current = true;
     onFinish({
+      completionId: completionIdRef.current,
       language: set.language,
       title: set.title,
       mode,
@@ -6971,6 +7124,8 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   const [audioMessage, setAudioMessage] = useState('');
   const [scoreHistory, setScoreHistory] = useState(() => sanitizeCommunicationScoreHistory(resume?.state?.scoreHistory));
   const recordedSessionRef = useRef(new Set());
+  const completionIdRef = useRef(resume?.sessionId || createActivityCompletionId('listening'));
+  const completionSavedRef = useRef(false);
   const resumeChangeRef = useRef(onResumeChange);
   const resumeSignatureRef = useRef('');
   const communicationResult = normalizeCommunicationResult(feedback);
@@ -7011,7 +7166,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
       version: 1,
       mode: 'listening',
       screen: 'listening',
-      sessionId: resume?.sessionId || `listening_${setId}`,
+      sessionId: completionIdRef.current,
       subjectId: 'listening',
       topicId: `${setId}_${sessionIndex}`,
       metadata: {
@@ -7116,6 +7271,7 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
   }
 
   function finish() {
+    if (completionSavedRef.current) return;
     stopAudio();
     const completedScores = sanitizeCommunicationScoreHistory(scoreHistory);
     if (!completedScores.length) {
@@ -7123,9 +7279,11 @@ function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish 
       onBack?.();
       return;
     }
+    completionSavedRef.current = true;
     const correct = completedScores.filter(score => score >= 80).length;
     const total = completedScores.length;
     onFinish?.({
+      completionId: completionIdRef.current,
       language: base.language,
       title: base.title,
       mode: 'mixed',

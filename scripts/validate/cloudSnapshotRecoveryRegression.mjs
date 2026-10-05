@@ -82,7 +82,8 @@ const sizes = measureSnapshotStorage(payload, accountId);
 assert.ok(sizes.canonicalCloudBytes > 3_000_000, 'The representative fixture must exercise a multi-megabyte canonical payload.');
 assert.ok(sizes.projectedAccountSnapshotBytes <= 768 * 1024, 'The local account snapshot must remain bounded.');
 assert.equal(sizes.childFieldBreakdown[0]?.key, 'jannati_large_history', 'The safe size report must identify the largest top-level child field without exposing its value.');
-assert.ok(result.skippedLargeSnapshotKeys.includes(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`), 'The oversized active child cache must be skipped whole, never truncated.');
+assert.ok(result.compactedSnapshotKeys.includes(`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`), 'The oversized active child cache must be compacted without blocking its active projection.');
+assert.ok(result.compactedSnapshotOmittedKeys[`${CHILD_SNAPSHOT_PREFIX}${activeChildId}`].includes('jannati_large_history'), 'Compaction must omit the non-essential oversized field as a whole.');
 
 assert.doesNotMatch(appSource, /account-snapshot-restore-failed/, 'A cache-only failure must not be reported as a cloud restore failure.');
 assert.match(appSource, /hydrateCloudLearningState\(localStorage, cloudData/, 'Cloud hydration must use the structured recovery service.');

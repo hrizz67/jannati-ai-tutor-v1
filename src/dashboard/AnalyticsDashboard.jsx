@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmptyState, SettingsPanel, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
+import { AdvancedRecoveryTools, EmptyState, Stat, SubjectIllustration } from './dashboardHelpers.jsx';
 import IconGlyph from '../components/IconGlyph.jsx';
 import GameBadge from '../components/GameBadge.jsx';
 import checkBadge from '../assets/icons/3d/check-badge.webp';
@@ -83,6 +83,7 @@ export default function AnalyticsDashboard({
   onSyncLearningData,
   onLoadLearningData,
   cloudSyncStatus,
+  showAdvancedRecoveryTools = false,
   onToggleFavourite,
   dashboardCharacter,
   welcomeTopic,
@@ -305,7 +306,7 @@ export default function AnalyticsDashboard({
         </div>
       </section>
 
-      <SettingsPanel onExportBetaReport={onExportBetaReport} onImportLearningData={onImportLearningData} onRecoverLearningData={onRecoverLearningData} onSyncLearningData={onSyncLearningData} onLoadLearningData={onLoadLearningData} cloudSyncStatus={cloudSyncStatus} onReset={onReset} />
+      <AdvancedRecoveryTools enabled={showAdvancedRecoveryTools} onExportBetaReport={onExportBetaReport} onImportLearningData={onImportLearningData} onRecoverLearningData={onRecoverLearningData} onSyncLearningData={onSyncLearningData} onLoadLearningData={onLoadLearningData} cloudSyncStatus={cloudSyncStatus} onReset={onReset} />
 
       <section className="card uasa-card">
         <p className="eyebrow">Latihan Pentaksiran</p>

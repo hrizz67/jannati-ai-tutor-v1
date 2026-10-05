@@ -409,6 +409,7 @@ export default function HomeDashboard(props) {
     onSyncLearningData,
     cloudSyncStatus,
     onLoadLearningData,
+    showAdvancedRecoveryTools: import.meta.env.DEV,
     dashboardCharacter,
     welcomeTopic,
     selectedSubject,

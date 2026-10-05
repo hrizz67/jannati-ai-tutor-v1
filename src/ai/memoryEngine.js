@@ -6,6 +6,7 @@ import { loadMemory as loadStudentMemory } from './memory/memoryStorage.js';
 import { applyActivityCompletion, applyQuestionCompletions, loadStudentProfile, resolveStudentId, saveStudentProfile } from './profile/index.js';
 import { recordMistakes } from './mistakes/index.js';
 import { getLearningIdentityMismatch, getLearningStorageScope, stampLearningIdentity } from '../services/studentIdentity.js';
+import { resolveCanonicalRewardBaseline } from '../utils/learnerProgressIntegrity.js';
 
 const MEMORY_KEY = 'jannati_v151_ai_memory';
 const LEGACY_MEMORY_KEYS = ['jannati_v150_ai_memory', 'jannati_v140_ai_memory'];
@@ -99,9 +100,17 @@ export function loadAIMemory(identityInput = {}) {
 export function saveAIMemory(memory, identityInput = memory) {
   const identity = getLearningStorageScope(identityInput);
   if (getLearningIdentityMismatch(memory, identity)) return loadAIMemory(identity);
+  const current = loadAIMemory(identity);
+  const baseline = resolveCanonicalRewardBaseline({
+    identity,
+    profile: memory,
+    aiMemory: current
+  });
   const safeMemory = {
     ...emptyMemory(identity),
     ...memory,
+    xp: baseline.xp,
+    coins: baseline.coins,
     updatedAt: new Date().toISOString()
   };
   const scopedMemory = identity.explicit ? stampLearningIdentity(safeMemory, identity) : safeMemory;

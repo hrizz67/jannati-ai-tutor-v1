@@ -410,6 +410,42 @@ const CANONICAL_PROFILE_FIELDS = new Set([
   'isPremium',
   'isDemo'
 ]);
+const CUMULATIVE_NUMERIC_FIELDS = new Set([
+  'xp',
+  'totalXp',
+  'coins',
+  'stars',
+  'starCount',
+  'level',
+  'globalLevel',
+  'bestStreak',
+  'longestStreak',
+  'maxStreak',
+  'attempts',
+  'totalAttempts',
+  'totalQuestions',
+  'correct',
+  'correctCount',
+  'correctQuestions',
+  'totalCorrect',
+  'wrong',
+  'incorrect',
+  'incorrectCount',
+  'incorrectQuestions',
+  'totalWrong',
+  'completedActivities',
+  'completedQuestions',
+  'completedTopics',
+  'attemptedTopics',
+  'studyMinutes',
+  'studySeconds',
+  'totalStudySeconds',
+  'best',
+  'bestScore',
+  'highestScore',
+  'passedCount'
+]);
+const CUMULATIVE_BOOLEAN_FIELDS = new Set(['completed', 'earned', 'mastered', 'passed', 'unlocked']);
 
 function isDateLikeField(key = '', value = '') {
   if (!value || typeof value !== 'string') return false;
@@ -449,7 +485,21 @@ function mergeLearningArrays(canonical = [], duplicate = [], depth = 0) {
   return merged.slice(0, 500);
 }
 
-function mergeLearningValue(canonical, duplicate, key = '', depth = 0) {
+function recordTimestamp(value = {}) {
+  if (!isObject(value)) return 0;
+  return Math.max(
+    parseTimestamp(value.updatedAt),
+    parseTimestamp(value.completedAt),
+    parseTimestamp(value.answeredAt),
+    parseTimestamp(value.lastAnsweredAt),
+    parseTimestamp(value.lastPractised),
+    parseTimestamp(value.startedAt),
+    parseTimestamp(value.date),
+    parseTimestamp(value.__childSnapshotCapturedAt)
+  );
+}
+
+function mergeLearningValue(canonical, duplicate, key = '', depth = 0, preferDuplicate = false) {
   if (duplicate === undefined || duplicate === null) return canonical;
   if (canonical === undefined || canonical === null) return duplicate;
   if (depth > 12) return canonical;
@@ -457,27 +507,45 @@ function mergeLearningValue(canonical, duplicate, key = '', depth = 0) {
     return mergeLearningArrays(canonical, duplicate, depth + 1);
   }
   if (isObject(canonical) && isObject(duplicate)) {
-    const merged = { ...canonical };
-    Object.entries(duplicate).forEach(([nestedKey, value]) => {
-      merged[nestedKey] = mergeLearningValue(merged[nestedKey], value, nestedKey, depth + 1);
+    const canonicalTimestamp = recordTimestamp(canonical);
+    const duplicateTimestamp = recordTimestamp(duplicate);
+    const preferNestedDuplicate = duplicateTimestamp === canonicalTimestamp
+      ? preferDuplicate
+      : duplicateTimestamp > canonicalTimestamp;
+    const merged = {};
+    new Set([...Object.keys(canonical), ...Object.keys(duplicate)]).forEach(nestedKey => {
+      merged[nestedKey] = mergeLearningValue(
+        canonical[nestedKey],
+        duplicate[nestedKey],
+        nestedKey,
+        depth + 1,
+        preferNestedDuplicate
+      );
     });
     return merged;
   }
-  if (typeof canonical === 'number' && typeof duplicate === 'number') return Math.max(canonical, duplicate);
+  if (typeof canonical === 'number' && typeof duplicate === 'number') {
+    return CUMULATIVE_NUMERIC_FIELDS.has(key)
+      ? Math.max(canonical, duplicate)
+      : preferDuplicate ? duplicate : canonical;
+  }
   if (typeof canonical === 'boolean' && typeof duplicate === 'boolean') {
-    return CANONICAL_PROFILE_FIELDS.has(key) ? canonical : canonical || duplicate;
+    if (CANONICAL_PROFILE_FIELDS.has(key)) return canonical;
+    return CUMULATIVE_BOOLEAN_FIELDS.has(key)
+      ? canonical || duplicate
+      : preferDuplicate ? duplicate : canonical;
   }
   if (typeof canonical === 'string' && typeof duplicate === 'string') {
     if (CANONICAL_PROFILE_FIELDS.has(key)) return canonical || duplicate;
     if (isDateLikeField(key, canonical) || isDateLikeField(key, duplicate)) {
       return parseTimestamp(duplicate) > parseTimestamp(canonical) ? duplicate : canonical;
     }
-    return canonical || duplicate;
+    return preferDuplicate ? duplicate || canonical : canonical || duplicate;
   }
-  return canonical;
+  return preferDuplicate ? duplicate : canonical;
 }
 
-function mergeStoredLearningValue(canonicalRaw, duplicateRaw, storageKey = '') {
+function mergeStoredLearningValue(canonicalRaw, duplicateRaw, storageKey = '', options = {}) {
   if (typeof canonicalRaw !== 'string') return duplicateRaw;
   if (typeof duplicateRaw !== 'string') return canonicalRaw;
   try {
@@ -486,7 +554,12 @@ function mergeStoredLearningValue(canonicalRaw, duplicateRaw, storageKey = '') {
     if (storageKey === 'jannati_v151_resume') {
       return parseTimestamp(duplicate?.updatedAt) > parseTimestamp(canonical?.updatedAt) ? duplicateRaw : canonicalRaw;
     }
-    return JSON.stringify(mergeLearningValue(canonical, duplicate));
+    const canonicalTimestamp = recordTimestamp(canonical);
+    const duplicateTimestamp = recordTimestamp(duplicate);
+    const preferDuplicate = duplicateTimestamp === canonicalTimestamp
+      ? Boolean(options.preferDuplicate)
+      : duplicateTimestamp > canonicalTimestamp;
+    return JSON.stringify(mergeLearningValue(canonical, duplicate, '', 0, preferDuplicate));
   } catch {
     return canonicalRaw || duplicateRaw;
   }
@@ -498,9 +571,10 @@ function mergeLearningSnapshots(canonicalRaw, duplicateRaw, childId) {
   const canonical = parseObject(canonicalRaw);
   const duplicate = parseObject(duplicateRaw);
   const merged = { ...canonical };
+  const preferDuplicate = getLearningSnapshotTimestamp(duplicateRaw) > getLearningSnapshotTimestamp(canonicalRaw);
   Object.entries(duplicate).forEach(([key, value]) => {
     if (key.startsWith('__')) return;
-    merged[key] = mergeStoredLearningValue(merged[key], value, key);
+    merged[key] = mergeStoredLearningValue(merged[key], value, key, { preferDuplicate });
   });
   const accountId = canonical.__childSnapshotAccountId || duplicate.__childSnapshotAccountId || '';
   const deviceId = canonical.__childSnapshotDeviceId || duplicate.__childSnapshotDeviceId || '';

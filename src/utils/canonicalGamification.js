@@ -182,13 +182,18 @@ function pickLatestSessionXp(input = {}, sources = []) {
 }
 
 function getAchievementRows(input = {}, sources = []) {
-  if (Array.isArray(input.achievements)) return input.achievements.filter(Boolean);
-  for (const source of sources) {
-    if (Array.isArray(source?.achievements) && source.achievements.length) {
-      return source.achievements.filter(Boolean);
-    }
-  }
-  return [];
+  const seen = new Set();
+  return [input.achievements, ...sources.map(source => source?.achievements)]
+    .flatMap(rows => Array.isArray(rows) ? rows : [])
+    .filter(Boolean)
+    .filter(item => {
+      const key = typeof item === 'string'
+        ? item
+        : String(item.id || item.key || item.name || item.title || JSON.stringify(item));
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 function buildLevelTitle(level = 1) {
@@ -264,13 +269,12 @@ export function createCanonicalGamification(input = {}) {
   const achievementRows = getAchievementRows(input, sources);
   const achievementCount = Math.max(
     0,
-    int(
-      input.achievementCount
-        ?? input.gamificationProfile?.achievementCount
-        ?? input.rewardSummary?.achievementCount
-        ?? achievementRows.length,
-      0
-    )
+    ...[
+      input.achievementCount,
+      input.gamificationProfile?.achievementCount,
+      input.rewardSummary?.achievementCount,
+      achievementRows.length
+    ].map(value => int(value, 0))
   );
   const currentStreak = Math.max(
     0,
@@ -299,21 +303,21 @@ export function createCanonicalGamification(input = {}) {
   );
   const starCount = Math.max(
     0,
-    int(
-      input.starCount
-        ?? globalSource?.starCount
-        ?? globalSource?.stars
-        ?? globalSource?.coins
-        ?? input.profile?.starCount
-        ?? input.profile?.stars
-        ?? input.profile?.coins
-        ?? input.adaptiveProfile?.starCount
-        ?? input.adaptiveProfile?.stars
-        ?? input.adaptiveProfile?.coins
-        ?? input.gamificationProfile?.coins
-        ?? 0,
-      0
-    )
+    ...[
+      input.starCount,
+      globalSource?.starCount,
+      globalSource?.stars,
+      globalSource?.coins,
+      input.profile?.starCount,
+      input.profile?.stars,
+      input.profile?.coins,
+      input.adaptiveProfile?.starCount,
+      input.adaptiveProfile?.stars,
+      input.adaptiveProfile?.coins,
+      input.gamificationProfile?.starCount,
+      input.gamificationProfile?.stars,
+      input.gamificationProfile?.coins
+    ].map(value => int(value, 0))
   );
   const latestSessionXp = pickLatestSessionXp(input, sources);
 

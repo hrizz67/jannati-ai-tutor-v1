@@ -191,6 +191,11 @@ export function SettingsPanel({ onExportBetaReport, onImportLearningData, onReco
   </section>;
 }
 
+export function AdvancedRecoveryTools({ enabled = false, ...settingsProps }) {
+  if (!enabled) return null;
+  return <SettingsPanel {...settingsProps} />;
+}
+
 export function LearningPath({ profile, subject, topicMastery, totalQuestions, completed, resume, onStartTopic, onResume, onToggleFavourite }) {
   const [collapsedSections, setCollapsedSections] = useState({});
   const sections = buildLearningPathSections(subject.topics);
