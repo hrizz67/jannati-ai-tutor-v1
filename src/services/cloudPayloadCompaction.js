@@ -5,6 +5,16 @@ const RESUME_SLOTS_KEY = 'jannati_v152_resume_slots';
 const RESUME_TOMBSTONES_KEY = 'jannati_v152_resume_tombstones';
 const RESUME_PENDING_TOMBSTONES_KEY = 'jannati_v152_resume_pending_tombstones';
 const isResumeStorageKey = key => /^jannati_v(?:140|150|151|152)_resume(?:_slots)?$/.test(key);
+const CLOUD_TRANSIENT_FIELDS = new Set([
+  'audio',
+  'audioBlob',
+  'audioUrl',
+  'diagnostic',
+  'diagnostics',
+  'speechCandidate',
+  'speechTranscript',
+  'transcript'
+]);
 
 const SNAPSHOT_PREFIXES = [
   'jannati_child_snapshot:',
@@ -70,7 +80,7 @@ function cleanNested(value, depth = 0) {
   if (typeof value !== 'object') return value;
   const next = {};
   Object.entries(value).forEach(([key, raw]) => {
-    if (isResumeStorageKey(key) || key === RESUME_TOMBSTONES_KEY || key === RESUME_PENDING_TOMBSTONES_KEY) return;
+    if (CLOUD_TRANSIENT_FIELDS.has(key) || isResumeStorageKey(key) || key === RESUME_TOMBSTONES_KEY || key === RESUME_PENDING_TOMBSTONES_KEY) return;
     next[key] = cleanNested(raw, depth + 1);
   });
   return next;
@@ -115,7 +125,7 @@ export function compactCloudLearningPayload(payload = {}, resumeSources = [], id
   });
   resumeSources.forEach(source => collectAccountResumeState(source, resumes, tombstones, identity));
   const eligible = resumes.filter(item => !accountId || !item.value.accountId || item.value.accountId === accountId);
-  const slots = compactResumeSlotCollection(...eligible.map(item => ({ [item.key]: item.value })));
+  const slots = cleanNested(compactResumeSlotCollection(...eligible.map(item => ({ [item.key]: item.value }))));
   const eligibleTombstones = [...tombstones.entries()]
     .filter(([, value]) => !accountId || !value.accountId || value.accountId === accountId)
     .sort((left, right) => Date.parse(right[1].clearedAt) - Date.parse(left[1].clearedAt) || left[0].localeCompare(right[0]));
@@ -135,8 +145,12 @@ export function compactCloudLearningPayload(payload = {}, resumeSources = [], id
   return next;
 }
 
+export function measureCloudLearningPayloadBytes(payload = {}) {
+  return new TextEncoder().encode(JSON.stringify(payload)).byteLength;
+}
+
 export function getCloudLearningPayloadSizeError(payload) {
-  const payloadBytes = new TextEncoder().encode(JSON.stringify(payload)).byteLength;
+  const payloadBytes = measureCloudLearningPayloadBytes(payload);
   if (payloadBytes <= MAX_CLOUD_LEARNING_PAYLOAD_BYTES) return null;
   return Object.assign(new Error('cloud_learning_payload_exceeds_client_limit'), {
     code: 'CLIENT_PAYLOAD_TOO_LARGE',

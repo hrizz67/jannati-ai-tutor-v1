@@ -460,15 +460,16 @@ const outgoingArchive = JSON.parse(outgoingPayload.jannati_archived_child_profil
 assert.equal(outgoingArchive['child-archived'].archivedAt, archivedChildren['child-archived'].archivedAt, 'Masa arkib tidak boleh dibuang.');
 assert.deepEqual(outgoingArchive['child-archived'].profile, archivedChildren['child-archived'].profile, 'Profil arkib tidak boleh dibuang.');
 
-let secondPayload = null;
-await syncRevisionedCloudLearning({ rpc: async (_name, args) => {
-  secondPayload = args.payload;
+let secondSaveCalls = 0;
+const secondSyncResult = await syncRevisionedCloudLearning({ rpc: async () => {
+  secondSaveCalls += 1;
   return { data: { ok: true, revision: 12 }, error: null };
 } }, outgoingPayload, {
   accountId: 'account-a', localActiveChildId: 'child-a', dirtyChildIds: ['child-a'],
   cloudEnvelope: { data: outgoingPayload, revision: 11, protocolVersion: 3, serverUpdatedAt: '', error: null }
 });
-assert.deepEqual(secondPayload, outgoingPayload, 'Merge + compaction berulang mesti idempotent.');
+assert.equal(secondSaveCalls, 0, 'Payload kanonik yang sama tidak boleh menghasilkan Supabase write kedua.');
+assert.equal(secondSyncResult.localNoop, true, 'Merge + compaction berulang mesti menjadi client-side no-op.');
 
 let oversizedCalls = 0;
 const oversizedResult = await saveRevisionedCloudLearningData({ rpc: async () => {

@@ -659,8 +659,15 @@ assert.match(appSource, /localStorage\.setItem\('jannati\.adaptive\.studentProfi
 assert.match(appSource, /localStorage\.setItem\('jannati_v151_ai_memory',[\s\S]{0,150}\{ \.\.\.memory, xp, coins: reconciled\.coins \}/, 'Hydration repair must align AI-memory cumulative rewards with the richest global projection.');
 assert.match(appSource, /syncRevisionedCloudLearning\(supabase, localPayload[\s\S]{0,300}accountId: operationAccountId/, 'Every cloud merge must validate snapshot ownership against the authenticated account.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,180}accountId: user\.id/, 'Initial recovery must reject snapshots from another account before comparing learning evidence.');
-assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
-assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must persist its checked response before explicitly scheduling an account cloud save.');
+assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,550}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
+assert.match(appSource, /function scheduleCloudLearningSave\(\{ childId = readActiveChildId\(\), delay = CLOUD_WRITE_DEBOUNCE_MS \}/, 'The normal cloud-write debounce must use the audited 700 ms floor.');
+assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\)/, 'A checked answer must persist locally while the active quiz policy defers its network write.');
+assert.match(appSource, /beginCloudLearningActivity\(`quiz:\$\{resumeMode\}`\)/, 'Quiz mutations must enter the activity-level cloud write policy.');
+const quizBackSource = appSource.slice(appSource.indexOf('function handleQuizBack'), appSource.indexOf('function toggleBookmark'));
+assert.match(quizBackSource, /autoSave\(questionIndex, session\);\s*finishCloudLearningActivity\(\);/, 'Leaving a quiz must flush the coalesced final local state at the activity boundary.');
+const finishTopicSource = appSource.slice(appSource.indexOf('function finishTopic'), appSource.indexOf('function completeDailyChallenge'));
+assert.match(finishTopicSource, /setScreen\('finish'\);[\s\S]{0,100}finishCloudLearningActivity\(\)/, 'Quiz completion must flush the coalesced final canonical state once.');
+assert.doesNotMatch(appSource, /scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Per-question cloud writes must not shorten the audited 700 ms debounce.');
 const accountActivationSource = appSource.slice(
   appSource.indexOf('function activateAccountStorage'),
   appSource.indexOf('function getEmailRedirectUrl')

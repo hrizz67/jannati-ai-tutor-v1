@@ -1,5 +1,6 @@
 import {
   CLOUD_SYNC_PROTOCOL_VERSION,
+  hasSameCanonicalLearningState,
   loadCloudLearningDataResult,
   mergeCloudLearningPayload
 } from './learningSync.js';
@@ -106,6 +107,21 @@ export async function syncRevisionedCloudLearning(client, localPayload = {}, opt
       accountId: options.accountId,
       childId: options.localActiveChildId
     });
+    if (hasSameCanonicalLearningState(payload, envelope.data)) {
+      return {
+        ok: true,
+        unchanged: true,
+        conflict: false,
+        duplicate: false,
+        payload: envelope.data,
+        revision: envelope.revision,
+        serverUpdatedAt: envelope.serverUpdatedAt,
+        protocolVersion: CLOUD_SYNC_PROTOCOL_VERSION,
+        conflictCount,
+        acknowledgedResumeTombstones: pendingResumeTombstones,
+        localNoop: true
+      };
+    }
     const result = await saveRevisionedCloudLearningData(client, {
       payload,
       expectedRevision: envelope.revision,

@@ -129,6 +129,7 @@ import {
   persistBoundedChildSnapshot
 } from './services/localSnapshotStorage.js';
 import { usePremiumAccess } from './hooks/usePremiumAccess.js';
+import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy } from './services/cloudActivityWritePolicy.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
@@ -1433,6 +1434,7 @@ export default function App() {
   const cloudWritePendingRef = useRef(false);
   const cloudWriteQueueRef = useRef(Promise.resolve());
   const cloudSaveTimerRef = useRef(null);
+  const cloudActivityWritePolicyRef = useRef(createCloudActivityWritePolicy());
   const pendingOfflineCloudSaveRef = useRef(false);
   const dirtyChildIdsRef = useRef(new Set());
   const childMutationVersionRef = useRef(new Map());
@@ -1684,6 +1686,11 @@ export default function App() {
   function queueCloudLearningSave({ markMutation = true } = {}) {
     if (!supabase || !accountUser?.id) return Promise.resolve(false);
     if (markMutation) markLocalLearningMutation();
+    if (cloudActivityWritePolicyRef.current.isActive(readActiveChildId())) {
+      pendingOfflineCloudSaveRef.current = true;
+      setPendingCloudMutation(accountUser.id, true);
+      return Promise.resolve(false);
+    }
     if (cloudWriteGuardRef.current.blocked && cloudWriteGuardRef.current.accountId === accountUser.id) {
       setPendingCloudMutation(accountUser.id, true);
       setCloudSyncStatus('error');
@@ -1796,9 +1803,16 @@ export default function App() {
     return cloudWriteQueueRef.current;
   }
 
-  function scheduleCloudLearningSave({ childId = readActiveChildId(), delay = 700 } = {}) {
+  function scheduleCloudLearningSave({ childId = readActiveChildId(), delay = CLOUD_WRITE_DEBOUNCE_MS } = {}) {
     if (!supabase || !accountUser?.id) return false;
     markLocalLearningMutation(childId);
+    if (cloudActivityWritePolicyRef.current.deferMutation(childId)) {
+      if (cloudSaveTimerRef.current) {
+        window.clearTimeout(cloudSaveTimerRef.current);
+        cloudSaveTimerRef.current = null;
+      }
+      return true;
+    }
     if (cloudSaveTimerRef.current) window.clearTimeout(cloudSaveTimerRef.current);
     cloudSaveTimerRef.current = window.setTimeout(() => {
       cloudSaveTimerRef.current = null;
@@ -1809,7 +1823,24 @@ export default function App() {
 
   useEffect(() => () => {
     if (cloudSaveTimerRef.current) window.clearTimeout(cloudSaveTimerRef.current);
+    cloudActivityWritePolicyRef.current.reset();
   }, []);
+
+  function beginCloudLearningActivity(activityId = 'quiz') {
+    if (cloudSaveTimerRef.current) {
+      window.clearTimeout(cloudSaveTimerRef.current);
+      cloudSaveTimerRef.current = null;
+    }
+    cloudActivityWritePolicyRef.current.begin({ activityId, childId: readActiveChildId() });
+  }
+
+  function finishCloudLearningActivity() {
+    const result = cloudActivityWritePolicyRef.current.finish();
+    if (result.shouldFlush || (accountUser?.id && hasPendingCloudMutation(accountUser.id))) {
+      scheduleCloudLearningSave({ childId: result.childId || readActiveChildId() });
+    }
+    return result;
+  }
 
   useEffect(() => {
     if (!supabase || !accountUser?.id) return undefined;
@@ -2159,6 +2190,7 @@ export default function App() {
     setCloudSyncInfo({ revision: 0, serverUpdatedAt: '' });
     lastCloudSignatureRef.current = '';
     cloudEnvelopeRef.current = {};
+    cloudActivityWritePolicyRef.current.reset();
     cloudWriteGuardRef.current = { accountId: '', blocked: false, serverProfileCount: 0, reason: '' };
     setProfile({ ...defaultProfile });
     setAdaptiveProfile(loadAdaptiveStudentProfile());
@@ -3648,6 +3680,7 @@ export default function App() {
     startSession.quotaSubjectId = quotaSubjectId || null;
     startSession.resumeSubjectId = resumeSubjectId || quotaSubjectId || null;
 
+    beginCloudLearningActivity(`quiz:${resumeMode}`);
     setActiveSubject(subject);
     setActiveTopic({ ...topic, questions, resumeMode, qdeScore: diversity.score, qipScore: diversity.score, qdeDebug: diversity.debug, qipDebug: diversity.debug, qdeDuplicateIssues: diversity.duplicateIssues || [], qipDuplicateIssues: diversity.duplicateIssues || [] });
     setQuestionIndex(startIndex);
@@ -4167,6 +4200,7 @@ export default function App() {
 
   function handleQuizBack() {
     autoSave(questionIndex, session);
+    finishCloudLearningActivity();
     setScreen('dashboard');
   }
 
@@ -4453,7 +4487,7 @@ export default function App() {
       answer: String(answer || ''),
       feedback: nextFeedback
     });
-    scheduleCloudLearningSave({ delay: 500 });
+    scheduleCloudLearningSave();
   }
 
   function createCoachSnapshot(mode, question = currentQuestion()) {
@@ -4738,6 +4772,7 @@ export default function App() {
     }, learningIdentity);
     setScreen('finish');
     refreshAdaptiveProfile();
+    finishCloudLearningActivity();
   }
 
   function completeDailyChallenge() {
