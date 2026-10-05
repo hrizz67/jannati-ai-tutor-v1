@@ -43,6 +43,7 @@ describe('Quiz rendered and controller contracts', () => {
     expect(startTopic).toContain('setFeedback(restoredQuestionState?.feedback || null);');
     expect(checkAnswer).toContain('const attemptNumber = (liveSession.answers || []).filter');
     expect(checkAnswer).toMatch(/recordQuestionResult\([\s\S]*?attemptNumber,/);
+    expect(checkAnswer).toMatch(/recordQuestionResult\([\s\S]*?awardXp:\s*false/);
     expect(checkAnswer).toContain('appendCreditedQuizAttempt(liveSession, attempt, {');
   });
 

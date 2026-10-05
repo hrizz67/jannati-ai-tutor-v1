@@ -39,7 +39,13 @@ import { speak, stop as stopVoice } from './ai/voice/voiceEngine.js';
 import { buildMasteryMap, summarizeMastery } from './ai/adaptive/masteryEngine';
 import { buildAdaptivePracticeSession, getAdaptivePracticeSummary } from './ai/adaptive/adaptivePracticeEngine';
 import { loadGamificationProfile as loadGamificationState, recordGamificationEvent, resetGamificationProfile } from './ai/gamification/gamificationEngine';
-import { getAdaptiveProfile, recordQuestionResult, recordSessionEnd, recordSessionStart } from './ai/adaptive/adaptiveSessionEngine';
+import {
+  getAdaptiveProfile,
+  recordQuestionResult,
+  recordSessionEnd,
+  recordSessionStart,
+  synchronizeAdaptiveRewardProjection
+} from './ai/adaptive/adaptiveSessionEngine';
 import { classifyMistake } from './ai/mistakes/index.js';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { isIOSWebKitBrowser, resolveMobileMediaSttActivation } from './ai/speech/speechCapability.js';
@@ -130,6 +136,11 @@ import {
 } from './services/localSnapshotStorage.js';
 import { usePremiumAccess } from './hooks/usePremiumAccess.js';
 import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy } from './services/cloudActivityWritePolicy.js';
+import {
+  acknowledgeCloudMutations,
+  markCloudMutation,
+  resolvePendingCloudOutbox
+} from './services/cloudMutationOutbox.js';
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
@@ -1661,16 +1672,15 @@ export default function App() {
   }
 
   function markLocalLearningMutation(childId = readActiveChildId()) {
+    const mutation = markCloudMutation(dirtyChildIdsRef.current, childMutationVersionRef.current, childId);
+    if (!mutation.marked) return false;
     cloudMutationAtRef.current = Date.now();
-    if (childId) {
-      dirtyChildIdsRef.current.add(childId);
-      childMutationVersionRef.current.set(childId, (childMutationVersionRef.current.get(childId) || 0) + 1);
-    }
     const accountId = accountUser?.id || String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
     if (accountId) {
       writePendingDirtyChildIds(accountId, dirtyChildIdsRef.current);
       setPendingCloudMutation(accountId, true);
     }
+    return true;
   }
 
   function rememberCloudEnvelope(accountId, result) {
@@ -1713,12 +1723,40 @@ export default function App() {
         const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
         if (activeAccountId !== operationAccountId || cloudHydratedAccountId !== operationAccountId) return false;
         const activeChildId = readActiveChildId();
-        const dirtyChildIds = [...dirtyChildIdsRef.current];
-        const reconcileChildIdentity = hasPendingProfileReconciliation(operationAccountId);
+        let dirtyChildIds = [...dirtyChildIdsRef.current];
+        let reconcileChildIdentity = hasPendingProfileReconciliation(operationAccountId);
         if (!dirtyChildIds.length && !reconcileChildIdentity) {
           const pendingWithoutOutbox = hasPendingCloudMutation(operationAccountId);
-          if (pendingWithoutOutbox) setCloudSyncStatus('error');
-          return !pendingWithoutOutbox;
+          if (!pendingWithoutOutbox) return true;
+          const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
+            ? cloudEnvelopeRef.current
+            : null;
+          const recoveredOutbox = resolvePendingCloudOutbox({
+            pending: true,
+            dirtyChildIds: [],
+            localPayload: buildCloudLearningPayload({ captureActiveChild: false }),
+            cloudPayload: knownCloudEnvelope?.data || {},
+            localActiveChildId: activeChildId,
+            accountId: operationAccountId
+          });
+          if (recoveredOutbox.recovered) {
+            recoveredOutbox.dirtyChildIds.forEach(childId => {
+              markCloudMutation(dirtyChildIdsRef.current, childMutationVersionRef.current, childId);
+            });
+            dirtyChildIds = [...dirtyChildIdsRef.current];
+            writePendingDirtyChildIds(operationAccountId, dirtyChildIds);
+            reconcileChildIdentity = recoveredOutbox.reconcileChildIdentity;
+            if (reconcileChildIdentity) setPendingProfileReconciliation(operationAccountId, true);
+          } else if (recoveredOutbox.clearPending) {
+            pendingOfflineCloudSaveRef.current = false;
+            setPendingCloudMutation(operationAccountId, false);
+            writePendingDirtyChildIds(operationAccountId, []);
+            setCloudSyncStatus('saved');
+            return true;
+          } else {
+            setCloudSyncStatus('error');
+            return false;
+          }
         }
         const submittedMutationVersions = new Map(dirtyChildIds.map(childId => [
           childId,
@@ -1772,12 +1810,11 @@ export default function App() {
             protocolVersion: syncResult.protocolVersion
           });
           setPendingProfileReconciliation(accountUser.id, false);
-          dirtyChildIds.forEach(childId => {
-            if ((childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)) return;
-            dirtyChildIdsRef.current.delete(childId);
-            childMutationVersionRef.current.delete(childId);
-          });
-          const remainingDirtyChildIds = [...dirtyChildIdsRef.current];
+          const remainingDirtyChildIds = acknowledgeCloudMutations(
+            dirtyChildIdsRef.current,
+            childMutationVersionRef.current,
+            submittedMutationVersions
+          );
           writePendingDirtyChildIds(accountUser.id, remainingDirtyChildIds);
           const stillPending = remainingDirtyChildIds.length > 0 || pendingResumeDelete;
           pendingOfflineCloudSaveRef.current = stillPending;
@@ -1805,7 +1842,10 @@ export default function App() {
 
   function scheduleCloudLearningSave({ childId = readActiveChildId(), delay = CLOUD_WRITE_DEBOUNCE_MS } = {}) {
     if (!supabase || !accountUser?.id) return false;
-    markLocalLearningMutation(childId);
+    if (!markLocalLearningMutation(childId)) {
+      if (hasPendingCloudMutation(accountUser.id)) void queueCloudLearningSave({ markMutation: false });
+      return false;
+    }
     if (cloudActivityWritePolicyRef.current.deferMutation(childId)) {
       if (cloudSaveTimerRef.current) {
         window.clearTimeout(cloudSaveTimerRef.current);
@@ -4434,6 +4474,7 @@ export default function App() {
       usedHint: supportUsage.usedHint,
       usedExplain: supportUsage.usedExplain,
       misconceptionType,
+      awardXp: false,
       ...(question.learningIntelligence?.adaptiveSignals || {})
     });
     recordGamification({
@@ -4751,12 +4792,14 @@ export default function App() {
     const updatedProfile = updateStoredRecommendation(rewarded.profile, activeSubject);
     saveQuizMemory({ profile: updatedProfile, subject: activeSubject, topic: activeTopic, percent, session: creditedSession, studySeconds });
     setProfile({ ...updatedProfile, badges: autoBadges(updatedProfile) });
+    const rewardedAdaptiveProfile = synchronizeAdaptiveRewardProjection(adaptiveSessionResult, updatedProfile);
+    setAdaptiveProfile(rewardedAdaptiveProfile);
     recordGamification({
       type: 'session-complete',
       sessionId: finishedSessionId,
       date: new Date().toISOString(),
       completedAt: new Date().toISOString()
-    }, { ...adaptiveSessionResult, ...updatedProfile }, {
+    }, { ...rewardedAdaptiveProfile, ...updatedProfile }, {
       sessionId: finishedSessionId,
       eventType: 'session-complete',
       sessionCompleted: true
@@ -4771,7 +4814,6 @@ export default function App() {
       topicId: activeTopic.id
     }, learningIdentity);
     setScreen('finish');
-    refreshAdaptiveProfile();
     finishCloudLearningActivity();
   }
 
