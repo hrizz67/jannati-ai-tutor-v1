@@ -245,17 +245,23 @@ function createEventTarget(initial = {}) {
     ...initial,
     intervalMs: 0,
     intervalCallback: null,
+    intervalSetCalls: 0,
+    intervalClearCalls: 0,
     addEventListener(name, callback) { listeners.set(name, callback); },
     removeEventListener(name, callback) {
       if (listeners.get(name) === callback) listeners.delete(name);
     },
     emit(name, payload) { listeners.get(name)?.(payload); },
     setInterval(callback, milliseconds) {
+      this.intervalSetCalls += 1;
       this.intervalCallback = callback;
       this.intervalMs = milliseconds;
       return 1;
     },
-    clearInterval() { this.intervalCallback = null; }
+    clearInterval() {
+      this.intervalClearCalls += 1;
+      this.intervalCallback = null;
+    }
   };
 }
 
@@ -268,6 +274,8 @@ let knownRevision = 10;
 let fullReads = 0;
 let revisionReads = 0;
 let appliedCloudResults = 0;
+let channelCalls = 0;
+let removeChannelCalls = 0;
 const lifecycleClient = {
   async rpc(name) {
     if (name === 'get_learning_revision_v1') {
@@ -282,6 +290,7 @@ const lifecycleClient = {
     throw new Error(`unexpected_rpc:${name}`);
   },
   channel() {
+    channelCalls += 1;
     return {
       on(_event, filter, callback) {
         realtimeFilter = filter;
@@ -291,7 +300,7 @@ const lifecycleClient = {
       subscribe() { return this; }
     };
   },
-  removeChannel() {}
+  removeChannel() { removeChannelCalls += 1; }
 };
 const controller = startCloudLearningRevisionSync({
   client: lifecycleClient,
@@ -313,6 +322,8 @@ const controller = startCloudLearningRevisionSync({
 const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 
 assert.ok(windowTarget.intervalMs >= 60000, 'Fallback polling must be revision-only and no more frequent than once per minute.');
+assert.equal(windowTarget.intervalSetCalls, 1, 'One account watcher must create exactly one polling loop.');
+assert.equal(channelCalls, 1, 'One account watcher must create exactly one Realtime subscription.');
 assert.deepEqual(realtimeFilter?.select, ['id', 'learning_revision', 'updated_at'], 'Realtime must receive only compact revision-signalling columns.');
 assert.equal(realtimeFilter.select.includes('learning_data'), false, 'Realtime must never select the full learning_data payload.');
 assert.equal(revisionReads, 0, 'Starting the watcher after hydration must not immediately repeat a network read.');
@@ -345,6 +356,8 @@ await settle();
 assert.equal(fullReads, 1, 'Concurrent newer Realtime signals must cause at most one full-state fetch.');
 assert.equal(appliedCloudResults, 1);
 controller.dispose();
+assert.equal(windowTarget.intervalClearCalls, 1, 'Watcher disposal must clear its only polling loop.');
+assert.equal(removeChannelCalls, 1, 'Watcher disposal must remove its only Realtime subscription.');
 
 assert.doesNotMatch(appSource, /setInterval\(pullLatestCloudData,\s*5000\)/, 'The five-second full-payload poll must be impossible.');
 assert.doesNotMatch(appSource, /setTimeout\(pullLatestCloudData,\s*1500\)/, 'Hydration must not be followed by an automatic full-payload reread.');

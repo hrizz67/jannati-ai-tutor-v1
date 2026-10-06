@@ -43,7 +43,7 @@ function stableJson(value) {
   return JSON.stringify(value);
 }
 
-function hasSameCanonicalLearningState(left = {}, right = {}) {
+export function hasSameCanonicalLearningState(left = {}, right = {}) {
   const withoutTransportMetadata = value => Object.fromEntries(
     Object.entries(isObject(value) ? value : {}).filter(([key]) => key !== CLOUD_SYNC_META_KEY)
   );

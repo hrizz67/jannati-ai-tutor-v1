@@ -639,6 +639,7 @@ assert.match(blockedLegacySync.error.message, /migration_required/);
 assert.equal(legacyWriteCalls, 0, 'A v3 client must never fall back to the blind legacy write RPC.');
 
 const appSource = fs.readFileSync('src/App.jsx', 'utf8');
+const mutationOutboxSource = fs.readFileSync('src/services/cloudMutationOutbox.js', 'utf8');
 const egressSource = fs.readFileSync('src/services/learningSyncEgress.js', 'utf8');
 const recoverySource = fs.readFileSync('src/services/cloudSnapshotRecovery.js', 'utf8');
 const dashboardSource = fs.readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
@@ -647,7 +648,8 @@ const integritySqlSource = fs.readFileSync('supabase/migrations/20260823090000_l
 assert.match(appSource, /cloudHydratedAccountId !== accountUser\.id/, 'Autosave must wait for account cloud hydration.');
 assert.match(appSource, /captureChildSnapshot\(activeChildId, \{ force: true \}\)/, 'Cloud saves must refresh the active child snapshot.');
 assert.match(appSource, /hasPendingCloudMutation\(accountUser\.id\)/, 'Unsent learning changes must survive reload and reconnect.');
-assert.match(appSource, /submittedMutationVersions[\s\S]{0,2500}childMutationVersionRef\.current\.get\(childId\)[\s\S]{0,350}dirtyChildIdsRef\.current\.delete\(childId\)/, 'A newer mutation for the same child must remain pending when an older in-flight save completes.');
+assert.match(appSource, /acknowledgeCloudMutations\([\s\S]{0,250}submittedMutationVersions/, 'The App must acknowledge the exact mutation versions submitted with the cloud write.');
+assert.match(mutationOutboxSource, /mutationVersions\.get\(childId\)[\s\S]{0,120}!== submittedVersion[\s\S]{0,150}dirtyChildIds\.delete\(childId\)/, 'A newer mutation for the same child must remain pending when an older in-flight save completes.');
 assert.match(appSource, /cloudResult\.error[\s\S]{0,250}pendingOfflineCloudSaveRef\.current = hasPendingLocalData[\s\S]{0,150}if \(!hasPendingLocalData\) skipNextCloudSaveRef\.current = true/, 'A failed initial cloud pull must not turn unchanged device data into an upload.');
 assert.match(appSource, /shouldBootstrapCloud[\s\S]{0,1800}dirtyChildIdsRef\.current\.add\(childState\.activeId\)[\s\S]{0,500}skipNextCloudSaveRef\.current = true/, 'Account hydration must suppress generic autosave and explicitly bootstrap only a genuinely empty v3 cloud.');
 assert.match(appSource, /recoverOrphanedCloudOutbox\(localLearningData, cloudLearningData[\s\S]{0,800}setPendingCloudMutation\(user\.id, false\)/, 'A stale pending marker must either recover meaningful local learning or stop blocking a richer cloud pull.');
@@ -659,8 +661,15 @@ assert.match(appSource, /localStorage\.setItem\('jannati\.adaptive\.studentProfi
 assert.match(appSource, /localStorage\.setItem\('jannati_v151_ai_memory',[\s\S]{0,150}\{ \.\.\.memory, xp, coins: reconciled\.coins \}/, 'Hydration repair must align AI-memory cumulative rewards with the richest global projection.');
 assert.match(appSource, /syncRevisionedCloudLearning\(supabase, localPayload[\s\S]{0,300}accountId: operationAccountId/, 'Every cloud merge must validate snapshot ownership against the authenticated account.');
 assert.match(appSource, /recoverMonotonicCloudGap\(localLearningData, cloudLearningData[\s\S]{0,180}accountId: user\.id/, 'Initial recovery must reject snapshots from another account before comparing learning evidence.');
-assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,300}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
-assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Every checked answer must persist its checked response before explicitly scheduling an account cloud save.');
+assert.match(appSource, /function scheduleCloudLearningSave[\s\S]{0,300}markLocalLearningMutation\(childId\)[\s\S]{0,550}cloudSaveTimerRef\.current = window\.setTimeout/, 'Learning changes must be marked pending before the persistent debounce timer starts.');
+assert.match(appSource, /function scheduleCloudLearningSave\(\{ childId = readActiveChildId\(\), delay = CLOUD_WRITE_DEBOUNCE_MS \}/, 'The normal cloud-write debounce must use the audited 700 ms floor.');
+assert.match(appSource, /autoSave\(questionIndex, nextSession, \{[\s\S]{0,350}feedback: nextFeedback[\s\S]{0,120}\);\s*scheduleCloudLearningSave\(\)/, 'A checked answer must persist locally while the active quiz policy defers its network write.');
+assert.match(appSource, /beginCloudLearningActivity\(`quiz:\$\{resumeMode\}`\)/, 'Quiz mutations must enter the activity-level cloud write policy.');
+const quizBackSource = appSource.slice(appSource.indexOf('function handleQuizBack'), appSource.indexOf('function toggleBookmark'));
+assert.match(quizBackSource, /autoSave\(questionIndex, session\);\s*finishCloudLearningActivity\(\);/, 'Leaving a quiz must flush the coalesced final local state at the activity boundary.');
+const finishTopicSource = appSource.slice(appSource.indexOf('function finishTopic'), appSource.indexOf('function completeDailyChallenge'));
+assert.match(finishTopicSource, /setScreen\('finish'\);[\s\S]{0,100}finishCloudLearningActivity\(\)/, 'Quiz completion must flush the coalesced final canonical state once.');
+assert.doesNotMatch(appSource, /scheduleCloudLearningSave\(\{ delay: 500 \}\)/, 'Per-question cloud writes must not shorten the audited 700 ms debounce.');
 const accountActivationSource = appSource.slice(
   appSource.indexOf('function activateAccountStorage'),
   appSource.indexOf('function getEmailRedirectUrl')

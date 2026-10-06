@@ -236,6 +236,23 @@ export function saveAdaptiveProfile(profile) {
 }
 
 /**
+ * Keeps the adaptive projection aligned after the canonical activity reward is
+ * committed. Question recording owns learning evidence; the canonical activity
+ * completion owns XP/coins for App quiz sessions.
+ */
+export function synchronizeAdaptiveRewardProjection(profile = {}, canonicalProfile = {}) {
+  const nextProfile = ensureSessionState(clone(profile));
+  nextProfile.xp = Math.max(0, Number(nextProfile.xp) || 0, Number(canonicalProfile.xp) || 0);
+  nextProfile.coins = Math.max(0, Number(nextProfile.coins) || 0, Number(canonicalProfile.coins) || 0);
+  nextProfile.processedRewardKeys = [...new Set([
+    ...(Array.isArray(nextProfile.processedRewardKeys) ? nextProfile.processedRewardKeys : []),
+    ...(Array.isArray(canonicalProfile.processedRewardKeys) ? canonicalProfile.processedRewardKeys : [])
+  ].map(String).filter(Boolean))].slice(-500);
+  nextProfile.level = calculateLevel(nextProfile.xp);
+  return saveAdaptiveProfile(nextProfile);
+}
+
+/**
  * Records the start of a learning session.
  */
 export function recordSessionStart(profile, sessionInfo = {}) {
@@ -287,7 +304,8 @@ export function recordQuestionResult(profile, result = {}) {
     usedExplain = false,
     misconceptionType = '',
     questionType = 'textEntry',
-    skillId = ''
+    skillId = '',
+    awardXp = true
   } = result || {};
   const safeQuestionType = normalizeLearningSignal(questionType, 'textEntry');
   const safeSkillId = normalizeLearningSignal(skillId, topicId || '');
@@ -331,7 +349,7 @@ export function recordQuestionResult(profile, result = {}) {
 
   const levelBefore = calculateLevel(nextProfile.xp || 0);
   const safeCorrect = Boolean(correct);
-  const xpEarned = calculateXP(safeCorrect ? 1 : 0, difficulty);
+  const xpEarned = awardXp === false ? 0 : calculateXP(safeCorrect ? 1 : 0, difficulty);
   const topicBefore = nextProfile.topics?.[subjectId]?.[topicId] || {};
   const masteryBefore = Number.isFinite(topicBefore.mastery) ? topicBefore.mastery : 0;
   const confidenceBefore = Number.isFinite(topicBefore.confidence) ? topicBefore.confidence : 0;
@@ -447,5 +465,6 @@ export default {
   recordQuestionResult,
   recordSessionEnd,
   recordSessionStart,
-  saveAdaptiveProfile
+  saveAdaptiveProfile,
+  synchronizeAdaptiveRewardProjection
 };
