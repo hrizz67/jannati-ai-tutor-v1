@@ -303,6 +303,35 @@ describe('P1.13.2 production-equivalent reward regression', () => {
     expect(second.reward.baseline).toMatchObject({ xp: 1155, coins: 87 });
     expect(second.profile).toMatchObject({ xp: 1190, coins: 104 });
   });
+
+  it('keeps canonical rewards unchanged when a three-question partial quiz is abandoned', () => {
+    const baseline = seedCanonicalState();
+    let adaptive = recordSessionStart(getAdaptiveProfile(IDENTITY), {
+      sessionId: 'session-partial',
+      subjectId: 'bm',
+      topicId: 'reading',
+      plannedQuestionCount: QUESTION_IDS.length
+    });
+
+    QUESTION_IDS.slice(0, 3).forEach((questionId, index) => {
+      const result = recordQuestionResult(adaptive, {
+        sessionId: 'session-partial',
+        questionId,
+        subjectId: 'bm',
+        topicId: 'reading',
+        attemptNumber: 1,
+        correct: index < 2,
+        awardXp: false
+      });
+      expect(result.summary.xpEarned).toBe(0);
+      adaptive = result.profile;
+    });
+
+    expect(baseline).toMatchObject({ xp: 1120, coins: 70 });
+    expect(JSON.parse(localStorage.getItem(PROFILE_KEY))).toMatchObject({ xp: 1120, coins: 70 });
+    expect(adaptive).toMatchObject({ xp: 1120, coins: 70 });
+    expect(loadGamificationProfile(IDENTITY)).toMatchObject({ xp: 1120, coins: 70 });
+  });
 });
 
 describe('P1.13.2 production sync-state regression', () => {

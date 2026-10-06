@@ -135,7 +135,7 @@ import {
   persistBoundedChildSnapshot
 } from './services/localSnapshotStorage.js';
 import { usePremiumAccess } from './hooks/usePremiumAccess.js';
-import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy } from './services/cloudActivityWritePolicy.js';
+import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy, resolveCloudSyncStatus } from './services/cloudActivityWritePolicy.js';
 import {
   acknowledgeCloudMutations,
   markCloudMutation,
@@ -1699,15 +1699,12 @@ export default function App() {
     if (cloudActivityWritePolicyRef.current.isActive(readActiveChildId())) {
       pendingOfflineCloudSaveRef.current = true;
       setPendingCloudMutation(accountUser.id, true);
+      setCloudSyncStatus(resolveCloudSyncStatus(false, 'idle'));
       return Promise.resolve(false);
     }
     if (cloudWriteGuardRef.current.blocked && cloudWriteGuardRef.current.accountId === accountUser.id) {
       setPendingCloudMutation(accountUser.id, true);
       setCloudSyncStatus('error');
-      return Promise.resolve(false);
-    }
-    if (cloudHydratedAccountId !== accountUser.id) {
-      setPendingCloudMutation(accountUser.id, true);
       return Promise.resolve(false);
     }
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -1716,126 +1713,145 @@ export default function App() {
       setCloudSyncStatus('offline');
       return Promise.resolve(false);
     }
+    if (cloudHydratedAccountId !== accountUser.id) {
+      pendingOfflineCloudSaveRef.current = true;
+      setPendingCloudMutation(accountUser.id, true);
+      setCloudSyncStatus(resolveCloudSyncStatus(false, 'idle'));
+      return Promise.resolve(false);
+    }
     cloudWriteQueueRef.current = cloudWriteQueueRef.current
       .catch(() => false)
       .then(async () => {
         const operationAccountId = accountUser.id;
-        const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
-        if (activeAccountId !== operationAccountId || cloudHydratedAccountId !== operationAccountId) return false;
-        const activeChildId = readActiveChildId();
-        let dirtyChildIds = [...dirtyChildIdsRef.current];
-        let reconcileChildIdentity = hasPendingProfileReconciliation(operationAccountId);
-        if (!dirtyChildIds.length && !reconcileChildIdentity) {
-          const pendingWithoutOutbox = hasPendingCloudMutation(operationAccountId);
-          if (!pendingWithoutOutbox) return true;
-          const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
-            ? cloudEnvelopeRef.current
-            : null;
-          const recoveredOutbox = resolvePendingCloudOutbox({
-            pending: true,
-            dirtyChildIds: [],
-            localPayload: buildCloudLearningPayload({ captureActiveChild: false }),
-            cloudPayload: knownCloudEnvelope?.data || {},
-            localActiveChildId: activeChildId,
-            accountId: operationAccountId
-          });
-          if (recoveredOutbox.recovered) {
-            recoveredOutbox.dirtyChildIds.forEach(childId => {
-              markCloudMutation(dirtyChildIdsRef.current, childMutationVersionRef.current, childId);
-            });
-            dirtyChildIds = [...dirtyChildIdsRef.current];
-            writePendingDirtyChildIds(operationAccountId, dirtyChildIds);
-            reconcileChildIdentity = recoveredOutbox.reconcileChildIdentity;
-            if (reconcileChildIdentity) setPendingProfileReconciliation(operationAccountId, true);
-          } else if (recoveredOutbox.clearPending) {
-            pendingOfflineCloudSaveRef.current = false;
-            setPendingCloudMutation(operationAccountId, false);
-            writePendingDirtyChildIds(operationAccountId, []);
-            setCloudSyncStatus('saved');
-            return true;
-          } else {
-            setCloudSyncStatus('error');
+        let writeStarted = false;
+        try {
+          const activeAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+          if (activeAccountId !== operationAccountId) return false;
+          if (cloudHydratedAccountId !== operationAccountId) {
+            pendingOfflineCloudSaveRef.current = true;
+            setPendingCloudMutation(operationAccountId, true);
+            setCloudSyncStatus(resolveCloudSyncStatus(false, 'idle'));
             return false;
           }
-        }
-        const submittedMutationVersions = new Map(dirtyChildIds.map(childId => [
-          childId,
-          childMutationVersionRef.current.get(childId) || 0
-        ]));
-        if (activeChildId && dirtyChildIds.includes(activeChildId)) captureChildSnapshot(activeChildId, { force: true });
-        cloudWritePendingRef.current = true;
-        setCloudSyncStatus('syncing');
-        const localPayload = buildCloudLearningPayload({ captureActiveChild: false });
-        const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
-          ? cloudEnvelopeRef.current
-          : undefined;
-        const { syncRevisionedCloudLearning } = await import('./services/learningSyncCoordinator.js');
-        const syncResult = await syncRevisionedCloudLearning(supabase, localPayload, {
-          cloudEnvelope: knownCloudEnvelope,
-          dirtyChildIds,
-          localActiveChildId: activeChildId,
-          deviceId: getSyncDeviceId(),
-          accountId: operationAccountId,
-          reconcileChildIdentity
-        });
-        const currentAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
-        if (currentAccountId !== operationAccountId) {
-          cloudWritePendingRef.current = false;
-          return false;
-        }
-        const ok = Boolean(syncResult.ok);
-        const payload = syncResult.payload || {};
-        cloudWritePendingRef.current = false;
-        if (ok) {
-          const pendingResumeDelete = acknowledgeResumeTombstones(
-            syncResult.acknowledgedResumeTombstones,
-            undefined,
-            operationAccountId
-          );
-          rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload });
-          const preserveLocalChildIds = dirtyChildIds.filter(childId => (
-            (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
-          ));
-          const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
-          if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
-            skipNextCloudSaveRef.current = true;
-            reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
+          const activeChildId = readActiveChildId();
+          let dirtyChildIds = [...dirtyChildIdsRef.current];
+          let reconcileChildIdentity = hasPendingProfileReconciliation(operationAccountId);
+          if (!dirtyChildIds.length && !reconcileChildIdentity) {
+            const pendingWithoutOutbox = hasPendingCloudMutation(operationAccountId);
+            if (!pendingWithoutOutbox) {
+              setCloudSyncStatus(resolveCloudSyncStatus(true));
+              return true;
+            }
+            const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
+              ? cloudEnvelopeRef.current
+              : null;
+            const recoveredOutbox = resolvePendingCloudOutbox({
+              pending: true,
+              dirtyChildIds: [],
+              localPayload: buildCloudLearningPayload({ captureActiveChild: false }),
+              cloudPayload: knownCloudEnvelope?.data || {},
+              localActiveChildId: activeChildId,
+              accountId: operationAccountId
+            });
+            if (recoveredOutbox.recovered) {
+              recoveredOutbox.dirtyChildIds.forEach(childId => {
+                markCloudMutation(dirtyChildIdsRef.current, childMutationVersionRef.current, childId);
+              });
+              dirtyChildIds = [...dirtyChildIdsRef.current];
+              writePendingDirtyChildIds(operationAccountId, dirtyChildIds);
+              reconcileChildIdentity = recoveredOutbox.reconcileChildIdentity;
+              if (reconcileChildIdentity) setPendingProfileReconciliation(operationAccountId, true);
+            } else if (recoveredOutbox.clearPending) {
+              pendingOfflineCloudSaveRef.current = false;
+              setPendingCloudMutation(operationAccountId, false);
+              writePendingDirtyChildIds(operationAccountId, []);
+              setCloudSyncStatus(resolveCloudSyncStatus(true));
+              return true;
+            } else {
+              setCloudSyncStatus(resolveCloudSyncStatus());
+              return false;
+            }
           }
-          setChildProfiles(readChildProfiles());
-          setArchivedChildren(readArchivedChildren());
-          setActiveChildId(readActiveChildId());
-          lastCloudSignatureRef.current = getCloudResultSignature({
-            data: payload,
-            revision: syncResult.revision,
-            protocolVersion: syncResult.protocolVersion
+          const submittedMutationVersions = new Map(dirtyChildIds.map(childId => [
+            childId,
+            childMutationVersionRef.current.get(childId) || 0
+          ]));
+          if (activeChildId && dirtyChildIds.includes(activeChildId)) captureChildSnapshot(activeChildId, { force: true });
+          cloudWritePendingRef.current = true;
+          writeStarted = true;
+          setCloudSyncStatus('syncing');
+          const localPayload = buildCloudLearningPayload({ captureActiveChild: false });
+          const knownCloudEnvelope = cloudEnvelopeRef.current.accountId === operationAccountId
+            ? cloudEnvelopeRef.current
+            : undefined;
+          const { syncRevisionedCloudLearning } = await import('./services/learningSyncCoordinator.js');
+          const syncResult = await syncRevisionedCloudLearning(supabase, localPayload, {
+            cloudEnvelope: knownCloudEnvelope,
+            dirtyChildIds,
+            localActiveChildId: activeChildId,
+            deviceId: getSyncDeviceId(),
+            accountId: operationAccountId,
+            reconcileChildIdentity
           });
-          setPendingProfileReconciliation(accountUser.id, false);
-          const remainingDirtyChildIds = acknowledgeCloudMutations(
-            dirtyChildIdsRef.current,
-            childMutationVersionRef.current,
-            submittedMutationVersions
-          );
-          writePendingDirtyChildIds(accountUser.id, remainingDirtyChildIds);
-          const stillPending = remainingDirtyChildIds.length > 0 || pendingResumeDelete;
-          pendingOfflineCloudSaveRef.current = stillPending;
-          setPendingCloudMutation(accountUser.id, stillPending);
-          captureAccountSnapshot(accountUser.id);
-          if (stillPending) void queueCloudLearningSave({ markMutation: false });
-        } else {
+          const currentAccountId = String(localStorage.getItem(ACCOUNT_SCOPE_KEY) || '').trim();
+          if (currentAccountId !== operationAccountId) return false;
+          const ok = Boolean(syncResult.ok);
+          const payload = syncResult.payload || {};
+          if (ok) {
+            const pendingResumeDelete = acknowledgeResumeTombstones(
+              syncResult.acknowledgedResumeTombstones,
+              undefined,
+              operationAccountId
+            );
+            rememberCloudEnvelope(operationAccountId, { ...syncResult, data: payload });
+            const preserveLocalChildIds = dirtyChildIds.filter(childId => (
+              (childMutationVersionRef.current.get(childId) || 0) !== submittedMutationVersions.get(childId)
+            ));
+            const resolvedActiveChildId = applyMergedCloudMetadata(payload, activeChildId, preserveLocalChildIds);
+            if (resolvedActiveChildId && (resolvedActiveChildId !== activeChildId || !preserveLocalChildIds.includes(activeChildId))) {
+              skipNextCloudSaveRef.current = true;
+              reloadCloudLearningState(resolvedActiveChildId, resolvedActiveChildId === activeChildId);
+            }
+            setChildProfiles(readChildProfiles());
+            setArchivedChildren(readArchivedChildren());
+            setActiveChildId(readActiveChildId());
+            lastCloudSignatureRef.current = getCloudResultSignature({
+              data: payload,
+              revision: syncResult.revision,
+              protocolVersion: syncResult.protocolVersion
+            });
+            setPendingProfileReconciliation(operationAccountId, false);
+            const remainingDirtyChildIds = acknowledgeCloudMutations(
+              dirtyChildIdsRef.current,
+              childMutationVersionRef.current,
+              submittedMutationVersions
+            );
+            writePendingDirtyChildIds(operationAccountId, remainingDirtyChildIds);
+            const stillPending = remainingDirtyChildIds.length > 0 || pendingResumeDelete;
+            pendingOfflineCloudSaveRef.current = stillPending;
+            setPendingCloudMutation(operationAccountId, stillPending);
+            captureAccountSnapshot(operationAccountId);
+            if (stillPending) void queueCloudLearningSave({ markMutation: false });
+          } else {
+            pendingOfflineCloudSaveRef.current = true;
+            setPendingCloudMutation(accountUser.id, true);
+          }
+          const syncErrorCode = String(syncResult.error?.message || '');
+          setCloudSyncStatus(resolveCloudSyncStatus(ok,
+            syncErrorCode === 'cloud_sync_migration_required'
+              ? 'upgrade-required'
+              : syncResult.conflict
+                ? 'conflict'
+                : navigator.onLine === false ? 'offline' : 'error'));
+          return ok;
+        } catch {
           pendingOfflineCloudSaveRef.current = true;
-          setPendingCloudMutation(accountUser.id, true);
+          setPendingCloudMutation(operationAccountId, true);
+          setCloudSyncStatus(resolveCloudSyncStatus(false, navigator.onLine === false ? 'offline' : 'error'));
+          return false;
+        } finally {
+          if (writeStarted) cloudWritePendingRef.current = false;
         }
-        const syncErrorCode = String(syncResult.error?.message || '');
-        setCloudSyncStatus(ok
-          ? 'saved'
-          : syncErrorCode === 'cloud_sync_migration_required'
-            ? 'upgrade-required'
-            : syncResult.conflict
-              ? 'conflict'
-              : navigator.onLine === false
-                ? 'offline'
-                : 'error');
-        return ok;
       });
     return cloudWriteQueueRef.current;
   }
@@ -2537,7 +2553,7 @@ export default function App() {
         pendingOfflineCloudSaveRef.current = true;
         setCloudSyncStatus(cloudProtocolRequiresUpgrade
           ? 'upgrade-required'
-          : navigator.onLine === false ? 'offline' : 'syncing');
+          : resolveCloudSyncStatus(false, navigator.onLine === false ? 'offline' : 'idle'));
       } else {
         pendingOfflineCloudSaveRef.current = true;
         setPendingCloudMutation(user.id, true);
@@ -2891,7 +2907,10 @@ export default function App() {
     if (!supabase || !accountUser?.id || cloudHydratedAccountId !== accountUser.id) return undefined;
     if (skipNextCloudSaveRef.current) {
       skipNextCloudSaveRef.current = false;
-      if (hasPendingCloudMutation(accountUser.id) && dirtyChildIdsRef.current.size > 0) {
+      if (pendingOfflineCloudSaveRef.current
+        || hasPendingCloudMutation(accountUser.id)
+        || dirtyChildIdsRef.current.size > 0
+        || hasPendingProfileReconciliation(accountUser.id)) {
         void queueCloudLearningSave({ markMutation: false });
       }
       return undefined;
@@ -2930,7 +2949,6 @@ export default function App() {
         setPendingCloudMutation(accountId, true);
         pendingOfflineCloudSaveRef.current = true;
         if (recoveredGap.reconcileChildIdentity) setPendingProfileReconciliation(accountId, true);
-        setCloudSyncStatus('syncing');
         void queueCloudLearningSave({ markMutation: false });
         return;
       }
@@ -3420,10 +3438,13 @@ export default function App() {
       setRecoveryMessages(prev => [...prev, 'Peranti sedang luar talian. Data kekal pada peranti dan akan disegerakkan apabila sambungan kembali.']);
       return;
     }
+    if (cloudWritePendingRef.current) {
+      setRecoveryMessages(prev => [...prev, 'Sync masih berjalan. Tunggu sebentar.']);
+      return;
+    }
     const hasPendingChanges = hasPendingCloudMutation(accountUser.id)
       || dirtyChildIdsRef.current.size > 0
       || pendingOfflineCloudSaveRef.current;
-    setCloudSyncStatus('syncing');
     if (hasPendingChanges) {
       const ok = await queueCloudLearningSave({ markMutation: false });
       setRecoveryMessages(prev => [...prev, ok
@@ -3434,6 +3455,7 @@ export default function App() {
 
     // A manual check must never turn a stale device into the source of truth.
     // With no pending outbox, it is strictly a pull from the server.
+    setCloudSyncStatus('syncing');
     const cloudResult = await loadCloudLearningDataResult(supabase);
     if (cloudResult.error) {
       setCloudSyncStatus('error');
@@ -5120,7 +5142,7 @@ export default function App() {
     const question = currentQuestion();
     const bookmarkId = question && activeSubject && activeTopic ? `${activeSubject.id}_${activeTopic.id}_${question.id}` : '';
     const isBookmarked = (profile.bookmarks || []).some(item => item.id === bookmarkId);
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={showQuestionHint} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '), { subjectId: activeSubject?.id })} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Soalan tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba sekali lagi." actionLabel="Papan Utama" onAction={handleQuizBack} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Soalan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Quiz subject={activeSubject} topic={activeTopic} questionIndex={questionIndex} answer={answer} feedback={feedback} isBookmarked={isBookmarked} coachKnowledgeData={coachKnowledgeData} hasAccountSession={Boolean(accountUser)} cloudSyncStatus={cloudSyncStatus} onAnswerChange={changeQuizAnswer} onCheckAnswer={checkAnswer} onNextQuestion={nextQuestion} onTryAgain={tryAgainQuestion} onExplain={openExplain} onBack={handleQuizBack} onPetunjuk={showQuestionHint} onSpeak={() => speak(currentQuestion().q.replaceAll('________', ' kosong '), { subjectId: activeSubject?.id })} onBookmark={toggleBookmark} onOpenAi={openTutorAi} coachDecision={coachingDecision} teachingStrategy={teachingStrategy} personality={quizPersonality} /><AIExplainModal open={explainOpen} data={explainData} context={coachSnapshot} question={question} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setExplainOpen, setExplainData)} onTryAgain={tryAgainQuestion} onTeach={openTeacher} /><AITeacherModal open={teacherOpen} data={teacherData} context={coachSnapshot} character={getPersonalityForSubject(coachSubject)} onTutup={() => closeCoachSurface(setTeacherOpen, setTeacherData)} onLatih={tryAgainQuestion} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
 
   if (screen === 'finish') {
@@ -5137,7 +5159,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onMarkMaterial={markLearningMaterial} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} syncInFlight={cloudWritePendingRef.current} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
