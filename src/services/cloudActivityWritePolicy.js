@@ -1,5 +1,9 @@
 export const CLOUD_WRITE_DEBOUNCE_MS = 700;
 
+export function resolveCloudSyncStatus(ok = false, failure = 'error') {
+  return ok ? 'saved' : failure;
+}
+
 /**
  * Keep question-level changes in the local outbox until the learner reaches an
  * activity boundary. The outbox remains durable; this policy only decides

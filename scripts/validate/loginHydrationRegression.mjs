@@ -35,12 +35,13 @@ assert.match(accountSync, /dashboardReadyAccountId !== user\.id[\s\S]{0,180}setS
 assert.match(accountSync, /dashboardReadyAccountId !== user\.id[\s\S]{0,160}setCloudSyncInfo\(\{ revision: 0, serverUpdatedAt: '' \}\)[\s\S]{0,100}lastCloudSignatureRef\.current = ''/, 'A newly activated account must not display another account\'s cloud revision metadata.');
 assert.match(app, /onAuthStateChange[\s\S]{0,180}requestAccountSync/, 'Auth changes must use the deduplicated hydration path.');
 assert.match(app, /getSession\(\)[\s\S]{0,180}requestAccountSync/, 'Recovered sessions must use the deduplicated hydration path.');
-assert.match(accountSync, /restoreCloudLearningSnapshotResult[\s\S]{0,300}if \(!restoreResult\.ok\)[\s\S]{0,500}scheduleHydrationRetry\(user\)[\s\S]{0,80}return;/, 'An invalid canonical restore must keep cloud writes locked and retry.');
+assert.match(accountSync, /restoreCloudLearningSnapshotResult[\s\S]{0,650}else if \(!restoreResult\.ok\)[\s\S]{0,700}scheduleHydrationRetry\(user\)[\s\S]{0,80}return;/, 'An invalid canonical restore must keep cloud writes locked and retry after the stale-operation guard.');
 assert.match(accountSync, /hydrationStageByAccount[\s\S]{0,12000}Account hydration failed/, 'Unexpected post-read failures must expose a safe diagnostic stage.');
 assert.match(app, /function restoreCloudLearningSnapshotResult[\s\S]{0,700}hydrateCloudLearningState\(localStorage, cloudData/, 'Cloud restore must validate and hydrate through the structured best-effort cache service.');
 assert.match(accountSync, /if \(!restoreResult\.activeStatePersisted\)[\s\S]{0,550}scheduleHydrationRetry\(user\)[\s\S]{0,80}return;/, 'A device-write failure must retain in-memory profiles, lock cloud writes and retry.');
 assert.match(app, /cloudWriteGuardRef\.current\.blocked[\s\S]{0,250}return Promise\.resolve\(false\)/, 'An incomplete hydration must never upload an accidental empty state.');
-assert.match(accountSync, /currentHash !== '#\/admin' && currentHash !== '#\/admin\/premium'[\s\S]{0,2200}loadStudentLearning[\s\S]{0,300}loadCloudLearningDataResult/, 'The Admin route must skip full student learning hydration.');
+assert.match(accountSync, /const loadStudentLearning = currentHash !== '#\/admin' && currentHash !== '#\/admin\/premium'/, 'The Admin route must opt out of student learning hydration.');
+assert.match(accountSync, /loadLearning: signal => loadStudentLearning\s*\? loadCloudLearningDataResult/, 'The Admin route must skip the full student cloud read.');
 assert.match(childStorage, /previousValues[\s\S]{0,1000}storage-quota-exceeded/, 'Scoped storage writes must roll back transactionally on browser quota failure.');
 assert.match(legacyMigration, /alreadyScoped[\s\S]{0,500}reason: 'already-scoped'/, 'Already-scoped learning data must skip the duplicate legacy backup.');
 

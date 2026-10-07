@@ -1,0 +1,359 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { createCloudActivityWritePolicy, resolveCloudSyncStatus } from '../../src/services/cloudActivityWritePolicy.js';
+import {
+  acknowledgeCloudMutations,
+  markCloudMutation
+} from '../../src/services/cloudMutationOutbox.js';
+import {
+  CHILD_SNAPSHOT_PREFIX,
+  CLOUD_CHILD_STATE_KEY,
+  CLOUD_SYNC_META_KEY
+} from '../../src/services/learningSync.js';
+import { syncRevisionedCloudLearning } from '../../src/services/learningSyncCoordinator.js';
+
+const ACCOUNT_ID = 'account-p1133';
+const CHILD_ID = 'child-p1133';
+
+function claimCloudRead(lock, sequence, replace = false) {
+  if (lock.current && !replace) return false;
+  lock.current = sequence;
+  return true;
+}
+
+function releaseCloudRead(lock, sequence) {
+  if (lock.current !== sequence) return false;
+  lock.current = 0;
+  return true;
+}
+
+async function runReadWithCleanup(lock, sequence, operation) {
+  if (!claimCloudRead(lock, sequence)) return false;
+  try {
+    return await operation();
+  } finally {
+    releaseCloudRead(lock, sequence);
+  }
+}
+
+function canUseCloudSyncAction(hasAccount, retryable, busy) {
+  return !hasAccount || (retryable && !busy);
+}
+
+function canonicalPayload(xp = 10) {
+  const profile = { id: CHILD_ID, childId: CHILD_ID, accountId: ACCOUNT_ID, xp };
+  return {
+    [CLOUD_CHILD_STATE_KEY]: JSON.stringify({
+      version: 3,
+      profiles: [profile],
+      activeChildId: CHILD_ID,
+      deletedChildren: {},
+      archivedChildren: {}
+    }),
+    jannati_child_profiles: JSON.stringify([profile]),
+    jannati_active_child_id: CHILD_ID,
+    jannati_deleted_child_profiles: '{}',
+    jannati_archived_child_profiles: '{}',
+    jannati_v151_profile: JSON.stringify(profile),
+    [`${CHILD_SNAPSHOT_PREFIX}${CHILD_ID}`]: JSON.stringify({
+      __childSnapshotChildId: CHILD_ID,
+      __childSnapshotAccountId: ACCOUNT_ID,
+      __childSnapshotCapturedAt: 1_759_276_800_000,
+      jannati_v151_profile: JSON.stringify(profile)
+    }),
+    [CLOUD_SYNC_META_KEY]: JSON.stringify({
+      version: 3,
+      activeChildId: CHILD_ID,
+      deviceId: 'p1133-device',
+      updatedAt: '2026-10-01T00:00:00.000Z'
+    })
+  };
+}
+
+describe('P1.13.3 cloud sync state recovery', () => {
+  it('maps every attempted save to a bounded terminal state', () => {
+    expect(resolveCloudSyncStatus(true)).toBe('saved');
+    expect(resolveCloudSyncStatus(false, 'idle')).toBe('idle');
+    expect(resolveCloudSyncStatus(false, 'offline')).toBe('offline');
+    expect(resolveCloudSyncStatus(false, 'conflict')).toBe('conflict');
+    expect(resolveCloudSyncStatus(false, 'upgrade-required')).toBe('upgrade-required');
+    expect(resolveCloudSyncStatus()).toBe('error');
+  });
+
+  it('defers an active quiz and flushes its mutations exactly once on completion', () => {
+    const policy = createCloudActivityWritePolicy();
+    policy.begin({ activityId: 'quiz:complete', childId: CHILD_ID });
+    for (let index = 0; index < 5; index += 1) expect(policy.deferMutation(CHILD_ID)).toBe(true);
+
+    expect(policy.snapshot()).toMatchObject({ active: true, deferredMutations: 5 });
+    expect(policy.finish()).toMatchObject({ wasActive: true, shouldFlush: true, deferredMutations: 5 });
+    expect(policy.finish()).toMatchObject({ wasActive: false, shouldFlush: false, deferredMutations: 0 });
+  });
+
+  it('flushes an abandoned partial quiz once when the learner returns to the dashboard', () => {
+    const policy = createCloudActivityWritePolicy();
+    policy.begin({ activityId: 'quiz:partial', childId: CHILD_ID });
+    for (let index = 0; index < 3; index += 1) expect(policy.deferMutation(CHILD_ID)).toBe(true);
+
+    const backBoundary = policy.finish();
+    expect(backBoundary).toMatchObject({ shouldFlush: true, deferredMutations: 3 });
+    expect(policy.snapshot().active).toBe(false);
+    expect(policy.finish().shouldFlush).toBe(false);
+  });
+
+  it('settles a canonical no-op as saved without a cloud read or write', async () => {
+    let rpcCalls = 0;
+    const payload = canonicalPayload();
+    const result = await syncRevisionedCloudLearning({
+      async rpc() {
+        rpcCalls += 1;
+        throw new Error('No-op must not call Supabase');
+      }
+    }, payload, {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [CHILD_ID],
+      cloudEnvelope: { data: payload, revision: 2, protocolVersion: 3, error: null }
+    });
+
+    expect(result).toMatchObject({ ok: true, unchanged: true, localNoop: true });
+    expect(resolveCloudSyncStatus(result.ok)).toBe('saved');
+    expect(rpcCalls).toBe(0);
+  });
+
+  it('writes changed canonical state once from the cached envelope and settles saved', async () => {
+    let writes = 0;
+    let reads = 0;
+    const cloud = canonicalPayload(10);
+    const local = canonicalPayload(20);
+    const result = await syncRevisionedCloudLearning({
+      async rpc(name, args) {
+        if (name.startsWith('get_learning_')) reads += 1;
+        if (name === 'save_learning_data_v4') {
+          writes += 1;
+          return { data: { ok: true, revision: 3, payload: args.payload }, error: null };
+        }
+        throw new Error(`Unexpected RPC: ${name}`);
+      }
+    }, local, {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [CHILD_ID],
+      cloudEnvelope: { data: cloud, revision: 2, protocolVersion: 3, error: null },
+      retryBaseDelayMs: 0
+    });
+
+    expect(result.ok).toBe(true);
+    expect(resolveCloudSyncStatus(result.ok)).toBe('saved');
+    expect({ writes, reads }).toEqual({ writes: 1, reads: 0 });
+  });
+
+  it('keeps a failed mutation queued and reconnects with one bounded write', async () => {
+    const dirty = new Set();
+    const versions = new Map();
+    markCloudMutation(dirty, versions, CHILD_ID);
+    const submitted = new Map(versions);
+    const cloud = canonicalPayload(10);
+    const local = canonicalPayload(20);
+    let failedAttempts = 0;
+    const failed = await syncRevisionedCloudLearning({
+      async rpc() {
+        failedAttempts += 1;
+        return { data: null, error: { status: 503, message: 'unavailable' } };
+      }
+    }, local, {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [...dirty],
+      cloudEnvelope: { data: cloud, revision: 2, protocolVersion: 3, error: null },
+      retryBaseDelayMs: 0
+    });
+
+    expect(failed.ok).toBe(false);
+    expect(resolveCloudSyncStatus()).toBe('error');
+    expect(failedAttempts).toBe(3);
+    expect([...dirty]).toEqual([CHILD_ID]);
+
+    let reconnectWrites = 0;
+    const reconnected = await syncRevisionedCloudLearning({
+      async rpc(name, args) {
+        if (name === 'save_learning_data_v4') reconnectWrites += 1;
+        return { data: { ok: true, revision: 3, payload: args.payload }, error: null };
+      }
+    }, local, {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [...dirty],
+      cloudEnvelope: { data: cloud, revision: 2, protocolVersion: 3, error: null },
+      retryBaseDelayMs: 0
+    });
+    expect(reconnected.ok).toBe(true);
+    expect(reconnectWrites).toBe(1);
+    expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([]);
+  });
+
+  it('does not acknowledge a newer mutation completed during an older write', () => {
+    const dirty = new Set();
+    const versions = new Map();
+    markCloudMutation(dirty, versions, CHILD_ID);
+    const submitted = new Map(versions);
+    markCloudMutation(dirty, versions, CHILD_ID);
+    expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([CHILD_ID]);
+  });
+
+  it('disables the sync action during an active write', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('disables the sync action during an active manual read', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('disables the sync action during an active hydration read', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('keeps stale syncing retryable when no operation is active', () => {
+    expect(canUseCloudSyncAction(true, true, false)).toBe(true);
+  });
+
+  it('rejects a rapid second manual read before the first one settles', async () => {
+    const lock = { current: 0 };
+    let finishFirst;
+    let reads = 0;
+    const gate = new Promise(resolve => { finishFirst = resolve; });
+    const pull = sequence => runReadWithCleanup(lock, sequence, async () => {
+      reads += 1;
+      await gate;
+      return true;
+    });
+
+    const first = pull(1);
+    const second = pull(2);
+    expect(reads).toBe(1);
+    await expect(second).resolves.toBe(false);
+    finishFirst();
+    await expect(first).resolves.toBe(true);
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after success', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => ({ ok: true }))).resolves.toEqual({ ok: true });
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after a returned error', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => ({ error: new Error('offline') }))).resolves.toMatchObject({ error: expect.any(Error) });
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after a thrown exception', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => { throw new Error('failure'); })).rejects.toThrow('failure');
+    expect(lock.current).toBe(0);
+  });
+
+  it('does not let an older read clear or apply over a newer account sequence', () => {
+    const lock = { current: 0 };
+    expect(claimCloudRead(lock, 1)).toBe(true);
+    expect(claimCloudRead(lock, 2, true)).toBe(true);
+    expect(lock.current === 1).toBe(false);
+    expect(releaseCloudRead(lock, 1)).toBe(false);
+    expect(lock.current).toBe(2);
+    expect(releaseCloudRead(lock, 2)).toBe(true);
+  });
+
+  it('keeps a mutation created during a read durable and flushes it once afterward', async () => {
+    const lock = { current: 0 };
+    const dirty = new Set();
+    const versions = new Map();
+    expect(claimCloudRead(lock, 7)).toBe(true);
+    markCloudMutation(dirty, versions, CHILD_ID);
+    expect([...dirty]).toEqual([CHILD_ID]);
+    expect(releaseCloudRead(lock, 7)).toBe(true);
+
+    let writes = 0;
+    let reads = 0;
+    const submitted = new Map(versions);
+    const result = await syncRevisionedCloudLearning({
+      async rpc(name, args) {
+        if (name.startsWith('get_learning_')) reads += 1;
+        if (name === 'save_learning_data_v4') {
+          writes += 1;
+          return { data: { ok: true, revision: 3, payload: args.payload }, error: null };
+        }
+        throw new Error(`Unexpected RPC: ${name}`);
+      }
+    }, canonicalPayload(20), {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [...dirty],
+      cloudEnvelope: { data: canonicalPayload(10), revision: 2, protocolVersion: 3, error: null },
+      retryBaseDelayMs: 0
+    });
+
+    expect(result.ok).toBe(true);
+    expect({ writes, reads }).toEqual({ writes: 1, reads: 0 });
+    expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([]);
+  });
+
+  it('wires deferred hydration and manual sync without a pre-emptive syncing state', () => {
+    const source = readFileSync('src/App.jsx', 'utf8');
+    const queueSource = source.slice(source.indexOf('function queueCloudLearningSave'), source.indexOf('function scheduleCloudLearningSave'));
+    const manualSource = source.slice(source.indexOf('async function syncLearningDataNow'), source.indexOf('async function loadLearningDataNow'));
+    const pendingBranch = manualSource.slice(manualSource.indexOf('if (hasPendingChanges)'), manualSource.indexOf('// A manual check'));
+
+    expect(queueSource).toMatch(/isActive[\s\S]{0,250}resolveCloudSyncStatus\(false, 'idle'\)/);
+    expect(queueSource).toMatch(/cloudHydratedAccountId !== operationAccountId[\s\S]{0,300}resolveCloudSyncStatus\(false, 'idle'\)/);
+    expect(queueSource).toMatch(/try \{[\s\S]*finally \{[\s\S]{0,120}cloudWritePendingRef\.current = false/);
+    expect(pendingBranch).not.toContain("setCloudSyncStatus('syncing')");
+    expect(manualSource).toMatch(/cloudWritePendingRef\.current[\s\S]{0,220}return;/);
+  });
+
+  it('queues all durable pending forms once hydration completes', () => {
+    const source = readFileSync('src/App.jsx', 'utf8');
+    const pendingHelper = source.slice(
+      source.indexOf('function hasPendingCloudChanges'),
+      source.indexOf('function rememberCloudEnvelope')
+    );
+    const hydrationEffect = source.slice(
+      source.indexOf('if (skipNextCloudSaveRef.current)'),
+      source.indexOf('useEffect(() => {', source.indexOf('if (skipNextCloudSaveRef.current)') + 1)
+    );
+    expect(pendingHelper).toContain('pendingOfflineCloudSaveRef.current');
+    expect(pendingHelper).toContain('hasPendingCloudMutation(accountId)');
+    expect(pendingHelper).toContain('dirtyChildIdsRef.current.size > 0');
+    expect(pendingHelper).toContain('hasPendingProfileReconciliation(accountId)');
+    expect(hydrationEffect).toContain('hasPendingCloudChanges(accountUser.id)');
+    expect(hydrationEffect.match(/queueCloudLearningSave\(\{ markMutation: false \}\)/g)).toHaveLength(1);
+  });
+
+  it('wires one reactive busy state to reads, writes and the dashboard', () => {
+    const appSource = readFileSync('src/App.jsx', 'utf8');
+    const dashboardSource = readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
+    const manualSource = appSource.slice(appSource.indexOf('async function syncLearningDataNow'), appSource.indexOf('async function loadLearningDataNow'));
+    const hydrationSource = appSource.slice(appSource.indexOf('const syncAccount = async'), appSource.indexOf('const { data: authListener }'));
+
+    expect(dashboardSource).toMatch(/syncing: \{[^\n]+retryable: true/);
+    expect(dashboardSource).toContain('!hasAccountSession || (cloudSyncPresentation.retryable && !syncInFlight)');
+    expect(appSource).toContain('syncInFlight={cloudOperationBusy}');
+    expect(appSource).toMatch(/cloudWritePendingRef\.current = true;[\s\S]{0,100}setCloudOperationBusy\(true\)/);
+    expect(appSource).toMatch(/cloudWritePendingRef\.current = false;[\s\S]{0,120}setCloudOperationBusy/);
+    expect(manualSource).toMatch(/cloudWritePendingRef\.current \|\| cloudReadPendingRef\.current/);
+    expect(manualSource).toMatch(/cloudReadPendingRef\.current = syncSequence[\s\S]+try \{[\s\S]+finally \{[\s\S]+cloudReadPendingRef\.current === syncSequence/);
+    expect(hydrationSource).toMatch(/cloudReadPendingRef\.current = syncSequence/);
+    expect(hydrationSource).toMatch(/syncSequence !== accountSyncSequenceRef\.current/);
+    expect(appSource).toContain('if (isCurrent && !isCurrent()) return null');
+  });
+
+  it('uses the same activity boundary for normal and error-path quiz exits', () => {
+    const source = readFileSync('src/App.jsx', 'utf8');
+    const backSource = source.slice(source.indexOf('function handleQuizBack'), source.indexOf('function toggleBookmark'));
+    const quizRender = source.slice(source.indexOf("if (screen === 'quiz')"), source.indexOf("if (screen === 'finish')"));
+    expect(backSource).toMatch(/autoSave\(questionIndex, session\);\s*finishCloudLearningActivity\(\);\s*setScreen\('dashboard'\)/);
+    expect(backSource).not.toContain('applyLearnerReward');
+    expect(quizRender).toContain('onAction={handleQuizBack}');
+  });
+});

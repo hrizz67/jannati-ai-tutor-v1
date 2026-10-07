@@ -135,7 +135,7 @@ function ChildProfileSwitcher({ profiles = [], archivedChildren = {}, activeChil
 function getCloudSyncPresentation(hasAccountSession, status, revision = 0, serverUpdatedAt = '') {
   if (!hasAccountSession) return { label: 'Cloud tidak aktif', tone: 'inactive', detail: 'Log masuk akaun yang sama pada desktop dan mobile untuk sync.', retryable: true };
   const presentation = {
-    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan kamu sedang disimpan ke cloud.', retryable: false },
+    syncing: { label: 'Sedang sync', tone: 'syncing', detail: 'Perubahan kamu sedang disimpan ke cloud.', retryable: true },
     saved: { label: 'Telah sync', tone: 'saved', detail: 'Perubahan terkini sudah disimpan ke cloud.', retryable: false },
     loaded: { label: 'Cloud terkini', tone: 'saved', detail: 'Data terkini daripada cloud sudah dimuatkan.', retryable: false },
     empty: { label: 'Cloud baharu', tone: 'syncing', detail: 'Data pertama sedang disediakan untuk akaun ini.', retryable: false },
@@ -195,6 +195,7 @@ export default function HomeDashboard(props) {
     onRecoverLearningData,
     onSyncLearningData,
     cloudSyncStatus,
+    syncInFlight,
     cloudSyncRevision,
     cloudSyncUpdatedAt,
     onLoadLearningData,
@@ -220,7 +221,7 @@ export default function HomeDashboard(props) {
   const isPremiumAccount = Boolean(hasAccountSession && accessProfile?.isPremium);
   const accessLabel = accessProfile?.accessLabel || (isPremiumAccount ? 'Premium aktif' : 'Versi Free');
   const cloudSyncPresentation = getCloudSyncPresentation(hasAccountSession, cloudSyncStatus, cloudSyncRevision, cloudSyncUpdatedAt);
-  const cloudSyncActionEnabled = !hasAccountSession || cloudSyncPresentation.retryable;
+  const cloudSyncActionEnabled = !hasAccountSession || (cloudSyncPresentation.retryable && !syncInFlight);
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const subjectRailRef = useRef(null);
   const subjectButtonRefs = useRef(new Map());
