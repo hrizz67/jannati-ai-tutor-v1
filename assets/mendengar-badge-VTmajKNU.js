@@ -1,0 +1,1 @@
+var e=`/jannati-ai-tutor-v1/assets/mendengar-badge-Rtg18cb5.webp`;export{e as t};
