@@ -21,7 +21,10 @@ import JatiAvatar from './components/JatiAvatar';
 import VoiceButton from './components/VoiceButton.jsx';
 import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
-import IconGlyph from './components/IconGlyph.jsx';
+const DeferredIconGlyph = React.lazy(() => import('./components/IconGlyph.jsx'));
+function IconGlyph(props) {
+  return <React.Suspense fallback={null}><DeferredIconGlyph {...props} /></React.Suspense>;
+}
 import { updateStoredRecommendation } from './ai/recommendationEngine';
 import { buildAdaptiveRecommendation } from './ai/adaptiveEngine';
 import { loadProfile as loadAdaptiveStudentProfile, resetProfile as resetAdaptiveStudentProfile } from './ai/adaptive/storageEngine';
