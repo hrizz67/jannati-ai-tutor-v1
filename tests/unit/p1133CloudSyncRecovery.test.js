@@ -1,9 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import {
-  createCloudActivityWritePolicy,
-  resolveCloudSyncStatus
-} from '../../src/services/cloudActivityWritePolicy.js';
+import { createCloudActivityWritePolicy, resolveCloudSyncStatus } from '../../src/services/cloudActivityWritePolicy.js';
 import {
   acknowledgeCloudMutations,
   markCloudMutation
@@ -17,6 +14,31 @@ import { syncRevisionedCloudLearning } from '../../src/services/learningSyncCoor
 
 const ACCOUNT_ID = 'account-p1133';
 const CHILD_ID = 'child-p1133';
+
+function claimCloudRead(lock, sequence, replace = false) {
+  if (lock.current && !replace) return false;
+  lock.current = sequence;
+  return true;
+}
+
+function releaseCloudRead(lock, sequence) {
+  if (lock.current !== sequence) return false;
+  lock.current = 0;
+  return true;
+}
+
+async function runReadWithCleanup(lock, sequence, operation) {
+  if (!claimCloudRead(lock, sequence)) return false;
+  try {
+    return await operation();
+  } finally {
+    releaseCloudRead(lock, sequence);
+  }
+}
+
+function canUseCloudSyncAction(hasAccount, retryable, busy) {
+  return !hasAccount || (retryable && !busy);
+}
 
 function canonicalPayload(xp = 10) {
   const profile = { id: CHILD_ID, childId: CHILD_ID, accountId: ACCOUNT_ID, xp };
@@ -179,6 +201,104 @@ describe('P1.13.3 cloud sync state recovery', () => {
     expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([CHILD_ID]);
   });
 
+  it('disables the sync action during an active write', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('disables the sync action during an active manual read', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('disables the sync action during an active hydration read', () => {
+    expect(canUseCloudSyncAction(true, true, true)).toBe(false);
+  });
+
+  it('keeps stale syncing retryable when no operation is active', () => {
+    expect(canUseCloudSyncAction(true, true, false)).toBe(true);
+  });
+
+  it('rejects a rapid second manual read before the first one settles', async () => {
+    const lock = { current: 0 };
+    let finishFirst;
+    let reads = 0;
+    const gate = new Promise(resolve => { finishFirst = resolve; });
+    const pull = sequence => runReadWithCleanup(lock, sequence, async () => {
+      reads += 1;
+      await gate;
+      return true;
+    });
+
+    const first = pull(1);
+    const second = pull(2);
+    expect(reads).toBe(1);
+    await expect(second).resolves.toBe(false);
+    finishFirst();
+    await expect(first).resolves.toBe(true);
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after success', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => ({ ok: true }))).resolves.toEqual({ ok: true });
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after a returned error', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => ({ error: new Error('offline') }))).resolves.toMatchObject({ error: expect.any(Error) });
+    expect(lock.current).toBe(0);
+  });
+
+  it('clears the read lock after a thrown exception', async () => {
+    const lock = { current: 0 };
+    await expect(runReadWithCleanup(lock, 1, async () => { throw new Error('failure'); })).rejects.toThrow('failure');
+    expect(lock.current).toBe(0);
+  });
+
+  it('does not let an older read clear or apply over a newer account sequence', () => {
+    const lock = { current: 0 };
+    expect(claimCloudRead(lock, 1)).toBe(true);
+    expect(claimCloudRead(lock, 2, true)).toBe(true);
+    expect(lock.current === 1).toBe(false);
+    expect(releaseCloudRead(lock, 1)).toBe(false);
+    expect(lock.current).toBe(2);
+    expect(releaseCloudRead(lock, 2)).toBe(true);
+  });
+
+  it('keeps a mutation created during a read durable and flushes it once afterward', async () => {
+    const lock = { current: 0 };
+    const dirty = new Set();
+    const versions = new Map();
+    expect(claimCloudRead(lock, 7)).toBe(true);
+    markCloudMutation(dirty, versions, CHILD_ID);
+    expect([...dirty]).toEqual([CHILD_ID]);
+    expect(releaseCloudRead(lock, 7)).toBe(true);
+
+    let writes = 0;
+    let reads = 0;
+    const submitted = new Map(versions);
+    const result = await syncRevisionedCloudLearning({
+      async rpc(name, args) {
+        if (name.startsWith('get_learning_')) reads += 1;
+        if (name === 'save_learning_data_v4') {
+          writes += 1;
+          return { data: { ok: true, revision: 3, payload: args.payload }, error: null };
+        }
+        throw new Error(`Unexpected RPC: ${name}`);
+      }
+    }, canonicalPayload(20), {
+      accountId: ACCOUNT_ID,
+      localActiveChildId: CHILD_ID,
+      dirtyChildIds: [...dirty],
+      cloudEnvelope: { data: canonicalPayload(10), revision: 2, protocolVersion: 3, error: null },
+      retryBaseDelayMs: 0
+    });
+
+    expect(result.ok).toBe(true);
+    expect({ writes, reads }).toEqual({ writes: 1, reads: 0 });
+    expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([]);
+  });
+
   it('wires deferred hydration and manual sync without a pre-emptive syncing state', () => {
     const source = readFileSync('src/App.jsx', 'utf8');
     const queueSource = source.slice(source.indexOf('function queueCloudLearningSave'), source.indexOf('function scheduleCloudLearningSave'));
@@ -194,21 +314,38 @@ describe('P1.13.3 cloud sync state recovery', () => {
 
   it('queues all durable pending forms once hydration completes', () => {
     const source = readFileSync('src/App.jsx', 'utf8');
+    const pendingHelper = source.slice(
+      source.indexOf('function hasPendingCloudChanges'),
+      source.indexOf('function rememberCloudEnvelope')
+    );
     const hydrationEffect = source.slice(
       source.indexOf('if (skipNextCloudSaveRef.current)'),
       source.indexOf('useEffect(() => {', source.indexOf('if (skipNextCloudSaveRef.current)') + 1)
     );
-    expect(hydrationEffect).toContain('pendingOfflineCloudSaveRef.current');
-    expect(hydrationEffect).toContain('hasPendingCloudMutation(accountUser.id)');
-    expect(hydrationEffect).toContain('dirtyChildIdsRef.current.size > 0');
-    expect(hydrationEffect).toContain('hasPendingProfileReconciliation(accountUser.id)');
+    expect(pendingHelper).toContain('pendingOfflineCloudSaveRef.current');
+    expect(pendingHelper).toContain('hasPendingCloudMutation(accountId)');
+    expect(pendingHelper).toContain('dirtyChildIdsRef.current.size > 0');
+    expect(pendingHelper).toContain('hasPendingProfileReconciliation(accountId)');
+    expect(hydrationEffect).toContain('hasPendingCloudChanges(accountUser.id)');
     expect(hydrationEffect.match(/queueCloudLearningSave\(\{ markMutation: false \}\)/g)).toHaveLength(1);
   });
 
-  it('keeps retry available for stale syncing but disables it during a real write', () => {
-    const source = readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
-    expect(source).toMatch(/syncing: \{[^\n]+retryable: true/);
-    expect(source).toContain('cloudSyncPresentation.retryable && !syncInFlight');
+  it('wires one reactive busy state to reads, writes and the dashboard', () => {
+    const appSource = readFileSync('src/App.jsx', 'utf8');
+    const dashboardSource = readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
+    const manualSource = appSource.slice(appSource.indexOf('async function syncLearningDataNow'), appSource.indexOf('async function loadLearningDataNow'));
+    const hydrationSource = appSource.slice(appSource.indexOf('const syncAccount = async'), appSource.indexOf('const { data: authListener }'));
+
+    expect(dashboardSource).toMatch(/syncing: \{[^\n]+retryable: true/);
+    expect(dashboardSource).toContain('!hasAccountSession || (cloudSyncPresentation.retryable && !syncInFlight)');
+    expect(appSource).toContain('syncInFlight={cloudOperationBusy}');
+    expect(appSource).toMatch(/cloudWritePendingRef\.current = true;[\s\S]{0,100}setCloudOperationBusy\(true\)/);
+    expect(appSource).toMatch(/cloudWritePendingRef\.current = false;[\s\S]{0,120}setCloudOperationBusy/);
+    expect(manualSource).toMatch(/cloudWritePendingRef\.current \|\| cloudReadPendingRef\.current/);
+    expect(manualSource).toMatch(/cloudReadPendingRef\.current = syncSequence[\s\S]+try \{[\s\S]+finally \{[\s\S]+cloudReadPendingRef\.current === syncSequence/);
+    expect(hydrationSource).toMatch(/cloudReadPendingRef\.current = syncSequence/);
+    expect(hydrationSource).toMatch(/syncSequence !== accountSyncSequenceRef\.current/);
+    expect(appSource).toContain('if (isCurrent && !isCurrent()) return null');
   });
 
   it('uses the same activity boundary for normal and error-path quiz exits', () => {
