@@ -1076,8 +1076,45 @@ function isMissingRevisionedRpc(error) {
   return code === 'PGRST202' || code === '42883' || /get_learning_data_v3|schema cache|does not exist/i.test(message);
 }
 
+function cloudSyncErrorFields(error) {
+  return {
+    status: error?.status ?? error?.statusCode ?? null,
+    code: error?.code || '',
+    message: error?.message || String(error || '')
+  };
+}
+
+function reportCloudReadDiagnostic(options, input) {
+  if (typeof options?.onDiagnostic !== 'function') return;
+  try { options.onDiagnostic(input); } catch { /* Diagnostics must not affect sync. */ }
+}
+
+function failedCloudRead(options, error, {
+  rpc = 'get_learning_data_v3',
+  fallbackAttempted = false,
+  revision = 0,
+  protocolVersion = 0
+} = {}) {
+  const diagnostic = {
+    phase: 'read',
+    rpc,
+    ...cloudSyncErrorFields(error),
+    attempt: 1,
+    maxAttempts: 1,
+    fallbackAttempted,
+    conflictCount: 0,
+    currentRevision: revision,
+    expectedRevision: revision,
+    protocolVersion
+  };
+  reportCloudReadDiagnostic(options, diagnostic);
+  return { data: null, revision, protocolVersion, serverUpdatedAt: '', error, diagnostic };
+}
+
 export async function loadCloudLearningDataResult(client, options = {}) {
-  if (!client) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: new Error('cloud_client_unavailable') };
+  if (!client) return failedCloudRead(options, new Error('cloud_client_unavailable'));
+  let selectedRpc = 'get_learning_data_v3';
+  let fallbackAttempted = false;
   try {
     const runRpc = name => {
       const request = client.rpc(name);
@@ -1088,14 +1125,25 @@ export async function loadCloudLearningDataResult(client, options = {}) {
     const revisioned = await runRpc('get_learning_data_v3');
     if (!revisioned?.error) return normalizeEnvelope(revisioned?.data);
     if (!isMissingRevisionedRpc(revisioned.error)) {
-      return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: revisioned.error };
+      const envelope = normalizeEnvelope(revisioned?.data);
+      return failedCloudRead(options, revisioned.error, {
+        rpc: selectedRpc,
+        revision: envelope.revision,
+        protocolVersion: envelope.protocolVersion
+      });
     }
 
     // Read-only compatibility allows a coordinated rollout without risking a
     // blind legacy write. The client keeps mutations pending until migration
     // v3 is available on the linked Supabase project.
-    const legacy = await runRpc('get_learning_data');
-    if (legacy?.error) return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error: legacy.error };
+    selectedRpc = 'get_learning_data';
+    fallbackAttempted = true;
+    const legacy = await runRpc(selectedRpc);
+    if (legacy?.error) return failedCloudRead(options, legacy.error, {
+      rpc: selectedRpc,
+      fallbackAttempted,
+      protocolVersion: 2
+    });
     return {
       data: isObject(legacy?.data) ? legacy.data : {},
       revision: 0,
@@ -1104,7 +1152,11 @@ export async function loadCloudLearningDataResult(client, options = {}) {
       error: null
     };
   } catch (error) {
-    return { data: null, revision: 0, protocolVersion: 0, serverUpdatedAt: '', error };
+    return failedCloudRead(options, error, {
+      rpc: selectedRpc,
+      fallbackAttempted,
+      protocolVersion: fallbackAttempted ? 2 : 0
+    });
   }
 }
 
