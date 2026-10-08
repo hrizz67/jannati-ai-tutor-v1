@@ -139,11 +139,14 @@ import {
 } from './services/localSnapshotStorage.js';
 import { usePremiumAccess } from './hooks/usePremiumAccess.js';
 import { CLOUD_WRITE_DEBOUNCE_MS, createCloudActivityWritePolicy, resolveCloudSyncStatus } from './services/cloudActivityWritePolicy.js';
+import { initializeCloudSyncDiagnostic, recordCloudSyncDiagnostic } from './services/cloudSyncDiagnostics.js';
 import {
   acknowledgeCloudMutations,
   markCloudMutation,
   resolvePendingCloudOutbox
 } from './services/cloudMutationOutbox.js';
+
+const CLOUD_SYNC_DIAGNOSTIC_ENABLED = initializeCloudSyncDiagnostic();
 
 const PROFILE_KEY = 'jannati_v151_profile';
 const SELECTED_STUDENT_NAME_KEY = 'jannati_selected_student_name';
@@ -1696,6 +1699,43 @@ export default function App() {
       || hasPendingProfileReconciliation(accountId);
   }
 
+  function captureCloudSyncDiagnostic(input, {
+    accountId = accountUser?.id || '',
+    childId = readActiveChildId(),
+    dirtyChildCount = dirtyChildIdsRef.current.size,
+    pendingMutation = hasPendingCloudChanges(accountId),
+    cachedEnvelopeUsed = cloudEnvelopeRef.current.accountId === accountId
+  } = {}) {
+    if (!CLOUD_SYNC_DIAGNOSTIC_ENABLED) return null;
+    return recordCloudSyncDiagnostic({
+      ...input,
+      dirtyChildCount,
+      pendingMutation,
+      cachedEnvelopeUsed: input?.cachedEnvelopeUsed ?? cachedEnvelopeUsed,
+      accountScopeMatch: Boolean(accountId) && getActiveStorageScopeId() === accountId,
+      childScopeMatch: Boolean(childId) && readActiveChildId() === childId,
+      online: typeof navigator === 'undefined' || navigator.onLine !== false
+    });
+  }
+
+  function captureCloudSyncFailure(resultOrError, { phase, rpc, ...context }) {
+    if (!CLOUD_SYNC_DIAGNOSTIC_ENABLED) return null;
+    const diagnostic = resultOrError?.diagnostic || {};
+    const error = resultOrError?.error || resultOrError;
+    const currentRevision = diagnostic.currentRevision ?? cloudEnvelopeRef.current.revision ?? 0;
+    return captureCloudSyncDiagnostic({
+      phase: diagnostic.phase || phase,
+      rpc: diagnostic.rpc || rpc,
+      status: diagnostic.status ?? error?.status ?? error?.statusCode,
+      code: diagnostic.code || error?.code,
+      message: diagnostic.message || error?.message || String(error || ''),
+      currentRevision,
+      expectedRevision: diagnostic.expectedRevision ?? currentRevision,
+      protocolVersion: diagnostic.protocolVersion ?? cloudEnvelopeRef.current.protocolVersion ?? CLOUD_SYNC_PROTOCOL_VERSION,
+      ...diagnostic
+    }, context);
+  }
+
   function rememberCloudEnvelope(accountId, result) {
     const data = result?.data;
     if (!accountId || result?.error || !data) return;
@@ -1857,6 +1897,15 @@ export default function App() {
           } else {
             pendingOfflineCloudSaveRef.current = true;
             setPendingCloudMutation(accountUser.id, true);
+            captureCloudSyncFailure(syncResult, {
+              phase: 'write',
+              rpc: 'save_learning_data_v4',
+              accountId: operationAccountId,
+              childId: activeChildId,
+              dirtyChildCount: dirtyChildIds.length,
+              pendingMutation: true,
+              cachedEnvelopeUsed: Boolean(knownCloudEnvelope)
+            });
           }
           const syncErrorCode = String(syncResult.error?.message || '');
           setCloudSyncStatus(resolveCloudSyncStatus(ok,
@@ -1866,9 +1915,16 @@ export default function App() {
                 ? 'conflict'
                 : navigator.onLine === false ? 'offline' : 'error'));
           return ok;
-        } catch {
+        } catch (error) {
           pendingOfflineCloudSaveRef.current = true;
           setPendingCloudMutation(operationAccountId, true);
+          captureCloudSyncFailure(error, {
+            phase: 'runtime',
+            rpc: 'save_learning_data_v4',
+            accountId: operationAccountId,
+            childId: readActiveChildId(),
+            pendingMutation: true
+          });
           setCloudSyncStatus(resolveCloudSyncStatus(false, navigator.onLine === false ? 'offline' : 'error'));
           return false;
         } finally {
@@ -2467,6 +2523,12 @@ export default function App() {
         serverUpdatedAt: '',
         error: new Error('cloud_hydration_unavailable')
       };
+      if (cloudResult.error) captureCloudSyncFailure(cloudResult, {
+        phase: 'read',
+        rpc: 'get_learning_data_v3',
+        accountId: user.id,
+        childId: readActiveChildId()
+      });
       if (!loadStudentLearning) {
         const nextAccess = entitlementResult.error || !entitlementResult.data
           ? createSafeFreeEntitlement(user.id, 'admin-entitlement-hydration-fallback', { isAdmin: Boolean(data?.is_admin) })
@@ -3511,6 +3573,13 @@ export default function App() {
       const cloudResult = await loadCloudLearningDataResult(supabase);
       if (!isCurrent()) return;
       if (cloudResult.error) {
+        captureCloudSyncFailure(cloudResult, {
+          phase: 'read',
+          rpc: 'get_learning_data_v3',
+          accountId: operationAccountId,
+          childId: readActiveChildId(),
+          pendingMutation: false
+        });
         setCloudSyncStatus('error');
         setRecoveryMessages(prev => [...prev, 'Status cloud tidak dapat disemak. Tiada data peranti dihantar.']);
         return;
@@ -3567,8 +3636,15 @@ export default function App() {
       lastCloudSignatureRef.current = getCloudResultSignature(cloudResult);
       setCloudSyncStatus('loaded');
       setRecoveryMessages(prev => [...prev, 'Peranti ini sudah menggunakan revision cloud terkini.']);
-    } catch {
+    } catch (error) {
       if (!isCurrent()) return;
+      captureCloudSyncFailure(error, {
+        phase: 'runtime',
+        rpc: 'get_learning_data_v3',
+        accountId: operationAccountId,
+        childId: readActiveChildId(),
+        pendingMutation: false
+      });
       setCloudSyncStatus('error');
     } finally {
       const current = isCurrent();
@@ -3601,6 +3677,13 @@ export default function App() {
     setCloudSyncStatus('syncing');
     const cloudResult = await loadCloudLearningDataResult(supabase);
     if (cloudResult.error) {
+      captureCloudSyncFailure(cloudResult, {
+        phase: 'read',
+        rpc: 'get_learning_data_v3',
+        accountId: accountUser.id,
+        childId: readActiveChildId(),
+        pendingMutation: false
+      });
       setCloudSyncStatus('error');
       setRecoveryMessages(prev => [...prev, 'Data cloud tidak dapat dimuat. Semak sambungan dan cuba lagi.']);
       return;
