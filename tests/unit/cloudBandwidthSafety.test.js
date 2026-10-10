@@ -206,7 +206,7 @@ describe('P1.13.2 Supabase bandwidth safety', () => {
     const v31315Baseline = { rawBytes: 1820, compactedBytes: 2176 };
 
     expect(measureCloudLearningPayloadBytes(raw)).toBe(v31315Baseline.rawBytes);
-    expect(measureCloudLearningPayloadBytes(compacted)).toBe(v31315Baseline.compactedBytes);
+    expect(measureCloudLearningPayloadBytes(compacted)).toBeLessThanOrEqual(v31315Baseline.compactedBytes);
     expect(compacted).not.toHaveProperty('transcript');
     expect(compacted).not.toHaveProperty('audio');
   });

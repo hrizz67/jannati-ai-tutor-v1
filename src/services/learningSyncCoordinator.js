@@ -189,7 +189,11 @@ export async function syncRevisionedCloudLearning(client, localPayload = {}, opt
       accountId: options.accountId,
       childId: options.localActiveChildId
     });
-    if (hasSameCanonicalLearningState(payload, envelope.data)) {
+    const compactedEnvelope = compactCloudLearningPayload(envelope.data, [envelope.data], {
+      accountId: options.accountId,
+      childId: options.localActiveChildId
+    });
+    if (hasSameCanonicalLearningState(payload, compactedEnvelope)) {
       return {
         ok: true,
         unchanged: true,

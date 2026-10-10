@@ -16,6 +16,7 @@ import {
   CHILD_ORIGINAL_SNAPSHOT_PREFIX,
   CHILD_SNAPSHOT_PREFIX,
   CLOUD_CHILD_STATE_KEY,
+  normalizeActiveLearningProjection,
   saveRevisionedCloudLearningData,
   syncRevisionedCloudLearning
 } from '../../src/services/learningSync.js';
@@ -199,10 +200,11 @@ const staleCloudRoot = {
 delete staleCloudRoot[RESUME_TOMBSTONES_KEY];
 const staleRootSync = await syncCapture(completedLocalPayload, staleCloudRoot);
 assert.equal(JSON.parse(staleRootSync.sent.at(-1)?.[RESUME_SLOTS_KEY] || '{}')[completedScope], undefined, 'Explicit completion tempatan mesti membuang resume root cloud yang stale.');
-assert.equal(JSON.parse(staleRootSync.sent.at(-1).jannati_v151_profile).xp, canonicalProfile.xp, 'Clear resume tidak boleh mengubah XP kanonik.');
-assert.deepEqual(JSON.parse(staleRootSync.sent.at(-1).jannati_v151_profile).progress, canonicalProfile.progress, 'Clear resume tidak boleh mengubah progress/mastery kanonik.');
-assert.deepEqual(JSON.parse(staleRootSync.sent.at(-1).jannati_v151_profile).history, canonicalProfile.history, 'Clear resume tidak boleh mengubah sejarah pembelajaran.');
-assert.deepEqual(JSON.parse(staleRootSync.sent.at(-1).jannati_v151_ai_memory), canonicalMemory, 'Clear resume tidak boleh mengubah memori AI.');
+const hydratedStaleRootSync = normalizeActiveLearningProjection(staleRootSync.sent.at(-1), 'child-a', { accountId: 'account-a' });
+assert.equal(JSON.parse(hydratedStaleRootSync.jannati_v151_profile).xp, canonicalProfile.xp, 'Clear resume tidak boleh mengubah XP kanonik.');
+assert.deepEqual(JSON.parse(hydratedStaleRootSync.jannati_v151_profile).progress, canonicalProfile.progress, 'Clear resume tidak boleh mengubah progress/mastery kanonik.');
+assert.deepEqual(JSON.parse(hydratedStaleRootSync.jannati_v151_profile).history, canonicalProfile.history, 'Clear resume tidak boleh mengubah sejarah pembelajaran.');
+assert.deepEqual(JSON.parse(hydratedStaleRootSync.jannati_v151_ai_memory), canonicalMemory, 'Clear resume tidak boleh mengubah memori AI.');
 
 const staleLegacyCloudRoot = {
   ...staleCloudRoot,
@@ -407,7 +409,8 @@ const legitimateRootOutput = compactCloudLearningPayload({
 const legitimateRootSlots = JSON.parse(legitimateRootOutput[RESUME_SLOTS_KEY]);
 assert.equal(Object.keys(legitimateRootSlots).length, 1, 'Resume root yang sah mesti kekal tepat sekali.');
 assert.ok(utf8Bytes(legitimateRootOutput[RESUME_SLOTS_KEY]) <= MAX_RESUME_BYTES, 'Resume root yang sah mesti kekal dibatasi.');
-assert.doesNotMatch(legitimateRootOutput[`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}child-a`], /jannati_v151_resume/, 'Salinan nested resume root mesti dibuang.');
+assert.equal(legitimateRootOutput[`${CHILD_ORIGINAL_SNAPSHOT_PREFIX}child-a`], undefined, 'Original snapshot redundant mesti digabung ke snapshot kanonik.');
+assert.doesNotMatch(legitimateRootOutput[`${CHILD_SNAPSHOT_PREFIX}child-a`], /jannati_v151_resume/, 'Salinan nested resume root mesti dibuang.');
 
 const foreignTombstoneOutput = compactCloudLearningPayload({
   [RESUME_SLOTS_KEY]: JSON.stringify({ [rootScope]: rootCurrentResume }),
@@ -450,13 +453,17 @@ assert.equal(outgoingPayload[`${CHILD_MERGED_BACKUP_PREFIX}invalid`], 'recovery-
 for (const key of [`${CHILD_SNAPSHOT_PREFIX}child-a`, `${CHILD_ORIGINAL_SNAPSHOT_PREFIX}child-a`, `${CHILD_MERGED_BACKUP_PREFIX}child-a`]) {
   assert.doesNotMatch(outgoingPayload[key] || '', /jannati_v15[012]_resume/, `${key} tidak boleh menyimpan salinan resume transit.`);
 }
-assert.equal(JSON.parse(outgoingPayload.jannati_v151_profile).xp, 321, 'XP kanonik tidak boleh dibuang.');
-assert.deepEqual(JSON.parse(outgoingPayload.jannati_v151_profile).progress, canonicalProfile.progress, 'Progress/mastery kanonik tidak boleh berubah.');
-assert.deepEqual(JSON.parse(outgoingPayload.jannati_v151_profile).history, canonicalProfile.history, 'Sejarah pembelajaran kanonik tidak boleh berubah.');
-assert.equal(JSON.parse(outgoingPayload.jannati_v151_ai_memory).notes.length, canonicalMemory.notes.length, 'Memori pembelajaran kanonik tidak boleh dipotong.');
-assert.deepEqual(JSON.parse(outgoingPayload.jannati_child_profiles), childProfiles, 'Profil anak tidak boleh dibuang.');
-assert.deepEqual(JSON.parse(outgoingPayload.jannati_deleted_child_profiles), deletedChildren, 'Metadata delete tidak boleh dibuang.');
-const outgoingArchive = JSON.parse(outgoingPayload.jannati_archived_child_profiles);
+assert.equal(outgoingPayload.jannati_v151_profile, undefined, 'Root projection redundant tidak perlu dihantar bersama snapshot kanonik.');
+assert.equal(outgoingPayload.jannati_child_profiles, undefined, 'Metadata profil legacy redundant tidak perlu dihantar.');
+const hydratedOutgoingPayload = normalizeActiveLearningProjection(outgoingPayload, 'child-a', { accountId: 'account-a' });
+assert.equal(JSON.parse(hydratedOutgoingPayload.jannati_v151_profile).xp, 321, 'XP kanonik mesti pulih daripada snapshot.');
+assert.deepEqual(JSON.parse(hydratedOutgoingPayload.jannati_v151_profile).progress, canonicalProfile.progress, 'Progress/mastery kanonik tidak boleh berubah.');
+assert.deepEqual(JSON.parse(hydratedOutgoingPayload.jannati_v151_profile).history, canonicalProfile.history, 'Sejarah pembelajaran kanonik tidak boleh berubah.');
+assert.equal(JSON.parse(hydratedOutgoingPayload.jannati_v151_ai_memory).notes.length, canonicalMemory.notes.length, 'Memori pembelajaran kanonik tidak boleh dipotong.');
+const canonicalChildState = JSON.parse(outgoingPayload[CLOUD_CHILD_STATE_KEY]);
+assert.deepEqual(canonicalChildState.profiles, childProfiles, 'Profil anak kanonik tidak boleh dibuang.');
+assert.deepEqual(canonicalChildState.deletedChildren, deletedChildren, 'Metadata delete kanonik tidak boleh dibuang.');
+const outgoingArchive = canonicalChildState.archivedChildren;
 assert.equal(outgoingArchive['child-archived'].archivedAt, archivedChildren['child-archived'].archivedAt, 'Masa arkib tidak boleh dibuang.');
 assert.deepEqual(outgoingArchive['child-archived'].profile, archivedChildren['child-archived'].profile, 'Profil arkib tidak boleh dibuang.');
 

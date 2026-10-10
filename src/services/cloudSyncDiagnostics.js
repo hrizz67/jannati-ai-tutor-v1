@@ -60,6 +60,8 @@ export function sanitizeCloudSyncDiagnosticText(value, limit = MESSAGE_LIMIT) {
 }
 
 function sanitizeCode(value) {
+  const symbolicCode = String(value || '').trim();
+  if (/^[A-Z][A-Z0-9_]{1,47}$/.test(symbolicCode)) return symbolicCode;
   const code = sanitizeCloudSyncDiagnosticText(value, 48);
   return /^[A-Za-z0-9_.:-]{1,48}$/.test(code) ? code : '';
 }
