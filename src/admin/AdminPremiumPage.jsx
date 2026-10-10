@@ -57,6 +57,7 @@ function errorMessage(error, fallback) {
   if (code.includes('admin_required') || code.includes('permission') || code.includes('row-level')) return 'Akses admin tidak dibenarkan untuk akaun ini.';
   if (code.includes('target_user_not_found')) return 'Akaun pelanggan tidak ditemui.';
   if (code.includes('future_expiry_required')) return 'Tarikh tamat mesti selepas masa server sekarang.';
+  if (code.includes('payment_not_settled')) return 'Bayaran belum disahkan. Tandakan sebagai Dibayar atau gunakan akses yang dikecualikan sebelum mengaktifkan Premium.';
   if (code.includes('payment_reference_required')) return 'Rujukan pembayaran diperlukan apabila status bayaran ialah Dibayar.';
   if (code.includes('active_entitlement_cannot_start_trial')) return 'Percubaan tidak boleh menggantikan entitlement aktif.';
   if (code.includes('permanent_complimentary_requires_expiry_change')) return 'Tukar akses complimentary kekal melalui tindakan bertarikh atau Aktifkan Premium.';
@@ -294,8 +295,9 @@ export default function AdminPremiumPage({ supabase, accountUser, onBack, onEnti
       if (!expiresAt || new Date(expiresAt).getTime() <= new Date(serverNow).getTime()) { setStatusMessage('Pilih tarikh tamat Malaysia yang masih akan datang.'); return; }
     }
     const billable = ['ACTIVATE_PREMIUM', 'EXTEND_PREMIUM', 'SET_EXPIRY'].includes(action);
+    if (billable && paymentStatus === 'pending') { setStatusMessage('Bayaran Pending belum boleh mengaktifkan atau melanjutkan Premium.'); return; }
     if (billable && paymentStatus === 'paid' && (paymentAmount === '' || !Number.isFinite(Number(paymentAmount)) || Number(paymentAmount) < 0)) { setStatusMessage('Masukkan jumlah pembayaran yang sah.'); return; }
-    if (billable && paymentStatus === 'paid' && !paymentReference.trim()) { setStatusMessage('Masukkan rujukan pembayaran, atau pilih status Pending/Waived.'); return; }
+    if (billable && paymentStatus === 'paid' && !paymentReference.trim()) { setStatusMessage('Masukkan rujukan pembayaran, atau pilih status Dikecualikan.'); return; }
     const baseCommand = {
       targetUserId: activeAccount.accountId, action, durationDays, expiresAt,
       permanentComplimentary: Boolean(options.permanentComplimentary),

@@ -168,10 +168,9 @@ function countIdentityGroups(records = []) {
   return new Set(records.map((_, index) => find(index))).size;
 }
 
-export function getDailyQuestionCount(profile = {}, adaptiveProfile = {}, dateKey = '', subjectId = '') {
+export function getDailyQuestionCount(profile = {}, adaptiveProfile = {}, dateKey = '', _subjectId = '') {
   const day = getLocalDateKey(dateKey || new Date());
   if (!day) return 0;
-  const subject = normalizeQuotaIdentity(subjectId);
   const records = [
     ...(Array.isArray(profile.history) ? profile.history : []),
     ...(Array.isArray(adaptiveProfile.learningHistory) ? adaptiveProfile.learningHistory : [])
@@ -179,10 +178,8 @@ export function getDailyQuestionCount(profile = {}, adaptiveProfile = {}, dateKe
   const eligibleRecords = records.flatMap(item => {
     const timestamp = item?.answeredAt || item?.date || item?.createdAt;
     const questionId = normalizeQuotaIdentity(item?.questionId);
-    const itemSubject = normalizeQuotaIdentity(item?.subjectId || item?.subject);
     if (!timestamp
       || getLocalDateKey(timestamp) !== day
-      || (subject && itemSubject !== subject)
       || (!questionId && item?.eventType !== 'quiz-answer')) return [];
     const aliases = getQuotaRecordAliases(item, day);
     return aliases.length ? [{ aliases }] : [];

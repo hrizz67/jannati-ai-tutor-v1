@@ -5,11 +5,16 @@ import {
   getParentAccessMessage,
   getParentPinAttemptState,
   getParentPinStatus,
+  isRecentParentAuthentication,
   requestParentPinRecovery
 } from '../../services/parentAccess.js';
 
 function getBlockedSeconds(state) {
   return Math.max(1, Math.ceil((Number(state?.remainingMs) || 0) / 1000));
+}
+
+function canSetUpParentPin(pinStatus, recoveryAllowed, authMarker) {
+  return Boolean(recoveryAllowed || (!pinStatus.exists && !pinStatus.errorCode && isRecentParentAuthentication(authMarker)));
 }
 
 export default function ParentAccessGate({ accountId, authMarker, activeChildId, onUnlock, onBack, onLogout }) {
@@ -22,11 +27,12 @@ export default function ParentAccessGate({ accountId, authMarker, activeChildId,
   const [pinStatus, setPinStatus] = useState(() => getParentPinStatus(accountId));
   const pinExists = pinStatus.exists;
   const [recoveryAllowed, setRecoveryAllowed] = useState(() => canRecoverParentPin(accountId, authMarker));
-  const [setupMode, setSetupMode] = useState((!pinExists && !pinStatus.errorCode) || recoveryAllowed);
+  const [setupMode, setSetupMode] = useState(() => canSetUpParentPin(pinStatus, recoveryAllowed, authMarker));
   const [submission] = useState(() => createParentPinSubmission());
   const contextRef = useRef(null);
   const attemptState = getParentPinAttemptState(accountId, { now: tick });
   const rateBlocked = !setupMode && attemptState.isBlocked && !attemptState.errorCode;
+  const reauthRequired = !pinExists && !pinStatus.errorCode && !setupMode;
 
   useLayoutEffect(() => {
     const context = { accountId, authMarker, activeChildId };
@@ -45,7 +51,8 @@ export default function ParentAccessGate({ accountId, authMarker, activeChildId,
       const recovery = canRecoverParentPin(accountId, authMarker);
       setPinStatus(status);
       setRecoveryAllowed(recovery);
-      setSetupMode((!status.exists && !status.errorCode) || recovery);
+      setSetupMode(canSetUpParentPin(status, recovery, authMarker));
+      setTick(Date.now());
     };
     refreshStatus();
     const timer = window.setTimeout(() => inputRef.current?.focus(), 0);
@@ -124,13 +131,15 @@ export default function ParentAccessGate({ accountId, authMarker, activeChildId,
       </div>
       <section className="card parent-access-card" aria-labelledby="parent-access-title">
         <p className="eyebrow">Kawasan Ibu Bapa</p>
-        <h1 id="parent-access-title">{setupMode ? (pinExists ? 'Tetapkan semula PIN' : 'Cipta PIN ibu bapa') : 'Masukkan PIN ibu bapa'}</h1>
-        <p>{setupMode
+        <h1 id="parent-access-title">{reauthRequired ? 'Log masuk semula diperlukan' : setupMode ? (pinExists ? 'Tetapkan semula PIN' : 'Cipta PIN ibu bapa') : 'Masukkan PIN ibu bapa'}</h1>
+        <p>{reauthRequired
+          ? 'Demi keselamatan, log keluar dan log masuk semula sebelum mencipta PIN ibu bapa pada peranti ini.'
+          : setupMode
           ? 'Gunakan 4 hingga 6 digit yang hanya diketahui oleh ibu bapa atau penjaga.'
           : 'Laporan pembelajaran anak akan kekal tersembunyi sehingga PIN disahkan.'}</p>
         <p className="parent-account-hint">Akaun ibu bapa telah disahkan.</p>
 
-        <form className="parent-pin-form" onSubmit={handleSubmit}>
+        {!reauthRequired && <form className="parent-pin-form" onSubmit={handleSubmit}>
           <label htmlFor="parent-pin">PIN ibu bapa</label>
           <input
             ref={inputRef}
@@ -176,11 +185,11 @@ export default function ParentAccessGate({ accountId, authMarker, activeChildId,
           <button type="submit" className="full" disabled={busy || rateBlocked}>
             {busy ? 'Mengesahkan…' : setupMode ? 'Simpan dan Buka Laporan' : 'Buka Laporan Ibu Bapa'}
           </button>
-        </form>
+        </form>}
 
         {!setupMode && (
           <button type="button" className="ghost parent-recovery-action" onClick={startRecovery} disabled={busy}>
-            Lupa PIN? Log keluar untuk tetapkan semula
+            {reauthRequired ? 'Log keluar dan log masuk semula' : 'Lupa PIN? Log keluar untuk tetapkan semula'}
           </button>
         )}
         {recoveryAllowed && <p className="parent-recovery-note" role="status">Login semula disahkan. Anda boleh mencipta PIN baharu.</p>}

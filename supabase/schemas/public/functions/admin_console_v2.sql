@@ -341,6 +341,10 @@ begin
     if replay_audit.target_user_id <> $1 or replay_audit.action <> normalized_action then raise exception 'request_id_conflict'; end if;
     return public.admin_verify_subscription_request($8) || jsonb_build_object('ok', true, 'duplicate', true, 'idempotentReplay', true);
   end if;
+  if normalized_action in ('ACTIVATE_PREMIUM', 'EXTEND_PREMIUM', 'SET_EXPIRY')
+    and normalized_payment_status not in ('paid', 'waived') then
+    raise exception 'payment_not_settled';
+  end if;
   select * into old_entitlement from public.premium_entitlements e where e.account_id = $1 for update;
   if found then
     old_status := old_entitlement.status; old_plan := old_entitlement.plan; old_expiry := old_entitlement.expires_at;

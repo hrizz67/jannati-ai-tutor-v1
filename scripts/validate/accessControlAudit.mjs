@@ -32,7 +32,7 @@ assert.equal(getDailyQuestionCount({}, {
     { questionId: 'bm-1', subjectId: 'bm', answeredAt: `${today}T01:00:00Z` },
     { questionId: 'math-1', subjectId: 'math', answeredAt: `${today}T02:00:00Z` }
   ]
-}, today, 'bm'), 1);
+}, today, 'bm'), 2, 'Free quota must be global across subjects for the active child and Malaysia day.');
 assert.equal(getDailyQuestionCount({}, {
   learningHistory: [
     { sessionId: 'session-1', questionId: 'math-retry', subjectId: 'math', topicId: 'nombor', attemptNumber: 1, answeredAt: `${today}T01:00:00Z` },

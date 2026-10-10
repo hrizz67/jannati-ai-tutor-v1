@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildAdaptivePracticeSession } from '../../src/ai/adaptive/adaptivePracticeEngine.js';
 import {
   FREE_DAILY_QUESTION_LIMIT,
+  canRestartQuestionResume,
   canStartFreeQuestionSession,
   canSubmitFreeQuestion,
   capQuestionCountToRemainingQuota,
@@ -63,13 +64,54 @@ describe('Free daily question occurrence identity', () => {
     ])).toBe(2);
   });
 
-  it('preserves subject-scoped BM and Math filtering', () => {
+  it('counts BM and Math together in one global child/day quota', () => {
     const records = [
       attempt({ questionId: 'math-1', subjectId: 'math' }),
       attempt({ questionId: 'bm-1', subjectId: 'bm', topicId: 'ayat', answeredAt: `${today}T02:00:00.000Z` })
     ];
-    expect(count(records, 'math')).toBe(1);
-    expect(count(records, 'bm')).toBe(1);
+    expect(count(records, 'math')).toBe(2);
+    expect(count(records, 'bm')).toBe(2);
+  });
+
+  it('makes 6 BM plus 4 Math consume all 10 questions', () => {
+    const records = Array.from({ length: 10 }, (_, index) => attempt({
+      sessionId: `session-${index}`,
+      questionId: `${index < 6 ? 'bm' : 'math'}-${index}`,
+      subjectId: index < 6 ? 'bm' : 'math',
+      topicId: index < 6 ? 'ayat' : 'nombor',
+      answeredAt: `${today}T${String(index).padStart(2, '0')}:00:00.000Z`
+    }));
+    const used = count(records, 'science');
+    expect(used).toBe(FREE_DAILY_QUESTION_LIMIT);
+    expect(canStartFreeQuestionSession({ dailyQuestionCount: used })).toBe(false);
+  });
+
+  it('does not reset after switching among three subjects or topics', () => {
+    const subjects = ['bm', 'math', 'science'];
+    const records = Array.from({ length: 10 }, (_, index) => attempt({
+      sessionId: `mixed-${index}`,
+      questionId: `question-${index}`,
+      subjectId: subjects[index % subjects.length],
+      topicId: `topic-${index % 5}`,
+      answeredAt: `${today}T${String(index).padStart(2, '0')}:10:00.000Z`
+    }));
+    for (const selectedSubject of subjects) expect(count(records, selectedSubject)).toBe(10);
+    expect(canSubmitFreeQuestion({ dailyQuestionCount: count(records), questionId: 'question-11', sessionId: 'mixed-next' })).toBe(false);
+  });
+
+  it('retains the same count after a refresh-equivalent reload', () => {
+    const persisted = [attempt({ questionId: 'bm-1', subjectId: 'bm' }), attempt({ sessionId: 'session-2', questionId: 'math-1', subjectId: 'math' })];
+    expect(count(structuredClone(persisted), 'bm')).toBe(2);
+    expect(count(structuredClone(persisted), 'math')).toBe(2);
+  });
+
+  it('keeps child and account histories isolated by their existing storage scope', () => {
+    const childA = Array.from({ length: 10 }, (_, index) => attempt({ sessionId: `a-${index}`, questionId: `a-${index}` }));
+    const childB = [];
+    const accountBChild = [attempt({ sessionId: 'account-b', questionId: 'account-b-1', subjectId: 'bm' })];
+    expect(count(childA)).toBe(10);
+    expect(count(childB)).toBe(0);
+    expect(count(accountBChild)).toBe(1);
   });
 
   it('excludes prior-day attempts', () => {
@@ -134,6 +176,11 @@ describe('Free answer-time quota decisions', () => {
     })).toBe(false);
   });
 
+  it('keeps Premium users outside the Free restart quota', () => {
+    expect(canRestartQuestionResume({ dailyQuestionCount: 10, isPremiumUser: true })).toBe(true);
+    expect(canRestartQuestionResume({ dailyQuestionCount: 10, isPremiumUser: false })).toBe(false);
+  });
+
   it('prefers the real question subject over a synthetic adaptive fallback', () => {
     expect(resolveQuestionQuotaSubjectId({ subjectId: 'math' }, 'adaptive', 'bm')).toBe('math');
     expect(resolveQuestionQuotaSubjectId({}, 'adaptive', 'bm')).toBe('bm');
@@ -154,7 +201,7 @@ describe('Free answer-time quota decisions', () => {
 });
 
 describe('Adaptive practice remaining quota', () => {
-  it('caps the planned session to the exact remaining subject quota', () => {
+  it('caps the planned session to the exact remaining global quota', () => {
     expect(capQuestionCountToRemainingQuota(10, 7)).toBe(3);
     const subject = {
       id: 'math',

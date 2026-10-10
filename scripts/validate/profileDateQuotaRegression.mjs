@@ -56,8 +56,8 @@ const multipleSubjects = {
   ]
 };
 assert.equal(getDailyQuestionCount({}, multipleSubjects, day), 3);
-assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'bm'), 2);
-assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'math'), 1);
+assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'bm'), 3, 'Subject selection must not divide the global Free allowance.');
+assert.equal(getDailyQuestionCount({}, multipleSubjects, day, 'math'), 3, 'Switching subject must retain the child/day count.');
 
 const childFayyadh = { history: [{ ...projectedAttempt, eventId: 'fayyadh-event-1' }] };
 const childAina = { history: [
