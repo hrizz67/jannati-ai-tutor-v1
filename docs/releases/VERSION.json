@@ -1,8 +1,8 @@
 {
-  "version": "3.13.19",
+  "version": "3.13.20",
   "status": "stable",
-  "tag": "v3.13.19",
-  "buildDate": "2026-10-08T11:56:16.723Z",
+  "tag": "v3.13.20",
+  "buildDate": "2026-10-10T11:42:20.842Z",
   "questionCount": 4530,
   "curriculumCoverage": "100%",
   "validation": {
