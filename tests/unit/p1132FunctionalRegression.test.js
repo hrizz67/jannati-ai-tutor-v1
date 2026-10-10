@@ -401,7 +401,8 @@ describe('P1.13.2 production sync-state regression', () => {
     pending = remaining.length > 0;
     expect({ writes, reads, pending, dirty: remaining, status: syncResult.ok ? 'saved' : 'error' })
       .toEqual({ writes: 1, reads: 0, pending: false, dirty: [], status: 'saved' });
-    expect(JSON.parse(syncResult.payload[PROFILE_KEY])).toMatchObject({ xp: 1155, coins: 87 });
+    const hydrated = normalizeActiveLearningProjection(syncResult.payload, CHILD_ID, { accountId: ACCOUNT_ID });
+    expect(JSON.parse(hydrated[PROFILE_KEY])).toMatchObject({ xp: 1155, coins: 87 });
   });
 
   it('keeps a failed reward queued without a busy loop and reconnects exactly once', async () => {
@@ -448,7 +449,8 @@ describe('P1.13.2 production sync-state regression', () => {
     expect(reconnected.ok).toBe(true);
     expect(reconnectWrites).toBe(1);
     expect(acknowledgeCloudMutations(dirty, versions, submitted)).toEqual([]);
-    expect(JSON.parse(reconnected.payload[PROFILE_KEY])).toMatchObject({ xp: 1155, coins: 87 });
+    const hydrated = normalizeActiveLearningProjection(reconnected.payload, CHILD_ID, { accountId: ACCOUNT_ID });
+    expect(JSON.parse(hydrated[PROFILE_KEY])).toMatchObject({ xp: 1155, coins: 87 });
   });
 
   it('does not clear a newer mutation when an older cloud write is acknowledged', () => {

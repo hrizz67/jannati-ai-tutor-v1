@@ -153,6 +153,21 @@ describe('P1.13 opt-in cloud sync diagnostics', () => {
     expect(storedDiagnostic().message.length).toBeLessThanOrEqual(160);
   });
 
+  it('preserves the bounded client payload error code without weakening secret redaction', () => {
+    recordCloudSyncDiagnostic(baseFailure({
+      status: null,
+      code: 'CLIENT_PAYLOAD_TOO_LARGE',
+      message: 'cloud_learning_payload_exceeds_client_limit',
+      attempt: 0
+    }));
+    expect(storedDiagnostic()).toMatchObject({
+      status: null,
+      code: 'CLIENT_PAYLOAD_TOO_LARGE',
+      message: '[REDACTED_TOKEN]',
+      attempt: 0
+    });
+  });
+
   it('records a read failure from the selected read RPC', async () => {
     const result = await loadCloudLearningDataResult({
       async rpc(name) {

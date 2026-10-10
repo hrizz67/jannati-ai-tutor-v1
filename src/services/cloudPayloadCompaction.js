@@ -1,9 +1,28 @@
 import { compactResumeSlotCollection } from '../utils/resumeCompaction.js';
+import {
+  CHILD_MERGED_BACKUP_PREFIX,
+  CHILD_ORIGINAL_SNAPSHOT_PREFIX,
+  CHILD_SNAPSHOT_PREFIX,
+  CLOUD_CHILD_STATE_KEY,
+  CLOUD_SYNC_META_KEY,
+  mergeConcurrentLearningSnapshots
+} from './learningSync.js';
 
 export const MAX_CLOUD_LEARNING_PAYLOAD_BYTES = 7 * 1024 * 1024;
 const RESUME_SLOTS_KEY = 'jannati_v152_resume_slots';
 const RESUME_TOMBSTONES_KEY = 'jannati_v152_resume_tombstones';
 const RESUME_PENDING_TOMBSTONES_KEY = 'jannati_v152_resume_pending_tombstones';
+const CHILD_PROFILES_KEY = 'jannati_child_profiles';
+const ACTIVE_CHILD_KEY = 'jannati_active_child_id';
+const DELETED_CHILDREN_KEY = 'jannati_deleted_child_profiles';
+const ARCHIVED_CHILDREN_KEY = 'jannati_archived_child_profiles';
+const PARENT_SECURITY_STORAGE_PREFIX = 'jannati_parent_security:';
+const LEGACY_CHILD_METADATA_KEYS = new Set([
+  CHILD_PROFILES_KEY,
+  ACTIVE_CHILD_KEY,
+  DELETED_CHILDREN_KEY,
+  ARCHIVED_CHILDREN_KEY
+]);
 const isResumeStorageKey = key => /^jannati_v(?:140|150|151|152)_resume(?:_slots)?$/.test(key);
 const CLOUD_TRANSIENT_FIELDS = new Set([
   'audio',
@@ -17,9 +36,9 @@ const CLOUD_TRANSIENT_FIELDS = new Set([
 ]);
 
 const SNAPSHOT_PREFIXES = [
-  'jannati_child_snapshot:',
-  'jannati_child_original_snapshot:',
-  'jannati_merged_child_backup:'
+  CHILD_SNAPSHOT_PREFIX,
+  CHILD_ORIGINAL_SNAPSHOT_PREFIX,
+  CHILD_MERGED_BACKUP_PREFIX
 ];
 
 function parseObject(raw) {
@@ -86,6 +105,97 @@ function cleanNested(value, depth = 0) {
   return next;
 }
 
+function childIdFromOriginalSnapshotKey(key = '') {
+  return key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)
+    ? key.slice(CHILD_ORIGINAL_SNAPSHOT_PREFIX.length)
+    : '';
+}
+
+function mergeSnapshotIntoCanonical(next, childId, rawSnapshot) {
+  if (!childId || typeof rawSnapshot !== 'string' || !parseObject(rawSnapshot)) return false;
+  const snapshotKey = `${CHILD_SNAPSHOT_PREFIX}${childId}`;
+  const merged = mergeConcurrentLearningSnapshots(next[snapshotKey], rawSnapshot, childId);
+  if (typeof merged !== 'string' || !parseObject(merged)) return false;
+  next[snapshotKey] = merged;
+  return true;
+}
+
+function collapseOriginalChildSnapshots(next, metadata = {}) {
+  Object.keys(next).filter(key => key.startsWith(CHILD_ORIGINAL_SNAPSHOT_PREFIX)).forEach(key => {
+    const childId = childIdFromOriginalSnapshotKey(key);
+    if (metadata.deletedChildren?.[childId]) return;
+    if (mergeSnapshotIntoCanonical(next, childId, next[key])) delete next[key];
+  });
+}
+
+function isKnownCanonicalChild(metadata = {}, childId = '', next = {}) {
+  if (!childId || metadata.deletedChildren?.[childId]) return false;
+  if (Array.isArray(metadata.profiles) && metadata.profiles.some(profile => profile?.id === childId)) return true;
+  if (metadata.archivedChildren?.[childId]?.profile) return true;
+  return Boolean(parseObject(next[`${CHILD_SNAPSHOT_PREFIX}${childId}`]));
+}
+
+function collapseMergedChildBackups(next, metadata = {}) {
+  Object.keys(next).filter(key => key.startsWith(CHILD_MERGED_BACKUP_PREFIX)).forEach(key => {
+    const backup = parseObject(next[key]);
+    const canonicalId = String(backup?.canonicalId || '').trim();
+    if (!backup || !isKnownCanonicalChild(metadata, canonicalId, next)) return;
+    const snapshotFields = ['snapshot', 'originalSnapshot'].filter(field => typeof backup[field] === 'string');
+    if (!snapshotFields.length) return;
+    const preserved = snapshotFields.every(field => mergeSnapshotIntoCanonical(next, canonicalId, backup[field]));
+    if (!preserved) return;
+    const compactBackup = { ...backup };
+    snapshotFields.forEach(field => delete compactBackup[field]);
+    next[key] = JSON.stringify(compactBackup);
+  });
+}
+
+function isRootLearningProjectionKey(key = '') {
+  return String(key).startsWith('jannati')
+    && !isResumeStorageKey(key)
+    && key !== RESUME_TOMBSTONES_KEY
+    && key !== RESUME_PENDING_TOMBSTONES_KEY
+    && !LEGACY_CHILD_METADATA_KEYS.has(key)
+    && key !== CLOUD_CHILD_STATE_KEY
+    && key !== CLOUD_SYNC_META_KEY
+    && !key.startsWith(PARENT_SECURITY_STORAGE_PREFIX)
+    && !SNAPSHOT_PREFIXES.some(prefix => key.startsWith(prefix));
+}
+
+function collapseActiveRootProjection(next, metadata = {}, identity = {}) {
+  const childId = String(metadata.activeChildId || identity.childId || '').trim();
+  const snapshotKey = `${CHILD_SNAPSHOT_PREFIX}${childId}`;
+  const current = parseObject(next[snapshotKey]);
+  if (!childId || !current) return;
+  const rootEntries = Object.entries(next).filter(([key, value]) => (
+    isRootLearningProjectionKey(key) && typeof value === 'string'
+  ));
+  if (!rootEntries.length) return;
+  const rootSnapshot = JSON.stringify({
+    __childSnapshotChildId: childId,
+    __childSnapshotCapturedAt: Number(current.__childSnapshotCapturedAt) || Date.now(),
+    ...(identity.accountId || current.__childSnapshotAccountId
+      ? { __childSnapshotAccountId: identity.accountId || current.__childSnapshotAccountId }
+      : {}),
+    ...Object.fromEntries(rootEntries)
+  });
+  if (!mergeSnapshotIntoCanonical(next, childId, rootSnapshot)) return;
+  rootEntries.forEach(([key]) => delete next[key]);
+}
+
+function removeRedundantLegacyMetadata(next, metadata = {}) {
+  if (!Array.isArray(metadata.profiles)) return;
+  LEGACY_CHILD_METADATA_KEYS.forEach(key => delete next[key]);
+}
+
+function compactRedundantTransportState(next, identity = {}) {
+  const metadata = parseObject(next[CLOUD_CHILD_STATE_KEY]) || {};
+  collapseOriginalChildSnapshots(next, metadata);
+  collapseMergedChildBackups(next, metadata);
+  collapseActiveRootProjection(next, metadata, identity);
+  removeRedundantLegacyMetadata(next, metadata);
+}
+
 function collectAccountResumeState(payload, resumes, tombstones, identity = {}) {
   Object.entries(payload && typeof payload === 'object' ? payload : {}).forEach(([key, raw]) => {
     if (isResumeStorageKey(key)) collectResumeCache(resumes, key, raw, identity);
@@ -123,6 +233,7 @@ export function compactCloudLearningPayload(payload = {}, resumeSources = [], id
         : cleanNested(raw);
     }
   });
+  compactRedundantTransportState(next, identity);
   resumeSources.forEach(source => collectAccountResumeState(source, resumes, tombstones, identity));
   const eligible = resumes.filter(item => !accountId || !item.value.accountId || item.value.accountId === accountId);
   const slots = cleanNested(compactResumeSlotCollection(...eligible.map(item => ({ [item.key]: item.value }))));
