@@ -1,0 +1,1 @@
+function e({dev:e=!1,search:t}={}){if(e)return!0;let n=t??(typeof window<`u`?window.location.search:``);return new URLSearchParams(n).has(`debug`)}export{e as t};
