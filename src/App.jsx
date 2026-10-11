@@ -99,6 +99,7 @@ const ManualPremiumSalesPage = React.lazy(() => import('./premium/ManualPremiumS
 const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
 const ParentModeBoundary = React.lazy(() => import('./components/parent/ParentModeBoundary.jsx'));
 const AuthRecoveryPanel = React.lazy(() => import('./components/auth/AuthRecoveryPanel.jsx'));
+const PublicInfoPage = React.lazy(() => import('./public/PublicInfoPage.jsx'));
 import { EmptyState } from './dashboard/EmptyState.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
@@ -107,6 +108,7 @@ import { announceAccountConnectivity, describeAccountError } from './services/ac
 import { settleAccountHydration } from './services/accountHydration.js';
 import { isInternalUiSurfaceEnabled } from './services/internalUiSurfaceVisibility.js';
 import { AUTH_RECOVERY_STATUS, getInitialAuthRecoveryStatus, resolveAuthRecoveryEvent } from './services/authRecoveryIntent.js';
+import { getSafePublicInfoReturnHash, resolvePublicInfoRoute } from './public/publicInfoRoutes.js';
 import {
   createSafeFreeEntitlement,
   getEntitlementExpiryDelay,
@@ -1426,6 +1428,8 @@ export default function App() {
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
   const [adminRouteActive, setAdminRouteActive] = useState(() => typeof window !== 'undefined' && ['#/admin', '#/admin/premium'].includes(window.location.hash));
   const [premiumSalesRouteActive, setPremiumSalesRouteActive] = useState(() => typeof window !== 'undefined' && window.location.hash === '#/premium');
+  const [publicInfoRoute, setPublicInfoRoute] = useState(() => resolvePublicInfoRoute(typeof window === 'undefined' ? '' : window.location.hash));
+  const publicInfoReturnHashRef = useRef(getSafePublicInfoReturnHash(typeof window === 'undefined' ? '' : window.location.hash));
   const [supabase, setSupabase] = useState(null);
   const [authRecoveryStatus, setAuthRecoveryStatus] = useState(getInitialAuthRecoveryStatus);
   const authRecoveryStatusRef = useRef(authRecoveryStatus);
@@ -1507,8 +1511,11 @@ export default function App() {
   useEffect(() => {
     const syncSpecialRoutes = () => {
       const hash = window.location.hash;
+      const nextPublicInfoRoute = resolvePublicInfoRoute(hash);
+      if (!nextPublicInfoRoute) publicInfoReturnHashRef.current = getSafePublicInfoReturnHash(hash);
       setAdminRouteActive(['#/admin', '#/admin/premium'].includes(hash));
       setPremiumSalesRouteActive(hash === '#/premium');
+      setPublicInfoRoute(nextPublicInfoRoute);
     };
     window.addEventListener('hashchange', syncSpecialRoutes);
     return () => window.removeEventListener('hashchange', syncSpecialRoutes);
@@ -1518,6 +1525,7 @@ export default function App() {
     window.location.hash = '/admin';
     setAdminRouteActive(true);
     setPremiumSalesRouteActive(false);
+    setPublicInfoRoute('');
   }
 
   function closeAdminPremium() {
@@ -1534,6 +1542,7 @@ export default function App() {
     window.location.hash = '/premium';
     setPremiumSalesRouteActive(true);
     setAdminRouteActive(false);
+    setPublicInfoRoute('');
     setAccessNotice(null);
     setScreen('dashboard');
   }
@@ -1542,6 +1551,14 @@ export default function App() {
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
     setPremiumSalesRouteActive(false);
     setScreen('dashboard');
+  }
+
+  function closePublicInfo() {
+    const returnHash = publicInfoReturnHashRef.current;
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${returnHash}`);
+    setPublicInfoRoute('');
+    setAdminRouteActive(['#/admin', '#/admin/premium'].includes(returnHash));
+    setPremiumSalesRouteActive(returnHash === '#/premium');
   }
 
   useEffect(() => {
@@ -5349,6 +5366,10 @@ export default function App() {
     setScreen(targetScreen);
   }
 
+  if (publicInfoRoute) {
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen={`public-${publicInfoRoute}`}><ProductionErrorBoundary fallback={<EmptyState title="Halaman maklumat tidak dapat dipaparkan." message="Kembali dan cuba semula." actionLabel="Kembali" onAction={closePublicInfo} />}><React.Suspense fallback={<main className="app"><section className="card"><p role="status">Memuat maklumat...</p></section></main>}><PublicInfoPage route={publicInfoRoute} onBack={closePublicInfo} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+  }
+
   if (authRecoveryStatus !== AUTH_RECOVERY_STATUS.IDLE) {
     const recoveryMode = authRecoveryStatus === AUTH_RECOVERY_STATUS.READY
       ? 'update-password'
@@ -5454,7 +5475,11 @@ function AppVersiFooter() {
   const displayDate = Number.isNaN(buildDate.getTime()) ? APP_BUILD_DATE : buildDate.toLocaleString();
   const showBuildTimestamp = import.meta.env.DEV || new URLSearchParams(window.location.search).has('debug');
   return <footer className="app-version-footer" aria-label="Maklumat versi aplikasi">
-    <BrandLogo horizontal size="sm" className="footer-brand-logo" />    <span><b>Versi</b> {APP_VERSION}</span>    {showBuildTimestamp && <span><b>Build</b> {displayDate}</span>}    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
+    <BrandLogo horizontal size="sm" className="footer-brand-logo" />
+    <span><b>Versi</b> {APP_VERSION}</span>
+    {showBuildTimestamp && <span><b>Build</b> {displayDate}</span>}
+    <span><b>Hak Cipta</b> Jannati AI Tutor</span>
+    <nav className="app-footer-links" aria-label="Maklumat awam"><a href="#/privacy">Dasar Privasi</a><a href="#/terms">Terma Penggunaan</a><a href="#/support">Bantuan</a></nav>
   </footer>;
 }
 
