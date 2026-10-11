@@ -4676,6 +4676,28 @@ input:focus {
   white-space: nowrap;
 }
 
+.app-footer-links {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.app-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #087a3b;
+  font-weight: 800;
+  text-underline-offset: 3px;
+}
+
+.app-footer-links a:focus-visible {
+  outline: 3px solid rgba(15,138,67,.3);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 @media (max-width: 650px) {
   .subject-quick-switch {
     overflow: hidden;
@@ -4718,6 +4740,11 @@ input:focus {
   .app-version-footer span {
     max-width: 100%;
     overflow-wrap: normal;
+  }
+
+  .app-footer-links {
+    width: 100%;
+    gap: 8px 14px;
   }
 
   .beta-feedback-fab {
