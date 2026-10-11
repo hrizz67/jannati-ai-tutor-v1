@@ -37,5 +37,8 @@ export function resolveAuthRecoveryEvent({ event = '', hasSession = false, curre
       shouldHydrate: false
     };
   }
+  if (currentStatus !== AUTH_RECOVERY_STATUS.IDLE && event !== 'SIGNED_OUT') {
+    return { status: currentStatus, shouldHydrate: false };
+  }
   return { status: currentStatus, shouldHydrate: true };
 }

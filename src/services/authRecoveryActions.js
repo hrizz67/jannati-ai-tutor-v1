@@ -3,7 +3,8 @@ import { formatAccountError } from './accountErrorMessages.js';
 export const AUTH_PASSWORD_MIN_LENGTH = 6;
 export const SAFE_PASSWORD_RESET_SENT = 'Jika akaun dengan e-mel itu tersedia, pautan tetapan semula telah dihantar.';
 export const SAFE_CONFIRMATION_RESENT = 'Jika e-mel itu memerlukan pengesahan, e-mel pengesahan baharu telah dihantar.';
-export const PASSWORD_UPDATED_MESSAGE = 'Kata laluan berjaya dikemas kini.';
+export const PASSWORD_UPDATED_MESSAGE = 'Kata laluan berjaya dikemas kini. Sila log masuk semula.';
+export const RECOVERY_SIGN_OUT_FAILED_MESSAGE = 'Kata laluan telah dikemas kini, tetapi sesi pemulihan belum dapat ditamatkan. Cuba lagi.';
 
 export function isValidAccountEmail(value = '') {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
@@ -63,4 +64,27 @@ export async function updateRecoveryPassword({ auth, password, confirmation } = 
   } catch (error) {
     return safeFailure(error);
   }
+}
+
+export async function endRecoverySession({ auth } = {}) {
+  if (!auth?.signOut) {
+    return { ok: false, finalized: false, passwordUpdated: true, message: RECOVERY_SIGN_OUT_FAILED_MESSAGE };
+  }
+  try {
+    const result = await auth.signOut({ scope: 'local' });
+    if (result?.error) {
+      return { ok: false, finalized: false, passwordUpdated: true, message: RECOVERY_SIGN_OUT_FAILED_MESSAGE };
+    }
+    return { ok: true, finalized: true, passwordUpdated: true, message: PASSWORD_UPDATED_MESSAGE };
+  } catch {
+    return { ok: false, finalized: false, passwordUpdated: true, message: RECOVERY_SIGN_OUT_FAILED_MESSAGE };
+  }
+}
+
+export async function updateRecoveryPasswordAndFinalize({ auth, password, confirmation } = {}) {
+  const updateResult = await updateRecoveryPassword({ auth, password, confirmation });
+  if (!updateResult.ok) {
+    return { ...updateResult, finalized: false, passwordUpdated: false };
+  }
+  return endRecoverySession({ auth });
 }

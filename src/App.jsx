@@ -5358,8 +5358,10 @@ export default function App() {
     const leaveRecovery = () => {
       authRecoveryStatusRef.current = AUTH_RECOVERY_STATUS.IDLE;
       setAuthRecoveryStatus(AUTH_RECOVERY_STATUS.IDLE);
+      setAccountUser(null);
+      setAccessProfile(null);
       setShowAccountLogin(true);
-      setScreen(accountUser?.id ? 'dashboard' : 'login');
+      setScreen('login');
     };
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="password-recovery"><React.Suspense fallback={<main className="app login-page"><section className="card"><p role="status">Menyediakan pemulihan akaun...</p></section></main>}><main className="app login-page"><section className="card"><AuthRecoveryPanel mode={recoveryMode} auth={supabase?.auth || null} redirectTo={getEmailRedirectUrl()} onSupabaseReady={setSupabase} onBack={leaveRecovery} onComplete={leaveRecovery} /></section></main></React.Suspense></BetaChrome>;
   }

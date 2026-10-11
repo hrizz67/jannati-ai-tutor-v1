@@ -7,11 +7,14 @@ import manualSalesConfig from '../../src/config/manualSalesConfig.js';
 import {
   AUTH_PASSWORD_MIN_LENGTH,
   PASSWORD_UPDATED_MESSAGE,
+  RECOVERY_SIGN_OUT_FAILED_MESSAGE,
   SAFE_CONFIRMATION_RESENT,
   SAFE_PASSWORD_RESET_SENT,
+  endRecoverySession,
   requestPasswordReset,
   resendSignupConfirmation,
   updateRecoveryPassword,
+  updateRecoveryPasswordAndFinalize,
   validateNewPassword
 } from '../../src/services/authRecoveryActions.js';
 import {
@@ -76,8 +79,9 @@ describe('P1.15B1 public auth recovery UX', () => {
   it('recognizes an expired recovery callback and supplies a safe route', () => {
     expect(getInitialAuthRecoveryStatus({ search: '?error=access_denied&error_code=otp_expired', hash: '' })).toBe(AUTH_RECOVERY_STATUS.INVALID);
     const markup = renderToStaticMarkup(React.createElement(AuthRecoveryPanel, { mode: 'invalid-link', onBack: () => {} }));
-    expect(markup).toContain('Pautan tidak sah atau telah tamat tempoh.');
-    expect(markup).toContain('Minta pautan baharu');
+    expect(markup).toContain('Pautan e-mel tidak sah atau telah tamat tempoh.');
+    expect(markup).toContain('Tetapkan semula kata laluan');
+    expect(markup).toContain('Hantar semula e-mel pengesahan');
     expect(markup).toContain('Kembali ke log masuk');
   });
 
@@ -100,6 +104,90 @@ describe('P1.15B1 public auth recovery UX', () => {
     expect(updateUser).toHaveBeenCalledTimes(1);
     expect(updateUser).toHaveBeenCalledWith({ password: 'baharu123' });
     expect(result).toEqual({ ok: true, message: PASSWORD_UPDATED_MESSAGE });
+  });
+
+  it('updates the password once and signs out the recovery session before finalizing', async () => {
+    const calls = [];
+    const auth = {
+      updateUser: vi.fn().mockImplementation(async () => {
+        calls.push('update');
+        return { data: { user: {} }, error: null };
+      }),
+      signOut: vi.fn().mockImplementation(async options => {
+        calls.push('sign-out');
+        expect(options).toEqual({ scope: 'local' });
+        return { error: null };
+      })
+    };
+
+    const result = await updateRecoveryPasswordAndFinalize({
+      auth,
+      password: 'baharu123',
+      confirmation: 'baharu123'
+    });
+
+    expect(calls).toEqual(['update', 'sign-out']);
+    expect(auth.updateUser).toHaveBeenCalledTimes(1);
+    expect(auth.signOut).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({
+      ok: true,
+      finalized: true,
+      passwordUpdated: true,
+      message: 'Kata laluan berjaya dikemas kini. Sila log masuk semula.'
+    });
+  });
+
+  it('does not report clean completion when recovery sign-out fails', async () => {
+    const auth = {
+      updateUser: vi.fn().mockResolvedValue({ data: { user: {} }, error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: { status: 503, message: 'provider unavailable' } })
+    };
+    const result = await updateRecoveryPasswordAndFinalize({
+      auth,
+      password: 'baharu123',
+      confirmation: 'baharu123'
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      finalized: false,
+      passwordUpdated: true,
+      message: RECOVERY_SIGN_OUT_FAILED_MESSAGE
+    });
+    expect(result.message).not.toContain('Sila log masuk semula');
+  });
+
+  it('retries only recovery sign-out after the password was already updated', async () => {
+    const signOut = vi.fn().mockResolvedValue({ error: null });
+    const result = await endRecoverySession({ auth: { signOut } });
+    expect(signOut).toHaveBeenCalledOnce();
+    expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
+    expect(result.finalized).toBe(true);
+  });
+
+  it('suppresses stale recovery refresh events until the signed-out cleanup event', () => {
+    expect(resolveAuthRecoveryEvent({
+      event: 'TOKEN_REFRESHED',
+      hasSession: true,
+      currentStatus: AUTH_RECOVERY_STATUS.READY
+    })).toEqual({ status: AUTH_RECOVERY_STATUS.READY, shouldHydrate: false });
+    expect(resolveAuthRecoveryEvent({
+      event: 'USER_UPDATED',
+      hasSession: true,
+      currentStatus: AUTH_RECOVERY_STATUS.READY
+    })).toEqual({ status: AUTH_RECOVERY_STATUS.READY, shouldHydrate: false });
+    expect(resolveAuthRecoveryEvent({
+      event: 'SIGNED_OUT',
+      hasSession: false,
+      currentStatus: AUTH_RECOVERY_STATUS.READY
+    })).toEqual({ status: AUTH_RECOVERY_STATUS.READY, shouldHydrate: true });
+  });
+
+  it('offers normal login only after the finalized recovery state', () => {
+    expect(recoveryPanelSource).toContain('{recoveryFinalized && <>');
+    expect(recoveryPanelSource).toContain('>Log masuk</button>');
+    expect(appSource).toContain("setAuthRecoveryStatus(AUTH_RECOVERY_STATUS.IDLE)");
+    expect(appSource).toContain("setScreen('login')");
   });
 
   it('resends signup confirmation with the supported exact SDK shape', async () => {

@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSupabaseClient } from '../../services/supabaseClient.js';
 import {
   AUTH_PASSWORD_MIN_LENGTH,
+  RECOVERY_SIGN_OUT_FAILED_MESSAGE,
+  endRecoverySession,
   requestPasswordReset,
   resendSignupConfirmation,
-  updateRecoveryPassword
+  updateRecoveryPasswordAndFinalize
 } from '../../services/authRecoveryActions.js';
 
 async function resolveAuth(auth, onSupabaseReady) {
@@ -30,12 +32,16 @@ export default function AuthRecoveryPanel({
   const [confirmation, setConfirmation] = useState('');
   const [message, setMessage] = useState('');
   const [messageKind, setMessageKind] = useState('');
+  const [passwordUpdated, setPasswordUpdated] = useState(false);
+  const [recoveryFinalized, setRecoveryFinalized] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     setActiveMode(mode);
     setMessage('');
     setMessageKind('');
+    setPasswordUpdated(false);
+    setRecoveryFinalized(false);
     panelRef.current?.focus();
   }, [mode]);
 
@@ -75,12 +81,40 @@ export default function AuthRecoveryPanel({
     setMessageKind('');
     try {
       const resolvedAuth = await resolveAuth(auth, onSupabaseReady);
-      const result = await updateRecoveryPassword({ auth: resolvedAuth, password, confirmation });
+      const result = await updateRecoveryPasswordAndFinalize({ auth: resolvedAuth, password, confirmation });
       setMessage(result.message);
       setMessageKind(result.ok ? 'success' : 'error');
+      setPasswordUpdated(Boolean(result.passwordUpdated));
+      setRecoveryFinalized(Boolean(result.finalized));
+      if (result.passwordUpdated) {
+        setPassword('');
+        setConfirmation('');
+      }
     } catch {
       setMessage('Akaun tidak dapat diproses sekarang. Cuba lagi sebentar.');
       setMessageKind('error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleSignOutRetry() {
+    if (busy) return;
+    setBusy(true);
+    setMessage('');
+    setMessageKind('');
+    try {
+      const resolvedAuth = await resolveAuth(auth, onSupabaseReady);
+      const result = await endRecoverySession({ auth: resolvedAuth });
+      setMessage(result.message);
+      setMessageKind(result.ok ? 'success' : 'error');
+      setPasswordUpdated(true);
+      setRecoveryFinalized(Boolean(result.finalized));
+    } catch {
+      setMessage(RECOVERY_SIGN_OUT_FAILED_MESSAGE);
+      setMessageKind('error');
+      setPasswordUpdated(true);
+      setRecoveryFinalized(false);
     } finally {
       setBusy(false);
     }
@@ -97,19 +131,19 @@ export default function AuthRecoveryPanel({
   if (activeMode === 'invalid-link') {
     return <section ref={panelRef} tabIndex={-1} className="auth-recovery-panel" aria-labelledby="auth-recovery-title">
       <p className="eyebrow">Akaun Jannati</p>
-      <h1 id="auth-recovery-title">Pautan tidak sah atau telah tamat tempoh.</h1>
-      <p>Minta pautan tetapan semula yang baharu atau kembali ke log masuk akaun.</p>
-      <button type="button" onClick={() => setActiveMode('request-reset')}>Minta pautan baharu</button>
+      <h1 id="auth-recovery-title">Pautan e-mel tidak sah atau telah tamat tempoh.</h1>
+      <p>Pilih tindakan yang sesuai untuk akaun kamu atau kembali ke log masuk.</p>
+      <button type="button" onClick={() => setActiveMode('request-reset')}>Tetapkan semula kata laluan</button>
+      <button type="button" className="secondary" onClick={() => setActiveMode('resend-signup')}>Hantar semula e-mel pengesahan</button>
       <button type="button" className="secondary" onClick={onBack}>Kembali ke log masuk</button>
     </section>;
   }
 
   if (activeMode === 'update-password') {
-    const updated = messageKind === 'success';
     return <section ref={panelRef} tabIndex={-1} className="auth-recovery-panel" aria-labelledby="auth-recovery-title">
       <p className="eyebrow">Akaun Jannati</p>
       <h1 id="auth-recovery-title">Tetapkan kata laluan baharu</h1>
-      {!updated && <form className="account-login-form" onSubmit={handlePasswordUpdate}>
+      {!passwordUpdated && <form className="account-login-form" onSubmit={handlePasswordUpdate}>
         <label htmlFor="recovery-password">Kata laluan baharu</label>
         <input id="recovery-password" type="password" value={password} onChange={event => setPassword(event.target.value)} minLength={AUTH_PASSWORD_MIN_LENGTH} autoComplete="new-password" required />
         <small>Minimum {AUTH_PASSWORD_MIN_LENGTH} aksara.</small>
@@ -118,9 +152,13 @@ export default function AuthRecoveryPanel({
         {message && <p className="autosave-note" role="alert" aria-live="assertive">{message}</p>}
         <button type="submit" className="full" disabled={busy}>{busy ? 'Mengemas kini...' : 'Kemas kini kata laluan'}</button>
       </form>}
-      {updated && <>
+      {passwordUpdated && !recoveryFinalized && <>
+        <p className="autosave-note" role="alert" aria-live="assertive">{message}</p>
+        <button type="button" className="full" onClick={handleSignOutRetry} disabled={busy}>{busy ? 'Menamatkan sesi...' : 'Cuba tamatkan sesi semula'}</button>
+      </>}
+      {recoveryFinalized && <>
         <p className="autosave-note" role="status" aria-live="polite">{message}</p>
-        <button type="button" onClick={onComplete}>Teruskan ke akaun</button>
+        <button type="button" onClick={onComplete}>Log masuk</button>
       </>}
     </section>;
   }
