@@ -95,6 +95,7 @@ import {
 import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
+const ManualPremiumSalesPage = React.lazy(() => import('./premium/ManualPremiumSalesPage.jsx'));
 const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
 const ParentModeBoundary = React.lazy(() => import('./components/parent/ParentModeBoundary.jsx'));
 import { EmptyState } from './dashboard/EmptyState.jsx';
@@ -1421,6 +1422,7 @@ export default function App() {
   }, [recoveryMessages]);
   const [screen, setScreen] = useState(profile.name ? 'dashboard' : 'login');
   const [adminRouteActive, setAdminRouteActive] = useState(() => typeof window !== 'undefined' && ['#/admin', '#/admin/premium'].includes(window.location.hash));
+  const [premiumSalesRouteActive, setPremiumSalesRouteActive] = useState(() => typeof window !== 'undefined' && window.location.hash === '#/premium');
   const [supabase, setSupabase] = useState(null);
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
@@ -1497,14 +1499,19 @@ export default function App() {
   }, [session]);
 
   useEffect(() => {
-    const syncAdminRoute = () => setAdminRouteActive(['#/admin', '#/admin/premium'].includes(window.location.hash));
-    window.addEventListener('hashchange', syncAdminRoute);
-    return () => window.removeEventListener('hashchange', syncAdminRoute);
+    const syncSpecialRoutes = () => {
+      const hash = window.location.hash;
+      setAdminRouteActive(['#/admin', '#/admin/premium'].includes(hash));
+      setPremiumSalesRouteActive(hash === '#/premium');
+    };
+    window.addEventListener('hashchange', syncSpecialRoutes);
+    return () => window.removeEventListener('hashchange', syncSpecialRoutes);
   }, []);
 
   function openAdminPremium() {
     window.location.hash = '/admin';
     setAdminRouteActive(true);
+    setPremiumSalesRouteActive(false);
   }
 
   function closeAdminPremium() {
@@ -1514,6 +1521,20 @@ export default function App() {
       window.location.reload();
       return;
     }
+    setScreen('dashboard');
+  }
+
+  function openManualPremiumSales() {
+    window.location.hash = '/premium';
+    setPremiumSalesRouteActive(true);
+    setAdminRouteActive(false);
+    setAccessNotice(null);
+    setScreen('dashboard');
+  }
+
+  function closeManualPremiumSales() {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    setPremiumSalesRouteActive(false);
     setScreen('dashboard');
   }
 
@@ -5289,7 +5310,9 @@ export default function App() {
 
   if (screen === 'login') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><Login onStart={startProfile} onSupabaseReady={setSupabase} guestProfile={getGuestProfileSummary()} onResumeGuest={resumeGuestProfile} /></BetaChrome>;
 
-  if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} /></BetaChrome>;
+  if (premiumSalesRouteActive) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="premium-sales"><ProductionErrorBoundary fallback={<EmptyState title="Halaman Premium tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba semula." actionLabel="Papan Utama" onAction={closeManualPremiumSales} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Maklumat Premium sedang dimuat</h2></div>}><ManualPremiumSalesPage accountUser={accountUser} accessProfile={effectiveAccess} onBack={closeManualPremiumSales} onLogin={() => { closeManualPremiumSales(); setShowAccountLogin(true); }} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
+
+  if (screen === 'access') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><AccessNotice notice={accessNotice} accessStatus={normalizeAccessStatus(effectiveAccess.access_status)} onBack={() => { setAccessNotice(null); setScreen(accessReturnScreen === 'access' ? 'dashboard' : accessReturnScreen); }} onLogin={() => { setAccessNotice(null); setShowAccountLogin(true); }} onUpgrade={openManualPremiumSales} /></BetaChrome>;
 
   if (adminRouteActive) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="admin-premium"><ProductionErrorBoundary fallback={<EmptyState title="Konsol Admin tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba semula." actionLabel="Papan Utama" onAction={closeAdminPremium} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Konsol Admin sedang dimuat</h2></div>}><AdminPremiumPage supabase={supabase} accountUser={accountUser} onBack={closeAdminPremium} onEntitlementChanged={() => refreshEntitlementRef.current?.()} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
 
@@ -5317,7 +5340,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onMarkMaterial={markLearningMaterial} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} syncInFlight={cloudOperationBusy} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} onOpenPremium={openManualPremiumSales} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} syncInFlight={cloudOperationBusy} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
@@ -5561,10 +5584,10 @@ function LoadingSkeleton() {
   </main>;
 }
 
-function AccessNotice({ notice, accessStatus, onBack, onLogin }) {
+function AccessNotice({ notice, accessStatus, onBack, onLogin, onUpgrade }) {
   const isLimit = notice?.kind === 'daily-limit';
   const feature = getAccessFeatureLabel(notice?.feature || 'tutorAi');
-  return <main className="app access-notice-page"><section className="card access-notice-card"><p className="eyebrow">Akses pembelajaran</p><h1>{isLimit ? 'Had Free harian dicapai' : `${feature} ialah ciri Premium`}</h1><p>{isLimit ? `Kamu sudah menjawab ${FREE_DAILY_QUESTION_LIMIT} soalan hari ini. Sambung esok atau aktifkan Premium untuk latihan tanpa had.` : `${feature} tersedia untuk akaun Premium. Akaun kamu sekarang berstatus ${accessStatus === 'expired' ? 'Premium tamat' : accessStatus === 'blocked' ? 'disekat' : 'Free'}.`}</p><div className="access-notice-actions"><button type="button" onClick={onLogin}>Log masuk / Minta Premium</button><button type="button" className="secondary" onClick={onBack}>Kembali belajar</button></div></section></main>;
+  return <main className="app access-notice-page"><section className="card access-notice-card"><p className="eyebrow">Akses pembelajaran</p><h1>{isLimit ? 'Had Free harian dicapai' : `${feature} ialah ciri Premium`}</h1><p>{isLimit ? `Kamu sudah menjawab ${FREE_DAILY_QUESTION_LIMIT} soalan hari ini. Sambung esok atau aktifkan Premium untuk latihan tanpa had.` : `${feature} tersedia untuk akaun Premium. Akaun kamu sekarang berstatus ${accessStatus === 'expired' ? 'Premium tamat' : accessStatus === 'blocked' ? 'disekat' : 'Free'}.`}</p><div className="access-notice-actions"><button type="button" onClick={onUpgrade}>Naik Taraf Premium</button><button type="button" className="secondary" onClick={onLogin}>Log masuk</button><button type="button" className="secondary" onClick={onBack}>Kembali belajar</button></div></section></main>;
 }
 
 function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, coachDecision, teachingStrategy, personality, coachKnowledgeData, hasAccountSession, cloudSyncStatus, onAnswerChange, onCheckAnswer, onNextQuestion, onTryAgain, onExplain, onBack, onPetunjuk, onSpeak, onBookmark, onOpenAi }) {

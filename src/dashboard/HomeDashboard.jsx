@@ -188,6 +188,7 @@ export default function HomeDashboard(props) {
     onOpenUasa,
     onOpenAi,
     onOpenAdmin,
+    onOpenPremium,
     isAdmin,
     onReset,
     onExportBetaReport,
@@ -459,6 +460,7 @@ export default function HomeDashboard(props) {
                 </span>
               </div>
               <div className="header-account-actions">
+                <button type="button" className="secondary header-account-action" onClick={onOpenPremium}>{isPremiumAccount ? 'Perbaharui Premium' : 'Naik Taraf Premium'}</button>
                 {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Konsol Admin</button> : null}
                 {hasAccountSession
                   ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
