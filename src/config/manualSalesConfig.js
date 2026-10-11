@@ -3,7 +3,7 @@ const plans = [
     id: 'premium-30',
     label: '30 Hari',
     durationDays: 30,
-    priceMYR: null,
+    priceMYR: 10,
     enabled: true,
     description: 'Tempoh Premium untuk akaun keluarga selama 30 hari.'
   },
@@ -11,7 +11,7 @@ const plans = [
     id: 'premium-90',
     label: '90 Hari',
     durationDays: 90,
-    priceMYR: null,
+    priceMYR: 25,
     enabled: true,
     badge: 'Pilihan keluarga',
     description: 'Tempoh Premium untuk akaun keluarga selama 90 hari.'
@@ -20,7 +20,7 @@ const plans = [
     id: 'premium-365',
     label: '365 Hari',
     durationDays: 365,
-    priceMYR: null,
+    priceMYR: 100,
     enabled: true,
     description: 'Tempoh Premium untuk akaun keluarga selama 365 hari.'
   }
@@ -31,8 +31,13 @@ export const manualSalesConfig = Object.freeze({
   currency: 'MYR',
   paymentMode: 'manual',
   plans: Object.freeze(plans),
-  whatsappNumber: '',
-  paymentInstructions: Object.freeze([])
+  whatsappNumber: '60134425202',
+  paymentInstructions: Object.freeze([
+    'Kaedah pembayaran: DuitNow / Bank Transfer',
+    'Hubungi Admin melalui WhatsApp untuk mendapatkan maklumat pembayaran.',
+    'Selepas membuat bayaran, simpan bukti atau rujukan transaksi.',
+    'Tekan Saya Dah Bayar dan hantar bukti pembayaran kepada Admin untuk semakan.'
+  ])
 });
 
 export default manualSalesConfig;
