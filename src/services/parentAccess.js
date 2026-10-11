@@ -8,6 +8,7 @@ const RECOVERY_PREFIX = 'jannati_parent_recovery:';
 const MAX_ATTEMPTS = 3;
 const BASE_LOCK_MS = 30000;
 const MAX_LOCK_MS = 5 * 60 * 1000;
+export const PARENT_RECENT_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
 
 export class ParentAccessError extends Error {
   constructor(code) { super(code); this.name = 'ParentAccessError'; this.code = code; }
@@ -82,6 +83,13 @@ function assertCurrent(options) {
   if (options.isCurrent && !options.isCurrent()) throw fail('parent_pin_context_changed');
 }
 export function isValidParentPin(pin) { return /^\d{4,6}$/.test(String(pin || '')); }
+export function isRecentParentAuthentication(authMarker, options = {}) {
+  const authenticatedAt = Date.parse(String(authMarker || ''));
+  const now = Number.isFinite(Number(options.now)) ? Number(options.now) : Date.now();
+  return Number.isFinite(authenticatedAt)
+    && authenticatedAt <= now
+    && now - authenticatedAt <= PARENT_RECENT_AUTH_MAX_AGE_MS;
+}
 export function getParentPinStatus(accountId, options = {}) {
   if (!cleanAccountId(accountId)) return { exists: false, errorCode: '' };
   try {
@@ -127,6 +135,7 @@ async function persistParentPin(accountId, pin, storage, previousRaw, options) {
 export async function saveParentPin(accountId, pin, options = {}) {
   if (!isValidParentPin(pin)) throw fail('parent_pin_invalid');
   if (!cleanAccountId(accountId)) throw fail('parent_pin_storage_unavailable');
+  if (!isRecentParentAuthentication(options.authMarker, options)) throw fail('parent_pin_recent_auth_required');
   const storage = requirePinStorage(options);
   const previous = readRawPin(storage, accountId);
   if (previous !== null) throw fail('parent_pin_reauthentication_required');
@@ -164,37 +173,38 @@ export function probeParentAccessCapabilities(options = {}) {
     secureContext: globalThis.isSecureContext !== false,
     cryptoAvailable,
     localStorageUsable: probeStorage(resolveStorage(options, 'localStorage'), PARENT_SECURITY_STORAGE_PREFIX + 'probe:' + nonce),
-    sessionStorageUsable: probeStorage(resolveStorage(options, 'sessionStorage'), RATE_LIMIT_PREFIX + 'probe:' + nonce)
+    rateLimitStorageUsable: probeStorage(resolveStorage(options, 'localStorage'), RATE_LIMIT_PREFIX + 'probe:' + nonce),
+    sessionStorageUsable: probeStorage(resolveStorage(options, 'sessionStorage'), RECOVERY_PREFIX + 'probe:' + nonce)
   };
 }
-function readSessionRecord(storage, key) {
-  if (!storage) throw fail('parent_pin_session_storage_unavailable');
+function readStorageRecord(storage, key, errorCode) {
+  if (!storage) throw fail(errorCode);
   try {
     const raw = storage.getItem(key);
     if (raw === null) return null;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error();
     return parsed;
-  } catch { throw fail('parent_pin_session_storage_unavailable'); }
+  } catch { throw fail(errorCode); }
 }
 const emptyAttempts = () => ({ attempts: 0, blockedUntil: 0, remainingMs: 0, isBlocked: false });
 export function getParentPinAttemptState(accountId, options = {}) {
   const now = Number(options.now) || Date.now();
   try {
-    const record = readSessionRecord(resolveStorage(options, 'sessionStorage'), rateKey(accountId));
+    const record = readStorageRecord(resolveStorage(options, 'localStorage'), rateKey(accountId), 'parent_pin_rate_storage_unavailable');
     if (!record) return emptyAttempts();
     if (!Number.isInteger(record.attempts) || record.attempts < 0 || !Number.isFinite(record.blockedUntil) || record.blockedUntil < 0) throw new Error();
     if (record.blockedUntil > 0 && record.blockedUntil <= now) return emptyAttempts();
     return { attempts: record.attempts, blockedUntil: record.blockedUntil, remainingMs: Math.max(0, record.blockedUntil - now), isBlocked: record.blockedUntil > now };
   } catch {
     // Fail closed, rather than allowing unlimited guesses without a rate store.
-    return { ...emptyAttempts(), isBlocked: true, errorCode: 'parent_pin_session_storage_unavailable' };
+    return { ...emptyAttempts(), isBlocked: true, errorCode: 'parent_pin_rate_storage_unavailable' };
   }
 }
 export function recordParentPinFailure(accountId, options = {}) {
   const current = getParentPinAttemptState(accountId, options);
   if (current.errorCode) throw fail(current.errorCode);
-  const storage = resolveStorage(options, 'sessionStorage');
+  const storage = resolveStorage(options, 'localStorage');
   const now = Number(options.now) || Date.now();
   const attempts = current.attempts + 1;
   const lockLevel = Math.max(0, Math.floor((attempts - MAX_ATTEMPTS) / MAX_ATTEMPTS));
@@ -203,7 +213,7 @@ export function recordParentPinFailure(accountId, options = {}) {
   try {
     storage.setItem(rateKey(accountId), raw);
     if (storage.getItem(rateKey(accountId)) !== raw) throw new Error();
-  } catch { throw fail('parent_pin_session_storage_unavailable'); }
+  } catch { throw fail('parent_pin_rate_storage_unavailable'); }
   return { attempts, blockedUntil, remainingMs: Math.max(0, blockedUntil - now), isBlocked: blockedUntil > now };
 }
 function removeSessionRecord(accountId, prefix, options) {
@@ -215,7 +225,16 @@ function removeSessionRecord(accountId, prefix, options) {
     return storage.getItem(key) === null;
   } catch { return false; }
 }
-export function clearParentPinAttempts(accountId, options = {}) { return removeSessionRecord(accountId, RATE_LIMIT_PREFIX, options); }
+function removeLocalRecord(accountId, prefix, options) {
+  const storage = resolveStorage(options, 'localStorage');
+  try {
+    if (!cleanAccountId(accountId) || !storage) return false;
+    const key = prefix + cleanAccountId(accountId);
+    storage.removeItem(key);
+    return storage.getItem(key) === null;
+  } catch { return false; }
+}
+export function clearParentPinAttempts(accountId, options = {}) { return removeLocalRecord(accountId, RATE_LIMIT_PREFIX, options); }
 
 function recoveryIdentity(accountId, options) {
   const raw = readRawPin(requirePinStorage(options), accountId);
@@ -233,7 +252,7 @@ export function requestParentPinRecovery(accountId, authMarker, options = {}) {
 }
 export function canRecoverParentPin(accountId, authMarker, options = {}) {
   try {
-    const record = readSessionRecord(resolveStorage(options, 'sessionStorage'), recoveryKey(accountId));
+    const record = readStorageRecord(resolveStorage(options, 'sessionStorage'), recoveryKey(accountId), 'parent_pin_session_storage_unavailable');
     const nextMarker = String(authMarker || '');
     if (!record || !nextMarker || nextMarker === String(record.previousAuthMarker || '')
       || !record.pinUpdatedAt || record.pinUpdatedAt !== recoveryIdentity(accountId, options)) return false;
@@ -260,9 +279,11 @@ export function getParentAccessMessage(code) {
     parent_pin_storage_write_failed: 'PIN tidak dapat disimpan dalam pelayar ini. Semak storan/privasi pelayar dan cuba semula.',
     parent_pin_storage_readback_failed: 'PIN tidak dapat disahkan selepas disimpan. Laporan masih dikunci. Cuba semula atau buka semula Kawasan Ibu Bapa.',
     parent_pin_storage_corrupt: 'Rekod PIN dalam pelayar tidak dapat dibaca dengan selamat. Gunakan Lupa PIN dan log masuk semula untuk menetapkannya semula.',
+    parent_pin_recent_auth_required: 'Log masuk semula diperlukan sebelum PIN ibu bapa boleh dicipta pada peranti ini.',
     parent_pin_reauthentication_required: 'Log masuk semula diperlukan sebelum PIN boleh ditetapkan semula.',
     parent_pin_record_changed: 'Rekod PIN telah berubah. Buka semula Kawasan Ibu Bapa dan sahkan PIN semasa.',
     parent_pin_session_storage_unavailable: 'Storan sesi pengesahan tidak tersedia. Semak tetapan privasi pelayar dan cuba buka semula Kawasan Ibu Bapa.',
+    parent_pin_rate_storage_unavailable: 'Storan keselamatan percubaan PIN tidak tersedia. Semak tetapan privasi pelayar dan cuba buka semula Kawasan Ibu Bapa.',
     parent_pin_saved_unlock_failed: 'PIN telah disimpan, tetapi Laporan Ibu Bapa belum dapat dibuka. Cuba buka semula Kawasan Ibu Bapa.',
     parent_pin_verified_unlock_failed: 'PIN telah disahkan, tetapi Laporan Ibu Bapa belum dapat dibuka. Cuba buka semula Kawasan Ibu Bapa.'
   })[code] || 'Pengesahan PIN tidak dapat diselesaikan. Cuba semula.';
@@ -287,14 +308,14 @@ export function createParentPinSubmission() {
         if (setupMode && pin !== confirmPin) throw fail('parent_pin_mismatch');
         if (setupMode) {
           if (canRecoverParentPin(accountId, authMarker, options)) await replaceParentPinAfterReauthentication(accountId, pin, authMarker, scopedOptions);
-          else await saveParentPin(accountId, pin, scopedOptions);
+          else await saveParentPin(accountId, pin, { ...scopedOptions, authMarker });
           saved = true;
         } else {
           getWebCrypto();
           const attempts = getParentPinAttemptState(accountId, options);
           if (attempts.errorCode) throw fail(attempts.errorCode);
           if (attempts.isBlocked) return { status: 'blocked', attempts };
-          if (!probeParentAccessCapabilities(options).sessionStorageUsable) throw fail('parent_pin_session_storage_unavailable');
+          if (!probeParentAccessCapabilities(options).rateLimitStorageUsable) throw fail('parent_pin_rate_storage_unavailable');
           if (!await verifyParentPin(accountId, pin, scopedOptions)) {
             if (!current()) return { status: 'stale' };
             return { status: 'incorrect', attempts: recordParentPinFailure(accountId, options) };

@@ -7,6 +7,7 @@ function read(path) {
 
 const migration = read('supabase/migrations/20260906210000_admin_console_v2.sql');
 const recoveryMigration = read('supabase/migrations/20260907090000_admin_subscription_recovery.sql');
+const settlementMigration = read('supabase/migrations/20261011090000_admin_payment_settlement_guard.sql');
 const paymentTable = read('supabase/schemas/public/tables/premium_payment_records.sql');
 const entitlementTable = read('supabase/schemas/public/tables/premium_entitlements.sql');
 const auditTable = read('supabase/schemas/public/tables/premium_admin_audit_log.sql');
@@ -16,6 +17,8 @@ const recovery = read('src/services/adminSubscriptionRecovery.js');
 const app = read('src/App.jsx');
 const tests = read('tests/unit/adminPremiumManagement.test.js');
 const recoveryTests = read('tests/unit/adminSubscriptionRecovery.test.js');
+const settlementTests = read('tests/unit/adminPaymentSettlementGuard.test.js');
+const csvSafetyTests = read('tests/unit/adminCsvSafety.test.js');
 
 assert.match(migration, /alter table public\.premium_entitlements[\s\S]*add column if not exists is_permanent/i, 'Permanent complimentary must be explicit on the canonical entitlement.');
 assert.match(migration, /premium_entitlements_expiry_presence_check/, 'Permanent and expiring entitlement shapes must be constrained.');
@@ -53,6 +56,18 @@ assert.doesNotMatch(service, /supabase\.rpc\(['"]admin_manage_premium_entitlemen
 assert.doesNotMatch(service, /\.from\(['"]premium_(entitlements|payment_records|admin_audit_log)/, 'Client must not write protected tables directly.');
 assert.doesNotMatch(service, /localStorage|SUPABASE_SERVICE_ROLE/i, 'Admin authority must not use local state or a service-role browser secret.');
 assert.ok((tests.match(/\bit\('/g) || []).length >= 28, 'Admin Console V2 must include at least 28 deterministic tests.');
+
+const settlementGuardAt = settlementMigration.indexOf("raise exception 'payment_not_settled'");
+const replayAt = settlementMigration.indexOf("'idempotentReplay', true");
+const entitlementWriteAt = settlementMigration.indexOf('insert into public.premium_entitlements');
+assert.match(settlementMigration, /normalized_action in \('ACTIVATE_PREMIUM', 'EXTEND_PREMIUM', 'SET_EXPIRY'\)[\s\S]*normalized_payment_status not in \('paid', 'waived'\)/, 'Billable grant actions must require settled or intentionally waived payment.');
+assert.ok(replayAt >= 0 && replayAt < settlementGuardAt && settlementGuardAt < entitlementWriteAt, 'Idempotent replay must remain intact and unsettled new writes must fail before mutation.');
+assert.match(settlementMigration, /if not public\.is_current_premium_admin\(\) then raise exception 'admin_required'/, 'Settlement safety must preserve server-side admin authorization.');
+assert.match(page, /Bayaran Pending belum boleh mengaktifkan atau melanjutkan Premium\./, 'Pending billable actions must be rejected before the client RPC.');
+assert.match(page, /payment_not_settled[\s\S]*Bayaran belum disahkan\./, 'The deterministic server guard must have a specific Admin UI message.');
+assert.match(service, /typeof value === 'string'[\s\S]*\^\\s\*\[=\+\\-@\]/, 'CSV text cells must neutralize spreadsheet formula prefixes before quoting.');
+assert.ok((settlementTests.match(/\bit(?:\.each)?\(/g) || []).length >= 8, 'Payment settlement safety must have a focused regression matrix.');
+assert.ok((csvSafetyTests.match(/\bit(?:\.each)?\(/g) || []).length >= 6, 'CSV formula safety must have focused regression tests.');
 
 assert.match(recoveryMigration, /create or replace function public\.admin_verify_subscription_request\(target_request_id uuid\)/, 'Recovery must use a protected request verification RPC.');
 assert.ok((recoveryMigration.match(/if not public\.is_current_premium_admin\(\) then raise exception 'admin_required'/g) || []).length >= 3, 'Every changed Admin Console RPC must keep server-side admin authorization.');

@@ -49,6 +49,7 @@ button.addEventListener('click', async () => {
   const pass = label => { lines.push('PASS: ' + label); results.textContent = lines.join('\n'); };
   const originalRemove = Storage.prototype.removeItem;
   const originalTimeout = window.setTimeout;
+  const recentAuthMarker = new Date().toISOString();
   try {
     results.textContent = 'Running in real browser…';
     const capabilities = probeParentAccessCapabilities();
@@ -56,7 +57,7 @@ button.addEventListener('click', async () => {
     pass('Secure context, Web Crypto, localStorage and sessionStorage round trips');
 
     const account = makeId();
-    await saveParentPin(account, '2468');
+    await saveParentPin(account, '2468', { authMarker: recentAuthMarker });
     assert(await verifyParentPin(account, '2468'), 'Native storage PIN verifies');
     assert(!await verifyParentPin(account, '1357'), 'Wrong PIN rejected');
     assert(!localStorage.getItem(PARENT_SECURITY_STORAGE_PREFIX + account).includes('"2468"'), 'No plaintext PIN');
@@ -64,11 +65,11 @@ button.addEventListener('click', async () => {
 
     const cleanupAccount = makeId();
     Storage.prototype.removeItem = function (key) {
-      if (this === sessionStorage && key === 'jannati_parent_rate:' + cleanupAccount) throw new Error('injected cleanup restriction');
+      if (this === localStorage && key === 'jannati_parent_rate:' + cleanupAccount) throw new Error('injected cleanup restriction');
       return originalRemove.call(this, key);
     };
     let cleanupUnlocks = 0;
-    render(<ParentAccessGate key={cleanupAccount} accountId={cleanupAccount} authMarker="diagnostic-auth" activeChildId="child-a" onUnlock={() => { cleanupUnlocks += 1; }} />);
+    render(<ParentAccessGate key={cleanupAccount} accountId={cleanupAccount} authMarker={recentAuthMarker} activeChildId="child-a" onUnlock={() => { cleanupUnlocks += 1; }} />);
     await enterPin(true);
     await until(() => cleanupUnlocks === 1, 'Gate unlock despite cleanup error');
     assert(await verifyParentPin(cleanupAccount, '2468'), 'Saved PIN remains valid');
@@ -76,7 +77,7 @@ button.addEventListener('click', async () => {
     Storage.prototype.removeItem = originalRemove;
 
     const callbackAccount = makeId();
-    render(<ParentAccessGate key={callbackAccount} accountId={callbackAccount} authMarker="diagnostic-auth" onUnlock={() => { throw new Error('injected unlock failure'); }} />);
+    render(<ParentAccessGate key={callbackAccount} accountId={callbackAccount} authMarker={recentAuthMarker} onUnlock={() => { throw new Error('injected unlock failure'); }} />);
     await enterPin(true);
     await until(() => fixture.textContent.includes(getParentAccessMessage('parent_pin_saved_unlock_failed')), 'Specific saved/unlock failure message');
     assert(await verifyParentPin(callbackAccount, '2468'), 'Callback error preserves PIN');
@@ -85,7 +86,7 @@ button.addEventListener('click', async () => {
 
     const duplicateAccount = makeId();
     let duplicateUnlocks = 0;
-    render(<ParentAccessGate key={duplicateAccount} accountId={duplicateAccount} authMarker="diagnostic-auth" onUnlock={() => { duplicateUnlocks += 1; }} />);
+    render(<ParentAccessGate key={duplicateAccount} accountId={duplicateAccount} authMarker={recentAuthMarker} onUnlock={() => { duplicateUnlocks += 1; }} />);
     fill('#parent-pin', '2468'); fill('#parent-pin-confirm', '2468');
     submit(); submit();
     await until(() => duplicateUnlocks > 0, 'Duplicate submit finishes');
@@ -96,7 +97,7 @@ button.addEventListener('click', async () => {
     const staleAccount = makeId();
     let staleUnlocks = 0;
     const staleCallback = () => { staleUnlocks += 1; };
-    render(<ParentAccessGate key="stale-fixture" accountId={staleAccount} authMarker="auth-a" onUnlock={staleCallback} />);
+    render(<ParentAccessGate key="stale-fixture" accountId={staleAccount} authMarker={recentAuthMarker} onUnlock={staleCallback} />);
     await enterPin(true);
     render(<ParentAccessGate key="stale-fixture" accountId={makeId()} authMarker="auth-b" onUnlock={staleCallback} />);
     await wait(800);
@@ -147,7 +148,7 @@ button.addEventListener('click', async () => {
     render(null);
     for (const id of ids) {
       localStorage.removeItem(PARENT_SECURITY_STORAGE_PREFIX + id);
-      sessionStorage.removeItem('jannati_parent_rate:' + id);
+      localStorage.removeItem('jannati_parent_rate:' + id);
       sessionStorage.removeItem('jannati_parent_recovery:' + id);
     }
     button.disabled = false;

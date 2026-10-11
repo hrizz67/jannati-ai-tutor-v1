@@ -292,7 +292,8 @@ export async function verifyAdminSubscriptionRequest(supabase, requestId, option
 }
 
 function csvCell(value) {
-  const text = String(value ?? '');
+  const raw = String(value ?? '');
+  const text = typeof value === 'string' && /^\s*[=+\-@]/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 

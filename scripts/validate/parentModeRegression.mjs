@@ -40,8 +40,10 @@ const sessionStorage = new MemoryStorage();
 const accountA = 'parent-account-a';
 const accountB = 'parent-account-b';
 const pin = '2468';
+const recentAuthNow = Date.parse('2026-10-10T10:00:00.000Z');
+const recentAuthMarker = '2026-10-10T09:59:00.000Z';
 
-await saveParentPin(accountA, pin, { localStorage });
+await saveParentPin(accountA, pin, { localStorage, authMarker: recentAuthMarker, now: recentAuthNow });
 assert.equal(hasParentPin(accountA, { localStorage }), true, 'Parent PIN verifier should exist for its account.');
 assert.equal(await verifyParentPin(accountA, pin, { localStorage }), true, 'Correct PIN should verify.');
 assert.equal(await verifyParentPin(accountA, '1357', { localStorage }), false, 'Wrong PIN must not verify.');
@@ -52,13 +54,13 @@ assert.ok(storedPinRecord, 'A salted verifier record should be stored.');
 assert.equal(storedPinRecord.includes(`\"${pin}\"`), false, 'Plaintext PIN must never be stored.');
 assert.match(storedPinRecord, /PBKDF2-SHA-256/, 'PIN should use the declared PBKDF2 verifier.');
 
-recordParentPinFailure(accountA, { sessionStorage, now: 1000 });
-recordParentPinFailure(accountA, { sessionStorage, now: 1000 });
-const blocked = recordParentPinFailure(accountA, { sessionStorage, now: 1000 });
+recordParentPinFailure(accountA, { localStorage, now: 1000 });
+recordParentPinFailure(accountA, { localStorage, now: 1000 });
+const blocked = recordParentPinFailure(accountA, { localStorage, now: 1000 });
 assert.equal(blocked.isBlocked, true, 'Third repeated failure should trigger a temporary lock.');
-assert.ok(getParentPinAttemptState(accountA, { sessionStorage, now: 2000 }).remainingMs > 0, 'Rate limit should expose remaining lock time.');
-clearParentPinAttempts(accountA, { sessionStorage });
-assert.equal(getParentPinAttemptState(accountA, { sessionStorage, now: 2000 }).isBlocked, false, 'Successful verification can clear the rate limit.');
+assert.ok(getParentPinAttemptState(accountA, { localStorage, now: 2000 }).remainingMs > 0, 'Rate limit should expose remaining lock time.');
+clearParentPinAttempts(accountA, { localStorage });
+assert.equal(getParentPinAttemptState(accountA, { localStorage, now: 2000 }).isBlocked, false, 'Successful verification can clear the rate limit.');
 
 requestParentPinRecovery(accountA, '2026-09-05T01:00:00.000Z', { localStorage, sessionStorage, now: Date.parse('2026-09-05T01:05:00.000Z') });
 assert.equal(canRecoverParentPin(accountA, '2026-09-05T01:00:00.000Z', { localStorage, sessionStorage }), false, 'Recovery must not be available in the same auth session.');
@@ -67,11 +69,19 @@ await replaceParentPinAfterReauthentication(accountA, '8642', '2026-09-05T01:10:
 assert.equal(await verifyParentPin(accountA, '8642', { localStorage }), true, 'Recovered PIN should replace the old verifier.');
 assert.equal(await verifyParentPin(accountA, pin, { localStorage }), false, 'Old PIN should stop working after recovery.');
 
-const brokenSessionStorage = { getItem: () => null, removeItem() { throw new Error('blocked'); } };
+const cleanupLocalStorage = {
+  getItem(key) { return localStorage.getItem(key); },
+  setItem(key, value) { localStorage.setItem(key, value); },
+  removeItem(key) {
+    if (String(key).startsWith('jannati_parent_rate:')) throw new Error('blocked');
+    localStorage.removeItem(key);
+  }
+};
 let unlocked = false;
 const savedWithCleanupFailure = await createParentPinSubmission().submit({
   accountId: 'parent-cleanup-test', pin, confirmPin: pin, setupMode: true,
-  options: { localStorage, sessionStorage: brokenSessionStorage }, onUnlock() { unlocked = true; }
+  authMarker: recentAuthMarker,
+  options: { localStorage: cleanupLocalStorage, sessionStorage, now: recentAuthNow }, onUnlock() { unlocked = true; }
 });
 assert.equal(savedWithCleanupFailure.saved, true, 'Session cleanup failure must not undo secure PIN persistence.');
 assert.equal(unlocked, true, 'A successful setup must still unlock when attempt cleanup fails.');
@@ -120,6 +130,8 @@ assert.match(boundarySource, /setUnlockedAccountId\(''\)/, 'Parent session shoul
 assert.match(boundarySource, /ParentModeSession key=\{sessionKey\}/, 'Account, child and auth changes must remount a locked session before rendering.');
 assert.match(boundarySource, /props\.accountId[\s\S]*props\.activeChildId[\s\S]*props\.authMarker/, 'The lock identity must include account, child and auth session.');
 assert.match(gateSource, /useLayoutEffect[\s\S]*submission\.invalidate/, 'Stale async submissions must be invalidated on context changes and unmount.');
+assert.match(gateSource, /isRecentParentAuthentication/, 'Missing-PIN setup must require a recent authenticated login.');
+assert.match(gateSource, /window\.addEventListener\('storage', refreshStatus\)/, 'Cross-tab rate-limit changes must refresh the visible Parent gate promptly.');
 assert.match(gateSource, /type="password"/, 'PIN entry should not reveal entered digits.');
 assert.match(gateSource, /Lupa PIN\? Log keluar/, 'PIN recovery should require a logout/login path.');
 assert.match(dashboardSource, /Belum cukup data untuk analisis\./, 'New child state should avoid a false negative label.');
