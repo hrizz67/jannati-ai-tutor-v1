@@ -1,20 +1,29 @@
-# Jannati AI Tutor 3.13.21 Release Notes
+# Jannati AI Tutor 3.13.22 — Manual Premium Sales Readiness
 
 Status: stable
-Tag: v3.13.21
-Build date: 2026-10-11T00:59:19.861Z
+Tag: v3.13.22
+Build date: 2026-10-11T05:33:32.415Z
 
 ## Release Readiness
 
-- Package, lockfile, release tag, and generated metadata are version-aligned.
-- Question-bank regression and release-pipeline audits run before the main validator suite.
-- Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
-- Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
+- The manual Premium upgrade and renewal page now supports 30, 90, and 365-day plans.
+- Plan prices are RM10, RM25, and RM100 respectively.
+- Customers can review their account identity, follow DuitNow or bank-transfer instructions, and contact Admin through the configured WhatsApp-assisted sales flow.
+- Bank account details are supplied privately through WhatsApp and are not stored in the public repository.
+
+## Commercial Safety
+
+- Admin manually verifies a real payment before using the existing Admin Console to activate or renew Premium.
+- Premium access remains server-authoritative; the customer page cannot mark a payment PAID or mutate entitlement.
+- This release adds no payment gateway, automatic payment activation, or customer-side PAID trust.
+- This release includes no database migration or schema/RPC change.
 
 ## Content Quality
 
-- All eight Year 2 subjects are included in the release validation scope.
-- Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
+- P1.13 cloud sync and reward behavior are unchanged.
+- Voice and STT behavior are unchanged.
+- The question bank is unchanged.
+- All eight Year 2 subjects remain covered by the release validation scope.
 
 ## Validation Summary
 

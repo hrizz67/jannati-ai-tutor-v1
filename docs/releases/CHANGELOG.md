@@ -1,12 +1,14 @@
 # Changelog
 
-## 3.13.21 - 2026-10-11
+## 3.13.22 - 2026-10-11
 
-### Release controls
+### Manual Premium Sales Readiness
 
-- Package metadata is the single source of truth for version and release status.
-- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
-- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+- Added a manual Premium upgrade and renewal page with 30, 90, and 365-day plans priced at RM10, RM25, and RM100.
+- Added an account identity summary, manual DuitNow or bank-transfer instructions, and a WhatsApp-assisted sales flow.
+- Admin verifies real payment before the existing Admin Console activates or renews server-authoritative Premium access.
+- No payment gateway, automatic activation, customer-side PAID trust, public bank-account details, or database migration is included.
+- P1.13 cloud/reward behavior, voice/STT behavior, and the question bank are unchanged.
 
 ### Quality snapshot
 
