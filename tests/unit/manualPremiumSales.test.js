@@ -16,6 +16,7 @@ import {
 
 const componentSource = fs.readFileSync(new URL('../../src/premium/ManualPremiumSalesPage.jsx', import.meta.url), 'utf8');
 const serviceSource = fs.readFileSync(new URL('../../src/services/manualPremiumSales.js', import.meta.url), 'utf8');
+const configSource = fs.readFileSync(new URL('../../src/config/manualSalesConfig.js', import.meta.url), 'utf8');
 const appSource = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
 const dashboardSource = fs.readFileSync(new URL('../../src/dashboard/HomeDashboard.jsx', import.meta.url), 'utf8');
 const stylesSource = fs.readFileSync(new URL('../../src/premium/manual-premium-sales.css', import.meta.url), 'utf8');
@@ -42,11 +43,10 @@ describe('P1.14.2A manual Premium sales UX', () => {
     expect(plans.map(plan => plan.id)).toEqual(['premium-30', 'premium-90', 'premium-365']);
   });
 
-  it('never renders RM0 when a price is not configured', () => {
-    for (const plan of manualSalesConfig.plans) {
-      expect(formatManualSalesPlanPrice(plan, manualSalesConfig.currency)).toBe('Harga akan dimaklumkan');
-      expect(formatManualSalesPlanPrice(plan, manualSalesConfig.currency)).not.toMatch(/RM\s*0/);
-    }
+  it('renders the configured prices for every enabled plan without a fallback label', () => {
+    const prices = manualSalesConfig.plans.map(plan => formatManualSalesPlanPrice(plan, manualSalesConfig.currency));
+    expect(prices).toEqual(['RM\u00a010.00', 'RM\u00a025.00', 'RM\u00a0100.00']);
+    expect(prices).not.toContain('Harga akan dimaklumkan');
   });
 
   it('uses a short account ID for display while retaining the exact account ID for copying', () => {
@@ -60,26 +60,26 @@ describe('P1.14.2A manual Premium sales UX', () => {
     expect(summary).toContain('E-mel akaun: parent@example.com');
     expect(summary).toContain('Pelan: 90 Hari');
     expect(summary).toContain('Tempoh: 90 hari');
-    expect(summary).toContain('Jumlah: Harga akan dimaklumkan');
+    expect(summary).toContain('Jumlah: RM\u00a025.00');
     expect(summary).toContain('Rujukan transaksi: [SILA ISI]');
     expect(summary).toContain('disahkan oleh Admin');
   });
 
-  it('encodes the configured WhatsApp number and pre-filled payment message', () => {
-    const config = { ...manualSalesConfig, whatsappNumber: '+60 12-345 6789' };
-    const plan = { ...manualSalesConfig.plans[0], priceMYR: 25 };
-    const details = { accountEmail: accountUser.email, accountId: accountUser.id, plan, config };
+  it('encodes the owner WhatsApp number and selected real plan price', () => {
+    const plan = manualSalesConfig.plans[2];
+    const details = { accountEmail: accountUser.email, accountId: accountUser.id, plan, config: manualSalesConfig };
     const url = buildWhatsAppPaymentUrl(details);
-    expect(url).toMatch(/^https:\/\/wa\.me\/60123456789\?text=/);
+    expect(url).toMatch(/^https:\/\/wa\.me\/60134425202\?text=/);
     expect(decodeURIComponent(url.split('?text=')[1])).toBe(buildWhatsAppPaymentMessage(details));
-    expect(decodeURIComponent(url)).toContain('Jumlah: RM 25.00');
+    expect(decodeURIComponent(url)).toContain('Pelan: 365 Hari');
+    expect(decodeURIComponent(url)).toContain('Jumlah: RM 100.00');
   });
 
-  it('returns no contact URL when WhatsApp is not configured', () => {
-    expect(buildWhatsAppPaymentUrl({ accountEmail: accountUser.email, accountId: accountUser.id, plan: manualSalesConfig.plans[0], config: manualSalesConfig })).toBe('');
+  it('renders every configured payment instruction and the WhatsApp contact action', () => {
     const markup = renderPage({ access_status: 'free' });
-    expect(markup).toContain('WhatsApp belum dikonfigurasi');
-    expect(markup).not.toContain('wa.me');
+    for (const instruction of manualSalesConfig.paymentInstructions) expect(markup).toContain(instruction);
+    expect(markup).toContain('https://wa.me/60134425202?text=');
+    expect(markup).not.toContain('Harga akan dimaklumkan');
   });
 
   it('renders account identity safely and escapes customer-controlled text', () => {
@@ -145,6 +145,8 @@ describe('P1.14.2A manual Premium sales UX', () => {
       'access_status:',
       'payment_status:'
     ]) expect(customerSources).not.toContain(forbidden);
+    expect(manualSalesConfig.paymentInstructions.join('\n')).not.toMatch(/(?:nombor akaun|nama pemegang|account number|account holder|\d{8,})/i);
+    expect(configSource).not.toMatch(/(?:bankAccount|accountHolder|privateBank)/i);
   });
 
   it('does not create an automatic order state when contact details are copied or opened', () => {
