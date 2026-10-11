@@ -1,29 +1,34 @@
-# Jannati AI Tutor 3.13.22 — Manual Premium Sales Readiness
+# Jannati AI Tutor 3.13.23 Release Notes
 
 Status: stable
-Tag: v3.13.22
-Build date: 2026-10-11T05:33:32.415Z
+Tag: v3.13.23
+Build date: 2026-10-11T14:56:26.051Z
+
+## Public Launch Readiness
+
+- Customer-visible beta, demo, and testing wording has been removed, and account login copy is clearer.
+- Internal feedback, QDE, and classroom-pilot surfaces remain hidden from the normal production experience.
+- Public account recovery now covers forgotten passwords, recovery-session finalization, confirmation resend, and invalid or expired e-mail links.
+- Public Privacy, Terms, and Support pages provide account/data deletion guidance, manual refund and payment-review guidance, and global footer links.
+
+## Commercial and Technical Boundaries
+
+- Manual Premium sales remain manual, with no payment gateway or automatic Premium activation.
+- Refund review remains manual; this release does not promise automatic refunds.
+- Account deletion guidance is provided, but no automated backend account deletion is added.
+- This release makes no database, schema, RPC, P1.13 sync, reward, STT/voice, or question-bank changes.
 
 ## Release Readiness
 
-- The manual Premium upgrade and renewal page now supports 30, 90, and 365-day plans.
-- Plan prices are RM10, RM25, and RM100 respectively.
-- Customers can review their account identity, follow DuitNow or bank-transfer instructions, and contact Admin through the configured WhatsApp-assisted sales flow.
-- Bank account details are supplied privately through WhatsApp and are not stored in the public repository.
-
-## Commercial Safety
-
-- Admin manually verifies a real payment before using the existing Admin Console to activate or renew Premium.
-- Premium access remains server-authoritative; the customer page cannot mark a payment PAID or mutate entitlement.
-- This release adds no payment gateway, automatic payment activation, or customer-side PAID trust.
-- This release includes no database migration or schema/RPC change.
+- Package, lockfile, release tag, and generated metadata are version-aligned.
+- Question-bank regression and release-pipeline audits run before the main validator suite.
+- Tagged deployment verifies production configuration, validation, build, and local asset integrity before publishing.
+- Production smoke testing waits for the deployed JavaScript entry hash to match the new build.
 
 ## Content Quality
 
-- P1.13 cloud sync and reward behavior are unchanged.
-- Voice and STT behavior are unchanged.
-- The question bank is unchanged.
-- All eight Year 2 subjects remain covered by the release validation scope.
+- All eight Year 2 subjects are included in the release validation scope.
+- Questions, curriculum metadata, storage schemas, and content-quality rules are validated together.
 
 ## Validation Summary
 

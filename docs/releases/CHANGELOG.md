@@ -1,14 +1,25 @@
 # Changelog
 
-## 3.13.22 - 2026-10-11
+## 3.13.23 - 2026-10-11
 
-### Manual Premium Sales Readiness
+### Public launch readiness
 
-- Added a manual Premium upgrade and renewal page with 30, 90, and 365-day plans priced at RM10, RM25, and RM100.
-- Added an account identity summary, manual DuitNow or bank-transfer instructions, and a WhatsApp-assisted sales flow.
-- Admin verifies real payment before the existing Admin Console activates or renews server-authoritative Premium access.
-- No payment gateway, automatic activation, customer-side PAID trust, public bank-account details, or database migration is included.
-- P1.13 cloud/reward behavior, voice/STT behavior, and the question bank are unchanged.
+- Removed customer-visible beta, demo, and testing wording and clarified account login copy.
+- Kept internal feedback, QDE, and classroom-pilot surfaces out of the normal production experience.
+- Added safer public account recovery for forgotten passwords, recovery-session finalization, confirmation resend, and invalid or expired e-mail links.
+- Added public Privacy, Terms, and Support pages with account/data deletion guidance, manual refund and payment-review guidance, and global footer links.
+
+### Scope boundaries
+
+- Manual Premium sales remain manual; no payment gateway or automatic Premium activation was added.
+- Refund review remains manual, and no automated backend account deletion was added.
+- No database, schema, RPC, P1.13 sync, reward, STT/voice, or question-bank behavior changed.
+
+### Release controls
+
+- Package metadata is the single source of truth for version and release status.
+- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
+- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
 
 ### Quality snapshot
 
