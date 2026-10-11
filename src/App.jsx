@@ -98,6 +98,7 @@ const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
 const ManualPremiumSalesPage = React.lazy(() => import('./premium/ManualPremiumSalesPage.jsx'));
 const LearningDashboard = React.lazy(() => import('./dashboard/LearningDashboard.jsx'));
 const ParentModeBoundary = React.lazy(() => import('./components/parent/ParentModeBoundary.jsx'));
+const AuthRecoveryPanel = React.lazy(() => import('./components/auth/AuthRecoveryPanel.jsx'));
 import { EmptyState } from './dashboard/EmptyState.jsx';
 import ProductionErrorBoundary from './components/ProductionErrorBoundary.jsx';
 import ConnectivityNotice from './components/ConnectivityNotice.jsx';
@@ -105,6 +106,7 @@ import { getSupabaseClient, supabaseConfigured } from './services/supabaseClient
 import { announceAccountConnectivity, describeAccountError } from './services/accountErrorMessages.js';
 import { settleAccountHydration } from './services/accountHydration.js';
 import { isInternalUiSurfaceEnabled } from './services/internalUiSurfaceVisibility.js';
+import { AUTH_RECOVERY_STATUS, getInitialAuthRecoveryStatus, resolveAuthRecoveryEvent } from './services/authRecoveryIntent.js';
 import {
   createSafeFreeEntitlement,
   getEntitlementExpiryDelay,
@@ -1425,6 +1427,9 @@ export default function App() {
   const [adminRouteActive, setAdminRouteActive] = useState(() => typeof window !== 'undefined' && ['#/admin', '#/admin/premium'].includes(window.location.hash));
   const [premiumSalesRouteActive, setPremiumSalesRouteActive] = useState(() => typeof window !== 'undefined' && window.location.hash === '#/premium');
   const [supabase, setSupabase] = useState(null);
+  const [authRecoveryStatus, setAuthRecoveryStatus] = useState(getInitialAuthRecoveryStatus);
+  const authRecoveryStatusRef = useRef(authRecoveryStatus);
+  authRecoveryStatusRef.current = authRecoveryStatus;
   const [accountUser, setAccountUser] = useState(null);
   const [childProfiles, setChildProfiles] = useState(() => readChildProfiles());
   const [archivedChildren, setArchivedChildren] = useState(() => readArchivedChildren());
@@ -1549,13 +1554,16 @@ export default function App() {
           if (!cancelled) setSupabase(client);
         })
         .catch(() => {
-          if (!cancelled) setRecoveryMessages(prev => [...prev, 'Sambungan akaun belum tersedia. Pembelajaran Free masih boleh diteruskan.']);
+          if (!cancelled) {
+            if (authRecoveryStatusRef.current !== AUTH_RECOVERY_STATUS.IDLE) setAuthRecoveryStatus(AUTH_RECOVERY_STATUS.INVALID);
+            setRecoveryMessages(prev => [...prev, 'Sambungan akaun belum tersedia. Pembelajaran Free masih boleh diteruskan.']);
+          }
         });
     };
     const timer = window.setTimeout(() => {
       if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(loadClient, { timeout: 2500 });
       else loadClient();
-    }, profile?.accountId ? 0 : 1200);
+    }, authRecoveryStatusRef.current !== AUTH_RECOVERY_STATUS.IDLE || profile?.accountId ? 0 : 1200);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
@@ -2796,13 +2804,49 @@ export default function App() {
       return task;
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const handleAuthRecoveryEvent = (event, session) => {
+      const recoveryDecision = resolveAuthRecoveryEvent({
+        event,
+        hasSession: Boolean(session?.user),
+        currentStatus: authRecoveryStatusRef.current
+      });
+      if (recoveryDecision.status !== authRecoveryStatusRef.current) {
+        authRecoveryStatusRef.current = recoveryDecision.status;
+        setAuthRecoveryStatus(recoveryDecision.status);
+      }
+      return !recoveryDecision.shouldHydrate;
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (handleAuthRecoveryEvent(event, session)) return;
       void requestAccountSync(session?.user || null);
     });
+
+    const handleRecoveredAuthSession = ({ data, error }, hydrateAccount) => {
+      const recoveryStatus = authRecoveryStatusRef.current;
+      if (recoveryStatus !== AUTH_RECOVERY_STATUS.IDLE) {
+        if (recoveryStatus === AUTH_RECOVERY_STATUS.PENDING) {
+          const nextStatus = !error && data.session?.user
+            ? AUTH_RECOVERY_STATUS.READY
+            : AUTH_RECOVERY_STATUS.INVALID;
+          authRecoveryStatusRef.current = nextStatus;
+          setAuthRecoveryStatus(nextStatus);
+        }
+        return false;
+      }
+      return hydrateAccount(data.session?.user || null);
+    };
+
     supabase.auth.getSession()
-      .then(({ data }) => requestAccountSync(data.session?.user || null))
+      .then(result => handleRecoveredAuthSession(result, requestAccountSync))
       .catch(() => {
-        if (alive) setRecoveryMessages(prev => [...prev, 'Sesi akaun tidak dapat dipulihkan. Sila log masuk semula.']);
+        if (!alive) return;
+        if (authRecoveryStatusRef.current !== AUTH_RECOVERY_STATUS.IDLE) {
+          authRecoveryStatusRef.current = AUTH_RECOVERY_STATUS.INVALID;
+          setAuthRecoveryStatus(AUTH_RECOVERY_STATUS.INVALID);
+        } else {
+          setRecoveryMessages(prev => [...prev, 'Sesi akaun tidak dapat dipulihkan. Sila log masuk semula.']);
+        }
       });
 
     return () => {
@@ -5305,6 +5349,23 @@ export default function App() {
     setScreen(targetScreen);
   }
 
+  if (authRecoveryStatus !== AUTH_RECOVERY_STATUS.IDLE) {
+    const recoveryMode = authRecoveryStatus === AUTH_RECOVERY_STATUS.READY
+      ? 'update-password'
+      : authRecoveryStatus === AUTH_RECOVERY_STATUS.INVALID
+        ? 'invalid-link'
+        : 'pending-link';
+    const leaveRecovery = () => {
+      authRecoveryStatusRef.current = AUTH_RECOVERY_STATUS.IDLE;
+      setAuthRecoveryStatus(AUTH_RECOVERY_STATUS.IDLE);
+      setAccountUser(null);
+      setAccessProfile(null);
+      setShowAccountLogin(true);
+      setScreen('login');
+    };
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={false} currentScreen="password-recovery"><React.Suspense fallback={<main className="app login-page"><section className="card"><p role="status">Menyediakan pemulihan akaun...</p></section></main>}><main className="app login-page"><section className="card"><AuthRecoveryPanel mode={recoveryMode} auth={supabase?.auth || null} redirectTo={getEmailRedirectUrl()} onSupabaseReady={setSupabase} onBack={leaveRecovery} onComplete={leaveRecovery} /></section></main></React.Suspense></BetaChrome>;
+  }
+
   if (showOnboarding && !showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><FirstRunWizard profile={profile} onComplete={completeOnboarding} onAccountLogin={() => setShowAccountLogin(true)} /></BetaChrome>;
 
   if (showAccountLogin) return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen="login"><Login onStart={startProfile} onBack={() => setShowAccountLogin(false)} onSupabaseReady={setSupabase} guestProfile={getGuestProfileSummary()} onResumeGuest={resumeGuestProfile} /></BetaChrome>;
@@ -5529,6 +5590,7 @@ function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [accountMode, setAccountMode] = useState('signin');
+  const [recoveryMode, setRecoveryMode] = useState('');
   const [accountMessage, setAccountMessage] = useState('');
   const [accountBusy, setAccountBusy] = useState(false);
   const avatars = [
@@ -5566,7 +5628,7 @@ function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }
       if (result.data.session?.user) {
         setAccountMessage('Log masuk berjaya. Memuatkan profil dan data pembelajaran akaun...');
       } else {
-        setAccountMessage('Akaun berjaya dicipta. Sahkan e-mel jika diminta, kemudian log masuk.');
+        setAccountMessage('Akaun berjaya dicipta. Semak e-mel dan tekan pautan pengesahan sebelum log masuk.');
         setAccountMode('signin');
       }
     } catch (error) {
@@ -5576,7 +5638,36 @@ function Login({ onStart, onBack, onSupabaseReady, guestProfile, onResumeGuest }
     }
   }
 
-  return <main className="app login-page"><section className="card"><p className="eyebrow">Akaun Jannati</p><h1>Selamat datang</h1>{guestProfile?.name && <button type="button" className="secondary full resume-free-profile" onClick={onResumeGuest}>Sambung {guestProfile.name} (Free)</button>}<p>Masukkan nama murid untuk mula dengan profil Free baharu.</p><label>Nama Murid</label><input value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus /><label>Avatar</label><div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div><button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar Free</button>{supabaseConfigured && <><div className="login-divider"><span>atau guna akaun</span></div><form onSubmit={handleAccountSubmit} className="account-login-form"><label htmlFor="account-email">E-mel</label><input id="account-email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="nama@contoh.com" required /><label htmlFor="account-password">Kata laluan</label><input id="account-password" type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Minimum 6 aksara" minLength={6} required />{accountMessage && <p className="autosave-note" role="status">{accountMessage}</p>}<button type="submit" className="secondary full" disabled={accountBusy}>{accountBusy ? 'Memproses...' : accountMode === 'signin' ? 'Log masuk' : 'Cipta akaun'}</button></form><button type="button" className="text-button" onClick={() => { setAccountMode(mode => mode === 'signin' ? 'signup' : 'signin'); setAccountMessage(''); }}>{accountMode === 'signin' ? 'Belum ada akaun? Cipta akaun' : 'Sudah ada akaun? Log masuk'}</button></>}{onBack && <button type="button" className="text-button login-back-button" onClick={onBack}>Kembali</button>}</section></main>;
+  return <main className="app login-page"><section className="card">
+    <p className="eyebrow">Akaun Jannati</p>
+    <h1>Selamat datang</h1>
+    {guestProfile?.name && <button type="button" className="secondary full resume-free-profile" onClick={onResumeGuest}>Sambung {guestProfile.name} (Free)</button>}
+    <p>Masukkan nama murid untuk mula dengan profil Free baharu.</p>
+    <label htmlFor="guest-name">Nama Murid</label>
+    <input id="guest-name" value={name} onChange={event => setName(event.target.value)} placeholder="Nama murid" autoFocus />
+    <label>Avatar</label>
+    <div className="reading-tabs">{avatars.map(item => <button key={item.id} type="button" className={item.id === avatar ? '' : 'secondary'} onClick={() => setAvatar(item.id)} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}</div>
+    <button type="button" className="full" onClick={() => onStart(name.trim(), avatar)} disabled={!name.trim()}>Mula Belajar Free</button>
+    {supabaseConfigured && <>
+      <div className="login-divider"><span>atau guna akaun</span></div>
+      {recoveryMode ? <React.Suspense fallback={<p role="status">Menyediakan pemulihan akaun...</p>}>
+        <AuthRecoveryPanel mode={recoveryMode} initialEmail={email} redirectTo={getEmailRedirectUrl()} onSupabaseReady={onSupabaseReady} onBack={() => setRecoveryMode('')} />
+      </React.Suspense> : <>
+        <form onSubmit={handleAccountSubmit} className="account-login-form">
+          <label htmlFor="account-email">E-mel</label>
+          <input id="account-email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="nama@contoh.com" autoComplete="email" required />
+          <label htmlFor="account-password">Kata laluan</label>
+          <input id="account-password" type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Minimum 6 aksara" minLength={6} autoComplete={accountMode === 'signin' ? 'current-password' : 'new-password'} required />
+          {accountMessage && <p className="autosave-note" role="status" aria-live="polite">{accountMessage}</p>}
+          <button type="submit" className="secondary full" disabled={accountBusy}>{accountBusy ? 'Memproses...' : accountMode === 'signin' ? 'Log masuk' : 'Cipta akaun'}</button>
+        </form>
+        {accountMode === 'signin' && <button type="button" className="text-button" onClick={() => { setRecoveryMode('request-reset'); setAccountMessage(''); }}>Lupa kata laluan?</button>}
+        <button type="button" className="text-button" onClick={() => { setRecoveryMode('resend-signup'); setAccountMessage(''); }}>Hantar semula e-mel pengesahan</button>
+        <button type="button" className="text-button" onClick={() => { setAccountMode(mode => mode === 'signin' ? 'signup' : 'signin'); setAccountMessage(''); }}>{accountMode === 'signin' ? 'Belum ada akaun? Cipta akaun' : 'Sudah ada akaun? Log masuk'}</button>
+      </>}
+    </>}
+    {onBack && <button type="button" className="text-button login-back-button" onClick={onBack}>Kembali</button>}
+  </section></main>;
 }
 
 function LoadingSkeleton() {

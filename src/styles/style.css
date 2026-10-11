@@ -5870,6 +5870,18 @@ input:focus {
   gap: 8px;
 }
 
+.auth-recovery-panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  outline: none;
+}
+
+.auth-recovery-panel input,
+.auth-recovery-panel button {
+  max-width: 100%;
+}
+
 .header-account-action {
   min-height: 44px;
   padding: 8px 12px;
