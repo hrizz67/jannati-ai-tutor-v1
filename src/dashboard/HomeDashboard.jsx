@@ -57,6 +57,7 @@ import targetBadge from '../assets/icons/3d/target-badge.webp';
 import clockBadge from '../assets/icons/3d/clock-badge.webp';
 import fireBadge from '../assets/icons/3d/fire-badge.webp';
 import { DEFAULT_STUDENT_YEAR, getStudentYearSupportLabel, SUPPORTED_STUDENT_YEARS } from '../config/studentYears.js';
+import { isInternalUiSurfaceEnabled } from '../services/internalUiSurfaceVisibility.js';
 
 // Legacy motion tokens remain documented while the resume UI uses the 3D replacements: IconGlyph name="play" and IconGlyph name="repeat".
 
@@ -411,6 +412,7 @@ export default function HomeDashboard(props) {
     onSyncLearningData,
     cloudSyncStatus,
     onLoadLearningData,
+    showClassroomPilot: isInternalUiSurfaceEnabled(),
     showAdvancedRecoveryTools: import.meta.env.DEV,
     dashboardCharacter,
     welcomeTopic,

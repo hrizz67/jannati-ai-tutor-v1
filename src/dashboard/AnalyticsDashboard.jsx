@@ -83,6 +83,7 @@ export default function AnalyticsDashboard({
   onSyncLearningData,
   onLoadLearningData,
   cloudSyncStatus,
+  showClassroomPilot = false,
   showAdvancedRecoveryTools = false,
   onToggleFavourite,
   dashboardCharacter,
@@ -161,7 +162,7 @@ export default function AnalyticsDashboard({
         )}
       </section>
 
-      <section className="card classroom-pilot-card">
+      {showClassroomPilot ? <section className="card classroom-pilot-card">
         <p className="eyebrow">Pilot Bilik Darjah</p>
         <h2>Ringkasan Bukti 14 Hari</h2>
         <p className="memory-last">{classroomPilot.readiness.label} · {classroomPilot.readiness.message}</p>
@@ -181,7 +182,7 @@ export default function AnalyticsDashboard({
         ) : null}
         <p className="autosave-note">Eksport pilot hanya mengandungi metrik agregat, kod peserta rawak dan tiada nama atau jawapan mentah.</p>
         <button type="button" onClick={() => onExportBetaReport?.({ reportType: 'classroom-pilot' })}>Eksport Laporan Pilot Tanpa Nama</button>
-      </section>
+      </section> : null}
 
       <section className="card curriculum-coverage-card">
         <p className="eyebrow">Liputan Kurikulum</p>
