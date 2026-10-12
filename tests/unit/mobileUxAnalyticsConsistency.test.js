@@ -3,7 +3,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { recordQuestionResult } from '../../src/ai/adaptive/adaptiveSessionEngine.js';
-import MetricCard, { MetricValue } from '../../src/components/MetricCard.jsx';
+import MetricCard, { getMetricValueKind, MetricValue } from '../../src/components/MetricCard.jsx';
 import AnalyticsDashboard from '../../src/dashboard/AnalyticsDashboard.jsx';
 import StudentDashboard from '../../src/dashboard/StudentDashboard.jsx';
 import pkSubject from '../../src/data/subjects/pk.js';
@@ -86,6 +86,23 @@ describe('P1.15D mobile choice and metric presentation', () => {
     const markup = renderToStaticMarkup(React.createElement(MetricValue, { value: 'Sedang Membina Asas Dengan Baik' }));
     expect(markup).toContain('metric-value--long-text');
     expect(markup).toContain('data-value-kind="long-text"');
+  });
+
+  it('renders Status Semasa with explicit text-safe typography without changing global classification', () => {
+    const markup = renderToStaticMarkup(React.createElement(StudentDashboard, {
+      profile: { name: 'Aina' },
+      adaptiveProfile: {},
+      canonicalAnalytics: createAnalytics({ status: 'Hampir Menguasai', accuracy: 81 }),
+      onStartAdaptivePractice: () => {}
+    }));
+
+    expect(markup).toMatch(/metric-value--long-text[^>]*>Hampir Menguasai<\/b><span>Status Semasa<\/span>/);
+    expect(getMetricValueKind('Hampir Menguasai')).toBe('text');
+    for (const value of ['81%', 4, 1320]) {
+      const numericMarkup = renderToStaticMarkup(React.createElement(MetricValue, { value }));
+      expect(numericMarkup).toContain('metric-value--numeric');
+    }
+    expect(stylesheet).toMatch(/\.metric-value--numeric\s*\{[\s\S]{0,120}text-align:\s*center;/);
   });
 });
 

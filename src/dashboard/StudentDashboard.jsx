@@ -58,7 +58,7 @@ export default function StudentDashboard({
               <div><MetricValue value={name}>{name}</MetricValue><span>Nama Murid</span></div>
               <div><MetricValue value={analytics.weakTopics.length} /><span>Topik Perlu Diperbaiki</span></div>
               <div><MetricValue value={analytics.strongTopics.length} /><span>Topik Dikuasai</span></div>
-              <div><MetricValue value={formatStatus(analytics.status)} /><span>Status Semasa</span></div>
+              <div><MetricValue value={formatStatus(analytics.status)} kind="long-text" /><span>Status Semasa</span></div>
             </div>
             <GamificationSummary profile={gamificationProfile} canonical={gamification} className="student-gamification-summary" />
             <div className="progress-wrap" role="progressbar" aria-label="Ketepatan keseluruhan" aria-valuemin={0} aria-valuemax={100} aria-valuenow={summaryAccuracy}>
