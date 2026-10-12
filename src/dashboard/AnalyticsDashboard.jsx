@@ -6,7 +6,7 @@ import checkBadge from '../assets/icons/3d/check-badge.webp';
 import giftBadge from '../assets/icons/3d/gift-badge.webp';
 import GamificationSummary from '../components/GamificationSummary.jsx';
 import MetricCard from '../components/MetricCard.jsx';
-import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatTopicName } from '../utils/displayFormatter';
+import { clampPercent, formatActivityStatus, formatDuration, formatDurationLabel, formatPriority, formatRecommendationCta, formatScopeLabel, formatStatus, formatStreakLabel, formatSubjectName, formatSubjectYearLabel, formatTopicName, isCrossSubjectTarget } from '../utils/displayFormatter';
 import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
 import { summarizeCommunicationHistory } from '../utils/communicationResult.js';
@@ -110,9 +110,12 @@ export default function AnalyticsDashboard({
   const studyRecommendation = aiMemory.reason || smartLesson?.reason || 'Cadangan akan muncul apabila data mencukupi.';
   const learningTitle = learningJourney.todayLesson?.title || formatTopicName(smartTopic?.topicId || smartTopic?.id || smartTopic?.title) || 'Enjin Pembelajaran Adaptif';
   const coverageState = getCurriculumCoverageState(curriculumCoverage.summary);
+  const smartTargetSubjectId = learningJourney.todayLesson?.subjectId || smartLesson?.nextSubject || smartLesson?.subjectId || smartSubject?.id || selectedSubjectId || '';
+  const smartCrossSubject = isCrossSubjectTarget(selectedSubjectId, smartTargetSubjectId);
+  const smartTargetSubjectLabel = formatSubjectYearLabel(smartTargetSubjectId || selectedSubjectId);
   const analyticsRecommendationCta = formatRecommendationCta({
-    subjectId: smartSubject?.id || selectedSubjectId,
-    isCrossSubject: Boolean(smartSubject?.id && selectedSubjectId && smartSubject.id !== selectedSubjectId),
+    subjectId: smartTargetSubjectId,
+    isCrossSubject: smartCrossSubject,
     reason: smartLesson?.reason,
     recommendationKey: smartLesson?.recommendationKey,
     defaultLabel: 'Mula Latihan'
@@ -220,6 +223,8 @@ export default function AnalyticsDashboard({
           <MetricCard value={formatPriority(smartLesson?.priority || 'normal')} label={`Keyakinan AI ${formatPriority(smartLesson?.priority || 'normal')}`} subtitle={studyRecommendation} />
         </div>
         <div className="recommend-meta">
+          {smartCrossSubject ? <span className="badge cross-subject-badge">Cadangan lintas subjek</span> : null}
+          {smartTargetSubjectId ? <span className="badge target-subject-badge">Sasaran: {smartTargetSubjectLabel}</span> : null}
           <span>{learningJourney.blockedTopics?.length || 0} topik terkunci</span>
           <span>{learningJourney.recommendedReview?.title || 'Ulang kaji stabil'}</span>
           <span>{smartTopic ? formatTopicName(smartTopic.topicId || smartTopic.id || smartTopic.title) : 'Semua topik selesai'}</span>

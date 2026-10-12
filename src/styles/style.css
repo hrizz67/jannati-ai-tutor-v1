@@ -4459,7 +4459,8 @@ input:focus {
   .dashboard-main .subject-card * {
     min-width: 0;
     max-width: 100%;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   .dashboard-main .adaptive-practice-card > *,
@@ -4490,7 +4491,8 @@ input:focus {
   .dashboard-main .stat b {
     font-size: clamp(1.15rem, 6.5vw, 1.7rem);
     line-height: 1.12;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   .dashboard-main .metric-card-label,
@@ -5665,6 +5667,33 @@ input:focus {
   line-height: 1.15;
 }
 
+.metric-value {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.metric-value--numeric {
+  width: 100%;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-value--text,
+.metric-value--long-text,
+.metric-value--unknown {
+  width: 100%;
+  text-align: left;
+}
+
+.metric-card-value.metric-value--long-text,
+.mastery-summary-grid > div > .metric-value--long-text {
+  font-size: clamp(.96rem, 2.6vw, 1.16rem);
+  line-height: 1.32;
+}
+
 .metric-card-value.is-unknown,
 .metric-card-unknown .metric-card-value {
   font-size: clamp(1rem, 3vw, 1.14rem);
@@ -5772,6 +5801,14 @@ input:focus {
 
   .metric-card-value {
     font-size: clamp(1.35rem, 7vw, 2rem);
+  }
+
+  .dashboard-main .metric-card-value.metric-value--long-text,
+  .dashboard-main .mastery-summary-grid > div > .metric-value--long-text {
+    font-size: clamp(.94rem, 4.2vw, 1.12rem);
+    line-height: 1.32;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   .metric-card-label {
@@ -6538,10 +6575,13 @@ input:focus {
 }
 
 .type-choice .interactive-choice {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
   place-items: center start;
   min-height: 58px;
   text-align: left;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .interactive-choice {
@@ -7440,6 +7480,15 @@ input:focus {
     grid-template-columns: 86px 1fr;
     min-height: 92px;
     text-align: left;
+  }
+
+  .type-choice .interactive-choice {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-height: 58px;
+    text-align: left;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   .visual-math-layout .interactive-choice {
