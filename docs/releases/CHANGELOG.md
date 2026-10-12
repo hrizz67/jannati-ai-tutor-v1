@@ -1,19 +1,23 @@
 # Changelog
 
-## 3.13.23 - 2026-10-11
+## 3.13.24 - 2026-10-12
 
-### Public launch readiness
+### Mobile UX
 
-- Removed customer-visible beta, demo, and testing wording and clarified account login copy.
-- Kept internal feedback, QDE, and classroom-pilot surfaces out of the normal production experience.
-- Added safer public account recovery for forgotten passwords, recovery-session finalization, confirmation resend, and invalid or expired e-mail links.
-- Added public Privacy, Terms, and Support pages with account/data deletion guidance, manual refund and payment-review guidance, and global footer links.
+- Gave plain-text mobile answer choices the full available text width without the old reserved 86px visual lane.
+- Added compact text-safe typography for long learner-status values while keeping numeric KPIs centered and distinct.
+
+### Analytics consistency
+
+- Sourced subject performance from canonical progress evidence.
+- Propagated real recorded learning time into subject and global analytics without fabricated or duplicate time.
+- Labelled cross-subject AI recommendations explicitly so the target is distinct from the selected analytics subject.
 
 ### Scope boundaries
 
-- Manual Premium sales remain manual; no payment gateway or automatic Premium activation was added.
-- Refund review remains manual, and no automated backend account deletion was added.
-- No database, schema, RPC, P1.13 sync, reward, STT/voice, or question-bank behavior changed.
+- Question wording, answers, IDs, and the 4,530-question bank remain unchanged.
+- No P1.13 sync, reward, XP, coin, Supabase, database, schema, RPC, migration, auth, Premium, payment, STT, voice, Admin, or Parent business-logic behavior changed.
+- No dependency was added.
 
 ### Release controls
 
