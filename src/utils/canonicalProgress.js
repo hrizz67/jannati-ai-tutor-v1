@@ -19,6 +19,17 @@ function explicitHistoryTotals(history) {
   }, { attempts: 0, correct: 0, wrong: 0 });
 }
 
+function getSubjectStudySeconds(record = {}, topicRecords = []) {
+  const topicSeconds = topicRecords.reduce((total, topic) => total + Math.max(0, number(topic?.totalTime, 0)), 0);
+  return Math.max(
+    0,
+    number(record.studySeconds, 0),
+    number(record.studyMinutes, 0) * 60,
+    number(record.totalTime, 0),
+    topicSeconds
+  );
+}
+
 export function createCanonicalProgress(input = {}) {
   const source = input && typeof input === 'object' ? input : {};
   const history = Array.isArray(source.history) ? source.history : [];
@@ -40,7 +51,7 @@ export function createCanonicalProgress(input = {}) {
       wrong: topicTotals.wrong,
       topicMastery: topicSource
     } : {}) };
-    const attempts = number(record.attempts ?? record.totalQuestions, topicTotals.attempts);
+    const attempts = number(record.attempts ?? record.total ?? record.totalQuestions, topicTotals.attempts);
     const correct = number(record.correct ?? record.correctQuestions, topicTotals.correct);
     subjects[id] = {
       xp: number(record.xp, 0),
@@ -48,15 +59,16 @@ export function createCanonicalProgress(input = {}) {
       attempts,
       correct,
       wrong: Math.max(0, number(record.wrong ?? record.incorrectQuestions, attempts - correct)),
-      studySeconds: Math.max(0, number(record.studySeconds, number(record.studyMinutes, 0) * 60)),
+      studySeconds: getSubjectStudySeconds(sourceSubject, topicRecords),
       topicMastery: record.topicMastery && typeof record.topicMastery === 'object' ? record.topicMastery : {}
     };
   }
   const subjectTotals = Object.values(subjects).reduce((totals, subject) => ({
     attempts: totals.attempts + subject.attempts,
     correct: totals.correct + subject.correct,
-    wrong: totals.wrong + subject.wrong
-  }), { attempts: 0, correct: 0, wrong: 0 });
+    wrong: totals.wrong + subject.wrong,
+    studySeconds: totals.studySeconds + subject.studySeconds
+  }), { attempts: 0, correct: 0, wrong: 0, studySeconds: 0 });
   const totalAttempts = firstNumber(source.totalQuestions, source.totals?.questionsAnswered, historyTotals.attempts, subjectTotals.attempts) ?? 0;
   const totalCorrect = firstNumber(source.correctQuestions, source.totalCorrect, source.totals?.correct, historyTotals.correct || null, subjectTotals.correct) ?? 0;
   const totalWrong = firstNumber(source.incorrectQuestions, source.totalWrong, source.totals?.wrong, historyTotals.wrong || null, subjectTotals.wrong, Math.max(0, totalAttempts - totalCorrect)) ?? 0;
@@ -73,7 +85,7 @@ export function createCanonicalProgress(input = {}) {
       totalAttempts: Math.max(0, totalAttempts),
       totalCorrect: Math.max(0, totalCorrect),
       totalWrong: Math.max(0, totalWrong),
-      totalStudySeconds: Math.max(0, number(source.totalStudySeconds, number(source.studyMinutes, 0) * 60)),
+      totalStudySeconds: Math.max(0, number(source.totalStudySeconds, 0), number(source.studyMinutes, 0) * 60, subjectTotals.studySeconds),
       achievements: Array.isArray(source.achievements) ? source.achievements : []
     },
     subjects,

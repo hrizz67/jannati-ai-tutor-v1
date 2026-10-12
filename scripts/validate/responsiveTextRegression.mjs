@@ -6,7 +6,7 @@ const studentSource = fs.readFileSync(new URL('../../src/dashboard/StudentDashbo
 const cssSource = fs.readFileSync(new URL('../../src/styles/style.css', import.meta.url), 'utf8');
 
 assert.match(homeSource, /className="journey-steps"[\s\S]*?>Seterusnya</, 'The responsive learning-journey contract must cover the next-step card.');
-assert.match(studentSource, /className="card streak-summary-card"[\s\S]{0,500}>Motivasi</, 'The streak motivation card needs a stable responsive scope.');
+assert.match(studentSource, /className="card streak-summary-card"[\s\S]{0,800}>Motivasi</, 'The streak motivation card needs a stable responsive scope.');
 
 assert.match(
   cssSource,

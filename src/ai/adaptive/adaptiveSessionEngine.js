@@ -103,7 +103,7 @@ function applyLifetimeTotals(profile, { correct, timeSpent, correctAnswer }) {
   return profile;
 }
 
-function applySubjectTotals(profile, subjectId, correct) {
+function applySubjectTotals(profile, subjectId) {
   if (!subjectId) return profile;
   if (!profile.subjects || typeof profile.subjects !== 'object') profile.subjects = {};
   const topicRecords = Object.values(profile.topics?.[subjectId] || {});
@@ -112,11 +112,13 @@ function applySubjectTotals(profile, subjectId, correct) {
   const existingSubject = profile.subjects[subjectId] && typeof profile.subjects[subjectId] === 'object'
     ? profile.subjects[subjectId]
     : {};
+  const topicStudySeconds = topicRecords.reduce((sum, record) => sum + Math.max(0, Number(record?.totalTime) || 0), 0);
   profile.subjects[subjectId] = {
     ...existingSubject,
     accuracy: total ? Math.round((correctTotal / total) * 100) : 0,
     correct: correctTotal,
-    total
+    total,
+    studySeconds: Math.max(0, Number(existingSubject.studySeconds) || 0, topicStudySeconds)
   };
   return profile;
 }
@@ -375,7 +377,7 @@ export function recordQuestionResult(profile, result = {}) {
   nextProfile.lastAnsweredAt = answeredAt || nowIso();
 
   applyLifetimeTotals(nextProfile, { correct: safeCorrect, timeSpent });
-  applySubjectTotals(nextProfile, subjectId, safeCorrect);
+  applySubjectTotals(nextProfile, subjectId);
   const topicMastery = nextProfile.topics?.[subjectId]?.[topicId] || {};
 
   nextProfile.learningHistory = [

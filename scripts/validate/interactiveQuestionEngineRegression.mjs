@@ -1236,7 +1236,7 @@ assert.ok(engineSource.includes('aria-label={`Pilih ${hotspot.label}`}'), 'Every
 assert.ok(styleSource.includes('width: 50px') && styleSource.includes('height: 50px') && styleSource.includes('min-width: 50px') && styleSource.includes('min-height: 50px'), 'Hotspot targets must remain at least 50px for touch input.');
 assert.ok(styleSource.includes('min-height: 48px') && styleSource.includes('@media (max-width: 650px)') && styleSource.includes('prefers-reduced-motion'), 'Touch size, mobile layout and reduced-motion support are required.');
 assert.ok(styleSource.includes('.interactive-clock-svg') && styleSource.includes('.interactive-ruler-svg') && styleSource.includes('.hotspot-stage'), 'Phase 2 visuals must have scoped responsive styles.');
-assert.ok(styleSource.includes('.type-choice .interactive-choice-grid') && styleSource.includes('overflow-wrap: anywhere'), 'Text-heavy derived choices must remain readable on desktop and mobile.');
+assert.match(styleSource, /\.type-choice \.interactive-choice\s*\{[\s\S]{0,260}grid-template-columns:\s*minmax\(0,\s*1fr\);[\s\S]{0,260}overflow-wrap:\s*break-word;[\s\S]{0,120}word-break:\s*normal;/, 'Text-heavy derived choices must use a full-width natural-wrapping lane on desktop and mobile.');
 assert.ok(styleSource.includes('.interactive-object-symbol.arabic-glyph'), 'Arabic and Jawi glyphs must retain a readable responsive size.');
 assert.ok(!engineSource.includes('dangerouslySetInnerHTML'), 'Question visuals must not inject unsafe HTML.');
 

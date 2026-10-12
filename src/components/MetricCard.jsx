@@ -7,6 +7,26 @@ function normalizeMetricText(value, fallback = 'Belum tersedia') {
   return text;
 }
 
+export function getMetricValueKind(value, displayValue = value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return 'numeric';
+  const text = String(displayValue ?? '').trim();
+  if (/^(?:RM\s*)?[+-]?\d+(?:[.,]\d+)?%?$/i.test(text)) return 'numeric';
+  if (text.length > 18 || text.split(/\s+/).filter(Boolean).length > 2) return 'long-text';
+  return 'text';
+}
+
+export function MetricValue({ value, children, kind = '', className = '' }) {
+  const resolvedKind = kind || getMetricValueKind(value, children ?? value);
+  return (
+    <b
+      className={`metric-value metric-value--${resolvedKind} ${className}`.trim()}
+      data-value-kind={resolvedKind}
+    >
+      {children ?? value}
+    </b>
+  );
+}
+
 export default function MetricCard({
   value,
   label,
@@ -18,6 +38,7 @@ export default function MetricCard({
   const safeValue = normalizeMetricText(value, unknownLabel);
   const safeSubtitle = normalizeMetricText(subtitle, '');
   const isUnknown = safeValue === unknownLabel;
+  const valueKind = isUnknown ? 'unknown' : getMetricValueKind(value, safeValue);
   const ariaLabel = [safeLabel, safeValue, safeSubtitle].filter(Boolean).join('. ');
 
   return (
@@ -27,7 +48,7 @@ export default function MetricCard({
       aria-label={ariaLabel}
     >
       <span className="metric-card-label">{safeLabel}</span>
-      <b className={`metric-card-value ${isUnknown ? 'is-unknown' : ''}`.trim()}>{safeValue}</b>
+      <MetricValue value={value} kind={valueKind} className={`metric-card-value ${isUnknown ? 'is-unknown' : ''}`.trim()}>{safeValue}</MetricValue>
       {safeSubtitle ? <small className="metric-card-subtitle">{safeSubtitle}</small> : null}
     </div>
   );

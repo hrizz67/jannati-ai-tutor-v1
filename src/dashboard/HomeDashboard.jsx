@@ -341,7 +341,7 @@ export default function HomeDashboard(props) {
     adaptivePracticePreview,
     adaptiveWeakTopics: [],
     adaptiveStrongTopics: [],
-    adaptiveRecommendation: { plan: { totalQuestions: 0, estimatedMinutes: 0 }, summary: { weakTopics: 0, strongTopics: 0, recommendedFocus: [] }, subjectRows: [] },
+    adaptiveRecommendation: { plan: { totalQuestions: 0, estimatedMinutes: 0 }, summary: { weakTopics: 0, strongTopics: 0, recommendedFocus: [] } },
     adaptiveRecommendationFocus: null,
     streakBest: Number(adaptiveStore.bestStreak || adaptiveStore.longestStreak || adaptiveStore.maxStreak || adaptiveStore.streak || 0),
     streakMessage: 'Teruskan langkah kecil hari ini.',

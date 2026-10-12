@@ -40,6 +40,23 @@ function getScopeLabel(selectedSubject, selectedId) {
   return `Subjek dipilih: ${selectedSubject?.title || selectedId}`;
 }
 
+export function getCanonicalSubjectRows(progress = {}) {
+  return Object.entries(progress.subjects || {}).flatMap(([id, record]) => {
+    const total = getAttemptCount(record);
+    const correct = num(record?.correct ?? record?.correctQuestions);
+    const studySeconds = num(record?.studySeconds);
+    const hasTopicEvidence = Object.values(record?.topicMastery || {}).some(topic => getAttemptCount(topic) > 0);
+    if (!total && !correct && !studySeconds && !hasTopicEvidence) return [];
+    return [{
+      id,
+      total,
+      correct,
+      accuracy: total ? Math.round(clamp((correct / total) * 100)) : 0,
+      studySeconds
+    }];
+  });
+}
+
 export function deriveAnalyticsStatus(analytics = {}) {
   if (!analytics.hasEvidence) return 'Belum Bermula';
   // Thresholds:
@@ -74,6 +91,7 @@ export function getCanonicalAnalytics(input = {}) {
   const currentStreak = num(progress.global?.streakCurrent);
   const bestStreak = Math.max(currentStreak, num(progress.global?.streakBest));
   const masteryPercent = topics.length ? clamp(topics.reduce((sum, topic) => sum + topic.mastery, 0) / topics.length) : (hasEvidence ? accuracy : 0);
+  const studySeconds = num(subject.studySeconds ?? progress.global?.totalStudySeconds);
   const output = {
     scope,
     scopeLabel: getScopeLabel(input.selectedSubject, selectedId),
@@ -82,7 +100,8 @@ export function getCanonicalAnalytics(input = {}) {
     hasEvidence,
     totalQuestions, correctQuestions, accuracy: Math.round(accuracy), masteryPercent: Math.round(masteryPercent),
     masteredTopics, learningTopics, weakTopics, strongTopics, availableTopics: topics,
-    currentStreak, bestStreak, studyMinutes: Math.round(num(subject.studySeconds ?? progress.global?.totalStudySeconds) / 60),
+    subjectRows: getCanonicalSubjectRows(progress),
+    currentStreak, bestStreak, studySeconds, studyMinutes: studySeconds / 60,
     latestScore: latest ? num(latest.score ?? latest.percent) : null, latestTopic: latest?.topicId || null,
     confidence: hasEvidence ? Math.round(accuracy) : null,
     latestActivityAt: latest?.date || latest?.timestamp || null,
