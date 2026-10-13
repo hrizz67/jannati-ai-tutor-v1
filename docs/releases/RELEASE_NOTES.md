@@ -1,27 +1,31 @@
-# Jannati AI Tutor 3.13.24 Release Notes
+# Jannati AI Tutor 3.13.25 Release Notes
 
 Status: stable
-Tag: v3.13.24
-Build date: 2026-10-12T11:37:08.538Z
+Tag: v3.13.25
+Build date: 2026-10-13T10:57:05.386Z
 
-## Mobile UX
+## Mobile Subject Report & Learning Journey Layout
 
-- Plain-text mobile answer choices now use the full available text width without reserving the old 86px visual lane.
-- Long learner-status values use compact, text-safe typography with natural wrapping.
-- Numeric KPIs remain visually distinct and centered.
+- Prestasi Subjek badges now use scoped mobile-safe sizing.
+- Subject names, accuracy percentages, progress bars, and question counts no longer overlap.
+- Long subject names wrap naturally.
+- Laluan Belajar cards stack through normal phone widths up to 430px.
+- Malay labels such as "Seterusnya" no longer split mid-word solely to preserve a three-column layout.
 
-## Analytics Consistency
+## Preserved P1.15D Behaviour
 
-- Subject performance now comes from canonical progress evidence.
-- Real recorded learning time flows into subject and global analytics without fabricating time.
-- Duplicate question events do not increase recorded learning time twice.
-- Cross-subject AI recommendations are explicitly labelled so they are not confused with the selected analytics subject.
+- Plain multiple-choice questions keep their full-width text lane.
+- Status Semasa keeps its text-safe typography.
+- Prestasi Subjek continues to use canonical data.
+- Study-time analytics continue to use real recorded study time.
+- Cross-subject recommendations retain their subject labels.
 
-## Safety and Unchanged Behavior
+## Scope Boundaries
 
-- Question wording, answers, IDs, and the 4,530-question bank remain unchanged.
-- No P1.13 sync, reward, XP, coin, Supabase, database, schema, RPC, migration, auth, Premium, payment, STT, voice, Admin, or Parent business-logic behavior changed.
+- No question wording, answer, or ID changes.
+- No reward, sync, authentication, Premium, STT, or Supabase changes.
 - No dependency was added.
+- Physical production acceptance is not claimed by this release preparation.
 
 ## Release Readiness
 
@@ -55,4 +59,3 @@ Build date: 2026-10-12T11:37:08.538Z
 
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
-- Production physical acceptance has not yet been claimed for this release.

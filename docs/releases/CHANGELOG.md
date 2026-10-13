@@ -1,23 +1,6 @@
 # Changelog
 
-## 3.13.24 - 2026-10-12
-
-### Mobile UX
-
-- Gave plain-text mobile answer choices the full available text width without the old reserved 86px visual lane.
-- Added compact text-safe typography for long learner-status values while keeping numeric KPIs centered and distinct.
-
-### Analytics consistency
-
-- Sourced subject performance from canonical progress evidence.
-- Propagated real recorded learning time into subject and global analytics without fabricated or duplicate time.
-- Labelled cross-subject AI recommendations explicitly so the target is distinct from the selected analytics subject.
-
-### Scope boundaries
-
-- Question wording, answers, IDs, and the 4,530-question bank remain unchanged.
-- No P1.13 sync, reward, XP, coin, Supabase, database, schema, RPC, migration, auth, Premium, payment, STT, voice, Admin, or Parent business-logic behavior changed.
-- No dependency was added.
+## 3.13.25 - 2026-10-13
 
 ### Release controls
 
