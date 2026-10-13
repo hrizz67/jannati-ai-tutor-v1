@@ -83,10 +83,10 @@ export default function StudentDashboard({
 
       <section className="card">
         <h2>Prestasi Subjek</h2>
-        {subjectRows.length ? <div className="subject-report-grid">
+        {subjectRows.length ? <div className="subject-report-grid student-subject-report-grid">
           {subjectRows.map(subject => (
             <div className="report-box" key={`student-${subject.id}`}>
-              <h3><SubjectBadge subjectId={subject.id} /> {subject.title || formatSubjectName(subject.id)}</h3>
+              <h3><SubjectBadge className="subject-report-badge" subjectId={subject.id} /> {subject.title || formatSubjectName(subject.id)}</h3>
               <b>{clampPercent(subject.accuracy)}%</b>
               <div className="mini-progress"><div style={{ width: `${clampPercent(subject.accuracy)}%` }} /></div>
               <span>{subject.total} soalan dicuba</span>

@@ -10,8 +10,8 @@ assert.match(studentSource, /className="card streak-summary-card"[\s\S]{0,800}>M
 
 assert.match(
   cssSource,
-  /@media \(max-width: 380px\)[\s\S]*?\.dashboard-main \.smart-lesson-card \.journey-steps\s*{[\s\S]*?grid-template-columns:\s*1fr;/,
-  'Learning-journey cards must stack before narrow phones crush Malay words.'
+  /@media \(max-width: 430px\)[\s\S]*?\.dashboard-main \.smart-lesson-card \.journey-steps\s*{[\s\S]*?grid-template-columns:\s*1fr;/,
+  'Learning-journey cards must stack across normal modern phone widths before Malay words are compressed.'
 );
 assert.match(
   cssSource,
@@ -29,4 +29,4 @@ assert.match(
   'The motivation card must receive a full text lane on very small phones.'
 );
 
-console.log('Responsive text regression: PASS (320px actions/streak, 360px learning journey, natural word boundaries)');
+console.log('Responsive text regression: PASS (320-430px learning journey, 320px actions/streak, natural word boundaries)');
