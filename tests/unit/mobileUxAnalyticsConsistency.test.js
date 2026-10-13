@@ -136,6 +136,52 @@ describe('P1.15D canonical subject performance and study time', () => {
     expect(markup).not.toContain('Belum ada prestasi subjek.');
   });
 
+  it('keeps long subject-report copy in a scoped, naturally flowing mobile layout', () => {
+    const markup = renderToStaticMarkup(React.createElement(StudentDashboard, {
+      profile: { name: 'Aina' },
+      adaptiveProfile: {},
+      canonicalAnalytics: createAnalytics({
+        subjectRows: [{
+          id: 'pj',
+          title: 'Pendidikan Jasmani dan Kesihatan',
+          total: 12,
+          correct: 9,
+          accuracy: 75
+        }]
+      }),
+      onStartAdaptivePractice: () => {}
+    }));
+
+    expect(markup).toContain('subject-report-grid student-subject-report-grid');
+    expect(markup).toContain('game-badge-icon subject-report-badge');
+    expect(markup).toMatch(/<h3><img[^>]*subject-report-badge[^>]*> Pendidikan Jasmani dan Kesihatan<\/h3><b>75%<\/b>/);
+    expect(markup).toContain('<span>12 soalan dicuba</span>');
+
+    const layoutBlock = stylesheet.match(/\.student-subject-report-grid \.report-box\s*\{([\s\S]*?)\n\}/)?.[1] || '';
+    const headingBlock = stylesheet.match(/\.student-subject-report-grid \.report-box h3\s*\{([\s\S]*?)\n\}/)?.[1] || '';
+    const badgeBlock = stylesheet.match(/\.student-subject-report-grid \.subject-report-badge\s*\{([\s\S]*?)\n\}/)?.[1] || '';
+    expect(layoutBlock).toContain('height: auto');
+    expect(layoutBlock).toContain('overflow: visible');
+    expect(headingBlock).toContain('white-space: normal');
+    expect(headingBlock).toContain('overflow-wrap: break-word');
+    expect(headingBlock).toContain('word-break: normal');
+    expect(headingBlock).toContain('hyphens: none');
+    expect(headingBlock).not.toContain('text-overflow');
+    expect(badgeBlock).toContain('width: clamp(64px, 18vw, 84px)');
+    expect(badgeBlock).toContain('height: auto');
+    expect(badgeBlock).not.toMatch(/(?:^|\n)\s*width:\s*100%/);
+  });
+
+  it('stacks learning-journey cards through 430px without mid-word wrapping', () => {
+    const mobileJourneyBlock = stylesheet.match(/@media \(max-width: 430px\) \{[\s\S]*?\.dashboard-main \.smart-lesson-card \.journey-steps\s*\{([\s\S]*?)\n  \}/)?.[1] || '';
+    const copyBlock = stylesheet.match(/@media \(max-width: 430px\)[\s\S]*?\.dashboard-main \.smart-lesson-card \.journey-steps span,[\s\S]*?\.dashboard-main \.smart-lesson-card \.journey-steps small\s*\{([\s\S]*?)\n  \}/)?.[1] || '';
+    expect(mobileJourneyBlock).toContain('grid-template-columns: 1fr');
+    expect(copyBlock).toContain('overflow-wrap: normal');
+    expect(copyBlock).toContain('word-break: normal');
+    expect(copyBlock).toContain('hyphens: none');
+    expect(copyBlock).not.toContain('overflow-wrap: anywhere');
+  });
+
   it('retains the empty subject-performance state when canonical evidence is absent', () => {
     const analytics = getCanonicalAnalytics({ canonicalProgress: createCanonicalProgress({}) });
     expect(analytics.subjectRows).toEqual([]);
