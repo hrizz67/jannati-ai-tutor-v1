@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 250, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.reviewed_interactive, 256, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
 assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2680, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.teacher_review, 2674, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -181,13 +181,13 @@ for (const id of scienceFillBlankBatch3Ids) {
 }
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
-  77,
-  'Science mesti mempunyai tepat 77 interaksi disemak selepas Science FillBlank Batch 3.'
+  78,
+  'Science mesti mempunyai tepat 78 interaksi disemak selepas pilot P1.16B.'
 );
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'teacher_review').length,
-  413,
-  'Science mesti mempunyai tepat 413 calon teacher_review selepas Science FillBlank Batch 3.'
+  412,
+  'Science mesti mempunyai tepat 412 calon teacher_review selepas pilot P1.16B.'
 );
 
 assert.equal(scienceChoiceMiniPilotIds.size, 6, 'Science Choice Mini-Pilot mesti mengandungi tepat enam ID yang diluluskan.');

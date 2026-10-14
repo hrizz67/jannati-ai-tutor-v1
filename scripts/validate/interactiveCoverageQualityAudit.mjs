@@ -105,6 +105,14 @@ const numberLinePilotIds = new Set([
   'MATH-DARAB-PILOT-033', 'MATH-BAHAGI-PILOT-008',
   'MATH-BAHAGI-PILOT-025'
 ]);
+const first6RichInteractivePilotTypes = new Map([
+  ['MATH-BENTUK-PILOT-024', 'imageChoice'],
+  ['ENG-COLOURS-011', 'imageChoice'],
+  ['BM-KATA_SENDI-003', 'fillBlank'],
+  ['ARAB-WARNA_ARAB-002', 'imageChoice'],
+  ['SAINS-TEKNOLOGI-001', 'fillBlank'],
+  ['MATH-NOMBOR-PILOT-007', 'visualMath']
+]);
 
 function metricTemplate() {
   return {
@@ -302,7 +310,7 @@ const globalAccessibilityChecks = {
   visibleFocus: styleSource.includes('button:focus-visible') && styleSource.includes('.interactive-choice:focus-visible'),
   reducedMotion: styleSource.includes('@media (prefers-reduced-motion: reduce)')
 };
-const mobileViewportChecks = [320, 375, 430].map(width => ({
+const mobileViewportChecks = [320, 375, 390, 430].map(width => ({
   width,
   responsiveRulePresent: styleSource.includes('@media (max-width: 650px)'),
   singleColumnChoices: styleSource.includes('.interactive-choice-grid,') && styleSource.includes('grid-template-columns: 1fr;'),
@@ -316,16 +324,25 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1242, TEACHER_REVIEW: 2680, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 250, 'All reviewed authored interactions must be counted once.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1248, TEACHER_REVIEW: 2674, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 256, 'All reviewed authored interactions must be counted once.');
 assert.equal(summary.derivedInteractive, 992, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1242, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3288, 'All remaining questions must stay on the standard response path.');
-assert.equal(summary.visual, 86, 'The two approved Science Hotspot diagrams must be the only new visual interactions.');
+assert.equal(summary.interactive, 1248, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3282, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.visual, 90, 'Reviewed visual interactions must include exactly the four visual P1.16B pilot additions.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
-assert.ok(mobileViewportChecks.every(check => check.responsiveRulePresent && check.singleColumnChoices && check.minimumTouchTarget), 'The 320px, 375px and 430px mobile contracts must be present.');
+assert.ok(mobileViewportChecks.every(check => check.responsiveRulePresent && check.singleColumnChoices && check.minimumTouchTarget), 'The 320px, 375px, 390px and 430px mobile contracts must be present.');
+assert.equal(first6RichInteractivePilotTypes.size, 6, 'P1.16B must contain exactly six approved questions.');
+assert.ok([...first6RichInteractivePilotTypes].every(([id, type]) => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.authoredInteractive
+    && row.interactionType === type
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every P1.16B question must be authored, valid, mobile-safe and accessibility-safe.');
 assert.ok([...q4Ids].every(id => rows.find(row => row.questionId === id)?.classification === 'AUTO_SAFE'), 'Every selected Q4 conversion must be valid and teacher reviewed.');
 assert.equal(batch1Ids.size, 15, 'Interactive Content Batch 1 must contain exactly fifteen approved question IDs.');
 assert.ok([...batch1Ids].every(id => {
@@ -455,9 +472,9 @@ assert.deepEqual(
   ['SAINS-BAHAN-026', 'SAINS-MANUSIA-047', 'SAINS-TUMBUHAN-009'].sort(),
   'Only the existing plant Hotspot and the two approved Science Hotspot Pilot IDs may be authored as Science Hotspots.'
 );
-assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive).length, 77, 'Science must contain exactly 77 reviewed interactions after Science FillBlank Batch 3.');
+assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive).length, 78, 'Science must contain exactly 78 reviewed interactions after P1.16B.');
 assert.equal(rows.filter(row => row.subjectId === 'sains' && row.authoredInteractive && row.interactionType === 'choice').length, 12, 'Science must contain exactly twelve reviewed authored Choice interactions.');
-assert.equal(rows.filter(row => row.subjectId === 'sains' && row.classification === 'TEACHER_REVIEW').length, 413, 'Science must retain exactly 413 teacher-review questions.');
+assert.equal(rows.filter(row => row.subjectId === 'sains' && row.classification === 'TEACHER_REVIEW').length, 412, 'Science must retain exactly 412 teacher-review questions after P1.16B.');
 for (const id of rejectedScienceChoiceIds) {
   const row = rows.find(item => item.questionId === id);
   assert.equal(row?.classification, 'TEACHER_REVIEW', `${id} must remain in teacher review.`);

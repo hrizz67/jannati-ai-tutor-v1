@@ -3608,6 +3608,157 @@ const REVIEWED_NUMBER_LINE_PILOT_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS = Object.freeze({
+  'MATH-BENTUK-PILOT-024': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Perhatikan pola bentuk dan pilih bentuk yang melengkapkannya.',
+      options: [
+        { id: 'triangle', label: 'Segi tiga', value: 'segi tiga', visual: { kind: 'shape', shape: 'triangle', label: 'Segi tiga' } },
+        { id: 'square', label: 'Segi empat sama', value: 'segi empat sama', visual: { kind: 'shape', shape: 'square', label: 'Segi empat sama' } },
+        { id: 'circle', label: 'Bulatan', value: 'bulatan', visual: { kind: 'shape', shape: 'circle', label: 'Bulatan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Melengkapkan pola berulang tiga bentuk menggunakan bentuk 2D yang sama seperti dalam soalan asal.',
+      assessment: 'Murid masih perlu mengenal unit ulangan segi tiga, segi empat sama dan bulatan sebelum memilih bentuk seterusnya.',
+      textbook: 'Kad bentuk SVG sedia ada mempunyai label teks yang jelas dan tidak mendedahkan kedudukan jawapan melalui warna.'
+    },
+    intelligence: {
+      skillId: 'bentuk.melengkapkan_pola_tiga_bentuk', responseMode: 'visual_pattern_selection',
+      conceptTags: ['bentuk_2d', 'pola_berulang', 'urutan'],
+      misconceptionTags: ['mengulang_bentuk_terakhir', 'tidak_mengenal_unit_pola'],
+      hintSteps: ['Cari kumpulan bentuk yang berulang.', 'Bandingkan tiga bentuk pertama dengan tiga kedudukan selepasnya.', 'Pilih bentuk ketiga yang melengkapkan kumpulan kedua.']
+    }
+  },
+  'ENG-COLOURS-011': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Choose the labelled colour that completes the sentence.',
+      options: [
+        { id: 'yellow', label: 'Yellow', value: 'yellow', visual: { kind: 'object', symbol: '🟨', label: 'Yellow colour swatch' } },
+        { id: 'green', label: 'Green', value: 'green', visual: { kind: 'object', symbol: '🟩', label: 'Green colour swatch' } },
+        { id: 'orange', label: 'Orange', value: 'orange', visual: { kind: 'object', symbol: '🟧', label: 'Orange colour swatch' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Recognise and use the English colour word “yellow” in a familiar sentence about a ripe banana.',
+      assessment: 'Every colour swatch has a visible word label, so pupils must connect the sentence meaning with the colour vocabulary.',
+      textbook: 'Existing lightweight symbols reinforce colour meaning without making colour the only accessible cue.'
+    },
+    intelligence: {
+      skillId: 'colours.ripe_banana_yellow', responseMode: 'labelled_visual_selection',
+      conceptTags: ['colours', 'yellow', 'sentence_completion'],
+      misconceptionTags: ['confuses_ripe_and_unripe_banana', 'chooses_colour_without_reading_label'],
+      hintSteps: ['Think about how a banana changes as it ripens.', 'Read each colour word below its swatch.', 'Choose the colour word used for a ripe banana.']
+    }
+  },
+  'BM-KATA_SENDI-003': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kata sendi nama yang melengkapkan ayat.',
+      sentenceParts: ['Lengkapkan ayat: Ayah pulang ', ' kampung selepas cuti sekolah.'],
+      options: [
+        { id: 'di', label: 'di', value: 'di' },
+        { id: 'ke', label: 'ke', value: 'ke' },
+        { id: 'dari', label: 'dari', value: 'dari' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menggunakan kata sendi nama “dari” untuk menunjukkan tempat asal.',
+      assessment: 'Ayat asal dikekalkan dan pilihan di/ke/dari membezakan tempat tetap, arah dan tempat asal.',
+      textbook: 'Tempat kosong berada pada kedudukan asal supaya konteks tatabahasa tidak berubah.'
+    },
+    intelligence: {
+      skillId: 'kata_sendi.menunjukkan_tempat_asal', responseMode: 'completion',
+      conceptTags: ['kata_sendi', 'dari', 'tempat_asal'],
+      misconceptionTags: ['keliru_dari_dan_ke', 'keliru_dari_dan_di'],
+      hintSteps: ['Kenal pasti tempat Ayah datang sebelum pulang.', 'Bezakan tempat asal daripada tempat yang dituju.', 'Pilih kata sendi yang menunjukkan tempat datang.']
+    }
+  },
+  'ARAB-WARNA_ARAB-002': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih warna berlabel yang sepadan dengan perkataan Arab.',
+      options: [
+        { id: 'blue', label: 'Biru', value: 'biru', visual: { kind: 'object', symbol: '🟦', label: 'Petak berwarna biru' } },
+        { id: 'red', label: 'Merah', value: 'merah', visual: { kind: 'object', symbol: '🟥', label: 'Petak berwarna merah' } },
+        { id: 'green', label: 'Hijau', value: 'hijau', visual: { kind: 'object', symbol: '🟩', label: 'Petak berwarna hijau' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan kosa kata warna Arab أَزْرَقُ dengan maksud Bahasa Melayu “biru”.',
+      assessment: 'Warna, label dan simbol disediakan bersama supaya pilihan tidak bergantung pada persepsi warna sahaja.',
+      textbook: 'Kad sedia ada mengekalkan teks Arab pada stem dan menyediakan label Bahasa Melayu yang boleh dibaca.'
+    },
+    intelligence: {
+      skillId: 'warna_arab.azraq_biru', responseMode: 'labelled_visual_selection',
+      conceptTags: ['warna_arab', 'azraq', 'biru'],
+      misconceptionTags: ['keliru_azraq_dan_ahmar', 'memilih_warna_tanpa_membaca_label'],
+      hintSteps: ['Baca perkataan Arab dari kanan ke kiri.', 'Ingat semula warna yang dipadankan dengan “azraq”.', 'Semak label Bahasa Melayu di bawah setiap petak warna.']
+    }
+  },
+  'SAINS-TEKNOLOGI-001': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih fungsi gunting yang melengkapkan ayat.',
+      sentenceParts: ['Gunting digunakan untuk ', '.'],
+      options: [
+        { id: 'cut', label: 'memotong', value: 'memotong' },
+        { id: 'measure', label: 'menyukat', value: 'menyukat' },
+        { id: 'stick', label: 'melekat', value: 'melekat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti fungsi gunting sebagai alat untuk memotong.',
+      assessment: 'Satu alat dan tiga fungsi ringkas mengekalkan bukti pembelajaran asal tanpa mencipta pasangan alat tambahan.',
+      textbook: 'Ayat asal kekal lengkap apabila fungsi yang dipilih dimasukkan ke tempat kosong.'
+    },
+    intelligence: {
+      skillId: 'teknologi.fungsi_gunting', responseMode: 'completion',
+      conceptTags: ['teknologi', 'alat', 'fungsi_gunting'],
+      misconceptionTags: ['keliru_gunting_dan_pembaris', 'keliru_memotong_dan_melekat'],
+      hintSteps: ['Bayangkan cara gunting digunakan.', 'Bandingkan fungsi mengubah bahan dengan fungsi mengukur atau melekat.', 'Pilih perbuatan yang dilakukan oleh dua bilah gunting.']
+    }
+  },
+  'MATH-NOMBOR-PILOT-007': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Perhatikan nilai tempat ratus, puluh dan sa, kemudian pilih nombor yang dibina.',
+      visual: {
+        kind: 'placeValue',
+        columns: [
+          { id: 'hundreds', label: 'Ratus', value: 9, block: 'hundred' },
+          { id: 'tens', label: 'Puluh', value: 4, block: 'ten' },
+          { id: 'ones', label: 'Sa', value: 2, block: 'one' }
+        ]
+      },
+      options: [
+        { id: '942', label: '942', value: '942' },
+        { id: '924', label: '924', value: '924' },
+        { id: '492', label: '492', value: '492' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mewakilkan 900 + 40 + 2 sebagai nombor berdasarkan nilai tempat ratus, puluh dan sa.',
+      assessment: 'Distraktor menukar kedudukan digit supaya murid perlu mentafsir setiap nilai tempat, bukan mengenal angka secara longgar.',
+      textbook: 'Model nilai tempat sedia ada menunjukkan komponen 9 ratus, 4 puluh dan 2 sa tanpa memaparkan nombor akhir di luar pilihan.'
+    },
+    intelligence: {
+      skillId: 'nombor.membina_942_daripada_nilai_tempat', responseMode: 'place_value_selection',
+      conceptTags: ['nilai_tempat', 'ratus', 'puluh', 'sa'],
+      misconceptionTags: ['menukar_digit_puluh_dan_sa', 'menukar_digit_ratus_dan_puluh'],
+      hintSteps: ['Baca lajur ratus terlebih dahulu.', 'Kemudian baca digit puluh dan digit sa mengikut urutan.', 'Gabungkan ketiga-tiga digit tanpa menukar kedudukannya.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -3624,6 +3775,13 @@ const REVIEWED_ARRAY_PILOT_EXAMPLES = Object.fromEntries(
 
 const REVIEWED_NUMBER_LINE_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
+const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
     qualityReview: spec.qualityReview
   }])
@@ -3653,6 +3811,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES,
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
+  ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -3960,6 +4119,10 @@ const REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_NUMBER_LINE_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4016,6 +4179,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_EQUAL_GROUPS_PILOT_INTELLIGENCE,
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
+  ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
