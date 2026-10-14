@@ -1,33 +1,31 @@
-# Jannati AI Tutor 3.13.26 Release Notes
+# Jannati AI Tutor 3.13.27 Release Notes
 
 Status: stable
-Tag: v3.13.26
-Build date: 2026-10-14T11:18:09.375Z
+Tag: v3.13.27
+Build date: 2026-10-14T16:30:29.048Z
 
-## First-Six Rich Interactive Pilot
+## P1.16C Rich Interactive Expansion — Batch 1
 
-- `MATH-BENTUK-PILOT-024` now uses the existing `imageChoice` shape visual for a repeating 2D shape pattern.
-- `ENG-COLOURS-011` now uses `imageChoice` with labelled colour swatches for ripe banana / yellow.
-- `BM-KATA_SENDI-003` now uses `fillBlank` for `di` / `ke` / `dari`; the canonical answer remains `dari`.
-- `ARAB-WARNA_ARAB-002` now uses `imageChoice` with labelled colour swatches for `أَزْرَقُ` → `biru`.
-- `SAINS-TEKNOLOGI-001` now uses `fillBlank` for `gunting` → `memotong`.
-- `MATH-NOMBOR-PILOT-007` now uses `visualMath` with the existing place-value visual for `900 + 40 + 2` → `942`.
+- `MATH-BAHAGI-PILOT-001` now uses the existing `visualMath` equal-groups visual for `12 ÷ 2` → `6`.
+- `MATH-BAHAGI-PILOT-003` now uses the existing `visualMath` equal-groups visual for `20 ÷ 4` → `5`.
+- `MATH-PANJANG-PILOT-002` now uses the existing `measurement` interaction for the metre (`m`) unit.
+- `MATH-JISIM-ISI-PADU-PILOT-004` now uses `imageChoice` for identifying a weighing scale.
+- `SAINS-KEMAHIRAN_SAINTIFIK-021` now uses `imageChoice` for identifying a ruler.
+- `ARAB-HURUF_HIJAIYAH-032` now uses `imageChoice` for identifying `ت` with its RTL semantics preserved.
 
 ## Preserved Learning Evidence
 
-- Underlying question IDs and wording are unchanged.
-- Canonical and accepted answers are unchanged.
-- The question bank remains at 4,530 questions.
-- The existing interaction engine and renderers are reused.
-- No new dependency or external image asset was added.
+- The six source questions, IDs, wording, canonical and accepted answers, difficulty, marks, hints, explanations, and curriculum metadata are unchanged.
+- Existing interaction primitives and lightweight visuals are reused; no renderer, engine, dependency, or external asset was added.
+- The question bank remains at 4,530 questions, with 262 reviewed interactions and 1,254 runtime-interactive questions.
+- Mobile-unsafe and accessibility-risk audit counts remain zero.
 
 ## Scope Boundaries
 
-- No Supabase, database, schema, RPC, or migration changes.
-- No reward, XP, coin, or P1.13 sync changes.
-- No authentication, Premium, payment, STT, or voice changes.
-- No Admin or Parent business-logic changes.
-- Physical production acceptance is not claimed by this release preparation.
+- No Supabase, database, schema, RPC, cloud-sync, reward, authentication, Premium, payment, STT, voice, Admin, or Parent logic changed.
+- No physical iPhone, Android, VoiceOver, or TalkBack acceptance is claimed by this release preparation.
+- The existing `MATH-NOMBOR-PILOT-007` iPhone acceptance exception remains open and is not reported as verified PASS.
+- Wrong-answer feedback wording and mixed Arabic–Malay text ordering remain separate observations outside this release scope.
 
 ## Release Readiness
 
