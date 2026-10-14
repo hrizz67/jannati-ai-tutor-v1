@@ -3759,6 +3759,144 @@ const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_SPECS = Object.freeze({
+  'MATH-BAHAGI-PILOT-001': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Bahagikan 12 pembilang sama rata kepada 2 kumpulan. Pilih bilangan dalam setiap kumpulan.',
+      visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 12, groups: 2 },
+      options: [
+        { id: 'six', label: '6', value: '6' },
+        { id: 'two', label: '2', value: '2' },
+        { id: 'ten', label: '10', value: '10' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memodelkan 12 ÷ 2 sebagai perkongsian sama rata.',
+      assessment: 'Murid menentukan bilangan dalam setiap kumpulan.',
+      textbook: 'Model kumpulan tidak memaparkan hasil bahagi.'
+    },
+    intelligence: {
+      skillId: 'bahagi.perkongsian_12_dengan_2', responseMode: 'visual_equal_sharing',
+      conceptTags: ['bahagi', 'perkongsian_sama_rata'], misconceptionTags: ['memilih_pembahagi', 'menolak_dua'],
+      hintSteps: ['Bina 2 kumpulan.', 'Kongsi 12 pembilang sama rata.', 'Kira pembilang dalam satu kumpulan.']
+    }
+  },
+  'MATH-BAHAGI-PILOT-003': {
+    interaction: {
+      version: 1,
+      type: 'visualMath',
+      instruction: 'Bahagikan 20 pembilang sama rata kepada 4 kumpulan. Pilih bilangan dalam setiap kumpulan.',
+      visual: { kind: 'equalGroups', mode: 'divisionSharing', total: 20, groups: 4 },
+      options: [
+        { id: 'five', label: '5', value: '5' },
+        { id: 'four', label: '4', value: '4' },
+        { id: 'sixteen', label: '16', value: '16' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memodelkan 20 ÷ 4 sebagai perkongsian sama rata.',
+      assessment: 'Murid menentukan bilangan dalam setiap kumpulan.',
+      textbook: 'Model kumpulan tidak memaparkan hasil bahagi.'
+    },
+    intelligence: {
+      skillId: 'bahagi.perkongsian_20_dengan_4', responseMode: 'visual_equal_sharing',
+      conceptTags: ['bahagi', 'perkongsian_sama_rata'], misconceptionTags: ['memilih_pembahagi', 'menolak_empat'],
+      hintSteps: ['Bina 4 kumpulan.', 'Kongsi 20 pembilang sama rata.', 'Kira pembilang dalam satu kumpulan.']
+    }
+  },
+  'MATH-PANJANG-PILOT-002': {
+    interaction: {
+      version: 1,
+      type: 'measurement',
+      instruction: 'Perhatikan gambaran panjang bilik darjah, kemudian pilih unit yang sesuai.',
+      visual: { kind: 'object', symbol: '↔', label: 'Gambaran panjang bilik darjah tanpa skala atau unit' },
+      options: [
+        { id: 'meter', label: 'Meter (m)', value: 'meter' },
+        { id: 'centimeter', label: 'Sentimeter (cm)', value: 'sentimeter' },
+        { id: 'kilogram', label: 'Kilogram (kg)', value: 'kilogram' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih unit sesuai bagi panjang bilik darjah.',
+      assessment: 'Pilihan membezakan skala panjang dan unit jisim.',
+      textbook: 'Visual tidak memaparkan unit jawapan.'
+    },
+    intelligence: {
+      skillId: 'panjang.unit_bilik_darjah', responseMode: 'measurement_unit_selection',
+      conceptTags: ['panjang', 'unit_meter'], misconceptionTags: ['memilih_sentimeter', 'memilih_unit_jisim'],
+      hintSteps: ['Bandingkan bilik dengan buku.', 'Fikirkan unit untuk objek panjang.', 'Pilih unit panjang yang lebih besar.']
+    }
+  },
+  'MATH-JISIM-ISI-PADU-PILOT-004': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih alat yang digunakan untuk mengukur jisim buah-buahan.',
+      options: [
+        { id: 'scale', label: 'Penimbang', value: 'penimbang', visual: { kind: 'object', symbol: '⚖️', label: 'Penimbang' } },
+        { id: 'ruler', label: 'Pembaris', value: 'pembaris', visual: { kind: 'object', symbol: '📏', label: 'Pembaris' } },
+        { id: 'clock', label: 'Jam', value: 'jam', visual: { kind: 'object', symbol: '🕒', label: 'Jam' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal alat untuk mengukur jisim.',
+      assessment: 'Pilihan membezakan alat jisim, panjang dan masa.',
+      textbook: 'Setiap simbol mempunyai label teks.'
+    },
+    intelligence: {
+      skillId: 'jisim.alat_penimbang', responseMode: 'labelled_visual_selection',
+      conceptTags: ['jisim', 'penimbang'], misconceptionTags: ['keliru_pembaris', 'keliru_jam'],
+      hintSteps: ['Fikirkan kuantiti yang diukur.', 'Buah diletakkan di atas alat.', 'Pilih alat yang memberi bacaan jisim.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-021': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih alat yang sesuai untuk mengukur panjang buku.',
+      options: [
+        { id: 'ruler', label: 'Pembaris', value: 'pembaris', visual: { kind: 'object', symbol: '📏', label: 'Pembaris' } },
+        { id: 'scale', label: 'Penimbang', value: 'penimbang', visual: { kind: 'object', symbol: '⚖️', label: 'Penimbang' } },
+        { id: 'cup', label: 'Cawan penyukat', value: 'cawan penyukat', visual: { kind: 'object', symbol: '🥛', label: 'Cawan penyukat' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih alat untuk mengukur panjang buku.',
+      assessment: 'Pilihan membezakan alat panjang, jisim dan isipadu.',
+      textbook: 'Setiap simbol mempunyai label teks.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.alat_ukur_panjang', responseMode: 'labelled_visual_selection',
+      conceptTags: ['mengukur', 'panjang', 'pembaris'], misconceptionTags: ['keliru_penimbang', 'keliru_cawan_penyukat'],
+      hintSteps: ['Kenal pasti kuantiti panjang.', 'Bandingkan fungsi setiap alat.', 'Pilih alat bertanda ukuran panjang.']
+    }
+  },
+  'ARAB-HURUF_HIJAIYAH-032': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih huruf Arab yang mempunyai dua titik di atas.',
+      options: [
+        { id: 'ta', label: 'ت', value: 'ت', visual: { kind: 'object', symbol: 'ت', label: 'Huruf Arab ت', lang: 'ar', dir: 'rtl' } },
+        { id: 'ba', label: 'ب', value: 'ب', visual: { kind: 'object', symbol: 'ب', label: 'Huruf Arab ب', lang: 'ar', dir: 'rtl' } },
+        { id: 'tha', label: 'ث', value: 'ث', visual: { kind: 'object', symbol: 'ث', label: 'Huruf Arab ث', lang: 'ar', dir: 'rtl' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal huruf ت melalui bentuk dan titiknya.',
+      assessment: 'Pilihan kekal dalam keluarga bentuk ب، ت، ث.',
+      textbook: 'Glyph Arab dipapar dengan arah dan bahasa yang betul.'
+    },
+    intelligence: {
+      skillId: 'huruf_hijaiyah.mengenal_ta', responseMode: 'arabic_glyph_selection',
+      conceptTags: ['huruf_hijaiyah', 'ta', 'titik'], misconceptionTags: ['keliru_ba', 'keliru_tha'],
+      hintSteps: ['Bandingkan bentuk huruf.', 'Perhatikan kedudukan titik.', 'Pilih huruf dengan dua titik di atas.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -3782,6 +3920,13 @@ const REVIEWED_NUMBER_LINE_PILOT_EXAMPLES = Object.fromEntries(
 
 const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
     qualityReview: spec.qualityReview
   }])
@@ -3812,6 +3957,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_ARRAY_PILOT_EXAMPLES,
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES,
+  ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4123,6 +4269,10 @@ const REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4180,6 +4330,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_ARRAY_PILOT_INTELLIGENCE,
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE,
+  ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
