@@ -113,15 +113,15 @@ describe('P1.16C rich interactive expansion Batch 2', () => {
       counts[question.interaction.type] = (counts[question.interaction.type] || 0) + 1;
       return counts;
     }, {});
-    expect(authored).toHaveLength(268);
+    expect(authored).toHaveLength(274);
     expect(typeCounts).toEqual({
-      imageChoice: 63, choice: 46, fillBlank: 99, ordering: 21, visualMath: 25,
+      imageChoice: 64, choice: 47, fillBlank: 103, ordering: 21, visualMath: 25,
       multiSelect: 2, money: 1, clock: 2, measurement: 4, dragDrop: 1,
       matching: 1, hotspot: 3
     });
-    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1260);
+    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1266);
     expect(buildInteractiveSuitabilityReport(subjects).summary.categories).toEqual({
-      reviewed_interactive: 268, auto_safe: 992, teacher_review: 2662, keep_standard: 608
+      reviewed_interactive: 274, auto_safe: 992, teacher_review: 2656, keep_standard: 608
     });
   });
 });
