@@ -103,15 +103,15 @@ describe('P1.16C rich interactive expansion Batch 1', () => {
       counts[question.interaction.type] = (counts[question.interaction.type] || 0) + 1;
       return counts;
     }, {});
-    expect(authored).toHaveLength(262);
+    expect(authored).toHaveLength(268);
     expect(typeCounts).toEqual({
-      imageChoice: 60, choice: 46, fillBlank: 97, ordering: 21, visualMath: 25,
-      multiSelect: 2, money: 1, clock: 2, measurement: 3, dragDrop: 1,
+      imageChoice: 63, choice: 46, fillBlank: 99, ordering: 21, visualMath: 25,
+      multiSelect: 2, money: 1, clock: 2, measurement: 4, dragDrop: 1,
       matching: 1, hotspot: 3
     });
-    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1254);
+    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1260);
     expect(buildInteractiveSuitabilityReport(subjects).summary.categories).toEqual({
-      reviewed_interactive: 262, auto_safe: 992, teacher_review: 2668, keep_standard: 608
+      reviewed_interactive: 268, auto_safe: 992, teacher_review: 2662, keep_standard: 608
     });
   });
 

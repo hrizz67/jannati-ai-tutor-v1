@@ -138,27 +138,27 @@ describe('P1.16B first-six rich interactive pilot', () => {
     expect(JSON.stringify({ instruction: question.interaction.instruction, visual: question.interaction.visual })).not.toContain('942');
   });
 
-  it('keeps the P1.16B pilot protected within the current approved interaction totals', () => {
+  it('keeps the P1.16B pilot protected within the expanded approved interaction totals', () => {
     const authored = questions.filter(question => question.interaction);
     const typeCounts = authored.reduce((counts, question) => {
       counts[question.interaction.type] = (counts[question.interaction.type] || 0) + 1;
       return counts;
     }, {});
-    expect(authored).toHaveLength(262);
+    expect(authored).toHaveLength(268);
     expect(typeCounts).toEqual({
-      imageChoice: 60, choice: 46, fillBlank: 97, ordering: 21, dragDrop: 1,
+      imageChoice: 63, choice: 46, fillBlank: 99, ordering: 21, dragDrop: 1,
       matching: 1, visualMath: 25, multiSelect: 2, hotspot: 3, clock: 2,
-      money: 1, measurement: 3
+      money: 1, measurement: 4
     });
-    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1254);
+    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1260);
   });
 
   it('moves only the six approved IDs from teacher review into reviewed interactive', () => {
     const report = buildInteractiveSuitabilityReport(subjects);
     expect(report.summary.categories).toEqual({
-      reviewed_interactive: 262,
+      reviewed_interactive: 268,
       auto_safe: 992,
-      teacher_review: 2668,
+      teacher_review: 2662,
       keep_standard: 608
     });
     for (const id of Object.keys(PILOT_CONTRACTS)) {

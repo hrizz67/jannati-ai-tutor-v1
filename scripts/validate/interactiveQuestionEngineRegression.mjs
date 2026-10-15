@@ -199,6 +199,14 @@ const richInteractiveExpansionBatch1Contracts = new Map([
   ['SAINS-KEMAHIRAN_SAINTIFIK-021', { type: 'imageChoice', correct: 'pembaris', distractors: ['penimbang', 'cawan penyukat'] }],
   ['ARAB-HURUF_HIJAIYAH-032', { type: 'imageChoice', correct: 'ت', distractors: ['ب', 'ث'] }]
 ]);
+const richInteractiveExpansionBatch2Contracts = new Map([
+  ['BM-KATA_NAMA_AM-006', { type: 'imageChoice', correct: 'kasut', distractors: ['rak', 'sekolah'] }],
+  ['ENG-NOUNS-006', { type: 'imageChoice', correct: 'cat', distractors: ['dog', 'cow'] }],
+  ['SAINS-HAIWAN-023', { type: 'imageChoice', correct: 'bulu pelepah', distractors: ['sisik', 'cangkerang'] }],
+  ['SAINS-HAIWAN-022', { type: 'fillBlank', correct: 'sisik', distractors: ['bulu pelepah', 'cangkerang'] }],
+  ['MATH-MASA-PILOT-005', { type: 'fillBlank', correct: '30', distractors: ['15', '60'] }],
+  ['MATH-JISIM-ISI-PADU-PILOT-006', { type: 'measurement', correct: 'liter', distractors: ['mililiter', 'kilogram'] }]
+]);
 const languageFillBlankBatch3Contracts = new Map([
   ['BM-KATA_SENDI-002', { stem: 'Baca situasi: Aina berjalan ______ kantin kerana dia lapar.', answer: 'ke', questionType: 'short_answer', sentenceParts: ['Baca situasi: Aina berjalan ', ' kantin kerana dia lapar.'], optionValues: ['di', 'ke', 'dari'] }],
   ['BM-KATA_HUBUNG-003', { stem: 'Lengkapkan ayat ini: Sara membawa payung ____ hari hujan pada pagi itu.', answer: 'kerana', questionType: 'short_answer', sentenceParts: ['Lengkapkan ayat ini: Sara membawa payung ', ' hari hujan pada pagi itu.'], optionValues: ['kerana', 'tetapi', 'atau'] }],
@@ -428,6 +436,7 @@ assert.equal(arrayPilotContracts.size, 2, 'The Array pilot must contain exactly 
 assert.equal(numberLinePilotContracts.size, 7, 'The Number Line pilot must contain exactly seven reviewed questions.');
 assert.equal(first6RichInteractivePilotContracts.size, 6, 'P1.16B must contain exactly the six independently approved reviewed questions.');
 assert.equal(richInteractiveExpansionBatch1Contracts.size, 6, 'P1.16C Batch 1 must contain exactly the six approved reviewed questions.');
+assert.equal(richInteractiveExpansionBatch2Contracts.size, 6, 'P1.16C Batch 2 must contain exactly the six teacher-approved reviewed questions.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
 const priorReviewedIds = [
   ...expectedTypes.keys(), ...reviewedFillBlankBatchIds, ...allReviewedChoiceBatchIds,
@@ -469,8 +478,10 @@ const reviewedIdsBeforeFirst6Pilot = [...scienceFillBlankBatch3PriorIds, ...scie
 assert.equal(new Set([...reviewedIdsBeforeFirst6Pilot, ...first6RichInteractivePilotContracts.keys()]).size, reviewedIdsBeforeFirst6Pilot.length + first6RichInteractivePilotContracts.size, 'P1.16B IDs must be disjoint from every earlier reviewed batch and pilot.');
 const reviewedIdsBeforeExpansionBatch1 = [...reviewedIdsBeforeFirst6Pilot, ...first6RichInteractivePilotContracts.keys()];
 assert.equal(new Set([...reviewedIdsBeforeExpansionBatch1, ...richInteractiveExpansionBatch1Contracts.keys()]).size, reviewedIdsBeforeExpansionBatch1.length + richInteractiveExpansionBatch1Contracts.size, 'P1.16C Batch 1 IDs must be disjoint from every earlier reviewed batch and pilot.');
+const reviewedIdsBeforeExpansionBatch2 = [...reviewedIdsBeforeExpansionBatch1, ...richInteractiveExpansionBatch1Contracts.keys()];
+assert.equal(new Set([...reviewedIdsBeforeExpansionBatch2, ...richInteractiveExpansionBatch2Contracts.keys()]).size, reviewedIdsBeforeExpansionBatch2.length + richInteractiveExpansionBatch2Contracts.size, 'P1.16C Batch 2 IDs must be disjoint from every earlier reviewed batch and pilot.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceFillBlankBatch3Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size + first6RichInteractivePilotContracts.size + richInteractiveExpansionBatch1Contracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceFillBlankBatch3Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size + first6RichInteractivePilotContracts.size + richInteractiveExpansionBatch1Contracts.size + richInteractiveExpansionBatch2Contracts.size, 'Every reviewed interactive example must be attached exactly once.');
 assert.equal(derivedChoiceQuestions.length, 992, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
@@ -508,6 +519,20 @@ for (const [id, contract] of richInteractiveExpansionBatch1Contracts) {
   assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
   assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
 }
+
+for (const [id, contract] of richInteractiveExpansionBatch2Contracts) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing P1.16C Batch 2 question ${id}.`);
+  assert.equal(question.interaction.type, contract.type, `${id} must use only its teacher-approved existing renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid P1.16C Batch 2 interaction schema.`);
+  assert.equal(smartCheck(contract.correct, question).status, 'correct', `${id} must submit its unchanged canonical answer.`);
+  assert.ok(contract.distractors.every(value => smartCheck(value, question).status !== 'correct'), `${id} distractors must remain incorrect.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must expose exactly one accepted selectable response.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
+}
+
+assert.equal(byId.has('SAINS-HAIWAN-017'), false, 'The ambiguous duck-movement candidate must remain outside the authored interaction set.');
 
 for (const id of reviewedFillBlankBatchIds) {
   const question = byId.get(id);
