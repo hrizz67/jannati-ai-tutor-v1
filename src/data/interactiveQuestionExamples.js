@@ -3897,6 +3897,144 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_SPECS = Object.freeze({
+  'BM-KATA_NAMA_AM-006': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih benda yang dipakai dalam ayat.',
+      options: [
+        { id: 'shoes', label: 'Kasut', value: 'kasut', visual: { kind: 'object', symbol: '👟', label: 'Sepasang kasut' } },
+        { id: 'shelf', label: 'Rak', value: 'rak', visual: { kind: 'object', symbol: '📚', label: 'Rak buku' } },
+        { id: 'school', label: 'Sekolah', value: 'sekolah', visual: { kind: 'object', symbol: '🏫', label: 'Bangunan sekolah' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi benda yang dipakai dalam ayat mudah.',
+      assessment: 'Pilihan berasal daripada konteks ayat dan hanya kasut memenuhi frasa benda yang dipakai.',
+      textbook: 'Simbol disertai label teks supaya pilihan tidak bergantung pada gambar sahaja.'
+    },
+    intelligence: {
+      skillId: 'kata_nama_am.mengenal_kasut_sebagai_benda', responseMode: 'labelled_visual_selection',
+      conceptTags: ['kata_nama_am', 'benda', 'kasut'], misconceptionTags: ['memilih_tempat', 'memilih_benda_yang_tidak_dipakai'],
+      hintSteps: ['Cari nama benda dalam ayat.', 'Fikirkan benda yang dipakai pada kaki.', 'Pilih benda yang disimpan di rak.']
+    }
+  },
+  'ENG-NOUNS-006': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Choose the animal that completes the sentence.',
+      options: [
+        { id: 'cat', label: 'Cat', value: 'cat', visual: { kind: 'object', symbol: '🐱', label: 'Cat' } },
+        { id: 'dog', label: 'Dog', value: 'dog', visual: { kind: 'object', symbol: '🐶', label: 'Dog' } },
+        { id: 'cow', label: 'Cow', value: 'cow', visual: { kind: 'object', symbol: '🐄', label: 'Cow' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Recognises a common animal noun from its familiar sound.',
+      assessment: 'The three labelled animals have distinct common sounds and only cat completes the authored sentence.',
+      textbook: 'Visible labels preserve word recognition while lightweight symbols support early readers.'
+    },
+    intelligence: {
+      skillId: 'nouns.identify_cat_from_meow', responseMode: 'labelled_visual_selection',
+      conceptTags: ['nouns', 'animals', 'cat'], misconceptionTags: ['confuse_cat_and_dog', 'confuse_cat_and_cow'],
+      hintSteps: ['Listen to the sound word in the sentence.', 'Think of a pet that says meow.', 'Choose the matching animal noun.']
+    }
+  },
+  'SAINS-HAIWAN-023': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih litupan badan burung.',
+      options: [
+        { id: 'feathers', label: 'Bulu pelepah', value: 'bulu pelepah', visual: { kind: 'object', symbol: '🪶', label: 'Bulu pelepah' } },
+        { id: 'scales', label: 'Sisik', value: 'sisik', visual: { kind: 'object', symbol: '🐟', label: 'Ikan bersisik' } },
+        { id: 'shell', label: 'Cangkerang', value: 'cangkerang', visual: { kind: 'object', symbol: '🐢', label: 'Penyu bercangkerang' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti bulu pelepah sebagai litupan badan burung.',
+      assessment: 'Distraktor ialah litupan haiwan lain yang berbeza dan tidak bertindih dengan jawapan kanonik.',
+      textbook: 'Setiap simbol mempunyai label litupan yang jelas dan boleh dibaca.'
+    },
+    intelligence: {
+      skillId: 'haiwan.litupan_badan_burung', responseMode: 'labelled_visual_selection',
+      conceptTags: ['haiwan', 'litupan_badan', 'bulu_pelepah'], misconceptionTags: ['keliru_sisik', 'keliru_cangkerang'],
+      hintSteps: ['Fikirkan bahagian luar badan burung.', 'Bandingkan burung dengan ikan dan penyu.', 'Pilih litupan yang membantu burung terbang dan kekal hangat.']
+    }
+  },
+  'SAINS-HAIWAN-022': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih litupan badan yang melengkapkan ayat.',
+      sentenceParts: ['Badan ikan dilitupi ', '.'],
+      options: [
+        { id: 'scales', label: 'sisik', value: 'sisik' },
+        { id: 'feathers', label: 'bulu pelepah', value: 'bulu pelepah' },
+        { id: 'shell', label: 'cangkerang', value: 'cangkerang' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti sisik sebagai litupan badan ikan.',
+      assessment: 'Ayat asal dikekalkan dan setiap pilihan ialah litupan badan haiwan yang berlainan.',
+      textbook: 'Tempat kosong mengekalkan bukti pengenalan istilah tanpa visual yang memberi jawapan tambahan.'
+    },
+    intelligence: {
+      skillId: 'haiwan.litupan_badan_ikan', responseMode: 'completion',
+      conceptTags: ['haiwan', 'litupan_badan', 'sisik'], misconceptionTags: ['keliru_bulu_pelepah', 'keliru_cangkerang'],
+      hintSteps: ['Fikirkan bahagian luar badan ikan.', 'Bandingkan ikan dengan burung dan penyu.', 'Pilih litupan yang tersusun pada badan ikan.']
+    }
+  },
+  'MATH-MASA-PILOT-005': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bilangan minit yang melengkapkan ayat.',
+      sentenceParts: ['Setengah jam ialah ', ' minit.'],
+      options: [
+        { id: 'thirty', label: '30', value: '30' },
+        { id: 'fifteen', label: '15', value: '15' },
+        { id: 'sixty', label: '60', value: '60' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan hubungan setengah jam dengan 30 minit.',
+      assessment: 'Aktiviti menilai hubungan tempoh yang sama tanpa menukar bukti kepada bacaan jam analog.',
+      textbook: 'Ayat hubungan masa kekal lengkap apabila bilangan minit dipilih.'
+    },
+    intelligence: {
+      skillId: 'masa.hubungan_setengah_jam', responseMode: 'completion',
+      conceptTags: ['masa', 'setengah_jam', 'minit'], misconceptionTags: ['keliru_suku_jam', 'memilih_satu_jam'],
+      hintSteps: ['Ingat bilangan minit dalam satu jam.', 'Cari separuh daripada 60.', 'Pilih bilangan minit untuk setengah jam.']
+    }
+  },
+  'MATH-JISIM-ISI-PADU-PILOT-006': {
+    interaction: {
+      version: 1,
+      type: 'measurement',
+      instruction: 'Pilih unit yang sesuai untuk isi padu air di dalam baldi.',
+      visual: { kind: 'object', symbol: '🪣', label: 'Baldi berisi air tanpa label unit atau skala' },
+      options: [
+        { id: 'liter', label: 'Liter (L)', value: 'liter' },
+        { id: 'milliliter', label: 'Mililiter (mL)', value: 'mililiter' },
+        { id: 'kilogram', label: 'Kilogram (kg)', value: 'kilogram' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih liter sebagai unit sesuai bagi isi padu cecair yang banyak.',
+      assessment: 'Pilihan membezakan unit isi padu besar, isi padu kecil dan jisim tanpa memaparkan jawapan pada visual.',
+      textbook: 'Baldi memberi konteks skala manakala visual sengaja tidak mempunyai unit atau tanda ukuran.'
+    },
+    intelligence: {
+      skillId: 'isi_padu.unit_air_dalam_baldi', responseMode: 'measurement_unit_selection',
+      conceptTags: ['isi_padu', 'liter', 'baldi'], misconceptionTags: ['memilih_mililiter', 'memilih_unit_jisim'],
+      hintSteps: ['Bandingkan baldi dengan sudu.', 'Fikirkan unit untuk kuantiti cecair yang banyak.', 'Pilih unit isi padu yang lebih besar.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -3932,6 +4070,13 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -3958,6 +4103,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_NUMBER_LINE_PILOT_EXAMPLES,
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES,
+  ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4273,6 +4419,10 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE = Object.fromEntr
   Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4331,6 +4481,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_NUMBER_LINE_PILOT_INTELLIGENCE,
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE,
+  ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
