@@ -4035,6 +4035,145 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS = Object.freeze({
+  'BM-KATA_NAMA_AM-005': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih kata nama am bagi haiwan dalam ayat.',
+      options: [
+        { id: 'cat', label: 'Kucing', value: 'kucing', visual: { kind: 'object', symbol: '🐈', label: 'Seekor kucing' } },
+        { id: 'table', label: 'Meja', value: 'meja', visual: { kind: 'object', symbol: '▭', label: 'Sebuah meja' } },
+        { id: 'sleep', label: 'Tidur', value: 'tidur', visual: { kind: 'object', symbol: '💤', label: 'Perbuatan tidur' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi haiwan dalam ayat mudah Bahasa Melayu Tahun 2.',
+      assessment: 'Pilihan membezakan haiwan, benda dan perbuatan daripada situasi asal; hanya kucing ialah kata nama am bagi haiwan.',
+      textbook: 'Simbol ringan disertai label teks yang jelas supaya aktiviti tidak bergantung pada gambar sahaja.'
+    },
+    intelligence: {
+      skillId: 'kata_nama_am.mengenal_kucing_sebagai_haiwan', responseMode: 'labelled_visual_selection',
+      conceptTags: ['kata_nama_am', 'haiwan', 'kucing'], misconceptionTags: ['memilih_nama_benda', 'memilih_perbuatan'],
+      hintSteps: ['Cari perkataan yang menamakan haiwan.', 'Bezakan haiwan daripada benda dan perbuatan.', 'Pilih haiwan yang tidur di bawah meja.']
+    }
+  },
+  'ENG-VERBS-018': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Choose the action word that completes the sentence.',
+      sentenceParts: ['At art time, the boy will ', ' the paper.'],
+      options: [
+        { id: 'cut', label: 'cut', value: 'cut' },
+        { id: 'drink', label: 'drink', value: 'drink' },
+        { id: 'sleep', label: 'sleep', value: 'sleep' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Uses a familiar Year 2 action word in a simple art-room sentence.',
+      assessment: 'All options are verbs, but only cut can act directly on paper in the authored sentence; no extra clue changes the source contract.',
+      textbook: 'The completed sentence remains short and readable without adding a visual that reveals the target action.'
+    },
+    intelligence: {
+      skillId: 'verbs.complete_cut_the_paper', responseMode: 'completion',
+      conceptTags: ['verbs', 'actions', 'art'], misconceptionTags: ['choose_unrelated_action', 'ignore_sentence_object'],
+      hintSteps: ['Look for an action word.', 'Think about what can be done to paper at art time.', 'Choose the verb that works with “the paper”.']
+    }
+  },
+  'SAINS-TUMBUHAN-022': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih peringkat pertumbuhan yang melengkapkan ayat.',
+      sentenceParts: ['Anak pokok boleh menjadi ', '.'],
+      options: [
+        { id: 'mature-tree', label: 'pokok dewasa', value: 'pokok dewasa' },
+        { id: 'seed', label: 'biji benih', value: 'biji benih' },
+        { id: 'root', label: 'akar', value: 'akar' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal urutan pertumbuhan tumbuhan daripada anak pokok kepada pokok dewasa.',
+      assessment: 'Distraktor ialah peringkat terdahulu dan bahagian tumbuhan; hanya pokok dewasa ialah peringkat selepas anak pokok.',
+      textbook: 'Ayat asal dikekalkan tanpa gambar yang membocorkan urutan pertumbuhan.'
+    },
+    intelligence: {
+      skillId: 'tumbuhan.urutan_anak_pokok_pokok_dewasa', responseMode: 'completion',
+      conceptTags: ['tumbuhan', 'pertumbuhan', 'anak_pokok', 'pokok_dewasa'], misconceptionTags: ['kembali_ke_biji_benih', 'keliru_peringkat_dengan_bahagian'],
+      hintSteps: ['Fikirkan apa yang berlaku apabila anak pokok membesar.', 'Bezakan peringkat pertumbuhan daripada bahagian tumbuhan.', 'Pilih peringkat selepas anak pokok.']
+    }
+  },
+  'ISLAM-IBADAH-005': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih bilangan rakaat yang melengkapkan ayat.',
+      sentenceParts: ['Solat Subuh mempunyai ', ' rakaat.'],
+      options: [
+        { id: 'two', label: 'dua', value: 'dua' },
+        { id: 'three', label: 'tiga', value: 'tiga' },
+        { id: 'four', label: 'empat', value: 'empat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengingat bilangan rakaat solat fardu Subuh dengan tepat.',
+      assessment: 'Bilangan tiga dan empat ialah bilangan rakaat solat fardu lain; hanya dua sepadan dengan Subuh.',
+      textbook: 'Ayat ibadah asal dan istilah rakaat dikekalkan tanpa mengubah fakta atau skema jawapan.'
+    },
+    intelligence: {
+      skillId: 'ibadah.bilangan_rakaat_subuh', responseMode: 'completion',
+      conceptTags: ['ibadah', 'solat_subuh', 'rakaat'], misconceptionTags: ['keliru_dengan_maghrib', 'keliru_dengan_zohor_asar_isyak'],
+      hintSteps: ['Ingat solat fardu pada awal pagi.', 'Bandingkan bilangan rakaat Subuh dengan Maghrib.', 'Cuba ingat semula bilangan rakaat Solat Subuh yang telah kamu pelajari.']
+    }
+  },
+  'ARAB-NOMBOR_ARAB-002': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih nilai Bahasa Melayu bagi simbol nombor Arab.',
+      options: [
+        { id: 'one', label: 'Satu', value: 'satu' },
+        { id: 'two', label: 'Dua', value: 'dua' },
+        { id: 'three', label: 'Tiga', value: 'tiga' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal nilai simbol nombor Arab ٢ dalam Bahasa Melayu.',
+      assessment: 'Pilihan satu, dua dan tiga ialah nilai bersebelahan yang jelas; hanya dua sepadan dengan glyph dalam stem asal.',
+      textbook: 'Glyph Arab kekal dalam stem sumber manakala pilihan berlabel Melayu mengelakkan visual berulang yang boleh membocorkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'nombor_arab.mengenal_simbol_2', responseMode: 'choice_selection',
+      conceptTags: ['nombor_arab', 'simbol_2', 'nilai_nombor'], misconceptionTags: ['keliru_simbol_1', 'keliru_simbol_3'],
+      hintSteps: ['Perhatikan bentuk simbol nombor Arab dalam ayat.', 'Bandingkan nilainya dengan satu dan tiga.', 'Pilih nama nombor itu dalam Bahasa Melayu.']
+    }
+  },
+  'MATH-WANG-PILOT-006': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Tambah nilai wang kertas, kemudian pilih jumlahnya.',
+      sentenceParts: ['Jumlah wang kertas itu ialah ', '.'],
+      options: [
+        { id: 'rm16', label: 'RM 16', value: 'RM 16' },
+        { id: 'rm15', label: 'RM 15', value: 'RM 15' },
+        { id: 'rm17', label: 'RM 17', value: 'RM 17' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menjumlahkan tiga nilai wang kertas Malaysia hingga RM 100.',
+      assessment: 'Distraktor satu ringgit kurang dan lebih menguji hasil tambah ketiga-tiga nilai tanpa mengubah operasi asal.',
+      textbook: 'Format RM dan jarak dipaparkan secara konsisten sementara nilai wang sumber kekal pada stem soalan.'
+    },
+    intelligence: {
+      skillId: 'wang.menjumlah_wang_kertas_10_5_1', responseMode: 'completion',
+      conceptTags: ['wang', 'ringgit', 'tambah'], misconceptionTags: ['tertinggal_rm1', 'terlebih_tambah_rm1'],
+      hintSteps: ['Tambah RM 10 dengan RM 5 dahulu.', 'Kemudian tambah RM 1.', 'Pilih jumlah dalam format ringgit.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4077,6 +4216,13 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES = Object.fromEntries(
   }])
 );
 
+const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4104,6 +4250,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_EXAMPLES,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES,
+  ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4423,6 +4570,10 @@ const REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE = Object.fromEntr
   Object.entries(REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4482,6 +4633,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_FIRST6_RICH_INTERACTIVE_PILOT_INTELLIGENCE,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE,
+  ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
