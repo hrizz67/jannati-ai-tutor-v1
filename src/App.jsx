@@ -92,7 +92,7 @@ import {
   normalizeCommunicationResult,
   sanitizeCommunicationScoreHistory
 } from './utils/communicationResult.js';
-import { semanticListeningSets, semanticSpeakingPrompts, semanticWritingSets, semanticReadingPassages } from './data/communicationContent.js';
+const CommunicationContentGate = React.lazy(() => import('./components/communication/CommunicationContentGate.jsx'));
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
 const ManualPremiumSalesPage = React.lazy(() => import('./premium/ManualPremiumSalesPage.jsx'));
@@ -5413,10 +5413,10 @@ export default function App() {
     const nextTopic = getNextTopic(activeSubject, activeTopic);
     return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Keputusan tidak dapat dipaparkan." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Ringkasan sedang dimuat</h2><p>Sebentar ya.</p></div>}><Finish profile={profile} session={session} topic={activeTopic} nextTopic={nextTopic} aiSummary={aiSummary} personality={finishPersonality} voiceSummaryText={[finishPersonality?.achievementMessage, finishPersonality?.farewell, aiSummary?.studyRecommendation, aiSummary?.journeySummary].filter(Boolean).join('. ')} onDashboard={() => setScreen('dashboard')} onRetry={() => activeTopic && activeSubject && startTopic(activeTopic, activeSubject)} onNextTopic={() => nextTopic && activeSubject && startTopic(nextTopic, activeSubject)} onOpenAi={openTutorAi} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
   }
-  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><BacaanCoach profile={profile} resume={resume?.mode === 'reading' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'reading' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBacaan} /></ProductionErrorBoundary></BetaChrome>;
-  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><MendengarLab resume={resume?.mode === 'listening' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'listening' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMendengar} /></BetaChrome>;
-  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><BertuturCoach resume={resume?.mode === 'speaking' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'speaking' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBertutur} /></BetaChrome>;
-  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><MenulisCoach resume={resume?.mode === 'writing' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'writing' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMenulis} /></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'reading') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bacaan tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><CommunicationContentBoundary>{content => <BacaanCoach content={content} profile={profile} resume={resume?.mode === 'reading' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'reading' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBacaan} />}</CommunicationContentBoundary></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'listening') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Mendengar tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><CommunicationContentBoundary>{content => <MendengarLab content={content} resume={resume?.mode === 'listening' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'listening' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMendengar} />}</CommunicationContentBoundary></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'speaking') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Bertutur tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><CommunicationContentBoundary>{content => <BertuturCoach content={content} resume={resume?.mode === 'speaking' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'speaking' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishBertutur} />}</CommunicationContentBoundary></ProductionErrorBoundary></BetaChrome>;
+  if (screen === 'writing') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Latihan Menulis tidak dapat dimuatkan." message="Sila kembali dan cuba semula." actionLabel="Papan Utama" onAction={returnToDashboard} />}><CommunicationContentBoundary>{content => <MenulisCoach content={content} resume={resume?.mode === 'writing' ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'writing' }, learningIdentity)} onBack={returnToDashboard} onFinish={finishMenulis} />}</CommunicationContentBoundary></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'parent') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Laporan ibu bapa tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Laporan sedang dimuat</h2><p>Sebentar ya.</p></div>}><ParentModeBoundary accountId={accountUser?.id || ''} accountEmail={accountUser?.email || ''} authMarker={accountUser?.last_sign_in_at || accountUser?.updated_at || ''} activeChildId={activeChildId} cloudSyncStatus={cloudSyncStatus} profile={profile} adaptiveProfile={adaptiveProfile} canonicalProgress={canonicalProgress} aiMemory={aiMemory} learningObservation={learningObservation} predictionProfile={predictionProfile} narrativeBundle={narrativeBundle} gamificationProfile={gamificationProfile} allSubjects={allSubjects} adaptivePracticeCount={adaptivePracticeCount} readiness={readiness} onStartAdaptivePractice={startAdaptivePractice} onLogout={logoutAccount} onBack={() => setScreen('dashboard')} /></React.Suspense></ProductionErrorBoundary></BetaChrome>;
   if (screen === 'uasa') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><UasaSimulator profile={profile} subject={selectedSubject} resume={resume?.mode === 'uasa' && resume?.subjectId === selectedSubject?.id ? resume : null} onResumeChange={(nextResume) => persistResumeData(nextResume, setResume, learningIdentity)} onClearResume={() => clearResumeData(setResume, { mode: 'uasa', subjectId: selectedSubject?.id }, learningIdentity)} onBack={returnToDashboard} onSave={saveUasaResult} /></BetaChrome>;
 
@@ -5428,6 +5428,10 @@ export default function App() {
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
   }
+
+function CommunicationContentBoundary({ children }) {
+  return <React.Suspense fallback={<main className="app"><section className="card"><p role="status">Memuat latihan...</p></section></main>}><CommunicationContentGate>{children}</CommunicationContentGate></React.Suspense>;
+}
 
 function BetaChrome({ children, recoveryMessages = [], modalOpen = false, currentScreen = '' }) {
   const feedbackSuppressed = modalOpen || ['quiz', 'uasa', 'reading', 'listening', 'speaking', 'writing', 'finish', 'parent'].includes(currentScreen);
@@ -6009,8 +6013,6 @@ function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChang
   return <main className="app uasa-page"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Pentaksiran Sumatif</span></div><section className="card uasa-card"><p className="eyebrow">Latihan Pentaksiran</p><h1>Pentaksiran Sumatif {subject.title}</h1><p>Jawab soalan campuran daripada topik subjek ini.</p><div className="mastery-summary-grid"><div><b>Soalan {questionIndex + 1} / {questions.length}</b><span>Soalan</span></div><div><b>{score.correct}</b><span>Betul</span></div><div><b>{score.wrong}</b><span>Salah</span></div><div><b>{profile?.uasaHistory?.length || 0}</b><span>Sejarah</span></div></div></section>{question ? <section className="card"><p className="eyebrow">Soalan {questionIndex + 1}</p><h2 className="question uasa-question" dir="auto">{renderUasaQuestionText(question.q)}</h2>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={nextAnswer => { setAnswer(nextAnswer); setValidationMessage(''); }} feedback={result ? { status: result.correct ? 'correct' : 'wrong' } : null} /></React.Suspense> : <input value={answer} onChange={event => { setAnswer(event.target.value); setValidationMessage(''); }} placeholder="Tulis jawapan kamu" autoFocus />}<div className="actions"><button type="button" onClick={submitAnswer} disabled={Boolean(result)}>Semak Jawapan</button><button type="button" className="secondary" onClick={nextQuestion} disabled={!result}>Seterusnya</button></div>{validationMessage && <p className="autosave-note" role="status">{validationMessage}</p>}{result && <div className={`feedback ${result.correct ? 'correct' : 'wrong'}`} aria-live="polite"><h2>{result.correct ? 'Betul' : 'Cuba lagi'}</h2><p>Jawapan diterima: <b>{result.expected}</b></p>{result.explanation && <p>{result.explanation}</p>}</div>}</section> : <EmptyState title="Tiada soalan pentaksiran." message="Pilih subjek lain untuk mencuba pentaksiran." actionLabel="Papan Utama" onAction={onBack} />}</main>;
 }
 
-const readingPassages = semanticReadingPassages;
-
 function normalizeBacaanWord(word = '') {
   return word
     .toLowerCase()
@@ -6047,7 +6049,8 @@ function nextCommunicationSessionIndex(currentIndex, size) {
   return (safeIndex + 1) % safeSize;
 }
 
-function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+function BacaanCoach({ content, profile, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const readingPassages = content.semanticReadingPassages;
   const initialPassageId = readingPassages.find(item => item.id === resume?.state?.passageId)?.id || readingPassages[0]?.id || 'bm';
   const [passageId, setPassageId] = useState(() => (resume?.mode === 'reading' && initialPassageId) || initialPassageId);
   const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
@@ -6498,8 +6501,6 @@ function BacaanCoach({ profile, resume, onResumeChange, onClearResume, onBack, o
 
   return <main className="app reading-coach-page"><div className="topbar"><button className="ghost" onClick={onBack}>← Papan Utama</button><span className="pill">Pilihan menaip tersedia</span></div><section className="card reading-hero"><div className="communication-hero-icon" aria-hidden="true"><IconGlyph name="book" /></div><div><p className="eyebrow">Latihan Bacaan</p><h1>{passage.title}</h1><p>Baca petikan dengan kuat. Janna akan membantu semak bacaan kamu.</p></div></section><section className="card"><p className="eyebrow">Pilih Petikan</p><div className="reading-tabs">{readingPassages.map(item => <button key={item.id} className={item.id === passageId ? '' : 'secondary'} onClick={() => setPassageId(item.id)}>{item.label}</button>)}</div><div className={`reading-target ${passage.language === 'arab' ? 'rtl' : ''}`} lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safePassageText || 'Tiada petikan bacaan tersedia buat masa ini.'}</div><div className="actions"><button onClick={startMendengar} disabled={iosMediaSttEnabled ? Boolean(speechCandidate) || ['stopping', 'transcribing'].includes(mediaSpeechStatus) : listening || iosSpeechBypassEnabled || !recognitionSupported}>{iosMediaSttEnabled ? bacaanVoiceButtonLabel : listening ? 'Sedang mendengar...' : 'Mula Bercakap'}</button><button className="secondary" onClick={checkManual} disabled={listening || Boolean(speechCandidate)}>Semak Teks</button></div>{iosSpeechBypassEnabled && <p className="autosave-note">Rakaman suara belum tersedia. Kamu masih boleh menaip jawapan.</p>}{iosMediaSttEnabled && <p className="autosave-note" role="status" aria-live="polite" data-speech-state={mediaSpeechStatus}>{bacaanMediaStatusLabel}</p>}{!recognitionSupported && !iosSpeechBypassEnabled && !iosMediaSttEnabled && <p className="autosave-note">Taip teks bacaan kamu di bawah.</p>}{speechCandidate?.text && <section className="speech-candidate" aria-live="polite"><h2>Semak transkrip bacaan</h2><p>Pastikan teks ini sepadan dengan bacaan kamu sebelum dinilai.</p><textarea aria-label="Semak transkrip bacaan" value={speechCandidate.text} onChange={event => setSpeechCandidate(current => ({ ...current, text: event.target.value }))} /><div className="actions"><button onClick={acceptBacaanSpeechCandidate}>Gunakan transkrip</button><button className="secondary" onClick={editBacaanSpeechCandidate}>Edit sebagai teks</button><button className="secondary" onClick={retryBacaanSpeechCapture}>Rakam semula</button><button className="secondary" onClick={clearBacaanSpeechCandidate}>Kosongkan</button></div></section>}<label>Teks bacaan kamu</label><textarea lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : 'auto'} value={transcript} onChange={e => { if (iosMediaSttEnabled) clearBacaanSession('manual-edit'); setTranscript(e.target.value); setSpeechCandidate(null); }} placeholder="Taip teks bacaan kamu..." /></section>{hasResult && <section className="card reading-result"><p className="eyebrow">Keputusan Bacaan</p>{communicationResult.isAssessed ? <><h2>{clampPercent(safeResult.score)}%</h2><div className="word-check reading-word-check" lang={passage.language === 'arab' ? 'ar' : undefined} dir={passage.language === 'arab' ? 'rtl' : undefined}>{safeWords.map((word, index) => <span key={`${word.text}-${index}`} className={word.status === 'correct' ? 'word-good' : 'word-miss'}>{word.text}</span>)}</div>{safeExtraWords.length > 0 && <p>Perkataan tambahan kurang tepat: <b>{safeExtraWords.join(', ')}</b></p>}<div className="recommend-meta"><span>{safeResult.matchedWordCount}/{safeResult.totalTargetWords} perkataan betul</span><span>{safeResult.missedWordCount} tertinggal</span><span>{safeResult.extraWordCount} tambahan</span><span>{safeResult.passed ? 'Lulus' : 'Belum lulus'}</span></div><div className="actions"><button onClick={nextBacaan}>Seterusnya</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></> : <><h2>Belum dinilai</h2><p>{safeResult.message || 'Jawapan belum diterima.'}</p><div className="actions"><button className="secondary" onClick={retryBacaan}>Cuba Lagi</button><button className="secondary" onClick={saveResult}>Tamatkan Sesi</button></div></>}</section>}{sessionSummary.hasEvidence ? <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>{sessionSummary.completedItems} petikan selesai • Purata {sessionSummary.averagePercent}% • Terbaik {sessionSummary.bestPercent}%</p></section> : <section className="card reading-result"><p className="eyebrow">Ringkasan Sesi</p><p>Belum ada sesi direkodkan.</p><p className="memory-last">Lengkapkan sekurang-kurangnya satu latihan yang dinilai untuk melihat ringkasan.</p></section>}</main>;
 }
-const listeningSets = semanticListeningSets;
-
 function normalizeMendengar(text = '') {
   return normalizeBacaanWord(text).replace(/\s+/g, '');
 }
@@ -6529,7 +6530,6 @@ function recordCommunicationScore({ ref, itemKey, result, setScoreHistory }) {
 }
 
 // Deprecated listening implementation removed; MendengarLab is the sole active surface.
-const speakingPrompts = semanticSpeakingPrompts;
 
 function scoreBertutur(prompt, transcript, language = '') {
   return scoreSpeakingKeywords(prompt, transcript, { language });
@@ -6588,7 +6588,8 @@ function createEmptyBacaanResult(message = '') {
   });
 }
 
-function BertuturCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+function BertuturCoach({ content, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const speakingPrompts = content.semanticSpeakingPrompts;
   const [setId, setSetId] = useState(() => (resume?.mode === 'speaking' && resume?.state?.setId) || 'bm');
   const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
   const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm']) ? resume.state.sessionIndexes[(resume?.mode === 'speaking' && resume?.state?.setId) || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
@@ -7126,9 +7127,6 @@ function getBertuturReviewCopy(languageId = 'bm') {
 function normalizeBertuturTranscript(value) {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
 }
-// Semantic communication banks are the only active source for listening, speaking, and writing.
-const writingSets = semanticWritingSets;
-
 function scoreMenulis(task, answer, dictionary = [], mode = '') {
   const normalizedAnswer = normalizeBacaanWord(answer);
   const expectedWords = splitBacaanWords(task.answer || '').map(word => word.text);
@@ -7167,7 +7165,8 @@ function scoreMenulis(task, answer, dictionary = [], mode = '') {
   };
 }
 
-function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const writingSets = content.semanticWritingSets;
   const [setId, setSetId] = useState(() => (resume?.mode === 'writing' && resume?.state?.setId) || 'bm');
   const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
   const [sessionIndex, setSessionIndex] = useState(() => Number.isInteger(resume?.state?.sessionIndexes?.[(resume?.mode === 'writing' && resume?.state?.setId) || 'bm']) ? resume.state.sessionIndexes[(resume?.mode === 'writing' && resume?.state?.setId) || 'bm'] : Number.isInteger(resume?.state?.sessionIndex) ? resume.state.sessionIndex : 0);
@@ -7509,7 +7508,8 @@ function MenulisCoach({ resume, onResumeChange, onClearResume, onBack, onFinish 
 }
 
 /* Final listening surface: explicit next-item flow with a bounded, non-repeating session. */
-function MendengarLab({ resume, onResumeChange, onClearResume, onBack, onFinish }) {
+function MendengarLab({ content, resume, onResumeChange, onClearResume, onBack, onFinish }) {
+  const listeningSets = content.semanticListeningSets;
   const [setId, setSetId] = useState(() => resume?.state?.setId || 'bm');
   const base = listeningSets.find(item => item.id === setId) || listeningSets[0];
   const [sessionIndexes, setSessionIndexes] = useState(() => resume?.state?.sessionIndexes || {});
