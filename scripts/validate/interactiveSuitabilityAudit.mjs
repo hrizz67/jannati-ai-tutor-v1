@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 274, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
-assert.equal(report.summary.categories.auto_safe, 992, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2656, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.reviewed_interactive, 280, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.auto_safe, 990, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
+assert.equal(report.summary.categories.teacher_review, 2652, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -184,6 +184,23 @@ for (const [id, type] of multiSubjectInteractiveExpansionBatch3Types) {
   assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai overlay authored yang disemak.`);
   assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} mesti mempunyai tepat satu jawapan pilihan yang diterima.`);
 }
+const visualInteractiveExpansionBatch4Types = new Map([
+  ['PJ-PERGERAKAN_ASAS-002', 'imageChoice'],
+  ['PK-KESELAMATAN_JALAN_RAYA-006', 'imageChoice'],
+  ['ARAB-WARNA_ARAB-003', 'imageChoice'],
+  ['ENG-NOUNS-012', 'imageChoice'],
+  ['SAINS-BAHAN-008', 'fillBlank'],
+  ['MATH-WANG-PILOT-007', 'fillBlank']
+]);
+assert.equal(visualInteractiveExpansionBatch4Types.size, 6, 'P1.16C Batch 4 mesti mengandungi tepat enam ID merentas enam subjek.');
+for (const [id, type] of visualInteractiveExpansionBatch4Types) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berada dalam laluan reviewed_interactive.`);
+  assert.equal(row?.recommendedType, type, `${id} mesti menggunakan primitive P1.16C Batch 4 yang diluluskan.`);
+  assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai overlay authored yang disemak.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} mesti mempunyai tepat satu jawapan pilihan yang diterima.`);
+}
 for (const [id, type] of interactiveContentBatch2Types) {
   const row = report.questionClassifications.find(item => item.questionId === id);
   const question = questionMap.get(id);
@@ -234,13 +251,13 @@ for (const id of scienceFillBlankBatch3Ids) {
 }
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'reviewed_interactive').length,
-  82,
-  'Science mesti mempunyai tepat 82 interaksi disemak selepas P1.16C Batch 3.'
+  83,
+  'Science mesti mempunyai tepat 83 interaksi disemak selepas P1.16C Batch 4.'
 );
 assert.equal(
   report.questionClassifications.filter(item => item.subjectId === 'sains' && item.category === 'teacher_review').length,
-  408,
-  'Science mesti mempunyai tepat 408 calon teacher_review selepas P1.16C Batch 3.'
+  407,
+  'Science mesti mempunyai tepat 407 calon teacher_review selepas P1.16C Batch 4.'
 );
 
 assert.equal(scienceChoiceMiniPilotIds.size, 6, 'Science Choice Mini-Pilot mesti mengandungi tepat enam ID yang diluluskan.');
