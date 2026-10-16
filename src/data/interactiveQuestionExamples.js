@@ -4174,6 +4174,143 @@ const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS = Object.freeze
   }
 });
 
+const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_SPECS = Object.freeze({
+  'PJ-PERGERAKAN_ASAS-002': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih pergerakan yang diterangkan dalam soalan.',
+      options: [
+        { id: 'jump', label: 'Melompat', value: 'melompat', visual: { kind: 'object', symbol: '🧍⬆️', label: 'Murid menolak badan ke atas dengan kedua-dua kaki' } },
+        { id: 'run', label: 'Berlari', value: 'berlari', visual: { kind: 'object', symbol: '🏃', label: 'Murid bergerak pantas dengan langkah berlari' } },
+        { id: 'walk', label: 'Berjalan', value: 'berjalan', visual: { kind: 'object', symbol: '🚶', label: 'Murid bergerak dengan langkah berjalan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti pergerakan melompat yang menggunakan kedua-dua kaki untuk menolak badan ke atas.',
+      assessment: 'Tiga pergerakan manusia yang jelas dibandingkan; hanya melompat menepati ciri kedua-dua kaki menolak badan ke atas.',
+      textbook: 'Simbol manusia dan label teks membezakan melompat, berlari dan berjalan tanpa menggunakan haiwan sebagai petunjuk.'
+    },
+    intelligence: {
+      skillId: 'pergerakan_asas.mengenal_melompat', responseMode: 'labelled_visual_selection',
+      conceptTags: ['pergerakan_asas', 'melompat', 'tolakan_dua_kaki'], misconceptionTags: ['keliru_melompat_dan_berlari', 'keliru_melompat_dan_berjalan'],
+      hintSteps: ['Bayangkan arah badan bergerak.', 'Fikir pergerakan yang mengangkat kedua-dua kaki seketika dari lantai.', 'Ingat pergerakan yang bermula dengan tolakan kedua-dua kaki.']
+    }
+  },
+  'PK-KESELAMATAN_JALAN_RAYA-006': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih tindakan yang selamat apabila isyarat pejalan kaki merah.',
+      options: [
+        { id: 'stop', label: 'Berhenti', value: 'berhenti', visual: { kind: 'object', symbol: '🧍🛑', label: 'Pejalan kaki menunggu di tepi jalan' } },
+        { id: 'cross', label: 'Mula melintas', value: 'mula melintas', visual: { kind: 'object', symbol: '🚶➡️', label: 'Pejalan kaki mula melintas jalan' } },
+        { id: 'run', label: 'Berlari melintas', value: 'berlari melintas', visual: { kind: 'object', symbol: '🏃➡️', label: 'Pejalan kaki berlari melintas jalan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih tindakan pejalan kaki yang selamat berdasarkan isyarat merah.',
+      assessment: 'Berhenti ialah satu-satunya tindakan selamat; dua pilihan lain menunjukkan perbuatan melintas ketika belum dibenarkan.',
+      textbook: 'Setiap tindakan mempunyai simbol manusia dan label jelas tanpa menggambarkan tingkah laku berisiko sebagai selamat.'
+    },
+    intelligence: {
+      skillId: 'keselamatan_jalan_raya.isyarat_merah_pejalan_kaki', responseMode: 'labelled_visual_selection',
+      conceptTags: ['keselamatan_jalan_raya', 'pejalan_kaki', 'isyarat_merah'], misconceptionTags: ['melintas_semasa_merah', 'berlari_melintas'],
+      hintSteps: ['Perhatikan warna isyarat pejalan kaki dalam soalan.', 'Fikir sama ada jalan sudah selamat untuk dilintasi.', 'Pilih tindakan menunggu sehingga isyarat membenarkan kamu melintas.']
+    }
+  },
+  'ARAB-WARNA_ARAB-003': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih warna berlabel yang sepadan dengan perkataan Arab.',
+      options: [
+        { id: 'yellow', label: 'Kuning', value: 'kuning', visual: { kind: 'object', symbol: '🟨', label: 'Petak berwarna kuning' } },
+        { id: 'green', label: 'Hijau', value: 'hijau', visual: { kind: 'object', symbol: '🟩', label: 'Petak berwarna hijau' } },
+        { id: 'blue', label: 'Biru', value: 'biru', visual: { kind: 'object', symbol: '🟦', label: 'Petak berwarna biru' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memadankan kosa kata warna Arab أَصْفَرُ dengan maksud Bahasa Melayu “kuning”.',
+      assessment: 'Warna, simbol dan label teks disediakan bersama; hanya kuning sepadan dengan perkataan Arab dalam stem.',
+      textbook: 'Kad menggunakan pola warna berlabel yang sama seperti interaksi Arab terdahulu dan tidak bergantung pada warna sahaja.'
+    },
+    intelligence: {
+      skillId: 'warna_arab.asfar_kuning', responseMode: 'labelled_visual_selection',
+      conceptTags: ['warna_arab', 'asfar', 'kuning'], misconceptionTags: ['keliru_asfar_dan_akhdar', 'keliru_asfar_dan_azraq'],
+      hintSteps: ['Baca perkataan Arab dari kanan ke kiri.', 'Ingat semula makna perkataan warna “asfar”.', 'Semak nama Bahasa Melayu pada setiap kad warna.']
+    }
+  },
+  'ENG-NOUNS-012': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Choose the animal noun that completes the clue.',
+      options: [
+        { id: 'dog', label: 'Dog', value: 'dog', visual: { kind: 'object', symbol: '🐶', label: 'A dog' } },
+        { id: 'cat', label: 'Cat', value: 'cat', visual: { kind: 'object', symbol: '🐱', label: 'A cat' } },
+        { id: 'cow', label: 'Cow', value: 'cow', visual: { kind: 'object', symbol: '🐄', label: 'A cow' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Recognise a familiar English animal noun from the sound and action in a simple clue.',
+      assessment: 'Dog is the only labelled animal that says “woof” and barks; cat and cow are familiar but unambiguous distractors.',
+      textbook: 'Lightweight animal symbols support early readers while visible English labels preserve the language response.'
+    },
+    intelligence: {
+      skillId: 'nouns.identify_dog_from_barking', responseMode: 'labelled_visual_selection',
+      conceptTags: ['nouns', 'animals', 'dog'], misconceptionTags: ['confuse_dog_and_cat', 'confuse_dog_and_cow'],
+      hintSteps: ['Listen to the sound word in the clue.', 'Think of the pet that barks.', 'Choose the matching English animal noun.']
+    }
+  },
+  'SAINS-BAHAN-008': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih sifat bahan yang menerangkan kegunaan span.',
+      sentenceParts: ['Span sesuai mengelap air kerana sifatnya ', '.'],
+      options: [
+        { id: 'absorb', label: 'menyerap air', value: 'menyerap air' },
+        { id: 'waterproof', label: 'kalis air', value: 'kalis air' },
+        { id: 'transparent', label: 'telus cahaya', value: 'telus cahaya' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kebolehan menyerap air sebagai sifat bahan span.',
+      assessment: 'Pilihan membandingkan tiga sifat bahan dan hanya menyerap air menerangkan sebab span sesuai mengelap air.',
+      textbook: 'Ayat lengkap kekal pada konteks kegunaan span tanpa visual yang membocorkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'bahan.sifat_span_menyerap_air', responseMode: 'completion',
+      conceptTags: ['bahan', 'span', 'menyerap_air'], misconceptionTags: ['keliru_menyerap_dan_kalis_air', 'keliru_dengan_telus_cahaya'],
+      hintSteps: ['Fikirkan apa yang berlaku apabila span menyentuh air.', 'Bandingkan bahan yang menyimpan air dengan bahan kalis air.', 'Pilih sifat yang membantu span mengangkat air dari permukaan.']
+    }
+  },
+  'MATH-WANG-PILOT-007': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Tukarkan nilai ringgit kepada sen.',
+      sentenceParts: ['RM 3 bersamaan dengan ', '.'],
+      options: [
+        { id: '300-sen', label: '300 sen', value: '300 sen' },
+        { id: '30-sen', label: '30 sen', value: '30 sen' },
+        { id: '3-sen', label: '3 sen', value: '3 sen' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menukar nilai ringgit kepada sen menggunakan hubungan RM 1 bersamaan 100 sen.',
+      assessment: 'Distraktor 30 sen dan 3 sen mengesan kesilapan nilai tempat; hanya 300 sen mengekalkan nilai RM 3.',
+      textbook: 'Unit sen ditulis pada setiap pilihan supaya murid membandingkan nilai dan unit secara jelas.'
+    },
+    intelligence: {
+      skillId: 'wang.menukar_rm3_kepada_sen', responseMode: 'completion',
+      conceptTags: ['wang', 'ringgit', 'sen', 'penukaran_unit'], misconceptionTags: ['tertinggal_satu_sifar', 'tidak_menukar_unit'],
+      hintSteps: ['Ingat nilai satu ringgit dalam sen.', 'Gunakan nilai yang sama untuk setiap ringgit.', 'Darab bilangan ringgit dengan 100 dan semak unit sen.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4223,6 +4360,13 @@ const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES = Object.fro
   }])
 );
 
+const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4251,6 +4395,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_EXAMPLES,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES,
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES,
+  ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4574,6 +4719,10 @@ const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE = Object
   Object.entries(REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4634,6 +4783,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_1_INTELLIGENCE,
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE,
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE,
+  ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
