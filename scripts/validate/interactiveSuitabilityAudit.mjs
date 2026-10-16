@@ -28,9 +28,9 @@ assert.deepEqual(
   [...INTERACTIVE_SUITABILITY_CATEGORIES].sort(),
   'Laporan mesti mengekalkan keempat-empat laluan keputusan.'
 );
-assert.equal(report.summary.categories.reviewed_interactive, 286, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
-assert.equal(report.summary.categories.auto_safe, 987, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
-assert.equal(report.summary.categories.teacher_review, 2649, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
+assert.equal(report.summary.categories.reviewed_interactive, 292, 'Semua interaksi yang ditulis dan disemak mesti kekal dilindungi.');
+assert.equal(report.summary.categories.auto_safe, 985, 'Semua soalan objektif yang masih belum ditulis khas mesti menerima kad pilihan automatik yang selamat.');
+assert.equal(report.summary.categories.teacher_review, 2645, 'Calon yang belum disemak guru mesti kekal dalam barisan semakan.');
 assert.equal(report.summary.categories.keep_standard, 608, 'Respons berstruktur dan terbuka mesti kekal pada laluan standard.');
 
 const interactiveContentBatch2Types = new Map([
@@ -215,6 +215,23 @@ for (const [id, type] of visualSequencingExpansionBatch5Types) {
   const question = questionMap.get(id);
   assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berada dalam laluan reviewed_interactive.`);
   assert.equal(row?.recommendedType, type, `${id} mesti menggunakan primitive P1.16C Batch 5 yang diluluskan.`);
+  assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai overlay authored yang disemak.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} mesti mempunyai tepat satu jawapan pilihan yang diterima.`);
+}
+const targetedCoverageExpansionBatch6Types = new Map([
+  ['BM-KATA_KERJA-009', 'fillBlank'],
+  ['BM-KATA_ADJEKTIF-006', 'fillBlank'],
+  ['PJ-MANIPULASI_ALATAN-001', 'imageChoice'],
+  ['PJ-KESELAMATAN_AKTIVITI-001', 'choice'],
+  ['ISLAM-ADAB-006', 'fillBlank'],
+  ['ISLAM-AKHLAK-009', 'fillBlank']
+]);
+assert.equal(targetedCoverageExpansionBatch6Types.size, 6, 'P1.16C Batch 6 mesti mengandungi tepat enam ID merentas BM, PJ dan Islam.');
+for (const [id, type] of targetedCoverageExpansionBatch6Types) {
+  const row = report.questionClassifications.find(item => item.questionId === id);
+  const question = questionMap.get(id);
+  assert.equal(row?.category, 'reviewed_interactive', `${id} mesti berada dalam laluan reviewed_interactive.`);
+  assert.equal(row?.recommendedType, type, `${id} mesti menggunakan primitive P1.16C Batch 6 yang diluluskan.`);
   assert.equal(question?.interaction?.type, type, `${id} mesti mempunyai overlay authored yang disemak.`);
   assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} mesti mempunyai tepat satu jawapan pilihan yang diterima.`);
 }

@@ -4448,6 +4448,145 @@ const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_SPECS = Object.freeze({
+  'BM-KATA_KERJA-009': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kata kerja yang terdapat dalam ayat.',
+      sentenceParts: ['Kata kerja dalam ayat itu ialah ', '.'],
+      options: [
+        { id: 'draw', label: 'melukis', value: 'melukis' },
+        { id: 'danish', label: 'Danish', value: 'Danish' },
+        { id: 'house', label: 'rumah', value: 'rumah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata kerja yang menunjukkan perbuatan dalam ayat Bahasa Melayu Tahun 2.',
+      assessment: 'Satu perbuatan dibezakan daripada nama orang dan nama benda supaya murid mengenal fungsi kata, bukan meneka bentuk perkataan.',
+      textbook: 'Ayat sumber kekal dipaparkan dan pilihan ringkas membolehkan murid merujuk konteks sebelum menjawab.'
+    },
+    intelligence: {
+      skillId: 'kata_kerja.mengenal_perbuatan_melukis', responseMode: 'completion',
+      conceptTags: ['kata_kerja', 'perbuatan', 'konteks_ayat'], misconceptionTags: ['keliru_kata_kerja_dan_nama_orang', 'keliru_kata_kerja_dan_nama_benda'],
+      hintSteps: ['Cari perkataan yang menunjukkan perbuatan Danish.', 'Nama orang dan nama benda bukan kata kerja.', 'Pilih perkataan yang menerangkan tindakan menghasilkan gambar.']
+    }
+  },
+  'BM-KATA_ADJEKTIF-006': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih kata adjektif yang terdapat dalam ayat.',
+      sentenceParts: ['Kata adjektif dalam ayat itu ialah ', '.'],
+      options: [
+        { id: 'slippery', label: 'licin', value: 'licin' },
+        { id: 'floor', label: 'lantai', value: 'lantai' },
+        { id: 'rain', label: 'hujan', value: 'hujan' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata adjektif yang menerangkan keadaan dalam ayat Bahasa Melayu Tahun 2.',
+      assessment: 'Satu kata sifat dibezakan daripada dua kata nama yang turut hadir dalam konteks ayat.',
+      textbook: 'Pilihan menggunakan perkataan yang berkaitan dengan ayat tanpa menambah gambaran visual yang membocorkan jawapan.'
+    },
+    intelligence: {
+      skillId: 'kata_adjektif.mengenal_keadaan_licin', responseMode: 'completion',
+      conceptTags: ['kata_adjektif', 'keadaan', 'konteks_ayat'], misconceptionTags: ['keliru_kata_adjektif_dan_benda', 'keliru_kata_adjektif_dan_keadaan_cuaca'],
+      hintSteps: ['Cari perkataan yang menerangkan keadaan lantai.', 'Nama tempat atau benda bukan kata adjektif.', 'Pilih perkataan yang menerangkan permukaan yang mudah menyebabkan tergelincir.']
+    }
+  },
+  'PJ-MANIPULASI_ALATAN-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih pergerakan yang menghantar bola ke arah sasaran.',
+      options: [
+        { id: 'throw', label: 'Membaling', value: 'membaling', visual: { kind: 'object', symbol: '🤾', label: 'Murid membaling bola ke arah sasaran' } },
+        { id: 'catch', label: 'Menangkap', value: 'menangkap', visual: { kind: 'object', symbol: '🙌⚽', label: 'Murid menangkap bola dengan tangan' } },
+        { id: 'roll', label: 'Menggolek', value: 'menggolek', visual: { kind: 'object', symbol: '🫳⚽', label: 'Murid menggolek bola di atas lantai' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kemahiran manipulasi alatan berdasarkan tujuan pergerakan bola dalam Pendidikan Jasmani Tahun 2.',
+      assessment: 'Membaling, menangkap dan menggolek ialah tindakan berlainan; label teks memastikan simbol tidak menjadi satu-satunya bukti.',
+      textbook: 'Visual ringan menunjukkan hasil gerakan tanpa mengajar teknik fizikal yang berbahaya atau mengubah jawapan sumber.'
+    },
+    intelligence: {
+      skillId: 'manipulasi_alatan.mengenal_membaling', responseMode: 'labelled_visual_selection',
+      conceptTags: ['manipulasi_alatan', 'bola', 'sasaran'], misconceptionTags: ['keliru_membaling_dan_menangkap', 'keliru_membaling_dan_menggolek'],
+      hintSteps: ['Perhatikan arah pergerakan bola menuju sasaran.', 'Bezakan melepaskan bola ke hadapan daripada menyambut atau menggolek.', 'Pilih gerakan tangan yang menghantar bola melalui udara ke sasaran.']
+    }
+  },
+  'PJ-KESELAMATAN_AKTIVITI-001': {
+    interaction: {
+      version: 1,
+      type: 'choice',
+      instruction: 'Pilih tindakan yang paling selamat apabila gelanggang basah.',
+      options: [
+        { id: 'stop-report', label: 'Berhenti dan beritahu guru', value: 'berhenti dan beritahu guru' },
+        { id: 'keep-playing', label: 'Terus bermain di gelanggang basah', value: 'terus bermain di gelanggang basah' },
+        { id: 'run-across', label: 'Berlari merentasi lantai basah', value: 'berlari merentasi lantai basah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menilai tindakan keselamatan apabila terdapat bahaya semasa aktiviti Pendidikan Jasmani.',
+      assessment: 'Renderer pilihan teks digunakan kerana tindakan berangkai berhenti dan memberitahu guru tidak boleh digambarkan dengan ikon ringkas tanpa kekaburan.',
+      textbook: 'Dua distraktor meneruskan aktiviti pada permukaan basah dan jelas tidak menyelesaikan bahaya; hanya tindakan kanonik selamat diterima.'
+    },
+    intelligence: {
+      skillId: 'keselamatan_aktiviti.menangani_lantai_basah', responseMode: 'selection',
+      conceptTags: ['keselamatan_aktiviti', 'lantai_basah', 'lapor_bahaya'], misconceptionTags: ['meneruskan_aktiviti_dalam_bahaya', 'berlari_di_permukaan_licin'],
+      hintSteps: ['Utamakan tindakan yang mencegah murid daripada tergelincir.', 'Tindakan selamat perlu menghentikan aktiviti dan mendapatkan bantuan orang dewasa.', 'Pilih tindakan yang menangani bahaya sebelum permainan diteruskan.']
+    }
+  },
+  'ISLAM-ADAB-006': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih perkataan yang melengkapkan adab dalam ayat.',
+      sentenceParts: ['Sebelum masuk bilik orang, kita perlu meminta ', '.'],
+      options: [
+        { id: 'permission', label: 'izin', value: 'izin' },
+        { id: 'apology', label: 'maaf', value: 'maaf' },
+        { id: 'gift', label: 'hadiah', value: 'hadiah' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengaplikasikan adab menghormati privasi sebelum memasuki ruang orang lain.',
+      assessment: 'Ketiga-tiga pilihan membentuk frasa yang boleh dibaca, tetapi hanya satu memenuhi tindakan menjaga privasi dalam situasi sumber.',
+      textbook: 'Bahasa ringkas dan sopan mengekalkan konteks hormat tanpa mendedahkan jawapan melalui visual.'
+    },
+    intelligence: {
+      skillId: 'adab.menjaga_privasi_bilik', responseMode: 'completion',
+      conceptTags: ['adab', 'privasi', 'hormat'], misconceptionTags: ['masuk_tanpa_kebenaran', 'keliru_adab_dan_permohonan_lain'],
+      hintSteps: ['Fikirkan adab sebelum memasuki ruang peribadi orang lain.', 'Tindakan ini menunjukkan kita menghormati hak dan privasi orang.', 'Pilih perkara yang perlu diperoleh dahulu sebelum masuk.']
+    }
+  },
+  'ISLAM-AKHLAK-009': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih sifat yang ditunjukkan melalui tindakan berkongsi.',
+      sentenceParts: ['Berkongsi alat tulis dengan kawan menunjukkan sikap ', '.'],
+      options: [
+        { id: 'generous', label: 'pemurah', value: 'pemurah' },
+        { id: 'stingy', label: 'kedekut', value: 'kedekut' },
+        { id: 'arrogant', label: 'sombong', value: 'sombong' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memahami sifat terpuji melalui tindakan berkongsi dan membantu rakan.',
+      assessment: 'Satu sifat terpuji dibezakan daripada sifat enggan berkongsi dan sifat merendahkan orang lain.',
+      textbook: 'Pilihan menilai makna akhlak dalam situasi harian tanpa mengubah konteks atau jawapan sumber.'
+    },
+    intelligence: {
+      skillId: 'akhlak.mengenal_sifat_pemurah', responseMode: 'completion',
+      conceptTags: ['akhlak', 'berkongsi', 'sifat_terpuji'], misconceptionTags: ['keliru_pemurah_dan_kedekut', 'keliru_pemurah_dan_sombong'],
+      hintSteps: ['Perhatikan tindakan berkongsi dengan kawan.', 'Sikap ini membuatkan seseorang rela memberi atau berkongsi barang.', 'Pilih sifat terpuji yang bertentangan dengan kedekut.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4511,6 +4650,13 @@ const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_EXAMPLES = Object.fromEntries
   }])
 );
 
+const REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4541,6 +4687,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES,
   ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_EXAMPLES,
   ...REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_EXAMPLES,
+  ...REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4872,6 +5019,10 @@ const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_INTELLIGENCE = Object.fromEnt
   Object.entries(REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4934,6 +5085,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE,
   ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_INTELLIGENCE,
   ...REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_INTELLIGENCE,
+  ...REVIEWED_TARGETED_COVERAGE_EXPANSION_BATCH_6_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
