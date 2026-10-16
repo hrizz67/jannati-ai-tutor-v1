@@ -4311,6 +4311,143 @@ const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_SPECS = Object.freeze({
   }
 });
 
+const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_SPECS = Object.freeze({
+  'BM-KATA_NAMA_AM-009': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih haiwan yang menjadi kata nama am dalam ayat.',
+      options: [
+        { id: 'bird', label: 'Burung', value: 'burung', visual: { kind: 'object', symbol: '🐦', label: 'Seekor burung kecil' } },
+        { id: 'cat', label: 'Kucing', value: 'kucing', visual: { kind: 'object', symbol: '🐱', label: 'Seekor kucing' } },
+        { id: 'fish', label: 'Ikan', value: 'ikan', visual: { kind: 'object', symbol: '🐟', label: 'Seekor ikan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti kata nama am bagi haiwan yang disebut dalam ayat mudah Bahasa Melayu Tahun 2.',
+      assessment: 'Tiga haiwan lazim dipaparkan dengan label; murid masih perlu merujuk haiwan dalam ayat untuk memilih jawapan.',
+      textbook: 'Simbol ringan dan label teks menyokong pembaca awal tanpa menambah petunjuk ketepatan pada mana-mana kad.'
+    },
+    intelligence: {
+      skillId: 'kata_nama_am.mengenal_haiwan_burung', responseMode: 'labelled_visual_selection',
+      conceptTags: ['kata_nama_am', 'haiwan', 'konteks_ayat'], misconceptionTags: ['memilih_haiwan_tidak_disebut', 'keliru_kata_nama_am'],
+      hintSteps: ['Cari perkataan dalam ayat yang menamakan haiwan.', 'Perhatikan haiwan yang berada pada dahan pokok.', 'Padankan haiwan dalam ayat dengan label pada kad.']
+    }
+  },
+  'ISLAM-IBADAH-002': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih amalan bersuci yang melengkapkan ayat.',
+      sentenceParts: ['Sebelum solat, kita perlu mengambil ', '.'],
+      options: [
+        { id: 'wuduk', label: 'wuduk', value: 'wuduk' },
+        { id: 'zakat', label: 'zakat', value: 'zakat' },
+        { id: 'puasa', label: 'puasa', value: 'puasa' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengingat amalan bersuci yang dilakukan sebelum solat dalam keadaan biasa apabila air tersedia.',
+      assessment: 'Pilihan tidak menggunakan tayamum sebagai distraktor, supaya keadaan pengecualian bersuci tidak digambarkan sebagai salah.',
+      textbook: 'Ayat sumber dan jawapan kekal, manakala pilihan ringkas membezakan persediaan solat daripada ibadah lain.'
+    },
+    intelligence: {
+      skillId: 'ibadah.persediaan_sebelum_solat', responseMode: 'completion',
+      conceptTags: ['ibadah', 'bersuci', 'persediaan_solat'], misconceptionTags: ['keliru_bersuci_dengan_ibadah_lain', 'tidak_mengenal_persediaan_solat'],
+      hintSteps: ['Ingat persediaan kebersihan biasa sebelum solat.', 'Fikirkan amalan menggunakan air untuk membersihkan anggota tertentu.', 'Pilih nama amalan bersuci yang dilakukan sebelum solat apabila air tersedia.']
+    }
+  },
+  'MATH-MASA-PILOT-002': {
+    interaction: {
+      version: 1,
+      type: 'fillBlank',
+      instruction: 'Pilih hari yang melengkapkan hubungan urutan minggu.',
+      sentenceParts: ['Hari sebelum Isnin ialah ', '.'],
+      options: [
+        { id: 'sunday', label: 'Ahad', value: 'Ahad' },
+        { id: 'tuesday', label: 'Selasa', value: 'Selasa' },
+        { id: 'friday', label: 'Jumaat', value: 'Jumaat' }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Menentukan kedudukan satu hari sebelum hari yang diberikan dalam urutan minggu.',
+      assessment: 'Murid mengundur satu langkah daripada Isnin; hanya satu pilihan menghasilkan hubungan urutan minggu yang tepat.',
+      textbook: 'Pilihan hari berlabel mengekalkan bukti pengetahuan urutan tanpa membina semula soalan sequencing yang telah authored.'
+    },
+    intelligence: {
+      skillId: 'masa.hari_sebelum_isnin', responseMode: 'completion',
+      conceptTags: ['masa', 'urutan_hari', 'hari_sebelum'], misconceptionTags: ['bergerak_ke_hadapan_bukan_ke_belakang', 'keliru_kitaran_minggu'],
+      hintSteps: ['Bayangkan urutan hari sebagai satu kitaran yang berulang.', 'Bermula pada Isnin dan undur satu hari.', 'Semak bahawa hari selepas pilihan kamu ialah Isnin.']
+    }
+  },
+  'SAINS-KEMAHIRAN_SAINTIFIK-019': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih alat yang digunakan untuk menghasilkan tulisan pada kertas.',
+      options: [
+        { id: 'pencil', label: 'Pensel', value: 'pensel', visual: { kind: 'object', symbol: '✏️', label: 'Sebatang pensel' } },
+        { id: 'eraser', label: 'Pemadam', value: 'pemadam', visual: { kind: 'object', symbol: '▱', label: 'Pemadam berbentuk blok' } },
+        { id: 'ruler', label: 'Pembaris', value: 'pembaris', visual: { kind: 'object', symbol: '📏', label: 'Sebatang pembaris' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti alat menulis berdasarkan fungsi objek harian dalam kemahiran mengelas.',
+      assessment: 'Pensel menghasilkan tulisan, manakala pemadam dan pembaris mempunyai fungsi berlainan yang jelas.',
+      textbook: 'Setiap simbol disertai label teks dan penerangan aksesibel supaya pengenalan tidak bergantung pada rupa simbol sahaja.'
+    },
+    intelligence: {
+      skillId: 'kemahiran_saintifik.mengelas_alat_menulis', responseMode: 'labelled_visual_selection',
+      conceptTags: ['kemahiran_saintifik', 'alat_menulis', 'fungsi_objek'], misconceptionTags: ['keliru_pensel_dan_pemadam', 'keliru_pensel_dan_pembaris'],
+      hintSteps: ['Fikirkan fungsi setiap alat pada kertas.', 'Cari alat yang meninggalkan tanda ketika digunakan.', 'Bezakan alat menulis daripada alat memadam dan mengukur.']
+    }
+  },
+  'PJ-LOKOMOTOR-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih pergerakan lokomotor utama dalam situasi itu.',
+      options: [
+        { id: 'walk', label: 'Berjalan', value: 'berjalan', visual: { kind: 'object', symbol: '🚶', label: 'Murid bergerak dengan langkah berjalan' } },
+        { id: 'run', label: 'Berlari', value: 'berlari', visual: { kind: 'object', symbol: '🏃', label: 'Murid bergerak pantas dengan langkah berlari' } },
+        { id: 'jump', label: 'Melompat', value: 'melompat', visual: { kind: 'object', symbol: '🧑⬆️', label: 'Murid menolak badan ke atas untuk melompat' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Mengenal pasti pergerakan lokomotor berjalan berdasarkan situasi bergerak menuju kon.',
+      assessment: 'Ketiga-tiga pilihan ialah pergerakan manusia yang jelas; murid perlu menggunakan kata kerja dalam situasi untuk memilih.',
+      textbook: 'Simbol manusia dan label teks mengelakkan penggunaan haiwan sebagai pengganti pergerakan lokomotor.'
+    },
+    intelligence: {
+      skillId: 'lokomotor.mengenal_berjalan', responseMode: 'labelled_visual_selection',
+      conceptTags: ['lokomotor', 'berjalan', 'bergerak_ke_kon'], misconceptionTags: ['keliru_berjalan_dan_berlari', 'keliru_berjalan_dan_melompat'],
+      hintSteps: ['Cari kata kerja pergerakan dalam situasi.', 'Bandingkan kelajuan dan cara kaki bergerak.', 'Pilih gerakan dengan langkah biasa menuju kon.']
+    }
+  },
+  'PK-KEBERSIHAN_DIRI-001': {
+    interaction: {
+      version: 1,
+      type: 'imageChoice',
+      instruction: 'Pilih amalan kebersihan yang betul sebelum makan.',
+      options: [
+        { id: 'wash', label: 'Basuh tangan dengan sabun', value: 'basuh tangan dengan sabun', visual: { kind: 'object', symbol: '🧼👐', label: 'Tangan dibasuh menggunakan sabun dan air' } },
+        { id: 'wipe', label: 'Lap tangan pada baju', value: 'lap tangan pada baju', visual: { kind: 'object', symbol: '👕👐', label: 'Tangan dilap pada baju' } },
+        { id: 'eat', label: 'Makan tanpa cuci tangan', value: 'makan tanpa cuci tangan', visual: { kind: 'object', symbol: '🍽️👐', label: 'Makan terus tanpa membersihkan tangan' } }
+      ]
+    },
+    qualityReview: {
+      curriculum: 'Memilih amalan kebersihan tangan yang betul sebelum makan untuk mengurangkan risiko kuman.',
+      assessment: 'Hanya mencuci dengan sabun membersihkan tangan dengan betul; dua tindakan lain kekal jelas tidak selamat.',
+      textbook: 'Tindakan dipaparkan bersama label dan penerangan aksesibel tanpa menandakan mana-mana pilihan sebagai jawapan betul.'
+    },
+    intelligence: {
+      skillId: 'kebersihan_diri.tangan_sebelum_makan', responseMode: 'labelled_visual_selection',
+      conceptTags: ['kebersihan_diri', 'tangan', 'sebelum_makan'], misconceptionTags: ['mengelap_dianggap_mencuci', 'makan_tanpa_membersihkan_tangan'],
+      hintSteps: ['Fikirkan apa yang perlu dibuat sebelum menyentuh makanan.', 'Pilih tindakan yang membersihkan kotoran dan kuman pada tangan.', 'Cari tindakan yang menggunakan air dan bahan pencuci.']
+    }
+  }
+});
+
 const REVIEWED_EQUAL_GROUPS_PILOT_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_EQUAL_GROUPS_PILOT_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4367,6 +4504,13 @@ const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_EXAMPLES = Object.fromEntrie
   }])
 );
 
+const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_EXAMPLES = Object.fromEntries(
+  Object.entries(REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_SPECS).map(([id, spec]) => [id, {
+    interaction: spec.interaction,
+    qualityReview: spec.qualityReview
+  }])
+);
+
 const REVIEWED_CONTENT_BATCH_1_EXAMPLES = Object.fromEntries(
   Object.entries(REVIEWED_CONTENT_BATCH_1_SPECS).map(([id, spec]) => [id, {
     interaction: spec.interaction,
@@ -4396,6 +4540,7 @@ const INTERACTIVE_QUESTION_EXAMPLES = Object.freeze({
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_EXAMPLES,
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_EXAMPLES,
   ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_EXAMPLES,
+  ...REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_EXAMPLES,
   'BM-KATA_NAMA_AM-001': {
     interaction: {
       version: 1,
@@ -4723,6 +4868,10 @@ const REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_INTELLIGENCE = Object.fromEn
   Object.entries(REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
 );
 
+const REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_INTELLIGENCE = Object.fromEntries(
+  Object.entries(REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_SPECS).map(([id, spec]) => [id, reviewedLearningIntelligence(spec.intelligence)])
+);
+
 const REVIEWED_FILL_BLANK_INTELLIGENCE = Object.fromEntries(
   Object.entries(REVIEWED_FILL_BLANK_BATCH_1).map(([id, spec]) => {
     const domain = REVIEWED_FILL_BLANK_DOMAINS[spec.domain];
@@ -4784,6 +4933,7 @@ const INTERACTIVE_QUESTION_INTELLIGENCE = Object.freeze({
   ...REVIEWED_RICH_INTERACTIVE_EXPANSION_BATCH_2_INTELLIGENCE,
   ...REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_INTELLIGENCE,
   ...REVIEWED_VISUAL_INTERACTIVE_EXPANSION_BATCH_4_INTELLIGENCE,
+  ...REVIEWED_VISUAL_SEQUENCING_EXPANSION_BATCH_5_INTELLIGENCE,
   'BM-KATA_NAMA_AM-001': reviewedLearningIntelligence({
     skillId: 'kata_nama_am.mengenal_benda',
     responseMode: 'visual_selection',
