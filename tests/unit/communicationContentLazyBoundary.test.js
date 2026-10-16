@@ -22,4 +22,15 @@ describe('communication content lazy boundary', () => {
     expect(appSource).not.toContain("from './data/communicationContent.js'");
     expect(gateSource).toContain('use(loadCommunicationContent())');
   });
+
+  it('offers a full reload for every communication screen after a cached import failure', () => {
+    const appSource = fs.readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
+
+    expect(appSource).toContain('function CommunicationContentErrorFallback({ title, onDashboard })');
+    expect(appSource).toContain('window.location.reload()');
+    expect(appSource).toContain('Muat semula aplikasi');
+    expect(appSource).toContain('Kembali ke Papan Utama untuk belajar perkara lain');
+    expect(appSource).not.toContain('Sila kembali dan cuba semula.');
+    expect((appSource.match(/fallback={<CommunicationContentErrorFallback/g) || [])).toHaveLength(4);
+  });
 });
