@@ -4124,7 +4124,7 @@ const REVIEWED_MULTI_SUBJECT_INTERACTIVE_EXPANSION_BATCH_3_SPECS = Object.freeze
     intelligence: {
       skillId: 'ibadah.bilangan_rakaat_subuh', responseMode: 'completion',
       conceptTags: ['ibadah', 'solat_subuh', 'rakaat'], misconceptionTags: ['keliru_dengan_maghrib', 'keliru_dengan_zohor_asar_isyak'],
-      hintSteps: ['Ingat solat fardu pada awal pagi.', 'Bandingkan bilangan rakaat Subuh dengan Maghrib.', 'Pilih bilangan rakaat yang paling sedikit antara pilihan.']
+      hintSteps: ['Ingat solat fardu pada awal pagi.', 'Bandingkan bilangan rakaat Subuh dengan Maghrib.', 'Cuba ingat semula bilangan rakaat Solat Subuh yang telah kamu pelajari.']
     }
   },
   'ARAB-NOMBOR_ARAB-002': {

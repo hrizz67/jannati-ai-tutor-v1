@@ -81,6 +81,7 @@ describe('P1.16C multi-subject interactive expansion Batch 3', () => {
     });
     expect(byId.get('SAINS-TUMBUHAN-022').interaction.options.map(option => option.value)).toEqual(['pokok dewasa', 'biji benih', 'akar']);
     expect(byId.get('ISLAM-IBADAH-005').interaction.options.map(option => option.value)).toEqual(['dua', 'tiga', 'empat']);
+    expect(byId.get('ISLAM-IBADAH-005').learningIntelligence.hintSteps[2]).toBe('Cuba ingat semula bilangan rakaat Solat Subuh yang telah kamu pelajari.');
   });
 
   it('preserves the Arabic digit glyph, mixed-direction source and accessible Malay choice labels', () => {
