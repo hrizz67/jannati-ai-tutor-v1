@@ -6558,6 +6558,18 @@ input:focus {
   font-weight: 800;
 }
 
+.interactive-screen-reader-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .interactive-choice-layout,
 .visual-math-layout {
   display: grid;
