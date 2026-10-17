@@ -1,6 +1,6 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-10-14T16:34:22.919Z",
+  "generatedAt": "2026-10-17T13:36:30.742Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
@@ -28,7 +28,7 @@
     "averageDiversityScore": 78,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 20,
-    "averageSelectionTimeMs": 3.665,
+    "averageSelectionTimeMs": 3.311,
     "stemDiversity": 100,
     "stemReuseRate": 0,
     "repeatedStems": 0,
@@ -80,9 +80,9 @@
       "kesihatan_mental_emosi": 2500
     },
     "difficultyBalance": {
-      "sederhana": 36673,
-      "mudah": 51761,
-      "sukar": 11566
+      "sederhana": 36669,
+      "mudah": 51767,
+      "sukar": 11564
     }
   },
   "issues": []
