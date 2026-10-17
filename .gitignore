@@ -1,5 +1,6 @@
 node_modules
 dist
+qa-preview-site
 .vite
 .env
 .env.local

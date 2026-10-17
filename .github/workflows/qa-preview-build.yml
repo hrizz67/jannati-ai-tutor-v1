@@ -1,0 +1,78 @@
+name: Build isolated QA preview artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact approved 40-character main commit SHA
+        required: true
+        type: string
+      confirmation:
+        description: Confirm this is an artifact build only
+        required: true
+        type: choice
+        options:
+          - BUILD_ISOLATED_QA_PREVIEW
+          - CANCEL
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-preview-artifact-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  build-preview-artifact:
+    if: inputs.confirmation == 'BUILD_ISOLATED_QA_PREVIEW'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VITE_BUILD_REVISION: ${{ inputs.source_sha }}
+
+    steps:
+      - name: Validate requested revision
+        shell: bash
+        run: |
+          if [[ ! "$VITE_BUILD_REVISION" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "source_sha must be an exact 40-character Git SHA."
+            exit 1
+          fi
+
+      - name: Checkout exact approved revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+
+      - name: Verify immutable reviewed main history
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${VITE_BUILD_REVISION,,}"
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$VITE_BUILD_REVISION" origin/main
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run validation suite without backend configuration
+        shell: bash
+        run: env -u VITE_SUPABASE_URL -u VITE_SUPABASE_PUBLISHABLE_KEY -u VITE_STT_ENDPOINT npm run validate
+
+      - name: Build isolated preview without backend configuration
+        shell: bash
+        run: env -u VITE_SUPABASE_URL -u VITE_SUPABASE_PUBLISHABLE_KEY -u VITE_STT_ENDPOINT npm run build:qa-preview
+
+      - name: Upload immutable preview artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: jannati-qa-preview-${{ inputs.source_sha }}
+          path: qa-preview-site/
+          if-no-files-found: error
+          retention-days: 7
