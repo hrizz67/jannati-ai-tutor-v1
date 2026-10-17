@@ -20,7 +20,21 @@ function responseClass(feedback, selected) {
   return feedback.status === 'correct' ? 'correct' : 'wrong';
 }
 
-function ChoiceGrid({ config, value, onChange, feedback, subjectId = '', visualMath = false }) {
+function responseStatusLabel(feedback, selected, { composite = false } = {}) {
+  if (!selected || !isLocked(feedback)) return '';
+  if (feedback.status === 'correct') return 'Jawapan dipilih betul.';
+  if (feedback.status === 'almost') return 'Jawapan dipilih hampir betul.';
+  return composite ? 'Pilihan dihantar; jawapan keseluruhan belum tepat.' : 'Jawapan dipilih belum tepat.';
+}
+
+function ResponseStatusText({ feedback, selected, composite = false, missed = false }) {
+  const label = missed
+    ? 'Jawapan betul yang belum dipilih.'
+    : responseStatusLabel(feedback, selected, { composite });
+  return label ? <span className="interactive-screen-reader-only">{label}</span> : null;
+}
+
+export function ChoiceGrid({ config, value, onChange, feedback, subjectId = '', visualMath = false }) {
   const locked = isLocked(feedback);
   return <div className={`interactive-choice-layout ${visualMath ? 'visual-math-layout' : ''}`}>
     {visualMath && <QuestionVisual visual={config.visual} />}
@@ -54,6 +68,7 @@ function ChoiceGrid({ config, value, onChange, feedback, subjectId = '', visualM
         >
           {option.visual && <QuestionVisual visual={option.visual} />}
           <SubjectLanguageText text={option.label} subjectId={subjectId} />
+          <ResponseStatusText feedback={feedback} selected={selected} />
         </button>;
       })}
     </div>
@@ -313,7 +328,7 @@ function OrderingQuestion({ config, value, onChange, feedback, subjectId = '' })
   </div>;
 }
 
-function FillBlankQuestion({ config, value, onChange, feedback, subjectId = '' }) {
+export function FillBlankQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const locked = isLocked(feedback);
   const [before, after] = config.sentenceParts;
   return <div className="fill-blank-question">
@@ -344,7 +359,10 @@ function FillBlankQuestion({ config, value, onChange, feedback, subjectId = '' }
             onChange(String(nextOption.value));
             event.currentTarget.parentElement?.querySelector(`[data-blank-option-id="${nextOption.id}"]`)?.focus();
           }}
-        ><SubjectLanguageText text={option.label} subjectId={subjectId} /></button>;
+        >
+          <SubjectLanguageText text={option.label} subjectId={subjectId} />
+          <ResponseStatusText feedback={feedback} selected={selected} />
+        </button>;
       })}
     </div>
   </div>;
@@ -357,7 +375,7 @@ function parseMultiSelectResponse(config, value) {
     .map(option => option.id);
 }
 
-function MultiSelectQuestion({ config, value, onChange, feedback, subjectId = '' }) {
+export function MultiSelectQuestion({ config, value, onChange, feedback, subjectId = '' }) {
   const [selectedIds, setSelectedIds] = useState(() => parseMultiSelectResponse(config, value));
   const locked = isLocked(feedback);
 
@@ -380,15 +398,21 @@ function MultiSelectQuestion({ config, value, onChange, feedback, subjectId = ''
       {config.options.map(option => {
         const selected = selectedIds.includes(option.id);
         const correctOption = config.correctOptionIds.includes(option.id);
+        const canRevealOptionCorrectness = feedback?.status === 'correct'
+          || feedback?.answerRevealPolicy?.canRevealAnswer === true;
         const optionState = !isLocked(feedback)
           ? (selected ? 'selected' : '')
-          : selected && correctOption
-            ? 'correct'
+          : canRevealOptionCorrectness
+            ? selected && correctOption
+              ? 'correct'
+              : selected
+                ? 'wrong'
+                : feedback.status !== 'correct' && correctOption
+                  ? 'missed'
+                  : ''
             : selected
               ? 'wrong'
-              : feedback.status !== 'correct' && correctOption
-                ? 'missed'
-                : '';
+              : '';
         return <button
           type="button"
           role="checkbox"
@@ -400,6 +424,7 @@ function MultiSelectQuestion({ config, value, onChange, feedback, subjectId = ''
         >
           <span className="multi-select-check" aria-hidden="true">{selected ? '✓' : ''}</span>
           <SubjectLanguageText text={option.label} subjectId={subjectId} />
+          <ResponseStatusText feedback={feedback} selected={selected} composite={!canRevealOptionCorrectness} missed={optionState === 'missed'} />
         </button>;
       })}
     </div>
