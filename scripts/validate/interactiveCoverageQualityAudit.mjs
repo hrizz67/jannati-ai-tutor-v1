@@ -153,6 +153,14 @@ const visualSequencingExpansionBatch5Types = new Map([
   ['PJ-LOKOMOTOR-001', 'imageChoice'],
   ['PK-KEBERSIHAN_DIRI-001', 'imageChoice']
 ]);
+const targetedCoverageExpansionBatch6Types = new Map([
+  ['BM-KATA_KERJA-009', 'fillBlank'],
+  ['BM-KATA_ADJEKTIF-006', 'fillBlank'],
+  ['PJ-MANIPULASI_ALATAN-001', 'imageChoice'],
+  ['PJ-KESELAMATAN_AKTIVITI-001', 'choice'],
+  ['ISLAM-ADAB-006', 'fillBlank'],
+  ['ISLAM-AKHLAK-009', 'fillBlank']
+]);
 
 function metricTemplate() {
   return {
@@ -364,12 +372,12 @@ for (const question of subjects.flatMap(subject => subject.topics.flatMap(topic 
 }
 
 assert.equal(rows.length, 4530, 'Interactive content conversion must not add or remove bank questions.');
-assert.deepEqual(classifications, { AUTO_SAFE: 1273, TEACHER_REVIEW: 2649, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
-assert.equal(summary.authoredInteractive, 286, 'All reviewed authored interactions must be counted once.');
-assert.equal(summary.derivedInteractive, 987, 'Only safe existing objective options may be derived automatically.');
-assert.equal(summary.interactive, 1273, 'Reviewed and derived interactions must be counted exactly once.');
-assert.equal(summary.standard, 3257, 'All remaining questions must stay on the standard response path.');
-assert.equal(summary.visual, 109, 'Reviewed visual interactions must include the four visual P1.16C Batch 5 additions.');
+assert.deepEqual(classifications, { AUTO_SAFE: 1277, TEACHER_REVIEW: 2645, KEEP_STANDARD: 608 }, 'Every question must follow exactly one approved interactive-content decision path.');
+assert.equal(summary.authoredInteractive, 292, 'All reviewed authored interactions must be counted once.');
+assert.equal(summary.derivedInteractive, 985, 'Only safe existing objective options may be derived automatically.');
+assert.equal(summary.interactive, 1277, 'Reviewed and derived interactions must be counted exactly once.');
+assert.equal(summary.standard, 3253, 'All remaining questions must stay on the standard response path.');
+assert.equal(summary.visual, 110, 'Reviewed visual interactions must include the labelled P1.16C Batch 6 manipulation visual.');
 assert.equal(summary.mobileUnsafe, 0, 'No published interaction may fail the static mobile-safety contract.');
 assert.equal(summary.accessibilityRisk, 0, 'No published interaction may have a known per-question accessibility risk.');
 assert.ok(Object.values(globalAccessibilityChecks).every(Boolean), 'The interactive engine must satisfy every global accessibility contract.');
@@ -428,6 +436,15 @@ assert.ok([...visualSequencingExpansionBatch5Types].every(([id, type]) => {
     && row.mobileIssues.length === 0
     && row.accessibilityIssues.length === 0;
 }), 'Every P1.16C Batch 5 question must be authored, valid, mobile-safe and accessibility-safe.');
+assert.equal(targetedCoverageExpansionBatch6Types.size, 6, 'P1.16C Batch 6 must contain exactly six approved questions across BM, PJ and Islam.');
+assert.ok([...targetedCoverageExpansionBatch6Types].every(([id, type]) => {
+  const row = rows.find(item => item.questionId === id);
+  return row?.classification === 'AUTO_SAFE'
+    && row.authoredInteractive
+    && row.interactionType === type
+    && row.mobileIssues.length === 0
+    && row.accessibilityIssues.length === 0;
+}), 'Every P1.16C Batch 6 question must be authored, valid, mobile-safe and accessibility-safe.');
 assert.equal(rows.find(item => item.questionId === 'MATH-MASA-PILOT-019')?.authoredInteractive, false, 'The mismatched structured two-week question must remain unauthored.');
 assert.equal(rows.find(item => item.questionId === 'SAINS-HAIWAN-017')?.classification, 'TEACHER_REVIEW', 'The ambiguous duck-movement candidate must remain in teacher review.');
 assert.ok([...q4Ids].every(id => rows.find(row => row.questionId === id)?.classification === 'AUTO_SAFE'), 'Every selected Q4 conversion must be valid and teacher reviewed.');

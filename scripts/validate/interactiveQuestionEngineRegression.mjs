@@ -231,6 +231,14 @@ const visualSequencingExpansionBatch5Contracts = new Map([
   ['PJ-LOKOMOTOR-001', { type: 'imageChoice', correct: 'berjalan', distractors: ['berlari', 'melompat'] }],
   ['PK-KEBERSIHAN_DIRI-001', { type: 'imageChoice', correct: 'basuh tangan dengan sabun', distractors: ['lap tangan pada baju', 'makan tanpa cuci tangan'] }]
 ]);
+const targetedCoverageExpansionBatch6Contracts = new Map([
+  ['BM-KATA_KERJA-009', { type: 'fillBlank', correct: 'melukis', distractors: ['Danish', 'rumah'] }],
+  ['BM-KATA_ADJEKTIF-006', { type: 'fillBlank', correct: 'licin', distractors: ['lantai', 'hujan'] }],
+  ['PJ-MANIPULASI_ALATAN-001', { type: 'imageChoice', correct: 'membaling', distractors: ['menangkap', 'menggolek'] }],
+  ['PJ-KESELAMATAN_AKTIVITI-001', { type: 'choice', correct: 'berhenti dan beritahu guru', distractors: ['terus bermain di gelanggang basah', 'berlari merentasi lantai basah'] }],
+  ['ISLAM-ADAB-006', { type: 'fillBlank', correct: 'izin', distractors: ['maaf', 'hadiah'] }],
+  ['ISLAM-AKHLAK-009', { type: 'fillBlank', correct: 'pemurah', distractors: ['kedekut', 'sombong'] }]
+]);
 const languageFillBlankBatch3Contracts = new Map([
   ['BM-KATA_SENDI-002', { stem: 'Baca situasi: Aina berjalan ______ kantin kerana dia lapar.', answer: 'ke', questionType: 'short_answer', sentenceParts: ['Baca situasi: Aina berjalan ', ' kantin kerana dia lapar.'], optionValues: ['di', 'ke', 'dari'] }],
   ['BM-KATA_HUBUNG-003', { stem: 'Lengkapkan ayat ini: Sara membawa payung ____ hari hujan pada pagi itu.', answer: 'kerana', questionType: 'short_answer', sentenceParts: ['Lengkapkan ayat ini: Sara membawa payung ', ' hari hujan pada pagi itu.'], optionValues: ['kerana', 'tetapi', 'atau'] }],
@@ -464,6 +472,7 @@ assert.equal(richInteractiveExpansionBatch2Contracts.size, 6, 'P1.16C Batch 2 mu
 assert.equal(multiSubjectInteractiveExpansionBatch3Contracts.size, 6, 'P1.16C Batch 3 must contain exactly six reviewed questions across six subjects.');
 assert.equal(visualInteractiveExpansionBatch4Contracts.size, 6, 'P1.16C Batch 4 must contain exactly six reviewed questions across six subjects.');
 assert.equal(visualSequencingExpansionBatch5Contracts.size, 6, 'P1.16C Batch 5 must contain exactly six reviewed questions across six subjects.');
+assert.equal(targetedCoverageExpansionBatch6Contracts.size, 6, 'P1.16C Batch 6 must contain exactly six reviewed questions across BM, PJ and Islam.');
 assert.equal(new Set([...reviewedInteractiveContentBatch1Types.keys(), ...reviewedInteractiveContentBatch2Types.keys()]).size, 30, 'Interactive Content Batches 1 and 2 must not contain duplicate reviewed IDs.');
 const priorReviewedIds = [
   ...expectedTypes.keys(), ...reviewedFillBlankBatchIds, ...allReviewedChoiceBatchIds,
@@ -513,9 +522,11 @@ const reviewedIdsBeforeExpansionBatch4 = [...reviewedIdsBeforeExpansionBatch3, .
 assert.equal(new Set([...reviewedIdsBeforeExpansionBatch4, ...visualInteractiveExpansionBatch4Contracts.keys()]).size, reviewedIdsBeforeExpansionBatch4.length + visualInteractiveExpansionBatch4Contracts.size, 'P1.16C Batch 4 IDs must be disjoint from every earlier reviewed batch and pilot.');
 const reviewedIdsBeforeExpansionBatch5 = [...reviewedIdsBeforeExpansionBatch4, ...visualInteractiveExpansionBatch4Contracts.keys()];
 assert.equal(new Set([...reviewedIdsBeforeExpansionBatch5, ...visualSequencingExpansionBatch5Contracts.keys()]).size, reviewedIdsBeforeExpansionBatch5.length + visualSequencingExpansionBatch5Contracts.size, 'P1.16C Batch 5 IDs must be disjoint from every earlier reviewed batch and pilot.');
+const reviewedIdsBeforeExpansionBatch6 = [...reviewedIdsBeforeExpansionBatch5, ...visualSequencingExpansionBatch5Contracts.keys()];
+assert.equal(new Set([...reviewedIdsBeforeExpansionBatch6, ...targetedCoverageExpansionBatch6Contracts.keys()]).size, reviewedIdsBeforeExpansionBatch6.length + targetedCoverageExpansionBatch6Contracts.size, 'P1.16C Batch 6 IDs must be disjoint from every earlier reviewed batch and pilot.');
 assert.equal(new Set(authoredInteractiveQuestions.map(question => question.id)).size, authoredInteractiveQuestions.length, 'Every authored interactive question ID must remain unique.');
-assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceFillBlankBatch3Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size + first6RichInteractivePilotContracts.size + richInteractiveExpansionBatch1Contracts.size + richInteractiveExpansionBatch2Contracts.size + multiSubjectInteractiveExpansionBatch3Contracts.size + visualInteractiveExpansionBatch4Contracts.size + visualSequencingExpansionBatch5Contracts.size, 'Every reviewed interactive example must be attached exactly once.');
-assert.equal(derivedChoiceQuestions.length, 987, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
+assert.equal(authoredInteractiveQuestions.length, expectedTypes.size + reviewedFillBlankBatchIds.size + allReviewedChoiceBatchIds.size + reviewedRichBatch4Ids.size + reviewedQuestionBatchQ4Ids.size + reviewedInteractiveContentBatch1Types.size + reviewedInteractiveContentBatch2Types.size + languageFillBlankBatch3Contracts.size + scienceFillBlankPilotContracts.size + scienceFillBlankBatch2Contracts.size + scienceFillBlankBatch3Contracts.size + scienceChoiceMiniPilotContracts.size + scienceChoiceBatch2Contracts.size + scienceHotspotPilotContracts.size + equalGroupsPilotContracts.size + arrayPilotContracts.size + numberLinePilotContracts.size + first6RichInteractivePilotContracts.size + richInteractiveExpansionBatch1Contracts.size + richInteractiveExpansionBatch2Contracts.size + multiSubjectInteractiveExpansionBatch3Contracts.size + visualInteractiveExpansionBatch4Contracts.size + visualSequencingExpansionBatch5Contracts.size + targetedCoverageExpansionBatch6Contracts.size, 'Every reviewed interactive example must be attached exactly once.');
+assert.equal(derivedChoiceQuestions.length, 985, 'Every remaining safe legacy objective question must become a tappable choice without editing bank data.');
 assert.equal(renderableInteractiveQuestions.length, authoredInteractiveQuestions.length + derivedChoiceQuestions.length, 'Reviewed and safely derived interactions must remain independently countable.');
 assert.deepEqual(new Set(authoredInteractiveQuestions.map(question => question.interaction.type)), new Set([...expectedTypes.values(), 'choice']), 'All twelve reviewed renderer types must remain represented.');
 
@@ -594,6 +605,18 @@ for (const [id, contract] of visualSequencingExpansionBatch5Contracts) {
   assert.ok(question, `Missing P1.16C Batch 5 question ${id}.`);
   assert.equal(question.interaction.type, contract.type, `${id} must use only its approved existing renderer.`);
   assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid P1.16C Batch 5 interaction schema.`);
+  assert.equal(smartCheck(contract.correct, question).status, 'correct', `${id} must submit its unchanged canonical answer.`);
+  assert.ok(contract.distractors.every(value => smartCheck(value, question).status !== 'correct'), `${id} distractors must remain incorrect.`);
+  assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must expose exactly one accepted selectable response.`);
+  assert.ok(question.qualityReview?.curriculum && question.qualityReview?.assessment && question.qualityReview?.textbook, `${id} requires all three review notes.`);
+  assert.ok(question.learningIntelligence?.hintSteps?.length >= 3, `${id} requires progressive reviewed hints.`);
+}
+
+for (const [id, contract] of targetedCoverageExpansionBatch6Contracts) {
+  const question = byId.get(id);
+  assert.ok(question, `Missing P1.16C Batch 6 question ${id}.`);
+  assert.equal(question.interaction.type, contract.type, `${id} must use only its approved existing renderer.`);
+  assert.deepEqual(validateInteractiveQuestionConfig(question.interaction), [], `${id} has an invalid P1.16C Batch 6 interaction schema.`);
   assert.equal(smartCheck(contract.correct, question).status, 'correct', `${id} must submit its unchanged canonical answer.`);
   assert.ok(contract.distractors.every(value => smartCheck(value, question).status !== 'correct'), `${id} distractors must remain incorrect.`);
   assert.equal(question.interaction.options.filter(option => smartCheck(option.value, question).status === 'correct').length, 1, `${id} must expose exactly one accepted selectable response.`);

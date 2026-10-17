@@ -144,21 +144,21 @@ describe('P1.16B first-six rich interactive pilot', () => {
       counts[question.interaction.type] = (counts[question.interaction.type] || 0) + 1;
       return counts;
     }, {});
-    expect(authored).toHaveLength(286);
+    expect(authored).toHaveLength(292);
     expect(typeCounts).toEqual({
-      imageChoice: 72, choice: 47, fillBlank: 107, ordering: 21, dragDrop: 1,
+      imageChoice: 73, choice: 48, fillBlank: 111, ordering: 21, dragDrop: 1,
       matching: 1, visualMath: 25, multiSelect: 2, hotspot: 3, clock: 2,
       money: 1, measurement: 4
     });
-    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1273);
+    expect(questions.filter(question => getInteractiveQuestionConfig(question))).toHaveLength(1277);
   });
 
   it('moves only the six approved IDs from teacher review into reviewed interactive', () => {
     const report = buildInteractiveSuitabilityReport(subjects);
     expect(report.summary.categories).toEqual({
-      reviewed_interactive: 286,
-      auto_safe: 987,
-      teacher_review: 2649,
+      reviewed_interactive: 292,
+      auto_safe: 985,
+      teacher_review: 2645,
       keep_standard: 608
     });
     for (const id of Object.keys(PILOT_CONTRACTS)) {
