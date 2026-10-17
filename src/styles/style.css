@@ -4813,6 +4813,32 @@ input:focus {
   position: relative;
 }
 
+.qa-preview-notice {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  min-height: 44px;
+  padding:
+    calc(8px + env(safe-area-inset-top, 0px))
+    calc(12px + env(safe-area-inset-right, 0px))
+    8px
+    calc(12px + env(safe-area-inset-left, 0px));
+  border-bottom: 2px solid #8b5a00;
+  background: #fff4ce;
+  color: #493000;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.qa-preview-notice strong {
+  color: #6b3600;
+}
+
 .app-chrome-shell[data-modal-open="true"] {
   pointer-events: none;
   user-select: none;

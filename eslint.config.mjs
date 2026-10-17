@@ -47,6 +47,7 @@ export default [
         __APP_BUILD_DATE__: 'readonly',
         __APP_BUILD_REVISION__: 'readonly',
         __APP_VERSION__: 'readonly',
+        __QA_PREVIEW_BUILD__: 'readonly',
         process: 'readonly'
       }
     },

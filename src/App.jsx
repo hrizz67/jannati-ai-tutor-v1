@@ -183,6 +183,8 @@ const PUBLIC_APP_URL = 'https://hrizz67.github.io/jannati-ai-tutor-v1/';
 const BETA_STATUS = 'Beta Tertutup';
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'local';
 const APP_BUILD_DATE = typeof __APP_BUILD_DATE__ !== 'undefined' ? __APP_BUILD_DATE__ : new Date().toISOString();
+const APP_BUILD_REVISION = typeof __APP_BUILD_REVISION__ !== 'undefined' ? __APP_BUILD_REVISION__ : 'local';
+const QA_PREVIEW_BUILD = typeof __QA_PREVIEW_BUILD__ !== 'undefined' && __QA_PREVIEW_BUILD__;
 const PREMIUM_SCREEN_FEATURES = Object.freeze({
   reading: 'bacaan',
   listening: 'mendengar',
@@ -5440,6 +5442,11 @@ function BetaChrome({ children, recoveryMessages = [], modalOpen = false, curren
   return <>
     <BrandSplash />
     <div className="app-chrome-shell" data-modal-open={modalOpen ? 'true' : 'false'} aria-hidden={modalOpen ? 'true' : undefined} inert={modalOpen ? true : undefined}>
+      {QA_PREVIEW_BUILD && <aside className="qa-preview-notice" role="status" aria-label="Maklumat binaan pratonton QA">
+        <strong>PRATONTON QA TERASING</strong>
+        <span>Backend dimatikan</span>
+        <span>Build {APP_BUILD_REVISION.slice(0, 12)}</span>
+      </aside>}
       <ConnectivityNotice />
       <div className="app-page-shell" data-screen={currentScreen}>{children}</div>
       {recoveryMessages.length > 0 && <StorageRecoveryNotice messages={recoveryMessages} />}
