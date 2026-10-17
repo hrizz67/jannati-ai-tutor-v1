@@ -51,6 +51,9 @@ Build date: 2026-10-17T13:36:34.024Z
 
 - Real-device Safari, Android Chrome, microphone, audio, RTL, VoiceOver, and TalkBack checks remain pending manual acceptance.
 - R3A/R3B remain on hold and are not enabled by this release.
+- The prior `MATH-NOMBOR-PILOT-007` physical-iPhone acceptance exception remains **OPEN / NOT VERIFIED**; automated checks do not establish physical-device acceptance.
+- Wrong-answer feedback wording remains an observed follow-up from v3.13.27; no verified closure is claimed for v3.13.28.
+- Mixed Arabic–Malay text ordering remains an observed RTL follow-up from v3.13.27; a real-device language/layout check is required before closure.
 
 ## Rollback Reference
 
