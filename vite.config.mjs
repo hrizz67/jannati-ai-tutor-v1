@@ -12,6 +12,7 @@ const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.met
 
 export default defineConfig(({ mode }) => {
   const qaPreview = isQaPreviewMode(mode)
+  const qaPreviewEnvDir = process.env.QA_PREVIEW_ENV_DIR?.trim()
   const env = qaPreview ? {} : loadEnv(mode, process.cwd(), '')
   const buildEnvironment = resolveBuildEnvironment({ mode, env })
   const { supabaseUrl, supabasePublishableKey, sttEndpoint } = buildEnvironment
@@ -31,7 +32,7 @@ export default defineConfig(({ mode }) => {
   return {
   plugins: [react()],
   base: QA_PREVIEW_BASE_PATH,
-  envDir: process.cwd(),
+  envDir: qaPreview && qaPreviewEnvDir ? qaPreviewEnvDir : process.cwd(),
   optimizeDeps: {
     entries: ['index.html'],
     include: ['react-dom/client']

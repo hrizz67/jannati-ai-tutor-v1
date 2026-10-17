@@ -72,4 +72,19 @@ describe('P1.16F isolated QA preview policy', () => {
     expect(packageJson.scripts['build:qa-preview']).toContain('--mode qa-preview');
     expect(packageJson.scripts['validate:qa-preview']).toContain('qaPreviewIsolationAudit.mjs');
   });
+
+  it('locks negative environment coverage and complete artifact reference validation into the preview build', () => {
+    const packageJson = JSON.parse(readProjectFile('package.json'));
+    const environmentAudit = readProjectFile('scripts/validate/qaPreviewEnvironmentIsolationAudit.mjs');
+    const isolationAudit = readProjectFile('scripts/validate/qaPreviewIsolationAudit.mjs');
+
+    expect(packageJson.scripts['build:qa-preview']).toContain('qaPreviewEnvironmentIsolationAudit.mjs');
+    expect(environmentAudit).toContain("'.env.local'");
+    expect(environmentAudit).toContain('inheritedSentinels');
+    expect(environmentAudit).toContain('localFileSentinels');
+    expect(environmentAudit).toContain('assertSentinelsAbsent');
+    expect(isolationAudit).toContain('auditAssetIntegrity');
+    expect(isolationAudit).toContain('service-worker-precache');
+    expect(isolationAudit).toContain('productionOriginPattern');
+  });
 });

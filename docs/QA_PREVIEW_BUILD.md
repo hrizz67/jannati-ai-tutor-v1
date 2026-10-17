@@ -39,6 +39,10 @@ npm run build:qa-preview
 
 The command runs the existing bundle budgets, packages the nested base path and validates isolation. It never uses `.env.local` in `qa-preview` mode.
 
+The validation includes two negative builds with dummy-only values: one supplies inherited backend environment variables and one supplies the same classes of values through an isolated `.env.local`. Every generated JavaScript, HTML and preview configuration file is scanned to prove those sentinels are absent.
+
+Artifact integrity validation follows HTML entries, JavaScript imports and lazy chunks, CSS URLs, both web manifests and their icons, JSON asset references, and the service-worker precache list. Every local reference must resolve to a file below `/jannati-ai-tutor-v1/`, and no asset may point at the production GitHub Pages origin.
+
 The manual GitHub workflow **Build isolated QA preview artifact** performs the same operation and uploads a short-lived private Actions artifact. It has read-only repository permissions and contains no deployment step or Cloudflare credential.
 
 ## Service worker and cleanup
