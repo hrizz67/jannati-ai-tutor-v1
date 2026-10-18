@@ -1,22 +1,23 @@
 # Changelog
 
-## 3.13.31 - 2026-10-18
+## 3.13.32 - 2026-10-18
 
-### P1.17-V04 native microphone onend handshake
+### P1.17-V05 manual quiz microphone finish
 
-- Keep quiz speech in its processing state until the native recognizer confirms termination through `onend` before committing the buffered transcript.
-- Add a bounded four-second missing-`onend` fallback to explicit retry or manual typing without automatic restart or stale transcript reuse.
-- Preserve cleanup on timeout, no-speech, errors, navigation, question changes, cancellation, and unmount.
-- Preserve established Bacaan/Bertutur and desktop defaults; the public MediaRecorder-to-STT quiz pilot remains build-disabled.
+- Adds an explicit `Selesai` action for the quiz Web Speech microphone while preserving the learner's editable transcript and manual typing fallback.
+- Buffers the current transcript until the browser's native `onend` acknowledgement, including transcripts that arrive after the learner stops capture.
+- Retains the bounded four-second native-end timeout and stale-session cleanup across no-speech, errors, timeout, navigation, question changes, cancellation, and unmount.
+- Keeps answer submission blocked during active capture/processing and prevents duplicate stop or transcript commits.
 
-### Release controls and quality
+### Scope and safety
 
-- Align package, lockfile, release metadata, health report, and README badges for v3.13.31.
-- Validate 4530 questions across 8 subjects and 84 topics with 968 unit tests and 0 validation errors or warnings.
-- Keep production JavaScript within budget: initial 862.82 kB, entry 302.34 kB, largest lazy chunk 459.49 kB, and Tutor incremental runtime 107.78 kB.
-- Retain v3.13.30 as the immutable rollback release.
+- Existing Bacaan/Bertutur behavior and legacy desktop speech defaults remain unchanged.
+- The public MediaRecorder-to-STT quiz pilot remains build-disabled.
+- No Supabase, reward, Premium/payment, question-bank, STT Worker, credential, dependency, or bundle-threshold change is included.
+- Physical iPhone Safari, Android Chrome, desktop quiz, VoiceOver, and TalkBack acceptance for V05 remains not run.
 
-### Physical acceptance boundary
+### Quality snapshot
 
-- iPhone Safari and Android Chrome first-tap retests after V04 are not run.
-- VoiceOver, TalkBack, actual iOS microphone privacy-indicator clearance, and Bacaan/Bertutur physical regression remain not verified on hardware.
+- 977 unit tests and 105 focused V05/related speech tests pass.
+- 8 subjects, 84 topics, and 4530 questions validate with 0 errors and 0 warnings.
+- Production-equivalent initial JavaScript is 863.93 / 900 kB; entry is 302.88 / 350 kB; largest lazy chunk is 459.49 / 480 kB.
