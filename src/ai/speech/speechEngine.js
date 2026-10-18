@@ -405,7 +405,19 @@ export function createSpeechSession({
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
-    releaseRecognition(completedRecognition, { abort, reason: 'empty:' + errorCode });
+    const endedAttempt = completedRecognition
+      ? attemptByRecognition.get(completedRecognition) || recognitionAttempt
+      : 0;
+    // On quiz paths the native audio owner must also close for no-speech,
+    // permission and capture errors, even if no onend has arrived.
+    releaseRecognition(completedRecognition, {
+      abort: abort || Boolean(
+        abortOnTranscriptComplete
+        && completedRecognition
+        && !nativeEndAcknowledgedAttempts.has(endedAttempt)
+      ),
+      reason: 'empty:' + errorCode
+    });
     const result = createEmptySpeechResult(errorCode, message);
     emit({
       status: 'empty',
@@ -816,6 +828,13 @@ export function createSpeechSession({
               // Ignore soft stop errors.
             }
             return;
+          }
+          if (abortOnTranscriptComplete) {
+            // Native Web Speech may fail without dispatching a terminal onend.
+            // Keep the legacy non-quiz error contract intact.
+            finalized = true;
+            clearTimers();
+            cleanup({ abort: true, instance: nextRecognition, reason: 'quiz-error:' + error });
           }
           emit({ status: 'error', error });
           onError?.(error);
