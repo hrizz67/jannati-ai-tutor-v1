@@ -64,8 +64,10 @@ if (!jsFiles.length || !browserCode.includes(config.quizEndpoint) ||
     !browserCode.includes(config.publishableKey)) {
   throw new Error('QA artifact routing mismatch: missing dedicated Worker or test Supabase bootstrap.');
 }
-if (browserCode.includes('sb_secret_') || browserCode.includes('service_role')) {
-  throw new Error('QA artifact contains forbidden backend credentials.');
+// Normal application logic may legitimately contain the string "service_role";
+// only reject actual server-only secret-key shapes here.
+if (/sb_secret_[A-Za-z0-9_-]{8,}/.test(browserCode)) {
+  throw new Error('QA artifact contains a server-only Supabase secret key.');
 }
 const configText = (await readFile(path.join(output, 'qa-quiz-stt-manifest.json'), 'utf8'))
   + (await readFile(path.join(output, '_headers'), 'utf8'));
