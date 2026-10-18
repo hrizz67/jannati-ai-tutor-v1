@@ -162,6 +162,10 @@ export function createSpeechSession({
   // Quiz-only opt-in: terminate native capture once a transcript is accepted.
   // Preserve existing communication/diagnostic lifecycle defaults.
   abortOnTranscriptComplete = false,
+  // Quiz-only: accept a Web Speech transcript after the browser confirms its
+  // native recognizer has stopped. Prevent a new question using the old owner.
+  awaitNativeEndOnTranscript = false,
+  nativeEndWaitTimeoutMs = 4000,
   canRecover = null,
   activity = 'speech',
   questionIndex = null,
@@ -195,6 +199,8 @@ export function createSpeechSession({
   let retryTimeoutId = null;
   let silenceTimeoutId = null;
   let hardTimeoutId = null;
+  let nativeEndWaitTimeoutId = null;
+  let awaitingTranscriptNativeEnd = false;
   const captureMode = resolveSpeechDiagnosticCaptureMode({
     continuous,
     interimResults,
@@ -276,6 +282,10 @@ export function createSpeechSession({
       clearTimeout(hardTimeoutId);
       hardTimeoutId = null;
     }
+    if (nativeEndWaitTimeoutId) {
+      clearTimeout(nativeEndWaitTimeoutId);
+      nativeEndWaitTimeoutId = null;
+    }
   }
 
   function clearTimers() {
@@ -350,6 +360,7 @@ export function createSpeechSession({
       totalCharacterCount: safeTranscript.length
     });
     finalized = true;
+    awaitingTranscriptNativeEnd = false;
     clearTimers();
     const completedRecognition = recognition;
     const completedAttempt = completedRecognition
@@ -403,6 +414,7 @@ export function createSpeechSession({
     if (finalized || emptyResultEmitted) return state.result || createEmptySpeechResult(errorCode, message);
     emptyResultEmitted = true;
     finalized = true;
+    awaitingTranscriptNativeEnd = false;
     clearTimers();
     const completedRecognition = recognition;
     const endedAttempt = completedRecognition
@@ -453,6 +465,7 @@ export function createSpeechSession({
     clearTimers();
     const cancelledRecognition = recognition;
     finalized = true;
+    awaitingTranscriptNativeEnd = false;
     transcriptBuffer = '';
     finalFragments = [];
     interimTranscript = '';
@@ -495,6 +508,7 @@ export function createSpeechSession({
     resultFragmentsByIndex = new Map();
     seenResultKeys = new Set();
     finalized = false;
+    awaitingTranscriptNativeEnd = false;
     emptyResultEmitted = false;
     recognitionAttempt = 0;
     contextChangedTraced = false;
@@ -778,10 +792,45 @@ export function createSpeechSession({
             totalCharacterCount: transcript.length
           });
           if (transcript) {
+            if (awaitingTranscriptNativeEnd) return;
             receivedResult = true;
             transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
             emit({ status: 'processing', transcript: transcriptBuffer });
             emitTranscript(transcriptBuffer);
+            if (awaitNativeEndOnTranscript) {
+              awaitingTranscriptNativeEnd = true;
+              clearAttemptTimers();
+              trace('stop-call', {
+                attempt: attemptByRecognition.get(nextRecognition),
+                reason: 'quiz-result-await-native-end'
+              });
+              // Bounded native onend handshake. Do not report "completed" until
+              // Safari/Chrome acknowledges capture release. No auto-restart.
+              nativeEndWaitTimeoutId = setTimeout(() => {
+                if (!awaitingTranscriptNativeEnd || finalized || recognition !== nextRecognition) return;
+                awaitingTranscriptNativeEnd = false;
+                trace('native-end-timeout', {
+                  attempt: attemptByRecognition.get(nextRecognition),
+                  reason: 'quiz-native-release-unacknowledged'
+                });
+                emitEmptyResult(
+                  'Mikrofon masih menamatkan sesi. Cuba lagi atau taip jawapan.',
+                  'native-end-timeout',
+                  { abort: true }
+                );
+              }, Math.max(1000, Number(nativeEndWaitTimeoutMs) || 4000));
+              try {
+                nextRecognition.stop?.();
+              } catch {
+                awaitingTranscriptNativeEnd = false;
+                emitEmptyResult(
+                  'Mikrofon tidak dapat dihentikan. Cuba lagi atau taip jawapan.',
+                  'native-stop-failed',
+                  { abort: true }
+                );
+              }
+              return;
+            }
             finalize(transcriptBuffer, 'completed');
             return;
           }
@@ -794,6 +843,11 @@ export function createSpeechSession({
             attempt: attemptByRecognition.get(nextRecognition),
             reason: error
           });
+          if (awaitingTranscriptNativeEnd && transcriptBuffer) {
+            // A late no-speech/aborted signal from stop() must not wipe an
+            // already captured transcript while waiting for native onend.
+            if (error === 'aborted' || error === 'no-speech') return;
+          }
           if (error === 'aborted') {
             emit({ status: 'idle', error: '' });
             onError?.(error);
@@ -850,6 +904,7 @@ export function createSpeechSession({
           if (recognition !== nextRecognition) return;
           clearStartTimeout();
           clearTimers();
+          awaitingTranscriptNativeEnd = false;
           if (finalized) {
             cleanup({ instance: nextRecognition, reason: 'onend-after-finalize' });
             return;
