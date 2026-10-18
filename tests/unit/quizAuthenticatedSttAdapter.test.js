@@ -79,6 +79,7 @@ describe('P1.17-V06 authenticated opt-in Quiz STT adapter', () => {
     expect(workflow).not.toContain('VITE_QUIZ_STT_ENDPOINT');
     expect(quiz).toContain("import('./ai/speech/quizAuthenticatedSttAdapter.js')");
     expect(quiz).toContain('quizMobileSttPilot.enabled && hasAccountSession');
+    expect(quiz).toContain("quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState)");
     expect(source).toContain('VITE_QUIZ_STT_ENDPOINT');
     expect(source).toContain("'/v1/quiz/transcribe'");
   });
