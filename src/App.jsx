@@ -5893,24 +5893,38 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       return;
     }
 
+    // Native Web Speech is still the default quiz path on public production.
+    // Keep each tap/question isolated and terminate the underlying native
+    // microphone owner once a confirmed quiz transcript has been accepted.
+    const generation = ++speechStartGenerationRef.current;
+    const contextKey = quizSpeechContextKey;
+    const isCurrent = () => generation === speechStartGenerationRef.current
+      && activeSpeechContextRef.current === contextKey;
     stopVoice();
     speechSessionRef.current?.cancel?.('restart');
     const session = createSpeechSession({
       expectedAnswer: speechAnswer,
       acceptedAnswers: getAcceptedAnswers(question),
+      activity: 'quiz',
+      questionIndex,
+      contextKey,
+      abortOnTranscriptComplete: true,
+      canRecover: isCurrent,
       onChange(nextState) {
+        if (!isCurrent()) return;
         setSpeechState(nextState.status || 'idle');
         setSpeechTranscript(nextState.transcript || '');
         if (nextState.result) setSpeechResult(nextState.result);
       },
       onResult(result) {
+        if (!isCurrent()) return;
         setSpeechTranscript(result.transcript || '');
         setSpeechResult(result);
         onAnswerChange(result.transcript || '');
         setSpeechState(result?.status || 'completed');
       },
       onError() {
-        setSpeechState('idle');
+        if (isCurrent()) setSpeechState('idle');
       }
     });
     speechSessionRef.current = session;

@@ -159,6 +159,9 @@ export function createSpeechSession({
   postStartRetryDelayMs = startRetryDelayMs,
   silenceDelayMs = 9000,
   hardTimeoutMs = 9000,
+  // Quiz-only opt-in: terminate native capture once a transcript is accepted.
+  // Preserve existing communication/diagnostic lifecycle defaults.
+  abortOnTranscriptComplete = false,
   canRecover = null,
   activity = 'speech',
   questionIndex = null,
@@ -349,7 +352,23 @@ export function createSpeechSession({
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
-    releaseRecognition(completedRecognition, { reason: 'finalize:' + reason });
+    const completedAttempt = completedRecognition
+      ? attemptByRecognition.get(completedRecognition) || recognitionAttempt
+      : 0;
+    // Some mobile browsers emit a transcript while native microphone capture
+    // continues. A quiz accepts the transcript immediately, so its recognizer
+    // must not be detached while retaining the native audio owner.
+    // Never abort again when the browser has already acknowledged onend.
+    const abortCompletedCapture = Boolean(
+      safeTranscript
+      && abortOnTranscriptComplete
+      && completedRecognition
+      && !nativeEndAcknowledgedAttempts.has(completedAttempt)
+    );
+    releaseRecognition(completedRecognition, {
+      abort: abortCompletedCapture,
+      reason: 'finalize:' + reason
+    });
     transcriptBuffer = safeTranscript;
     const result = safeTranscript ? buildResult(safeTranscript) : createEmptySpeechResult();
     const nextState = safeTranscript
@@ -386,7 +405,19 @@ export function createSpeechSession({
     finalized = true;
     clearTimers();
     const completedRecognition = recognition;
-    releaseRecognition(completedRecognition, { abort, reason: 'empty:' + errorCode });
+    const endedAttempt = completedRecognition
+      ? attemptByRecognition.get(completedRecognition) || recognitionAttempt
+      : 0;
+    // On quiz paths the native audio owner must also close for no-speech,
+    // permission and capture errors, even if no onend has arrived.
+    releaseRecognition(completedRecognition, {
+      abort: abort || Boolean(
+        abortOnTranscriptComplete
+        && completedRecognition
+        && !nativeEndAcknowledgedAttempts.has(endedAttempt)
+      ),
+      reason: 'empty:' + errorCode
+    });
     const result = createEmptySpeechResult(errorCode, message);
     emit({
       status: 'empty',
@@ -797,6 +828,13 @@ export function createSpeechSession({
               // Ignore soft stop errors.
             }
             return;
+          }
+          if (abortOnTranscriptComplete) {
+            // Native Web Speech may fail without dispatching a terminal onend.
+            // Keep the legacy non-quiz error contract intact.
+            finalized = true;
+            clearTimers();
+            cleanup({ abort: true, instance: nextRecognition, reason: 'quiz-error:' + error });
           }
           emit({ status: 'error', error });
           onError?.(error);
