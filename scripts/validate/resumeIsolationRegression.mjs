@@ -157,7 +157,7 @@ assert.match(app, /questions:\s*targetResume\.questions,[\s\S]{0,250}preserveQue
 assert.match(app, /questions,[\s\S]{0,250}preserveQuestions:\s*true,[\s\S]{0,120}restoreFromResume:\s*true/, 'Resume kuiz mesti mengekalkan susunan soalan asal sesi.');
 assert.match(app, /state:\s*targetResume\.state,[\s\S]{0,180}restoreFromResume:\s*true/, 'Resume kuiz mesti menghantar draf jawapan dan maklum balas untuk dipulihkan.');
 assert.ok(app.includes('onAnswerChange={changeQuizAnswer}'), 'Setiap perubahan jawapan kuiz mesti menggunakan pengendali autosimpan draf.');
-assert.match(app, /disabled=\{answerChecked\}>Semak Jawapan/, 'Jawapan yang sudah direkodkan tidak boleh dihantar semula selepas resume.');
+assert.match(app, /disabled=\{answerChecked(?: \|\| \(!quizMobileSttPilot\.requested && \['starting', 'listening', 'stopping', 'processing'\]\.includes\(speechState\)\))?\}>Semak Jawapan/, 'Jawapan yang sudah direkodkan tidak boleh dihantar semula selepas resume; semakan ketika mikrofon aktif mesti disekat.');
 for (const mode of ['reading', 'listening', 'speaking', 'writing']) {
   assert.ok(app.includes(`resume?.mode === '${mode}' ? resume : null`), `${mode} mesti menerima resume modnya sahaja.`);
   assert.ok(app.includes(`clearResumeData(setResume, { mode: '${mode}' }, learningIdentity)`), `${mode} mesti memadam slot profil aktif sahaja.`);
