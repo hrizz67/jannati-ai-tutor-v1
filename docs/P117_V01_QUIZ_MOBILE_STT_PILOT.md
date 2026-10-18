@@ -1,6 +1,6 @@
 # P1.17-V01 — Quiz Mobile STT Pilot and Capacity Audit
 
-Status: **CODE PILOT / PHYSICAL ACCEPTANCE NOT RUN / NO PRODUCTION DEPLOYMENT**
+Status: **CODE PILOT / PUBLIC PRODUCTION ACTIVATION DISABLED / PHYSICAL ACCEPTANCE NOT RUN**
 Baseline: `v3.13.28` (`f971c0d1bccc1fe870a58788b9d4fbe061c6b7e0`)
 
 ## Background and evidence
@@ -13,7 +13,8 @@ This change does **not** claim that delayed OS-level privacy-indicator clearing 
 
 ## Pilot gate and UX
 
-- Append `?quizMobileSttPilot=1` to a suitable QA/preview URL on supported iPhone Safari or Android Chrome. This is an **opt-in test switch**, not authentication, a capacity control, or permission to enable it for children publicly.
+- A separately authorized test build must set `VITE_QUIZ_MOBILE_STT_PILOT_ENABLED=true`, and the tester must also append `?quizMobileSttPilot=1` on supported iPhone Safari or Android Chrome. The environment switch is a deployment permit, while the query is only a tester opt-in; neither is authentication or a capacity control.
+- The official public production workflow intentionally does **not** set the build permit. A public visitor adding the query alone cannot activate quiz recording or upload quiz audio.
 - The gate requires a configured HTTPS STT endpoint and `getUserMedia` + `MediaRecorder`. Otherwise the quiz exposes manual entry, not a hidden Web Speech fallback.
 - Default quiz Web Speech and desktop behavior remain unchanged when the switch is absent.
 - The shared media-STT factory is preloaded outside the tap handler; native capture still starts **only when the learner taps** the microphone.
@@ -55,6 +56,6 @@ Record device model, OS/browser versions, URL mode, microphone indicator/track e
 
 ## Release control
 
-Pilot is implemented in a development PR for independent review. **No merge, release tag, Worker deployment or production GitHub Pages deployment is authorized.** Production remains stable `v3.13.28`. Existing stable rollback reference is `v3.13.27`.
+The pilot code may ship only with public production activation disabled. The official tagged workflow does not provide the test-build permit, and no Worker deployment or quota change is part of this release. Production remains on the existing Bacaan/Bertutur STT behavior; quiz pilot activation requires a future separately controlled build and approval.
 
 A future test deployment requires separate review and approval. Do not classify QV-01/QV-02 as PASS from CI, or change global default voice mode without verified physical tests and a backend quota/privacy decision.
