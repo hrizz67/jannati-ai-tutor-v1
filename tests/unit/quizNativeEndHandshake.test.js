@@ -197,12 +197,13 @@ describe('P1.17-V04 native end handshake on quiz', () => {
     expect(native.abortCalls).toBe(0);
   });
 
-  it('uses the native onend handshake only in normal quiz Web Speech, not the STT pilot', () => {
+  it('preserves the native onend engine behavior while the Quiz explicitly switches to manual Selesai', () => {
     const src = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
     const quiz = src.split('function Quiz({')[1].split('function UasaSimulator(')[0];
-    expect(quiz).toContain('awaitNativeEndOnTranscript: true');
+    expect(quiz).toContain('manualQuizStop: true');
+    expect(quiz).toContain('awaitNativeEndOnTranscript: false');
     expect(quiz).toContain('abortOnTranscriptComplete: true');
-    expect(quiz).toContain("speechState === 'processing'");
+    expect(quiz).toContain("['starting', 'stopping', 'processing'].includes(speechState)");
     expect(quiz).toContain('getCurrentContextKey: () => activeSpeechContextRef.current');
   });
 });
