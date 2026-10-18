@@ -234,6 +234,7 @@ describe('P1.17-V05 explicit quiz microphone finish', () => {
     expect(quiz).toContain("previous.stop('user-finished')");
     expect(quiz).toContain("listening: 'Selesai'");
     expect(quiz).toContain("['starting', 'stopping', 'processing'].includes(speechState)");
+    expect(quiz).toContain("['starting', 'listening', 'stopping', 'processing'].includes(speechState)");
     expect(quiz).toContain('if (result?.transcript) onAnswerChange(result.transcript)');
     expect(quiz).toContain("speechSessionRef.current?.cancel?.('context-changed')");
   });
