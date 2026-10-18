@@ -165,6 +165,9 @@ export function createSpeechSession({
   // Quiz-only: accept a Web Speech transcript after the browser confirms its
   // native recognizer has stopped. Prevent a new question using the old owner.
   awaitNativeEndOnTranscript = false,
+  // Manual mode for ordinary quiz only: a tap to start, another tap to finish.
+  // Buffer any native transcript until the user finishes or the browser ends.
+  manualQuizStop = false,
   nativeEndWaitTimeoutMs = 4000,
   canRecover = null,
   activity = 'speech',
@@ -451,6 +454,38 @@ export function createSpeechSession({
 
   function stop(reason = 'user-stop') {
     trace('stop-call', { reason });
+    if (manualQuizStop) {
+      if (finalized || !recognition || awaitingTranscriptNativeEnd) return;
+      const stoppedRecognition = recognition;
+      awaitingTranscriptNativeEnd = true;
+      clearAttemptTimers();
+      emit({ status: 'stopping', error: '' });
+      // Avoid an indefinite disabled microphone when Safari omits native onend.
+      nativeEndWaitTimeoutId = setTimeout(() => {
+        if (finalized || !awaitingTranscriptNativeEnd || recognition !== stoppedRecognition) return;
+        awaitingTranscriptNativeEnd = false;
+        trace('native-end-timeout', {
+          attempt: attemptByRecognition.get(stoppedRecognition),
+          reason: 'manual-quiz-stop-timeout'
+        });
+        emitEmptyResult(
+          'Mikrofon mengambil masa terlalu lama untuk berhenti. Cuba lagi atau taip jawapan.',
+          'native-end-timeout',
+          { abort: true }
+        );
+      }, Math.max(1000, Number(nativeEndWaitTimeoutMs) || 4000));
+      try {
+        stoppedRecognition.stop?.();
+      } catch {
+        awaitingTranscriptNativeEnd = false;
+        emitEmptyResult(
+          'Mikrofon tidak dapat dihentikan. Cuba lagi atau taip jawapan.',
+          'native-stop-failed',
+          { abort: true }
+        );
+      }
+      return;
+    }
     try {
       recognition?.stop?.();
     } catch {
@@ -792,9 +827,20 @@ export function createSpeechSession({
             totalCharacterCount: transcript.length
           });
           if (transcript) {
-            if (awaitingTranscriptNativeEnd) return;
+            // Manual quiz keeps the original native recognition running until
+            // the learner taps Selesai (or Safari ends it by itself).
+            // Native results can arrive AFTER the manual stop request.
+            if (awaitingTranscriptNativeEnd && !manualQuizStop) return;
             receivedResult = true;
             transcriptBuffer = mergeSpeechTranscript(transcriptBuffer, transcript);
+            if (manualQuizStop) {
+              emit({
+                status: awaitingTranscriptNativeEnd ? 'stopping' : 'listening',
+                transcript: transcriptBuffer,
+                error: ''
+              });
+              return;
+            }
             emit({ status: 'processing', transcript: transcriptBuffer });
             emitTranscript(transcriptBuffer);
             if (awaitNativeEndOnTranscript) {
