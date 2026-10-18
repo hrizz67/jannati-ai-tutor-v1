@@ -148,15 +148,16 @@ export async function handleRequest(request, env = {}, { fetchImpl = globalThis.
     return fail('rate-limit-unavailable', 503, origin);
   }
 
+  // Spend global quota before remote token introspection as well: a malicious
+  // origin/spoofed client must not create an unlimited Supabase Auth workload.
+  const globalLimit = await consume(env.QUIZ_GLOBAL_RATE_LIMITER, 'quiz-pilot:global');
+  if (globalLimit !== 'ok') return fail(globalLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', globalLimit === 'limited' ? 429 : 503, origin);
   const user = await verifyUser(request, env, fetchImpl);
   if (user.error) return fail(user.error, user.status, origin);
   if (!allowedUserId(env, user.id)) return fail('pilot-access-denied', 403, origin);
-  // Independent per-account and global quotas: never trust the query string,
-  // supplied user ID or CORS origin as authorization.
+  // Per-account quota is keyed ONLY from the verified Supabase user ID.
   const accountLimit = await consume(env.QUIZ_ACCOUNT_RATE_LIMITER, `quiz-account:${user.id}`);
   if (accountLimit !== 'ok') return fail(accountLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', accountLimit === 'limited' ? 429 : 503, origin);
-  const globalLimit = await consume(env.QUIZ_GLOBAL_RATE_LIMITER, 'quiz-pilot:global');
-  if (globalLimit !== 'ok') return fail(globalLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', globalLimit === 'limited' ? 429 : 503, origin);
 
   let audio;
   try {
