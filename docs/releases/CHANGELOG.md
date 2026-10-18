@@ -1,33 +1,33 @@
 # Changelog
 
-## 3.13.29 - 2026-10-18
+## 3.13.30 - 2026-10-18
 
-### P1.17-V01
+### P1.17-V03
 
-- Added an opt-in quiz mobile MediaRecorder-to-STT pilot implementation for future controlled iPhone Safari and Android Chrome validation.
-- Added lifecycle regression coverage for fresh recording sessions, navigation cancellation, stale transcript containment, and explicit transcript review without automatic grading.
-- Added a fail-closed production build permit. The public query parameter alone cannot activate quiz recording or upload quiz audio in the official production build.
-- Kept the existing Bacaan/Bertutur path, Worker configuration, authentication, rewards, sync, Premium access, and question bank unchanged.
+- Added quiz-only native Web Speech termination after a confirmed transcript so the browser recognizer is not detached while it may still own microphone capture.
+- Added bounded cleanup for quiz success, no-speech, timeout, permission/capture errors, unexpected terminal errors, restart, answer submission, navigation, and unmount.
+- Bound quiz speech callbacks and recovery to the active question context and generation to prevent stale cross-question results.
+- Added simulated iOS Safari and Android Chrome lifecycle regressions while preserving the established Bacaan/Bertutur defaults.
 
-### Release safety
+### Public pilot and scope safety
 
-- Public quiz-pilot activation remains disabled pending server-validated abuse/cost controls and physical-device acceptance.
-- iPhone Safari, Android Chrome, VoiceOver, and TalkBack acceptance for the new pilot remain NOT RUN.
-- The current Worker capacity remains a shared 60-request-per-minute origin bucket; no quota increase or Worker deployment is included.
+- Kept the MediaRecorder-to-STT quiz pilot build-disabled in public production; the public query parameter alone cannot enable recording or upload.
+- Kept the STT Worker, Supabase, authentication, XP, coins, rewards, Premium, payment, question bank, and learner storage unchanged.
+- Carried forward the P1.16 interactive, deferred-loading, accessibility, recovery, and isolated-preview boundaries without changing their contracts.
 
 ### Release controls
 
-- Package metadata is the single source of truth for version and release status.
-- Tagged deployments verify package, lockfile, tag, and generated release artifacts before publishing.
-- Validation, production environment, build, and local asset gates run before GitHub Pages deployment.
+- Package metadata remains the source of truth for version and stable tag alignment.
+- Tagged deployments verify production configuration, validation, bundle limits, credential safety, local assets, Pages publication, and the deployed entry hash.
+- Rollback targets immutable `v3.13.29` source commit `4b9f37c14f1e0d53a33ef2a2ff004cfd8e4f1ddc` and prior Pages commit `ac0400e385cebbba6ed9d1f49a319e1ede2c7c8c`.
 
 ### Quality snapshot
 
+- 962 unit tests passed; validation reported 0 errors and 0 warnings.
 - 8 subjects, 84 topics, and 4530 questions validated.
-- Validation result: 0 error(s), 0 warning(s), 14816 informational item(s).
-- Production smoke testing requires the public entry hash to match the newly built JavaScript asset.
+- Production bundle gates passed: initial 861.75 kB, entry 302.19 kB, largest lazy chunk 459.49 kB.
 
-### Follow-up work
+### Physical follow-up
 
-- Complete controlled real-device quiz STT validation without enabling the pilot on public production.
-- Review server-validated learner authorization, per-account throttling, cost monitoring, privacy notice, and safe 429/5xx fallback before any public activation.
+- iPhone Safari and Android Chrome retests remain NOT RUN.
+- VoiceOver, TalkBack, Bacaan/Bertutur physical regression, and actual iOS microphone privacy-indicator clearance remain NOT RUN / NOT VERIFIED.
