@@ -147,7 +147,7 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const account = await send({}, { QUIZ_ACCOUNT_RATE_LIMITER: { limit: vi.fn(async () => ({ success: false })) } });
     expect(account.response.status).toBe(429);
     expect(account.bindings.AI.run).not.toHaveBeenCalled();
-    expect(account.bindings.QUIZ_GLOBAL_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(account.bindings.QUIZ_GLOBAL_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: 'quiz-pilot:global' });
 
     const tokenVerifier = auth();
     const global = await send({}, { QUIZ_GLOBAL_RATE_LIMITER: { limit: vi.fn(async () => ({ success: false })) } }, tokenVerifier);
