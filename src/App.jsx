@@ -54,6 +54,7 @@ import {
 import { classifyMistake } from './ai/mistakes/index.js';
 import { buildSmartQuestionSession, createSmartQuestionSeed, loadSmartQuestionState, recordSmartQuestionState, resetSmartQuestionState } from './ai/questionGenerator/smartQuestionGenerator';
 import { isIOSWebKitBrowser, resolveMobileMediaSttActivation } from './ai/speech/speechCapability.js';
+import { QUIZ_MOBILE_STT_CAPTURE_DURATION_MS, resolveQuizMobileSttPilot } from './ai/speech/quizMobileSttPilot.js';
 import { createSpeechSession, supportsSpeechRecognition } from './ai/speech/speechEngine.js';
 import { traceSpeechDiagnostic } from './ai/speech/speechDiagnostics.js';
 import {
@@ -5778,25 +5779,120 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   const [speechState, setSpeechState] = useState('idle');
   const [speechTranscript, setSpeechTranscript] = useState('');
   const [speechResult, setSpeechResult] = useState(null);
+  const [quizMobileSttFactory, setQuizMobileSttFactory] = useState(null);
   const speechSessionRef = useRef(null);
-  const speechSupported = useMemo(() => supportsSpeechRecognition(), []);
-  const speechAnswer = useMemo(() => {
-    return getAcceptedAnswers(question)[0] || '';
-  }, [question]);
+  const speechStartGenerationRef = useRef(0);
+  const activeSpeechContextRef = useRef('');
+  const quizMobileSttPilot = useMemo(() => resolveQuizMobileSttPilot(), []);
+  const quizSpeechContextKey = `quiz:${subject?.id || ''}:${topic?.id || ''}:${questionIndex}:${question?.id || ''}`;
+  activeSpeechContextRef.current = quizSpeechContextKey;
+  const speechSupported = useMemo(() => quizMobileSttPilot.requested
+    ? quizMobileSttPilot.enabled
+    : supportsSpeechRecognition(), [quizMobileSttPilot]);
+  const speechAnswer = useMemo(() => getAcceptedAnswers(question)[0] || '', [question]);
+
+  useEffect(() => {
+    if (!quizMobileSttPilot.enabled) return undefined;
+    let mounted = true;
+    void loadMobileMediaSessionFactory().then(factory => {
+      if (mounted) setQuizMobileSttFactory(() => factory || null);
+    });
+    return () => { mounted = false; };
+  }, [quizMobileSttPilot.enabled]);
 
   useEffect(() => () => {
+    speechStartGenerationRef.current += 1;
     speechSessionRef.current?.cancel?.('component-unmount');
+    speechSessionRef.current = null;
   }, []);
 
   useEffect(() => {
+    speechStartGenerationRef.current += 1;
     speechSessionRef.current?.cancel?.('context-changed');
+    speechSessionRef.current = null;
     setSpeechState('idle');
     setSpeechTranscript('');
     setSpeechResult(null);
-  }, [question?.id]);
+  }, [quizSpeechContextKey]);
+
+  useEffect(() => {
+    if (answerChecked) speechSessionRef.current?.cancel?.('answer-checked');
+  }, [answerChecked]);
 
   function handleSpeechStart() {
-    if (!speechSupported || !speechAnswer) return;
+    if (!speechSupported || !speechAnswer || answerChecked) return;
+    if (quizMobileSttPilot.requested) {
+      if (!quizMobileSttPilot.enabled || !quizMobileSttFactory) return;
+      const prior = speechSessionRef.current;
+      const nativeState = prior?.getState?.().status;
+      if (nativeState === 'recording') {
+        prior.stop('manual-stop');
+        return;
+      }
+      if (nativeState === 'stopping' || nativeState === 'transcribing') return;
+      speechStartGenerationRef.current += 1;
+      const generation = speechStartGenerationRef.current;
+      const contextKey = quizSpeechContextKey;
+      stopVoice();
+      prior?.cancel?.('restart');
+      setSpeechState('starting');
+      setSpeechTranscript('');
+      setSpeechResult(null);
+      const mobileSession = quizMobileSttFactory({
+        activity: 'quiz',
+        language: subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY',
+        platformFamily: quizMobileSttPilot.platformFamily,
+        contextKey,
+        getCurrentContextKey: () => activeSpeechContextRef.current,
+        captureDurationMs: QUIZ_MOBILE_STT_CAPTURE_DURATION_MS,
+        onStateChange(nextState) {
+          if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
+          const mapped = {
+            ready: 'idle',
+            recording: 'recording',
+            stopping: 'stopping',
+            transcribing: 'processing',
+            review: 'completed',
+            error: 'error'
+          };
+          setSpeechState(mapped[nextState.status] || 'idle');
+        },
+        onTranscript(transcript, response) {
+          if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
+          const safeTranscript = String(transcript || '').trim();
+          if (!safeTranscript) return;
+          setSpeechTranscript(safeTranscript);
+          setSpeechResult({
+            source: 'mobile-stt',
+            transcript: safeTranscript,
+            confidence: Number(response?.confidence) || 0,
+            message: 'Transkrip diterima. Semak teks sebelum tekan Semak Jawapan.'
+          });
+          onAnswerChange(safeTranscript);
+          setSpeechState('completed');
+        },
+        onFailure({ errorCode } = {}) {
+          if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
+          setSpeechState('error');
+          setSpeechResult({
+            source: 'mobile-stt',
+            message: getCommunicationSpeechErrorMessage(errorCode)
+          });
+        }
+      });
+      speechSessionRef.current = mobileSession;
+      void Promise.resolve(mobileSession.start()).catch(() => {
+        if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
+        mobileSession.cancel('unexpected-error');
+        setSpeechState('error');
+        setSpeechResult({
+          source: 'mobile-stt',
+          message: getCommunicationSpeechErrorMessage('stt-error')
+        });
+      });
+      return;
+    }
+
     stopVoice();
     speechSessionRef.current?.cancel?.('restart');
     const session = createSpeechSession({
@@ -5819,15 +5915,15 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     });
     speechSessionRef.current = session;
     const started = session.start();
-    if (started?.unsupported) {
-      setSpeechState('unsupported');
-    }
+    if (started?.unsupported) setSpeechState('unsupported');
   }
 
   const speechStatusLabel = {
     idle: 'Sedia',
     starting: 'Memulakan mikrofon',
     listening: 'Mendengar',
+    recording: 'Sedang merakam',
+    stopping: 'Menghentikan rakaman',
     processing: 'Memproses',
     completed: 'Selesai',
     empty: 'Cuba Lagi',
@@ -5835,7 +5931,15 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     unsupported: 'Tidak disokong'
   }[speechState] || 'Sedia';
 
-  const speechButtonLabel = {
+  const speechButtonLabel = quizMobileSttPilot.requested ? ({
+    idle: 'Mikrofon',
+    starting: 'Memulakan',
+    recording: 'Henti rakaman',
+    stopping: 'Menghentikan',
+    processing: 'Memproses suara',
+    completed: 'Cuba Lagi',
+    error: 'Cuba Lagi'
+  }[speechState] || 'Mikrofon') : ({
     idle: 'Mikrofon',
     starting: 'Memulakan mikrofon',
     listening: 'Mendengar',
@@ -5844,7 +5948,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     empty: 'Cuba Lagi',
     error: 'Cuba Lagi',
     unsupported: 'Mikrofon'
-  }[speechState] || 'Mikrofon';
+  }[speechState] || 'Mikrofon');
   const speechMessage = typeof speechResult?.message === 'string' ? speechResult.message : '';
   const syncMessage = !hasAccountSession
     ? (isEnglishSubject ? 'Saved on this device only. Sign in to the same account to sync devices.' : 'Disimpan pada peranti ini sahaja. Log masuk akaun yang sama untuk sync desktop dan mobile.')
@@ -5858,7 +5962,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       'upgrade-required': isEnglishSubject ? 'Cloud safety upgrade is required; this answer remains on this device.' : 'Naik taraf keselamatan cloud diperlukan; jawapan kekal pada peranti ini.'
     })[cloudSyncStatus] || (isEnglishSubject ? 'Cloud sync is active.' : 'Sync cloud aktif untuk akaun ini.');
 
-  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); answerChecked ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={quizUi.microphone}>{speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk} disabled={feedback?.status === 'correct'}>Petunjuk</button></div>{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>Ucapkan jawapan kamu.</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked}>Semak Jawapan</button>{isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details>}<p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <><QuizFeedbackAccessibility title={feedbackTitle} message={feedback.message} answerChecked={answerChecked} canRetry={canRetryQuizAnswer(feedback)} retryLabel={quizUi.retry} nextLabel={quizUi.next} /><section className={`feedback ${feedback.status}`} role="region" aria-labelledby="quiz-feedback-title"><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2 id="quiz-feedback-title">{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{answerChecked && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button>{canRetryQuizAnswer(feedback) && <button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button>}<button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section></>}</main>;
+  return <main className="app"><div className="topbar"><button className="ghost" type="button" onClick={onBack}>Papan Utama</button><span className="pill">Soalan {questionIndex + 1} / {topic.questions.length}</span></div><section className="card tutor-card"><BrandLogo iconOnly /><div><p className="eyebrow">{subject.title}</p><h2>{topic.title}</h2><p>{topic.note}</p></div></section><section className="card"><div className="progress-wrap"><div className="progress" style={{ width: `${progressWidth}%` }} /></div><h1 className="question" dir="auto">{renderUasaQuestionText(question.q)}</h1>{interactiveQuestion ? <React.Suspense fallback={<p className="interactive-loading">Memuat aktiviti...</p>}><InteractiveQuestionEngine key={question.id} question={question} value={answer} onChange={onAnswerChange} feedback={feedback} /></React.Suspense> : <input value={answer} dir="auto" onChange={e => onAnswerChange(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); answerChecked ? onNextQuestion() : onCheckAnswer(); } }} placeholder={quizUi.answerPlaceholder} autoFocus />}<div className="actions"><VoiceButton text={question?.q?.replaceAll('________', ' kosong ')} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readQuestion} title={quizUi.readQuestion} className="secondary" />{speechSupported && !interactiveQuestion && <button className="secondary" type="button" onClick={handleSpeechStart} aria-label={speechButtonLabel} disabled={answerChecked || (quizMobileSttPilot.requested && (!quizMobileSttFactory || ['stopping', 'processing', 'starting'].includes(speechState)))}>{quizMobileSttPilot.requested && !quizMobileSttFactory ? 'Memuat rakaman...' : speechButtonLabel}</button>}<button className="secondary" type="button" onClick={onPetunjuk} disabled={feedback?.status === 'correct'}>Petunjuk</button></div>{quizMobileSttPilot.requested && !quizMobileSttPilot.enabled && !interactiveQuestion && <p className="autosave-note" role="status">Rakaman suara tidak tersedia pada peranti ini. Taip jawapan secara manual.</p>}{speechSupported && !interactiveQuestion && <p className="speech-status" aria-live="polite"><b>{speechStatusLabel}</b>{speechTranscript ? <span dir="auto">{speechTranscript}</span> : <span>{quizMobileSttPilot.requested ? 'Tekan mikrofon untuk mula. Tekan Henti rakaman apabila selesai.' : 'Ucapkan jawapan kamu.'}</span>}</p>}{speechMessage && <p className="autosave-note" aria-live="polite">{speechMessage}</p>}{speechResult && speechResult.source !== 'mobile-stt' && <p className={`speech-result ${speechResult.correct ? 'correct' : 'wrong'}`}>{speechResult.correct ? 'Betul' : 'Cuba lagi'} · Keyakinan {speechResult.confidence}%</p>}<div className="actions"><button className="secondary" type="button" onClick={onBookmark}>{isBookmarked ? 'Ditanda' : 'Tanda Soalan'}</button><button className="secondary" type="button" onClick={onOpenAi}>{quizUi.askTeacher}</button></div><button className="full" type="button" onClick={onCheckAnswer} disabled={answerChecked}>Semak Jawapan</button>{isInternalUiSurfaceEnabled() && <details className="qde-debug-panel"><summary>Panel Bantuan</summary><dl><dt>Soalan Dipilih</dt><dd>{qipRow.metadata?.questionId || question.id || '-'}</dd><dt>Sebab Dipilih</dt><dd>{qipRow.reasonSelected || debugRow.reason || '-'}</dd><dt>Keputusan Sejarah</dt><dd>{JSON.stringify(qipRow.historyCheck || { historyMatch: Boolean(qipRow.historyMatch || debugRow.historyMatch) })}</dd><dt>Keputusan Pendua</dt><dd>{(qipRow.duplicateCheck || debugRow.duplicateCheck || ['pass']).join(', ')}</dd><dt>Skor Kepelbagaian</dt><dd>{diversityScore.overallDiversity || 0}%</dd><dt>Stem Asal</dt><dd>{qipRow.originalStem || question.question || '-'}</dd><dt>Stem Dipilih</dt><dd>{qipRow.selectedStem || question.q || '-'}</dd><dt>Kumpulan Variasi</dt><dd>{qipRow.variationGroup || '-'}</dd><dt>Sebab Stem</dt><dd>{qipRow.stemSelectionReason || '-'}</dd><dt>Penggunaan Semula Stem</dt><dd>{qipRow.stemReuseCount || 0}</dd><dt>Konteks Asal</dt><dd>{qipRow.originalContext || '-'}</dd><dt>Konteks Dipilih</dt><dd>{qipRow.selectedContext || '-'}</dd><dt>Kumpulan Konteks</dt><dd>{qipRow.contextGroup || '-'}</dd><dt>Sebab Konteks</dt><dd>{qipRow.contextSelectionReason || '-'}</dd><dt>Penggunaan Semula Konteks</dt><dd>{qipRow.contextReuseCount || 0}</dd><dt>Kepelbagaian Konteks</dt><dd>{diversityScore.contextDiversity || 0}%</dd><dt>Templat</dt><dd>{qipRow.metadata?.templateId || qipRow.templateId || debugRow.templateId || debugRow.templateUsed || '-'}</dd><dt>Tahap Kesukaran</dt><dd>{qipRow.metadata?.difficulty || qipRow.difficulty || debugRow.difficulty || question.difficulty || '-'}</dd></dl></details>}<p className={`autosave-note ${hasAccountSession ? "" : "device-only-save-note"}`}>{syncMessage}</p></section>{feedback && <><QuizFeedbackAccessibility title={feedbackTitle} message={feedback.message} answerChecked={answerChecked} canRetry={canRetryQuizAnswer(feedback)} retryLabel={quizUi.retry} nextLabel={quizUi.next} /><section className={`feedback ${feedback.status}`} role="region" aria-labelledby="quiz-feedback-title"><MascotCard character={quizCharacter} mood={feedbackMood} size="sm" animation="gentle" message={feedbackMessage} /><h2 id="quiz-feedback-title">{feedbackTitle}</h2><p>{feedback.message}</p>{feedback.status !== 'hint' && feedback.correctAnswer && <p>Jawapan tepat: <b dir="auto">{feedback.correctAnswer}</b></p>}{feedback.status !== 'hint' && (feedback.explanation || safeQuestionExplanation) && <div className="explain-box"><b>{quizCharacter === 'jati' ? 'Jati' : 'Janna'}</b><p dir="auto">{feedback.explanation || safeQuestionExplanation}</p></div>}{feedback.status === 'hint' && <VoiceButton text={safeHint} lang={subject?.id === 'english' ? 'en-US' : subject?.id === 'arab' ? 'ar-SA' : 'ms-MY'} label={quizUi.readHint} title={quizUi.readHint} className="secondary" />}{answerChecked && <div className="actions"><button className="secondary" type="button" onClick={onExplain}>Terangkan</button>{canRetryQuizAnswer(feedback) && <button className="secondary" type="button" onClick={onTryAgain}>Cuba Lagi</button>}<button type="button" onClick={onNextQuestion}>Seterusnya</button></div>}</section></>}</main>;
 }
 
 function UasaSimulator({ profile, subject, resume, onBack, onSave, onResumeChange, onClearResume }) {
