@@ -10,7 +10,7 @@ import { createMobileMediaSttSession } from '../../src/ai/mobileMediaSttSession.
 const IOS = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
 const ANDROID = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
 const DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36';
-const ENDPOINT = 'https://example.workers.dev/v1/transcribe';
+const ENDPOINT = 'https://example.workers.dev/v1/quiz/transcribe';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -96,6 +96,15 @@ describe('P1.17-V01 opt-in quiz media-STT', () => {
       expect(pilot('?quizMobileSttPilot=1', userAgent, { mediaCaptureSupported: false }).enabled).toBe(false);
     }
   );
+
+  it('never activates a quiz pilot against the shared reading/speaking Worker endpoint', () => {
+    expect(pilot('?quizMobileSttPilot=1', IOS, {
+      endpoint: 'https://example.workers.dev/v1/transcribe'
+    }).enabled).toBe(false);
+    expect(pilot('?quizMobileSttPilot=1', ANDROID, {
+      endpoint: 'https://example.workers.dev/v1/transcribe'
+    }).enabled).toBe(false);
+  });
 
   it('does not activate on desktop or when an explicit iOS manual bypass is requested', () => {
     expect(pilot('?quizMobileSttPilot=1', DESKTOP)).toMatchObject({
