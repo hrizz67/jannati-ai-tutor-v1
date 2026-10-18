@@ -15,7 +15,7 @@ Production remains v3.13.32. Do not confuse this QA mode with the deliberately o
 1. Obtain explicit approval for an **isolated QA Worker and private QA Pages site** only. This does not authorize merge, tagging, main, public Pages or the Bacaan/Bertutur Worker.
 2. Use a dedicated test Supabase project and fabricated learner account(s); never real children's learning data. Confirm adult-test consent for remote audio processing.
 3. Confirm Cloudflare Workers AI free/paid usage and hard account budget controls. Namespace IDs `11011` and `11012` must be reviewed for conflicts and operational limits. Per-account 4/60s and global 20/60s are *rate limits*, not a daily billing cap.
-4. Restrict the QA Pages site with Cloudflare Access to specific adult testers **before** uploading the artifact. Set a separate nonproduction HTTPS origin; never host on `hrizz67.github.io`.
+4. Restrict the QA Pages site to specific adult testers **before** uploading the artifact. The generated `_worker.js` fails closed unless the Pages secrets `QA_ACCESS_USERNAME` and `QA_ACCESS_PASSWORD` are configured. Cloudflare Access may be used instead when it is already available without a paid/overage enrollment. Set a separate nonproduction HTTPS origin; never host on `hrizz67.github.io`.
 5. Restrict the QA Worker with server-side Supabase Auth verification and `QUIZ_PILOT_ALLOWED_USER_IDS` for only QA tester UUIDs. Set Worker CORS to that single QA Pages origin, not the production Pages origin.
 6. Configure `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `QUIZ_PILOT_ALLOWED_USER_IDS` via protected Worker secrets/environment settings. The publishable key is public by design, but secrets/allowlist must not appear in git or exported traces.
 7. Enable server `QUIZ_STT_PILOT_ENABLED=true` only when other gates are in place. Ensure Worker cannot be deployed accidentally under an open test domain.
@@ -34,7 +34,7 @@ npm ci
 npm run build:quiz-stt-qa
 ```
 
-Output: `qa-quiz-stt-site/` with `/_headers`, `/_redirects`, immutable manifest, and nested `/jannati-ai-tutor-v1/` website. It is **not published by this command**. The script strips inherited `VITE_*` variables, disallows `.env.local`, refuses any public Pages origin, strips the shared `VITE_STT_ENDPOINT`, and injects only the QA data it validates. Avoid uploading/hosting until Cloudflare Access is verified manually.
+Output: `qa-quiz-stt-site/` with `/_headers`, `/_redirects`, a generated credential-free `/_worker.js` access gate, immutable manifest, and nested `/jannati-ai-tutor-v1/` website. It is **not published by this command**. The script strips inherited `VITE_*` variables, disallows `.env.local`, refuses any public Pages origin, strips the shared `VITE_STT_ENDPOINT`, and injects only the QA data it validates. Configure the two Pages access secrets before upload and verify anonymous requests receive `401` (or `503` when the secrets are absent).
 
 ## Negative server checks BEFORE any voice upload
 - While disabled: any valid-looking POST returns 503 `pilot-disabled`.

@@ -6,6 +6,10 @@ import { fileURLToPath } from 'node:url';
 import {
   QUIZ_STT_QA_BASE_PATH, QUIZ_STT_QA_OUTPUT, validateQuizSttQaConfig
 } from './quizSttQaPolicy.mjs';
+import {
+  QUIZ_STT_QA_ACCESS_BINDINGS,
+  buildQuizSttQaAccessWorker
+} from './quizSttQaAccessWorker.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const config = validateQuizSttQaConfig(process.env);
@@ -30,10 +34,15 @@ const headers = `/*
 const redirects = `/ ${QUIZ_STT_QA_BASE_PATH} 302
 ${QUIZ_STT_QA_BASE_PATH.slice(0, -1)} ${QUIZ_STT_QA_BASE_PATH} 302
 `;
+const accessWorker = buildQuizSttQaAccessWorker({
+  supabaseOrigin: config.supabaseOrigin,
+  workerOrigin
+});
 
 await Promise.all([
   writeFile(path.join(output, '_headers'), headers, 'utf8'),
   writeFile(path.join(output, '_redirects'), redirects, 'utf8'),
+  writeFile(path.join(output, '_worker.js'), accessWorker, 'utf8'),
   writeFile(path.join(output, 'qa-quiz-stt-manifest.json'), JSON.stringify({
     schemaVersion: 1,
     appVersion: packageJson.version,
@@ -44,7 +53,9 @@ await Promise.all([
     activation: {
       serverKillSwitchRequired: true,
       userAllowlistRequired: true,
-      cloudflareAccessRequired: true,
+      siteAccessGateRequired: true,
+      siteAccessMode: 'pages-function-basic-auth',
+      siteAccessBindings: Object.values(QUIZ_STT_QA_ACCESS_BINDINGS),
       queryOptInRequired: true
     },
     integrations: {
@@ -70,9 +81,15 @@ if (/sb_secret_[A-Za-z0-9_-]{8,}/.test(browserCode)) {
   throw new Error('QA artifact contains a server-only Supabase secret key.');
 }
 const configText = (await readFile(path.join(output, 'qa-quiz-stt-manifest.json'), 'utf8'))
-  + (await readFile(path.join(output, '_headers'), 'utf8'));
+  + (await readFile(path.join(output, '_headers'), 'utf8'))
+  + (await readFile(path.join(output, '_worker.js'), 'utf8'));
 if (configText.includes('sb_publishable_') || configText.includes(config.quizEndpoint)) {
   throw new Error('QA packaging must never write publishable keys or precise endpoint paths into metadata.');
 }
+if (!accessWorker.includes(QUIZ_STT_QA_ACCESS_BINDINGS.username)
+    || !accessWorker.includes(QUIZ_STT_QA_ACCESS_BINDINGS.password)
+    || /Basic\s+[A-Za-z0-9+/=]{16,}/.test(accessWorker)) {
+  throw new Error('QA site access gate is missing or contains embedded credentials.');
+}
 console.log('Prepared private QA-only site artifact at ' + QUIZ_STT_QA_OUTPUT + '/.');
-console.log('Not deployed. Cloudflare Access, Worker secret setup and learner consent remain operator gates.');
+console.log('Not deployed. Pages access secrets, Worker secret setup and learner consent remain operator gates.');
