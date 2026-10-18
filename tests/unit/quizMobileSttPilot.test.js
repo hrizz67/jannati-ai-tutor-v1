@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   QUIZ_MOBILE_STT_CAPTURE_DURATION_MS,
+  QUIZ_MOBILE_STT_BUILD_ENABLED,
   resolveQuizMobileSttPilot
 } from '../../src/ai/speech/quizMobileSttPilot.js';
 import { createMobileMediaSttSession } from '../../src/ai/mobileMediaSttSession.js';
@@ -22,6 +23,7 @@ function pilot(search, userAgent = IOS, overrides = {}) {
     userAgent,
     endpoint: ENDPOINT,
     mediaCaptureSupported: true,
+    buildEnabled: true,
     ...overrides
   });
 }
@@ -66,8 +68,26 @@ function deferred() {
 }
 
 describe('P1.17-V01 opt-in quiz media-STT', () => {
+  it('keeps the public production build disabled even when the URL opt-in is present', () => {
+    const deployWorkflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+    expect(QUIZ_MOBILE_STT_BUILD_ENABLED).toBe(false);
+    expect(deployWorkflow).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
+    expect(resolveQuizMobileSttPilot({
+      search: '?quizMobileSttPilot=1',
+      userAgent: IOS,
+      endpoint: ENDPOINT,
+      mediaCaptureSupported: true
+    })).toMatchObject({
+      requested: true,
+      buildEnabled: false,
+      enabled: false
+    });
+    expect(pilot('?quizMobileSttPilot=1', IOS, { buildEnabled: false }).enabled).toBe(false);
+    expect(pilot('?quizMobileSttPilot=1', ANDROID, { buildEnabled: false }).enabled).toBe(false);
+  });
+
   it.each([['iPhone Safari', IOS], ['Android Chrome', ANDROID]])(
-    '%s uses existing mobile STT only with an explicit opt-in',
+    '%s uses existing mobile STT only with a build permit and explicit opt-in',
     (_label, userAgent) => {
       expect(pilot('', userAgent).enabled).toBe(false);
       expect(pilot('?quizMobileSttPilot=0', userAgent).enabled).toBe(false);

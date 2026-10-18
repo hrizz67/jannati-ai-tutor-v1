@@ -2,6 +2,8 @@ import { resolveMobileMediaSttActivation } from './speechCapability.js';
 
 export const QUIZ_MOBILE_STT_PILOT_PARAM = 'quizMobileSttPilot';
 export const QUIZ_MOBILE_STT_CAPTURE_DURATION_MS = 8000;
+export const QUIZ_MOBILE_STT_BUILD_ENABLED =
+  import.meta.env?.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED === 'true';
 
 function readSearch() {
   return typeof window !== 'undefined' ? window.location?.search || '' : '';
@@ -23,7 +25,8 @@ export function resolveQuizMobileSttPilot({
   userAgent,
   maxTouchPoints,
   endpoint,
-  mediaCaptureSupported
+  mediaCaptureSupported,
+  buildEnabled = QUIZ_MOBILE_STT_BUILD_ENABLED
 } = {}) {
   let requested = false;
   try {
@@ -43,7 +46,8 @@ export function resolveQuizMobileSttPilot({
   });
   return {
     requested,
-    enabled: requested && captureSupported && mobile.active && mobile.endpointConfigured,
+    buildEnabled,
+    enabled: buildEnabled && requested && captureSupported && mobile.active && mobile.endpointConfigured,
     platformFamily: mobile.platformFamily,
     endpointConfigured: mobile.endpointConfigured,
     captureSupported
