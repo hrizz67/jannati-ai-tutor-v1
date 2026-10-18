@@ -167,6 +167,25 @@ describe('P1.17-V03 native quiz mic termination', () => {
     expect(accepted).toEqual([]);
   });
 
+  it.each(['no-speech', 'not-allowed', 'audio-capture', 'network'])(
+    'closes native mic on terminal quiz error %s without waiting for onend',
+    errorCode => {
+      install(IOS);
+      const session = createSpeechSession({
+        activity: 'quiz',
+        contextKey: 'quiz:bm:error',
+        abortOnTranscriptComplete: true
+      });
+      session.start();
+      const native = session.recognition;
+      expect(native.nativeCaptureActive).toBe(true);
+      native.onerror?.({ error: errorCode });
+      expect(native.abortCalls).toBe(1);
+      expect(native.nativeCaptureActive).toBe(false);
+      expect(session.recognition).toBe(null);
+    }
+  );
+
   it('wires native termination and question context guards only on public quiz Web Speech', () => {
     const app = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
     const quiz = app.split('function Quiz({')[1].split('function UasaSimulator(')[0];
