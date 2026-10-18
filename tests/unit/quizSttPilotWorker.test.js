@@ -149,8 +149,10 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(account.bindings.AI.run).not.toHaveBeenCalled();
     expect(account.bindings.QUIZ_GLOBAL_RATE_LIMITER.limit).not.toHaveBeenCalled();
 
-    const global = await send({}, { QUIZ_GLOBAL_RATE_LIMITER: { limit: vi.fn(async () => ({ success: false })) } });
+    const tokenVerifier = auth();
+    const global = await send({}, { QUIZ_GLOBAL_RATE_LIMITER: { limit: vi.fn(async () => ({ success: false })) } }, tokenVerifier);
     expect(global.response.status).toBe(429);
+    expect(tokenVerifier).not.toHaveBeenCalled(); // Global cap also protects Supabase Auth capacity.
     expect(global.bindings.AI.run).not.toHaveBeenCalled();
   });
 
