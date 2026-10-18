@@ -1,6 +1,6 @@
 # P1.17-V06 — Secure isolated Quiz MediaRecorder–STT pilot
 
-Status: DRAFT / CI PENDING / PHYSICAL QA NOT RUN / NO MERGE OR DEPLOY.
+Status: DRAFT / AUTOMATED QA CODE AND BUILD / PHYSICAL QA NOT RUN / NO MERGE OR DEPLOY.
 Baseline: main 7a798878b92bee0f1206d843165569ef2ba5bcc9, stable v3.13.32.
 
 ## iPhone Safari evidence 2026-10-18
@@ -33,9 +33,10 @@ Baseline: main 7a798878b92bee0f1206d843165569ef2ba5bcc9, stable v3.13.32.
 7. Audit audio consent, child data, privacy notice, Cloudflare billable request capacity, and VoiceOver/TalkBack before proposing wider activation.
 
 ## Gate
-- Unit, STT and Worker regression: CI PENDING.
+- Unit, STT and Worker regression: verify the latest PR push and pull_request CI at the exact reviewed head.
 - iOS/Android/Desktop physical test: NOT RUN.
 - Live STT upload and accuracy: NOT RUN.
 - Production scale/cost: NOT RUN.
 - Merge, release, Worker deploy and Pages deploy: ON HOLD.
+- Separate private speech-QA build: `npm run build:quiz-stt-qa`; protected host and adult consent remain operator gates. See `docs/P117_V06_PRIVATE_QA_HANDOFF.md`.
 Production remains v3.13.32. Passing unit tests cannot be reported as physical PASS.
