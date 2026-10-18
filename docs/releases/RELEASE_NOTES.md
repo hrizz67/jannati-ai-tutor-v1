@@ -1,23 +1,28 @@
-# Jannati AI Tutor 3.13.28 Release Notes
+# Jannati AI Tutor 3.13.29 Release Notes
 
 Status: stable
-Tag: v3.13.28
-Build date: 2026-10-17T13:36:34.024Z
+Tag: v3.13.29
+Build date: 2026-10-18T00:30:40.408Z
 
-## Consolidated P1.16 Scope
+## P1.16 Consolidated Learning Scope
 
-- P1.16C Batches 2–6 add 30 teacher-reviewed Year 2 interaction overlays across Bahasa Melayu, English, Mathematics, Science, Arabic, Islamic Education, Physical Education, and Health Education. Source question IDs, canonical and accepted answers, marks, difficulty, and curriculum metadata remain unchanged.
-- The validated interaction inventory is 292 authored interactions plus 985 derived auto-safe interactions, for 1,277 runtime-interactive questions and 110 reviewed visual interactions.
-- P1.16D defers communication content until it is opened and preserves an explicit, user-triggered recovery path after a deferred import failure.
-- P1.16E improves screen-reader feedback for interactive answers and next actions, and adds rendered-component coverage for image choice, fill blank, visual mathematics, measurement, and deferred-import recovery.
-- P1.16F adds a CI-only isolated QA preview artifact. Production continues to use the normal production mode; QA-only banners, disabled-backend configuration, and preview metadata are excluded from the production bundle.
+- Carries forward the teacher-reviewed P1.16 interactive expansion across all eight Year 2 subjects, with 292 authored interactions and 985 derived auto-safe interactions for 1,277 runtime-interactive questions.
+- Preserves the P1.16D deferred communication bundle, P1.16E accessibility and recovery hardening, and the P1.16F CI-only isolated QA preview boundary.
+- Production uses the normal production build mode. QA-only banners, disabled-backend preview configuration, and preview metadata are not shipped in the public application.
 
-## Safety Boundaries
+## P1.17-V01 Quiz Mobile STT Pilot
 
-- Supabase production configuration remains browser-safe, and the public STT endpoint remains scoped to the production build and deployment workflow.
-- The child-safety generative AI gateway remains disabled unless separately authorized.
-- No Supabase schema, RPC, migration, authentication, reward, cloud-sync, Premium, payment, STT Worker, or source question-bank contract is changed by release preparation.
-- Physical iPhone, Android, VoiceOver, TalkBack, and R3A/R3B acceptance are **NOT RUN / ON HOLD**. This release preparation does not claim physical-device acceptance.
+- Adds the reviewed mobile MediaRecorder-to-STT quiz path for a future controlled iPhone Safari and Android Chrome pilot, with fresh capture sessions, explicit start/stop, bounded recording, transcript review, and question-transition cleanup.
+- The public `?quizMobileSttPilot=1` parameter is **not** treated as access control. Public production activation is disabled by a separate build permit, and the official tagged deployment intentionally does not set that permit.
+- A visitor cannot activate quiz recording or upload quiz audio on the public v3.13.29 build merely by adding the query parameter.
+- Existing Bacaan/Bertutur behavior, desktop quiz speech behavior, authentication, rewards, cloud sync, Premium access, and the question bank are unchanged.
+
+## STT Capacity and Privacy Boundary
+
+- The existing STT Worker remains limited to 60 accepted requests per 60 seconds per allowed origin and Cloudflare location; callers from the production origin share that bucket.
+- CORS is not authentication. The Worker does not currently provide server-validated learner identity, per-account quota, or a repository-enforced Workers AI budget safeguard.
+- No Worker, quota, endpoint, credential, Supabase schema, RPC, or learner-data change is included in this release.
+- Public quiz-pilot activation remains blocked pending a separately controlled test environment, backend abuse/cost controls, privacy review, and explicit approval.
 
 ## Release Readiness
 
@@ -49,14 +54,13 @@ Build date: 2026-10-17T13:36:34.024Z
 
 ## Known Follow-ups
 
-- Real-device Safari, Android Chrome, microphone, audio, RTL, VoiceOver, and TalkBack checks remain pending manual acceptance.
-- R3A/R3B remain on hold and are not enabled by this release.
-- The prior `MATH-NOMBOR-PILOT-007` physical-iPhone acceptance exception remains **OPEN / NOT VERIFIED**; automated checks do not establish physical-device acceptance.
-- Wrong-answer feedback wording remains an observed follow-up from v3.13.27; no verified closure is claimed for v3.13.28.
-- Mixed Arabic–Malay text ordering remains an observed RTL follow-up from v3.13.27; a real-device language/layout check is required before closure.
+- P1.17 iPhone Safari and Android Chrome physical acceptance is **NOT RUN**. CI and simulated tests are not hardware evidence.
+- VoiceOver, TalkBack, microphone privacy-indicator timing, interrupted-network behavior, and production-scale STT capacity remain **NOT RUN / ON HOLD**.
+- The prior `MATH-NOMBOR-PILOT-007` physical-iPhone acceptance exception remains **OPEN / NOT VERIFIED**.
+- Wrong-answer feedback wording and mixed Arabic–Malay layout remain observed follow-ups requiring real-device verification.
 
 ## Rollback Reference
 
-- Last stable immutable release: `v3.13.27` at commit `220fe3bd85b47d0f816b8d56659a05ee9f74ead1`.
-- Last deployed GitHub Pages commit before this release preparation: `0b5db4d19e36e71a15ad0b7f05cfae993af0266e`.
-- Rollback uses the existing tagged deployment path for `v3.13.27`; the revisioned service-worker URL activates the matching cache identity and removes older Jannati cache revisions during activation.
+- Previous stable immutable release: `v3.13.28` at commit `f971c0d1bccc1fe870a58788b9d4fbe061c6b7e0`.
+- Previous deployed GitHub Pages commit: `06f6223a141a7ea72db2906008bc309c32754cf9`.
+- Rollback uses the repository's existing tagged deployment path and matching revisioned service-worker cache identity.
