@@ -4,6 +4,17 @@ const MODEL = '@cf/openai/whisper-large-v3-turbo';
 const PATH = '/v1/quiz/transcribe';
 const MAX_AUDIO_BYTES = 1024 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
+const AUTH_TIMEOUT_MS = 4000;
+const AUTH_DIAGNOSTIC_STAGES = new Set([
+  'bearer-missing',
+  'config-invalid',
+  'fetch-unavailable',
+  'upstream-auth-rejected',
+  'upstream-service-rejected',
+  'upstream-response-invalid',
+  'fetch-timeout',
+  'fetch-failed'
+]);
 const LANGUAGES = new Map([
   ['ms-my', 'ms'], ['ms', 'ms'], ['en-us', 'en'], ['en', 'en'],
   ['ar-sa', 'ar'], ['ar', 'ar']
@@ -22,8 +33,21 @@ function respond(payload, status, origin = '') {
   }
   return new Response(JSON.stringify(payload), { status, headers });
 }
-function fail(code, status, origin = '') {
-  return respond({ error: code }, status, origin);
+function safeAuthDiagnostic(env, diagnostic) {
+  if (env.QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED !== 'true' || !diagnostic
+      || !AUTH_DIAGNOSTIC_STAGES.has(diagnostic.stage)) return null;
+  const httpStatus = Number(diagnostic.httpStatus);
+  const elapsedMs = Number(diagnostic.elapsedMs);
+  return {
+    stage: diagnostic.stage,
+    httpStatus: Number.isInteger(httpStatus) && httpStatus >= 100 && httpStatus <= 599 ? httpStatus : null,
+    elapsedMs: Number.isFinite(elapsedMs) ? Math.max(0, Math.min(60000, Math.round(elapsedMs))) : 0
+  };
+}
+function fail(code, status, origin = '', authDiagnostic = null) {
+  const payload = { error: code };
+  if (authDiagnostic) payload.authDiagnostic = authDiagnostic;
+  return respond(payload, status, origin);
 }
 function allowedOrigin(request, env) {
   const origin = request.headers.get('Origin') || '';
@@ -51,14 +75,28 @@ function authServiceConfig(env) {
     return null;
   }
 }
-async function verifyUser(request, env, fetchImpl) {
+async function verifyUser(request, env, fetchImpl, {
+  now = () => Date.now(),
+  timeoutMs = AUTH_TIMEOUT_MS
+} = {}) {
+  const startedAt = now();
+  const failure = (error, status, stage, httpStatus = null) => ({
+    error,
+    status,
+    diagnostic: {
+      stage,
+      httpStatus,
+      elapsedMs: now() - startedAt
+    }
+  });
   const auth = String(request.headers.get('Authorization') || '');
   const match = /^Bearer ([A-Za-z0-9._~-]{32,8192})$/.exec(auth);
-  if (!match) return { error: 'authentication-required', status: 401 };
+  if (!match) return failure('authentication-required', 401, 'bearer-missing');
   const config = authServiceConfig(env);
-  if (!config || typeof fetchImpl !== 'function') return { error: 'auth-unavailable', status: 503 };
+  if (!config) return failure('auth-unavailable', 503, 'config-invalid');
+  if (typeof fetchImpl !== 'function') return failure('auth-unavailable', 503, 'fetch-unavailable');
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 4000);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetchImpl(config.url, {
       method: 'GET',
@@ -67,13 +105,24 @@ async function verifyUser(request, env, fetchImpl) {
       redirect: 'error',
       signal: controller.signal
     });
-    if (response.status === 401 || response.status === 403) return { error: 'authentication-required', status: 401 };
-    if (!response.ok) return { error: 'auth-unavailable', status: 503 };
-    const user = await response.json();
-    if (typeof user?.id !== 'string' || !user.id) return { error: 'authentication-required', status: 401 };
+    if (response.status === 401 || response.status === 403) {
+      return failure('authentication-required', 401, 'upstream-auth-rejected', response.status);
+    }
+    if (!response.ok) {
+      return failure('auth-unavailable', 503, 'upstream-service-rejected', response.status);
+    }
+    let user;
+    try {
+      user = await response.json();
+    } catch {
+      return failure('auth-unavailable', 503, 'upstream-response-invalid', response.status);
+    }
+    if (typeof user?.id !== 'string' || !user.id) {
+      return failure('auth-unavailable', 503, 'upstream-response-invalid', response.status);
+    }
     return { id: user.id };
   } catch {
-    return { error: 'auth-unavailable', status: 503 };
+    return failure('auth-unavailable', 503, controller.signal.aborted ? 'fetch-timeout' : 'fetch-failed');
   } finally {
     clearTimeout(timer);
   }
@@ -126,7 +175,11 @@ function preflight(request, origin) {
   });
 }
 
-export async function handleRequest(request, env = {}, { fetchImpl = globalThis.fetch } = {}) {
+export async function handleRequest(request, env = {}, {
+  fetchImpl = globalThis.fetch,
+  now,
+  authTimeoutMs
+} = {}) {
   const url = new URL(request.url);
   if (url.pathname !== PATH) return fail('not-found', 404);
   const origin = allowedOrigin(request, env);
@@ -152,8 +205,8 @@ export async function handleRequest(request, env = {}, { fetchImpl = globalThis.
   // origin/spoofed client must not create an unlimited Supabase Auth workload.
   const globalLimit = await consume(env.QUIZ_GLOBAL_RATE_LIMITER, 'quiz-pilot:global');
   if (globalLimit !== 'ok') return fail(globalLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', globalLimit === 'limited' ? 429 : 503, origin);
-  const user = await verifyUser(request, env, fetchImpl);
-  if (user.error) return fail(user.error, user.status, origin);
+  const user = await verifyUser(request, env, fetchImpl, { now, timeoutMs: authTimeoutMs });
+  if (user.error) return fail(user.error, user.status, origin, safeAuthDiagnostic(env, user.diagnostic));
   if (!allowedUserId(env, user.id)) return fail('pilot-access-denied', 403, origin);
   // Per-account quota is keyed ONLY from the verified Supabase user ID.
   const accountLimit = await consume(env.QUIZ_ACCOUNT_RATE_LIMITER, `quiz-account:${user.id}`);

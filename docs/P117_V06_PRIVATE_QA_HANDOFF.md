@@ -19,6 +19,7 @@ Production remains v3.13.32. Do not confuse this QA mode with the deliberately o
 5. Restrict the QA Worker with server-side Supabase Auth verification and `QUIZ_PILOT_ALLOWED_USER_IDS` for only QA tester UUIDs. Set Worker CORS to that single QA Pages origin, not the production Pages origin.
 6. Configure `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `QUIZ_PILOT_ALLOWED_USER_IDS` via protected Worker secrets/environment settings. The publishable key is public by design, but secrets/allowlist must not appear in git or exported traces.
 7. Enable server `QUIZ_STT_PILOT_ENABLED=true` only when other gates are in place. Ensure Worker cannot be deployed accidentally under an open test domain.
+8. Keep `QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED=false` normally. For an approved, time-bounded QA auth investigation it may be enabled only on the isolated Quiz Worker; failed auth responses then contain only an allowlisted failure stage, upstream HTTP status when available, and bounded elapsed milliseconds. The diagnostic never includes URLs, tokens, UUIDs, keys, response bodies, transcripts or audio.
 
 ## Build locally without deploying (PowerShell)
 Use the exact reviewed PR head SHA; do not substitute `main` or a mutable branch name.

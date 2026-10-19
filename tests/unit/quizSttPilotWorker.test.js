@@ -128,6 +128,93 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(unavailable.bindings.AI.run).not.toHaveBeenCalled();
   });
 
+  it('keeps auth diagnostics opt-in and classifies invalid tokens as 401', async () => {
+    const hidden = await send({}, {}, auth(USER, 401));
+    await expect(hidden.response.json()).resolves.toEqual({ error: 'authentication-required' });
+
+    const visible = await send({}, { QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true' }, auth(USER, 401));
+    expect(visible.response.status).toBe(401);
+    await expect(visible.response.json()).resolves.toEqual({
+      error: 'authentication-required',
+      authDiagnostic: {
+        stage: 'upstream-auth-rejected',
+        httpStatus: 401,
+        elapsedMs: expect.any(Number)
+      }
+    });
+    expect(visible.bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it('reports only bounded stage, upstream status and elapsed time for QA auth failures', async () => {
+    const secret = 'secret-value-that-must-not-leak';
+    const token = 'z'.repeat(64);
+    const response = await handleRequest(request(URL, { token }), env({
+      QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true',
+      SUPABASE_PUBLISHABLE_KEY: secret
+    }), {
+      now: vi.fn().mockReturnValueOnce(100).mockReturnValueOnce(137),
+      fetchImpl: vi.fn(async () => new Response('provider detail with secret', { status: 502 }))
+    });
+    expect(response.status).toBe(503);
+    const text = await response.text();
+    expect(JSON.parse(text)).toEqual({
+      error: 'auth-unavailable',
+      authDiagnostic: {
+        stage: 'upstream-service-rejected',
+        httpStatus: 502,
+        elapsedMs: 37
+      }
+    });
+    for (const sensitive of [secret, token, USER, 'provider detail']) expect(text).not.toContain(sensitive);
+  });
+
+  it('distinguishes invalid configuration, malformed upstream responses, fetch errors and timeout', async () => {
+    const cases = [
+      {
+        override: { SUPABASE_URL: '', QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true' },
+        fetchImpl: auth(),
+        stage: 'config-invalid',
+        httpStatus: null
+      },
+      {
+        override: { QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true' },
+        fetchImpl: vi.fn(async () => new Response('{', { status: 200 })),
+        stage: 'upstream-response-invalid',
+        httpStatus: 200
+      },
+      {
+        override: { QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true' },
+        fetchImpl: vi.fn(async () => { throw new Error('network detail'); }),
+        stage: 'fetch-failed',
+        httpStatus: null
+      },
+      {
+        override: { QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true' },
+        fetchImpl: vi.fn((_url, init) => new Promise((resolve, reject) => {
+          init.signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')), { once: true });
+        })),
+        stage: 'fetch-timeout',
+        httpStatus: null,
+        authTimeoutMs: 1
+      }
+    ];
+    for (const testCase of cases) {
+      const bindings = env(testCase.override);
+      const response = await handleRequest(request(), bindings, {
+        fetchImpl: testCase.fetchImpl,
+        authTimeoutMs: testCase.authTimeoutMs
+      });
+      expect(response.status).toBe(503);
+      const body = await response.json();
+      expect(body.authDiagnostic).toEqual({
+        stage: testCase.stage,
+        httpStatus: testCase.httpStatus,
+        elapsedMs: expect.any(Number)
+      });
+      expect(bindings.AI.run).not.toHaveBeenCalled();
+    }
+  });
+
   it('fails closed when Supabase configuration, user allowlist or rate limiter bindings are missing', async () => {
     const variants = [
       { SUPABASE_URL: '' },
