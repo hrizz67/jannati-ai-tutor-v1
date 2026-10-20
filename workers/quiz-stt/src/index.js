@@ -10,6 +10,7 @@ const AUTH_DIAGNOSTIC_STAGES = new Set([
   'config-invalid',
   'fetch-unavailable',
   'upstream-auth-rejected',
+  'upstream-redirect-rejected',
   'upstream-service-rejected',
   'upstream-response-invalid',
   'fetch-timeout',
@@ -102,9 +103,12 @@ async function verifyUser(request, env, fetchImpl, {
       method: 'GET',
       headers: { apikey: config.key, Authorization: `Bearer ${match[1]}`, Accept: 'application/json' },
       cache: 'no-store',
-      redirect: 'error',
+      redirect: 'manual',
       signal: controller.signal
     });
+    if (response.status >= 300 && response.status <= 399) {
+      return failure('auth-unavailable', 503, 'upstream-redirect-rejected', response.status);
+    }
     if (response.status === 401 || response.status === 403) {
       return failure('authentication-required', 401, 'upstream-auth-rejected', response.status);
     }

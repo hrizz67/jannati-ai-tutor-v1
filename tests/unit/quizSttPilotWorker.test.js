@@ -100,7 +100,10 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(fetchImpl).toHaveBeenCalledWith('https://jannati-test.supabase.co/auth/v1/user',
       expect.objectContaining({
         method: 'GET',
-        headers: expect.objectContaining({ apikey: 'sb_publishable_test', Authorization: 'Bearer ' + TOKEN })
+        headers: expect.objectContaining({ apikey: 'sb_publishable_test', Authorization: 'Bearer ' + TOKEN }),
+        cache: 'no-store',
+        redirect: 'manual',
+        signal: expect.any(AbortSignal)
       }));
     await expect(response.json()).resolves.toEqual({
       transcript: 'kucing', confidence: 87, provider: 'cloudflare-workers-ai',
@@ -143,6 +146,48 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
       }
     });
     expect(visible.bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it.each([301, 302, 303, 307, 308])(
+    'rejects upstream HTTP %s redirects without following or exposing their location',
+    async status => {
+      const location = `https://redirect.example/auth?token=${TOKEN}`;
+      const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ id: USER }), {
+        status,
+        headers: { Location: location, 'Content-Type': 'application/json' }
+      }));
+      const { response, bindings } = await send({}, {
+        QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED: 'true'
+      }, fetchImpl);
+
+      expect(response.status).toBe(503);
+      const text = await response.text();
+      expect(JSON.parse(text)).toEqual({
+        error: 'auth-unavailable',
+        authDiagnostic: {
+          stage: 'upstream-redirect-rejected',
+          httpStatus: status,
+          elapsedMs: expect.any(Number)
+        }
+      });
+      expect(text).not.toContain(location);
+      expect(text).not.toContain(TOKEN);
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ redirect: 'manual' }));
+      expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).not.toHaveBeenCalled();
+      expect(bindings.AI.run).not.toHaveBeenCalled();
+    }
+  );
+
+  it('retains the four-second default authentication timeout', async () => {
+    const timeoutSpy = vi.spyOn(globalThis, 'setTimeout');
+    try {
+      const { response } = await send();
+      expect(response.status).toBe(200);
+      expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 4000);
+    } finally {
+      timeoutSpy.mockRestore();
+    }
   });
 
   it('reports only bounded stage, upstream status and elapsed time for QA auth failures', async () => {
