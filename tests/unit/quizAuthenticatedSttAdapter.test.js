@@ -70,17 +70,19 @@ describe('P1.17-V06 authenticated opt-in Quiz STT adapter', () => {
     }
   );
 
-  it('keeps the public tagged deployment pilot-disabled and loads auth adapter only from opt-in Quiz', () => {
+  it('scopes the dedicated production endpoint to tagged build steps and preserves authenticated adapter loading', () => {
     const workflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
     const app = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
     const source = readFileSync(new URL('../../src/ai/speech/quizMobileSttPilot.js', import.meta.url), 'utf8');
     const quiz = app.split('function Quiz({')[1].split('function UasaSimulator(')[0];
     expect(workflow).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
-    expect(workflow).not.toContain('VITE_QUIZ_STT_ENDPOINT');
+    expect(workflow).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(workflow.match(/VITE_QUIZ_STT_ENDPOINT:/g)).toHaveLength(2);
     expect(quiz).toContain("import('./ai/speech/quizAuthenticatedSttAdapter.js')");
     expect(quiz).toContain('quizMobileSttPilot.enabled && hasAccountSession');
     expect(quiz).toContain("quizMobileSttPilot.requested && ['starting', 'recording', 'stopping', 'processing'].includes(speechState)");
     expect(source).toContain('VITE_QUIZ_STT_ENDPOINT');
+    expect(source).toContain('VITE_QUIZ_MOBILE_STT_AUTO_ENABLED');
     expect(source).toContain("'/v1/quiz/transcribe'");
   });
 });

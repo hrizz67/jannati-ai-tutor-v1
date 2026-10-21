@@ -62,8 +62,13 @@ function allowedOrigin(request, env) {
   }) ? origin : '';
 }
 function allowedUserId(env, userId) {
-  return /^[0-9a-f]{8}-[0-9a-f-]{27,50}$/i.test(userId || '')
-    && String(env.QUIZ_PILOT_ALLOWED_USER_IDS || '').split(',').some(s => s.trim() === userId);
+  if (!/^[0-9a-f]{8}-[0-9a-f-]{27,50}$/i.test(userId || '')) return 'denied';
+  const accessMode = String(env.QUIZ_STT_ACCESS_MODE || 'allowlist').trim().toLowerCase();
+  if (accessMode === 'registered') return 'allowed';
+  if (accessMode !== 'allowlist') return 'unavailable';
+  return String(env.QUIZ_PILOT_ALLOWED_USER_IDS || '').split(',').some(s => s.trim() === userId)
+    ? 'allowed'
+    : 'denied';
 }
 function authServiceConfig(env) {
   try {
@@ -211,7 +216,9 @@ export async function handleRequest(request, env = {}, {
   if (globalLimit !== 'ok') return fail(globalLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', globalLimit === 'limited' ? 429 : 503, origin);
   const user = await verifyUser(request, env, fetchImpl, { now, timeoutMs: authTimeoutMs });
   if (user.error) return fail(user.error, user.status, origin, safeAuthDiagnostic(env, user.diagnostic));
-  if (!allowedUserId(env, user.id)) return fail('pilot-access-denied', 403, origin);
+  const access = allowedUserId(env, user.id);
+  if (access === 'unavailable') return fail('access-policy-unavailable', 503, origin);
+  if (access !== 'allowed') return fail('pilot-access-denied', 403, origin);
   // Per-account quota is keyed ONLY from the verified Supabase user ID.
   const accountLimit = await consume(env.QUIZ_ACCOUNT_RATE_LIMITER, `quiz-account:${user.id}`);
   if (accountLimit !== 'ok') return fail(accountLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', accountLimit === 'limited' ? 429 : 503, origin);

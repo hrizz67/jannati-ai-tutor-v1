@@ -104,6 +104,18 @@ describe('P1.15B2 public information content', () => {
     expect(privacyMarkup).toContain('hanya maklumat yang diperlukan untuk profil murid');
   });
 
+  it('explains transient Quiz audio processing, adult consent and manual typing', () => {
+    for (const expected of [
+      'Rakaman suara kuiz',
+      'teks yang boleh disemak dan diedit',
+      'tidak menyimpan audio kuiz',
+      'diproses secara sementara',
+      'input menaip sentiasa tersedia',
+      'ibu bapa atau penjaga mesti memberi kebenaran',
+      'Rakaman tidak bermula secara automatik'
+    ]) expect(privacyMarkup).toContain(expected);
+  });
+
   it('makes account or data deletion a verified manual request without a fake action', () => {
     expect(privacyMarkup).toContain('Permintaan diproses secara manual selepas pengesahan akaun');
     expect(supportMarkup).toContain('Admin akan mengesahkan akaun sebelum memproses permintaan secara manual');

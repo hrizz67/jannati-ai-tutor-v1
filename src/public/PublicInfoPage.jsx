@@ -45,6 +45,13 @@ function PrivacyContent() {
     </section>
 
     <section>
+      <h2>Rakaman suara kuiz</h2>
+      <p>Untuk pengguna akaun pada peranti yang disokong, jawapan suara pendek boleh dihantar secara selamat kepada perkhidmatan transkripsi bagi menghasilkan teks yang boleh disemak dan diedit sebelum jawapan dinilai.</p>
+      <p>Jannati tidak menyimpan audio kuiz dalam pangkalan data atau storan pembelajaran. Audio diproses secara sementara oleh penyedia transkripsi dan input menaip sentiasa tersedia.</p>
+      <p>Bagi murid kanak-kanak, ibu bapa atau penjaga mesti memberi kebenaran sebelum rakaman dimulakan. Rakaman tidak bermula secara automatik.</p>
+    </section>
+
+    <section>
       <h2>Tujuan penggunaan</h2>
       <p>Maklumat digunakan untuk operasi log masuk dan akaun, memulihkan atau menyelaraskan kemajuan pembelajaran, menyediakan akses Free atau Premium, pentadbiran Premium secara manual, bantuan, keselamatan dan kebolehpercayaan aplikasi.</p>
     </section>

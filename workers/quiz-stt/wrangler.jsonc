@@ -20,6 +20,7 @@
   "vars": {
     "QUIZ_STT_PILOT_ENABLED": "false",
     "QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false",
+    "QUIZ_STT_ACCESS_MODE": "allowlist",
     "CORS_ALLOW_ORIGINS": "https://qa.invalid"
   },
   "observability": {

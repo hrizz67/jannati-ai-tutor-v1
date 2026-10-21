@@ -13,7 +13,7 @@ Baseline: main 7a798878b92bee0f1206d843165569ef2ba5bcc9, stable v3.13.32.
 - Do not change the existing Bacaan/Bertutur Worker (workers/stt) or its /v1/transcribe API.
 - New Worker in workers/quiz-stt exposes only POST /v1/quiz/transcribe, separate from the shared Worker.
 - Server-side QUIZ_STT_PILOT_ENABLED defaults false. Missing flag, bindings, auth or allowlist fails closed.
-- User opt-in URL ?quizMobileSttPilot=1 is NOT authorization. Public deploy workflow still omits VITE_QUIZ_MOBILE_STT_PILOT_ENABLED and VITE_QUIZ_STT_ENDPOINT.
+- User opt-in URL `?quizMobileSttPilot=1` is NOT authorization. It remains a QA-only forcing flag; production uses a separately scoped mobile-auto build permit, a dedicated endpoint, server authentication, access policy and kill switch.
 - Quiz requires a dedicated HTTPS endpoint /v1/quiz/transcribe; it cannot use the reading/speaking endpoint.
 - The lazy Quiz adapter retrieves a Supabase access token from the active client session and sends it ONLY to the dedicated endpoint. Server verifies it via Supabase Auth GET /auth/v1/user.
 - Server-only QUIZ_PILOT_ALLOWED_USER_IDS allows a small exact set of Supabase UUIDs. Empty denies all. Use only test accounts and adult consent.
@@ -30,7 +30,7 @@ Baseline: main 7a798878b92bee0f1206d843165569ef2ba5bcc9, stable v3.13.32.
 4. Enable VITE_QUIZ_MOBILE_STT_PILOT_ENABLED=true and VITE_QUIZ_STT_ENDPOINT=https://<qa-worker-host>/v1/quiz/transcribe only in isolated QA build; never tagged public production.
 5. Verify eligible vs ineligible authenticated users, expired tokens, no auth, invalid origins, quota exhaustion, no speech, oversized audio, permission denied and stale navigation.
 6. Verify real transcript accuracy and first-tap behavior for five sequential questions in iPhone Safari and Android Chrome; test desktop fallback.
-7. Audit audio consent, child data, privacy notice, Cloudflare billable request capacity, and VoiceOver/TalkBack before proposing wider activation.
+7. For wider activation follow `P117_PRODUCTION_STT_ROLLOUT.md`: explicit adult consent, privacy notice, production Supabase authentication, registered-user access policy, capacity review and physical iPhone/Android acceptance are mandatory. VoiceOver/TalkBack remain separately reportable hardware checks.
 
 ## Gate
 - Unit, STT and Worker regression: verify the latest PR push and pull_request CI at the exact reviewed head.

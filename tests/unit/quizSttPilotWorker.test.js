@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { handleRequest, QUIZ_STT_MAX_AUDIO_BYTES } from '../../workers/quiz-stt/src/index.js';
 
 const ORIGIN = 'https://hrizz67.github.io';
@@ -10,6 +11,7 @@ const URL = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 function env(overrides = {}) {
   return {
     QUIZ_STT_PILOT_ENABLED: 'true',
+    QUIZ_STT_ACCESS_MODE: 'allowlist',
     CORS_ALLOW_ORIGINS: ORIGIN,
     SUPABASE_URL: 'https://jannati-test.supabase.co',
     SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test',
@@ -44,6 +46,19 @@ async function send(options = {}, override = {}, fetchImpl = auth()) {
 }
 
 describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
+  it('keeps the dedicated production Worker disabled with registered-account policy and exact origin', () => {
+    const config = readFileSync(new globalThis.URL('../../workers/quiz-stt/wrangler.production.jsonc', import.meta.url), 'utf8');
+    expect(config).toContain('"name": "jannati-ai-tutor-quiz-stt"');
+    expect(config).toContain('"QUIZ_STT_PILOT_ENABLED": "false"');
+    expect(config).toContain('"QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false"');
+    expect(config).toContain('"QUIZ_STT_ACCESS_MODE": "registered"');
+    expect(config).toContain('"CORS_ALLOW_ORIGINS": "https://hrizz67.github.io"');
+    expect(config).toContain('"namespace_id": "11021"');
+    expect(config).toContain('"namespace_id": "11022"');
+    expect(config).not.toContain('QUIZ_PILOT_ALLOWED_USER_IDS');
+    expect(config).not.toContain('jannati-v1-qa.pages.dev');
+  });
+
   it('defaults to disabled and cannot reach AI with missing or false server flag', async () => {
     const bindings = env({ QUIZ_STT_PILOT_ENABLED: 'false' });
     const response = await handleRequest(request(), bindings, { fetchImpl: auth() });
@@ -118,6 +133,24 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const { response, bindings } = await send({}, {}, auth(OTHER));
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({ error: 'pilot-access-denied' });
+    expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it('allows every valid Supabase account only in explicit registered access mode', async () => {
+    const { response, bindings } = await send({}, {
+      QUIZ_STT_ACCESS_MODE: 'registered',
+      QUIZ_PILOT_ALLOWED_USER_IDS: ''
+    }, auth(OTHER));
+    expect(response.status).toBe(200);
+    expect(bindings.AI.run).toHaveBeenCalledTimes(1);
+    expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: 'quiz-account:' + OTHER });
+  });
+
+  it('fails closed for an unknown access mode', async () => {
+    const { response, bindings } = await send({}, { QUIZ_STT_ACCESS_MODE: 'public' });
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ error: 'access-policy-unavailable' });
     expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).not.toHaveBeenCalled();
     expect(bindings.AI.run).not.toHaveBeenCalled();
   });

@@ -5,6 +5,8 @@ export const QUIZ_MOBILE_STT_PILOT_PARAM = 'quizMobileSttPilot';
 export const QUIZ_MOBILE_STT_CAPTURE_DURATION_MS = 8000;
 export const QUIZ_MOBILE_STT_BUILD_ENABLED =
   import.meta.env?.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED === 'true';
+export const QUIZ_MOBILE_STT_AUTO_ENABLED =
+  import.meta.env?.VITE_QUIZ_MOBILE_STT_AUTO_ENABLED === 'true';
 
 function readSearch() {
   return typeof window !== 'undefined' ? window.location?.search || '' : '';
@@ -18,8 +20,10 @@ function supportsMediaCapture() {
 }
 
 /**
- * Explicit, temporary QA-only opt-in for the shared MediaRecorder -> STT route.
- * This URL switch is NOT an access control, authentication or rate limit.
+ * Resolve the dedicated Quiz MediaRecorder -> STT route. The legacy URL flag
+ * remains an explicit QA opt-in; production activation is a separate build
+ * permit and is still enforced by server authentication, access policy and
+ * the Worker kill switch.
  */
 export function resolveQuizMobileSttPilot({
   search = readSearch(),
@@ -27,11 +31,12 @@ export function resolveQuizMobileSttPilot({
   maxTouchPoints,
   endpoint = import.meta.env?.VITE_QUIZ_STT_ENDPOINT,
   mediaCaptureSupported,
-  buildEnabled = QUIZ_MOBILE_STT_BUILD_ENABLED
+  buildEnabled = QUIZ_MOBILE_STT_BUILD_ENABLED,
+  autoEnabled = QUIZ_MOBILE_STT_AUTO_ENABLED
 } = {}) {
-  let requested = false;
+  let explicitRequested = false;
   try {
-    requested = new URLSearchParams(search).get(QUIZ_MOBILE_STT_PILOT_PARAM) === '1';
+    explicitRequested = new URLSearchParams(search).get(QUIZ_MOBILE_STT_PILOT_PARAM) === '1';
   } catch {
     // Invalid URL parameters must never activate an audio capture path.
   }
@@ -54,10 +59,19 @@ export function resolveQuizMobileSttPilot({
     endpoint: isolatedEndpoint,
     mediaCaptureSupported: captureSupported
   });
+  const productionRequested = autoEnabled && mobile.platformFamily !== 'desktop'
+    && captureSupported && mobile.active && mobile.endpointConfigured;
+  const requested = explicitRequested || productionRequested;
+  const permitted = productionRequested || (explicitRequested && buildEnabled);
   return {
     requested,
+    explicitRequested,
     buildEnabled,
-    enabled: buildEnabled && requested && captureSupported && mobile.active && mobile.endpointConfigured,
+    autoEnabled,
+    activationReason: explicitRequested
+      ? 'explicit-quiz-media-stt-flag'
+      : productionRequested ? 'production-mobile-auto' : 'inactive',
+    enabled: permitted && captureSupported && mobile.active && mobile.endpointConfigured,
     platformFamily: mobile.platformFamily,
     endpointConfigured: mobile.endpointConfigured,
     captureSupported

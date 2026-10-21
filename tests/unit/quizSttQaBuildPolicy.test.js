@@ -58,16 +58,18 @@ describe('P1.17-V06 dedicated authenticated speech QA artifact', () => {
     expect(exactPilotEndpoint('https://pilot.workers.dev/v1/transcribe')).toBe('');
   });
 
-  it('keeps the existing QA preview without backend and production deploy without pilot flags', () => {
+  it('keeps offline QA preview isolated while production uses a separately scoped Quiz endpoint', () => {
     const offlinePreview = source('scripts/preview/qaPreviewPolicy.mjs');
     const publicDeploy = source('.github/workflows/deploy.yml');
     const vite = source('vite.config.mjs');
     expect(offlinePreview).toContain("sttEndpoint: ''");
     expect(offlinePreview).toContain("supabaseUrl: ''");
     expect(publicDeploy).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
-    expect(publicDeploy).not.toContain('VITE_QUIZ_STT_ENDPOINT');
+    expect(publicDeploy).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(publicDeploy.match(/VITE_QUIZ_STT_ENDPOINT:/g)).toHaveLength(2);
     expect(vite).toContain("quizSttQa ? 'true' : 'false'");
-    expect(vite).toContain("quizSttQa ? quizSttQaConfig.quizEndpoint : ''");
+    expect(vite).toContain('quizSttQaConfig.quizEndpoint');
+    expect(vite).toContain("qaPreview ? ''");
     expect(vite).toContain('envDir: quizSttQa ? false');
   });
 

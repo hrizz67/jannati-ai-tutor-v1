@@ -11,7 +11,8 @@ const requiredFiles = [
   'workers/stt/src/index.js',
   'workers/stt/wrangler.jsonc',
   'workers/quiz-stt/src/index.js',
-  'workers/quiz-stt/wrangler.jsonc'
+  'workers/quiz-stt/wrangler.jsonc',
+  'workers/quiz-stt/wrangler.production.jsonc'
 ];
 
 const productionSource = requiredFiles
