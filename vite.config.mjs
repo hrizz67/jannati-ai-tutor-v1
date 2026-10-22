@@ -7,15 +7,25 @@ import {
   requireQaPreviewRevision,
   resolveBuildEnvironment
 } from './scripts/preview/qaPreviewPolicy.mjs'
+import { QUIZ_STT_QA_MODE, validateQuizSttQaConfig } from './scripts/preview/quizSttQaPolicy.mjs'
 
 const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
 
 export default defineConfig(({ mode }) => {
   const qaPreview = isQaPreviewMode(mode)
+  const quizSttQa = mode === QUIZ_STT_QA_MODE
+  const quizSttQaConfig = quizSttQa ? validateQuizSttQaConfig(process.env) : null
   const qaPreviewEnvDir = process.env.QA_PREVIEW_ENV_DIR?.trim()
-  const env = qaPreview ? {} : loadEnv(mode, process.cwd(), '')
-  const buildEnvironment = resolveBuildEnvironment({ mode, env })
+  const env = qaPreview || quizSttQa ? {} : loadEnv(mode, process.cwd(), '')
+  const buildEnvironment = quizSttQa
+    ? { supabaseUrl: quizSttQaConfig.supabaseOrigin, supabasePublishableKey: quizSttQaConfig.publishableKey, sttEndpoint: '' }
+    : resolveBuildEnvironment({ mode, env })
   const { supabaseUrl, supabasePublishableKey, sttEndpoint } = buildEnvironment
+  const quizSttEndpoint = quizSttQa
+    ? quizSttQaConfig.quizEndpoint
+    : qaPreview ? '' : String(env.VITE_QUIZ_STT_ENDPOINT || '').trim()
+  const quizMobileSttAutoEnabled = !qaPreview && !quizSttQa
+    && String(env.VITE_QUIZ_MOBILE_STT_AUTO_ENABLED || '').trim() === 'true'
   const buildDate = new Date().toISOString()
   const revisionCandidate = process.env.VITE_BUILD_REVISION?.trim()
     || env.VITE_BUILD_REVISION?.trim()
@@ -23,7 +33,7 @@ export default defineConfig(({ mode }) => {
     || buildDate
   const buildRevision = qaPreview
     ? requireQaPreviewRevision(revisionCandidate)
-    : revisionCandidate
+    : quizSttQa ? quizSttQaConfig.revision : revisionCandidate
 
   if (!qaPreview && (!supabaseUrl || !supabasePublishableKey)) {
     throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. Configure .env.local or deployment environment variables before building.')
@@ -32,7 +42,7 @@ export default defineConfig(({ mode }) => {
   return {
   plugins: [react()],
   base: QA_PREVIEW_BASE_PATH,
-  envDir: qaPreview && qaPreviewEnvDir ? qaPreviewEnvDir : process.cwd(),
+  envDir: quizSttQa ? false : qaPreview && qaPreviewEnvDir ? qaPreviewEnvDir : process.cwd(),
   optimizeDeps: {
     entries: ['index.html'],
     include: ['react-dom/client']
@@ -72,7 +82,10 @@ export default defineConfig(({ mode }) => {
     __QA_PREVIEW_BUILD__: JSON.stringify(qaPreview),
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseUrl),
     'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(supabasePublishableKey),
-    'import.meta.env.VITE_STT_ENDPOINT': JSON.stringify(sttEndpoint)
+    'import.meta.env.VITE_STT_ENDPOINT': JSON.stringify(sttEndpoint),
+    'import.meta.env.VITE_QUIZ_STT_ENDPOINT': JSON.stringify(quizSttEndpoint),
+    'import.meta.env.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED': JSON.stringify(quizSttQa ? 'true' : 'false'),
+    'import.meta.env.VITE_QUIZ_MOBILE_STT_AUTO_ENABLED': JSON.stringify(quizMobileSttAutoEnabled ? 'true' : 'false')
   }
   }
 })

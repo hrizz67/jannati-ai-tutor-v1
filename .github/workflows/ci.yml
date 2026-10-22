@@ -62,6 +62,18 @@ jobs:
           VITE_BUILD_REVISION: ${{ github.sha }}
         run: env -u VITE_SUPABASE_URL -u VITE_SUPABASE_PUBLISHABLE_KEY -u VITE_STT_ENDPOINT npm run build:qa-preview
 
+      - name: Verify private Quiz STT QA build with dummy-only configuration
+        id: quiz-stt-qa
+        shell: bash
+        env:
+          VITE_BUILD_REVISION: ${{ github.sha }}
+          QUIZ_STT_QA_CONFIRM: ISOLATED_QA_ARTIFACT_ONLY
+          QUIZ_STT_QA_ORIGIN: https://qa-pilot-ci.example
+          VITE_SUPABASE_URL: https://qa-ci-placeholder.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_dummy_fixture_only
+          VITE_QUIZ_STT_ENDPOINT: https://quiz-stt-qa-ci.example/v1/quiz/transcribe
+        run: npm run build:quiz-stt-qa
+
       - name: Upload QA reports
         uses: actions/upload-artifact@v7
         if: always()
@@ -88,4 +100,5 @@ jobs:
             echo "| Production build | ${{ steps.build.outcome }} |"
             echo "| Build assets | ${{ steps.build-assets.outcome }} |"
             echo "| Isolated QA preview | ${{ steps.qa-preview.outcome }} |"
+            echo "| Private Quiz STT QA artifact (dummy config only) | ${{ steps.quiz-stt-qa.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"

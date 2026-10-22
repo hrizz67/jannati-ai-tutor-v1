@@ -23,6 +23,8 @@ const smokeTest = read('scripts/release/smokeTestDeployment.mjs');
 const buildVerifier = read('scripts/release/verifyBuildOutput.js');
 const structureVerifier = read('scripts/release/verifyBuildStructure.js');
 const productionSttEndpoint = 'VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe';
+const productionQuizSttEndpoint = 'VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe';
+const productionQuizSttAutoFlag = "VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'";
 
 function readWorkflowSection(startMarker, endMarker) {
   const start = deployWorkflow.indexOf(startMarker);
@@ -99,11 +101,11 @@ assert.ok(
 );
 assert.match(deployWorkflow, /secrets\.VITE_SUPABASE_URL/, 'Deploy must receive the production Supabase URL from GitHub Secrets.');
 assert.match(deployWorkflow, /secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Deploy must receive the production Supabase key from GitHub Secrets.');
-assert.match(deployWorkflow, /Required Supabase deployment secrets are missing\./, 'Deploy must fail closed when production Supabase secrets are unavailable.');
+assert.match(deployWorkflow, /Required production deployment configuration is missing\./, 'Deploy must fail closed when production configuration is unavailable.');
 assert.doesNotMatch(
   deployJobEnvironment,
-  /VITE_STT_ENDPOINT/,
-  'Production STT endpoint must not leak from job-level env into validation.'
+  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
+  'Production STT configuration must not leak from job-level env into validation.'
 );
 assert.ok(
   productionEnvironmentStep.includes(productionSttEndpoint),
@@ -111,25 +113,31 @@ assert.ok(
 );
 assert.match(
   productionEnvironmentStep,
-  /-z "\$VITE_STT_ENDPOINT"/,
-  'Production environment verification must fail closed when the STT endpoint is absent.'
+  /-z "\$VITE_STT_ENDPOINT"[\s\S]*-z "\$VITE_QUIZ_STT_ENDPOINT"[\s\S]*VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
+  'Production environment verification must fail closed when either STT endpoint or Quiz activation is absent.'
 );
 assert.doesNotMatch(
   validationStep,
-  /VITE_STT_ENDPOINT/,
-  'Validation must run without the production STT endpoint.'
+  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
+  'Validation must run without production STT configuration.'
 );
 assert.ok(
   productionBuildStep.includes(productionSttEndpoint),
   'Production build must receive the production STT endpoint.'
 );
-assert.doesNotMatch(buildCheckStep, /VITE_STT_ENDPOINT/, 'Build verification does not need the STT endpoint.');
-assert.doesNotMatch(publishStep, /VITE_STT_ENDPOINT/, 'Pages publish must not receive the STT endpoint.');
+for (const requiredQuizConfig of [productionQuizSttEndpoint, productionQuizSttAutoFlag]) {
+  assert.ok(productionEnvironmentStep.includes(requiredQuizConfig), 'Production environment verification must receive Quiz STT configuration.');
+  assert.ok(productionBuildStep.includes(requiredQuizConfig), 'Production build must receive Quiz STT configuration.');
+}
+assert.doesNotMatch(buildCheckStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/, 'Build verification does not need STT configuration.');
+assert.doesNotMatch(publishStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/, 'Pages publish must not receive STT configuration.');
 assert.equal(
   deployWorkflow.split(productionSttEndpoint).length - 1,
   2,
   'Production STT endpoint must be injected only for environment verification and the Vite build.'
 );
+assert.equal(deployWorkflow.split(productionQuizSttEndpoint).length - 1, 2, 'Production Quiz STT endpoint must be injected only for environment verification and the Vite build.');
+assert.equal(deployWorkflow.split(productionQuizSttAutoFlag).length - 1, 2, 'Production Quiz STT activation must be injected only for environment verification and the Vite build.');
 assert.doesNotMatch(ciWorkflow, /secrets\.VITE_SUPABASE_URL|secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Normal CI must not depend on production Supabase secrets.');
 assert.match(ciWorkflow, /https:\/\/ci-placeholder\.supabase\.co/, 'Normal CI must use an explicit non-production Supabase URL fixture.');
 assert.match(ciWorkflow, /sb_publishable_ci-placeholder/, 'Normal CI must use an explicit non-production publishable-key fixture.');

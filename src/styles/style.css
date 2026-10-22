@@ -8073,3 +8073,42 @@ li[lang="ar"][dir="rtl"],
   text-align: right;
   unicode-bidi: isolate;
 }
+.quiz-speech-consent-backdrop {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: rgba(20, 34, 53, 0.72);
+}
+
+.quiz-speech-consent-dialog {
+  width: min(100%, 32rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border-radius: 1.25rem;
+  background: var(--surface, #fff);
+  color: var(--text, #172033);
+  box-shadow: 0 1.25rem 3rem rgba(12, 24, 43, 0.3);
+}
+
+.quiz-speech-consent-dialog h2:focus {
+  outline: 3px solid var(--primary, #0b766e);
+  outline-offset: 0.25rem;
+}
+
+.quiz-speech-consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.quiz-speech-consent-check input {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+}

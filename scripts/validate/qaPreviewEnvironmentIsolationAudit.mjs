@@ -17,20 +17,26 @@ const revision = requireQaPreviewRevision(process.env.VITE_BUILD_REVISION || pro
 const inheritedSentinels = Object.freeze({
   VITE_SUPABASE_URL: 'https://inherited-backend-sentinel.invalid',
   VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_inherited_sentinel_do_not_ship',
-  VITE_STT_ENDPOINT: 'https://inherited-stt-sentinel.invalid/v1/transcribe'
+  VITE_STT_ENDPOINT: 'https://inherited-stt-sentinel.invalid/v1/transcribe',
+  VITE_QUIZ_STT_ENDPOINT: 'https://inherited-quiz-stt-sentinel.invalid/v1/quiz/transcribe',
+  VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'inherited-auto-enable-sentinel-do-not-ship'
 });
 const localFileSentinels = Object.freeze({
   VITE_SUPABASE_URL: 'https://local-file-backend-sentinel.invalid',
   VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_local_file_sentinel_do_not_ship',
-  VITE_STT_ENDPOINT: 'https://local-file-stt-sentinel.invalid/v1/transcribe'
+  VITE_STT_ENDPOINT: 'https://local-file-stt-sentinel.invalid/v1/transcribe',
+  VITE_QUIZ_STT_ENDPOINT: 'https://local-file-quiz-stt-sentinel.invalid/v1/quiz/transcribe',
+  VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'local-file-auto-enable-sentinel-do-not-ship'
 });
 const forbiddenSentinelFragments = [
   ...Object.values(inheritedSentinels),
   ...Object.values(localFileSentinels),
   'inherited-backend-sentinel.invalid',
   'inherited-stt-sentinel.invalid',
+  'inherited-quiz-stt-sentinel.invalid',
   'local-file-backend-sentinel.invalid',
-  'local-file-stt-sentinel.invalid'
+  'local-file-stt-sentinel.invalid',
+  'local-file-quiz-stt-sentinel.invalid'
 ];
 
 async function collectFiles(directory) {

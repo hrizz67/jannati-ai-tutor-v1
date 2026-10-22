@@ -1,0 +1,35 @@
+import React, { useEffect, useRef, useState } from 'react';
+
+export default function QuizSpeechConsent({ open, onConfirm, onDecline }) {
+  const [confirmedByAdult, setConfirmedByAdult] = useState(false);
+  const headingRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    headingRef.current?.focus();
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') onDecline();
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [open, onDecline]);
+
+  if (!open) return null;
+  return <div className="quiz-speech-consent-backdrop">
+    <section className="quiz-speech-consent-dialog" role="dialog" aria-modal="true" aria-labelledby="quiz-speech-consent-title" aria-describedby="quiz-speech-consent-description">
+      <h2 id="quiz-speech-consent-title" ref={headingRef} tabIndex="-1">Kebenaran rakaman suara</h2>
+      <div id="quiz-speech-consent-description">
+        <p>Jannati akan merakam jawapan pendek dan menghantarnya secara selamat untuk menghasilkan teks yang boleh disemak.</p>
+        <p>Audio tidak disimpan oleh Jannati. Kamu masih boleh memilih untuk menaip jawapan.</p>
+      </div>
+      <label className="quiz-speech-consent-check">
+        <input type="checkbox" checked={confirmedByAdult} onChange={event => setConfirmedByAdult(event.target.checked)} />
+        <span>Saya ibu bapa, penjaga atau pengguna dewasa dan saya membenarkan rakaman pendek ini.</span>
+      </label>
+      <div className="actions">
+        <button type="button" onClick={onConfirm} disabled={!confirmedByAdult}>Benarkan dan mula</button>
+        <button type="button" className="secondary" onClick={onDecline}>Taip sahaja</button>
+      </div>
+    </section>
+  </div>;
+}

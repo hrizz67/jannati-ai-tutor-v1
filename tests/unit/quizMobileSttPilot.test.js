@@ -10,7 +10,7 @@ import { createMobileMediaSttSession } from '../../src/ai/mobileMediaSttSession.
 const IOS = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
 const ANDROID = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
 const DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36';
-const ENDPOINT = 'https://example.workers.dev/v1/transcribe';
+const ENDPOINT = 'https://example.workers.dev/v1/quiz/transcribe';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -68,10 +68,11 @@ function deferred() {
 }
 
 describe('P1.17-V01 opt-in quiz media-STT', () => {
-  it('keeps the public production build disabled even when the URL opt-in is present', () => {
+  it('keeps an ordinary non-release build disabled even when the URL opt-in is present', () => {
     const deployWorkflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
     expect(QUIZ_MOBILE_STT_BUILD_ENABLED).toBe(false);
-    expect(deployWorkflow).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
+    expect(deployWorkflow).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(deployWorkflow).toContain('VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.');
     expect(resolveQuizMobileSttPilot({
       search: '?quizMobileSttPilot=1',
       userAgent: IOS,
@@ -97,6 +98,32 @@ describe('P1.17-V01 opt-in quiz media-STT', () => {
     }
   );
 
+  it.each([['iPhone Safari', IOS], ['Android Chrome', ANDROID]])(
+    '%s activates production mobile STT without a query only under the release auto permit',
+    (_label, userAgent) => {
+      expect(pilot('', userAgent, { buildEnabled: false, autoEnabled: true })).toMatchObject({
+        requested: true,
+        explicitRequested: false,
+        autoEnabled: true,
+        activationReason: 'production-mobile-auto',
+        enabled: true
+      });
+      expect(pilot('', userAgent, { buildEnabled: false, autoEnabled: true, endpoint: '' }).enabled).toBe(false);
+      expect(pilot('?quizMobileSttPilot=1', userAgent, { buildEnabled: false, autoEnabled: true }).enabled).toBe(true);
+      expect(pilot('', userAgent, { buildEnabled: false, autoEnabled: true, mediaCaptureSupported: false }))
+        .toMatchObject({ requested: false, enabled: false });
+    }
+  );
+
+  it('never activates a quiz pilot against the shared reading/speaking Worker endpoint', () => {
+    expect(pilot('?quizMobileSttPilot=1', IOS, {
+      endpoint: 'https://example.workers.dev/v1/transcribe'
+    }).enabled).toBe(false);
+    expect(pilot('?quizMobileSttPilot=1', ANDROID, {
+      endpoint: 'https://example.workers.dev/v1/transcribe'
+    }).enabled).toBe(false);
+  });
+
   it('does not activate on desktop or when an explicit iOS manual bypass is requested', () => {
     expect(pilot('?quizMobileSttPilot=1', DESKTOP)).toMatchObject({
       enabled: false,
@@ -104,6 +131,7 @@ describe('P1.17-V01 opt-in quiz media-STT', () => {
     });
     expect(pilot('?quizMobileSttPilot=1&iosSpeechBypass=1', IOS).enabled).toBe(false);
     expect(pilot('?quizMobileSttPilot=1&speechDiag=1&speechMode=legacy-simple', IOS).enabled).toBe(false);
+    expect(pilot('', DESKTOP, { autoEnabled: true })).toMatchObject({ requested: false, enabled: false });
   });
 
   it.each([['iPhone Safari', IOS, 'ios'], ['Android Chrome', ANDROID, 'android']])(

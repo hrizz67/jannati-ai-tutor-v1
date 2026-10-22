@@ -9,7 +9,10 @@ const requiredFiles = [
   'vite.config.mjs',
   'src/ai/speech/sttAdapter.js',
   'workers/stt/src/index.js',
-  'workers/stt/wrangler.jsonc'
+  'workers/stt/wrangler.jsonc',
+  'workers/quiz-stt/src/index.js',
+  'workers/quiz-stt/wrangler.jsonc',
+  'workers/quiz-stt/wrangler.production.jsonc'
 ];
 
 const productionSource = requiredFiles
@@ -43,5 +46,9 @@ assert.doesNotMatch(adapterSource, /['"]Authorization['"]\s*:/, 'Browser STT mus
 const workerSource = fs.readFileSync(path.join(root, 'workers/stt/src/index.js'), 'utf8');
 assert.doesNotMatch(workerSource, /console\./, 'Worker must not log audio or transcript content.');
 assert.doesNotMatch(workerSource, /\b(?:KV|R2|D1|DurableObject)\b/, 'Worker must not add persistent storage bindings.');
+
+const quizWorkerSource = fs.readFileSync(path.join(root, 'workers/quiz-stt/src/index.js'), 'utf8');
+assert.doesNotMatch(quizWorkerSource, /console\./, 'Quiz STT Worker must not log auth, audio or transcript content.');
+assert.doesNotMatch(quizWorkerSource, /\b(?:KV|R2|D1|DurableObject)\b/, 'Quiz STT Worker must not add persistent storage bindings.');
 
 console.log('P1.10 STT credential safety audit: PASS');
