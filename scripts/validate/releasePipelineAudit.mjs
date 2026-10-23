@@ -143,7 +143,11 @@ assert.match(ciWorkflow, /https:\/\/ci-placeholder\.supabase\.co/, 'Normal CI mu
 assert.match(ciWorkflow, /sb_publishable_ci-placeholder/, 'Normal CI must use an explicit non-production publishable-key fixture.');
 assert.match(ciWorkflow, /npm run build:structure-check/, 'Normal CI must run the structural build and credential-safety gate.');
 assert.doesNotMatch(ciWorkflow, /npm run release:build-check/, 'Normal CI must not run the production configuration gate.');
-assert.match(smokeTest, /assetUrl\.pathname !== expectedAssetPath/, 'Smoke test must reject a stale production entry hash.');
+assert.match(smokeTest, /deployedEntryPath !== manifest\.expectedEntryPath/, 'Smoke test must reject a stale production entry hash.');
+assert.match(smokeTest, /entryUrl\.origin !== expectedBaseUrl\.origin/, 'Smoke test must reject a cross-origin HTML entry asset.');
+assert.match(smokeTest, /createVerifiedBuildManifest/, 'Smoke test must derive the expected JavaScript asset manifest from the local production build.');
+assert.match(smokeTest, /digest\(source\) !== asset\.digest/, 'Smoke test must reject stale production JavaScript chunks.');
+assert.match(smokeTest, /assetUrl\.origin !== productionUrl\.origin/, 'Smoke test must restrict production assets to the configured origin.');
 assert.match(smokeTest, /\/auth\/v1\/health/, 'Smoke test must verify safe Supabase Auth reachability.');
 assert.match(smokeTest, /inspectProductionSupabaseBundle/, 'Smoke test must reject placeholder or secret-bearing production bundles.');
 assert.match(buildVerifier, /inspectProductionSupabaseBundle/, 'Production build verification must inspect the entry bundle configuration.');

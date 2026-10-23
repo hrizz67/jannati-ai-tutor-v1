@@ -1,8 +1,8 @@
 # Release Health
 
-Version: 3.13.33
+Version: 3.13.34
 Status: stable
-Build date: 2026-10-22T10:47:04.556Z
+Build date: 2026-10-23T10:36:08.736Z
 
 | Area | Status |
 | --- | --- |
