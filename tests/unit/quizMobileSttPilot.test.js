@@ -68,11 +68,22 @@ function deferred() {
 }
 
 describe('P1.17-V01 opt-in quiz media-STT', () => {
-  it('keeps an ordinary non-release build disabled even when the URL opt-in is present', () => {
+  it('keeps tagged production automatic media-STT disabled while preserving the ordinary mobile Quiz path', () => {
     const deployWorkflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
     expect(QUIZ_MOBILE_STT_BUILD_ENABLED).toBe(false);
-    expect(deployWorkflow).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(deployWorkflow.match(/VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'/g)).toHaveLength(2);
+    expect(deployWorkflow).not.toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
     expect(deployWorkflow).toContain('VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.');
+    expect(pilot('', IOS, { buildEnabled: false, autoEnabled: false })).toMatchObject({
+      requested: false,
+      enabled: false,
+      activationReason: 'inactive'
+    });
+    expect(pilot('', ANDROID, { buildEnabled: false, autoEnabled: false })).toMatchObject({
+      requested: false,
+      enabled: false,
+      activationReason: 'inactive'
+    });
     expect(resolveQuizMobileSttPilot({
       search: '?quizMobileSttPilot=1',
       userAgent: IOS,
@@ -85,6 +96,12 @@ describe('P1.17-V01 opt-in quiz media-STT', () => {
     });
     expect(pilot('?quizMobileSttPilot=1', IOS, { buildEnabled: false }).enabled).toBe(false);
     expect(pilot('?quizMobileSttPilot=1', ANDROID, { buildEnabled: false }).enabled).toBe(false);
+  });
+
+  it('keeps the production Worker kill switch committed OFF', () => {
+    const productionWorker = readFileSync(new URL('../../workers/quiz-stt/wrangler.production.jsonc', import.meta.url), 'utf8');
+    expect(productionWorker).toContain('"QUIZ_STT_PILOT_ENABLED": "false"');
+    expect(productionWorker).toContain('"QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false"');
   });
 
   it.each([['iPhone Safari', IOS], ['Android Chrome', ANDROID]])(

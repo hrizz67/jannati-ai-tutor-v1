@@ -76,7 +76,8 @@ describe('P1.17-V06 authenticated opt-in Quiz STT adapter', () => {
     const source = readFileSync(new URL('../../src/ai/speech/quizMobileSttPilot.js', import.meta.url), 'utf8');
     const quiz = app.split('function Quiz({')[1].split('function UasaSimulator(')[0];
     expect(workflow).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
-    expect(workflow).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(workflow).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'");
+    expect(workflow).not.toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
     expect(workflow.match(/VITE_QUIZ_STT_ENDPOINT:/g)).toHaveLength(2);
     expect(quiz).toContain("import('./ai/speech/quizAuthenticatedSttAdapter.js')");
     expect(quiz).toContain('quizMobileSttPilot.enabled && hasAccountSession');

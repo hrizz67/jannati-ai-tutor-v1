@@ -24,7 +24,7 @@ const buildVerifier = read('scripts/release/verifyBuildOutput.js');
 const structureVerifier = read('scripts/release/verifyBuildStructure.js');
 const productionSttEndpoint = 'VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe';
 const productionQuizSttEndpoint = 'VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe';
-const productionQuizSttAutoFlag = "VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'";
+const productionQuizSttAutoFlag = "VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'";
 
 function readWorkflowSection(startMarker, endMarker) {
   const start = deployWorkflow.indexOf(startMarker);
@@ -113,8 +113,8 @@ assert.ok(
 );
 assert.match(
   productionEnvironmentStep,
-  /-z "\$VITE_STT_ENDPOINT"[\s\S]*-z "\$VITE_QUIZ_STT_ENDPOINT"[\s\S]*VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
-  'Production environment verification must fail closed when either STT endpoint or Quiz activation is absent.'
+  /-z "\$VITE_STT_ENDPOINT"[\s\S]*-z "\$VITE_QUIZ_STT_ENDPOINT"[\s\S]*"\$VITE_QUIZ_MOBILE_STT_AUTO_ENABLED" != "false"/,
+  'Production environment verification must fail closed unless Quiz automatic MediaRecorder-STT remains disabled.'
 );
 assert.doesNotMatch(
   validationStep,
@@ -137,13 +137,18 @@ assert.equal(
   'Production STT endpoint must be injected only for environment verification and the Vite build.'
 );
 assert.equal(deployWorkflow.split(productionQuizSttEndpoint).length - 1, 2, 'Production Quiz STT endpoint must be injected only for environment verification and the Vite build.');
-assert.equal(deployWorkflow.split(productionQuizSttAutoFlag).length - 1, 2, 'Production Quiz STT activation must be injected only for environment verification and the Vite build.');
+assert.equal(deployWorkflow.split(productionQuizSttAutoFlag).length - 1, 2, 'Production Quiz STT disable flag must be injected only for environment verification and the Vite build.');
+assert.doesNotMatch(deployWorkflow, /VITE_QUIZ_MOBILE_STT_AUTO_ENABLED:\s*['"]true['"]/, 'Tagged production builds must not automatically enable Quiz MediaRecorder-STT.');
 assert.doesNotMatch(ciWorkflow, /secrets\.VITE_SUPABASE_URL|secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Normal CI must not depend on production Supabase secrets.');
 assert.match(ciWorkflow, /https:\/\/ci-placeholder\.supabase\.co/, 'Normal CI must use an explicit non-production Supabase URL fixture.');
 assert.match(ciWorkflow, /sb_publishable_ci-placeholder/, 'Normal CI must use an explicit non-production publishable-key fixture.');
 assert.match(ciWorkflow, /npm run build:structure-check/, 'Normal CI must run the structural build and credential-safety gate.');
 assert.doesNotMatch(ciWorkflow, /npm run release:build-check/, 'Normal CI must not run the production configuration gate.');
-assert.match(smokeTest, /assetUrl\.pathname !== expectedAssetPath/, 'Smoke test must reject a stale production entry hash.');
+assert.match(smokeTest, /deployedEntryPath !== manifest\.expectedEntryPath/, 'Smoke test must reject a stale production entry hash.');
+assert.match(smokeTest, /entryUrl\.origin !== expectedBaseUrl\.origin/, 'Smoke test must reject a cross-origin HTML entry asset.');
+assert.match(smokeTest, /createVerifiedBuildManifest/, 'Smoke test must derive the expected JavaScript asset manifest from the local production build.');
+assert.match(smokeTest, /digest\(source\) !== asset\.digest/, 'Smoke test must reject stale production JavaScript chunks.');
+assert.match(smokeTest, /assetUrl\.origin !== productionUrl\.origin/, 'Smoke test must restrict production assets to the configured origin.');
 assert.match(smokeTest, /\/auth\/v1\/health/, 'Smoke test must verify safe Supabase Auth reachability.');
 assert.match(smokeTest, /inspectProductionSupabaseBundle/, 'Smoke test must reject placeholder or secret-bearing production bundles.');
 assert.match(buildVerifier, /inspectProductionSupabaseBundle/, 'Production build verification must inspect the entry bundle configuration.');

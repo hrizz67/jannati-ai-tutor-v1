@@ -65,7 +65,8 @@ describe('P1.17-V06 dedicated authenticated speech QA artifact', () => {
     expect(offlinePreview).toContain("sttEndpoint: ''");
     expect(offlinePreview).toContain("supabaseUrl: ''");
     expect(publicDeploy).not.toContain('VITE_QUIZ_MOBILE_STT_PILOT_ENABLED');
-    expect(publicDeploy).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
+    expect(publicDeploy).toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'");
+    expect(publicDeploy).not.toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
     expect(publicDeploy.match(/VITE_QUIZ_STT_ENDPOINT:/g)).toHaveLength(2);
     expect(vite).toContain("quizSttQa ? 'true' : 'false'");
     expect(vite).toContain('quizSttQaConfig.quizEndpoint');
