@@ -38,10 +38,10 @@ jobs:
         env:
           VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
           VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
-          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'
+          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
         shell: bash
         run: |
-          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ] || [ -z "$VITE_STT_ENDPOINT" ] || [ -z "$VITE_QUIZ_STT_ENDPOINT" ] || [ "$VITE_QUIZ_MOBILE_STT_AUTO_ENABLED" != "true" ]; then
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ] || [ -z "$VITE_STT_ENDPOINT" ] || [ -z "$VITE_QUIZ_STT_ENDPOINT" ] || [ "$VITE_QUIZ_MOBILE_STT_AUTO_ENABLED" != "false" ]; then
             echo "Required production deployment configuration is missing."
             exit 1
           fi
@@ -56,7 +56,7 @@ jobs:
         env:
           VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
           VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
-          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'
+          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
         run: npm run build
 
       - name: Verify production build assets
