@@ -19,9 +19,10 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(markup).toContain('aria-modal="true"');
     expect(markup).toContain('Kebenaran rakaman suara');
     expect(markup).toContain('ibu bapa/penjaga sah kepada murid ini');
+    expect(markup).toContain('untuk satu rakaman audio pendek ini');
     expect(markup).toContain('hanya selepas butang mula ditekan');
     expect(markup).toContain('diproses sementara dan tidak disimpan oleh Jannati');
-    expect(markup).toContain('dihantar untuk ditukar kepada teks');
+    expect(markup).toContain('dihantar bagi ditukar kepada teks');
     expect(markup).toContain('Taip sahaja');
     expect(markup).toMatch(/type="checkbox"/);
     expect(markup).toMatch(/disabled=""[^>]*>Benarkan dan mula/);
@@ -41,6 +42,8 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(quiz).toContain('if (!quizSpeechConsentGrantedRef.current)');
     expect(quiz).toContain('setQuizSpeechConsentOpen(true)');
     expect(quiz).toContain('quizSpeechConsentGrantedRef.current = true');
+    expect(quiz).toContain('quizSpeechConsentGrantedRef.current = false');
+    expect(quiz.indexOf('quizSpeechConsentGrantedRef.current = false')).toBeLessThan(quiz.indexOf('mobileSession.start()'));
     expect(quiz.indexOf('if (!quizSpeechConsentGrantedRef.current)')).toBeLessThan(quiz.indexOf('mobileSession.start()'));
     expect(quiz).toContain('Tiada rakaman dibuat. Kamu masih boleh menaip jawapan.');
     expect(quiz).not.toContain('onCheckAnswer(safeTranscript)');

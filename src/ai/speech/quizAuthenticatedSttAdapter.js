@@ -3,8 +3,8 @@ import { MediaSttError } from './mediaSttCapture.js';
 import { createSttAdapter } from './sttAdapter.js';
 import { getConfiguredSttEndpoint } from './sttEndpoint.js';
 
-// Loaded only for the QA opt-in. The dedicated Worker independently verifies
-// Auth and pilot membership and applies per-account and global rate limits.
+// Loaded only for the explicit mobile opt-in. The dedicated Worker independently
+// verifies Auth and the configured access policy, then applies account/global limits.
 const PILOT_MAX_BYTES = 1024 * 1024;
 const PILOT_MAX_DURATION_MS = 8000;
 const MAX_RESPONSE_CHARS = 16 * 1024;

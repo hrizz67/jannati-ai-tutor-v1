@@ -56,6 +56,6 @@ Record device model, OS/browser versions, URL mode, microphone indicator/track e
 
 ## Release control
 
-The pilot code may ship only with public production activation disabled. The official tagged workflow does not provide the test-build permit, and no Worker deployment or quota change is part of this release. Production remains on the existing Bacaan/Bertutur STT behavior; quiz pilot activation requires a future separately controlled build and approval.
+The tagged workflow provides the frontend opt-in permit but keeps automatic activation disabled. The dedicated production Worker remains fail-closed through its independent kill switch until the reviewed Worker version, free-plan verification and controlled physical-test gate are complete. Production Bacaan/Bertutur behavior is unchanged; enabling the query opt-in alone cannot bypass Worker authentication or the server kill switch.
 
 A future test deployment requires separate review and approval. Do not classify QV-01/QV-02 as PASS from CI, or change global default voice mode without verified physical tests and a backend quota/privacy decision.

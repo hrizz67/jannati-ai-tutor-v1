@@ -14,8 +14,8 @@ const TOKEN = 'a'.repeat(64);
 const URL = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 
 function quotaBinding(result = { status: 'ok', remaining: 99 }) {
-  const reserve = vi.fn(async () => result);
-  return { binding: { getByName: vi.fn(() => ({ reserve })) }, reserve };
+  const fetch = vi.fn(async () => Response.json(result));
+  return { binding: { getByName: vi.fn(() => ({ fetch })) }, fetch };
 }
 
 function env(overrides = {}) {
@@ -61,6 +61,7 @@ async function send(options = {}, override = {}, fetchImpl = auth()) {
 describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
   it('keeps the dedicated production Worker disabled with registered-account policy and exact origin', () => {
     const config = readFileSync(new globalThis.URL('../../workers/quiz-stt/wrangler.production.jsonc', import.meta.url), 'utf8');
+    const worker = readFileSync(new globalThis.URL('../../workers/quiz-stt/src/index.js', import.meta.url), 'utf8');
     expect(config).toContain('"name": "jannati-ai-tutor-quiz-stt"');
     expect(config).toContain('"QUIZ_STT_PILOT_ENABLED": "false"');
     expect(config).toContain('"QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false"');
@@ -73,6 +74,9 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(config).toContain('"namespace_id": "11022"');
     expect(config).not.toContain('QUIZ_PILOT_ALLOWED_USER_IDS');
     expect(config).not.toContain('jannati-v1-qa.pages.dev');
+    expect(worker).toContain("import { DurableObject } from 'cloudflare:workers'");
+    expect(worker).toContain('class QuizDailyUsageQuota extends DurableObject');
+    expect(worker).toContain('super(ctx, env)');
   });
 
   it('defaults to disabled and cannot reach AI with missing or false server flag', async () => {
@@ -367,8 +371,10 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const { response, bindings } = await send({}, { QUIZ_DAILY_USAGE: quota.binding });
     expect(response.status).toBe(200);
     expect(quota.binding.getByName).toHaveBeenCalledWith('quiz-stt-global-v1');
-    expect(quota.reserve).toHaveBeenCalledTimes(1);
-    expect(quota.reserve).toHaveBeenCalledWith(expect.objectContaining({
+    expect(quota.fetch).toHaveBeenCalledTimes(1);
+    const quotaRequest = quota.fetch.mock.calls[0][0];
+    expect(quotaRequest).toBeInstanceOf(Request);
+    expect(await quotaRequest.json()).toEqual(expect.objectContaining({
       day: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
       limit: 100
     }));
@@ -377,7 +383,7 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const invalidQuota = quotaBinding({ status: 'ok', remaining: 41 });
     const invalid = await send({ type: 'application/json' }, { QUIZ_DAILY_USAGE: invalidQuota.binding });
     expect(invalid.response.status).toBe(415);
-    expect(invalidQuota.reserve).not.toHaveBeenCalled();
+    expect(invalidQuota.fetch).not.toHaveBeenCalled();
     expect(invalid.bindings.AI.run).not.toHaveBeenCalled();
   });
 
@@ -386,15 +392,20 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const get = vi.fn(async () => record);
     const put = vi.fn(async (_key, value) => { record = value; });
     const transaction = vi.fn(async callback => callback({ get, put }));
-    const quota = new QuizDailyUsageQuota({ storage: { transaction } });
+    const quota = new QuizDailyUsageQuota({ storage: { transaction } }, {});
+    const reserve = () => quota.fetch(new Request('https://quiz-quota.internal/reserve', {
+      method: 'POST', body: JSON.stringify({ day: '2026-10-24', limit: 2 })
+    })).then(response => response.json());
 
-    await expect(quota.reserve({ day: '2026-10-24', limit: 2 })).resolves.toEqual({ status: 'ok', remaining: 1 });
-    await expect(quota.reserve({ day: '2026-10-24', limit: 2 })).resolves.toEqual({ status: 'ok', remaining: 0 });
-    await expect(quota.reserve({ day: '2026-10-24', limit: 2 })).resolves.toEqual({ status: 'limited', remaining: 0 });
+    await expect(reserve()).resolves.toEqual({ status: 'ok', remaining: 1 });
+    await expect(reserve()).resolves.toEqual({ status: 'ok', remaining: 0 });
+    await expect(reserve()).resolves.toEqual({ status: 'limited', remaining: 0 });
     expect(record).toEqual({ day: '2026-10-24', used: 2 });
     expect(JSON.stringify(record)).not.toMatch(new RegExp(`${USER}|token|audio|transcript`, 'i'));
 
-    await expect(quota.reserve({ day: '2026-10-25', limit: 2 })).resolves.toEqual({ status: 'ok', remaining: 1 });
+    await expect(quota.fetch(new Request('https://quiz-quota.internal/reserve', {
+      method: 'POST', body: JSON.stringify({ day: '2026-10-25', limit: 2 })
+    })).then(response => response.json())).resolves.toEqual({ status: 'ok', remaining: 1 });
     expect(record).toEqual({ day: '2026-10-25', used: 1 });
   });
 

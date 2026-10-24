@@ -24,7 +24,7 @@ export default function QuizSpeechConsent({ open, onConfirm, onDecline }) {
       </div>
       <label className="quiz-speech-consent-check">
         <input type="checkbox" checked={confirmedByAdult} onChange={event => setConfirmedByAdult(event.target.checked)} />
-        <span>Saya pengguna dewasa, atau ibu bapa/penjaga sah kepada murid ini, dan saya bersetuju audio pendek ini dihantar untuk ditukar kepada teks.</span>
+        <span>Saya mengesahkan bahawa saya ialah pengguna dewasa atau ibu bapa/penjaga sah kepada murid ini, dan saya memberi kebenaran untuk satu rakaman audio pendek ini dihantar bagi ditukar kepada teks.</span>
       </label>
       <div className="actions">
         <button type="button" onClick={onConfirm} disabled={!confirmedByAdult}>Benarkan dan mula</button>

@@ -1,3 +1,5 @@
+import { DurableObject } from 'cloudflare:workers';
+
 // P1.17-V06: isolated, fail-closed Quiz STT pilot Worker.
 // Do not route Bacaan/Bertutur traffic here. No request, transcript or audio logging.
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
@@ -6,6 +8,7 @@ const MAX_AUDIO_BYTES = 1024 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
 const AUTH_TIMEOUT_MS = 4000;
 const DAILY_QUOTA_OBJECT_NAME = 'quiz-stt-global-v1';
+const DAILY_QUOTA_INTERNAL_URL = 'https://quiz-quota.internal/reserve';
 const MAX_DAILY_INFERENCES = 100;
 const AUTH_DIAGNOSTIC_STAGES = new Set([
   'bearer-missing',
@@ -169,7 +172,17 @@ async function reserveDailyInference(env, now = Date.now) {
     return { status: 'unavailable' };
   }
   try {
-    const result = await env.QUIZ_DAILY_USAGE.getByName(DAILY_QUOTA_OBJECT_NAME).reserve({ day, limit });
+    const stub = env.QUIZ_DAILY_USAGE.getByName(DAILY_QUOTA_OBJECT_NAME);
+    if (!stub || typeof stub.fetch !== 'function') return { status: 'unavailable' };
+    const response = await stub.fetch(new Request(DAILY_QUOTA_INTERNAL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ day, limit })
+    }));
+    if (!response?.ok) return { status: 'unavailable' };
+    const text = await response.text();
+    if (text.length > 256) return { status: 'unavailable' };
+    const result = JSON.parse(text);
     if (result?.status === 'limited') return { status: 'limited' };
     if (result?.status !== 'ok'
         || !Number.isInteger(result.remaining)
@@ -310,12 +323,29 @@ export const QUIZ_STT_MAX_DAILY_INFERENCES = MAX_DAILY_INFERENCES;
 
 // Stores only one UTC date and a global count. It never receives or stores a
 // user ID, token, audio, transcript or learner content.
-export class QuizDailyUsageQuota {
-  constructor(ctx) {
-    this.ctx = ctx;
+export class QuizDailyUsageQuota extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
   }
 
-  async reserve({ day, limit } = {}) {
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method !== 'POST' || url.origin !== 'https://quiz-quota.internal' || url.pathname !== '/reserve') {
+      return new Response(null, { status: 404 });
+    }
+    let input;
+    try {
+      const text = await request.text();
+      if (text.length > 128) return new Response(null, { status: 400 });
+      input = JSON.parse(text);
+    } catch {
+      return new Response(null, { status: 400 });
+    }
+    const result = await this.#reserve(input);
+    return Response.json(result);
+  }
+
+  async #reserve({ day, limit } = {}) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '')
         || !Number.isInteger(limit)
         || limit < 1
