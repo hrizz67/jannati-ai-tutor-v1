@@ -49,6 +49,9 @@ assert.doesNotMatch(workerSource, /\b(?:KV|R2|D1|DurableObject)\b/, 'Worker must
 
 const quizWorkerSource = fs.readFileSync(path.join(root, 'workers/quiz-stt/src/index.js'), 'utf8');
 assert.doesNotMatch(quizWorkerSource, /console\./, 'Quiz STT Worker must not log auth, audio or transcript content.');
-assert.doesNotMatch(quizWorkerSource, /\b(?:KV|R2|D1|DurableObject)\b/, 'Quiz STT Worker must not add persistent storage bindings.');
+assert.doesNotMatch(quizWorkerSource, /\b(?:KV|R2|D1)\b/, 'Quiz STT Worker must not add general-purpose content storage bindings.');
+assert.match(quizWorkerSource, /class QuizDailyUsageQuota/, 'Quiz STT Worker must keep its fail-closed daily usage counter.');
+assert.match(quizWorkerSource, /storage\.put\('usage', \{ day, used: next \}\)/, 'Quiz quota storage must contain only UTC day and aggregate count.');
+assert.doesNotMatch(quizWorkerSource, /storage\.put\([^\n]*(?:user|token|audio|transcript)/i, 'Quiz quota storage must not persist identity, credential or speech content.');
 
 console.log('P1.10 STT credential safety audit: PASS');

@@ -24,6 +24,7 @@ const buildVerifier = read('scripts/release/verifyBuildOutput.js');
 const structureVerifier = read('scripts/release/verifyBuildStructure.js');
 const productionSttEndpoint = 'VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe';
 const productionQuizSttEndpoint = 'VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe';
+const productionQuizSttOptInFlag = "VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'";
 const productionQuizSttAutoFlag = "VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'";
 
 function readWorkflowSection(startMarker, endMarker) {
@@ -104,7 +105,7 @@ assert.match(deployWorkflow, /secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Deploy m
 assert.match(deployWorkflow, /Required production deployment configuration is missing\./, 'Deploy must fail closed when production configuration is unavailable.');
 assert.doesNotMatch(
   deployJobEnvironment,
-  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
+  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_(?:PILOT|AUTO)_ENABLED/,
   'Production STT configuration must not leak from job-level env into validation.'
 );
 assert.ok(
@@ -113,30 +114,31 @@ assert.ok(
 );
 assert.match(
   productionEnvironmentStep,
-  /-z "\$VITE_STT_ENDPOINT"[\s\S]*-z "\$VITE_QUIZ_STT_ENDPOINT"[\s\S]*"\$VITE_QUIZ_MOBILE_STT_AUTO_ENABLED" != "false"/,
-  'Production environment verification must fail closed unless Quiz automatic MediaRecorder-STT remains disabled.'
+  /-z "\$VITE_STT_ENDPOINT"[\s\S]*-z "\$VITE_QUIZ_STT_ENDPOINT"[\s\S]*"\$VITE_QUIZ_MOBILE_STT_PILOT_ENABLED" != "true"[\s\S]*"\$VITE_QUIZ_MOBILE_STT_AUTO_ENABLED" != "false"/,
+  'Production environment verification must require explicit opt-in support while keeping automatic Quiz MediaRecorder-STT disabled.'
 );
 assert.doesNotMatch(
   validationStep,
-  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/,
+  /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_(?:PILOT|AUTO)_ENABLED/,
   'Validation must run without production STT configuration.'
 );
 assert.ok(
   productionBuildStep.includes(productionSttEndpoint),
   'Production build must receive the production STT endpoint.'
 );
-for (const requiredQuizConfig of [productionQuizSttEndpoint, productionQuizSttAutoFlag]) {
+for (const requiredQuizConfig of [productionQuizSttEndpoint, productionQuizSttOptInFlag, productionQuizSttAutoFlag]) {
   assert.ok(productionEnvironmentStep.includes(requiredQuizConfig), 'Production environment verification must receive Quiz STT configuration.');
   assert.ok(productionBuildStep.includes(requiredQuizConfig), 'Production build must receive Quiz STT configuration.');
 }
-assert.doesNotMatch(buildCheckStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/, 'Build verification does not need STT configuration.');
-assert.doesNotMatch(publishStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_AUTO_ENABLED/, 'Pages publish must not receive STT configuration.');
+assert.doesNotMatch(buildCheckStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_(?:PILOT|AUTO)_ENABLED/, 'Build verification does not need STT configuration.');
+assert.doesNotMatch(publishStep, /VITE_(?:QUIZ_)?STT_ENDPOINT|VITE_QUIZ_MOBILE_STT_(?:PILOT|AUTO)_ENABLED/, 'Pages publish must not receive STT configuration.');
 assert.equal(
   deployWorkflow.split(productionSttEndpoint).length - 1,
   2,
   'Production STT endpoint must be injected only for environment verification and the Vite build.'
 );
 assert.equal(deployWorkflow.split(productionQuizSttEndpoint).length - 1, 2, 'Production Quiz STT endpoint must be injected only for environment verification and the Vite build.');
+assert.equal(deployWorkflow.split(productionQuizSttOptInFlag).length - 1, 2, 'Production Quiz STT opt-in permit must be injected only for environment verification and the Vite build.');
 assert.equal(deployWorkflow.split(productionQuizSttAutoFlag).length - 1, 2, 'Production Quiz STT disable flag must be injected only for environment verification and the Vite build.');
 assert.doesNotMatch(deployWorkflow, /VITE_QUIZ_MOBILE_STT_AUTO_ENABLED:\s*['"]true['"]/, 'Tagged production builds must not automatically enable Quiz MediaRecorder-STT.');
 assert.doesNotMatch(ciWorkflow, /secrets\.VITE_SUPABASE_URL|secrets\.VITE_SUPABASE_PUBLISHABLE_KEY/, 'Normal CI must not depend on production Supabase secrets.');

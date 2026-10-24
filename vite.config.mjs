@@ -24,6 +24,8 @@ export default defineConfig(({ mode }) => {
   const quizSttEndpoint = quizSttQa
     ? quizSttQaConfig.quizEndpoint
     : qaPreview ? '' : String(env.VITE_QUIZ_STT_ENDPOINT || '').trim()
+  const quizMobileSttBuildEnabled = quizSttQa || (!qaPreview
+    && String(env.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED || '').trim() === 'true')
   const quizMobileSttAutoEnabled = !qaPreview && !quizSttQa
     && String(env.VITE_QUIZ_MOBILE_STT_AUTO_ENABLED || '').trim() === 'true'
   const buildDate = new Date().toISOString()
@@ -84,7 +86,7 @@ export default defineConfig(({ mode }) => {
     'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(supabasePublishableKey),
     'import.meta.env.VITE_STT_ENDPOINT': JSON.stringify(sttEndpoint),
     'import.meta.env.VITE_QUIZ_STT_ENDPOINT': JSON.stringify(quizSttEndpoint),
-    'import.meta.env.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED': JSON.stringify(quizSttQa ? 'true' : 'false'),
+    'import.meta.env.VITE_QUIZ_MOBILE_STT_PILOT_ENABLED': JSON.stringify(quizMobileSttBuildEnabled ? 'true' : 'false'),
     'import.meta.env.VITE_QUIZ_MOBILE_STT_AUTO_ENABLED': JSON.stringify(quizMobileSttAutoEnabled ? 'true' : 'false')
   }
   }

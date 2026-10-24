@@ -18,8 +18,10 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(markup).toContain('role="dialog"');
     expect(markup).toContain('aria-modal="true"');
     expect(markup).toContain('Kebenaran rakaman suara');
-    expect(markup).toContain('ibu bapa, penjaga atau pengguna dewasa');
-    expect(markup).toContain('Audio tidak disimpan oleh Jannati');
+    expect(markup).toContain('ibu bapa/penjaga sah kepada murid ini');
+    expect(markup).toContain('hanya selepas butang mula ditekan');
+    expect(markup).toContain('diproses sementara dan tidak disimpan oleh Jannati');
+    expect(markup).toContain('dihantar untuk ditukar kepada teks');
     expect(markup).toContain('Taip sahaja');
     expect(markup).toMatch(/type="checkbox"/);
     expect(markup).toMatch(/disabled=""[^>]*>Benarkan dan mula/);

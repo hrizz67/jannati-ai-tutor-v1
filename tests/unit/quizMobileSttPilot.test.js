@@ -68,9 +68,10 @@ function deferred() {
 }
 
 describe('P1.17-V01 opt-in quiz media-STT', () => {
-  it('keeps tagged production automatic media-STT disabled while preserving the ordinary mobile Quiz path', () => {
+  it('permits only explicit tagged-production opt-in while keeping automatic mobile STT disabled', () => {
     const deployWorkflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
     expect(QUIZ_MOBILE_STT_BUILD_ENABLED).toBe(false);
+    expect(deployWorkflow.match(/VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'/g)).toHaveLength(2);
     expect(deployWorkflow.match(/VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'/g)).toHaveLength(2);
     expect(deployWorkflow).not.toContain("VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'true'");
     expect(deployWorkflow).toContain('VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.');
@@ -88,11 +89,12 @@ describe('P1.17-V01 opt-in quiz media-STT', () => {
       search: '?quizMobileSttPilot=1',
       userAgent: IOS,
       endpoint: ENDPOINT,
-      mediaCaptureSupported: true
+      mediaCaptureSupported: true,
+      buildEnabled: true
     })).toMatchObject({
       requested: true,
-      buildEnabled: false,
-      enabled: false
+      buildEnabled: true,
+      enabled: true
     });
     expect(pilot('?quizMobileSttPilot=1', IOS, { buildEnabled: false }).enabled).toBe(false);
     expect(pilot('?quizMobileSttPilot=1', ANDROID, { buildEnabled: false }).enabled).toBe(false);
