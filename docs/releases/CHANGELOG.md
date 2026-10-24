@@ -1,23 +1,23 @@
 # Changelog
 
-## 3.13.34 - 2026-10-23
+## 3.13.35 - 2026-10-24
 
-### Production deployment smoke repair
+### Quiz STT rollout controls
 
-- Verifies the deployed entry and every expected production JavaScript chunk against the local release build rather than scanning only the entry chunk.
-- Detects missing, stale, redirected, cross-origin, or mixed-release lazy chunks before accepting a GitHub Pages deployment.
-- Applies the existing Supabase production guard to the combined verified build and checks Auth health plus production-origin CORS without exposing credentials.
-- Adds focused regression coverage for entry-only and lazy-only configuration, missing/stale chunks, wrong origins, conflicting or forbidden configuration, and Auth health failures.
-- Explicitly keeps automatic Quiz MediaRecorder-STT disabled in tagged production builds while preserving the previous mobile Quiz speech behavior and manual typing fallback.
+- Added an explicit production-build Quiz MediaRecorder-STT opt-in while keeping automatic activation disabled.
+- Added registered-account server authentication, exact production CORS, per-account/global rate limits, bounded audio handling, and a dedicated emergency kill switch.
+- Added a fail-closed Durable Object quota of 100 AI inference reservations per UTC day without storing account identity, audio, transcripts, or learner content.
+- Changed voice consent to a single-recording acknowledgement that must be repeated for every retry or new recording.
 
-### Release safety
+### Preserved boundaries
 
-- Keeps the failed `v3.13.33` tag immutable; the patch advances through a new `v3.13.34` release path.
-- Makes no application-runtime, question-bank, Supabase schema/RPC, reward, Premium/payment, STT Worker, or dependency change.
-- Keeps Quiz STT activation and physical mobile acceptance blocked pending separate authorization and evidence.
+- Production Quiz Worker remains OFF pending free-plan, live security/quota, and physical-device gates.
+- Manual typing, native Quiz speech where supported, and existing Bacaan/Bertutur behavior remain available.
+- No Supabase schema/RPC, reward, Premium/payment, shared STT Worker, dependency, or question-bank change.
 
 ### Quality snapshot
 
-- 1,050 unit tests pass, including 12 focused smoke-deployment tests and a tagged-production Quiz STT disable regression.
-- 8 subjects, 84 topics, and 4,530 questions validate with 0 errors and 0 warnings.
-- Production-equivalent initial JavaScript is 869.33 / 900 kB; entry is 304.29 / 350 kB; largest lazy chunk is 459.49 / 480 kB; Tutor incremental runtime is 107.94 / 125 kB.
+- 1,054 unit tests pass; validation reports 0 errors and 0 warnings.
+- 8 subjects, 84 topics, and 4,530 questions remain validated.
+- Tagged-production-equivalent initial JavaScript 869.22 / 900 kB; entry 304.52 / 350 kB; largest lazy chunk 459.49 / 480 kB.
+- iPhone Safari, Android Chrome, VoiceOver, and TalkBack acceptance remain NOT RUN.
