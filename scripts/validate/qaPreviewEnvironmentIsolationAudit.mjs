@@ -19,6 +19,7 @@ const inheritedSentinels = Object.freeze({
   VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_inherited_sentinel_do_not_ship',
   VITE_STT_ENDPOINT: 'https://inherited-stt-sentinel.invalid/v1/transcribe',
   VITE_QUIZ_STT_ENDPOINT: 'https://inherited-quiz-stt-sentinel.invalid/v1/quiz/transcribe',
+  VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'inherited-pilot-enable-sentinel-do-not-ship',
   VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'inherited-auto-enable-sentinel-do-not-ship'
 });
 const localFileSentinels = Object.freeze({
@@ -26,6 +27,7 @@ const localFileSentinels = Object.freeze({
   VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_local_file_sentinel_do_not_ship',
   VITE_STT_ENDPOINT: 'https://local-file-stt-sentinel.invalid/v1/transcribe',
   VITE_QUIZ_STT_ENDPOINT: 'https://local-file-quiz-stt-sentinel.invalid/v1/quiz/transcribe',
+  VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'local-file-pilot-enable-sentinel-do-not-ship',
   VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'local-file-auto-enable-sentinel-do-not-ship'
 });
 const forbiddenSentinelFragments = [

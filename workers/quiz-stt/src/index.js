@@ -1,3 +1,5 @@
+import { DurableObject } from 'cloudflare:workers';
+
 // P1.17-V06: isolated, fail-closed Quiz STT pilot Worker.
 // Do not route Bacaan/Bertutur traffic here. No request, transcript or audio logging.
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
@@ -5,6 +7,9 @@ const PATH = '/v1/quiz/transcribe';
 const MAX_AUDIO_BYTES = 1024 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
 const AUTH_TIMEOUT_MS = 4000;
+const DAILY_QUOTA_OBJECT_NAME = 'quiz-stt-global-v1';
+const DAILY_QUOTA_INTERNAL_URL = 'https://quiz-quota.internal/reserve';
+const MAX_DAILY_INFERENCES = 100;
 const AUTH_DIAGNOSTIC_STAGES = new Set([
   'bearer-missing',
   'config-invalid',
@@ -145,6 +150,50 @@ async function consume(binding, key) {
     return 'unavailable';
   }
 }
+function utcDayKey(value = Date.now()) {
+  const timestamp = Number(value);
+  if (!Number.isFinite(timestamp)) return '';
+  try {
+    return new Date(timestamp).toISOString().slice(0, 10);
+  } catch {
+    return '';
+  }
+}
+function configuredDailyInferenceLimit(env) {
+  const configured = Number(env.QUIZ_STT_DAILY_MAX_INFERENCES);
+  return Number.isInteger(configured) && configured > 0 && configured <= MAX_DAILY_INFERENCES
+    ? configured
+    : 0;
+}
+async function reserveDailyInference(env, now = Date.now) {
+  const limit = configuredDailyInferenceLimit(env);
+  const day = utcDayKey(now());
+  if (!limit || !day || !env.QUIZ_DAILY_USAGE || typeof env.QUIZ_DAILY_USAGE.getByName !== 'function') {
+    return { status: 'unavailable' };
+  }
+  try {
+    const stub = env.QUIZ_DAILY_USAGE.getByName(DAILY_QUOTA_OBJECT_NAME);
+    if (!stub || typeof stub.fetch !== 'function') return { status: 'unavailable' };
+    const response = await stub.fetch(new Request(DAILY_QUOTA_INTERNAL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ day, limit })
+    }));
+    if (!response?.ok) return { status: 'unavailable' };
+    const text = await response.text();
+    if (text.length > 256) return { status: 'unavailable' };
+    const result = JSON.parse(text);
+    if (result?.status === 'limited') return { status: 'limited' };
+    if (result?.status !== 'ok'
+        || !Number.isInteger(result.remaining)
+        || result.remaining < 0
+        || result.remaining >= limit) return { status: 'unavailable' };
+    const resetAt = new Date(Date.parse(`${day}T00:00:00Z`) + 86400000).toISOString();
+    return { status: 'ok', remaining: result.remaining, limit, resetAt };
+  } catch {
+    return { status: 'unavailable' };
+  }
+}
 function base64(bytes) {
   const data = new Uint8Array(bytes);
   let out = '';
@@ -231,6 +280,15 @@ export async function handleRequest(request, env = {}, {
   }
   if (!audio.byteLength) return fail('empty-audio', 400, origin);
   if (audio.byteLength > MAX_AUDIO_BYTES) return fail('audio-too-large', 413, origin);
+  // Reserve one strongly-consistent global inference slot only after auth,
+  // access policy, rate limits and payload guards have passed. A reservation
+  // is never refunded after a provider failure: the budget remains
+  // conservative and cannot overshoot because of retries.
+  const dailyQuota = await reserveDailyInference(env, now || Date.now);
+  if (dailyQuota.status !== 'ok') {
+    return fail(dailyQuota.status === 'limited' ? 'daily-ai-quota-exhausted' : 'daily-ai-quota-unavailable',
+      dailyQuota.status === 'limited' ? 429 : 503, origin);
+  }
   try {
     const result = await env.AI.run(MODEL, {
       audio: base64(audio), task: 'transcribe', language,
@@ -242,7 +300,15 @@ export async function handleRequest(request, env = {}, {
       transcript,
       confidence: normalizeConfidence(result?.transcription_info?.language_probability ?? result?.language_probability),
       provider: 'cloudflare-workers-ai',
-      metadata: { language, model: MODEL }
+      metadata: {
+        language,
+        model: MODEL,
+        quota: {
+          dailyInferenceLimit: dailyQuota.limit,
+          dailyInferenceRemaining: dailyQuota.remaining,
+          resetsAt: dailyQuota.resetAt
+        }
+      }
     }, 200, origin);
   } catch (err) {
     const status = Number(err?.status || err?.statusCode);
@@ -253,3 +319,51 @@ export async function handleRequest(request, env = {}, {
 }
 export default { fetch: handleRequest };
 export const QUIZ_STT_MAX_AUDIO_BYTES = MAX_AUDIO_BYTES;
+export const QUIZ_STT_MAX_DAILY_INFERENCES = MAX_DAILY_INFERENCES;
+
+// Stores only one UTC date and a global count. It never receives or stores a
+// user ID, token, audio, transcript or learner content.
+export class QuizDailyUsageQuota extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method !== 'POST' || url.origin !== 'https://quiz-quota.internal' || url.pathname !== '/reserve') {
+      return new Response(null, { status: 404 });
+    }
+    let input;
+    try {
+      const text = await request.text();
+      if (text.length > 128) return new Response(null, { status: 400 });
+      input = JSON.parse(text);
+    } catch {
+      return new Response(null, { status: 400 });
+    }
+    const result = await this.#reserve(input);
+    return Response.json(result);
+  }
+
+  async #reserve({ day, limit } = {}) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '')
+        || !Number.isInteger(limit)
+        || limit < 1
+        || limit > MAX_DAILY_INFERENCES
+        || !this.ctx?.storage?.transaction) return { status: 'unavailable' };
+    try {
+      return await this.ctx.storage.transaction(async storage => {
+        const previous = await storage.get('usage');
+        const used = previous?.day === day && Number.isInteger(previous?.used) && previous.used >= 0
+          ? previous.used
+          : 0;
+        if (used >= limit) return { status: 'limited', remaining: 0 };
+        const next = used + 1;
+        await storage.put('usage', { day, used: next });
+        return { status: 'ok', remaining: limit - next };
+      });
+    } catch {
+      return { status: 'unavailable' };
+    }
+  }
+}

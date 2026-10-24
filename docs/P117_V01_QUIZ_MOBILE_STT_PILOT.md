@@ -13,8 +13,8 @@ This change does **not** claim that delayed OS-level privacy-indicator clearing 
 
 ## Pilot gate and UX
 
-- A separately authorized test build must set `VITE_QUIZ_MOBILE_STT_PILOT_ENABLED=true`, and the tester must also append `?quizMobileSttPilot=1` on supported iPhone Safari or Android Chrome. The environment switch is a deployment permit, while the query is only a tester opt-in; neither is authentication or a capacity control.
-- The official public production workflow intentionally does **not** set the build permit. A public visitor adding the query alone cannot activate quiz recording or upload quiz audio.
+- An authorized build must set `VITE_QUIZ_MOBILE_STT_PILOT_ENABLED=true`, and the tester must also append `?quizMobileSttPilot=1` on supported iPhone Safari or Android Chrome. The environment switch is a deployment permit, while the query is only a tester opt-in; neither is authentication or a capacity control.
+- The tagged production workflow sets the build permit but keeps automatic activation false. The dedicated Worker independently requires a valid production Supabase session, registered-account policy, rate limits, hard daily quota and operator kill switch.
 - The gate requires a configured HTTPS STT endpoint and `getUserMedia` + `MediaRecorder`. Otherwise the quiz exposes manual entry, not a hidden Web Speech fallback.
 - Default quiz Web Speech and desktop behavior remain unchanged when the switch is absent.
 - The shared media-STT factory is preloaded outside the tap handler; native capture still starts **only when the learner taps** the microphone.
@@ -32,7 +32,7 @@ The Worker currently:
 - Accepts `ms-MY`, English and Arabic locales; invokes Workers AI `@cf/openai/whisper-large-v3-turbo`.
 - Enforces up to **5 MiB** audio per request, validates MIME and rate limits, and returns bounded transcript metadata.
 - Does not authenticate the learner or verify Premium entitlement on the STT request.
-- Does not provide a per-user daily quota or a confirmed Workers AI Neurons budget safeguard within this repository.
+- The production rollout adds a hard global 100-inference UTC-day counter. The account and provider Free-plan status must still be verified before activation because the counter is intentionally conservative and does not replace provider billing controls.
 
 **Capacity examples, not forecasts:** 10 concurrent learners making 6 STT calls in a minute consume the entire 60/min shared allowance. Audio cost depends on billable model usage, capture duration, failed calls and Workers AI plan; verify current Cloudflare dashboard figures rather than assuming the free allowance makes unlimited use free.
 
@@ -56,6 +56,6 @@ Record device model, OS/browser versions, URL mode, microphone indicator/track e
 
 ## Release control
 
-The pilot code may ship only with public production activation disabled. The official tagged workflow does not provide the test-build permit, and no Worker deployment or quota change is part of this release. Production remains on the existing Bacaan/Bertutur STT behavior; quiz pilot activation requires a future separately controlled build and approval.
+The tagged workflow provides the frontend opt-in permit but keeps automatic activation disabled. The dedicated production Worker remains fail-closed through its independent kill switch until the reviewed Worker version, free-plan verification and controlled physical-test gate are complete. Production Bacaan/Bertutur behavior is unchanged; enabling the query opt-in alone cannot bypass Worker authentication or the server kill switch.
 
 A future test deployment requires separate review and approval. Do not classify QV-01/QV-02 as PASS from CI, or change global default voice mode without verified physical tests and a backend quota/privacy decision.

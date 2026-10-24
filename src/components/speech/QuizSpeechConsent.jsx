@@ -19,12 +19,12 @@ export default function QuizSpeechConsent({ open, onConfirm, onDecline }) {
     <section className="quiz-speech-consent-dialog" role="dialog" aria-modal="true" aria-labelledby="quiz-speech-consent-title" aria-describedby="quiz-speech-consent-description">
       <h2 id="quiz-speech-consent-title" ref={headingRef} tabIndex="-1">Kebenaran rakaman suara</h2>
       <div id="quiz-speech-consent-description">
-        <p>Jannati akan merakam jawapan pendek dan menghantarnya secara selamat untuk menghasilkan teks yang boleh disemak.</p>
-        <p>Audio tidak disimpan oleh Jannati. Kamu masih boleh memilih untuk menaip jawapan.</p>
+        <p>Jannati akan merakam jawapan pendek hanya selepas butang mula ditekan, kemudian menghantarnya secara selamat kepada perkhidmatan transkripsi untuk menghasilkan teks yang boleh disemak.</p>
+        <p>Audio diproses sementara dan tidak disimpan oleh Jannati. Kamu masih boleh memilih untuk menaip jawapan.</p>
       </div>
       <label className="quiz-speech-consent-check">
         <input type="checkbox" checked={confirmedByAdult} onChange={event => setConfirmedByAdult(event.target.checked)} />
-        <span>Saya ibu bapa, penjaga atau pengguna dewasa dan saya membenarkan rakaman pendek ini.</span>
+        <span>Saya mengesahkan bahawa saya ialah pengguna dewasa atau ibu bapa/penjaga sah kepada murid ini, dan saya memberi kebenaran untuk satu rakaman audio pendek ini dihantar bagi ditukar kepada teks.</span>
       </label>
       <div className="actions">
         <button type="button" onClick={onConfirm} disabled={!confirmedByAdult}>Benarkan dan mula</button>

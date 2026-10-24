@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { handleRequest, QUIZ_STT_MAX_AUDIO_BYTES } from '../../workers/quiz-stt/src/index.js';
+import {
+  handleRequest,
+  QuizDailyUsageQuota,
+  QUIZ_STT_MAX_AUDIO_BYTES,
+  QUIZ_STT_MAX_DAILY_INFERENCES
+} from '../../workers/quiz-stt/src/index.js';
 
 const ORIGIN = 'https://hrizz67.github.io';
 const USER = '11111111-1111-4111-8111-111111111111';
@@ -8,7 +13,13 @@ const OTHER = '22222222-2222-4222-8222-222222222222';
 const TOKEN = 'a'.repeat(64);
 const URL = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 
+function quotaBinding(result = { status: 'ok', remaining: 99 }) {
+  const fetch = vi.fn(async () => Response.json(result));
+  return { binding: { getByName: vi.fn(() => ({ fetch })) }, fetch };
+}
+
 function env(overrides = {}) {
+  const quota = quotaBinding();
   return {
     QUIZ_STT_PILOT_ENABLED: 'true',
     QUIZ_STT_ACCESS_MODE: 'allowlist',
@@ -16,9 +27,11 @@ function env(overrides = {}) {
     SUPABASE_URL: 'https://jannati-test.supabase.co',
     SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test',
     QUIZ_PILOT_ALLOWED_USER_IDS: USER,
+    QUIZ_STT_DAILY_MAX_INFERENCES: '100',
     AI: { run: vi.fn(async () => ({ text: '  kucing  ', language_probability: 0.87 })) },
     QUIZ_ACCOUNT_RATE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     QUIZ_GLOBAL_RATE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
+    QUIZ_DAILY_USAGE: quota.binding,
     ...overrides
   };
 }
@@ -48,15 +61,22 @@ async function send(options = {}, override = {}, fetchImpl = auth()) {
 describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
   it('keeps the dedicated production Worker disabled with registered-account policy and exact origin', () => {
     const config = readFileSync(new globalThis.URL('../../workers/quiz-stt/wrangler.production.jsonc', import.meta.url), 'utf8');
+    const worker = readFileSync(new globalThis.URL('../../workers/quiz-stt/src/index.js', import.meta.url), 'utf8');
     expect(config).toContain('"name": "jannati-ai-tutor-quiz-stt"');
     expect(config).toContain('"QUIZ_STT_PILOT_ENABLED": "false"');
     expect(config).toContain('"QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false"');
     expect(config).toContain('"QUIZ_STT_ACCESS_MODE": "registered"');
+    expect(config).toContain('"QUIZ_STT_DAILY_MAX_INFERENCES": "100"');
+    expect(config).toContain('"name": "QUIZ_DAILY_USAGE"');
+    expect(config).toContain('"QuizDailyUsageQuota": { "type": "durable-object", "storage": "sqlite" }');
     expect(config).toContain('"CORS_ALLOW_ORIGINS": "https://hrizz67.github.io"');
     expect(config).toContain('"namespace_id": "11021"');
     expect(config).toContain('"namespace_id": "11022"');
     expect(config).not.toContain('QUIZ_PILOT_ALLOWED_USER_IDS');
     expect(config).not.toContain('jannati-v1-qa.pages.dev');
+    expect(worker).toContain("import { DurableObject } from 'cloudflare:workers'");
+    expect(worker).toContain('class QuizDailyUsageQuota extends DurableObject');
+    expect(worker).toContain('super(ctx, env)');
   });
 
   it('defaults to disabled and cannot reach AI with missing or false server flag', async () => {
@@ -122,7 +142,15 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
       }));
     await expect(response.json()).resolves.toEqual({
       transcript: 'kucing', confidence: 87, provider: 'cloudflare-workers-ai',
-      metadata: { language: 'ms', model: '@cf/openai/whisper-large-v3-turbo' }
+      metadata: {
+        language: 'ms',
+        model: '@cf/openai/whisper-large-v3-turbo',
+        quota: {
+          dailyInferenceLimit: 100,
+          dailyInferenceRemaining: 99,
+          resetsAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T00:00:00\.000Z$/)
+        }
+      }
     });
     expect(bindings.AI.run).toHaveBeenCalledTimes(1);
     expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: 'quiz-account:' + USER });
@@ -299,7 +327,8 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
       { SUPABASE_PUBLISHABLE_KEY: '' },
       { QUIZ_PILOT_ALLOWED_USER_IDS: '' },
       { QUIZ_ACCOUNT_RATE_LIMITER: null },
-      { QUIZ_GLOBAL_RATE_LIMITER: null }
+      { QUIZ_GLOBAL_RATE_LIMITER: null },
+      { QUIZ_DAILY_USAGE: null }
     ];
     for (const changes of variants) {
       const { response, bindings } = await send({}, changes);
@@ -319,6 +348,72 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(global.response.status).toBe(429);
     expect(tokenVerifier).not.toHaveBeenCalled(); // Global cap also protects Supabase Auth capacity.
     expect(global.bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when the hard daily quota is missing, invalid, unavailable or exhausted', async () => {
+    const cases = [
+      [{ QUIZ_DAILY_USAGE: null }, 503, 'daily-ai-quota-unavailable'],
+      [{ QUIZ_STT_DAILY_MAX_INFERENCES: '0' }, 503, 'daily-ai-quota-unavailable'],
+      [{ QUIZ_STT_DAILY_MAX_INFERENCES: '101' }, 503, 'daily-ai-quota-unavailable'],
+      [{ QUIZ_DAILY_USAGE: quotaBinding({ status: 'unavailable' }).binding }, 503, 'daily-ai-quota-unavailable'],
+      [{ QUIZ_DAILY_USAGE: quotaBinding({ status: 'limited', remaining: 0 }).binding }, 429, 'daily-ai-quota-exhausted']
+    ];
+    for (const [override, status, error] of cases) {
+      const { response, bindings } = await send({}, override);
+      expect(response.status).toBe(status);
+      await expect(response.json()).resolves.toEqual({ error });
+      expect(bindings.AI.run).not.toHaveBeenCalled();
+    }
+  });
+
+  it('reserves exactly one daily slot after auth, access, rate limits and payload validation', async () => {
+    const quota = quotaBinding({ status: 'ok', remaining: 41 });
+    const { response, bindings } = await send({}, { QUIZ_DAILY_USAGE: quota.binding });
+    expect(response.status).toBe(200);
+    expect(quota.binding.getByName).toHaveBeenCalledWith('quiz-stt-global-v1');
+    expect(quota.fetch).toHaveBeenCalledTimes(1);
+    const quotaRequest = quota.fetch.mock.calls[0][0];
+    expect(quotaRequest).toBeInstanceOf(Request);
+    expect(await quotaRequest.json()).toEqual(expect.objectContaining({
+      day: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      limit: 100
+    }));
+    expect(bindings.AI.run).toHaveBeenCalledTimes(1);
+
+    const invalidQuota = quotaBinding({ status: 'ok', remaining: 41 });
+    const invalid = await send({ type: 'application/json' }, { QUIZ_DAILY_USAGE: invalidQuota.binding });
+    expect(invalid.response.status).toBe(415);
+    expect(invalidQuota.fetch).not.toHaveBeenCalled();
+    expect(invalid.bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it('keeps an atomic UTC-day count without storing identity, audio or transcript data', async () => {
+    let record;
+    const get = vi.fn(async () => record);
+    const put = vi.fn(async (_key, value) => { record = value; });
+    const transaction = vi.fn(async callback => callback({ get, put }));
+    const quota = new QuizDailyUsageQuota({ storage: { transaction } }, {});
+    const reserve = () => quota.fetch(new Request('https://quiz-quota.internal/reserve', {
+      method: 'POST', body: JSON.stringify({ day: '2026-10-24', limit: 2 })
+    })).then(response => response.json());
+
+    await expect(reserve()).resolves.toEqual({ status: 'ok', remaining: 1 });
+    await expect(reserve()).resolves.toEqual({ status: 'ok', remaining: 0 });
+    await expect(reserve()).resolves.toEqual({ status: 'limited', remaining: 0 });
+    expect(record).toEqual({ day: '2026-10-24', used: 2 });
+    expect(JSON.stringify(record)).not.toMatch(new RegExp(`${USER}|token|audio|transcript`, 'i'));
+
+    await expect(quota.fetch(new Request('https://quiz-quota.internal/reserve', {
+      method: 'POST', body: JSON.stringify({ day: '2026-10-25', limit: 2 })
+    })).then(response => response.json())).resolves.toEqual({ status: 'ok', remaining: 1 });
+    expect(record).toEqual({ day: '2026-10-25', used: 1 });
+  });
+
+  it('caps the committed pilot at 100 daily inferences with conservative free-allocation headroom', () => {
+    expect(QUIZ_STT_MAX_DAILY_INFERENCES).toBe(100);
+    // 100 honest maximum-duration (8 s) captures reserve about 621.74 neurons,
+    // well below the provider's current 10,000-neuron free allocation.
+    expect((100 * 8 / 60) * 46.63).toBeLessThan(1000);
   });
 
   it('rejects invalid content types, languages and oversized audio before inference', async () => {

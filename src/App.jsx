@@ -5828,6 +5828,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     setSpeechTranscript('');
     setSpeechResult(null);
     setQuizSpeechConsentOpen(false);
+    quizSpeechConsentGrantedRef.current = false;
   }, [quizSpeechContextKey]);
 
   useEffect(() => {
@@ -5849,6 +5850,9 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         setQuizSpeechConsentOpen(true);
         return;
       }
+      // Consent is deliberately single-use. Every new audio upload requires
+      // the adult/guardian acknowledgement again; retry never inherits it.
+      quizSpeechConsentGrantedRef.current = false;
       speechStartGenerationRef.current += 1;
       const generation = speechStartGenerationRef.current;
       const contextKey = quizSpeechContextKey;

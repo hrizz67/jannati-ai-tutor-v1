@@ -27,7 +27,7 @@ Baseline: main 7a798878b92bee0f1206d843165569ef2ba5bcc9, stable v3.13.32.
 1. Review new Worker security policy, CORS, Supabase verification, allowlist, two rate-limit bindings and real production-account namespace assignments.
 2. Put SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY and QUIZ_PILOT_ALLOWED_USER_IDS in protected Worker environment secrets. Never commit real values.
 3. Enable QUIZ_STT_PILOT_ENABLED=true only in isolated approved pilot environment.
-4. Enable VITE_QUIZ_MOBILE_STT_PILOT_ENABLED=true and VITE_QUIZ_STT_ENDPOINT=https://<qa-worker-host>/v1/quiz/transcribe only in isolated QA build; never tagged public production.
+4. QA builds continue using the isolated QA endpoint. Tagged public production may carry the separate production build permit only for explicit `?quizMobileSttPilot=1` opt-in; automatic activation remains false and the server-side production controls are mandatory.
 5. Verify eligible vs ineligible authenticated users, expired tokens, no auth, invalid origins, quota exhaustion, no speech, oversized audio, permission denied and stale navigation.
 6. Verify real transcript accuracy and first-tap behavior for five sequential questions in iPhone Safari and Android Chrome; test desktop fallback.
 7. For wider activation follow `P117_PRODUCTION_STT_ROLLOUT.md`: explicit adult consent, privacy notice, production Supabase authentication, registered-user access policy, capacity review and physical iPhone/Android acceptance are mandatory. VoiceOver/TalkBack remain separately reportable hardware checks.
