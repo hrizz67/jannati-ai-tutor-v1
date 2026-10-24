@@ -1,48 +1,44 @@
-# Jannati AI Tutor 3.13.34 Release Notes
+# Jannati AI Tutor 3.13.35 Release Notes
 
 Status: stable
-Tag: v3.13.34
-Build date: 2026-10-23T10:36:08.736Z
+Tag: v3.13.35
+Build date: 2026-10-24T11:21:03.435Z
 
-## Production Deployment Smoke Repair
+## Registered-account Quiz STT opt-in preparation
 
-- Repairs the tagged-release smoke gate so it validates Supabase configuration across the complete verified production JavaScript build, including deferred vendor and lazy chunks, instead of assuming the configuration is present in the entry chunk.
-- Builds an expected same-origin JavaScript asset manifest from the local production output and verifies the deployed HTML entry name plus the SHA-256 content of every expected JavaScript asset.
-- Rejects missing, redirected, cross-origin, stale, or mixed-release JavaScript assets before checking production configuration.
-- Reuses the existing production Supabase guard across the combined verified assets, preserving rejection of placeholders, service-role credentials, secret keys, missing configuration, and conflicting project configuration.
-- Verifies Supabase Auth health and CORS without printing credentials or sensitive response bodies. Existing bounded GitHub Pages propagation retries remain in place.
-- The failed immutable `v3.13.33` tag is not deleted, moved, or force-updated. This patch prepares a new immutable release path through `v3.13.34`.
-- Tagged production builds explicitly set Quiz MediaRecorder-STT automatic activation to `false`. Mobile Quiz retains the previous native speech behavior where supported, with editable manual typing always available.
+- Adds a production-build opt-in path for Quiz MediaRecorder transcription. It remains explicit rather than automatic; ordinary mobile Quiz behavior and editable manual typing remain available.
+- Uses a dedicated Quiz STT Worker that authenticates Supabase production sessions server-side and permits registered accounts without a UUID allowlist.
+- Preserves exact production CORS, per-account and global rate limits, a 1 MiB audio guard, the eight-second browser capture limit, and a server-side emergency kill switch.
+- Adds a strongly consistent Durable Object counter capped at 100 AI inference reservations per UTC day. The counter fails closed and stores only the UTC date and aggregate count.
+- Requires a fresh adult or lawful parent/guardian acknowledgement for every short recording. Audio is transient, the transcript remains editable, and Quiz never grades automatically from the transcript.
+- Does not change the existing Bacaan/Bertutur Worker, Supabase schema/RPC, rewards, XP, coins, Premium/payment, or any of the 4,530 question contracts.
 
-## Preserved P1.17 Safety Boundary
+## Activation boundary
 
-- The dedicated Quiz STT Worker remains OFF through its committed emergency kill switch. This release preparation does not activate Quiz STT or authorize general registered-user access.
-- Existing Bacaan/Bertutur behavior, desktop Quiz behavior, reward, XP, coins, cloud sync, Premium/payment, Supabase schema/RPC, and all 4,530 question contracts remain unchanged.
-- Quiz recording still requires explicit learner action and adult, parent, or guardian consent. Manual typing remains available, transcripts remain editable, and speech is not graded automatically.
-- No audio, transcript, credential, or learner-content persistence is added.
+- The dedicated production Quiz STT Worker configuration keeps `QUIZ_STT_PILOT_ENABLED=false` and diagnostics disabled; the reviewed Worker must first be deployed and verified in that OFF state.
+- This frontend release does **not** activate Quiz STT for all registered accounts. The query opt-in cannot bypass the server kill switch, authentication, access policy, rate limits, or quota.
+- Activation remains blocked until the live Cloudflare account is verified as Free with no paid billing path, the Worker passes an OFF-baseline and controlled security/quota test, and adult-consented physical tests pass on iPhone Safari and Android Chrome.
+- Guardian status is self-attested in the current UI; it is not an independently verified or auditable guardian relationship. Product/legal acceptance remains required before broad child use.
 
-## Release Readiness
+## Release readiness
 
-- Package, lockfile, tag metadata, generated reports, and release artifacts are aligned to 3.13.34.
-- Unit tests: 1,050 passed, including 12 focused deployment-smoke regressions and a tagged-production Quiz STT disable regression.
+- Unit tests: 1,054 passed across 67 test files.
 - Validation: 0 errors, 0 warnings, 14,816 informational items.
 - Subjects: 8; topics: 84; questions: 4,530; curriculum coverage: 100%.
-- Production-equivalent bundle: initial JavaScript 869.33 / 900 kB, entry 304.29 / 350 kB, largest lazy chunk 459.49 / 480 kB, Tutor incremental runtime 107.94 / 125 kB.
-- Credential safety, build structure, speech/STT regressions, Worker tests, QA-preview isolation, and release-pipeline audits pass.
+- Tagged-production-equivalent bundle: initial JavaScript 869.22 / 900 kB, entry 304.52 / 350 kB, largest lazy chunk 459.49 / 480 kB, Tutor incremental runtime 107.85 / 125 kB.
+- Credential safety, build structure, speech/STT regressions, Worker tests, QA-preview isolation, release-pipeline audits, and the production Worker Wrangler dry-run pass.
 
-## Physical Acceptance Status
+## Physical acceptance status
 
 - Quiz MediaRecorder-STT on iPhone Safari: **NOT RUN**.
 - Quiz MediaRecorder-STT on Android Chrome: **NOT RUN**.
 - VoiceOver and TalkBack: **NOT RUN**.
-- General registered-user Quiz STT activation: **BLOCKED pending both mobile physical tests and separate authorization**.
-- Existing native Web Speech and Bacaan/Bertutur physical regression for this release: **NOT RUN**.
-- The prior `MATH-NOMBOR-PILOT-007` physical-iPhone exception remains **OPEN / NOT VERIFIED**.
-- Automated tests prove bounded software contracts; they do not prove physical microphone reliability or privacy-indicator clearance.
+- Five-question microphone lifecycle, latency, retry, quota display, and privacy-indicator clearance: **NOT RUN**.
+- Existing native Quiz speech and Bacaan/Bertutur physical regression for this release: **NOT RUN**.
+- Automated validation does not prove physical microphone reliability or authorize broad activation.
 
-## Rollback Reference
+## Rollback reference
 
-- Last stable completed release: `v3.13.32` at source commit `7a798878b92bee0f1206d843165569ef2ba5bcc9`.
-- GitHub Pages commit before the partial `v3.13.33` publish: `8a6293d7393ed9ba6fc30416b953d281d362990e`.
-- The partially published `v3.13.33` Pages commit is `e73d376d47788b65993f7079a8d6e0740887284f`; its official deployment workflow did not complete successfully.
-- Frontend rollback must use the repository's existing immutable tagged deployment path. Do not retag or force-push `v3.13.33`.
+- Last stable production release before this patch: `v3.13.34` at source commit `9e5806af13a414ce7c999d495112c65024febdd1`.
+- GitHub Pages before this release: `5a6361fb73498925e2473857f8a35c361ccf7ce7`.
+- Frontend rollback must use the repository's immutable tagged deployment path. The Worker can be independently returned to its committed OFF state through the existing kill switch.
