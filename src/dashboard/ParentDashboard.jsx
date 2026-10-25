@@ -33,6 +33,7 @@ import { getStudentDisplayName } from '../utils/displayFormatter';
 import { createCanonicalProgress, toParentProgressProfile } from '../utils/canonicalProgress.js';
 import { getCanonicalAnalytics } from '../utils/canonicalAnalytics.js';
 import { createCanonicalGamification } from '../utils/canonicalGamification.js';
+import QuizSttGuardianConsentPanel from '../components/parent/QuizSttGuardianConsentPanel.jsx';
 
 function safeNumber(value, fallback = 0) {
   const number = Number(value);
@@ -133,6 +134,7 @@ function getCloudStateMessage(status) {
 }
 
 export default function ParentDashboard({
+  hasAccountSession = false,
   profile,
   adaptiveProfile,
   canonicalProgress = null,
@@ -368,6 +370,12 @@ export default function ParentDashboard({
           />
         )}
       </section>
+
+      <QuizSttGuardianConsentPanel
+        hasAccountSession={hasAccountSession}
+        childId={activeChildId}
+        childName={studentName}
+      />
 
       <section className="card parent-subject-section" data-parent-section="subjects">
         <h2>Subjek dan Penguasaan</h2>

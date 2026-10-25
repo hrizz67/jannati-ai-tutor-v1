@@ -26,6 +26,22 @@ export function getSupabaseClient() {
   return clientPromise;
 }
 
+// Guardian authorization must prove a fresh password session without replacing
+// the learner's persisted browser session or broadcasting an auth-state change.
+// This short-lived client keeps its session in memory only and is discarded
+// after the consent RPC completes.
+export async function getSupabaseReauthenticationClient() {
+  if (!supabaseConfigured) return null;
+  const { createClient } = await import('@supabase/supabase-js');
+  return createClient(supabaseUrl, supabasePublishableKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  });
+}
+
 export const supabaseConfig = {
   url: supabaseUrl || '',
   hasPublishableKey: Boolean(supabasePublishableKey)

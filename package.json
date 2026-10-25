@@ -4,7 +4,7 @@
   "homepage": "https://hrizz67.github.io/jannati-ai-tutor-v1",
   "scripts": {
     "dev": "vite",
-    "lint": "eslint src tests workers/stt/src workers/quiz-stt/src scripts/preview scripts/validate/architectureHardeningRegression.mjs scripts/validate/sttCredentialSafetyAudit.mjs scripts/validate/qaPreviewIsolationAudit.mjs scripts/validate/qaPreviewEnvironmentIsolationAudit.mjs vite.config.mjs eslint.config.mjs vitest.config.mjs",
+    "lint": "eslint src tests workers/stt/src workers/quiz-stt/src scripts/preview scripts/validate/architectureHardeningRegression.mjs scripts/validate/sttCredentialSafetyAudit.mjs scripts/validate/qaPreviewIsolationAudit.mjs scripts/validate/qaPreviewEnvironmentIsolationAudit.mjs scripts/validate/quizSttGuardianConsentDatabaseCheck.mjs vite.config.mjs eslint.config.mjs vitest.config.mjs",
     "test": "vitest run",
     "test:stt": "vitest run tests/unit/sttAdapter.test.js tests/unit/iosMediaSttIntegration.test.js tests/unit/cloudflareSttWorker.test.js",
     "test:worker": "vitest run tests/unit/cloudflareSttWorker.test.js",
@@ -65,6 +65,7 @@
     "validate:bundle": "node scripts/validate/bundleBudgetAudit.mjs",
     "validate:adaptive-subject": "node scripts/validate/adaptivePracticeSubjectGuardAudit.mjs",
     "validate:access": "node scripts/validate/accessControlAudit.mjs",
+    "validate:quiz-stt-consent-db:linked-qa": "node scripts/validate/quizSttGuardianConsentDatabaseCheck.mjs --linked-qa",
     "validate:admin-premium": "node scripts/validate/adminPremiumRegression.mjs",
     "validate:admin-console": "node scripts/validate/adminPremiumManagementRegression.mjs",
     "validate:admin-sql-42702": "node scripts/validate/adminSubscriptionSql42702Regression.mjs",

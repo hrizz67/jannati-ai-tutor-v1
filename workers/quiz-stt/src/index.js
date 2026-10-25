@@ -7,6 +7,8 @@ const PATH = '/v1/quiz/transcribe';
 const MAX_AUDIO_BYTES = 1024 * 1024;
 const MAX_TRANSCRIPT_LENGTH = 4000;
 const AUTH_TIMEOUT_MS = 4000;
+const CONSENT_TIMEOUT_MS = 4000;
+const CONSENT_NOTICE_VERSION = 'quiz-stt-cloudflare-bm-v1';
 const DAILY_QUOTA_OBJECT_NAME = 'quiz-stt-global-v1';
 const DAILY_QUOTA_INTERNAL_URL = 'https://quiz-quota.internal/reserve';
 const MAX_DAILY_INFERENCES = 100;
@@ -69,7 +71,7 @@ function allowedOrigin(request, env) {
 function allowedUserId(env, userId) {
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27,50}$/i.test(userId || '')) return 'denied';
   const accessMode = String(env.QUIZ_STT_ACCESS_MODE || 'allowlist').trim().toLowerCase();
-  if (accessMode === 'registered') return 'allowed';
+  if (accessMode === 'guardian-consent') return 'allowed';
   if (accessMode !== 'allowlist') return 'unavailable';
   return String(env.QUIZ_PILOT_ALLOWED_USER_IDS || '').split(',').some(s => s.trim() === userId)
     ? 'allowed'
@@ -81,9 +83,66 @@ function authServiceConfig(env) {
     if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash) return null;
     const key = String(env.SUPABASE_PUBLISHABLE_KEY || '');
     if (!key || key.length > 512) return null;
-    return { url: url.origin + '/auth/v1/user', key };
+    return {
+      url: url.origin + '/auth/v1/user',
+      consentUrl: url.origin + '/rest/v1/rpc/verify_quiz_stt_guardian_consent_v1',
+      key
+    };
   } catch {
     return null;
+  }
+}
+function guardianConsentRequired(env) {
+  return String(env.QUIZ_STT_ACCESS_MODE || '').trim().toLowerCase() === 'guardian-consent';
+}
+async function verifyGuardianConsent(request, env, fetchImpl, { timeoutMs = CONSENT_TIMEOUT_MS } = {}) {
+  if (String(env.QUIZ_STT_CONSENT_NOTICE_VERSION || '') !== CONSENT_NOTICE_VERSION) {
+    return { error: 'guardian-consent-unavailable', status: 503 };
+  }
+  const token = String(request.headers.get('X-Jannati-Consent-Token') || '').trim();
+  const childId = String(request.headers.get('X-Jannati-Child-Id') || '').trim();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(token)) {
+    return { error: 'guardian-consent-required', status: 403 };
+  }
+  if (!/^child-[A-Za-z0-9._:-]{1,194}$/.test(childId)) {
+    return { error: 'guardian-consent-required', status: 403 };
+  }
+  const config = authServiceConfig(env);
+  if (!config || typeof fetchImpl !== 'function') return { error: 'guardian-consent-unavailable', status: 503 };
+  const authorization = String(request.headers.get('Authorization') || '');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetchImpl(config.consentUrl, {
+      method: 'POST',
+      headers: {
+        apikey: config.key,
+        Authorization: authorization,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_consent_token: token, p_child_id: childId }),
+      cache: 'no-store',
+      redirect: 'manual',
+      signal: controller.signal
+    });
+    if (response.status >= 300 && response.status <= 399) return { error: 'guardian-consent-unavailable', status: 503 };
+    if (response.status === 401 || response.status === 403) return { error: 'authentication-required', status: 401 };
+    if (!response.ok) return { error: 'guardian-consent-unavailable', status: 503 };
+    const text = await response.text();
+    if (text.length > 1024) return { error: 'guardian-consent-unavailable', status: 503 };
+    const result = JSON.parse(text);
+    if (!result || typeof result !== 'object' || Array.isArray(result)) {
+      return { error: 'guardian-consent-unavailable', status: 503 };
+    }
+    if (result.granted !== true || result.status !== 'granted' || result.noticeVersion !== CONSENT_NOTICE_VERSION) {
+      return { error: 'guardian-consent-required', status: 403 };
+    }
+    return { granted: true };
+  } catch {
+    return { error: 'guardian-consent-unavailable', status: 503 };
+  } finally {
+    clearTimeout(timer);
   }
 }
 async function verifyUser(request, env, fetchImpl, {
@@ -216,7 +275,7 @@ function preflight(request, origin) {
   if (request.headers.get('Access-Control-Request-Method') !== 'POST') return fail('method-not-allowed', 405, origin);
   const requested = (request.headers.get('Access-Control-Request-Headers') || '')
     .toLowerCase().split(',').map(v => v.trim()).filter(Boolean);
-  if (requested.some(k => !['authorization', 'content-type', 'x-stt-language'].includes(k))) {
+  if (requested.some(k => !['authorization', 'content-type', 'x-stt-language', 'x-jannati-consent-token', 'x-jannati-child-id'].includes(k))) {
     return fail('headers-not-allowed', 403, origin);
   }
   return new Response(null, {
@@ -224,7 +283,7 @@ function preflight(request, origin) {
     headers: {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'authorization, content-type, x-stt-language',
+      'Access-Control-Allow-Headers': 'authorization, content-type, x-stt-language, x-jannati-consent-token, x-jannati-child-id',
       'Access-Control-Max-Age': '600',
       'Cache-Control': 'no-store',
       'Vary': 'Origin',
@@ -268,6 +327,10 @@ export async function handleRequest(request, env = {}, {
   const access = allowedUserId(env, user.id);
   if (access === 'unavailable') return fail('access-policy-unavailable', 503, origin);
   if (access !== 'allowed') return fail('pilot-access-denied', 403, origin);
+  if (guardianConsentRequired(env)) {
+    const consent = await verifyGuardianConsent(request, env, fetchImpl, { timeoutMs: authTimeoutMs });
+    if (consent.error) return fail(consent.error, consent.status, origin);
+  }
   // Per-account quota is keyed ONLY from the verified Supabase user ID.
   const accountLimit = await consume(env.QUIZ_ACCOUNT_RATE_LIMITER, `quiz-account:${user.id}`);
   if (accountLimit !== 'ok') return fail(accountLimit === 'limited' ? 'stt-rate-limited' : 'rate-limit-unavailable', accountLimit === 'limited' ? 429 : 503, origin);
@@ -320,6 +383,7 @@ export async function handleRequest(request, env = {}, {
 export default { fetch: handleRequest };
 export const QUIZ_STT_MAX_AUDIO_BYTES = MAX_AUDIO_BYTES;
 export const QUIZ_STT_MAX_DAILY_INFERENCES = MAX_DAILY_INFERENCES;
+export const QUIZ_STT_CONSENT_NOTICE_VERSION = CONSENT_NOTICE_VERSION;
 
 // Stores only one UTC date and a global count. It never receives or stores a
 // user ID, token, audio, transcript or learner content.

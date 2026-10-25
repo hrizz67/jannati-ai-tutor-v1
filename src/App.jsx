@@ -5786,7 +5786,10 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   const speechStartGenerationRef = useRef(0);
   const activeSpeechContextRef = useRef('');
   const quizSpeechConsentGrantedRef = useRef(false);
+  const quizGuardianConsentRef = useRef(null);
+  const quizConsentCheckRef = useRef(false);
   const quizMobileSttPilot = useMemo(() => resolveQuizMobileSttPilot(), []);
+  const quizActiveChildId = readActiveChildId();
   const quizSpeechContextKey = `quiz:${subject?.id || ''}:${topic?.id || ''}:${questionIndex}:${question?.id || ''}`;
   activeSpeechContextRef.current = quizSpeechContextKey;
   const speechSupported = useMemo(() => quizMobileSttPilot.requested
@@ -5806,7 +5809,13 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       // Only the explicit Quiz pilot gets an Authorization-bearing adapter.
       // Reading/Bertutur continue using their own unmodified shared Worker.
       setQuizMobileSttFactory(() => configured
-        ? options => factory({ ...options, adapterFactory: adapter.createAuthenticatedQuizSttAdapter })
+        ? options => factory({
+          ...options,
+          adapterFactory: () => adapter.createAuthenticatedQuizSttAdapter({
+            consentToken: options.consentToken,
+            childId: options.childId
+          })
+        })
         : null);
     }).catch(() => {
       if (mounted) setQuizMobileSttFactory(null);
@@ -5829,13 +5838,15 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
     setSpeechResult(null);
     setQuizSpeechConsentOpen(false);
     quizSpeechConsentGrantedRef.current = false;
+    quizGuardianConsentRef.current = null;
+    quizConsentCheckRef.current = false;
   }, [quizSpeechContextKey]);
 
   useEffect(() => {
     if (answerChecked) speechSessionRef.current?.cancel?.('answer-checked');
   }, [answerChecked]);
 
-  function handleSpeechStart() {
+  async function handleSpeechStart() {
     if (!speechSupported || !speechAnswer || answerChecked) return;
     if (quizMobileSttPilot.requested) {
       if (!quizMobileSttPilot.enabled || !quizMobileSttFactory) return;
@@ -5845,14 +5856,41 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         prior.stop('manual-stop');
         return;
       }
-      if (nativeState === 'stopping' || nativeState === 'transcribing') return;
+      if (nativeState === 'stopping' || nativeState === 'transcribing' || quizConsentCheckRef.current) return;
       if (!quizSpeechConsentGrantedRef.current) {
+        quizConsentCheckRef.current = true;
+        setSpeechState('checking-consent');
+        const consentContext = quizSpeechContextKey;
+        const consentGeneration = speechStartGenerationRef.current;
+        let guardianConsent;
+        try {
+          const consentService = await import('./services/quizSttGuardianConsent.js');
+          guardianConsent = await consentService.getQuizSttGuardianConsent(quizActiveChildId);
+        } catch {
+          guardianConsent = null;
+        } finally {
+          quizConsentCheckRef.current = false;
+        }
+        if (activeSpeechContextRef.current !== consentContext
+          || speechStartGenerationRef.current !== consentGeneration) return;
+        setSpeechState('idle');
+        if (!guardianConsent?.granted || !guardianConsent?.consentToken) {
+          quizGuardianConsentRef.current = null;
+          setSpeechResult({
+            source: 'mobile-stt',
+            message: 'Persetujuan penjaga belum disahkan. Gunakan pilihan menaip atau minta penjaga membuka Kawasan Ibu Bapa.'
+          });
+          return;
+        }
+        quizGuardianConsentRef.current = guardianConsent;
         setQuizSpeechConsentOpen(true);
         return;
       }
       // Consent is deliberately single-use. Every new audio upload requires
       // the adult/guardian acknowledgement again; retry never inherits it.
       quizSpeechConsentGrantedRef.current = false;
+      const consentToken = quizGuardianConsentRef.current?.consentToken || '';
+      quizGuardianConsentRef.current = null;
       speechStartGenerationRef.current += 1;
       const generation = speechStartGenerationRef.current;
       const contextKey = quizSpeechContextKey;
@@ -5868,6 +5906,8 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         contextKey,
         getCurrentContextKey: () => activeSpeechContextRef.current,
         captureDurationMs: QUIZ_MOBILE_STT_CAPTURE_DURATION_MS,
+        consentToken,
+        childId: quizActiveChildId,
         onStateChange(nextState) {
           if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
           const mapped = {
@@ -5969,11 +6009,12 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
   function confirmQuizSpeechConsent() {
     quizSpeechConsentGrantedRef.current = true;
     setQuizSpeechConsentOpen(false);
-    handleSpeechStart();
+    void handleSpeechStart();
   }
 
   function declineQuizSpeechConsent() {
     setQuizSpeechConsentOpen(false);
+    quizGuardianConsentRef.current = null;
     setSpeechResult({
       source: 'mobile-stt',
       message: 'Tiada rakaman dibuat. Kamu masih boleh menaip jawapan.'
@@ -5982,6 +6023,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
 
   const speechStatusLabel = {
     idle: 'Sedia',
+    'checking-consent': 'Menyemak persetujuan',
     starting: 'Memulakan mikrofon',
     listening: 'Mendengar',
     recording: 'Sedang merakam',
@@ -5995,6 +6037,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
 
   const speechButtonLabel = quizMobileSttPilot.requested ? ({
     idle: 'Mikrofon',
+    'checking-consent': 'Menyemak persetujuan',
     starting: 'Memulakan',
     recording: 'Henti rakaman',
     stopping: 'Menghentikan',
