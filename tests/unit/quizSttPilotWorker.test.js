@@ -13,6 +13,8 @@ const USER = '11111111-1111-4111-8111-111111111111';
 const OTHER = '22222222-2222-4222-8222-222222222222';
 const TOKEN = 'a'.repeat(64);
 const CONSENT_TOKEN = '33333333-3333-4333-8333-333333333333';
+const CHILD_ID = 'child-11111111-1111-4111-8111-111111111111';
+const OTHER_CHILD_ID = 'child-22222222-2222-4222-8222-222222222222';
 const URL = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 
 function quotaBinding(result = { status: 'ok', remaining: 99 }) {
@@ -40,7 +42,7 @@ function env(overrides = {}) {
 }
 function request(path = URL, {
   origin = ORIGIN, token = TOKEN, type = 'audio/mp4;codecs=mp4a.40.2',
-  language = 'ms-MY', consentToken = CONSENT_TOKEN, contentLength, body = new Uint8Array([1, 2, 3])
+  language = 'ms-MY', consentToken = CONSENT_TOKEN, childId = CHILD_ID, contentLength, body = new Uint8Array([1, 2, 3])
 } = {}) {
   const headers = {
     Origin: origin,
@@ -49,6 +51,7 @@ function request(path = URL, {
   };
   if (token != null) headers.Authorization = 'Bearer ' + token;
   if (consentToken != null) headers['X-Jannati-Consent-Token'] = consentToken;
+  if (childId != null) headers['X-Jannati-Child-Id'] = childId;
   if (contentLength != null) headers['Content-Length'] = String(contentLength);
   return new Request(path, { method: 'POST', headers, body });
 }
@@ -56,11 +59,13 @@ const auth = (user = USER, status = 200) => vi.fn(async () => new Response(
   status === 200 ? JSON.stringify({ id: user }) : '{}',
   { status, headers: { 'Content-Type': 'application/json' } }
 ));
-const authAndConsent = ({ user = USER, granted = true, status = 'granted', noticeVersion = QUIZ_STT_CONSENT_NOTICE_VERSION } = {}) => vi.fn(async url => {
+const authAndConsent = ({ user = USER, granted = true, status = 'granted', noticeVersion = QUIZ_STT_CONSENT_NOTICE_VERSION, childId = CHILD_ID } = {}) => vi.fn(async (url, init) => {
   if (String(url).endsWith('/auth/v1/user')) {
     return Response.json({ id: user });
   }
   if (String(url).endsWith('/rest/v1/rpc/verify_quiz_stt_guardian_consent_v1')) {
+    const request = JSON.parse(init.body);
+    if (request.p_child_id !== childId) return Response.json({ granted: false, status: 'child-mismatch', noticeVersion: null });
     return Response.json({ granted, status, noticeVersion });
   }
   throw new Error('unexpected-upstream');
@@ -122,11 +127,12 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const response = await handleRequest(new Request(URL, { method: 'OPTIONS', headers: {
       Origin: ORIGIN,
       'Access-Control-Request-Method': 'POST',
-      'Access-Control-Request-Headers': 'authorization,content-type,x-stt-language,x-jannati-consent-token'
+      'Access-Control-Request-Headers': 'authorization,content-type,x-stt-language,x-jannati-consent-token,x-jannati-child-id'
     } }), bindings);
     expect(response.status).toBe(204);
     expect(response.headers.get('Access-Control-Allow-Headers')).toContain('authorization');
     expect(response.headers.get('Access-Control-Allow-Headers')).toContain('x-jannati-consent-token');
+    expect(response.headers.get('Access-Control-Allow-Headers')).toContain('x-jannati-child-id');
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe(ORIGIN);
     expect(response.headers.get('Access-Control-Allow-Credentials')).toBeNull();
     const denied = await handleRequest(new Request(URL, { method: 'OPTIONS', headers: {
@@ -190,11 +196,31 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(bindings.AI.run).toHaveBeenCalledTimes(1);
     expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: 'quiz-account:' + OTHER });
+    const consentCall = fetchImpl.mock.calls[1];
+    expect(JSON.parse(consentCall[1].body)).toEqual({
+      p_consent_token: CONSENT_TOKEN,
+      p_child_id: CHILD_ID
+    });
+  });
+
+  it('rejects cross-child consent use before quota spend or inference', async () => {
+    const fetchImpl = authAndConsent({ user: OTHER, childId: CHILD_ID });
+    const { response, bindings } = await send({ childId: OTHER_CHILD_ID }, {
+      QUIZ_STT_ACCESS_MODE: 'guardian-consent',
+      QUIZ_PILOT_ALLOWED_USER_IDS: ''
+    }, fetchImpl);
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({ error: 'guardian-consent-required' });
+    expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(bindings.QUIZ_DAILY_USAGE.getByName).not.toHaveBeenCalled();
+    expect(bindings.AI.run).not.toHaveBeenCalled();
   });
 
   it.each([
     [{ consentToken: null }, authAndConsent(), 'guardian-consent-required'],
     [{ consentToken: 'malformed' }, authAndConsent(), 'guardian-consent-required'],
+    [{ childId: null }, authAndConsent(), 'guardian-consent-required'],
+    [{ childId: 'child/unsafe' }, authAndConsent(), 'guardian-consent-required'],
     [{}, authAndConsent({ granted: false, status: 'revoked' }), 'guardian-consent-required'],
     [{}, authAndConsent({ noticeVersion: 'older-notice' }), 'guardian-consent-required']
   ])('rejects missing, invalid, revoked or stale guardian consent before account spend and inference', async (options, fetchImpl, error) => {

@@ -31,6 +31,7 @@ function providerError(response) {
 export function createAuthenticatedQuizSttAdapter({
   endpoint,
   consentToken,
+  childId,
   fetchImpl = globalThis.fetch,
   getClient = getSupabaseClient
 } = {}) {
@@ -38,13 +39,16 @@ export function createAuthenticatedQuizSttAdapter({
   const configuredConsentToken = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(consentToken || '').trim())
     ? String(consentToken).trim()
     : '';
+  const configuredChildId = /^child-[A-Za-z0-9._:-]{1,194}$/.test(String(childId || '').trim())
+    ? String(childId).trim()
+    : '';
   return createSttAdapter({
     provider: 'cloudflare-workers-ai',
     timeoutMs: 20000,
     maxBytes: PILOT_MAX_BYTES,
     maxDurationMs: PILOT_MAX_DURATION_MS,
     request: async ({ blob, mimeType, language, signal }) => {
-      if (!configuredEndpoint || !configuredConsentToken || typeof fetchImpl !== 'function') {
+      if (!configuredEndpoint || !configuredConsentToken || !configuredChildId || typeof fetchImpl !== 'function') {
         throw new MediaSttError('stt-unavailable', 'pilot-not-configured');
       }
       const supabase = await getClient();
@@ -64,7 +68,8 @@ export function createAuthenticatedQuizSttAdapter({
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': mimeType || blob.type || 'application/octet-stream',
             'X-STT-Language': language,
-            'X-Jannati-Consent-Token': configuredConsentToken
+            'X-Jannati-Consent-Token': configuredConsentToken,
+            'X-Jannati-Child-Id': configuredChildId
           },
           body: blob,
           cache: 'no-store',

@@ -5811,7 +5811,10 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
       setQuizMobileSttFactory(() => configured
         ? options => factory({
           ...options,
-          adapterFactory: () => adapter.createAuthenticatedQuizSttAdapter({ consentToken: options.consentToken })
+          adapterFactory: () => adapter.createAuthenticatedQuizSttAdapter({
+            consentToken: options.consentToken,
+            childId: options.childId
+          })
         })
         : null);
     }).catch(() => {
@@ -5904,6 +5907,7 @@ function Quiz({ subject, topic, questionIndex, answer, feedback, isBookmarked, c
         getCurrentContextKey: () => activeSpeechContextRef.current,
         captureDurationMs: QUIZ_MOBILE_STT_CAPTURE_DURATION_MS,
         consentToken,
+        childId: quizActiveChildId,
         onStateChange(nextState) {
           if (activeSpeechContextRef.current !== contextKey || generation !== speechStartGenerationRef.current) return;
           const mapped = {

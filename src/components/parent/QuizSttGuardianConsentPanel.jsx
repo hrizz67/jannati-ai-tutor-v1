@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  grantQuizSttGuardianConsent,
   getQuizSttGuardianConsent,
   setQuizSttGuardianConsent
 } from '../../services/quizSttGuardianConsent.js';
@@ -7,11 +8,13 @@ import {
 export default function QuizSttGuardianConsentPanel({ hasAccountSession, childId, childName = 'murid' }) {
   const [consent, setConsent] = useState({ status: 'loading', granted: false, eligible: false });
   const [acknowledged, setAcknowledged] = useState(false);
+  const [password, setPassword] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let current = true;
     setAcknowledged(false);
+    setPassword('');
     setConsent({ status: 'loading', granted: false, eligible: false });
     if (!hasAccountSession || !childId) {
       setConsent({ status: 'unavailable', granted: false, eligible: false });
@@ -24,11 +27,14 @@ export default function QuizSttGuardianConsentPanel({ hasAccountSession, childId
   }, [hasAccountSession, childId]);
 
   async function updateConsent(granted) {
-    if (saving || (granted && !acknowledged)) return;
+    if (saving || (granted && (!acknowledged || !password))) return;
     setSaving(true);
-    const result = await setQuizSttGuardianConsent({ childId, granted });
+    const result = granted
+      ? await grantQuizSttGuardianConsent({ childId, password })
+      : await setQuizSttGuardianConsent({ childId, granted: false });
     setConsent(result);
     setAcknowledged(false);
+    setPassword('');
     setSaving(false);
   }
 
@@ -66,9 +72,22 @@ export default function QuizSttGuardianConsentPanel({ hasAccountSession, childId
             />
             <span>Saya ialah ibu bapa atau penjaga sah bagi murid ini. Saya memahami notis di atas dan membenarkan penggunaan rakaman pendek untuk transkripsi kuiz.</span>
           </label>
+          <label htmlFor="quiz-stt-guardian-password">Sahkan dengan kata laluan akaun ibu bapa</label>
+          <input
+            id="quiz-stt-guardian-password"
+            name="quiz-stt-guardian-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={event => setPassword(event.target.value)}
+            disabled={saving || !acknowledged}
+            aria-describedby="quiz-stt-guardian-password-help"
+            required
+          />
+          <small id="quiz-stt-guardian-password-help">Kata laluan disahkan terus oleh perkhidmatan akaun dan tidak disimpan dalam rekod persetujuan.</small>
           <button
             type="button"
-            disabled={!acknowledged || saving || consent.status === 'loading' || consent.status === 'unavailable' || consent.status === 'child-not-found'}
+            disabled={!acknowledged || !password || saving || consent.status === 'loading' || consent.status === 'unavailable' || consent.status === 'child-not-found'}
             onClick={() => updateConsent(true)}
           >
             {saving ? 'Menyimpan...' : 'Beri persetujuan'}

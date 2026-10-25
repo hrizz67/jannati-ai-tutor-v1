@@ -100,7 +100,11 @@ async function verifyGuardianConsent(request, env, fetchImpl, { timeoutMs = CONS
     return { error: 'guardian-consent-unavailable', status: 503 };
   }
   const token = String(request.headers.get('X-Jannati-Consent-Token') || '').trim();
+  const childId = String(request.headers.get('X-Jannati-Child-Id') || '').trim();
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(token)) {
+    return { error: 'guardian-consent-required', status: 403 };
+  }
+  if (!/^child-[A-Za-z0-9._:-]{1,194}$/.test(childId)) {
     return { error: 'guardian-consent-required', status: 403 };
   }
   const config = authServiceConfig(env);
@@ -117,7 +121,7 @@ async function verifyGuardianConsent(request, env, fetchImpl, { timeoutMs = CONS
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ p_consent_token: token }),
+      body: JSON.stringify({ p_consent_token: token, p_child_id: childId }),
       cache: 'no-store',
       redirect: 'manual',
       signal: controller.signal
@@ -271,7 +275,7 @@ function preflight(request, origin) {
   if (request.headers.get('Access-Control-Request-Method') !== 'POST') return fail('method-not-allowed', 405, origin);
   const requested = (request.headers.get('Access-Control-Request-Headers') || '')
     .toLowerCase().split(',').map(v => v.trim()).filter(Boolean);
-  if (requested.some(k => !['authorization', 'content-type', 'x-stt-language', 'x-jannati-consent-token'].includes(k))) {
+  if (requested.some(k => !['authorization', 'content-type', 'x-stt-language', 'x-jannati-consent-token', 'x-jannati-child-id'].includes(k))) {
     return fail('headers-not-allowed', 403, origin);
   }
   return new Response(null, {
@@ -279,7 +283,7 @@ function preflight(request, origin) {
     headers: {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'authorization, content-type, x-stt-language, x-jannati-consent-token',
+      'Access-Control-Allow-Headers': 'authorization, content-type, x-stt-language, x-jannati-consent-token, x-jannati-child-id',
       'Access-Control-Max-Age': '600',
       'Cache-Control': 'no-store',
       'Vary': 'Origin',

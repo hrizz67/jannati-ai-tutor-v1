@@ -121,6 +121,7 @@ const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/publ
 const declarativeIntegrityFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/learning_data_v3.sql', import.meta.url), 'utf8');
 const guardianConsentMigration = fs.readFileSync(new URL('../../supabase/migrations/20261025090000_quiz_stt_guardian_consent.sql', import.meta.url), 'utf8');
 const guardianConsentTable = fs.readFileSync(new URL('../../supabase/schemas/public/tables/quiz_stt_guardian_consent_events.sql', import.meta.url), 'utf8');
+const guardianAuthorizationTable = fs.readFileSync(new URL('../../supabase/schemas/public/tables/quiz_stt_guardian_authorization_challenges.sql', import.meta.url), 'utf8');
 const guardianConsentFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/quiz_stt_guardian_consent.sql', import.meta.url), 'utf8');
 const integrityTableNames = ['learning_data_backups', 'learning_sync_operations', 'learner_profiles', 'learning_states', 'learning_events'];
 const startTopicSource = app.slice(app.indexOf('  function startTopic('), app.indexOf('\n  async function startResume('));
@@ -183,10 +184,18 @@ for (const consentSql of [guardianConsentMigration, guardianConsentFunctions]) {
   assert.match(consentSql, /deletedChildren/, 'Deleted children must never remain eligible for voice consent.');
   assert.match(consentSql, /archivedChildren/, 'Archived children must never remain eligible for voice consent.');
   assert.doesNotMatch(consentSql, /jannati_child_profiles/, 'Legacy projections cannot safely prove current child eligibility.');
+  assert.match(consentSql, /begin_quiz_stt_guardian_authorization_v1/, 'A backend-issued guardian reauthentication challenge is required.');
+  assert.match(consentSql, /current_session_hash = initial_session_hash/, 'The grant RPC must reject the parent-locked session that created the challenge.');
+  assert.match(consentSql, /method ->> 'method' = 'password'/, 'Guardian grant must prove a fresh password authentication event.');
+  assert.match(consentSql, /matched_child_id is distinct from p_child_id/, 'Consent verification must bind the token to the requested child.');
+  assert.match(consentSql, /owns_active_child := public\._quiz_stt_account_owns_child_v1/, 'Consent verification must recheck active child ownership every time.');
 }
 assert.match(guardianConsentTable, /enable row level security/, 'The consent audit table must enable RLS.');
 assert.match(guardianConsentTable, /revoke all on table "public"\."quiz_stt_guardian_consent_events" from public, anon, authenticated;/, 'Consent audit rows must not be directly readable or writable by browsers.');
 assert.doesNotMatch(guardianConsentTable, /grant (select|insert|update|delete|all)[\s\S]{0,120}to authenticated/, 'Consent audit access must be RPC-only.');
+assert.match(guardianAuthorizationTable, /enable row level security/, 'Guardian authorization challenges must enable RLS.');
+assert.match(guardianAuthorizationTable, /initial_session_hash/, 'Guardian authorization challenges must store only a one-way session hash.');
+assert.doesNotMatch(guardianAuthorizationTable, /grant (select|insert|update|delete|all)[\s\S]{0,120}to authenticated/, 'Guardian authorization challenges must be RPC-only.');
 assert.doesNotMatch(guardianConsentMigration, /update\s+public\.quiz_stt_guardian_consent_events|delete\s+from\s+public\.quiz_stt_guardian_consent_events/i, 'Consent decisions must remain append-only.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');
 

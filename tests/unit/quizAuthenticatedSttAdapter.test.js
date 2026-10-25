@@ -9,14 +9,15 @@ const ENDPOINT = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 const BLOB = new Blob(['abc'], { type: 'audio/mp4' });
 const TOKEN = 'test-access-token';
 const CONSENT_TOKEN = '33333333-3333-4333-8333-333333333333';
+const CHILD_ID = 'child-11111111-1111-4111-8111-111111111111';
 function context() {
   return { activity: 'quiz', contextKey: 'quiz:bm:0', captureDurationMs: 8000, durationMs: 1200, stopReason: 'manual-stop' };
 }
 const client = () => Promise.resolve({
   auth: { getSession: async () => ({ data: { session: { access_token: TOKEN } } }) }
 });
-function adapter(fetchImpl, getClient = client, endpoint = ENDPOINT, consentToken = CONSENT_TOKEN) {
-  return createAuthenticatedQuizSttAdapter({ endpoint, consentToken, fetchImpl, getClient });
+function adapter(fetchImpl, getClient = client, endpoint = ENDPOINT, consentToken = CONSENT_TOKEN, childId = CHILD_ID) {
+  return createAuthenticatedQuizSttAdapter({ endpoint, consentToken, childId, fetchImpl, getClient });
 }
 function result(data = { transcript: 'kucing', confidence: 91, provider: 'cloudflare-workers-ai' }, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
@@ -44,7 +45,8 @@ describe('P1.17-V06 authenticated opt-in Quiz STT adapter', () => {
         Authorization: 'Bearer ' + TOKEN,
         'Content-Type': 'audio/mp4',
         'X-STT-Language': 'ms-MY',
-        'X-Jannati-Consent-Token': CONSENT_TOKEN
+        'X-Jannati-Consent-Token': CONSENT_TOKEN,
+        'X-Jannati-Child-Id': CHILD_ID
       }),
       credentials: 'omit', referrerPolicy: 'no-referrer'
     }));
@@ -59,13 +61,23 @@ describe('P1.17-V06 authenticated opt-in Quiz STT adapter', () => {
     }
   });
 
-  it('sends no child identifier, payload metadata or consent record to the Worker', async () => {
+  it('binds the opaque consent handle to the selected child without sending learner content', async () => {
     const fetchImpl = vi.fn(async () => result());
     await transcribe(adapter(fetchImpl));
     const headers = fetchImpl.mock.calls[0][1].headers;
-    expect(JSON.stringify(headers)).not.toMatch(/child-|account|transcript/i);
+    expect(headers['X-Jannati-Child-Id']).toBe(CHILD_ID);
+    expect(JSON.stringify(headers)).not.toMatch(/account|transcript|name|email/i);
     expect(readFileSync(new URL('../../src/ai/speech/quizAuthenticatedSttAdapter.js', import.meta.url), 'utf8'))
       .not.toMatch(/localStorage|sessionStorage/);
+  });
+
+  it('fails closed before upload when the active child identifier is missing or malformed', async () => {
+    for (const childId of ['', 'child-other/unsafe', '../child']) {
+      const fetchImpl = vi.fn(async () => result());
+      await expect(transcribe(adapter(fetchImpl, client, ENDPOINT, CONSENT_TOKEN, childId)))
+        .rejects.toMatchObject({ code: 'stt-unavailable' });
+      expect(fetchImpl).not.toHaveBeenCalled();
+    }
   });
 
   it('cannot send audio or leak tokens when session is missing', async () => {

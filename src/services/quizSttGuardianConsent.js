@@ -3,6 +3,7 @@ import { getSupabaseClient } from './supabaseClient.js';
 export const QUIZ_STT_PRIVACY_NOTICE_VERSION = 'quiz-stt-cloudflare-bm-v1';
 
 const CONSENT_TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function cleanChildId(value) {
   const childId = String(value || '').trim();
@@ -51,14 +52,15 @@ export async function getQuizSttGuardianConsent(childId, { getClient = getSupaba
 
 export async function setQuizSttGuardianConsent({ childId, granted }, { getClient = getSupabaseClient } = {}) {
   const normalizedChildId = cleanChildId(childId);
-  if (!normalizedChildId || typeof granted !== 'boolean') return unavailable('invalid-request');
+  if (!normalizedChildId || granted !== false) return unavailable('invalid-request');
   try {
     const client = await getClient();
     if (!client?.rpc) return unavailable();
     const { data, error } = await client.rpc('set_quiz_stt_guardian_consent_v1', {
       p_child_id: normalizedChildId,
-      p_granted: granted,
-      p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION
+      p_granted: false,
+      p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION,
+      p_guardian_challenge: null
     });
     if (error) return unavailable();
     return normalizeConsentResult(data);
@@ -67,7 +69,55 @@ export async function setQuizSttGuardianConsent({ childId, granted }, { getClien
   }
 }
 
+export async function grantQuizSttGuardianConsent(
+  { childId, password },
+  { getClient = getSupabaseClient } = {}
+) {
+  const normalizedChildId = cleanChildId(childId);
+  if (!normalizedChildId || typeof password !== 'string' || !password) {
+    return unavailable('invalid-request');
+  }
+  try {
+    const client = await getClient();
+    if (!client?.rpc || !client?.auth?.getSession || !client?.auth?.signInWithPassword) return unavailable();
+    const priorSession = await client.auth.getSession();
+    const priorUserId = priorSession?.data?.session?.user?.id;
+    const normalizedEmail = String(priorSession?.data?.session?.user?.email || '').trim();
+    if (typeof priorUserId !== 'string' || !priorUserId || !EMAIL_PATTERN.test(normalizedEmail)) {
+      return unavailable('guardian-reauth-required');
+    }
+
+    const challengeResult = await client.rpc('begin_quiz_stt_guardian_authorization_v1', {
+      p_child_id: normalizedChildId
+    });
+    const challengeToken = challengeResult?.data?.challengeToken;
+    if (challengeResult?.error || !CONSENT_TOKEN_PATTERN.test(challengeToken || '')) {
+      return unavailable('guardian-reauth-required');
+    }
+
+    const reauthentication = await client.auth.signInWithPassword({
+      email: normalizedEmail,
+      password
+    });
+    if (reauthentication?.error || reauthentication?.data?.user?.id !== priorUserId) {
+      return unavailable('guardian-reauth-failed');
+    }
+
+    const { data, error } = await client.rpc('set_quiz_stt_guardian_consent_v1', {
+      p_child_id: normalizedChildId,
+      p_granted: true,
+      p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION,
+      p_guardian_challenge: challengeToken
+    });
+    if (error) return unavailable('guardian-authorization-rejected');
+    return normalizeConsentResult(data);
+  } catch {
+    return unavailable('guardian-reauth-failed');
+  }
+}
+
 export default {
+  grantQuizSttGuardianConsent,
   getQuizSttGuardianConsent,
   setQuizSttGuardianConsent,
   QUIZ_STT_PRIVACY_NOTICE_VERSION
