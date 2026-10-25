@@ -1,4 +1,7 @@
-import { getSupabaseClient } from './supabaseClient.js';
+import {
+  getSupabaseClient,
+  getSupabaseReauthenticationClient
+} from './supabaseClient.js';
 
 export const QUIZ_STT_PRIVACY_NOTICE_VERSION = 'quiz-stt-cloudflare-bm-v1';
 
@@ -71,7 +74,10 @@ export async function setQuizSttGuardianConsent({ childId, granted }, { getClien
 
 export async function grantQuizSttGuardianConsent(
   { childId, password },
-  { getClient = getSupabaseClient } = {}
+  {
+    getClient = getSupabaseClient,
+    getReauthenticationClient = getSupabaseReauthenticationClient
+  } = {}
 ) {
   const normalizedChildId = cleanChildId(childId);
   if (!normalizedChildId || typeof password !== 'string' || !password) {
@@ -79,7 +85,7 @@ export async function grantQuizSttGuardianConsent(
   }
   try {
     const client = await getClient();
-    if (!client?.rpc || !client?.auth?.getSession || !client?.auth?.signInWithPassword) return unavailable();
+    if (!client?.rpc || !client?.auth?.getSession) return unavailable();
     const priorSession = await client.auth.getSession();
     const priorUserId = priorSession?.data?.session?.user?.id;
     const normalizedEmail = String(priorSession?.data?.session?.user?.email || '').trim();
@@ -95,7 +101,11 @@ export async function grantQuizSttGuardianConsent(
       return unavailable('guardian-reauth-required');
     }
 
-    const reauthentication = await client.auth.signInWithPassword({
+    const reauthenticationClient = await getReauthenticationClient();
+    if (!reauthenticationClient?.rpc || !reauthenticationClient?.auth?.signInWithPassword) {
+      return unavailable('guardian-reauth-required');
+    }
+    const reauthentication = await reauthenticationClient.auth.signInWithPassword({
       email: normalizedEmail,
       password
     });
@@ -103,7 +113,7 @@ export async function grantQuizSttGuardianConsent(
       return unavailable('guardian-reauth-failed');
     }
 
-    const { data, error } = await client.rpc('set_quiz_stt_guardian_consent_v1', {
+    const { data, error } = await reauthenticationClient.rpc('set_quiz_stt_guardian_consent_v1', {
       p_child_id: normalizedChildId,
       p_granted: true,
       p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION,

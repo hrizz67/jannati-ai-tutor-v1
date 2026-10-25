@@ -32,9 +32,9 @@ const tests = transactionBody(
   readFileSync(new URL('../../supabase/tests/quiz_stt_guardian_consent_test.sql', import.meta.url), 'utf8'),
   'rollback;'
 );
-if (!/select plan\(11\);/i.test(tests)
-    || !/assertion_count[\s\S]{0,200}<> 11[\s\S]{0,120}guardian_consent_assertion_count_failed/i.test(tests)) {
-  throw new Error('Expected an enforced 11-assertion RPC test plan.');
+if (!/select plan\(22\);/i.test(tests)
+    || !/assertion_count[\s\S]{0,200}<> 22[\s\S]{0,120}guardian_consent_assertion_count_failed/i.test(tests)) {
+  throw new Error('Expected an enforced 22-assertion RPC test plan.');
 }
 const bootstrap = `
 create table public.profiles (
@@ -84,6 +84,11 @@ try {
       ['ambiguous-reference', /ambiguous/i],
       ['constraint-failure', /violates .*constraint/i],
       ['assertion-failure', /\bnot ok\b/i],
+      ['tap-assertion-failure', /guardian_consent_assertion_failed/i],
+      ['challenge-spam-deduplication-failure', /guardian_challenge_spam_created_new_token/i],
+      ['assertion-count-failure', /guardian_consent_assertion_count_failed/i],
+      ['challenge-rate-limit-mismatch', /guardian_authorization_rate_limited/i],
+      ['notice-version-mismatch', /invalid_notice_version/i],
       ['connection-failure', /connect|network|timeout/i],
       ['management-api-failure', /failed to send|unexpected response|management api/i],
       ['query-execution-failure', /query failed|failed to execute|error:/i],
@@ -98,10 +103,11 @@ try {
     const rawSyntaxToken = /syntax error at or near ["']([^"']{1,40})["']/i.exec(diagnosticText)?.[1] || '';
     const allowedSyntaxTokens = new Set(['begin', 'create', 'table', 'id', 'bigint', 'generated', 'always', 'as', 'identity', 'primary', 'key', 'account_id', 'grant', 'revoke', 'select', 'insert', 'update', 'returning', 'for', 'role', 'authenticated', 'public', 'plan', 'rollback', ';']);
     const syntaxToken = allowedSyntaxTokens.has(rawSyntaxToken.toLowerCase()) ? rawSyntaxToken : 'withheld';
-    console.error(`Failure categories: ${categories.join(',') || 'unclassified'}; process status: ${result.status ?? 'unknown'}; spawn code: ${result.error?.code || 'none'}; SQLSTATE: ${sqlState}; location: ${locationKind} ${position}; line: ${line}; token: ${syntaxToken}`);
+    const assertionOrdinal = /guardian_consent_assertion_failed_(\d{1,3})/i.exec(diagnosticText)?.[1] || 'none';
+    console.error(`Failure categories: ${categories.join(',') || 'unclassified'}; process status: ${result.status ?? 'unknown'}; spawn code: ${result.error?.code || 'none'}; SQLSTATE: ${sqlState}; location: ${locationKind} ${position}; line: ${line}; token: ${syntaxToken}; assertion: ${assertionOrdinal}`);
     process.exitCode = 1;
   } else {
-    console.log('Isolated Supabase guardian-consent RPC test: PASS (11/11; transaction rolled back)');
+    console.log('Isolated Supabase guardian-consent RPC test: PASS (22/22; transaction rolled back)');
   }
 } finally {
   rmSync(directory, { recursive: true, force: true });

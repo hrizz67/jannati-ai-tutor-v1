@@ -18,10 +18,19 @@ const challengeTable = readFileSync(new URL('../../supabase/schemas/public/table
 const schemaFunctions = readFileSync(new URL('../../supabase/schemas/public/functions/quiz_stt_guardian_consent.sql', import.meta.url), 'utf8');
 const panelSource = readFileSync(new URL('../../src/components/parent/QuizSttGuardianConsentPanel.jsx', import.meta.url), 'utf8');
 const publicInfo = readFileSync(new URL('../../src/public/PublicInfoPage.jsx', import.meta.url), 'utf8');
+const supabaseClientSource = readFileSync(new URL('../../src/services/supabaseClient.js', import.meta.url), 'utf8');
 
 function clientResult(data, error = null) {
   const rpc = vi.fn(async () => ({ data, error }));
   return { getClient: async () => ({ rpc }), rpc };
+}
+
+function normalizedFunctionDefinition(sql, functionName) {
+  const definition = sql.match(new RegExp(
+    `create or replace function public\\.${functionName}[\\s\\S]*?end;\\s*\\$\\$;`,
+    'i'
+  ))?.[0];
+  return definition?.replace(/\s+/g, '') || '';
 }
 
 describe('P1.17 guardian-consent privacy and authorization', () => {
@@ -65,31 +74,39 @@ describe('P1.17 guardian-consent privacy and authorization', () => {
   });
 
   it('requires a backend challenge followed by password reauthentication before grant', async () => {
-    const rpc = vi.fn(async name => name === 'begin_quiz_stt_guardian_authorization_v1'
-      ? { data: { challengeToken: CONSENT_TOKEN, expiresAt: '2026-10-25T00:05:00Z' }, error: null }
-      : { data: { eligible: true, granted: true, status: 'granted', consentToken: CONSENT_TOKEN,
-        noticeVersion: QUIZ_STT_PRIVACY_NOTICE_VERSION }, error: null });
+    const rpc = vi.fn(async () => ({
+      data: { challengeToken: CONSENT_TOKEN, expiresAt: '2026-10-25T00:05:00Z' }, error: null
+    }));
+    const reauthenticationRpc = vi.fn(async () => ({
+      data: { eligible: true, granted: true, status: 'granted', consentToken: CONSENT_TOKEN,
+        noticeVersion: QUIZ_STT_PRIVACY_NOTICE_VERSION }, error: null
+    }));
     const getSession = vi.fn(async () => ({ data: { session: { user: { id: 'account-a', email: 'parent@example.test' } } } }));
+    const sharedSignInWithPassword = vi.fn();
     const signInWithPassword = vi.fn(async () => ({ data: { user: { id: 'account-a' } }, error: null }));
-    const getClient = async () => ({ rpc, auth: { getSession, signInWithPassword } });
+    const getClient = async () => ({ rpc, auth: { getSession, signInWithPassword: sharedSignInWithPassword } });
+    const getReauthenticationClient = async () => ({
+      rpc: reauthenticationRpc,
+      auth: { signInWithPassword }
+    });
 
     await expect(grantQuizSttGuardianConsent({
       childId: CHILD_ID,
       password: 'guardian-password'
-    }, { getClient })).resolves.toMatchObject({ granted: true });
-    expect(rpc.mock.calls).toEqual([
-      ['begin_quiz_stt_guardian_authorization_v1', { p_child_id: CHILD_ID }],
-      ['set_quiz_stt_guardian_consent_v1', {
-        p_child_id: CHILD_ID,
-        p_granted: true,
-        p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION,
-        p_guardian_challenge: CONSENT_TOKEN
-      }]
-    ]);
+    }, { getClient, getReauthenticationClient })).resolves.toMatchObject({ granted: true });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith('begin_quiz_stt_guardian_authorization_v1', { p_child_id: CHILD_ID });
+    expect(reauthenticationRpc).toHaveBeenCalledWith('set_quiz_stt_guardian_consent_v1', {
+      p_child_id: CHILD_ID,
+      p_granted: true,
+      p_notice_version: QUIZ_STT_PRIVACY_NOTICE_VERSION,
+      p_guardian_challenge: CONSENT_TOKEN
+    });
     expect(signInWithPassword).toHaveBeenCalledWith({
       email: 'parent@example.test',
       password: 'guardian-password'
     });
+    expect(sharedSignInWithPassword).not.toHaveBeenCalled();
   });
 
   it('fails closed when a parent-locked session attempts a direct grant or reauthentication fails', async () => {
@@ -99,17 +116,25 @@ describe('P1.17 guardian-consent privacy and authorization', () => {
     expect(direct.rpc).not.toHaveBeenCalled();
 
     const rpc = vi.fn(async () => ({ data: { challengeToken: CONSENT_TOKEN }, error: null }));
-    const getClient = async () => ({
-      rpc,
-      auth: {
-        getSession: async () => ({ data: { session: { user: { id: 'account-a', email: 'parent@example.test' } } } }),
-        signInWithPassword: async () => ({ data: { user: null }, error: { code: 'invalid_credentials' } })
-      }
+    const getClient = async () => ({ rpc, auth: {
+      getSession: async () => ({ data: { session: { user: { id: 'account-a', email: 'parent@example.test' } } } })
+    } });
+    const getReauthenticationClient = async () => ({
+      rpc: vi.fn(),
+      auth: { signInWithPassword: async () => ({ data: { user: null }, error: { code: 'invalid_credentials' } }) }
     });
     await expect(grantQuizSttGuardianConsent({
       childId: CHILD_ID, password: 'wrong'
-    }, { getClient })).resolves.toMatchObject({ granted: false, reason: 'guardian-reauth-failed' });
+    }, { getClient, getReauthenticationClient })).resolves.toMatchObject({ granted: false, reason: 'guardian-reauth-failed' });
     expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it('isolates fresh guardian reauthentication from the persisted Parent Area session', () => {
+    expect(supabaseClientSource).toMatch(/getSupabaseReauthenticationClient/);
+    expect(supabaseClientSource).toMatch(/getSupabaseReauthenticationClient[\s\S]*persistSession: false/);
+    expect(supabaseClientSource).toMatch(/getSupabaseReauthenticationClient[\s\S]*autoRefreshToken: false/);
+    expect(supabaseClientSource).toMatch(/getSupabaseReauthenticationClient[\s\S]*detectSessionInUrl: false/);
+    expect(supabaseClientSource).toMatch(/getSupabaseClient[\s\S]*persistSession: true/);
   });
 
   it('shows a clear BM Cloudflare notice, typing fallback and revocation control in Parent Area', () => {
@@ -170,6 +195,42 @@ describe('P1.17 guardian-consent privacy and authorization', () => {
       expect(sql).toMatch(/used_at is null/);
       expect(sql).toMatch(/set used_at = pg_catalog\.now\(\)/);
       expect(sql).toContain('guardian_reauthentication_required');
+    }
+  });
+
+  it('bounds challenge issuance and consent audit growth under spam and concurrent requests', () => {
+    for (const sql of [migration, schemaFunctions]) {
+      expect(sql).toContain("'quiz-stt-challenge:' || caller_id::text || ':' || p_child_id");
+      expect(sql).toContain("'quiz-stt-consent:' || caller_id::text || ':' || p_child_id");
+      expect(sql).toContain('pg_catalog.pg_advisory_xact_lock');
+      expect(sql).toContain("stale.created_at < pg_catalog.now() - interval '24 hours'");
+      expect(sql).toContain("existing_created_at > pg_catalog.now() - interval '30 seconds'");
+      expect(sql).toContain('guardian_authorization_rate_limited');
+      expect(sql).toMatch(/existing_used_at is null[\s\S]{0,120}existing_expires_at > pg_catalog\.now\(\)[\s\S]{0,240}return jsonb_build_object/);
+      expect(sql).toMatch(/update public\.quiz_stt_guardian_authorization_challenges[\s\S]{0,500}used_at = null/);
+      expect(sql).toMatch(/if not p_granted then[\s\S]{0,400}delete from public\.quiz_stt_guardian_authorization_challenges/);
+    }
+    for (const sql of [migration, challengeTable]) {
+      expect(sql).toMatch(/unique \(account_id, child_id\)/);
+    }
+  });
+
+  it('accepts only the canonical privacy notice for both grant and revoke', () => {
+    for (const sql of [migration, schemaFunctions]) {
+      expect(sql).toContain("canonical_notice_version constant text := 'quiz-stt-cloudflare-bm-v1'");
+      expect(sql).toContain('p_notice_version is distinct from canonical_notice_version');
+      expect(sql).toContain("raise exception 'invalid_notice_version'");
+    }
+  });
+
+  it('keeps the bounded challenge and consent RPCs identical in migration and declarative schema', () => {
+    for (const functionName of [
+      'begin_quiz_stt_guardian_authorization_v1',
+      'set_quiz_stt_guardian_consent_v1'
+    ]) {
+      expect(normalizedFunctionDefinition(migration, functionName)).not.toBe('');
+      expect(normalizedFunctionDefinition(schemaFunctions, functionName))
+        .toBe(normalizedFunctionDefinition(migration, functionName));
     }
   });
 

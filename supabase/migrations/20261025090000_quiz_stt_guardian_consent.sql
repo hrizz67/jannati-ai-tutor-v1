@@ -34,6 +34,7 @@ create table if not exists public.quiz_stt_guardian_authorization_challenges (
   created_at timestamptz not null default pg_catalog.now(),
   expires_at timestamptz not null,
   used_at timestamptz,
+  unique (account_id, child_id),
   check (expires_at > created_at)
 );
 
@@ -117,6 +118,11 @@ declare
   caller_id uuid := auth.uid();
   jwt_claims jsonb := auth.jwt();
   initial_session_id text;
+  existing_challenge_id bigint;
+  existing_challenge_token uuid;
+  existing_created_at timestamptz;
+  existing_expires_at timestamptz;
+  existing_used_at timestamptz;
   challenge uuid;
   challenge_expires_at timestamptz;
 begin
@@ -133,15 +139,56 @@ begin
     raise exception 'guardian_authorization_required';
   end if;
 
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('quiz-stt-challenge:' || caller_id::text || ':' || p_child_id, 0)
+  );
+  delete from public.quiz_stt_guardian_authorization_challenges as stale
+  where stale.account_id = caller_id
+    and stale.created_at < pg_catalog.now() - interval '24 hours';
+
+  select challenge_row.id, challenge_row.challenge_token, challenge_row.created_at,
+         challenge_row.expires_at, challenge_row.used_at
+    into existing_challenge_id, existing_challenge_token, existing_created_at,
+         existing_expires_at, existing_used_at
+  from public.quiz_stt_guardian_authorization_challenges as challenge_row
+  where challenge_row.account_id = caller_id
+    and challenge_row.child_id = p_child_id
+  for update;
+
+  if existing_challenge_id is not null
+     and existing_used_at is null
+     and existing_expires_at > pg_catalog.now() then
+    return jsonb_build_object(
+      'challengeToken', existing_challenge_token::text,
+      'expiresAt', existing_expires_at
+    );
+  end if;
+  if existing_challenge_id is not null
+     and existing_created_at > pg_catalog.now() - interval '30 seconds' then
+    raise exception 'guardian_authorization_rate_limited';
+  end if;
+
+  challenge := extensions.gen_random_uuid();
   challenge_expires_at := pg_catalog.now() + interval '5 minutes';
-  insert into public.quiz_stt_guardian_authorization_challenges (
-    account_id, child_id, initial_session_hash, expires_at
-  ) values (
-    caller_id,
-    p_child_id,
-    extensions.digest(pg_catalog.convert_to(initial_session_id, 'UTF8'), 'sha256'),
-    challenge_expires_at
-  ) returning challenge_token into challenge;
+  if existing_challenge_id is null then
+    insert into public.quiz_stt_guardian_authorization_challenges (
+      account_id, child_id, challenge_token, initial_session_hash, expires_at
+    ) values (
+      caller_id,
+      p_child_id,
+      challenge,
+      extensions.digest(pg_catalog.convert_to(initial_session_id, 'UTF8'), 'sha256'),
+      challenge_expires_at
+    );
+  else
+    update public.quiz_stt_guardian_authorization_challenges
+    set challenge_token = challenge,
+        initial_session_hash = extensions.digest(pg_catalog.convert_to(initial_session_id, 'UTF8'), 'sha256'),
+        created_at = pg_catalog.now(),
+        expires_at = challenge_expires_at,
+        used_at = null
+    where id = existing_challenge_id;
+  end if;
 
   return jsonb_build_object(
     'challengeToken', challenge::text,
@@ -285,18 +332,20 @@ declare
   challenge_created_at timestamptz;
   password_auth_at bigint;
   consumed_challenge_id bigint;
+  canonical_notice_version constant text := 'quiz-stt-cloudflare-bm-v1';
 begin
   if caller_id is null then raise exception 'not_authenticated'; end if;
   if p_granted is null then raise exception 'consent_decision_required'; end if;
-  if p_notice_version is null
-     or length(p_notice_version) < 1
-     or length(p_notice_version) > 64
-     or p_notice_version !~ '^[a-z0-9._-]+$' then
+  if p_notice_version is distinct from canonical_notice_version then
     raise exception 'invalid_notice_version';
   end if;
   if not public._quiz_stt_account_owns_child_v1(caller_id, p_child_id) then
     raise exception 'child_not_owned';
   end if;
+
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('quiz-stt-consent:' || caller_id::text || ':' || p_child_id, 0)
+  );
 
   if p_granted then
     if p_guardian_challenge is null
@@ -358,6 +407,14 @@ begin
     ) values (
       caller_id, p_child_id, requested_decision, p_notice_version
     );
+  end if;
+
+  if not p_granted then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('quiz-stt-challenge:' || caller_id::text || ':' || p_child_id, 0)
+    );
+    delete from public.quiz_stt_guardian_authorization_challenges
+    where account_id = caller_id and child_id = p_child_id;
   end if;
 
   return public.get_quiz_stt_guardian_consent_v1(p_child_id);

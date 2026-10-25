@@ -189,12 +189,18 @@ for (const consentSql of [guardianConsentMigration, guardianConsentFunctions]) {
   assert.match(consentSql, /method ->> 'method' = 'password'/, 'Guardian grant must prove a fresh password authentication event.');
   assert.match(consentSql, /matched_child_id is distinct from p_child_id/, 'Consent verification must bind the token to the requested child.');
   assert.match(consentSql, /owns_active_child := public\._quiz_stt_account_owns_child_v1/, 'Consent verification must recheck active child ownership every time.');
+  assert.match(consentSql, /pg_catalog\.pg_advisory_xact_lock/, 'Challenge and consent mutations must serialize concurrent calls.');
+  assert.match(consentSql, /existing_used_at is null[\s\S]{0,160}existing_expires_at > pg_catalog\.now\(\)/, 'Repeated challenge requests must reuse one active five-minute challenge.');
+  assert.match(consentSql, /stale\.created_at < pg_catalog\.now\(\) - interval '24 hours'/, 'Expired challenge records must have a bounded retention policy.');
+  assert.match(consentSql, /canonical_notice_version constant text := 'quiz-stt-cloudflare-bm-v1'/, 'The backend must pin the canonical privacy notice version.');
+  assert.match(consentSql, /if not p_granted then[\s\S]{0,500}delete from public\.quiz_stt_guardian_authorization_challenges/, 'Revocation must immediately discard pending guardian challenges.');
 }
 assert.match(guardianConsentTable, /enable row level security/, 'The consent audit table must enable RLS.');
 assert.match(guardianConsentTable, /revoke all on table "public"\."quiz_stt_guardian_consent_events" from public, anon, authenticated;/, 'Consent audit rows must not be directly readable or writable by browsers.');
 assert.doesNotMatch(guardianConsentTable, /grant (select|insert|update|delete|all)[\s\S]{0,120}to authenticated/, 'Consent audit access must be RPC-only.');
 assert.match(guardianAuthorizationTable, /enable row level security/, 'Guardian authorization challenges must enable RLS.');
 assert.match(guardianAuthorizationTable, /initial_session_hash/, 'Guardian authorization challenges must store only a one-way session hash.');
+assert.match(guardianAuthorizationTable, /unique \(account_id, child_id\)/, 'At most one challenge row may exist for an account/child pair.');
 assert.doesNotMatch(guardianAuthorizationTable, /grant (select|insert|update|delete|all)[\s\S]{0,120}to authenticated/, 'Guardian authorization challenges must be RPC-only.');
 assert.doesNotMatch(guardianConsentMigration, /update\s+public\.quiz_stt_guardian_consent_events|delete\s+from\s+public\.quiz_stt_guardian_consent_events/i, 'Consent decisions must remain append-only.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');

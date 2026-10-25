@@ -2,13 +2,16 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(11);
+select plan(22);
 select set_config('jannati_test.assertion_count', '0', true);
 
 create function pg_temp.assert_tap(p_result text)
 returns text language plpgsql as $$
 begin
-  if p_result !~ '^ok ' then raise exception 'guardian_consent_assertion_failed'; end if;
+  if p_result !~ '^ok ' then
+    raise exception 'guardian_consent_assertion_failed_%',
+      current_setting('jannati_test.assertion_count')::integer + 1;
+  end if;
   perform set_config(
     'jannati_test.assertion_count',
     (current_setting('jannati_test.assertion_count')::integer + 1)::text,
@@ -72,6 +75,46 @@ select set_config(
   true
 );
 
+do $$
+declare
+  initial_token text := current_setting('jannati_test.challenge_token');
+  repeated_token text;
+begin
+  for request_number in 1..50 loop
+    repeated_token := public.begin_quiz_stt_guardian_authorization_v1(
+      'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+    ) ->> 'challengeToken';
+    if repeated_token is distinct from initial_token then
+      raise exception 'guardian_challenge_spam_created_new_token';
+    end if;
+  end loop;
+end;
+$$;
+select pg_temp.assert_tap(ok(
+  true,
+  'repeated challenge requests reuse the active five-minute challenge'
+));
+
+reset role;
+select pg_temp.assert_tap(is(
+  (select count(*)::integer from public.quiz_stt_guardian_authorization_challenges
+   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
+  1,
+  'challenge spam remains bounded to one row per account and child'
+));
+select pg_temp.assert_tap(ok(
+  exists (
+    select 1
+    from pg_catalog.pg_constraint as constraint_row
+    where constraint_row.conrelid = 'public.quiz_stt_guardian_authorization_challenges'::regclass
+      and constraint_row.contype = 'u'
+      and pg_catalog.pg_get_constraintdef(constraint_row.oid) like 'UNIQUE (account_id, child_id)%'
+  ),
+  'the database enforces the concurrent account-child uniqueness invariant'
+));
+set local role authenticated;
+
 select pg_temp.assert_tap(throws_ok(
   $$select public.set_quiz_stt_guardian_consent_v1(
     'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', true,
@@ -118,6 +161,14 @@ select pg_temp.assert_tap(throws_ok(
   'a consumed guardian challenge cannot be replayed'
 ));
 
+select pg_temp.assert_tap(throws_ok(
+  $$select public.begin_quiz_stt_guardian_authorization_v1(
+    'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  )$$,
+  'P0001', 'guardian_authorization_rate_limited',
+  'a consumed challenge cannot be reissued repeatedly inside the cooldown'
+));
+
 select pg_temp.assert_tap(is(
   (public.verify_quiz_stt_guardian_consent_v1(
     current_setting('jannati_test.consent_token')::uuid,
@@ -136,6 +187,15 @@ select pg_temp.assert_tap(is(
   'child A consent cannot authorize child B'
 ));
 
+select pg_temp.assert_tap(throws_ok(
+  $$select public.set_quiz_stt_guardian_consent_v1(
+    'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', false,
+    'attacker-selected-notice-v999', null
+  )$$,
+  'P0001', 'invalid_notice_version',
+  'revocation rejects an arbitrary audit notice version'
+));
+
 select public.set_quiz_stt_guardian_consent_v1(
   'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', false,
   'quiz-stt-cloudflare-bm-v1', null
@@ -148,6 +208,96 @@ select pg_temp.assert_tap(is(
   'revoked',
   'revocation invalidates the old consent token'
 ));
+
+do $$
+begin
+  for request_number in 1..50 loop
+    perform public.set_quiz_stt_guardian_consent_v1(
+      'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', false,
+      'quiz-stt-cloudflare-bm-v1', null
+    );
+  end loop;
+end;
+$$;
+reset role;
+select pg_temp.assert_tap(is(
+  (select count(*)::integer from public.quiz_stt_guardian_consent_events
+   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
+  2,
+  'repeated canonical revocation is an idempotent bounded audit event'
+));
+select pg_temp.assert_tap(is(
+  (select count(*)::integer from public.quiz_stt_guardian_authorization_challenges
+   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
+  0,
+  'revocation removes the pending or consumed challenge immediately'
+));
+
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object(
+  'sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'role', 'authenticated',
+  'session_id', '77777777-7777-4777-8777-777777777777', 'is_anonymous', false,
+  'amr', jsonb_build_array(jsonb_build_object('method', 'password', 'timestamp', pg_catalog.floor(extract(epoch from pg_catalog.now()))::bigint))
+)::text, true);
+select set_config(
+  'jannati_test.child_b_old_challenge',
+  public.begin_quiz_stt_guardian_authorization_v1('child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb') ->> 'challengeToken',
+  true
+);
+reset role;
+update public.quiz_stt_guardian_authorization_challenges
+set created_at = pg_catalog.now() - interval '31 seconds',
+    expires_at = pg_catalog.now() - interval '1 second'
+where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  and child_id = 'child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+set local role authenticated;
+select set_config(
+  'jannati_test.child_b_new_challenge',
+  public.begin_quiz_stt_guardian_authorization_v1('child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb') ->> 'challengeToken',
+  true
+);
+select pg_temp.assert_tap(ok(
+  current_setting('jannati_test.child_b_new_challenge') <> current_setting('jannati_test.child_b_old_challenge'),
+  'an expired challenge rotates to a new token after the issuance cooldown'
+));
+select set_config('request.jwt.claims', jsonb_build_object(
+  'sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'role', 'authenticated',
+  'session_id', '88888888-8888-4888-8888-888888888888', 'is_anonymous', false,
+  'amr', jsonb_build_array(jsonb_build_object('method', 'password', 'timestamp', pg_catalog.floor(extract(epoch from pg_catalog.now()))::bigint))
+)::text, true);
+select pg_temp.assert_tap(throws_ok(
+  $$select public.set_quiz_stt_guardian_consent_v1(
+    'child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', true,
+    'quiz-stt-cloudflare-bm-v1',
+    current_setting('jannati_test.child_b_old_challenge')::uuid
+  )$$,
+  'P0001', 'guardian_authorization_required',
+  'an expired and replaced challenge cannot be consumed'
+));
+select set_config(
+  'jannati_test.child_b_consent_token',
+  public.set_quiz_stt_guardian_consent_v1(
+    'child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', true,
+    'quiz-stt-cloudflare-bm-v1',
+    current_setting('jannati_test.child_b_new_challenge')::uuid
+  ) ->> 'consentToken',
+  true
+);
+select pg_temp.assert_tap(ok(
+  current_setting('jannati_test.child_b_consent_token')::uuid is not null,
+  'the replacement challenge remains usable after fresh password authentication'
+));
+reset role;
+select pg_temp.assert_tap(is(
+  (select count(*)::integer from public.quiz_stt_guardian_authorization_challenges
+   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and child_id = 'child-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'),
+  1,
+  'expiration and replacement preserve one bounded challenge row'
+));
+set local role authenticated;
 
 select set_config('jannati_test.challenge_token', '', true);
 select set_config('jannati_test.consent_token', '', true);
@@ -226,14 +376,16 @@ select pg_temp.assert_tap(throws_ok(
 reset role;
 select pg_temp.assert_tap(is(
   (select count(*)::integer from public.quiz_stt_guardian_consent_events
-   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' and decision = 'granted'),
+   where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+     and decision = 'granted'),
   2,
   'only the two explicitly reauthenticated grants were recorded'
 ));
 
 do $$
 begin
-  if current_setting('jannati_test.assertion_count')::integer <> 11 then
+  if current_setting('jannati_test.assertion_count')::integer <> 22 then
     raise exception 'guardian_consent_assertion_count_failed';
   end if;
 end;

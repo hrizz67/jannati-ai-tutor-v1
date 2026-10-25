@@ -10,6 +10,7 @@ create table "public"."quiz_stt_guardian_authorization_challenges" (
   "created_at" timestamptz not null default pg_catalog.now(),
   "expires_at" timestamptz not null,
   "used_at" timestamptz,
+  unique (account_id, child_id),
   check (expires_at > created_at)
 );
 
