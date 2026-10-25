@@ -119,6 +119,9 @@ const integrityMigration = fs.readFileSync(new URL(integrityMigrationName, migra
 const integrityFunctionFixMigration = fs.readFileSync(new URL(integrityFunctionFixMigrationName, migrationDirectory), 'utf8');
 const declarativeProfiles = fs.readFileSync(new URL('../../supabase/schemas/public/tables/profiles.sql', import.meta.url), 'utf8');
 const declarativeIntegrityFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/learning_data_v3.sql', import.meta.url), 'utf8');
+const guardianConsentMigration = fs.readFileSync(new URL('../../supabase/migrations/20261025090000_quiz_stt_guardian_consent.sql', import.meta.url), 'utf8');
+const guardianConsentTable = fs.readFileSync(new URL('../../supabase/schemas/public/tables/quiz_stt_guardian_consent_events.sql', import.meta.url), 'utf8');
+const guardianConsentFunctions = fs.readFileSync(new URL('../../supabase/schemas/public/functions/quiz_stt_guardian_consent.sql', import.meta.url), 'utf8');
 const integrityTableNames = ['learning_data_backups', 'learning_sync_operations', 'learner_profiles', 'learning_states', 'learning_events'];
 const startTopicSource = app.slice(app.indexOf('  function startTopic('), app.indexOf('\n  async function startResume('));
 const startAdaptivePracticeSource = app.slice(app.indexOf('  async function startAdaptivePractice('), app.indexOf('\n  function currentQuestion('));
@@ -173,6 +176,18 @@ assert.match(declarativeProfiles, /grant select on table "public"\."profiles" to
 assert.match(declarativeIntegrityFunctions, /set search_path to ''/, 'Declarative revisioned RPCs must pin an empty search path.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v3[\s\S]{0,120}to authenticated;/, 'Authenticated users need only the revisioned learning write RPC.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');
+for (const consentSql of [guardianConsentMigration, guardianConsentFunctions]) {
+  assert.match(consentSql, /auth\.uid\(\)/, 'Guardian-consent decisions must be bound to the authenticated parent account.');
+  assert.match(consentSql, /set search_path = ''/, 'Guardian-consent RPCs must pin an empty search path.');
+  assert.match(consentSql, /jannati_cloud_child_state/, 'Guardian consent must verify ownership from canonical child state.');
+  assert.match(consentSql, /deletedChildren/, 'Deleted children must never remain eligible for voice consent.');
+  assert.match(consentSql, /archivedChildren/, 'Archived children must never remain eligible for voice consent.');
+  assert.doesNotMatch(consentSql, /jannati_child_profiles/, 'Legacy projections cannot safely prove current child eligibility.');
+}
+assert.match(guardianConsentTable, /enable row level security/, 'The consent audit table must enable RLS.');
+assert.match(guardianConsentTable, /revoke all on table "public"\."quiz_stt_guardian_consent_events" from public, anon, authenticated;/, 'Consent audit rows must not be directly readable or writable by browsers.');
+assert.doesNotMatch(guardianConsentTable, /grant (select|insert|update|delete|all)[\s\S]{0,120}to authenticated/, 'Consent audit access must be RPC-only.');
+assert.doesNotMatch(guardianConsentMigration, /update\s+public\.quiz_stt_guardian_consent_events|delete\s+from\s+public\.quiz_stt_guardian_consent_events/i, 'Consent decisions must remain append-only.');
 assert.match(declarativeIntegrityFunctions, /grant execute on function public\.save_learning_data_v4[\s\S]{0,120}to authenticated;/, 'Authenticated users need the compact revisioned learning write RPC.');
 
 console.log('Access-control audit: PASS');

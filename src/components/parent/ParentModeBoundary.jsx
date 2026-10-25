@@ -84,7 +84,7 @@ function ParentModeSession({
         <span>Mod Ibu Bapa dibuka untuk sesi ini sahaja.</span>
         <button type="button" className="ghost" onClick={() => setUnlockedAccountId('')}>Kunci Sekarang</button>
       </div>
-      <ParentDashboard key={activeChildId || 'active-child'} {...dashboardProps} activeChildId={activeChildId} onBack={leaveParentMode} />
+      <ParentDashboard key={activeChildId || 'active-child'} {...dashboardProps} hasAccountSession={Boolean(accountId)} activeChildId={activeChildId} onBack={leaveParentMode} />
     </div>
   );
 }

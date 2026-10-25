@@ -18,11 +18,13 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(markup).toContain('role="dialog"');
     expect(markup).toContain('aria-modal="true"');
     expect(markup).toContain('Kebenaran rakaman suara');
-    expect(markup).toContain('ibu bapa/penjaga sah kepada murid ini');
-    expect(markup).toContain('untuk satu rakaman audio pendek ini');
+    expect(markup).toContain('Cloudflare Workers AI');
+    expect(markup).toContain('Kawasan Ibu Bapa');
+    expect(markup).toContain('ditarik balik');
+    expect(markup).toContain('satu rakaman audio pendek ini');
     expect(markup).toContain('hanya selepas butang mula ditekan');
     expect(markup).toContain('diproses sementara dan tidak disimpan oleh Jannati');
-    expect(markup).toContain('dihantar bagi ditukar kepada teks');
+    expect(markup).toContain('Cloudflare Workers AI untuk menghasilkan teks');
     expect(markup).toContain('Taip sahaja');
     expect(markup).toMatch(/type="checkbox"/);
     expect(markup).toMatch(/disabled=""[^>]*>Benarkan dan mula/);
@@ -40,6 +42,10 @@ describe('P1.17 production Quiz speech consent', () => {
   it('gates MediaRecorder start until adult confirmation and never auto-grades', () => {
     const quiz = app.split('function Quiz({')[1].split('function UasaSimulator(')[0];
     expect(quiz).toContain('if (!quizSpeechConsentGrantedRef.current)');
+    expect(quiz).toContain("import('./services/quizSttGuardianConsent.js')");
+    expect(quiz).toContain('getQuizSttGuardianConsent(quizActiveChildId)');
+    expect(quiz).toContain('!guardianConsent?.granted || !guardianConsent?.consentToken');
+    expect(quiz).toContain('quizGuardianConsentRef.current = null');
     expect(quiz).toContain('setQuizSpeechConsentOpen(true)');
     expect(quiz).toContain('quizSpeechConsentGrantedRef.current = true');
     expect(quiz).toContain('quizSpeechConsentGrantedRef.current = false');
@@ -47,6 +53,7 @@ describe('P1.17 production Quiz speech consent', () => {
     expect(quiz.indexOf('if (!quizSpeechConsentGrantedRef.current)')).toBeLessThan(quiz.indexOf('mobileSession.start()'));
     expect(quiz).toContain('Tiada rakaman dibuat. Kamu masih boleh menaip jawapan.');
     expect(quiz).not.toContain('onCheckAnswer(safeTranscript)');
+    expect(quiz).not.toMatch(/localStorage\.setItem\([^\n]*consent|sessionStorage\.setItem\([^\n]*consent/i);
   });
 
   it('provides mobile safe-area and focus treatment without new runtime dependencies', () => {

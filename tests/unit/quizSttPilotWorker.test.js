@@ -4,13 +4,15 @@ import {
   handleRequest,
   QuizDailyUsageQuota,
   QUIZ_STT_MAX_AUDIO_BYTES,
-  QUIZ_STT_MAX_DAILY_INFERENCES
+  QUIZ_STT_MAX_DAILY_INFERENCES,
+  QUIZ_STT_CONSENT_NOTICE_VERSION
 } from '../../workers/quiz-stt/src/index.js';
 
 const ORIGIN = 'https://hrizz67.github.io';
 const USER = '11111111-1111-4111-8111-111111111111';
 const OTHER = '22222222-2222-4222-8222-222222222222';
 const TOKEN = 'a'.repeat(64);
+const CONSENT_TOKEN = '33333333-3333-4333-8333-333333333333';
 const URL = 'https://quiz-pilot.example.workers.dev/v1/quiz/transcribe';
 
 function quotaBinding(result = { status: 'ok', remaining: 99 }) {
@@ -27,6 +29,7 @@ function env(overrides = {}) {
     SUPABASE_URL: 'https://jannati-test.supabase.co',
     SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test',
     QUIZ_PILOT_ALLOWED_USER_IDS: USER,
+    QUIZ_STT_CONSENT_NOTICE_VERSION,
     QUIZ_STT_DAILY_MAX_INFERENCES: '100',
     AI: { run: vi.fn(async () => ({ text: '  kucing  ', language_probability: 0.87 })) },
     QUIZ_ACCOUNT_RATE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
@@ -37,7 +40,7 @@ function env(overrides = {}) {
 }
 function request(path = URL, {
   origin = ORIGIN, token = TOKEN, type = 'audio/mp4;codecs=mp4a.40.2',
-  language = 'ms-MY', contentLength, body = new Uint8Array([1, 2, 3])
+  language = 'ms-MY', consentToken = CONSENT_TOKEN, contentLength, body = new Uint8Array([1, 2, 3])
 } = {}) {
   const headers = {
     Origin: origin,
@@ -45,6 +48,7 @@ function request(path = URL, {
     'X-STT-Language': language
   };
   if (token != null) headers.Authorization = 'Bearer ' + token;
+  if (consentToken != null) headers['X-Jannati-Consent-Token'] = consentToken;
   if (contentLength != null) headers['Content-Length'] = String(contentLength);
   return new Request(path, { method: 'POST', headers, body });
 }
@@ -52,6 +56,15 @@ const auth = (user = USER, status = 200) => vi.fn(async () => new Response(
   status === 200 ? JSON.stringify({ id: user }) : '{}',
   { status, headers: { 'Content-Type': 'application/json' } }
 ));
+const authAndConsent = ({ user = USER, granted = true, status = 'granted', noticeVersion = QUIZ_STT_CONSENT_NOTICE_VERSION } = {}) => vi.fn(async url => {
+  if (String(url).endsWith('/auth/v1/user')) {
+    return Response.json({ id: user });
+  }
+  if (String(url).endsWith('/rest/v1/rpc/verify_quiz_stt_guardian_consent_v1')) {
+    return Response.json({ granted, status, noticeVersion });
+  }
+  throw new Error('unexpected-upstream');
+});
 async function send(options = {}, override = {}, fetchImpl = auth()) {
   const bindings = env(override);
   const response = await handleRequest(request(URL, options), bindings, { fetchImpl });
@@ -59,13 +72,14 @@ async function send(options = {}, override = {}, fetchImpl = auth()) {
 }
 
 describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
-  it('keeps the dedicated production Worker disabled with registered-account policy and exact origin', () => {
+  it('keeps the dedicated production Worker disabled with guardian-consent policy and exact origin', () => {
     const config = readFileSync(new globalThis.URL('../../workers/quiz-stt/wrangler.production.jsonc', import.meta.url), 'utf8');
     const worker = readFileSync(new globalThis.URL('../../workers/quiz-stt/src/index.js', import.meta.url), 'utf8');
     expect(config).toContain('"name": "jannati-ai-tutor-quiz-stt"');
     expect(config).toContain('"QUIZ_STT_PILOT_ENABLED": "false"');
     expect(config).toContain('"QUIZ_STT_AUTH_DIAGNOSTICS_ENABLED": "false"');
-    expect(config).toContain('"QUIZ_STT_ACCESS_MODE": "registered"');
+    expect(config).toContain('"QUIZ_STT_ACCESS_MODE": "guardian-consent"');
+    expect(config).toContain('"QUIZ_STT_CONSENT_NOTICE_VERSION": "quiz-stt-cloudflare-bm-v1"');
     expect(config).toContain('"QUIZ_STT_DAILY_MAX_INFERENCES": "100"');
     expect(config).toContain('"name": "QUIZ_DAILY_USAGE"');
     expect(config).toContain('"QuizDailyUsageQuota": { "type": "durable-object", "storage": "sqlite" }');
@@ -108,10 +122,11 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     const response = await handleRequest(new Request(URL, { method: 'OPTIONS', headers: {
       Origin: ORIGIN,
       'Access-Control-Request-Method': 'POST',
-      'Access-Control-Request-Headers': 'authorization,content-type,x-stt-language'
+      'Access-Control-Request-Headers': 'authorization,content-type,x-stt-language,x-jannati-consent-token'
     } }), bindings);
     expect(response.status).toBe(204);
     expect(response.headers.get('Access-Control-Allow-Headers')).toContain('authorization');
+    expect(response.headers.get('Access-Control-Allow-Headers')).toContain('x-jannati-consent-token');
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe(ORIGIN);
     expect(response.headers.get('Access-Control-Allow-Credentials')).toBeNull();
     const denied = await handleRequest(new Request(URL, { method: 'OPTIONS', headers: {
@@ -165,14 +180,66 @@ describe('P1.17-V06 isolated authenticated Quiz STT Worker', () => {
     expect(bindings.AI.run).not.toHaveBeenCalled();
   });
 
-  it('allows every valid Supabase account only in explicit registered access mode', async () => {
+  it('allows a valid account only when the server verifies current guardian consent', async () => {
+    const fetchImpl = authAndConsent({ user: OTHER });
     const { response, bindings } = await send({}, {
-      QUIZ_STT_ACCESS_MODE: 'registered',
+      QUIZ_STT_ACCESS_MODE: 'guardian-consent',
       QUIZ_PILOT_ALLOWED_USER_IDS: ''
-    }, auth(OTHER));
+    }, fetchImpl);
     expect(response.status).toBe(200);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(bindings.AI.run).toHaveBeenCalledTimes(1);
     expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).toHaveBeenCalledWith({ key: 'quiz-account:' + OTHER });
+  });
+
+  it.each([
+    [{ consentToken: null }, authAndConsent(), 'guardian-consent-required'],
+    [{ consentToken: 'malformed' }, authAndConsent(), 'guardian-consent-required'],
+    [{}, authAndConsent({ granted: false, status: 'revoked' }), 'guardian-consent-required'],
+    [{}, authAndConsent({ noticeVersion: 'older-notice' }), 'guardian-consent-required']
+  ])('rejects missing, invalid, revoked or stale guardian consent before account spend and inference', async (options, fetchImpl, error) => {
+    const { response, bindings } = await send(options, {
+      QUIZ_STT_ACCESS_MODE: 'guardian-consent',
+      QUIZ_PILOT_ALLOWED_USER_IDS: ''
+    }, fetchImpl);
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({ error });
+    expect(bindings.QUIZ_ACCOUNT_RATE_LIMITER.limit).not.toHaveBeenCalled();
+    expect(bindings.QUIZ_DAILY_USAGE.getByName).not.toHaveBeenCalled();
+    expect(bindings.AI.run).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when guardian-consent verification is unavailable or redirects', async () => {
+    for (const consentResponse of [
+      () => { throw new Error('offline'); },
+      () => new Response('', { status: 302, headers: { Location: 'https://evil.example' } }),
+      () => new Response('x'.repeat(1025), { status: 200 })
+    ]) {
+      const fetchImpl = vi.fn(async url => String(url).endsWith('/auth/v1/user')
+        ? Response.json({ id: USER })
+        : consentResponse());
+      const { response, bindings } = await send({}, {
+        QUIZ_STT_ACCESS_MODE: 'guardian-consent', QUIZ_PILOT_ALLOWED_USER_IDS: ''
+      }, fetchImpl);
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({ error: 'guardian-consent-unavailable' });
+      expect(bindings.AI.run).not.toHaveBeenCalled();
+    }
+  });
+
+  it('fails closed when the deployed consent notice version is missing or stale', async () => {
+    for (const version of ['', 'old-notice']) {
+      const fetchImpl = authAndConsent();
+      const { response, bindings } = await send({}, {
+        QUIZ_STT_ACCESS_MODE: 'guardian-consent',
+        QUIZ_STT_CONSENT_NOTICE_VERSION: version,
+        QUIZ_PILOT_ALLOWED_USER_IDS: ''
+      }, fetchImpl);
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({ error: 'guardian-consent-unavailable' });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(bindings.AI.run).not.toHaveBeenCalled();
+    }
   });
 
   it('fails closed for an unknown access mode', async () => {
