@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(22);
+select plan(25);
 select set_config('jannati_test.assertion_count', '0', true);
 
 create function pg_temp.assert_tap(p_result text)
@@ -209,6 +209,14 @@ select pg_temp.assert_tap(is(
   'revocation invalidates the old consent token'
 ));
 
+select pg_temp.assert_tap(throws_ok(
+  $$select public.begin_quiz_stt_guardian_authorization_v1(
+    'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  )$$,
+  'P0001', 'guardian_authorization_rate_limited',
+  'begin then revoke then begin cannot bypass the issuance cooldown'
+));
+
 do $$
 begin
   for request_number in 1..50 loop
@@ -227,15 +235,40 @@ select pg_temp.assert_tap(is(
   2,
   'repeated canonical revocation is an idempotent bounded audit event'
 ));
-select pg_temp.assert_tap(is(
-  (select count(*)::integer from public.quiz_stt_guardian_authorization_challenges
+select pg_temp.assert_tap(ok(
+  (select count(*) = 1 and bool_and(used_at is not null)
+   from public.quiz_stt_guardian_authorization_challenges
    where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
      and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
-  0,
-  'revocation removes the pending or consumed challenge immediately'
+  'revocation invalidates the challenge but retains one cooldown tombstone'
 ));
 
+update public.quiz_stt_guardian_authorization_challenges
+set created_at = pg_catalog.now() - interval '31 seconds'
+where account_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  and child_id = 'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 set local role authenticated;
+select set_config(
+  'jannati_test.post_revoke_challenge',
+  public.begin_quiz_stt_guardian_authorization_v1(
+    'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  ) ->> 'challengeToken',
+  true
+);
+select pg_temp.assert_tap(ok(
+  current_setting('jannati_test.post_revoke_challenge')
+    <> current_setting('jannati_test.challenge_token'),
+  'a valid replacement challenge can be issued after cooldown without restoring consent'
+));
+select pg_temp.assert_tap(is(
+  (public.verify_quiz_stt_guardian_consent_v1(
+    current_setting('jannati_test.consent_token')::uuid,
+    'child-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  ) ->> 'status'),
+  'revoked',
+  'issuing a post-cooldown challenge never resurrects revoked consent'
+));
+
 select set_config('request.jwt.claims', jsonb_build_object(
   'sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'role', 'authenticated',
   'session_id', '77777777-7777-4777-8777-777777777777', 'is_anonymous', false,
@@ -385,7 +418,7 @@ select pg_temp.assert_tap(is(
 
 do $$
 begin
-  if current_setting('jannati_test.assertion_count')::integer <> 22 then
+  if current_setting('jannati_test.assertion_count')::integer <> 25 then
     raise exception 'guardian_consent_assertion_count_failed';
   end if;
 end;

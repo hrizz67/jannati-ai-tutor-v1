@@ -32,9 +32,9 @@ const tests = transactionBody(
   readFileSync(new URL('../../supabase/tests/quiz_stt_guardian_consent_test.sql', import.meta.url), 'utf8'),
   'rollback;'
 );
-if (!/select plan\(22\);/i.test(tests)
-    || !/assertion_count[\s\S]{0,200}<> 22[\s\S]{0,120}guardian_consent_assertion_count_failed/i.test(tests)) {
-  throw new Error('Expected an enforced 22-assertion RPC test plan.');
+if (!/select plan\(25\);/i.test(tests)
+    || !/assertion_count[\s\S]{0,200}<> 25[\s\S]{0,120}guardian_consent_assertion_count_failed/i.test(tests)) {
+  throw new Error('Expected an enforced 25-assertion RPC test plan.');
 }
 const bootstrap = `
 create table public.profiles (
@@ -107,7 +107,7 @@ try {
     console.error(`Failure categories: ${categories.join(',') || 'unclassified'}; process status: ${result.status ?? 'unknown'}; spawn code: ${result.error?.code || 'none'}; SQLSTATE: ${sqlState}; location: ${locationKind} ${position}; line: ${line}; token: ${syntaxToken}; assertion: ${assertionOrdinal}`);
     process.exitCode = 1;
   } else {
-    console.log('Isolated Supabase guardian-consent RPC test: PASS (22/22; transaction rolled back)');
+    console.log('Isolated Supabase guardian-consent RPC test: PASS (25/25; transaction rolled back)');
   }
 } finally {
   rmSync(directory, { recursive: true, force: true });

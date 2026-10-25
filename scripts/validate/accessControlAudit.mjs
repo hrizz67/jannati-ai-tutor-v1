@@ -193,7 +193,8 @@ for (const consentSql of [guardianConsentMigration, guardianConsentFunctions]) {
   assert.match(consentSql, /existing_used_at is null[\s\S]{0,160}existing_expires_at > pg_catalog\.now\(\)/, 'Repeated challenge requests must reuse one active five-minute challenge.');
   assert.match(consentSql, /stale\.created_at < pg_catalog\.now\(\) - interval '24 hours'/, 'Expired challenge records must have a bounded retention policy.');
   assert.match(consentSql, /canonical_notice_version constant text := 'quiz-stt-cloudflare-bm-v1'/, 'The backend must pin the canonical privacy notice version.');
-  assert.match(consentSql, /if not p_granted then[\s\S]{0,500}delete from public\.quiz_stt_guardian_authorization_challenges/, 'Revocation must immediately discard pending guardian challenges.');
+  assert.match(consentSql, /if not p_granted then[\s\S]{0,500}update public\.quiz_stt_guardian_authorization_challenges[\s\S]{0,200}and used_at is null/, 'Revocation must invalidate a pending challenge while retaining its cooldown tombstone.');
+  assert.doesNotMatch(consentSql, /if not p_granted then[\s\S]{0,500}delete from public\.quiz_stt_guardian_authorization_challenges/, 'Revocation must not delete the row that enforces issuance cooldown.');
 }
 assert.match(guardianConsentTable, /enable row level security/, 'The consent audit table must enable RLS.');
 assert.match(guardianConsentTable, /revoke all on table "public"\."quiz_stt_guardian_consent_events" from public, anon, authenticated;/, 'Consent audit rows must not be directly readable or writable by browsers.');

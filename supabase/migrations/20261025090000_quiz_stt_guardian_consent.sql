@@ -142,6 +142,8 @@ begin
   perform pg_catalog.pg_advisory_xact_lock(
     pg_catalog.hashtextextended('quiz-stt-challenge:' || caller_id::text || ':' || p_child_id, 0)
   );
+  -- Lazy retention: stale rows for this account are removed opportunistically
+  -- on a later begin call. This is not a scheduled/global 24-hour deletion SLA.
   delete from public.quiz_stt_guardian_authorization_challenges as stale
   where stale.account_id = caller_id
     and stale.created_at < pg_catalog.now() - interval '24 hours';
@@ -413,8 +415,11 @@ begin
     perform pg_catalog.pg_advisory_xact_lock(
       pg_catalog.hashtextextended('quiz-stt-challenge:' || caller_id::text || ':' || p_child_id, 0)
     );
-    delete from public.quiz_stt_guardian_authorization_challenges
-    where account_id = caller_id and child_id = p_child_id;
+    update public.quiz_stt_guardian_authorization_challenges
+    set used_at = pg_catalog.now()
+    where account_id = caller_id
+      and child_id = p_child_id
+      and used_at is null;
   end if;
 
   return public.get_quiz_stt_guardian_consent_v1(p_child_id);

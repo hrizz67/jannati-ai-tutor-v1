@@ -208,7 +208,9 @@ describe('P1.17 guardian-consent privacy and authorization', () => {
       expect(sql).toContain('guardian_authorization_rate_limited');
       expect(sql).toMatch(/existing_used_at is null[\s\S]{0,120}existing_expires_at > pg_catalog\.now\(\)[\s\S]{0,240}return jsonb_build_object/);
       expect(sql).toMatch(/update public\.quiz_stt_guardian_authorization_challenges[\s\S]{0,500}used_at = null/);
-      expect(sql).toMatch(/if not p_granted then[\s\S]{0,400}delete from public\.quiz_stt_guardian_authorization_challenges/);
+      expect(sql).toMatch(/if not p_granted then[\s\S]{0,500}update public\.quiz_stt_guardian_authorization_challenges[\s\S]{0,200}and used_at is null/);
+      expect(sql).not.toMatch(/if not p_granted then[\s\S]{0,500}delete from public\.quiz_stt_guardian_authorization_challenges/);
+      expect(sql).toContain('This is not a scheduled/global 24-hour deletion SLA.');
     }
     for (const sql of [migration, challengeTable]) {
       expect(sql).toMatch(/unique \(account_id, child_id\)/);
