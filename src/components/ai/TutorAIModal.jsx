@@ -452,6 +452,8 @@ export default function TutorAIModal({
         text: nextText,
         tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : (response?.pedagogicalStepCorrect || response?.isCorrect) ? 'correct' : '',
         source: response?.source || '',
+        intent: response?.intent || '',
+        dialogueClassification: response?.dialogueClassification || '',
         suggestions: response?.quickActions?.length
           ? response.quickActions
           : normalizeList(response?.quickReplies?.length

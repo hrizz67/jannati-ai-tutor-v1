@@ -142,7 +142,8 @@ assert.match(edgeText, /\/v1\/moderations/, 'Gateway mesti menapis input dan out
 assert.match(edgeText, /inputModeration[\s\S]*outputModeration/, 'Moderasi mesti berlaku sebelum dan selepas penjanaan.');
 assert.doesNotMatch(edgeText, /SERVICE_ROLE|service_role/i, 'Gateway tidak boleh memintas RLS dengan service role.');
 assert.match(configText, /\[functions\.tutor-ai\][\s\S]*verify_jwt\s*=\s*true/, 'JWT mesti diwajibkan untuk Edge Function.');
-assert.match(serviceText, /maybeEnhanceTutorResponse/, 'Perkhidmatan Tutor AI mesti mengekalkan fallback tempatan.');
+assert.match(serviceText, /classifyLocalFirstDialogue/, 'Perkhidmatan Tutor AI mesti mengelaskan laluan tempatan sebelum sebarang fallback masa depan.');
+assert.doesNotMatch(serviceText, /maybeEnhanceTutorResponse|functions\.invoke|fetch\s*\(/, 'PR1 tidak boleh memanggil gateway generatif daripada perkhidmatan Tutor.');
 assert.match(modalText, /Tutor AI membantu pembelajaran dan boleh tersilap/, 'UI mesti memberi pendedahan AI yang sesuai umur.');
 
 console.log('Tutor generative gateway regression: PASS');

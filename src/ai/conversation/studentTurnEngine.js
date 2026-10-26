@@ -15,10 +15,10 @@ const INTENT_ALIASES = Object.freeze({
   uasa_summary: 'uasa_summary'
 });
 
-const QUESTION_PATTERN = /^(?:apa|apakah|kenapa|mengapa|bagaimana|macam\s*mana|boleh(?:kah)?|what|why|how|can|could|ما|ماذا|لماذا|كيف)\b|[?؟]\s*$/iu;
-const HELP_PATTERN = /\b(?:ajar|mengajar|terangkan|jelaskan|bantu|tolong|petunjuk|hint|contoh|cara\s+lain|tak\s+faham|tidak\s+faham|belum\s+faham|keliru|teach|explain|help|example|confused|understand)\b/iu;
-const GREETING_PATTERN = /^(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?:pagi|tengah\s+hari|petang|malam)|apa\s+khabar|terima\s+kasih|thanks?)\b/iu;
-const SOCIAL_ONLY_PATTERN = /^(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?:pagi|tengah\s+hari|petang|malam)|apa\s+khabar|terima\s+kasih|thanks?)(?:\s+cikgu)?[.!?؟]*$/iu;
+const QUESTION_PATTERN = /^(?:(?:apa|apakah|kenapa|mengapa|bagaimana|macam\s*mana|boleh(?:kah)?|what|why|how|which|where|when|who|can|could)\b|(?:ما|ماذا|لماذا|كيف|أين|متى|من|هل)(?:\s|$))|[?؟]\s*$/iu;
+const HELP_PATTERN = /(?:\b(?:ajar|mengajar|terangkan|jelaskan|bantu|tolong|petunjuk|hint|contoh|cara\s+lain|tak\s+faham|tidak\s+faham|belum\s+faham|keliru|teach|explain|help|example|confused|understand|show\s+me|give\s+me\s+a\s+clue|don'?t\s+get\s+it)\b|(?:ساعدني|اشرح|مثال|تلميح|لا\s+أفهم|لم\s+أفهم))/iu;
+const GREETING_PATTERN = /^(?:(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?:pagi|tengah\s+hari|petang|malam)|apa\s+khabar|terima\s+kasih|thanks?)\b|(?:مرحبا|السلام\s+عليكم|شكرا)(?:\s|$))/iu;
+const SOCIAL_ONLY_PATTERN = /^(?:(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?:pagi|tengah\s+hari|petang|malam)|apa\s+khabar|terima\s+kasih|thanks?)(?:\s+cikgu)?|(?:مرحبا|السلام\s+عليكم|شكرا))[.!?؟]*$/iu;
 const LEARNING_RECOMMENDATION_PATTERN = /(?:\b(?:hari\s*(?:ini|ni)|sekarang)\b.{0,35}\b(?:belajar|ulang\s*kaji)\b|\b(?:belajar|ulang\s*kaji)\b.{0,25}\b(?:apa|mana)\b|\b(?:apa|mana)\b.{0,30}\b(?:patut|perlu|mahu|nak|boleh)?\s*(?:saya\s+)?(?:belajar|ulang\s*kaji)\b|\b(?:cadang(?:an|kan)?|saran(?:an|kan)?|pilih)\b.{0,30}\b(?:topik|pelajaran|belajar)\b|\b(?:mula|mulakan|jom)\b.{0,20}\b(?:sesi|latihan)\s+(?:ringkas|hari\s*(?:ini|ni))\b|\bwhat\s+should\s+i\s+(?:learn|study)\b|\bchoose\s+(?:a\s+)?topic\b)/iu;
 const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S)/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
@@ -99,8 +99,8 @@ export function understandStudentTurn({
   const explicitIntent = clean(intent).toLowerCase();
   const conversation = recentConversation(history);
   const referencesPreviousTurn = conversation.hasHistory && (
-    /^(?:(?:kenapa|mengapa|bagaimana|macam\s*mana|why|how)(?:\s+(?:ini|itu|tadi|pula))?|apa\s+maksudnya)\s*[?؟]?$/iu.test(text) ||
-    /^(?:yang\s+itu|yang\s+tadi|lagi|cara\s+lain)\b/iu.test(text)
+    /^(?:(?:kenapa|mengapa|bagaimana|macam\s*mana|why|how|لماذا|كيف)(?:\s+(?:ini|itu|tadi|pula))?|apa\s+maksudnya|what\s+does\s+that\s+mean)\s*[?؟]?$/iu.test(text) ||
+    /^(?:yang\s+itu|yang\s+tadi|lagi|cara\s+lain|that\s+one|the\s+previous\s+one|again|مرة\s+أخرى|ذلك|السابق)\b/iu.test(text)
   );
 
   if (!AUTO_INTENTS.has(explicitIntent) && INTENT_ALIASES[explicitIntent]) {
@@ -153,7 +153,7 @@ export function understandStudentTurn({
     });
   }
 
-  if (/\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b/iu.test(lower)) {
+  if (/\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|أنا\s+محتار)/iu.test(lower)) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
@@ -178,27 +178,27 @@ export function understandStudentTurn({
   }
   if (continuation) return makeTurn(QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, { ...conversation, referencesPreviousTurn: true });
 
-  if (/\b(?:beri|bagi|minta|mahu|nak)?\s*(?:satu\s+)?(?:petunjuk|hint)\b/iu.test(lower)) return makeTurn('hint', 'help_request', 0.99, conversation);
+  if (/\b(?:beri|bagi|minta|mahu|nak)?\s*(?:satu\s+)?(?:petunjuk|hint)\b/iu.test(lower) || /(?:أعطني\s+تلميح|تلميح)/u.test(lower)) return makeTurn('hint', 'help_request', 0.99, conversation);
   if (/\b(?:jawapan\s+saya\s+salah|kenapa\s+salah|silap\s+di\s+mana|where\s+did\s+i\s+go\s+wrong)\b/iu.test(lower)) return makeTurn('wrong_answer_coaching', 'help_request', 0.98, conversation);
-  if (/\b(?:contoh|example)(?:\s+lagi|\s+mudah|\s+lain)?\b/iu.test(lower) || /^(?:lagi|satu\s+lagi)$/iu.test(lower)) {
+  if (/\b(?:contoh|example)(?:\s+lagi|\s+mudah|\s+lain)?\b/iu.test(lower) || /(?:أعطني\s+مثال|مثال\s+آخر)/u.test(lower) || /^(?:lagi|satu\s+lagi)$/iu.test(lower)) {
     return makeTurn('example_request', KNOWLEDGE_QUESTION, 0.97, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
-  if (/\b(?:cara\s+lain|terangkan\s+lagi|jelaskan\s+lagi|ulang\s+semula|explain\s+again|another\s+way)\b/iu.test(lower)) {
+  if (/\b(?:cara\s+lain|terangkan\s+lagi|jelaskan\s+lagi|ulang\s+semula|explain\s+again|another\s+way)\b/iu.test(lower) || /(?:اشرح\s+مرة\s+أخرى|طريقة\s+أخرى)/u.test(lower)) {
     return makeTurn('alternative_explanation', FOLLOW_UP_QUESTION, 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn: conversation.hasHistory });
   }
   if (/\b(?:apa\s+beza|apakah\s+perbezaan|bezakan|bandingkan|difference\s+between|compare)\b/iu.test(lower)) {
     return makeTurn('comparison_question', KNOWLEDGE_QUESTION, 0.99, { ...conversation, isQuestion: true });
   }
-  if (/^(?:kenapa|mengapa|why|لماذا)\b/iu.test(lower)) {
+  if (/^(?:(?:kenapa|mengapa|why)\b|لماذا(?:\s|$))/iu.test(lower)) {
     return makeTurn('why_question', KNOWLEDGE_QUESTION, 0.98, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
-  if (/^(?:bagaimana|macam\s*mana|how|كيف)\b/iu.test(lower) || /\b(?:ajar|tunjuk(?:kan)?\s+cara|langkah\s+demi\s+langkah|teach\s+me)\b/iu.test(lower)) {
+  if (/^(?:(?:bagaimana|macam\s*mana|how)\b|كيف(?:\s|$))/iu.test(lower) || /\b(?:ajar|tunjuk(?:kan)?\s+cara|langkah\s+demi\s+langkah|teach\s+me)\b/iu.test(lower) || /(?:علمني|اشرح\s+الخطوات)/u.test(lower)) {
     return makeTurn('how_question', KNOWLEDGE_QUESTION, 0.96, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
-  if (/^(?:apa(?:kah)?\s+(?:itu|maksud|erti)|what\s+is|what\s+does|ما|ماذا)\b/iu.test(lower)) {
+  if (/^(?:(?:apa(?:kah)?\s+(?:itu|maksud|erti)|what\s+is|what\s+does)\b|(?:ما|ماذا)(?:\s|$))/iu.test(lower)) {
     return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.96, { ...conversation, isQuestion: true });
   }
-  if (/\b(?:terangkan|jelaskan|bantu|tolong\s+ajar|explain|help\s+me)\b/iu.test(lower)) {
+  if (/\b(?:terangkan|jelaskan|bantu|tolong\s+ajar|explain|help\s+me)\b/iu.test(lower) || /(?:ساعدني|اشرح\s+لي)/u.test(lower)) {
     return makeTurn(QUESTION_HELP, 'help_request', 0.93, { ...conversation, isQuestion: /[?؟]/.test(text) });
   }
   if (QUESTION_PATTERN.test(text)) return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.82, { ...conversation, isQuestion: true, referencesPreviousTurn });
