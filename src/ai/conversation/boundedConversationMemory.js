@@ -25,7 +25,39 @@ function cleanText(value = '', maxLength = MAX_MESSAGE_LENGTH) {
 }
 
 function cleanScope(value = '') {
-  return cleanText(value, MAX_SCOPE_LENGTH);
+  const scope = String(value ?? '')
+    .normalize('NFKC')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return scope && scope.length <= MAX_SCOPE_LENGTH ? scope : '';
+}
+
+function escapeRegExp(value = '') {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function removeStudentIdentityFromAssistantText(value = '', studentName = '') {
+  const text = cleanText(value);
+  const identity = cleanText(studentName, 160);
+  if (!text || !identity) return text;
+  const identityPattern = escapeRegExp(identity).replace(/\s+/g, '\\s+');
+  const boundaryPattern = new RegExp(`(^|[^\\p{L}\\p{N}\\p{M}_])${identityPattern}(?=$|[^\\p{L}\\p{N}\\p{M}_])`, 'giu');
+  return cleanText(text.replace(boundaryPattern, '$1kamu'));
+}
+
+export function prepareTutorConversationMessagesForPersistence(messages = [], studentName = '') {
+  return (Array.isArray(messages) ? messages : []).map(message => {
+    const role = message?.role === 'ai' || message?.role === 'assistant' ? 'ai' : message?.role;
+    if (role !== 'ai') return message;
+    const { persistedText, ...safeMessage } = message || {};
+    const storageText = cleanText(persistedText) || cleanText(message?.text);
+    return {
+      ...safeMessage,
+      role: 'ai',
+      text: removeStudentIdentityFromAssistantText(storageText, studentName)
+    };
+  });
 }
 
 function cleanSuggestion(value) {
@@ -45,18 +77,19 @@ export function sanitizeTutorConversationMessage(value = {}) {
   const role = value?.role === 'user' ? 'user' : value?.role === 'ai' || value?.role === 'assistant' ? 'ai' : '';
   const rawText = cleanText(value?.text);
   if (!role || !rawText) return null;
+  const retainedText = role === 'ai' ? cleanText(value?.persistedText) || rawText : rawText;
   const declaredSafetySignal = cleanText(value?.safetySignal, 40);
   const safetySignal = role === 'user'
     ? detectTutorSafetyRisk(rawText) || (RETAINED_SAFETY_SIGNALS.has(declaredSafetySignal) ? declaredSafetySignal : '')
     : '';
-  const privacySignal = role === 'user' && (
-    containsPotentialPersonalData(rawText) || value?.privacySignal === 'personal-data'
-  ) ? 'personal-data' : '';
+  const privacySignal = containsPotentialPersonalData(retainedText) || value?.privacySignal === 'personal-data'
+    ? 'personal-data'
+    : '';
   const text = privacySignal
     ? TUTOR_MEMORY_REDACTION_TEXT.personalData
     : safetySignal
       ? TUTOR_MEMORY_REDACTION_TEXT.safety
-      : rawText;
+      : retainedText;
   return {
     role,
     text,
@@ -143,11 +176,14 @@ export function createBoundedTutorConversationMemory({
 export const TUTOR_CONVERSATION_MEMORY_LIMITS = Object.freeze({
   maxScopes: DEFAULT_MAX_SCOPES,
   maxTurns: DEFAULT_MAX_TURNS,
-  ttlMs: DEFAULT_TTL_MS
+  ttlMs: DEFAULT_TTL_MS,
+  maxScopeLength: MAX_SCOPE_LENGTH
 });
 
 export default {
   createBoundedTutorConversationMemory,
+  prepareTutorConversationMessagesForPersistence,
+  removeStudentIdentityFromAssistantText,
   sanitizeTutorConversationMessage,
   TUTOR_MEMORY_REDACTION_TEXT,
   TUTOR_CONVERSATION_MEMORY_LIMITS

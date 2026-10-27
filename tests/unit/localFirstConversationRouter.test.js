@@ -2,8 +2,10 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  TUTOR_CONVERSATION_MEMORY_LIMITS,
   TUTOR_MEMORY_REDACTION_TEXT,
-  createBoundedTutorConversationMemory
+  createBoundedTutorConversationMemory,
+  prepareTutorConversationMessagesForPersistence
 } from '../../src/ai/conversation/boundedConversationMemory.js';
 import {
   DIALOGUE_CLASSIFICATION,
@@ -55,6 +57,22 @@ describe('bounded tutor conversation memory', () => {
     expect(memory.size()).toBe(0);
   });
 
+  it('rejects overlong scope keys instead of aliasing their shared prefix', () => {
+    const memory = createBoundedTutorConversationMemory();
+    const sharedPrefix = 'scope-'.padEnd(TUTOR_CONVERSATION_MEMORY_LIMITS.maxScopeLength, 'x');
+    const childAScope = `${sharedPrefix}-child-a`;
+    const childBScope = `${sharedPrefix}-child-b`;
+    expect(childAScope.slice(0, TUTOR_CONVERSATION_MEMORY_LIMITS.maxScopeLength)).toBe(
+      childBScope.slice(0, TUTOR_CONVERSATION_MEMORY_LIMITS.maxScopeLength)
+    );
+
+    expect(memory.set(childAScope, [{ role: 'ai', text: 'child-a-message' }])).toEqual([]);
+    expect(memory.set(childBScope, [{ role: 'ai', text: 'child-b-message' }])).toEqual([]);
+    expect(memory.get(childAScope)).toEqual([]);
+    expect(memory.get(childBScope)).toEqual([]);
+    expect(memory.size()).toBe(0);
+  });
+
   it('never writes memory to browser or cloud storage', () => {
     const source = readFileSync(resolve('src/ai/conversation/boundedConversationMemory.js'), 'utf8');
     expect(source).not.toMatch(/localStorage|sessionStorage|createClient|functions\.invoke|fetch\s*\(/i);
@@ -82,6 +100,32 @@ describe('bounded tutor conversation memory', () => {
     expect(stored.text).toBe(TUTOR_MEMORY_REDACTION_TEXT.safety);
     expect(stored.text).not.toContain('bunuh diri');
     expect(stored.safetySignal).toBe('self_harm');
+  });
+
+  it.each([
+    ['BM', 'Nur Aisyah', 'Hai Nur Aisyah. Mari kita belajar bersama.', 'Hai. Mari kita belajar bersama.'],
+    ['English', 'Adam Lee', 'Hi Adam Lee. What would you like to understand?', 'Hi. What would you like to understand?']
+  ])('keeps a natural personalized %s AI greeting on screen but never persists the child identity', (_language, studentName, visibleText, persistedText) => {
+    const visibleGreeting = { role: 'ai', text: visibleText, persistedText, suggestions: [] };
+    expect(visibleGreeting.text).toContain(studentName);
+
+    const prepared = prepareTutorConversationMessagesForPersistence([visibleGreeting], studentName);
+    expect(prepared[0].text).toBe(persistedText);
+    expect(prepared[0].text).not.toContain(studentName);
+    expect(prepared[0]).not.toHaveProperty('persistedText');
+
+    const memory = createBoundedTutorConversationMemory();
+    memory.set('account-a::child-a', [visibleGreeting]);
+    expect(memory.get('account-a::child-a')[0].text).toBe(persistedText);
+    expect(memory.get('account-a::child-a')[0].text).not.toContain(studentName);
+  });
+
+  it('removes the child identity from any assistant-origin message at the persistence boundary', () => {
+    const prepared = prepareTutorConversationMessagesForPersistence([
+      { role: 'ai', text: 'Aina, jawapan kamu menunjukkan usaha yang baik.' }
+    ], 'Aina');
+    expect(prepared[0].text).toBe('kamu, jawapan kamu menunjukkan usaha yang baik.');
+    expect(prepared[0].text).not.toContain('Aina');
   });
 });
 

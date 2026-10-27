@@ -64,6 +64,8 @@ describe('Tutor conversation scope isolation hardening', () => {
     const scopedStateSource = readFileSync(resolve('src/ai/conversation/scopedConversationState.js'), 'utf8');
     expect(modalSource).toContain('getScopedConversationWrite(conversationState, sessionKey)');
     expect(modalSource).toContain('updateScopedConversationMessages(current, sessionKey, update)');
+    expect(modalSource).toContain('prepareTutorConversationMessagesForPersistence(write.messages, studentName)');
+    expect(modalSource).toMatch(/persistedText:\s*buildNaturalGreeting\(\{\s*studentName:\s*''/);
     expect(modalSource).not.toContain('onMessagesChange?.(sessionKey, messages)');
     expect(`${modalSource}\n${scopedStateSource}`).not.toMatch(/functions\.invoke|fetch\s*\(|XMLHttpRequest|WebSocket/);
   });

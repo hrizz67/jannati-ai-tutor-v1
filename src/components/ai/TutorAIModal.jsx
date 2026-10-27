@@ -15,6 +15,10 @@ import {
   readScopedConversationMessages,
   updateScopedConversationMessages
 } from '../../ai/conversation/scopedConversationState.js';
+import {
+  prepareTutorConversationMessagesForPersistence,
+  removeStudentIdentityFromAssistantText
+} from '../../ai/conversation/boundedConversationMemory.js';
 import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
@@ -327,8 +331,13 @@ export default function TutorAIModal({
 
   useEffect(() => {
     const write = getScopedConversationWrite(conversationState, sessionKey);
-    if (write) onMessagesChange?.(write.scopeKey, write.messages);
-  }, [conversationState, sessionKey, onMessagesChange]);
+    if (write) {
+      onMessagesChange?.(
+        write.scopeKey,
+        prepareTutorConversationMessagesForPersistence(write.messages, studentName)
+      );
+    }
+  }, [conversationState, sessionKey, studentName, onMessagesChange]);
 
   useEffect(() => {
     if (!open) {
@@ -345,6 +354,13 @@ export default function TutorAIModal({
       role: 'ai',
       text: buildNaturalGreeting({
         studentName,
+        subjectLabel,
+        topicLabel,
+        questionText: normalizedQuestionText,
+        teachingLanguage: languagePresentation.teachingLanguage
+      }),
+      persistedText: buildNaturalGreeting({
+        studentName: '',
         subjectLabel,
         topicLabel,
         questionText: normalizedQuestionText,
@@ -461,6 +477,7 @@ export default function TutorAIModal({
         return [...prev, {
         role: 'ai',
         text: nextText,
+        persistedText: removeStudentIdentityFromAssistantText(nextText, studentName),
         tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : (response?.pedagogicalStepCorrect || response?.isCorrect) ? 'correct' : '',
         source: response?.source || '',
         intent: response?.intent || '',
