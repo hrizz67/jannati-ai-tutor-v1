@@ -24,6 +24,7 @@ import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedA
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 import { buildIntelligentTeachingTurn } from './pedagogy/intelligentTeachingEngine.js';
+import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -681,13 +682,19 @@ function buildContextualSections({
   const answerSafeList = candidates => normalizeList(candidates)
     .map(candidate => selectAnswerSafeText([candidate], protectedAnswers, ''))
     .filter(Boolean);
-  const verifiedExamples = coachResponse?.ready && coachKnowledge?.packLoaded === true
-    ? answerSafeList([
-        coachKnowledge?.examples,
-        coachKnowledge?.extraExamples,
-        coachKnowledge?.workedExamples
-      ])
-    : [];
+  const knowledgeExampleCandidates = answerSafeList([
+    coachKnowledge?.examples,
+    coachKnowledge?.extraExamples,
+    coachKnowledge?.workedExamples
+  ]);
+  const reviewedExampleSelection = coachResponse?.ready && coachKnowledge?.source === 'knowledge'
+    ? selectApprovedTeachingExamples({
+        subjectId: subject?.id,
+        topicId: topic?.id,
+        candidates: knowledgeExampleCandidates
+      })
+    : { examples: [], provenance: null };
+  const verifiedExamples = answerSafeList(reviewedExampleSelection.examples);
   const pedagogicalContent = {
     grounded: Boolean(
       coachResponse?.ready ||
@@ -704,6 +711,7 @@ function buildContextualSections({
     ]),
     examples: verifiedExamples,
     verifiedExamples,
+    verifiedExampleProvenance: reviewedExampleSelection.provenance,
     alternatives: answerSafeList([
       commonMistake,
       memoryTip,

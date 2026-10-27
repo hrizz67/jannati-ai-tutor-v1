@@ -76,9 +76,9 @@ describe('intelligent teaching progression', () => {
     expect(questionCount(third.reply.text)).toBe(1);
   });
 
-  it('uses a distinct verified micro-example on turn four and a bounded adult recovery on turn five', () => {
+  it('uses a distinct approved micro-example on turn four and closes adult support without a question loop on turns five to seven', () => {
     const turns = [];
-    for (let index = 0; index < 5; index += 1) {
+    for (let index = 0; index < 7; index += 1) {
       turns.push(buildIntelligentTeachingTurn(buildArgs({
         history: turns.flatMap(withPriorTurn)
       })));
@@ -94,10 +94,27 @@ describe('intelligent teaching progression', () => {
     expect(turns[4].pedagogicalState).toMatchObject({
       misunderstandingCount: 5,
       strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
-      supportStage: 'adult_support'
+      supportStage: 'adult_support_referral'
     });
     expect(turns[4].reply.text).toMatch(/guru atau penjaga/i);
-    expect(new Set(turns.map(item => item.reply.text)).size).toBe(5);
+    expect(turns[5].pedagogicalState).toMatchObject({
+      misunderstandingCount: 6,
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+      supportStage: 'adult_support_acknowledgement',
+      pendingFollowUp: ''
+    });
+    expect(turns[6].pedagogicalState).toMatchObject({
+      misunderstandingCount: 7,
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+      supportStage: 'adult_support_closed',
+      pendingFollowUp: ''
+    });
+    expect(new Set(turns.map(item => item.reply.text)).size).toBe(7);
+    expect(questionCount(turns[4].reply.text)).toBe(1);
+    expect(questionCount(turns[5].reply.text)).toBe(0);
+    expect(questionCount(turns[6].reply.text)).toBe(0);
+    expect(turns[5].reply.text).not.toBe(turns[4].reply.text);
+    expect(turns[6].reply.text).not.toBe(turns[5].reply.text);
     for (const turn of turns) expect(questionCount(turn.reply.text)).toBeLessThanOrEqual(1);
   });
 
@@ -117,7 +134,8 @@ describe('intelligent teaching progression', () => {
     }));
     expect(result.pedagogicalState).toMatchObject({
       misunderstandingCount: 4,
-      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+      supportStage: 'adult_support_referral'
     });
     expect(result.reply.text).toMatch(/guru atau penjaga/i);
     expect(questionCount(result.reply.text)).toBe(1);
@@ -342,7 +360,7 @@ describe('pedagogical state scope and privacy boundaries', () => {
       }
     }]);
     expect(memory.get('account-a::child-a')[0].pedagogicalState).toMatchObject({
-      misunderstandingCount: 5,
+      misunderstandingCount: 7,
       pendingFollowUp: ''
     });
   });

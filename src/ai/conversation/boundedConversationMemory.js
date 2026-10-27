@@ -78,7 +78,7 @@ export function sanitizeTutorPedagogicalState(value = {}) {
   const pendingFollowUp = cleanText(value.pendingFollowUp, 200);
   const state = {
     supportStage: cleanText(value.supportStage, 48),
-    misunderstandingCount: Math.max(0, Math.min(5, Math.floor(Number(value.misunderstandingCount) || 0))),
+    misunderstandingCount: Math.max(0, Math.min(7, Math.floor(Number(value.misunderstandingCount) || 0))),
     strategyUsed: cleanText(value.strategyUsed, 64),
     currentConcept: cleanText(value.currentConcept, 240),
     pendingFollowUp: containsPotentialPersonalData(pendingFollowUp) ? '' : pendingFollowUp,
