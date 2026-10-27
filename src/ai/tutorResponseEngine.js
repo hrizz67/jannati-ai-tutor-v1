@@ -1,4 +1,4 @@
-import { buildCoachResponse } from './coach/v3/coachController.js';
+import { fetchTutorKnowledgeData } from './coach/knowledge/tutorKnowledgeAdapter.js';
 import { rankStrongTopics, rankWeakTopics } from './adaptive/weakTopicEngine.js';
 import { buildRecommendation } from './recommendationEngine.js';
 import {
@@ -28,6 +28,58 @@ import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamp
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+
+function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
+  const asTextList = value => Array.isArray(value)
+    ? value.filter(Boolean).map(String)
+    : value === null || value === undefined || value === '' ? [] : [String(value)];
+  const explanations = asTextList(knowledge.teacherExplanation);
+  const simpleExplanation = String(knowledge.simpleExplanation || knowledge.explanation || '');
+  const questionText = String(context.questionText || '').trim();
+  const expectedAnswer = String(context.expectedAnswer || '').trim();
+  const pronoun = subjectId === 'bm' && /kata[_ ]ganti[_ ]nama/.test(`${subjectId} ${topicId}`.toLowerCase())
+    ? (expectedAnswer.match(/\b(saya|kami|kita|awak|kamu|dia|beliau|mereka|anda|aku)\b/i)?.[1] || '').toLowerCase()
+    : '';
+  const pronounReason = {
+    saya: '“Saya” digunakan apabila seorang penutur bercakap tentang diri sendiri.',
+    kami: '“Kami” digunakan apabila Amir dan Faris bercakap tentang diri mereka tanpa memasukkan pendengar.',
+    kita: '“Kita” digunakan apabila penutur bercakap tentang diri sendiri bersama pendengar.',
+    kamu: '“Kamu” digunakan apabila penutur bercakap terus kepada seorang pendengar.',
+    awak: '“Awak” digunakan apabila penutur bercakap terus kepada seorang pendengar.',
+    dia: '“Dia” digunakan untuk seorang yang sedang dibicarakan.',
+    beliau: '“Beliau” digunakan dengan sopan untuk seorang yang dihormati.',
+    mereka: '“Mereka” digunakan untuk beberapa orang yang sedang dibicarakan.',
+    anda: '“Anda” digunakan apabila penutur bercakap kepada seorang secara sopan.',
+    aku: '“Aku” digunakan apabila seorang penutur bercakap tentang diri sendiri dalam situasi tidak rasmi.'
+  }[pronoun];
+  const contextualPronoun = pronounReason
+    ? `Kata ganti nama diri yang betul ialah “${pronoun.charAt(0).toUpperCase()}${pronoun.slice(1)}” kerana ${pronounReason.replace(/^“[^”]+”\s+digunakan apabila /, '').replace(/^“[^”]+”\s+digunakan untuk /, '').replace(/^“[^”]+”\s+digunakan dengan sopan untuk /, '').replace(/^“[^”]+”\s+digunakan apabila /, '')}`
+    : '';
+  const subjectFocus = subjectId === 'math' && questionText
+    ? ` Soalan semasa menggunakan nombor dan operasi ini: ${questionText}${expectedAnswer ? ` Jawapan perlu disemak dengan ${expectedAnswer}.` : ''}`
+    : subjectId === 'sains' && questionText
+      ? ` Perhatikan konsep sains dalam soalan semasa: ${questionText}`
+      : subjectId === 'arab' && questionText
+        ? ` Kekalkan tulisan dan bunyi Arab daripada soalan ini: ${questionText}`
+        : subjectId === 'english' && questionText
+          ? ` Gunakan perkataan atau ayat Inggeris dalam soalan ini: ${questionText}`
+          : '';
+  const explanation = contextualPronoun || simpleExplanation || explanations[0] || '';
+  return {
+    explanation: `${explanation}${subjectFocus}`.trim(),
+    simpleExplanation: `${contextualPronoun || simpleExplanation || explanations[0] || ''}${subjectFocus}`.trim()
+  };
+}
+
+async function buildTutorKnowledgeResponse({ subjectId, topicId, question, result, userAnswer, context }) {
+  const knowledge = await fetchTutorKnowledgeData({ subjectId, topicId, question, result, userAnswer });
+  if (!knowledge) return null;
+  return {
+    knowledge,
+    explanation: buildTutorExplanation({ subjectId, topicId, knowledge, context }),
+    ready: true
+  };
+}
 
 const CATEGORY_COMMON_MISTAKES = {
   person: ['Memilih nama tempat.', 'Memilih perkataan yang bukan nama orang.'],
@@ -1289,7 +1341,7 @@ export async function getTutorResponse(options = {}) {
 
   if (hasQuestionContext && (subjectContext.id || topicContext.id)) {
     try {
-      coachResponse = await buildCoachResponse({
+      coachResponse = await buildTutorKnowledgeResponse({
         subjectId: subjectContext.id,
         topicId: topicContext.id,
         question: resolvedQuestion,

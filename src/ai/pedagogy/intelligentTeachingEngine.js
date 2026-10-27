@@ -249,6 +249,33 @@ function buildState({ signal, previousState, currentConcept, strategyUsed, suppo
   };
 }
 
+function buildTeachingResult({
+  signal,
+  previousState,
+  currentConcept,
+  strategyUsed,
+  supportStage,
+  pendingFollowUp = '',
+  text = '',
+  quickReplies = [],
+  misconception = null,
+  includeReply = true
+}) {
+  return {
+    reply: includeReply ? { text, quickReplies, grounded: true } : null,
+    misconception,
+    pedagogicalState: buildState({
+      signal,
+      previousState,
+      currentConcept,
+      strategyUsed,
+      supportStage,
+      pendingFollowUp,
+      misconception
+    })
+  };
+}
+
 export function buildIntelligentTeachingTurn({
   studentTurn = {},
   resolvedIntent = '',
@@ -301,19 +328,15 @@ export function buildIntelligentTeachingTurn({
       : signal === TEACHING_SIGNAL.RESOLVED
         ? TEACHING_STRATEGY.CHECK_COMPLETED
         : TEACHING_STRATEGY.CLARIFY_REQUEST;
-    return {
-      reply: null,
-      misconception: null,
-      pedagogicalState: buildState({
-        signal,
-        previousState,
-        currentConcept,
-        strategyUsed,
-        supportStage: signal === TEACHING_SIGNAL.CLARIFICATION ? 'clarification' : signal,
-        pendingFollowUp: signal === TEACHING_SIGNAL.CLARIFICATION ? checkQuestion : '',
-        misconception: null
-      })
-    };
+    return buildTeachingResult({
+      signal,
+      previousState,
+      currentConcept,
+      strategyUsed,
+      supportStage: signal === TEACHING_SIGNAL.CLARIFICATION ? 'clarification' : signal,
+      pendingFollowUp: signal === TEACHING_SIGNAL.CLARIFICATION ? checkQuestion : '',
+      includeReply: false
+    });
   }
 
   if (signal === 'example_request') {
@@ -322,51 +345,37 @@ export function buildIntelligentTeachingTurn({
       .join(' '));
     const approvedExample = verifiedExamples.find(item => !priorText.includes(normalize(item)));
     const hasExample = Boolean(approvedExample);
-    return {
-      reply: {
-        text: hasExample
-          ? clean([`${copy.exampleLead} ${approvedExample}`, `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
-          : copy.noExample,
-        quickReplies: hasExample ? copy.quickReplies : [copy.quickReplies[0], copy.quickReplies[2]],
-        grounded: true
-      },
-      misconception: null,
-      pedagogicalState: buildState({
-        signal,
-        previousState,
-        currentConcept,
-        strategyUsed: hasExample ? TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE : TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
-        supportStage: hasExample ? 'example' : 'example_unavailable',
-        pendingFollowUp: hasExample ? checkQuestion : '',
-        misconception: null
-      })
-    };
+    return buildTeachingResult({
+      signal,
+      previousState,
+      currentConcept,
+      text: hasExample
+        ? clean([`${copy.exampleLead} ${approvedExample}`, `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
+        : copy.noExample,
+      quickReplies: hasExample ? copy.quickReplies : [copy.quickReplies[0], copy.quickReplies[2]],
+      strategyUsed: hasExample ? TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE : TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
+      supportStage: hasExample ? 'example' : 'example_unavailable',
+      pendingFollowUp: hasExample ? checkQuestion : ''
+    });
   }
 
   const hasGroundedContent = teachingContent.grounded === true && Boolean(explanations[0] || examples[0] || alternatives[0] || steps[0]);
   if (!hasGroundedContent) {
     const pendingFollowUp = copy.missingQuestion;
-    return {
-      reply: {
-        text: copy.missing,
-        quickReplies: language === 'en'
-          ? ['Return to this question', 'Name the topic', 'Ask my teacher']
-          : language === 'ar'
-            ? ['ارجع إلى السؤال', 'اكتب اسم الدرس', 'اسأل المعلم']
-            : ['Kembali kepada soalan', 'Nyatakan nama topik', 'Tanya guru'],
-        grounded: true
-      },
-      misconception: null,
-      pedagogicalState: buildState({
-        signal,
-        previousState,
-        currentConcept,
-        strategyUsed: TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
-        supportStage: 'knowledge_safe_fallback',
-        pendingFollowUp,
-        misconception: null
-      })
-    };
+    return buildTeachingResult({
+      signal,
+      previousState,
+      currentConcept,
+      text: copy.missing,
+      quickReplies: language === 'en'
+        ? ['Return to this question', 'Name the topic', 'Ask my teacher']
+        : language === 'ar'
+          ? ['ارجع إلى السؤال', 'اكتب اسم الدرس', 'اسأل المعلم']
+          : ['Kembali kepada soalan', 'Nyatakan nama topik', 'Tanya guru'],
+      strategyUsed: TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
+      supportStage: 'knowledge_safe_fallback',
+      pendingFollowUp
+    });
   }
 
   if (signal === TEACHING_SIGNAL.RECOVERY_SELECTION) {
@@ -375,43 +384,28 @@ export function buildIntelligentTeachingTurn({
       ? explanations[0] || alternatives[0] || steps[0]
       : steps[0] || alternatives[0] || explanations[0];
     const supportLead = asksForMeaning ? copy.conceptLead : copy.stepLead;
-    return {
-      reply: {
-        text: clean([supportLead, groundedSupport, `${copy.checkLead} ${checkQuestion}`].filter(Boolean).join(' '), 700),
-        quickReplies: copy.recoveryCheckReplies,
-        grounded: true
-      },
-      misconception: null,
-      pedagogicalState: buildState({
-        signal,
-        previousState,
-        currentConcept,
-        strategyUsed: asksForMeaning ? TEACHING_STRATEGY.ALTERNATIVE_CONNECTION : TEACHING_STRATEGY.ONE_SMALL_STEP,
-        supportStage: asksForMeaning ? 'recovery_meaning' : 'recovery_first_step',
-        pendingFollowUp: checkQuestion,
-        misconception: null
-      })
-    };
+    return buildTeachingResult({
+      signal,
+      previousState,
+      currentConcept,
+      text: clean([supportLead, groundedSupport, `${copy.checkLead} ${checkQuestion}`].filter(Boolean).join(' '), 700),
+      quickReplies: copy.recoveryCheckReplies,
+      strategyUsed: asksForMeaning ? TEACHING_STRATEGY.ALTERNATIVE_CONNECTION : TEACHING_STRATEGY.ONE_SMALL_STEP,
+      supportStage: asksForMeaning ? 'recovery_meaning' : 'recovery_first_step',
+      pendingFollowUp: checkQuestion
+    });
   }
 
   if (signal === TEACHING_SIGNAL.ADULT_SUPPORT) {
-    return {
-      reply: {
-        text: copy.adultFollowUp,
-        quickReplies: copy.adultClosedReplies,
-        grounded: true
-      },
-      misconception: null,
-      pedagogicalState: buildState({
-        signal,
-        previousState,
-        currentConcept,
-        strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
-        supportStage: 'adult_support_acknowledgement',
-        pendingFollowUp: '',
-        misconception: null
-      })
-    };
+    return buildTeachingResult({
+      signal,
+      previousState,
+      currentConcept,
+      text: copy.adultFollowUp,
+      quickReplies: copy.adultClosedReplies,
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+      supportStage: 'adult_support_acknowledgement'
+    });
   }
 
   const previousCount = previousState?.currentConcept === currentConcept
@@ -455,23 +449,17 @@ export function buildIntelligentTeachingTurn({
   }
 
   const text = clean(textParts.filter(Boolean).join(' '), 700);
-  return {
-    reply: {
-      text,
-      quickReplies,
-      grounded: true
-    },
-    misconception,
-    pedagogicalState: buildState({
-      signal,
-      previousState,
-      currentConcept,
-      strategyUsed,
-      supportStage,
-      pendingFollowUp,
-      misconception
-    })
-  };
+  return buildTeachingResult({
+    signal,
+    previousState,
+    currentConcept,
+    text,
+    quickReplies,
+    strategyUsed,
+    supportStage,
+    pendingFollowUp,
+    misconception
+  });
 }
 
 export default {

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { fetchCoachKnowledgeData } from '../../src/ai/coach/knowledge/knowledgeAdapter.js';
+import { fetchTutorKnowledgeData } from '../../src/ai/coach/knowledge/tutorKnowledgeAdapter.js';
 import {
   APPROVED_TEACHING_EXAMPLES,
   selectApprovedTeachingExamples
@@ -54,8 +55,30 @@ describe('authored teaching-example approval boundary', () => {
     })).toEqual({ examples: [], provenance: null });
   });
 
+  it.each([
+    ['bm', 'kata_nama_am'],
+    ['english', 'nouns'],
+    ['arab', 'mufradat']
+  ])('keeps the Tutor-specific %s adapter grounded in the authored allowlist', async (subjectId, topicId) => {
+    const knowledge = await fetchTutorKnowledgeData({ subjectId, topicId });
+    const result = selectApprovedTeachingExamples({
+      subjectId,
+      topicId,
+      candidates: knowledgeCandidates(knowledge)
+    });
+
+    expect(knowledge).toMatchObject({ source: 'knowledge', packLoaded: true });
+    expect(result.examples.length).toBeGreaterThan(0);
+    expect(result.provenance?.status).toBe('approved-for-adaptive-teaching');
+    expect(knowledge).not.toHaveProperty('learningProfile');
+  });
+
   it('has no network or remote-AI path', () => {
-    const source = readFileSync(resolve('src/ai/pedagogy/approvedTeachingExamples.js'), 'utf8');
+    const source = [
+      'src/ai/pedagogy/approvedTeachingExamples.js',
+      'src/ai/coach/knowledge/tutorKnowledgeAdapter.js',
+      'src/ai/coach/knowledge/knowledgeText.js'
+    ].map(file => readFileSync(resolve(file), 'utf8')).join('\n');
     expect(source).not.toMatch(/fetch\s*\(|XMLHttpRequest|WebSocket|functions\.invoke|supabase/i);
   });
 });
