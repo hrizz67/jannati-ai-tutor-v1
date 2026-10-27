@@ -43,7 +43,8 @@ export function buildBoundedDialogueContext(history = [], { maxTurns = 6 } = {})
       intent: clean(item.intent, 60),
       dialogueClassification: clean(item.dialogueClassification, 40),
       privacySignal: clean(item.privacySignal, 40),
-      safetySignal: clean(item.safetySignal, 40)
+      safetySignal: clean(item.safetySignal, 40),
+      pedagogicalState: item.pedagogicalState ? { ...item.pedagogicalState } : null
     }));
 }
 

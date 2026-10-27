@@ -73,6 +73,21 @@ function cleanSuggestion(value) {
   };
 }
 
+export function sanitizeTutorPedagogicalState(value = {}) {
+  if (!value || typeof value !== 'object') return null;
+  const pendingFollowUp = cleanText(value.pendingFollowUp, 200);
+  const state = {
+    supportStage: cleanText(value.supportStage, 48),
+    misunderstandingCount: Math.max(0, Math.min(7, Math.floor(Number(value.misunderstandingCount) || 0))),
+    strategyUsed: cleanText(value.strategyUsed, 64),
+    currentConcept: cleanText(value.currentConcept, 240),
+    pendingFollowUp: containsPotentialPersonalData(pendingFollowUp) ? '' : pendingFollowUp,
+    signal: cleanText(value.signal, 40),
+    misconceptionType: cleanText(value.misconceptionType, 80)
+  };
+  return Object.values(state).some(item => item !== '' && item !== 0) ? state : null;
+}
+
 export function sanitizeTutorConversationMessage(value = {}) {
   const role = value?.role === 'user' ? 'user' : value?.role === 'ai' || value?.role === 'assistant' ? 'ai' : '';
   const rawText = cleanText(value?.text);
@@ -99,6 +114,7 @@ export function sanitizeTutorConversationMessage(value = {}) {
     dialogueClassification: cleanText(value?.dialogueClassification, 40),
     privacySignal,
     safetySignal,
+    pedagogicalState: sanitizeTutorPedagogicalState(value?.pedagogicalState),
     suggestions: (Array.isArray(value?.suggestions) ? value.suggestions : [])
       .slice(0, 3)
       .map(cleanSuggestion)
@@ -109,6 +125,7 @@ export function sanitizeTutorConversationMessage(value = {}) {
 function cloneMessages(messages = []) {
   return messages.map(message => ({
     ...message,
+    pedagogicalState: message.pedagogicalState ? { ...message.pedagogicalState } : null,
     suggestions: message.suggestions.map(item => typeof item === 'string' ? item : { ...item })
   }));
 }
@@ -184,6 +201,7 @@ export default {
   createBoundedTutorConversationMemory,
   prepareTutorConversationMessagesForPersistence,
   removeStudentIdentityFromAssistantText,
+  sanitizeTutorPedagogicalState,
   sanitizeTutorConversationMessage,
   TUTOR_MEMORY_REDACTION_TEXT,
   TUTOR_CONVERSATION_MEMORY_LIMITS

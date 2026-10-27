@@ -9,6 +9,12 @@ const INTENT_ALIASES = Object.freeze({
   wrong_answer_coaching: 'wrong_answer_coaching',
   correct_answer_reinforcement: 'correct_answer_reinforcement',
   example_request: 'example_request',
+  alternative_explanation: 'alternative_explanation',
+  understanding_confirmation: 'understanding_confirmation',
+  misunderstanding: 'misunderstanding',
+  recovery_meaning: 'recovery_meaning',
+  recovery_first_step: 'recovery_first_step',
+  adult_support_acknowledgement: 'adult_support_acknowledgement',
   learning_recommendation: 'learning_recommendation',
   weak_topic: 'weak_topic',
   revision_plan: 'revision_plan',
@@ -21,6 +27,7 @@ const GREETING_PATTERN = /^(?:(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?
 const SOCIAL_ONLY_PATTERN = /^(?:(?:hai|hello|hi|salam|assalamualaikum|selamat\s+(?:pagi|tengah\s+hari|petang|malam)|apa\s+khabar|terima\s+kasih|thanks?)(?:\s+cikgu)?|(?:مرحبا|السلام\s+عليكم|شكرا))[.!?؟]*$/iu;
 const LEARNING_RECOMMENDATION_PATTERN = /(?:\b(?:hari\s*(?:ini|ni)|sekarang)\b.{0,35}\b(?:belajar|ulang\s*kaji)\b|\b(?:belajar|ulang\s*kaji)\b.{0,25}\b(?:apa|mana)\b|\b(?:apa|mana)\b.{0,30}\b(?:patut|perlu|mahu|nak|boleh)?\s*(?:saya\s+)?(?:belajar|ulang\s*kaji)\b|\b(?:cadang(?:an|kan)?|saran(?:an|kan)?|pilih)\b.{0,30}\b(?:topik|pelajaran|belajar)\b|\b(?:mula|mulakan|jom)\b.{0,20}\b(?:sesi|latihan)\s+(?:ringkas|hari\s*(?:ini|ni))\b|\bwhat\s+should\s+i\s+(?:learn|study)\b|\bchoose\s+(?:a\s+)?topic\b)/iu;
 const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S)/iu;
+const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pelajaran)\s+\S|\b(?:belajar|cuba)\s+topik\s+(?:lain|baru)\b|\b(?:switch|change)\s+(?:to\s+)?(?:a\s+)?(?:new\s+)?topic\b|(?:غيّر\s+الموضوع|موضوع\s+جديد))/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
 const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|then(?: what)?|what(?:'s| is)? next|next step)[.!?？]*$/u;
@@ -142,8 +149,12 @@ export function understandStudentTurn({
   }
   if (/\b(?:ulang\s*kaji|revision\s+plan|jadual\s+belajar|cadangan\s+belajar)\b/iu.test(lower)) return makeTurn('revision_plan', 'progress_question', 0.96, conversation);
   if (/\b(?:uasa|pentaksiran)\b/iu.test(lower) && /\b(?:saya|markah|prestasi|bagaimana|ringkasan)\b/iu.test(lower)) return makeTurn('uasa_summary', 'progress_question', 0.96, conversation);
-  if (NAMED_LEARNING_REQUEST_PATTERN.test(lower)) {
-    return makeTurn('how_question', KNOWLEDGE_QUESTION, 0.97, { ...conversation, isQuestion: true });
+  if (TOPIC_CHANGE_PATTERN.test(lower) || NAMED_LEARNING_REQUEST_PATTERN.test(lower)) {
+    return makeTurn('how_question', 'new_topic_request', 0.97, {
+      ...conversation,
+      isQuestion: true,
+      newTopicRequest: true
+    });
   }
 
   if (/^(?:saya\s+)?(?:dah|sudah|telah)?\s*faham\b|^(?:ok|baik),?\s*(?:saya\s+)?faham\b/iu.test(lower)) {

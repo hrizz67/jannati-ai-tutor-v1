@@ -23,6 +23,9 @@ import { understandStudentTurn } from './conversation/studentTurnEngine.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
+import { buildIntelligentTeachingTurn } from './pedagogy/intelligentTeachingEngine.js';
+import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
+import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -49,7 +52,6 @@ const INTENT_STEPS = {
   weak_topic: ['Lihat topik yang paling lemah dahulu.', 'Ulang satu langkah pada satu masa.'],
   revision_plan: ['Ikut topik keutamaan hari ini.', 'Buat ulang kaji ringkas dahulu.'],
   uasa_summary: ['Semak skor dan topik yang perlu dikuatkan.', 'Rancang ulang kaji sebelum simulasi seterusnya.'],
-  example_request: ['Baca contoh mudah.', 'Bandingkan dengan soalan yang sedang kamu jawab.'],
   knowledge_question: ['Kenal pasti maksud konsep.', 'Lihat satu contoh mudah.', 'Terangkan semula dengan ayat sendiri.'],
   comparison_question: ['Kenal pasti maksud kedua-dua konsep.', 'Cari satu perbezaan utama.', 'Uji perbezaan itu dengan contoh.'],
   why_question: ['Kenal pasti sebab utama.', 'Hubungkan sebab dengan petunjuk dalam soalan.', 'Semak kefahaman dengan satu contoh.'],
@@ -181,7 +183,7 @@ function getSubjectContext(subject = {}, subjectId = '') {
 }
 
 function getTopicContext(topic = {}, topicId = '') {
-  const resolvedId = normalizeText(topic?.id || topicId, '');
+  const resolvedId = String(topic?.id || topicId || '').trim();
   return {
     id: resolvedId,
     title: normalizeText(topic?.title || topic?.name || formatTopicName(resolvedId), resolvedId),
@@ -677,6 +679,52 @@ function buildContextualSections({
     coachResponse?.memoryTips?.[0] ||
     categoryRule.category !== 'generic' ? categoryRule.memoryTip : buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, acceptedAnswers, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   );
+  const answerSafeList = candidates => normalizeList(candidates)
+    .map(candidate => selectAnswerSafeText([candidate], protectedAnswers, ''))
+    .filter(Boolean);
+  const knowledgeExampleCandidates = answerSafeList([
+    coachKnowledge?.examples,
+    coachKnowledge?.extraExamples,
+    coachKnowledge?.workedExamples
+  ]);
+  const reviewedExampleSelection = coachResponse?.ready && coachKnowledge?.source === 'knowledge'
+    ? selectApprovedTeachingExamples({
+        subjectId: subject?.id,
+        topicId: topic?.id,
+        candidates: knowledgeExampleCandidates
+      })
+    : { examples: [], provenance: null };
+  const verifiedExamples = answerSafeList(reviewedExampleSelection.examples);
+  const pedagogicalContent = {
+    grounded: Boolean(
+      coachResponse?.ready ||
+      question?.explanation ||
+      question?.simpleExplanation ||
+      topic?.note ||
+      subjectGuidance
+    ),
+    explanations: answerSafeList([
+      simpleExplanationText,
+      explanationText,
+      topic?.note,
+      currentLearningObjective
+    ]),
+    examples: verifiedExamples,
+    verifiedExamples,
+    verifiedExampleProvenance: reviewedExampleSelection.provenance,
+    alternatives: answerSafeList([
+      commonMistake,
+      memoryTip,
+      coachKnowledge?.memoryTips,
+      coachResponse?.memoryTips
+    ]),
+    steps: answerSafeList(steps),
+    checkQuestions: answerSafeList([
+      coachKnowledge?.followUpQuestions,
+      coachResponse?.followUpQuestions,
+      guided?.guidingQuestion
+    ])
+  };
   const learningObjective = normalizeText(currentLearningObjective || topic?.objective || topic?.learningObjective || topic?.currentLearningObjective || '', '');
   const weakTopic = Array.isArray(weakTopics) && weakTopics.length
     ? weakTopics[0]
@@ -913,7 +961,8 @@ function buildContextualSections({
     instruction: resolvedInstruction,
     options: resolvedOptions,
     subject: subjectLabel,
-    topic: topicLabel
+    topic: topicLabel,
+    pedagogicalContent
   };
 
   const contextUsed = {
@@ -939,7 +988,7 @@ function buildContextualSections({
     hasCoachData: Boolean(coachResponse?.ready),
     tutorMode: guided?.mode || '',
     supportStage: guided?.stage || '',
-    misconceptionType: guided?.misconception?.type || ''
+    misconceptionType: guided?.misconception?.supported === true ? guided.misconception.type : ''
   };
 
   return {
@@ -1097,16 +1146,6 @@ function buildConversationalTeachingReply({
           `Cuba buat langkah pertama dahulu. Apa yang kamu dapat?`
         ].filter(Boolean).join(' '),
         ['Bimbing langkah pertama', 'Beri contoh mudah', 'Saya mahu cuba sendiri']
-      );
-    case 'example_request':
-      return withReplies(
-        [
-          example ? sentence(example, 'Contoh mudah: ') : `Mari gunakan satu contoh mudah bagi ${topicLabel}.`,
-          learningAnchor && learningAnchor !== example ? learningAnchor : '',
-          'Apakah persamaan antara contoh ini dengan soalan kamu?'
-        ].filter(Boolean).join(' '),
-        ['Beri contoh lain', 'Bimbing saya membandingkan', 'Saya sudah faham'],
-        Boolean(example || learningAnchor)
       );
     default:
       return null;
@@ -1379,21 +1418,50 @@ export async function getTutorResponse(options = {}) {
     weakTopics: weakList,
     studyPlan
   });
+  const intelligentTeaching = buildIntelligentTeachingTurn({
+    studentTurn: { ...studentTurn, intent: resolvedIntent },
+    resolvedIntent,
+    history,
+    subjectId: subjectContext.id,
+    topicId: topicContext.id,
+    topicLabel: fallbackTopicLabel,
+    questionId: normalizeText(resolvedQuestion?.id || '', ''),
+    learnerAnswer: answerText,
+    options: resolvedOptions,
+    expectedAnswer: expected,
+    acceptedAnswers,
+    isCorrect: resolvedCorrect,
+    answerAttempted: Boolean(promptAnswer),
+    guidedMisconception: guided.misconception,
+    teachingContent: contextBundle.sections.pedagogicalContent,
+    locale: resolvedLocale,
+    languagePresentation
+  });
+  const effectiveConversationalReply = intelligentTeaching?.reply || conversationalReply;
 
-  const suggestions = conversationalReply?.quickReplies?.length
-    ? conversationalReply.quickReplies
+  const suggestions = effectiveConversationalReply?.quickReplies?.length
+    ? effectiveConversationalReply.quickReplies
     : standaloneAnswer ? [] : buildSuggestionList(resolvedIntent, {
     subject: subjectContext,
     topic: topicContext,
     question: resolvedQuestion,
     questionText: resolvedQuestionText
   });
+  const quickActions = suggestions.map(suggestion => resolveTutorQuickReplyAction(suggestion, {
+    hasExerciseContext: hasQuestionContext,
+    conversationKey,
+    questionId: normalizeText(resolvedQuestion?.id || '', ''),
+    subjectId: subjectContext.id,
+    topicId: topicContext.id
+  })).filter(Boolean);
 
   const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
-  const usesConversationReply = Boolean(conversationalReply?.text);
-  const usesGroundedConversationReply = Boolean(usesConversationReply && conversationalReply.grounded);
+  const usesConversationReply = Boolean(effectiveConversationalReply?.text);
+  const usesGroundedConversationReply = Boolean(usesConversationReply && effectiveConversationalReply.grounded);
   const responseSource = resolvedIntent === 'learning_recommendation' && usesGroundedConversationReply
     ? 'adaptive-teacher'
+    : intelligentTeaching?.reply
+      ? 'intelligent-teaching-engine'
     : usesConversationReply
       ? 'conversation-engine'
       : source;
@@ -1413,12 +1481,13 @@ export async function getTutorResponse(options = {}) {
   );
 
   return {
-    text: conversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
-    shortText: conversationalReply?.text || standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
+    text: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
+    shortText: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
     intent: resolvedIntent,
     confidence: clampPercent(confidence),
     suggestions,
     suggestedActions: suggestions,
+    quickActions,
     source: responseSource,
     fallbackUsed: Boolean(responseFallbackUsed),
     error: null,
@@ -1445,14 +1514,15 @@ export async function getTutorResponse(options = {}) {
     currentLearningObjective,
     learnerAnswerText: answerText,
     tutorMode: guided.mode,
-    supportStage: guided.stage,
+    supportStage: intelligentTeaching?.pedagogicalState?.supportStage || guided.stage,
     answerRevealPolicy: guided.answerRevealPolicy,
     locale: resolvedLocale,
     languagePresentation,
-    misconception: guided.misconception,
+    misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
+    pedagogicalState: intelligentTeaching?.pedagogicalState || null,
     guidingQuestion: guided.guidingQuestion,
-    quickReplies: conversationalReply?.quickReplies?.length
-      ? conversationalReply.quickReplies
+    quickReplies: effectiveConversationalReply?.quickReplies?.length
+      ? effectiveConversationalReply.quickReplies
       : guided.quickReplies?.length ? guided.quickReplies : suggestions,
     nextAction: guided.nextAction,
     praise: guided.praise,
@@ -1461,8 +1531,8 @@ export async function getTutorResponse(options = {}) {
     conversationStage: studentTurn.messageType,
     referencesPreviousTurn: Boolean(studentTurn.referencesPreviousTurn),
     needsClarification: Boolean(studentTurn.needsClarification),
-    grounded: conversationalReply ? Boolean(conversationalReply.grounded) : Boolean(contextBundle?.contextUsed?.hasCoachData),
-    needsGenerativeTutor: Boolean(conversationalReply && !conversationalReply.grounded),
+    grounded: effectiveConversationalReply ? Boolean(effectiveConversationalReply.grounded) : Boolean(contextBundle?.contextUsed?.hasCoachData),
+    needsGenerativeTutor: Boolean(effectiveConversationalReply && !effectiveConversationalReply.grounded),
     mathQuestionContext
   };
 }
