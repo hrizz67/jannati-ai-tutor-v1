@@ -482,6 +482,7 @@ export default function TutorAIModal({
         source: response?.source || '',
         intent: response?.intent || '',
         dialogueClassification: response?.dialogueClassification || '',
+        pedagogicalState: response?.pedagogicalState || null,
         suggestions: response?.quickActions?.length
           ? response.quickActions
           : normalizeList(response?.quickReplies?.length

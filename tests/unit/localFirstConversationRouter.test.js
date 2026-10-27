@@ -144,9 +144,44 @@ describe('multilingual deterministic intent handling', () => {
     expect(understandStudentTurn({ prompt, hasLearningContext: true }).intent).toBe(expectedIntent);
   });
 
+  it.each([
+    'Saya mahu belajar kata kerja',
+    'Tukar ke topik kata nama',
+    'Switch to a new topic',
+    'موضوع جديد'
+  ])('distinguishes the new-topic request %s from repeated confusion', prompt => {
+    expect(understandStudentTurn({ prompt, hasLearningContext: true })).toMatchObject({
+      intent: 'how_question',
+      messageType: 'new_topic_request',
+      newTopicRequest: true
+    });
+  });
+
   it('uses a bounded six-turn context for routing', () => {
     const history = Array.from({ length: 9 }, (_, index) => ({ role: index % 2 ? 'user' : 'ai', text: String(index) }));
     expect(buildBoundedDialogueContext(history).map(item => item.text)).toEqual(['3', '4', '5', '6', '7', '8']);
+  });
+
+  it('carries only the already-sanitized pedagogical state through local routing context', () => {
+    const memory = createBoundedTutorConversationMemory();
+    memory.set('account-a::child-a', [{
+      role: 'ai',
+      text: 'Mari cuba cara lain.',
+      pedagogicalState: {
+        supportStage: 'alternative_strategy',
+        misunderstandingCount: 2,
+        strategyUsed: 'alternative-connection',
+        currentConcept: 'bm::kata-nama::question-1',
+        pendingFollowUp: 'Apakah petunjuk utama',
+        signal: 'misunderstanding'
+      }
+    }]);
+    const context = buildBoundedDialogueContext(memory.get('account-a::child-a'));
+    expect(context[0].pedagogicalState).toMatchObject({
+      misunderstandingCount: 2,
+      strategyUsed: 'alternative-connection',
+      currentConcept: 'bm::kata-nama::question-1'
+    });
   });
 });
 
@@ -314,6 +349,47 @@ describe('local-first deterministic routing', () => {
 });
 
 describe('canonical answer and response-policy regression', () => {
+  it('wires scoped multi-turn misunderstanding state into the tutor response', async () => {
+    const baseOptions = {
+      student: { id: 'synthetic-child', name: 'Murid' },
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
+      question: {
+        id: 'synthetic-bm-teaching-1',
+        q: 'Pilih kata nama orang.',
+        options: ['Ali', 'berlari', 'cantik'],
+        answer: 'Ali',
+        acceptedAnswers: ['Ali'],
+        explanation: 'Kata nama orang digunakan untuk menamakan seseorang.',
+        simpleExplanation: 'Kata nama orang ialah nama bagi seseorang.'
+      },
+      expectedAnswer: 'Ali',
+      acceptedAnswers: ['Ali'],
+      attemptCount: 0
+    };
+    const first = await getTutorResponse({ ...baseOptions, prompt: 'Saya tak faham', history: [] });
+    const second = await getTutorResponse({
+      ...baseOptions,
+      prompt: 'Saya masih tak faham',
+      history: [{ role: 'ai', text: first.text, pedagogicalState: first.pedagogicalState }]
+    });
+
+    expect(first.source).toBe('intelligent-teaching-engine');
+    expect(first.pedagogicalState).toMatchObject({
+      misunderstandingCount: 1,
+      strategyUsed: 'concept-and-example'
+    });
+    expect(second.pedagogicalState).toMatchObject({
+      misunderstandingCount: 2,
+      strategyUsed: 'alternative-connection'
+    });
+    expect(first.expectedAnswer).toBe('');
+    expect(second.expectedAnswer).toBe('');
+    expect(`${first.text} ${second.text}`).not.toMatch(/jawapan(?:nya| betul)?(?: ialah|:) Ali/i);
+    expect(first.remoteAttempted).toBe(false);
+    expect(second.remoteAttempted).toBe(false);
+  });
+
   it('preserves canonical checking and the existing answer-reveal policy', async () => {
     const baseOptions = {
       student: { id: 'synthetic-child', name: 'Murid' },
@@ -333,12 +409,18 @@ describe('canonical answer and response-policy regression', () => {
     expect(response.dialogueClassification).toBe(DIALOGUE_CLASSIFICATION.LOCAL_HANDLED);
     expect(response.expectedAnswer).toBe('buku');
     expect(response.remoteAttempted).toBe(false);
+    expect(response).not.toHaveProperty('xp');
+    expect(response).not.toHaveProperty('coins');
+    expect(response).not.toHaveProperty('rewards');
 
     const wrongResponse = await getTutorResponse({ ...baseOptions, prompt: 'membaca' });
     expect(wrongResponse.isCorrect).toBe(false);
     expect(wrongResponse.expectedAnswer).toBe('');
     expect(wrongResponse.acceptedAnswers).toEqual([]);
     expect(wrongResponse.text).not.toMatch(/jawapannya ialah buku|jawapan betul.*buku/i);
+    expect(wrongResponse).not.toHaveProperty('xp');
+    expect(wrongResponse).not.toHaveProperty('coins');
+    expect(wrongResponse).not.toHaveProperty('rewards');
   });
 });
 

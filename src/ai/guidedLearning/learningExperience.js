@@ -54,36 +54,37 @@ export function classifyMisconception({ instruction = '', options = [], expected
   const expected = normalizeAnswer(expectedAnswer);
   const learner = normalizeAnswer(learnerAnswer);
   const choices = list(options).map(normalizeAnswer);
+  const learnerIsOption = Boolean(learner && choices.includes(learner));
   if (!learner) return subjectId === 'english'
-    ? { type: 'no_meaningful_attempt', confidence: 0.9, evidence: 'No answer was provided.', childSafeLabel: 'There is no answer to check yet.', suggestedPrompt: 'Choose or type one answer first.' }
-    : { type: 'no_meaningful_attempt', confidence: 0.9, evidence: 'Tiada jawapan diberikan.', childSafeLabel: 'Belum ada jawapan untuk disemak.', suggestedPrompt: 'Cuba pilih atau taip satu jawapan dahulu.' };
-  if (learner === expected) return { type: 'none', confidence: 1, evidence: 'Jawapan sepadan.', childSafeLabel: '', suggestedPrompt: '' };
+    ? { type: 'no_meaningful_attempt', confidence: 0.9, supported: false, evidence: 'No answer was provided.', childSafeLabel: 'There is no answer to check yet.', suggestedPrompt: 'Choose or type one answer first.' }
+    : { type: 'no_meaningful_attempt', confidence: 0.9, supported: false, evidence: 'Tiada jawapan diberikan.', childSafeLabel: 'Belum ada jawapan untuk disemak.', suggestedPrompt: 'Cuba pilih atau taip satu jawapan dahulu.' };
+  if (learner === expected) return { type: 'none', confidence: 1, supported: true, evidence: 'Jawapan sepadan.', childSafeLabel: '', suggestedPrompt: '' };
 
   const isMath = subjectId === 'math' || /kira|jumlah|beza|darab|bahagi|tambah|tolak/.test(instructionText);
   if (isMath && /tambah|jumlah|keseluruhan/.test(instructionText) && /tolak|beza|tinggal/.test(learner)) {
-    return { type: 'addition_subtraction_confusion', confidence: 0.78, evidence: 'Petunjuk operasi tidak sepadan dengan jawapan.', childSafeLabel: 'Mari semak sama ada soalan meminta tambah atau tolak.', suggestedPrompt: 'Soalan ini menggabungkan atau mengurangkan nombor?' };
+    return { type: 'addition_subtraction_confusion', confidence: 0.78, supported: true, evidence: 'Petunjuk operasi tidak sepadan dengan jawapan.', childSafeLabel: 'Mari semak sama ada soalan meminta tambah atau tolak.', suggestedPrompt: 'Soalan ini menggabungkan atau mengurangkan nombor?' };
   }
   if (isMath && /nilai tempat|ratus|puluh|sa/.test(instructionText)) {
-    return { type: 'place_value_confusion', confidence: 0.62, evidence: 'Soalan menyebut nilai tempat.', childSafeLabel: 'Mari lihat tempat setiap digit.', suggestedPrompt: 'Digit ini berada di tempat sa, puluh atau ratus?' };
+    return { type: 'place_value_confusion', confidence: 0.62, supported: true, evidence: 'Soalan menyebut nilai tempat.', childSafeLabel: 'Mari lihat tempat setiap digit.', suggestedPrompt: 'Digit ini berada di tempat sa, puluh atau ratus?' };
   }
-  if (subjectId === 'bm' && /nama (orang|murid|khas)|kata nama khas/.test(instructionText) && choices.some(item => item && item !== expected)) {
-    return { type: 'common_noun_vs_proper_noun', confidence: 0.7, evidence: 'Arahan meminta nama khusus.', childSafeLabel: 'Kamu sudah menjumpai kata nama, tetapi soalan meminta nama khusus.', suggestedPrompt: 'Nama itu merujuk kepada orang atau nama khusus seseorang?' };
+  if (subjectId === 'bm' && /nama (orang|murid|khas)|kata nama khas/.test(instructionText) && learnerIsOption) {
+    return { type: 'common_noun_vs_proper_noun', confidence: 0.7, supported: true, evidence: 'Arahan meminta nama khusus dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Kamu sudah menjumpai kata nama, tetapi soalan meminta nama khusus.', suggestedPrompt: 'Nama itu merujuk kepada orang atau nama khusus seseorang?' };
   }
-  if (subjectId === 'bm' && /nama orang|siapakah|murid/.test(instructionText)) {
-    return { type: 'object_instead_of_person', confidence: 0.66, evidence: 'Arahan meminta nama orang.', childSafeLabel: 'Soalan meminta nama orang, bukan nama benda.', suggestedPrompt: 'Perkataan ini nama orang atau nama benda?' };
+  if (subjectId === 'bm' && /nama orang|siapakah|murid/.test(instructionText) && learnerIsOption) {
+    return { type: 'object_instead_of_person', confidence: 0.66, supported: true, evidence: 'Arahan meminta nama orang dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Soalan meminta nama orang, bukan nama benda.', suggestedPrompt: 'Perkataan ini nama orang atau nama benda?' };
   }
-  if (subjectId === 'english' && /noun|person|place|thing/.test(instructionText)) {
-    return { type: 'vocabulary_confusion', confidence: 0.58, evidence: 'The question asks for a specific English word.', childSafeLabel: 'Let us find the word that names a person, place or thing.', suggestedPrompt: 'Which word names something?' };
+  if (subjectId === 'english' && /noun|person|place|thing/.test(instructionText) && learnerIsOption) {
+    return { type: 'vocabulary_confusion', confidence: 0.58, supported: true, evidence: 'The question asks for a specific English word and the answer is a listed distractor.', childSafeLabel: 'Let us find the word that names a person, place or thing.', suggestedPrompt: 'Which word names something?' };
   }
-  if (subjectId === 'sains' && /kelas|jenis|ciri|hidup|benda/.test(instructionText)) {
-    return { type: 'classification_confusion', confidence: 0.58, evidence: 'Soalan meminta pengelasan berdasarkan ciri.', childSafeLabel: 'Mari semak satu ciri yang dapat dilihat.', suggestedPrompt: 'Apakah ciri yang sama pada pilihan ini?' };
+  if (subjectId === 'sains' && /kelas|jenis|ciri|hidup|benda/.test(instructionText) && learnerIsOption) {
+    return { type: 'classification_confusion', confidence: 0.58, supported: true, evidence: 'Soalan meminta pengelasan berdasarkan ciri dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Mari semak satu ciri yang dapat dilihat.', suggestedPrompt: 'Apakah ciri yang sama pada pilihan ini?' };
   }
   if (subjectId === 'arab') {
-    return { type: 'spelling_variation', confidence: 0.5, evidence: 'Jawapan Arab perlu disemak hurufnya.', childSafeLabel: 'Mari semak huruf dan bunyinya satu demi satu.', suggestedPrompt: 'Bunyi huruf ini bermula dengan huruf Arab yang mana?' };
+    return { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Mari semak huruf dan bunyinya satu demi satu.', suggestedPrompt: 'Bunyi huruf ini bermula dengan huruf Arab yang mana?' };
   }
   return subjectId === 'english'
-    ? { type: 'general_misunderstanding', confidence: 0.35, evidence: 'The answer does not match the question yet.', childSafeLabel: 'Let us check the clue together.', suggestedPrompt: 'What is the main thing the question asks for?' }
-    : { type: 'general_misunderstanding', confidence: 0.35, evidence: 'Jawapan belum sepadan dengan kehendak soalan.', childSafeLabel: 'Mari kita semak petunjuk soalan bersama-sama.', suggestedPrompt: 'Apakah perkara utama yang diminta oleh soalan?' };
+    ? { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Let us check the clue together.', suggestedPrompt: 'What is the main thing the question asks for?' }
+    : { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Mari kita semak petunjuk soalan bersama-sama.', suggestedPrompt: 'Apakah perkara utama yang diminta oleh soalan?' };
 }
 
 export function resolveSupportStage({ isCorrect = false, attemptCount = 0, hintsUsed = 0, explicitAnswerRequest = false, completionState = false } = {}) {
