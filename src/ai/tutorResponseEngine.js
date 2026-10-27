@@ -681,6 +681,13 @@ function buildContextualSections({
   const answerSafeList = candidates => normalizeList(candidates)
     .map(candidate => selectAnswerSafeText([candidate], protectedAnswers, ''))
     .filter(Boolean);
+  const verifiedExamples = coachResponse?.ready && coachKnowledge?.packLoaded === true
+    ? answerSafeList([
+        coachKnowledge?.examples,
+        coachKnowledge?.extraExamples,
+        coachKnowledge?.workedExamples
+      ])
+    : [];
   const pedagogicalContent = {
     grounded: Boolean(
       coachResponse?.ready ||
@@ -695,13 +702,8 @@ function buildContextualSections({
       topic?.note,
       currentLearningObjective
     ]),
-    examples: answerSafeList([
-      coachKnowledge?.examples,
-      coachResponse?.examples,
-      coachKnowledge?.extraExamples,
-      subjectGuidance?.example,
-      categoryRule.category !== 'generic' ? categoryRule.example : ''
-    ]),
+    examples: verifiedExamples,
+    verifiedExamples,
     alternatives: answerSafeList([
       commonMistake,
       memoryTip,
@@ -1431,6 +1433,7 @@ export async function getTutorResponse(options = {}) {
     expectedAnswer: expected,
     acceptedAnswers,
     isCorrect: resolvedCorrect,
+    answerAttempted: Boolean(promptAnswer),
     guidedMisconception: guided.misconception,
     teachingContent: contextBundle.sections.pedagogicalContent,
     locale: resolvedLocale,

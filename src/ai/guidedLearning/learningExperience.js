@@ -43,6 +43,37 @@ function normalizeAnswer(value) {
   return clean(value).toLocaleLowerCase('ms-MY').replace(/[.!?,]/g, '');
 }
 
+function buildUnclassifiedMisconception(subjectId = '') {
+  return subjectId === 'english'
+    ? { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Let us check the clue together.', suggestedPrompt: 'What is the main thing the question asks for?' }
+    : { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Mari kita semak petunjuk soalan bersama-sama.', suggestedPrompt: 'Apakah perkara utama yang diminta oleh soalan?' };
+}
+
+function getVerifiedMisconceptionEvidence(question = {}, learnerAnswer = '', learnerIsOption = false) {
+  if (!learnerIsOption || !Array.isArray(question?.misconceptionEvidence)) return null;
+  const learner = normalizeAnswer(learnerAnswer);
+  const match = question.misconceptionEvidence.find(item => (
+    item?.verified === true &&
+    item?.source === 'reviewed-question' &&
+    normalizeAnswer(item?.answer) === learner
+  ));
+  const type = clean(match?.type);
+  const evidence = clean(match?.evidence);
+  const childSafeLabel = clean(match?.childSafeLabel);
+  const confidence = Number(match?.confidence);
+  if (!type || type === 'unclassified' || type === 'none' || !evidence || !childSafeLabel || !Number.isFinite(confidence) || confidence < 0.58) return null;
+  return {
+    type,
+    confidence: Math.min(1, confidence),
+    supported: true,
+    evidence,
+    evidenceSource: 'reviewed-question',
+    evidenceAnswer: clean(match.answer),
+    childSafeLabel,
+    suggestedPrompt: clean(match.suggestedPrompt)
+  };
+}
+
 export function resolveTutorMode({ intent = '', exerciseState = {}, learnerAnswer = '', isCorrect = false, attemptCount = 0, hintsUsed = 0, completionState = false } = {}) {
   if (completionState) return 'motivator';
   if (isCorrect || exerciseState?.status === 'correct') return 'examiner';
@@ -67,24 +98,12 @@ export function classifyMisconception({ instruction = '', options = [], expected
   if (isMath && /nilai tempat|ratus|puluh|sa/.test(instructionText)) {
     return { type: 'place_value_confusion', confidence: 0.62, supported: true, evidence: 'Soalan menyebut nilai tempat.', childSafeLabel: 'Mari lihat tempat setiap digit.', suggestedPrompt: 'Digit ini berada di tempat sa, puluh atau ratus?' };
   }
-  if (subjectId === 'bm' && /nama (orang|murid|khas)|kata nama khas/.test(instructionText) && learnerIsOption) {
-    return { type: 'common_noun_vs_proper_noun', confidence: 0.7, supported: true, evidence: 'Arahan meminta nama khusus dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Kamu sudah menjumpai kata nama, tetapi soalan meminta nama khusus.', suggestedPrompt: 'Nama itu merujuk kepada orang atau nama khusus seseorang?' };
-  }
-  if (subjectId === 'bm' && /nama orang|siapakah|murid/.test(instructionText) && learnerIsOption) {
-    return { type: 'object_instead_of_person', confidence: 0.66, supported: true, evidence: 'Arahan meminta nama orang dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Soalan meminta nama orang, bukan nama benda.', suggestedPrompt: 'Perkataan ini nama orang atau nama benda?' };
-  }
-  if (subjectId === 'english' && /noun|person|place|thing/.test(instructionText) && learnerIsOption) {
-    return { type: 'vocabulary_confusion', confidence: 0.58, supported: true, evidence: 'The question asks for a specific English word and the answer is a listed distractor.', childSafeLabel: 'Let us find the word that names a person, place or thing.', suggestedPrompt: 'Which word names something?' };
-  }
-  if (subjectId === 'sains' && /kelas|jenis|ciri|hidup|benda/.test(instructionText) && learnerIsOption) {
-    return { type: 'classification_confusion', confidence: 0.58, supported: true, evidence: 'Soalan meminta pengelasan berdasarkan ciri dan jawapan ialah pilihan pengalih.', childSafeLabel: 'Mari semak satu ciri yang dapat dilihat.', suggestedPrompt: 'Apakah ciri yang sama pada pilihan ini?' };
-  }
+  const verifiedEvidence = getVerifiedMisconceptionEvidence(question, learnerAnswer, learnerIsOption);
+  if (verifiedEvidence) return verifiedEvidence;
   if (subjectId === 'arab') {
     return { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Mari semak huruf dan bunyinya satu demi satu.', suggestedPrompt: 'Bunyi huruf ini bermula dengan huruf Arab yang mana?' };
   }
-  return subjectId === 'english'
-    ? { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Let us check the clue together.', suggestedPrompt: 'What is the main thing the question asks for?' }
-    : { type: 'unclassified', confidence: 0, supported: false, evidence: '', childSafeLabel: 'Mari kita semak petunjuk soalan bersama-sama.', suggestedPrompt: 'Apakah perkara utama yang diminta oleh soalan?' };
+  return buildUnclassifiedMisconception(subjectId);
 }
 
 export function resolveSupportStage({ isCorrect = false, attemptCount = 0, hintsUsed = 0, explicitAnswerRequest = false, completionState = false } = {}) {

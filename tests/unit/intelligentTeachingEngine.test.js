@@ -13,6 +13,7 @@ const teachingContent = {
   grounded: true,
   explanations: ['Kata nama ialah perkataan untuk orang, haiwan, tempat atau benda.'],
   examples: ['“Doktor” ialah kata nama bagi orang.', '“Sekolah” ialah kata nama bagi tempat.'],
+  verifiedExamples: ['“Doktor” ialah kata nama bagi orang.', '“Sekolah” ialah kata nama bagi tempat.'],
   alternatives: ['Cari siapa atau apa yang dinamakan dalam ayat.'],
   steps: ['Cari perkataan yang menamakan orang, haiwan, tempat atau benda.'],
   checkQuestions: ['Perkataan manakah menamakan orang dalam ayat ini']
@@ -44,6 +45,10 @@ function withPriorTurn(result) {
   return [{ role: 'ai', text: result.reply?.text || '', pedagogicalState: result.pedagogicalState }];
 }
 
+function questionCount(value = '') {
+  return (String(value).match(/[?؟]/g) || []).length;
+}
+
 describe('intelligent teaching progression', () => {
   it('progresses from concept to an alternative strategy and then one small step', () => {
     const first = buildIntelligentTeachingTurn(buildArgs());
@@ -66,9 +71,56 @@ describe('intelligent teaching progression', () => {
       supportStage: 'guided_small_step'
     });
     expect(new Set([first.reply.text, second.reply.text, third.reply.text]).size).toBe(3);
-    expect((first.reply.text.match(/\?/g) || [])).toHaveLength(1);
-    expect((second.reply.text.match(/\?/g) || [])).toHaveLength(1);
-    expect((third.reply.text.match(/\?/g) || [])).toHaveLength(1);
+    expect(questionCount(first.reply.text)).toBe(1);
+    expect(questionCount(second.reply.text)).toBe(1);
+    expect(questionCount(third.reply.text)).toBe(1);
+  });
+
+  it('uses a distinct verified micro-example on turn four and a bounded adult recovery on turn five', () => {
+    const turns = [];
+    for (let index = 0; index < 5; index += 1) {
+      turns.push(buildIntelligentTeachingTurn(buildArgs({
+        history: turns.flatMap(withPriorTurn)
+      })));
+    }
+
+    expect(turns[3].pedagogicalState).toMatchObject({
+      misunderstandingCount: 4,
+      strategyUsed: TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE,
+      supportStage: 'verified_micro_example'
+    });
+    expect(turns[3].reply.text).toContain('“Sekolah” ialah kata nama bagi tempat.');
+    expect(turns[3].reply.text).not.toBe(turns[2].reply.text);
+    expect(turns[4].pedagogicalState).toMatchObject({
+      misunderstandingCount: 5,
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+      supportStage: 'adult_support'
+    });
+    expect(turns[4].reply.text).toMatch(/guru atau penjaga/i);
+    expect(new Set(turns.map(item => item.reply.text)).size).toBe(5);
+    for (const turn of turns) expect(questionCount(turn.reply.text)).toBeLessThanOrEqual(1);
+  });
+
+  it('moves directly to bounded adult support when no second verified example exists', () => {
+    const priorState = {
+      supportStage: 'guided_small_step',
+      misunderstandingCount: 3,
+      strategyUsed: TEACHING_STRATEGY.ONE_SMALL_STEP,
+      currentConcept: 'bm::kata-nama::BM-KN-001',
+      pendingFollowUp: 'Apakah petunjuk utama dalam soalan ini?',
+      signal: TEACHING_SIGNAL.MISUNDERSTANDING,
+      misconceptionType: ''
+    };
+    const result = buildIntelligentTeachingTurn(buildArgs({
+      history: [{ role: 'ai', text: 'Langkah kecil.', pedagogicalState: priorState }],
+      teachingContent: { ...teachingContent, examples: teachingContent.examples.slice(0, 1), verifiedExamples: teachingContent.verifiedExamples.slice(0, 1) }
+    }));
+    expect(result.pedagogicalState).toMatchObject({
+      misunderstandingCount: 4,
+      strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT
+    });
+    expect(result.reply.text).toMatch(/guru atau penjaga/i);
+    expect(questionCount(result.reply.text)).toBe(1);
   });
 
   it('resets the bounded count when understanding is confirmed or a new topic is requested', () => {
@@ -106,6 +158,8 @@ describe('intelligent teaching progression', () => {
       confidence: 0.8,
       supported: true,
       evidence: 'Learner selected the verb option.',
+      evidenceSource: 'reviewed-question',
+      evidenceAnswer: 'berlari',
       childSafeLabel: 'Kamu memilih perbuatan, bukan nama orang.'
     };
     const confirmed = buildIntelligentTeachingTurn(buildArgs({
@@ -131,6 +185,61 @@ describe('intelligent teaching progression', () => {
     expect(confirmed.pedagogicalState.misconceptionType).toBe('verb_for_person');
     expect(unsupportedText.misconception).toBeNull();
     expect(lowConfidence.misconception).toBeNull();
+  });
+
+  it.each([
+    ['verb', 'berlari'],
+    ['adjective', 'cantik'],
+    ['common noun', 'murid']
+  ])('does not diagnose a BM %s distractor without exact reviewed evidence', (_category, learnerAnswer) => {
+    expect(classifyMisconception({
+      subjectId: 'bm',
+      instruction: 'Pilih kata nama orang.',
+      options: ['Ali', 'berlari', 'cantik', 'murid'],
+      expectedAnswer: 'Ali',
+      learnerAnswer
+    })).toMatchObject({ type: 'unclassified', confidence: 0, supported: false });
+  });
+
+  it('accepts an exact misconception category only from reviewed question evidence for that distractor', () => {
+    const result = classifyMisconception({
+      subjectId: 'bm',
+      instruction: 'Pilih kata nama khas.',
+      options: ['Aina', 'murid'],
+      expectedAnswer: 'Aina',
+      learnerAnswer: 'murid',
+      question: {
+        misconceptionEvidence: [{
+          answer: 'murid',
+          type: 'common_noun_vs_proper_noun',
+          confidence: 0.9,
+          verified: true,
+          source: 'reviewed-question',
+          evidence: 'The reviewed distractor is a common noun.',
+          childSafeLabel: 'Kamu memilih nama umum, tetapi soalan meminta nama khusus.',
+          suggestedPrompt: 'Adakah perkataan itu nama umum atau nama khusus?'
+        }]
+      }
+    });
+    expect(result).toMatchObject({
+      type: 'common_noun_vs_proper_noun',
+      supported: true,
+      evidenceSource: 'reviewed-question',
+      evidenceAnswer: 'murid'
+    });
+  });
+
+  it('treats previous correctness separately from a new explicit comprehension request', () => {
+    const misunderstood = buildIntelligentTeachingTurn(buildArgs({ isCorrect: true }));
+    const anotherWay = buildIntelligentTeachingTurn(buildArgs({
+      isCorrect: true,
+      resolvedIntent: 'alternative_explanation',
+      studentTurn: { intent: 'alternative_explanation', messageType: 'follow_up_question' }
+    }));
+    expect(misunderstood.pedagogicalState.signal).toBe(TEACHING_SIGNAL.MISUNDERSTANDING);
+    expect(misunderstood.reply?.text).toBeTruthy();
+    expect(anotherWay.pedagogicalState.signal).toBe(TEACHING_SIGNAL.MISUNDERSTANDING);
+    expect(anotherWay.reply?.text).toBeTruthy();
   });
 
   it('leaves open-text and Arabic mistakes unclassified without deterministic evidence', () => {
@@ -167,7 +276,7 @@ describe('intelligent teaching progression', () => {
     const exposed = JSON.stringify({ reply: result.reply, state: result.pedagogicalState }).toLocaleLowerCase('ms-MY');
     expect(exposed).not.toContain('mawar');
     expect(result.reply.text).toContain('Cari benda hidup');
-    expect((result.reply.text.match(/\?/g) || [])).toHaveLength(1);
+    expect(questionCount(result.reply.text)).toBe(1);
   });
 
   it('uses a grounded safe fallback rather than inventing missing knowledge', () => {
@@ -233,7 +342,7 @@ describe('pedagogical state scope and privacy boundaries', () => {
       }
     }]);
     expect(memory.get('account-a::child-a')[0].pedagogicalState).toMatchObject({
-      misunderstandingCount: 3,
+      misunderstandingCount: 5,
       pendingFollowUp: ''
     });
   });

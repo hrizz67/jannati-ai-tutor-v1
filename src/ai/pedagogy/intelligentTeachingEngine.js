@@ -1,6 +1,6 @@
 import { selectAnswerSafeText, textContainsExpectedAnswer } from '../policy/answerRevealPolicy.js';
 
-const MAX_MISUNDERSTANDING_COUNT = 3;
+const MAX_MISUNDERSTANDING_COUNT = 5;
 const SUPPORTED_MISCONCEPTION_CONFIDENCE = 0.58;
 
 export const TEACHING_SIGNAL = Object.freeze({
@@ -15,6 +15,8 @@ export const TEACHING_STRATEGY = Object.freeze({
   CONCEPT_AND_EXAMPLE: 'concept-and-example',
   ALTERNATIVE_CONNECTION: 'alternative-connection',
   ONE_SMALL_STEP: 'one-small-step',
+  VERIFIED_MICRO_EXAMPLE: 'verified-micro-example',
+  ADULT_SUPPORT: 'adult-support',
   EVIDENCE_GUIDED_CORRECTION: 'evidence-guided-correction',
   CLARIFY_REQUEST: 'clarify-request',
   NEW_CONCEPT: 'new-concept',
@@ -52,12 +54,13 @@ function resolveLanguage({ locale = '', languagePresentation = {}, subjectId = '
   return 'ms';
 }
 
-function resolveSignal({ studentTurn = {}, resolvedIntent = '', isCorrect = false } = {}) {
+function resolveSignal({ studentTurn = {}, resolvedIntent = '', isCorrect = false, answerAttempted = false } = {}) {
   if (studentTurn?.messageType === 'new_topic_request' || studentTurn?.newTopicRequest) return TEACHING_SIGNAL.NEW_TOPIC;
-  if (isCorrect || resolvedIntent === 'understanding_confirmation') return TEACHING_SIGNAL.RESOLVED;
+  if (resolvedIntent === 'understanding_confirmation') return TEACHING_SIGNAL.RESOLVED;
   if (studentTurn?.needsClarification || resolvedIntent === 'clarification_needed') return TEACHING_SIGNAL.CLARIFICATION;
-  if (resolvedIntent === 'wrong_answer_coaching') return TEACHING_SIGNAL.WRONG_ANSWER;
   if (resolvedIntent === 'misunderstanding' || resolvedIntent === 'alternative_explanation') return TEACHING_SIGNAL.MISUNDERSTANDING;
+  if (resolvedIntent === 'wrong_answer_coaching') return TEACHING_SIGNAL.WRONG_ANSWER;
+  if (answerAttempted && isCorrect && resolvedIntent === 'correct_answer_reinforcement') return TEACHING_SIGNAL.RESOLVED;
   return '';
 }
 
@@ -75,7 +78,8 @@ function getPreviousState(history = [], currentConcept = '') {
 function safeCandidates(candidates = [], protectedAnswers = []) {
   const result = [];
   const seen = new Set();
-  for (const candidate of list(candidates)) {
+  for (const rawCandidate of list(candidates)) {
+    const candidate = clean(rawCandidate.replace(/[?؟]+/gu, '.'));
     if (textContainsExpectedAnswer(candidate, protectedAnswers)) continue;
     const key = normalize(candidate);
     if (!key || seen.has(key)) continue;
@@ -87,7 +91,7 @@ function safeCandidates(candidates = [], protectedAnswers = []) {
 
 function safeQuestion(candidates = [], protectedAnswers = [], fallback = '') {
   const selected = selectAnswerSafeText(candidates, protectedAnswers, fallback);
-  const statement = clean(selected, 180).replace(/[.!?؟]+$/u, '');
+  const statement = clean(selected, 180).split(/[?؟]/u)[0].replace(/[.!]+$/u, '');
   if (!statement || textContainsExpectedAnswer(statement, protectedAnswers)) return '';
   return `${statement}?`;
 }
@@ -98,7 +102,13 @@ function resolveMisconception({ signal = '', guidedMisconception = null, learner
   if (confidence < SUPPORTED_MISCONCEPTION_CONFIDENCE) return null;
   const learner = normalize(learnerAnswer);
   const optionEvidence = list(options).map(normalize).filter(Boolean);
-  if (!learner || !optionEvidence.includes(learner)) return null;
+  const evidenceAnswer = normalize(guidedMisconception.evidenceAnswer);
+  if (
+    !learner ||
+    !optionEvidence.includes(learner) ||
+    guidedMisconception.evidenceSource !== 'reviewed-question' ||
+    evidenceAnswer !== learner
+  ) return null;
   return {
     type: clean(guidedMisconception.type, 80),
     confidence,
@@ -119,7 +129,13 @@ function copyFor(language) {
       missing: 'I do not have enough approved learning information for this concept yet. Ask about the active question or check with your teacher.',
       missingQuestion: 'Which part of the active question should we check?',
       correctionLead: 'Let us use the evidence in your answer.',
-      quickReplies: ['Show one small step', 'Give an easy example', 'I understand now']
+      genericCorrectionLead: 'Let us check the question and your answer one small step at a time.',
+      recoveryLead: 'Let us try one different example from this lesson:',
+      recoveryQuestion: 'Which part is harder: the meaning or the first step',
+      adultSupport: 'We have tried a few ways. Please show this question to your teacher or guardian so they can help beside you.',
+      adultQuestion: 'Can you show this question to a teacher or guardian now',
+      quickReplies: ['Show one small step', 'Give an easy example', 'I understand now'],
+      recoveryReplies: ['The meaning', 'The first step', 'Ask an adult']
     };
   }
   if (language === 'ar') {
@@ -133,11 +149,17 @@ function copyFor(language) {
       missing: 'لا توجد معلومات تعليمية معتمدة كافية لهذا المفهوم الآن. اسأل عن السؤال الحالي أو اطلب مساعدة المعلم.',
       missingQuestion: 'أي جزء من السؤال الحالي تريد أن نراجعه?',
       correctionLead: 'لنراجع الدليل في إجابتك.',
-      quickReplies: ['اشرح خطوة واحدة', 'أعطني مثالًا سهلًا', 'فهمت الآن']
+      genericCorrectionLead: 'لنراجع السؤال والإجابة خطوة صغيرة.',
+      recoveryLead: 'نجرب مثالًا آخر من هذا الدرس:',
+      recoveryQuestion: 'أيهما أصعب: المعنى أم الخطوة الأولى',
+      adultSupport: 'جربنا عدة طرق. اعرض هذا السؤال على المعلم أو ولي الأمر ليساعدك بجانبك.',
+      adultQuestion: 'هل تستطيع عرض السؤال على المعلم أو ولي الأمر الآن',
+      quickReplies: ['اشرح خطوة واحدة', 'أعطني مثالًا سهلًا', 'فهمت الآن'],
+      recoveryReplies: ['المعنى', 'الخطوة الأولى', 'أسأل شخصًا بالغًا']
     };
   }
   return {
-    reassurance: 'Tak mengapa. Beritahu bahagian mana yang mengelirukan, kemudian kita mula dengan idea paling asas.',
+    reassurance: 'Tak mengapa. Kita cari bahagian mana yang mengelirukan dan mula dengan idea paling asas.',
     conceptLead: 'Idea utama:',
     exampleLead: 'Contoh mudah:',
     alternativeLead: 'Mari lihat dengan cara lain.',
@@ -146,7 +168,13 @@ function copyFor(language) {
     missing: 'Saya belum mempunyai maklumat pembelajaran yang disahkan untuk konsep ini. Tanya tentang soalan semasa atau semak bersama guru.',
     missingQuestion: 'Bahagian mana dalam soalan semasa yang mahu kita semak?',
     correctionLead: 'Mari gunakan bukti daripada jawapan kamu.',
-    quickReplies: ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham']
+    genericCorrectionLead: 'Mari semak soalan dan jawapan kamu satu langkah kecil pada satu masa.',
+    recoveryLead: 'Mari cuba satu contoh lain daripada pelajaran ini:',
+    recoveryQuestion: 'Bahagian manakah lebih sukar: maksud atau langkah pertama',
+    adultSupport: 'Kita sudah mencuba beberapa cara. Tunjukkan soalan ini kepada guru atau penjaga supaya mereka boleh membantu di sisi kamu.',
+    adultQuestion: 'Boleh kamu tunjukkan soalan ini kepada guru atau penjaga sekarang',
+    quickReplies: ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham'],
+    recoveryReplies: ['Maksud perkataan', 'Langkah pertama', 'Tanya orang dewasa']
   };
 }
 
@@ -183,13 +211,14 @@ export function buildIntelligentTeachingTurn({
   expectedAnswer = '',
   acceptedAnswers = [],
   isCorrect = false,
+  answerAttempted = false,
   guidedMisconception = null,
   teachingContent = {},
   locale = '',
   languagePresentation = {}
 } = {}) {
   if (subjectId === 'math') return null;
-  const signal = resolveSignal({ studentTurn, resolvedIntent, isCorrect });
+  const signal = resolveSignal({ studentTurn, resolvedIntent, isCorrect, answerAttempted });
   if (!signal) return null;
 
   const currentConcept = resolveConceptKey({ subjectId, topicId, questionId, topicLabel });
@@ -197,6 +226,7 @@ export function buildIntelligentTeachingTurn({
   const protectedAnswers = [expectedAnswer, ...(Array.isArray(acceptedAnswers) ? acceptedAnswers : [])].filter(Boolean);
   const explanations = safeCandidates(teachingContent.explanations, protectedAnswers);
   const examples = safeCandidates(teachingContent.examples, protectedAnswers);
+  const verifiedExamples = safeCandidates(teachingContent.verifiedExamples, protectedAnswers);
   const alternatives = safeCandidates(teachingContent.alternatives, protectedAnswers);
   const steps = safeCandidates(teachingContent.steps, protectedAnswers);
   const language = resolveLanguage({ locale, languagePresentation, subjectId });
@@ -210,6 +240,8 @@ export function buildIntelligentTeachingTurn({
         ? 'ما الدليل المهم في هذا السؤال'
         : 'Apakah petunjuk utama dalam soalan ini'
   );
+  const recoveryQuestion = safeQuestion([copy.recoveryQuestion], protectedAnswers, copy.recoveryQuestion);
+  const adultQuestion = safeQuestion([copy.adultQuestion], protectedAnswers, copy.adultQuestion);
   const misconception = resolveMisconception({ signal, guidedMisconception, learnerAnswer, options });
 
   if ([TEACHING_SIGNAL.NEW_TOPIC, TEACHING_SIGNAL.RESOLVED, TEACHING_SIGNAL.CLARIFICATION].includes(signal)) {
@@ -263,30 +295,55 @@ export function buildIntelligentTeachingTurn({
     ? clampCount(previousState.misunderstandingCount)
     : 0;
   const nextCount = signal === TEACHING_SIGNAL.MISUNDERSTANDING ? clampCount(previousCount + 1) : previousCount;
+  const strategyCount = resolvedIntent === 'alternative_explanation' ? Math.max(2, nextCount) : nextCount;
   let strategyUsed = TEACHING_STRATEGY.EVIDENCE_GUIDED_CORRECTION;
   let supportStage = 'evidence_guided_correction';
-  let textParts = [copy.correctionLead, misconception?.childSafeLabel || alternatives[0] || steps[0], checkQuestion];
+  let pendingFollowUp = checkQuestion;
+  let quickReplies = copy.quickReplies;
+  let textParts = [misconception ? copy.correctionLead : copy.genericCorrectionLead, misconception?.childSafeLabel || alternatives[0] || steps[0], checkQuestion];
 
-  if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && nextCount <= 1) {
+  if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount <= 1) {
     strategyUsed = TEACHING_STRATEGY.CONCEPT_AND_EXAMPLE;
     supportStage = 'concept_explanation';
     const safeConcept = explanations[0] || alternatives[0] || steps[0];
     textParts = [copy.reassurance, safeConcept ? `${copy.conceptLead} ${safeConcept}` : '', examples[0] ? `${copy.exampleLead} ${examples[0]}` : '', `${copy.checkLead} ${checkQuestion}`];
-  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && nextCount === 2) {
+  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 2) {
     strategyUsed = TEACHING_STRATEGY.ALTERNATIVE_CONNECTION;
     supportStage = 'alternative_strategy';
     textParts = [copy.alternativeLead, alternatives[0] || examples[1] || steps[0], `${copy.checkLead} ${checkQuestion}`];
-  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING) {
+  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 3) {
     strategyUsed = TEACHING_STRATEGY.ONE_SMALL_STEP;
     supportStage = 'guided_small_step';
     textParts = [copy.stepLead, steps[0] || alternatives[0] || examples[0], `${copy.checkLead} ${checkQuestion}`];
+  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 4) {
+    const firstExample = normalize(examples[0]);
+    const distinctVerifiedExample = verifiedExamples.find(item => normalize(item) !== firstExample);
+    if (distinctVerifiedExample) {
+      strategyUsed = TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE;
+      supportStage = 'verified_micro_example';
+      pendingFollowUp = recoveryQuestion;
+      quickReplies = copy.recoveryReplies;
+      textParts = [copy.recoveryLead, distinctVerifiedExample, recoveryQuestion];
+    } else {
+      strategyUsed = TEACHING_STRATEGY.ADULT_SUPPORT;
+      supportStage = 'adult_support';
+      pendingFollowUp = adultQuestion;
+      quickReplies = copy.recoveryReplies;
+      textParts = [copy.adultSupport, adultQuestion];
+    }
+  } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING) {
+    strategyUsed = TEACHING_STRATEGY.ADULT_SUPPORT;
+    supportStage = 'adult_support';
+    pendingFollowUp = adultQuestion;
+    quickReplies = copy.recoveryReplies;
+    textParts = [copy.adultSupport, adultQuestion];
   }
 
   const text = clean(textParts.filter(Boolean).join(' '), 700);
   return {
     reply: {
       text,
-      quickReplies: copy.quickReplies,
+      quickReplies,
       grounded: true
     },
     misconception,
@@ -296,7 +353,7 @@ export function buildIntelligentTeachingTurn({
       currentConcept,
       strategyUsed,
       supportStage,
-      pendingFollowUp: checkQuestion,
+      pendingFollowUp,
       misconception
     })
   };

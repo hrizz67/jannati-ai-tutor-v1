@@ -349,6 +349,71 @@ describe('local-first deterministic routing', () => {
 });
 
 describe('canonical answer and response-policy regression', () => {
+  it.each([
+    ['Saya masih tak faham', 'concept-and-example'],
+    ['Boleh terangkan cara lain?', 'alternative-connection']
+  ])('does not let previous correct feedback override the new comprehension request %s', async (prompt, strategyUsed) => {
+    const response = await getTutorResponse({
+      student: { id: 'synthetic-child', name: 'Murid' },
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
+      question: {
+        id: 'synthetic-bm-correct-then-confused',
+        q: 'Pilih kata nama orang.',
+        options: ['Ali', 'berlari', 'cantik'],
+        answer: 'Ali',
+        acceptedAnswers: ['Ali'],
+        explanation: 'Kata nama orang digunakan untuk menamakan seseorang.'
+      },
+      expectedAnswer: 'Ali',
+      acceptedAnswers: ['Ali'],
+      isCorrect: true,
+      attemptCount: 1,
+      prompt,
+      history: []
+    });
+
+    expect(response.source).toBe('intelligent-teaching-engine');
+    expect(response.isCorrect).toBe(true);
+    expect(response.pedagogicalState).toMatchObject({
+      signal: 'misunderstanding',
+      misunderstandingCount: 1,
+      strategyUsed
+    });
+    expect(response.text).not.toMatch(/bagus.*betul|tepat.*jawapan/i);
+    expect(response.remoteAttempted).toBe(false);
+  });
+
+  it.each([
+    ['verb', 'berlari'],
+    ['adjective', 'cantik'],
+    ['noun', 'murid']
+  ])('keeps an unsupported BM %s distractor unclassified end to end', async (_category, prompt) => {
+    const response = await getTutorResponse({
+      student: { id: 'synthetic-child', name: 'Murid' },
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_khas', title: 'Kata Nama Khas' },
+      question: {
+        id: `synthetic-bm-unsupported-${prompt}`,
+        q: 'Pilih kata nama khas bagi orang.',
+        options: ['Aina', 'berlari', 'cantik', 'murid'],
+        answer: 'Aina',
+        acceptedAnswers: ['Aina'],
+        explanation: 'Kata nama khas ialah nama khusus.'
+      },
+      expectedAnswer: 'Aina',
+      acceptedAnswers: ['Aina'],
+      attemptCount: 1,
+      prompt,
+      history: []
+    });
+    expect(response.isCorrect).toBe(false);
+    expect(response.misconception).toBeNull();
+    expect(response.contextUsed.misconceptionType).toBe('');
+    expect(response.text).not.toMatch(/sudah menjumpai kata nama|memilih nama umum/i);
+    expect(response.expectedAnswer).toBe('');
+  });
+
   it('wires scoped multi-turn misunderstanding state into the tutor response', async () => {
     const baseOptions = {
       student: { id: 'synthetic-child', name: 'Murid' },
