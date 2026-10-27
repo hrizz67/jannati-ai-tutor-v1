@@ -25,6 +25,7 @@ import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerReve
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 import { buildIntelligentTeachingTurn } from './pedagogy/intelligentTeachingEngine.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
+import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 
@@ -1457,6 +1458,13 @@ export async function getTutorResponse(options = {}) {
     question: resolvedQuestion,
     questionText: resolvedQuestionText
   });
+  const quickActions = suggestions.map(suggestion => resolveTutorQuickReplyAction(suggestion, {
+    hasExerciseContext: hasQuestionContext,
+    conversationKey,
+    questionId: normalizeText(resolvedQuestion?.id || '', ''),
+    subjectId: subjectContext.id,
+    topicId: topicContext.id
+  })).filter(Boolean);
 
   const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
   const usesConversationReply = Boolean(effectiveConversationalReply?.text);
@@ -1490,6 +1498,7 @@ export async function getTutorResponse(options = {}) {
     confidence: clampPercent(confidence),
     suggestions,
     suggestedActions: suggestions,
+    quickActions,
     source: responseSource,
     fallbackUsed: Boolean(responseFallbackUsed),
     error: null,

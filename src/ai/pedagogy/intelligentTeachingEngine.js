@@ -7,6 +7,8 @@ export const TEACHING_SIGNAL = Object.freeze({
   MISUNDERSTANDING: 'misunderstanding',
   WRONG_ANSWER: 'wrong_answer',
   CLARIFICATION: 'clarification',
+  RECOVERY_SELECTION: 'recovery_selection',
+  ADULT_SUPPORT: 'adult_support',
   NEW_TOPIC: 'new_topic',
   RESOLVED: 'resolved'
 });
@@ -58,7 +60,9 @@ function resolveSignal({ studentTurn = {}, resolvedIntent = '', isCorrect = fals
   if (studentTurn?.messageType === 'new_topic_request' || studentTurn?.newTopicRequest) return TEACHING_SIGNAL.NEW_TOPIC;
   if (resolvedIntent === 'understanding_confirmation') return TEACHING_SIGNAL.RESOLVED;
   if (studentTurn?.needsClarification || resolvedIntent === 'clarification_needed') return TEACHING_SIGNAL.CLARIFICATION;
-  if (resolvedIntent === 'misunderstanding' || resolvedIntent === 'alternative_explanation') return TEACHING_SIGNAL.MISUNDERSTANDING;
+  if (['recovery_meaning', 'recovery_first_step'].includes(resolvedIntent)) return TEACHING_SIGNAL.RECOVERY_SELECTION;
+  if (resolvedIntent === 'adult_support_acknowledgement') return TEACHING_SIGNAL.ADULT_SUPPORT;
+  if (['misunderstanding', 'alternative_explanation', 'example_request'].includes(resolvedIntent)) return TEACHING_SIGNAL.MISUNDERSTANDING;
   if (resolvedIntent === 'wrong_answer_coaching') return TEACHING_SIGNAL.WRONG_ANSWER;
   if (answerAttempted && isCorrect && resolvedIntent === 'correct_answer_reinforcement') return TEACHING_SIGNAL.RESOLVED;
   return '';
@@ -134,12 +138,13 @@ function copyFor(language) {
       recoveryQuestion: 'Which part is harder: the meaning or the first step',
       adultSupport: 'We have tried a few ways. Please show this question to your teacher or guardian so they can help beside you.',
       adultQuestion: 'Can you show this question to a teacher or guardian now',
-      adultFollowUp: 'Good plan. Keep this question and ask your teacher or guardian before trying it again.',
+      adultFollowUp: 'Good plan. Show this question to your teacher or guardian before trying it again.',
       adultClosed: 'Let us pause here so we do not guess. Continue after your teacher or guardian has helped you.',
       quickReplies: ['Show one small step', 'Give an easy example', 'I understand now'],
       recoveryReplies: ['The meaning', 'The first step', 'Ask an adult'],
-      adultFollowUpReplies: ['I will ask an adult', 'Keep this question'],
-      adultClosedReplies: ['Return to dashboard']
+      adultFollowUpReplies: ['I will ask an adult', 'Close Tutor'],
+      adultClosedReplies: ['Close Tutor'],
+      recoveryCheckReplies: ["I still don't understand", 'I understand now']
     };
   }
   if (language === 'ar') {
@@ -158,12 +163,13 @@ function copyFor(language) {
       recoveryQuestion: 'أيهما أصعب: المعنى أم الخطوة الأولى',
       adultSupport: 'جربنا عدة طرق. اعرض هذا السؤال على المعلم أو ولي الأمر ليساعدك بجانبك.',
       adultQuestion: 'هل تستطيع عرض السؤال على المعلم أو ولي الأمر الآن',
-      adultFollowUp: 'حسنًا. احتفظ بهذا السؤال واسأل المعلم أو ولي الأمر قبل أن تحاول مرة أخرى.',
+      adultFollowUp: 'حسنًا. اعرض هذا السؤال على المعلم أو ولي الأمر قبل أن تحاول مرة أخرى.',
       adultClosed: 'نتوقف هنا حتى لا نخمن. تابع بعد أن يساعدك المعلم أو ولي الأمر.',
       quickReplies: ['اشرح خطوة واحدة', 'أعطني مثالًا سهلًا', 'فهمت الآن'],
       recoveryReplies: ['المعنى', 'الخطوة الأولى', 'أسأل شخصًا بالغًا'],
-      adultFollowUpReplies: ['سأسأل شخصًا بالغًا', 'احتفظ بالسؤال'],
-      adultClosedReplies: ['العودة إلى الصفحة الرئيسية']
+      adultFollowUpReplies: ['سأسأل شخصًا بالغًا', 'إغلاق المعلّم'],
+      adultClosedReplies: ['إغلاق المعلّم'],
+      recoveryCheckReplies: ['ما زلت لا أفهم', 'فهمت الآن']
     };
   }
   return {
@@ -181,12 +187,13 @@ function copyFor(language) {
     recoveryQuestion: 'Bahagian manakah lebih sukar: maksud atau langkah pertama',
     adultSupport: 'Kita sudah mencuba beberapa cara. Tunjukkan soalan ini kepada guru atau penjaga supaya mereka boleh membantu di sisi kamu.',
     adultQuestion: 'Boleh kamu tunjukkan soalan ini kepada guru atau penjaga sekarang',
-    adultFollowUp: 'Baik. Simpan soalan ini dan minta guru atau penjaga membantu sebelum kamu mencuba lagi.',
+    adultFollowUp: 'Baik. Tunjukkan soalan ini kepada guru atau penjaga sebelum kamu mencuba lagi.',
     adultClosed: 'Kita berhenti di sini dahulu supaya kita tidak meneka. Sambung selepas guru atau penjaga membantu kamu.',
     quickReplies: ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham'],
     recoveryReplies: ['Maksud perkataan', 'Langkah pertama', 'Tanya orang dewasa'],
-    adultFollowUpReplies: ['Saya akan tanya orang dewasa', 'Simpan soalan ini'],
-    adultClosedReplies: ['Kembali ke papan utama']
+    adultFollowUpReplies: ['Saya akan tanya orang dewasa', 'Tutup Tutor'],
+    adultClosedReplies: ['Tutup Tutor'],
+    recoveryCheckReplies: ['Saya masih tak faham', 'Saya sudah faham']
   };
 }
 
@@ -326,6 +333,51 @@ export function buildIntelligentTeachingTurn({
         strategyUsed: TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
         supportStage: 'knowledge_safe_fallback',
         pendingFollowUp,
+        misconception: null
+      })
+    };
+  }
+
+  if (signal === TEACHING_SIGNAL.RECOVERY_SELECTION) {
+    const asksForMeaning = resolvedIntent === 'recovery_meaning';
+    const groundedSupport = asksForMeaning
+      ? explanations[0] || alternatives[0] || steps[0]
+      : steps[0] || alternatives[0] || explanations[0];
+    const supportLead = asksForMeaning ? copy.conceptLead : copy.stepLead;
+    return {
+      reply: {
+        text: clean([supportLead, groundedSupport, `${copy.checkLead} ${checkQuestion}`].filter(Boolean).join(' '), 700),
+        quickReplies: copy.recoveryCheckReplies,
+        grounded: true
+      },
+      misconception: null,
+      pedagogicalState: buildState({
+        signal,
+        previousState,
+        currentConcept,
+        strategyUsed: asksForMeaning ? TEACHING_STRATEGY.ALTERNATIVE_CONNECTION : TEACHING_STRATEGY.ONE_SMALL_STEP,
+        supportStage: asksForMeaning ? 'recovery_meaning' : 'recovery_first_step',
+        pendingFollowUp: checkQuestion,
+        misconception: null
+      })
+    };
+  }
+
+  if (signal === TEACHING_SIGNAL.ADULT_SUPPORT) {
+    return {
+      reply: {
+        text: copy.adultFollowUp,
+        quickReplies: copy.adultClosedReplies,
+        grounded: true
+      },
+      misconception: null,
+      pedagogicalState: buildState({
+        signal,
+        previousState,
+        currentConcept,
+        strategyUsed: TEACHING_STRATEGY.ADULT_SUPPORT,
+        supportStage: 'adult_support_acknowledgement',
+        pendingFollowUp: '',
         misconception: null
       })
     };

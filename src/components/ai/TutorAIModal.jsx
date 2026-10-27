@@ -19,6 +19,10 @@ import {
   prepareTutorConversationMessagesForPersistence,
   removeStudentIdentityFromAssistantText
 } from '../../ai/conversation/boundedConversationMemory.js';
+import {
+  getTutorQuickReplyDispatch,
+  resolveTutorQuickReplyAction
+} from '../../ai/conversation/tutorQuickReplyActions.js';
 import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
@@ -529,17 +533,20 @@ export default function TutorAIModal({
   }
 
   function handleTutorSuggestion(suggestion) {
-    const action = suggestion && typeof suggestion === 'object'
-      ? suggestion
-      : hasExerciseContext
-        ? createTutorAction('continue_current_question', suggestion)
-        : null;
-    const label = normalizeText(action?.label || suggestion, '');
-    if (action?.actionId === 'return_to_original_question' || label.toLocaleLowerCase('ms-MY') === 'kembali ke soalan') {
+    const action = resolveTutorQuickReplyAction(suggestion, {
+      hasExerciseContext,
+      conversationKey: sessionKey,
+      questionId: currentQuestion?.id || currentQuestion?.questionId || normalizedQuestionText,
+      subjectId: activeSubject?.id || '',
+      topicId: activeTopic?.id || ''
+    });
+    const dispatch = getTutorQuickReplyDispatch(action);
+    if (dispatch.type === 'close') {
       onTutup();
       return;
     }
-    void sendMessage(label, action?.intent || 'general', action);
+    if (dispatch.type !== 'message') return;
+    void sendMessage(action.label, action.intent || 'general', action);
   }
 
   function toggleToolPanel(panel) {

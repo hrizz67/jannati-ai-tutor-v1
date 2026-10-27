@@ -7,6 +7,7 @@ const root = process.cwd();
 const turnEnginePath = resolve(root, 'src/ai/conversation/studentTurnEngine.js');
 const tutorEnginePath = resolve(root, 'src/ai/tutorResponseEngine.js');
 const modalPath = resolve(root, 'src/components/ai/TutorAIModal.jsx');
+const quickReplyActionsPath = resolve(root, 'src/ai/conversation/tutorQuickReplyActions.js');
 const appPath = resolve(root, 'src/App.jsx');
 
 const { understandStudentTurn } = await import(pathToFileURL(turnEnginePath).href);
@@ -574,14 +575,23 @@ const sparseLearningRecommendation = await getTutorResponse({
 assert.match(sparseLearningRecommendation.text, /^Fayyadh, saya belum mempunyai cukup rekod/i, 'Tutor mesti menggunakan nama profil anak aktif walaupun rekod pembelajaran masih terhad.');
 
 const modalText = readFileSync(modalPath, 'utf8');
+const tutorEngineText = readFileSync(tutorEnginePath, 'utf8');
+const quickReplyActionsText = readFileSync(quickReplyActionsPath, 'utf8');
 const appText = readFileSync(appPath, 'utf8');
 assert.match(modalText, /function handleTutorSuggestion\(suggestion\)/, 'Balasan pantas mesti menggunakan handler Tutor yang sama.');
 assert.match(modalText, /function createTutorAction\(actionId, label, intent/, 'UI mesti mengekalkan identiti structured Tutor action.');
 assert.match(modalText, /response\?\.quickActions\?\.length[\s\S]{0,80}response\.quickActions/, 'Structured quick actions mesti disimpan tanpa ditukar kepada string.');
 assert.match(modalText, /tutorAction,/, 'Structured Tutor action mesti dihantar kepada enjin berasingan daripada label mesej.');
-assert.match(modalText, /hasExerciseContext[\s\S]{0,100}createTutorAction\('continue_current_question'/, 'Suggestion string lama dalam soalan aktif mesti melalui guard tindakan, bukan answer checker.');
+assert.match(modalText, /resolveTutorQuickReplyAction\(suggestion, \{[\s\S]{0,300}hasExerciseContext/, 'Balasan pantas mesti dipetakan kepada tindakan semantik sebelum dihantar kepada enjin.');
+assert.match(modalText, /getTutorQuickReplyDispatch\(action\)[\s\S]{0,160}dispatch\.type === 'close'[\s\S]{0,80}onTutup\(\)/, 'Tindakan tutup atau kembali mesti melaksanakan penutupan Tutor tanpa menghantar mesej.');
+assert.match(modalText, /sendMessage\(action\.label, action\.intent \|\| 'general', action\)/, 'Intent semantik balasan pantas mesti dihantar bersama structured action.');
+assert.match(tutorEngineText, /suggestions\.map\(suggestion => resolveTutorQuickReplyAction\(suggestion, \{/, 'Enjin Tutor mesti menerbitkan structured quick actions daripada cadangan pedagogi.');
+assert.match(quickReplyActionsText, /'confirm_understanding', 'understanding_confirmation'/, 'Pengesahan faham mesti mempunyai intent khusus.');
+assert.match(quickReplyActionsText, /'request_alternative_explanation', 'alternative_explanation'/, 'Permintaan cara lain mesti mempunyai intent khusus.');
+assert.match(quickReplyActionsText, /'request_approved_example', 'example_request'/, 'Permintaan contoh mesti mempunyai intent khusus.');
+assert.match(quickReplyActionsText, /'explain_recovery_meaning', 'recovery_meaning'/, 'Pilihan pemulihan makna mesti mempunyai intent khusus.');
+assert.match(quickReplyActionsText, /\['close_tutor', 'return_to_original_question'\]\.includes\(action\.actionId\)/, 'Tindakan tutup dan kembali mesti kekal sebagai arahan UI, bukan jawapan soalan.');
 assert.match(modalText, /onSuggestion=\{handleTutorSuggestion\}/, 'Cadangan mesej mesti melalui handler balasan pantas Tutor.');
-assert.match(modalText, /=== 'kembali ke soalan'[\s\S]{0,120}onTutup\(\)/, 'Tindakan kembali mesti menutup Tutor tanpa menghantar atau menyemak jawapan kuiz.');
 assert.match(modalText, /<button type="button" onClick=\{\(\) => onSuggestion\?\.\(item\)\}>/, 'Cadangan Tutor AI mesti berupa butang interaktif.');
 assert.doesNotMatch(modalText, /function extractDirectAnswer|function directAnswersMatch/, 'UI tidak boleh mempunyai enjin semakan jawapan pendua.');
 assert.match(modalText, /Guru Pembelajaran AI/, 'Identiti Tutor AI mesti jelas sebagai guru pembelajaran.');
