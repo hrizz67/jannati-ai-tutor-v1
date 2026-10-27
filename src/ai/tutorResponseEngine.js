@@ -52,7 +52,6 @@ const INTENT_STEPS = {
   weak_topic: ['Lihat topik yang paling lemah dahulu.', 'Ulang satu langkah pada satu masa.'],
   revision_plan: ['Ikut topik keutamaan hari ini.', 'Buat ulang kaji ringkas dahulu.'],
   uasa_summary: ['Semak skor dan topik yang perlu dikuatkan.', 'Rancang ulang kaji sebelum simulasi seterusnya.'],
-  example_request: ['Baca contoh mudah.', 'Bandingkan dengan soalan yang sedang kamu jawab.'],
   knowledge_question: ['Kenal pasti maksud konsep.', 'Lihat satu contoh mudah.', 'Terangkan semula dengan ayat sendiri.'],
   comparison_question: ['Kenal pasti maksud kedua-dua konsep.', 'Cari satu perbezaan utama.', 'Uji perbezaan itu dengan contoh.'],
   why_question: ['Kenal pasti sebab utama.', 'Hubungkan sebab dengan petunjuk dalam soalan.', 'Semak kefahaman dengan satu contoh.'],
@@ -184,7 +183,7 @@ function getSubjectContext(subject = {}, subjectId = '') {
 }
 
 function getTopicContext(topic = {}, topicId = '') {
-  const resolvedId = normalizeText(topic?.id || topicId, '');
+  const resolvedId = String(topic?.id || topicId || '').trim();
   return {
     id: resolvedId,
     title: normalizeText(topic?.title || topic?.name || formatTopicName(resolvedId), resolvedId),
@@ -1147,16 +1146,6 @@ function buildConversationalTeachingReply({
           `Cuba buat langkah pertama dahulu. Apa yang kamu dapat?`
         ].filter(Boolean).join(' '),
         ['Bimbing langkah pertama', 'Beri contoh mudah', 'Saya mahu cuba sendiri']
-      );
-    case 'example_request':
-      return withReplies(
-        [
-          example ? sentence(example, 'Contoh mudah: ') : `Mari gunakan satu contoh mudah bagi ${topicLabel}.`,
-          learningAnchor && learningAnchor !== example ? learningAnchor : '',
-          'Apakah persamaan antara contoh ini dengan soalan kamu?'
-        ].filter(Boolean).join(' '),
-        ['Beri contoh lain', 'Bimbing saya membandingkan', 'Saya sudah faham'],
-        Boolean(example || learningAnchor)
       );
     default:
       return null;

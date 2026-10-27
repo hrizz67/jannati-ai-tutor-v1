@@ -62,7 +62,8 @@ function resolveSignal({ studentTurn = {}, resolvedIntent = '', isCorrect = fals
   if (studentTurn?.needsClarification || resolvedIntent === 'clarification_needed') return TEACHING_SIGNAL.CLARIFICATION;
   if (['recovery_meaning', 'recovery_first_step'].includes(resolvedIntent)) return TEACHING_SIGNAL.RECOVERY_SELECTION;
   if (resolvedIntent === 'adult_support_acknowledgement') return TEACHING_SIGNAL.ADULT_SUPPORT;
-  if (['misunderstanding', 'alternative_explanation', 'example_request'].includes(resolvedIntent)) return TEACHING_SIGNAL.MISUNDERSTANDING;
+  if (resolvedIntent === 'example_request') return resolvedIntent;
+  if (['misunderstanding', 'alternative_explanation'].includes(resolvedIntent)) return TEACHING_SIGNAL.MISUNDERSTANDING;
   if (resolvedIntent === 'wrong_answer_coaching') return TEACHING_SIGNAL.WRONG_ANSWER;
   if (answerAttempted && isCorrect && resolvedIntent === 'correct_answer_reinforcement') return TEACHING_SIGNAL.RESOLVED;
   return '';
@@ -131,6 +132,7 @@ function copyFor(language) {
       stepLead: 'Do just one small step:',
       checkLead: 'Small check:',
       missing: 'I do not have enough approved learning information for this concept yet. Ask about the active question or check with your teacher.',
+      noExample: 'No new approved example is available. I can guide one step in this question.',
       missingQuestion: 'Which part of the active question should we check?',
       correctionLead: 'Let us use the evidence in your answer.',
       genericCorrectionLead: 'Let us check the question and your answer one small step at a time.',
@@ -156,6 +158,7 @@ function copyFor(language) {
       stepLead: 'نفعل خطوة واحدة:',
       checkLead: 'سؤال صغير:',
       missing: 'لا توجد معلومات تعليمية معتمدة كافية لهذا المفهوم الآن. اسأل عن السؤال الحالي أو اطلب مساعدة المعلم.',
+      noExample: 'لا يوجد مثال جديد معتمد. يمكنني إرشادك في خطوة من هذا السؤال.',
       missingQuestion: 'أي جزء من السؤال الحالي تريد أن نراجعه?',
       correctionLead: 'لنراجع الدليل في إجابتك.',
       genericCorrectionLead: 'لنراجع السؤال والإجابة خطوة صغيرة.',
@@ -180,6 +183,7 @@ function copyFor(language) {
     stepLead: 'Buat satu langkah kecil sahaja:',
     checkLead: 'Semakan kecil:',
     missing: 'Saya belum mempunyai maklumat pembelajaran yang disahkan untuk konsep ini. Tanya tentang soalan semasa atau semak bersama guru.',
+    noExample: 'Tiada contoh baharu diluluskan. Saya boleh bimbing satu langkah dalam soalan ini.',
     missingQuestion: 'Bahagian mana dalam soalan semasa yang mahu kita semak?',
     correctionLead: 'Mari gunakan bukti daripada jawapan kamu.',
     genericCorrectionLead: 'Mari semak soalan dan jawapan kamu satu langkah kecil pada satu masa.',
@@ -189,7 +193,7 @@ function copyFor(language) {
     adultQuestion: 'Boleh kamu tunjukkan soalan ini kepada guru atau penjaga sekarang',
     adultFollowUp: 'Baik. Tunjukkan soalan ini kepada guru atau penjaga sebelum kamu mencuba lagi.',
     adultClosed: 'Kita berhenti di sini dahulu supaya kita tidak meneka. Sambung selepas guru atau penjaga membantu kamu.',
-    quickReplies: ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham'],
+    quickReplies: ['Terangkan cara lain', 'Beri contoh mudah', 'Saya sudah faham'],
     recoveryReplies: ['Maksud perkataan', 'Langkah pertama', 'Tanya orang dewasa'],
     adultFollowUpReplies: ['Saya akan tanya orang dewasa', 'Tutup Tutor'],
     adultClosedReplies: ['Tutup Tutor'],
@@ -307,6 +311,33 @@ export function buildIntelligentTeachingTurn({
         strategyUsed,
         supportStage: signal === TEACHING_SIGNAL.CLARIFICATION ? 'clarification' : signal,
         pendingFollowUp: signal === TEACHING_SIGNAL.CLARIFICATION ? checkQuestion : '',
+        misconception: null
+      })
+    };
+  }
+
+  if (signal === 'example_request') {
+    const priorText = normalize((history || [])
+      .map(item => item?.role === 'ai' ? item.text : '')
+      .join(' '));
+    const approvedExample = verifiedExamples.find(item => !priorText.includes(normalize(item)));
+    const hasExample = Boolean(approvedExample);
+    return {
+      reply: {
+        text: hasExample
+          ? clean([`${copy.exampleLead} ${approvedExample}`, `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
+          : copy.noExample,
+        quickReplies: hasExample ? copy.quickReplies : [copy.quickReplies[0], copy.quickReplies[2]],
+        grounded: true
+      },
+      misconception: null,
+      pedagogicalState: buildState({
+        signal,
+        previousState,
+        currentConcept,
+        strategyUsed: hasExample ? TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE : TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
+        supportStage: hasExample ? 'example' : 'example_unavailable',
+        pendingFollowUp: hasExample ? checkQuestion : '',
         misconception: null
       })
     };

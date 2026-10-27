@@ -100,8 +100,8 @@ describe('Tutor quick-reply click integration', () => {
       history: []
     });
     expect(response.quickActions).toEqual([
-      expect.objectContaining({ actionId: 'request_approved_example', intent: 'example_request', label: 'Beri contoh mudah' }),
       expect.objectContaining({ actionId: 'request_alternative_explanation', intent: 'alternative_explanation', label: 'Terangkan cara lain' }),
+      expect.objectContaining({ actionId: 'request_approved_example', intent: 'example_request', label: 'Beri contoh mudah' }),
       expect.objectContaining({ actionId: 'confirm_understanding', intent: 'understanding_confirmation', label: 'Saya sudah faham' })
     ]);
   });
@@ -126,10 +126,8 @@ describe('Tutor quick-reply click integration', () => {
     });
   });
 
-  it.each([
-    ['Terangkan cara lain', 'alternative-connection'],
-    ['Beri contoh mudah', 'alternative-connection']
-  ])('routes %s into the teaching progression despite previous correct feedback', async (label, strategyUsed) => {
+  it('routes an alternative explanation into the teaching progression despite previous correct feedback', async () => {
+    const label = 'Terangkan cara lain';
     const { action } = click(label);
     const initialState = await getInitialTeachingState();
     const response = await getTutorResponse({
@@ -146,7 +144,7 @@ describe('Tutor quick-reply click integration', () => {
     expect(response.pedagogicalState).toMatchObject({
       signal: 'misunderstanding',
       misunderstandingCount: 2,
-      strategyUsed
+      strategyUsed: 'alternative-connection'
     });
     expect(response.expectedAnswer).toBe('Ali');
   });
