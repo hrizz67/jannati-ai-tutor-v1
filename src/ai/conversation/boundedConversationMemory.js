@@ -1,8 +1,19 @@
+import {
+  containsPotentialPersonalData,
+  detectTutorSafetyRisk
+} from '../../../supabase/functions/_shared/tutorPolicy.js';
+
 const DEFAULT_MAX_SCOPES = 24;
 const DEFAULT_MAX_TURNS = 12;
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
 const MAX_SCOPE_LENGTH = 320;
 const MAX_MESSAGE_LENGTH = 1400;
+const RETAINED_SAFETY_SIGNALS = new Set(['self_harm', 'exploitation', 'dangerous']);
+
+export const TUTOR_MEMORY_REDACTION_TEXT = Object.freeze({
+  personalData: 'Maklumat peribadi tidak disimpan.',
+  safety: 'Mesej keselamatan tidak disimpan.'
+});
 
 function cleanText(value = '', maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -30,10 +41,22 @@ function cleanSuggestion(value) {
   };
 }
 
-function cleanMessage(value = {}) {
+export function sanitizeTutorConversationMessage(value = {}) {
   const role = value?.role === 'user' ? 'user' : value?.role === 'ai' || value?.role === 'assistant' ? 'ai' : '';
-  const text = cleanText(value?.text);
-  if (!role || !text) return null;
+  const rawText = cleanText(value?.text);
+  if (!role || !rawText) return null;
+  const declaredSafetySignal = cleanText(value?.safetySignal, 40);
+  const safetySignal = role === 'user'
+    ? detectTutorSafetyRisk(rawText) || (RETAINED_SAFETY_SIGNALS.has(declaredSafetySignal) ? declaredSafetySignal : '')
+    : '';
+  const privacySignal = role === 'user' && (
+    containsPotentialPersonalData(rawText) || value?.privacySignal === 'personal-data'
+  ) ? 'personal-data' : '';
+  const text = privacySignal
+    ? TUTOR_MEMORY_REDACTION_TEXT.personalData
+    : safetySignal
+      ? TUTOR_MEMORY_REDACTION_TEXT.safety
+      : rawText;
   return {
     role,
     text,
@@ -41,6 +64,8 @@ function cleanMessage(value = {}) {
     source: cleanText(value?.source, 60),
     intent: cleanText(value?.intent, 60),
     dialogueClassification: cleanText(value?.dialogueClassification, 40),
+    privacySignal,
+    safetySignal,
     suggestions: (Array.isArray(value?.suggestions) ? value.suggestions : [])
       .slice(0, 3)
       .map(cleanSuggestion)
@@ -90,7 +115,7 @@ export function createBoundedTutorConversationMemory({
     const currentTime = now();
     removeExpired(currentTime);
     const boundedMessages = (Array.isArray(messages) ? messages : [])
-      .map(cleanMessage)
+      .map(sanitizeTutorConversationMessage)
       .filter(Boolean)
       .slice(-safeMaxTurns);
     scopes.delete(scope);
@@ -123,5 +148,7 @@ export const TUTOR_CONVERSATION_MEMORY_LIMITS = Object.freeze({
 
 export default {
   createBoundedTutorConversationMemory,
+  sanitizeTutorConversationMessage,
+  TUTOR_MEMORY_REDACTION_TEXT,
   TUTOR_CONVERSATION_MEMORY_LIMITS
 };

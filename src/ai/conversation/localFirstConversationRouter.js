@@ -3,6 +3,7 @@ import {
   containsPotentialPersonalData,
   detectTutorSafetyRisk
 } from '../../../supabase/functions/_shared/tutorPolicy.js';
+import { sanitizeTutorConversationMessage } from './boundedConversationMemory.js';
 
 export const DIALOGUE_CLASSIFICATION = Object.freeze({
   LOCAL_HANDLED: 'LOCAL_HANDLED',
@@ -20,7 +21,7 @@ const REMOTE_ELIGIBLE_INTENTS = new Set([
   'why_question',
   'how_question'
 ]);
-const UNSUPPORTED_PATTERN = /\b(?:ramalan\s+cuaca|harga\s+saham|crypto|bitcoin|politik|pilihan\s*raya|dating|perjudian|judi|weather\s+forecast|stock\s+price|write\s+code|hack(?:ing)?|اختراق|سياسة)\b/iu;
+const UNSUPPORTED_PATTERN = /(?:^|[^\p{L}\p{N}\p{M}_])(?:ramalan\s+cuaca|harga\s+saham|crypto|bitcoin|politik|pilihan\s*raya|dating|perjudian|judi|weather\s+forecast|stock\s+price|write\s+code|hack(?:ing)?|اختراق|سياسة)(?=$|[^\p{L}\p{N}\p{M}_])/iu;
 const CLARIFICATION_ROUTE = DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION;
 
 function clean(value = '', maxLength = 1400) {
@@ -34,13 +35,16 @@ function clean(value = '', maxLength = 1400) {
 export function buildBoundedDialogueContext(history = [], { maxTurns = 6 } = {}) {
   return (Array.isArray(history) ? history : [])
     .slice(-Math.max(2, Number(maxTurns) || 6))
+    .map(sanitizeTutorConversationMessage)
+    .filter(Boolean)
     .map(item => ({
-      role: item?.role === 'user' ? 'user' : item?.role === 'ai' || item?.role === 'assistant' ? 'ai' : '',
-      text: clean(item?.text, 500),
-      intent: clean(item?.intent, 60),
-      dialogueClassification: clean(item?.dialogueClassification, 40)
-    }))
-    .filter(item => item.role && item.text);
+      role: item.role,
+      text: clean(item.text, 500),
+      intent: clean(item.intent, 60),
+      dialogueClassification: clean(item.dialogueClassification, 40),
+      privacySignal: clean(item.privacySignal, 40),
+      safetySignal: clean(item.safetySignal, 40)
+    }));
 }
 
 function wasLocalClarificationRequested(history = []) {
@@ -104,6 +108,39 @@ function buildUnsupportedCopy(options = {}) {
   };
 }
 
+function buildDialogueDecision(classification, reason, boundedHistory = [], extra = {}) {
+  const historicalSafetySignal = [...boundedHistory].reverse().find(item => item.safetySignal)?.safetySignal || '';
+  return {
+    classification,
+    reason,
+    remoteEligible: classification === DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE,
+    remoteAttempted: false,
+    historicalSafetySignal,
+    historicalPrivacySignal: boundedHistory.some(item => item.privacySignal === 'personal-data'),
+    ...extra
+  };
+}
+
+function clearNonAnswerFeedbackMetadata(value = {}) {
+  const {
+    acceptedAnswers: _acceptedAnswers,
+    answer: _answer,
+    correct: _correct,
+    correctAnswer: _correctAnswer,
+    expectedAnswer: _expectedAnswer,
+    isCorrect: _isCorrect,
+    isOriginalCorrect: _isOriginalCorrect,
+    originalAnswerCorrect: _originalAnswerCorrect,
+    pedagogicalStepCorrect: _pedagogicalStepCorrect,
+    score: _score,
+    status: _status,
+    success: _success,
+    supportStage: _supportStage,
+    ...safeValue
+  } = value || {};
+  return safeValue;
+}
+
 export function classifyLocalFirstDialogue({
   prompt = '',
   history = [],
@@ -112,71 +149,43 @@ export function classifyLocalFirstDialogue({
 } = {}) {
   const text = clean(prompt, 700);
   const boundedHistory = buildBoundedDialogueContext(history);
-  const userConversation = [
-    ...boundedHistory.filter(item => item.role === 'user').map(item => item.text),
-    text
-  ].join(' ');
-  const safetyRisk = detectTutorSafetyRisk(userConversation);
-  if (safetyRisk || containsPotentialPersonalData(userConversation)) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED,
-      reason: safetyRisk || 'personal-data',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+  const safetyRisk = detectTutorSafetyRisk(text);
+  if (safetyRisk || containsPotentialPersonalData(text)) {
+    return buildDialogueDecision(
+      DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED,
+      safetyRisk || 'personal-data',
+      boundedHistory
+    );
   }
   if (!text || studentTurn?.needsClarification) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION,
-      reason: !text ? 'empty-prompt' : 'ambiguous-prompt',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+    return buildDialogueDecision(
+      DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION,
+      !text ? 'empty-prompt' : 'ambiguous-prompt',
+      boundedHistory
+    );
   }
   if (UNSUPPORTED_PATTERN.test(text)) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.UNSUPPORTED,
-      reason: 'outside-year-2-learning-scope',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+    return buildDialogueDecision(DIALOGUE_CLASSIFICATION.UNSUPPORTED, 'outside-year-2-learning-scope', boundedHistory);
   }
   if (localResponse?.needsGenerativeTutor !== true) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.LOCAL_HANDLED,
-      reason: 'local-response-sufficient',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+    return buildDialogueDecision(DIALOGUE_CLASSIFICATION.LOCAL_HANDLED, 'local-response-sufficient', boundedHistory);
   }
   if (!REMOTE_ELIGIBLE_INTENTS.has(studentTurn?.intent || localResponse?.intent)) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.UNSUPPORTED,
-      reason: 'unsupported-intent',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+    return buildDialogueDecision(DIALOGUE_CLASSIFICATION.UNSUPPORTED, 'unsupported-intent', boundedHistory);
   }
   if (!wasLocalClarificationRequested(history)) {
-    return {
-      classification: DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION,
-      reason: 'local-clarification-required',
-      remoteEligible: false,
-      remoteAttempted: false
-    };
+    return buildDialogueDecision(DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION, 'local-clarification-required', boundedHistory);
   }
-  return {
-    classification: DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE,
-    reason: 'local-clarification-exhausted',
-    remoteEligible: true,
-    remoteAttempted: false
-  };
+  return buildDialogueDecision(DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE, 'local-clarification-exhausted', boundedHistory);
 }
 
 export function applyLocalFirstDialogueRoute(localResponse = {}, decision = {}, options = {}) {
+  const classification = decision.classification || DIALOGUE_CLASSIFICATION.LOCAL_HANDLED;
   const base = {
-    ...localResponse,
-    dialogueClassification: decision.classification || DIALOGUE_CLASSIFICATION.LOCAL_HANDLED,
+    ...(classification === DIALOGUE_CLASSIFICATION.LOCAL_HANDLED
+      ? localResponse
+      : clearNonAnswerFeedbackMetadata(localResponse)),
+    dialogueClassification: classification,
     dialogueRoutingReason: decision.reason || 'local-response-sufficient',
     remoteEligible: decision.remoteEligible === true,
     remoteAttempted: false,

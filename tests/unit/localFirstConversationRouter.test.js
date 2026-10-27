@@ -1,7 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { createBoundedTutorConversationMemory } from '../../src/ai/conversation/boundedConversationMemory.js';
+import {
+  TUTOR_MEMORY_REDACTION_TEXT,
+  createBoundedTutorConversationMemory
+} from '../../src/ai/conversation/boundedConversationMemory.js';
 import {
   DIALOGUE_CLASSIFICATION,
   LOCAL_FIRST_REMOTE_ENABLED,
@@ -54,7 +57,31 @@ describe('bounded tutor conversation memory', () => {
 
   it('never writes memory to browser or cloud storage', () => {
     const source = readFileSync(resolve('src/ai/conversation/boundedConversationMemory.js'), 'utf8');
-    expect(source).not.toMatch(/localStorage|sessionStorage|supabase|fetch\s*\(/i);
+    expect(source).not.toMatch(/localStorage|sessionStorage|createClient|functions\.invoke|fetch\s*\(/i);
+  });
+
+  it.each([
+    ['email', 'Email saya ali.murid@example.com'],
+    ['phone', 'Nombor telefon saya 012-345 6789'],
+    ['named identifier', 'Nama saya Ali bin Ahmad'],
+    ['address', 'Alamat saya di 12 Jalan Melur'],
+    ['school', 'Sekolah saya SK Seri Damai']
+  ])('never retains %s personal data verbatim', (_label, personalMessage) => {
+    const memory = createBoundedTutorConversationMemory();
+    memory.set('account-a::child-a', [{ role: 'user', text: personalMessage }]);
+    const stored = memory.get('account-a::child-a')[0];
+    expect(stored.text).toBe(TUTOR_MEMORY_REDACTION_TEXT.personalData);
+    expect(stored.text).not.toContain(personalMessage);
+    expect(stored.privacySignal).toBe('personal-data');
+  });
+
+  it('retains only a bounded safety marker instead of sensitive student text', () => {
+    const memory = createBoundedTutorConversationMemory();
+    memory.set('account-a::child-a', [{ role: 'user', text: 'Saya nak bunuh diri' }]);
+    const stored = memory.get('account-a::child-a')[0];
+    expect(stored.text).toBe(TUTOR_MEMORY_REDACTION_TEXT.safety);
+    expect(stored.text).not.toContain('bunuh diri');
+    expect(stored.safetySignal).toBe('self_harm');
   });
 });
 
@@ -132,12 +159,94 @@ describe('local-first deterministic routing', () => {
 
   it.each([
     ['Boleh ramal harga saham esok?', DIALOGUE_CLASSIFICATION.UNSUPPORTED],
+    ['What is the stock price today?', DIALOGUE_CLASSIFICATION.UNSUPPORTED],
+    ['هل هذا موضوع سياسة؟', DIALOGUE_CLASSIFICATION.UNSUPPORTED],
+    ['هل يمكنك شرح اختراق؟', DIALOGUE_CLASSIFICATION.UNSUPPORTED],
     ['Nama saya Ali dan alamat saya di sini', DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED],
     ['Saya nak bunuh diri', DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED]
   ])('routes %s without a remote call', (prompt, expected) => {
     const decision = classifyLocalFirstDialogue({ prompt, studentTurn: { intent: 'knowledge_question' }, localResponse: ungroundedResponse });
     expect(decision.classification).toBe(expected);
     expect(decision.remoteAttempted).toBe(false);
+  });
+
+  it('uses Unicode-aware Arabic boundaries without matching longer safe words', () => {
+    const decision = classifyLocalFirstDialogue({
+      prompt: 'ما معنى سياسات المدرسة؟',
+      studentTurn: { intent: 'knowledge_question' },
+      localResponse: { ...ungroundedResponse, grounded: true, needsGenerativeTutor: false }
+    });
+    expect(decision.classification).toBe(DIALOGUE_CLASSIFICATION.LOCAL_HANDLED);
+  });
+
+  it('blocks the current safety signal but allows a later safe learning question', () => {
+    const currentRisk = classifyLocalFirstDialogue({
+      prompt: 'Saya nak bunuh diri',
+      studentTurn: { intent: 'knowledge_question' },
+      localResponse: ungroundedResponse
+    });
+    expect(currentRisk.classification).toBe(DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED);
+
+    const historicalContext = buildBoundedDialogueContext(buildBoundedDialogueContext([
+      { role: 'user', text: 'Saya nak bunuh diri' }
+    ]));
+    const safeFollowUp = classifyLocalFirstDialogue({
+      prompt: 'Berapakah 2 tambah 2?',
+      history: historicalContext,
+      studentTurn: { intent: 'knowledge_question' },
+      localResponse: { ...ungroundedResponse, grounded: true, needsGenerativeTutor: false }
+    });
+    expect(safeFollowUp.classification).toBe(DIALOGUE_CLASSIFICATION.LOCAL_HANDLED);
+    expect(safeFollowUp.historicalSafetySignal).toBe('self_harm');
+  });
+
+  it('does not let historical personal data poison a safe follow-up question', () => {
+    const historicalContext = buildBoundedDialogueContext(buildBoundedDialogueContext([
+      { role: 'user', text: 'Nama saya Ali dan sekolah saya SK Seri Damai' }
+    ]));
+    const decision = classifyLocalFirstDialogue({
+      prompt: 'Mengapa tumbuhan perlukan air?',
+      history: historicalContext,
+      studentTurn: { intent: 'why_question' },
+      localResponse: { ...ungroundedResponse, grounded: true, needsGenerativeTutor: false }
+    });
+    expect(decision.classification).toBe(DIALOGUE_CLASSIFICATION.LOCAL_HANDLED);
+    expect(decision.historicalPrivacySignal).toBe(true);
+    expect(historicalContext[0].text).toBe(TUTOR_MEMORY_REDACTION_TEXT.personalData);
+  });
+
+  it.each([
+    DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED,
+    DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION,
+    DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE,
+    DIALOGUE_CLASSIFICATION.UNSUPPORTED
+  ])('clears answer-success metadata from the %s non-answer route', (classification) => {
+    const response = applyLocalFirstDialogueRoute({
+      ...ungroundedResponse,
+      isCorrect: true,
+      pedagogicalStepCorrect: true,
+      status: 'correct',
+      supportStage: 'correct_first_try',
+      expectedAnswer: '4',
+      acceptedAnswers: ['4'],
+      score: 100,
+      success: true
+    }, {
+      classification,
+      reason: classification === DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED ? 'personal-data' : 'test-route',
+      remoteEligible: classification === DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE
+    });
+    for (const field of ['isCorrect', 'pedagogicalStepCorrect', 'status', 'supportStage', 'expectedAnswer', 'acceptedAnswers', 'score', 'success']) {
+      expect(response).not.toHaveProperty(field);
+    }
+  });
+
+  it('preserves correctness metadata for a genuine locally handled answer', () => {
+    const response = applyLocalFirstDialogueRoute({ ...ungroundedResponse, isCorrect: true }, {
+      classification: DIALOGUE_CLASSIFICATION.LOCAL_HANDLED,
+      reason: 'local-response-sufficient'
+    });
+    expect(response.isCorrect).toBe(true);
   });
 
   it('blocks unsafe text without advancing a pending teaching step', () => {
