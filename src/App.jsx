@@ -88,6 +88,7 @@ import { applyCanonicalLearnerReward, reconcileCumulativeLearnerProfile } from '
 import { createBoundedRecoveryNoticeTracker } from './utils/recoveryNotice.js';
 import { matchesCoachContext, resolveCoachContextSnapshot } from './ai/coach/contextSnapshot.js';
 import { buildChildSafeHint, getAnswerRevealPolicy } from './ai/policy/answerRevealPolicy.js';
+import { createBoundedTutorConversationMemory } from './ai/conversation/boundedConversationMemory.js';
 import { getAcceptedAnswers, getCanonicalQuestionAnswers, getQuestionAnswerDisplay, normalizeAcceptedAnswer, supportsInteractiveQuestion } from './utils/acceptedAnswers.js';
 import {
   appendUniqueCommunicationResult,
@@ -1502,7 +1503,7 @@ export default function App() {
   const [teacherData, setTeacherData] = useState(null);
   const [coachKnowledgeData, setCoachKnowledgeData] = useState(null);
   const coachRequestRef = useRef({ requestId: 0, open: false, mode: '', snapshot: null });
-  const tutorConversationRef = useRef(new Map());
+  const tutorConversationRef = useRef(createBoundedTutorConversationMemory());
 
   const [quizStartedAt, setQuizStartedAt] = useState(Date.now());
   const [adaptivePracticeCount, setAdaptivePracticeCount] = useState(10);

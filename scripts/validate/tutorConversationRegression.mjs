@@ -598,7 +598,7 @@ assert.match(modalText, /languagePresentation\.contentLocale/, 'Locale pengecama
 assert.match(modalText, /availableSubjects/, 'Tutor AI mesti menerima konteks semua subjek untuk pertanyaan pembelajaran umum.');
 assert.match(appText, /const tutorHasExerciseContext = screen === 'quiz'/, 'Konteks soalan hanya boleh diaktifkan dari skrin kuiz.');
 assert.match(appText, /const tutorQuestion = tutorHasExerciseContext \? currentQuestion\(\) : null/, 'Soalan latihan lama tidak boleh dihantar dari Papan Utama.');
-assert.match(appText, /const tutorConversationRef = useRef\(new Map\(\)\)/, 'Tutor AI dan Tanya Tutor AI mesti berkongsi satu sejarah perbualan dalam memori aplikasi.');
+assert.match(appText, /const tutorConversationRef = useRef\(createBoundedTutorConversationMemory\(\)\)/, 'Tutor AI mesti menggunakan sejarah perbualan dalam memori yang bounded.');
 assert.match(appText, /const chatWidget = chatOpen && chatSubject \?/, 'Modal Tutor AI mesti kekal lazy dan hanya dimuatkan apabila dibuka.');
 assert.match(appText, /conversationKey=\{tutorConversationKey\}[\s\S]{0,250}initialMessages=\{tutorConversationRef\.current\.get/, 'Sejarah Tutor AI mesti dipulihkan mengikut profil anak aktif.');
 assert.match(appText, /tutorConversationRef\.current\.clear\(\)/, 'Sejarah Tutor AI mesti dibersihkan apabila sesi akaun atau profil tempatan ditamatkan.');

@@ -9,6 +9,16 @@ import { getAnswerRevealPolicy } from '../../ai/policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from '../../ai/voice/voiceConfig.js';
 import { supportsSpeechRecognition } from '../../ai/speech/speechEngine.js';
 import { createTutorSpeechInputSession } from '../../ai/speech/tutorSpeechInput.js';
+import {
+  createScopedConversationState,
+  getScopedConversationWrite,
+  readScopedConversationMessages,
+  updateScopedConversationMessages
+} from '../../ai/conversation/scopedConversationState.js';
+import {
+  prepareTutorConversationMessagesForPersistence,
+  removeStudentIdentityFromAssistantText
+} from '../../ai/conversation/boundedConversationMemory.js';
 import SubjectLanguageText from '../SubjectLanguageText.jsx';
 import { renderModalPortal, useModalRuntime } from './modalRuntime.js';
 
@@ -221,7 +231,7 @@ export default function TutorAIModal({
   const requestContextRef = useRef('');
   const inputDraftRef = useRef('');
   const speechSessionRef = useRef(null);
-  const [messages, setMessages] = useState(() => Array.isArray(initialMessages) ? initialMessages : []);
+  const [conversationState, setConversationState] = useState(() => createScopedConversationState());
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -290,6 +300,10 @@ export default function TutorAIModal({
     () => normalizeText(conversationKey || studentProfile?.studentId || studentProfile?.name || 'learner', 'learner'),
     [conversationKey, studentProfile?.studentId, studentProfile?.name]
   );
+  const messages = readScopedConversationMessages(conversationState, sessionKey);
+  function setMessages(update) {
+    setConversationState(current => updateScopedConversationMessages(current, sessionKey, update));
+  }
   const requestContextKey = `${sessionKey}::${activeSubject?.id || 'general'}::${activeTopic?.id || 'general'}::${currentQuestion?.id || currentQuestion?.questionId || 'general'}`;
   requestContextRef.current = requestContextKey;
   inputDraftRef.current = input;
@@ -302,7 +316,7 @@ export default function TutorAIModal({
   });
 
   useEffect(() => {
-    setMessages(Array.isArray(initialMessages) ? initialMessages : []);
+    setConversationState(createScopedConversationState(sessionKey, initialMessages));
     setInput('');
     setLoading(false);
     setStatus('idle');
@@ -316,8 +330,14 @@ export default function TutorAIModal({
   }, [sessionKey, speechSupported]);
 
   useEffect(() => {
-    onMessagesChange?.(sessionKey, messages);
-  }, [messages, sessionKey, onMessagesChange]);
+    const write = getScopedConversationWrite(conversationState, sessionKey);
+    if (write) {
+      onMessagesChange?.(
+        write.scopeKey,
+        prepareTutorConversationMessagesForPersistence(write.messages, studentName)
+      );
+    }
+  }, [conversationState, sessionKey, studentName, onMessagesChange]);
 
   useEffect(() => {
     if (!open) {
@@ -334,6 +354,13 @@ export default function TutorAIModal({
       role: 'ai',
       text: buildNaturalGreeting({
         studentName,
+        subjectLabel,
+        topicLabel,
+        questionText: normalizedQuestionText,
+        teachingLanguage: languagePresentation.teachingLanguage
+      }),
+      persistedText: buildNaturalGreeting({
+        studentName: '',
         subjectLabel,
         topicLabel,
         questionText: normalizedQuestionText,
@@ -450,8 +477,11 @@ export default function TutorAIModal({
         return [...prev, {
         role: 'ai',
         text: nextText,
+        persistedText: removeStudentIdentityFromAssistantText(nextText, studentName),
         tone: response?.supportStage === 'guiding_question' ? 'pulse' : response?.supportStage === 'strong_hint' ? 'hint' : (response?.pedagogicalStepCorrect || response?.isCorrect) ? 'correct' : '',
         source: response?.source || '',
+        intent: response?.intent || '',
+        dialogueClassification: response?.dialogueClassification || '',
         suggestions: response?.quickActions?.length
           ? response.quickActions
           : normalizeList(response?.quickReplies?.length
