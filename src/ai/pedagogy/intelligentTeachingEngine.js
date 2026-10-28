@@ -380,9 +380,18 @@ export function buildIntelligentTeachingTurn({
 
   if (signal === TEACHING_SIGNAL.RECOVERY_SELECTION) {
     const asksForMeaning = resolvedIntent === 'recovery_meaning';
-    const groundedSupport = asksForMeaning
-      ? explanations[0] || alternatives[0] || steps[0]
-      : steps[0] || alternatives[0] || explanations[0];
+    const candidates = asksForMeaning
+      ? [...explanations, ...alternatives, ...steps]
+      : [...steps, ...alternatives, ...explanations];
+    const priorTeaching = (Array.isArray(history) ? history : [])
+      .filter(item => item?.role === 'ai' &&
+        item.dialogueClassification === 'LOCAL_HANDLED' &&
+        !item.privacySignal && !item.safetySignal &&
+        item.pedagogicalState?.currentConcept === currentConcept)
+      .slice(-12).map(item => normalize(item.text));
+    const groundedSupport = candidates.find(candidate =>
+      !priorTeaching.some(text => text.includes(normalize(candidate)))
+    ) || candidates[0] || '';
     const supportLead = asksForMeaning ? copy.conceptLead : copy.stepLead;
     return buildTeachingResult({
       signal,
