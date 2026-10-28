@@ -49,7 +49,7 @@ function comparable(value = '') {
     .trim();
 }
 
-function recentConversation(history = []) {
+function recentConversation(history = [], activeConcept = '') {
   const safeHistory = Array.isArray(history) ? history.filter(item => clean(item?.text)) : [];
   const lastStudentTurn = [...safeHistory].reverse().find(item => item?.role === 'user')?.text || '';
   const lastTutorMessage = [...safeHistory].reverse().find(item => item?.role === 'ai');
@@ -57,7 +57,11 @@ function recentConversation(history = []) {
     lastStudentTurn: clean(lastStudentTurn),
     lastTutorTurn: clean(lastTutorMessage?.text),
     hasHistory: Boolean(lastStudentTurn),
-    hasTeachingStage: Boolean(lastTutorMessage?.pedagogicalState?.currentConcept && lastTutorMessage?.pedagogicalState?.supportStage)
+    hasTeachingStage: Boolean(
+      clean(activeConcept) &&
+      lastTutorMessage?.pedagogicalState?.currentConcept === clean(activeConcept) &&
+      lastTutorMessage?.pedagogicalState?.supportStage
+    )
   };
 }
 
@@ -101,12 +105,13 @@ export function understandStudentTurn({
   expectedAnswer = '',
   acceptedAnswers = [],
   hasExerciseContext = false,
-  hasLearningContext = false
+  hasLearningContext = false,
+  activeConcept = ''
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
   const explicitIntent = clean(intent).toLowerCase();
-  const conversation = recentConversation(history);
+  const conversation = recentConversation(history, activeConcept);
   const referencesPreviousTurn = conversation.hasHistory && (
     /^(?:(?:kenapa|mengapa|bagaimana|macam\s*mana|why|how|لماذا|كيف)(?:\s+(?:ini|itu|tadi|pula))?|apa\s+maksudnya|what\s+does\s+that\s+mean)\s*[?؟]?$/iu.test(text) ||
     /^(?:yang\s+itu|yang\s+tadi|lagi|cara\s+lain|that\s+one|the\s+previous\s+one|again|مرة\s+أخرى|ذلك|السابق)\b/iu.test(text)
