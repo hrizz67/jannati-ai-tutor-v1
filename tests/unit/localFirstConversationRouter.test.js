@@ -320,6 +320,28 @@ describe('local-first deterministic routing', () => {
     }
   });
 
+  it.each([
+    DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED,
+    DIALOGUE_CLASSIFICATION.NEEDS_CLARIFICATION,
+    DIALOGUE_CLASSIFICATION.REMOTE_ELIGIBLE,
+    DIALOGUE_CLASSIFICATION.UNSUPPORTED
+  ])('drops synthetic prior teaching progress for non-answer %s routes', classification => {
+    const response = applyLocalFirstDialogueRoute({
+      text: 'Mari belajar topik ini.',
+      pedagogicalState: {
+        currentConcept: 'bm::kata_nama_am::q-1',
+        supportStage: 'concept_explanation',
+        misunderstandingCount: 1
+      }
+    }, {
+      classification,
+      reason: classification === DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED ? 'personal-data' : 'test-route'
+    });
+    expect(response).not.toHaveProperty('pedagogicalState');
+    expect(response).not.toHaveProperty('isCorrect');
+    expect(response.remoteAttempted).toBe(false);
+  });
+
   it('preserves correctness metadata for a genuine locally handled answer', () => {
     const response = applyLocalFirstDialogueRoute({ ...ungroundedResponse, isCorrect: true }, {
       classification: DIALOGUE_CLASSIFICATION.LOCAL_HANDLED,
