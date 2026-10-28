@@ -122,7 +122,7 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     expect(source).toContain('::${activeSubject?.id');
     expect(source).toContain('::${activeTopic?.id');
     const effect = source.slice(
-      source.indexOf("  useEffect(() => {\\n    if (!open)"),
+      source.indexOf("  useEffect(() => {"),
       source.indexOf("  useEffect(() => () =>")
     );
     expect(effect).toContain("}, [open, requestContextKey, speechSupported]);");
