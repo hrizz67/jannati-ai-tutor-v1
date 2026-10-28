@@ -62,8 +62,9 @@ function recentConversation(history = [], activeConcept = '') {
   return {
     lastStudentTurn: clean(lastStudentTurn),
     lastTutorTurn: clean(lastTutorMessage?.text),
-    hasHistory: Boolean(lastStudentTurn),
-    hasTeachingStage: Boolean(
+    hasHistory: !!lastStudentTurn,
+    pendingCheck: !!lastTutorMessage?.pedagogicalState?.pendingFollowUp,
+    hasTeachingStage: !!(
       safeHistory.at(-1)?.role === 'ai' &&
       lastTutorMessage?.dialogueClassification === 'LOCAL_HANDLED' &&
       !lastTutorMessage?.privacySignal &&
@@ -206,14 +207,16 @@ export function understandStudentTurn({
       ...conversation, isQuestion: true, referencesPreviousTurn: true
     });
   }
-  const continuation = hasExerciseContext && conversation.hasHistory && CONTINUATION_PATTERN.test(lower);
+  const checkReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
+    /^(?:petunjuk(?:nya)?(?: utama)?|(?:the )?clue|الدليل)(?: (?:ialah|adalah|is|هو))? \S/iu.test(lower) && !/[?؟]/u.test(text);
+  const continuation = hasExerciseContext && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || checkReply);
   const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
     return makeTurn('direct_answer', 'answer_attempt', 0.96, { ...conversation, answerCandidate });
   }
   if (continuation) {
-    return makeTurn(conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, {
-      ...conversation, referencesPreviousTurn: true, isQuestion: true
+    return makeTurn(conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP, checkReply ? 'learning_response' : FOLLOW_UP_QUESTION, 0.99, {
+      ...conversation, referencesPreviousTurn: true, isQuestion: !checkReply
     });
   }
 

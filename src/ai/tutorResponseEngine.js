@@ -1037,7 +1037,7 @@ function buildContextualSections({
     expectedAnswer: revealAnswer ? expectedAnswer : '',
     acceptedAnswers: revealAnswer ? acceptedAnswers : [],
     learnerAnswer: learner,
-    isCorrect: Boolean(isCorrect),
+    isCorrect,
     attemptCount: Number(attemptCount) || 0,
     hintsUsed: Number(hintsUsed) || 0,
     explanationMode: normalizeText(explanationMode, ''),
@@ -1334,7 +1334,13 @@ export async function getTutorResponse(options = {}) {
   const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request';
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
-  const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
+  const microCheck = studentTurn.messageType === 'learning_response';
+  const tutorAttempts = +attemptCount * !microCheck || 0;
+  const tutorHints = +hintsUsed * !microCheck || 0;
+  const feedbackQuestion = microCheck
+    ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
+    : resolvedQuestion;
+  const answerText = microCheck ? '' : getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
   const answerCheckQuestion = {
     ...resolvedQuestion,
     answer: expected || resolvedQuestion.answer,
@@ -1342,7 +1348,7 @@ export async function getTutorResponse(options = {}) {
       ? [...new Set([expected, ...acceptedAnswers])]
       : acceptedAnswers
   };
-  const resolvedCorrect = promptAnswer
+  const resolvedCorrect = microCheck ? null : promptAnswer
     ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
     : typeof isCorrect === 'boolean'
       ? isCorrect
@@ -1360,10 +1366,10 @@ export async function getTutorResponse(options = {}) {
       coachResponse = await buildTutorKnowledgeResponse({
         subjectId: subjectContext.id,
         topicId: topicContext.id,
-        question: resolvedQuestion,
+        question: feedbackQuestion,
         result: {
           correct: resolvedCorrect,
-          status: typeof isCorrect === 'boolean'
+          status: !microCheck && typeof isCorrect === 'boolean'
             ? (isCorrect ? 'correct' : 'wrong')
             : undefined,
           explanation: ''
@@ -1379,8 +1385,8 @@ export async function getTutorResponse(options = {}) {
           intent: resolvedIntent,
           locale: resolvedLocale,
           historyCount: Array.isArray(history) ? history.length : 0,
-          attemptCount: Number(attemptCount) || 0,
-          hintsUsed: Number(hintsUsed) || 0,
+          attemptCount: tutorAttempts,
+          hintsUsed: tutorHints,
           level: Number(studentProfile.level || adaptiveProfile?.level || 0),
           xp: Number(studentProfile.xp || adaptiveProfile?.xp || 0),
           streak: Number(studentProfile.streak || adaptiveProfile?.streak || 0),
@@ -1430,11 +1436,15 @@ export async function getTutorResponse(options = {}) {
     acceptedAnswers,
     learnerAnswer: answerText,
     isCorrect: resolvedCorrect,
-    attemptCount: Number(attemptCount) || 0,
-    hintsUsed: Number(hintsUsed) || 0,
-    question: resolvedQuestion,
+    attemptCount: tutorAttempts,
+    hintsUsed: tutorHints,
+    question: feedbackQuestion,
     completionState: resolvedIntent === 'uasa_summary' || resolvedIntent === 'revision_plan',
     explicitAnswerRequest: /tunjuk(?:kan)?\s+(?:jawapan|jawapan betul)|show answer|jawapan sebenar/i.test(prompt)
+  });
+
+  if (microCheck) Object.assign(guided, {
+    stage: 'learning_response', misconception: null, praise: '', nextAction: ''
   });
 
   const resolvedTopicLabel = resolveTopicLabel({
@@ -1456,12 +1466,12 @@ export async function getTutorResponse(options = {}) {
     subject: subjectContext,
     topic: topicContext,
     topicLabel: fallbackTopicLabel,
-    question: resolvedQuestion,
+    question: feedbackQuestion,
     answer: expected,
     learnerAnswer: answerText,
     isCorrect: resolvedCorrect,
-    attemptCount: Number(attemptCount) || 0,
-    hintsUsed: Number(hintsUsed) || 0,
+    attemptCount: tutorAttempts,
+    hintsUsed: tutorHints,
     coachResponse,
     studyPlan,
     readiness,
