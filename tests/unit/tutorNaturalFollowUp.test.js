@@ -127,6 +127,31 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
     }
   );
 
+  it.each([
+    'resolved',
+    'new_topic',
+    'clarification',
+    'adult_support_referral',
+    'adult_support_closed',
+    'knowledge_safe_fallback',
+    'example_unavailable'
+  ])('does not resume a terminal or ungrounded teaching stage: %s', supportStage => {
+    const history = [
+      { role: 'user', text: 'Saya tak faham' },
+      {
+        role: 'ai', text: 'Sesi ini sudah selesai atau tidak dapat disahkan.',
+        pedagogicalState: { currentConcept: concept, supportStage }
+      }
+    ];
+    for (const prompt of ['Lepas tu?', 'Apa maksudnya?']) {
+      const turn = understandStudentTurn({
+        prompt, history, hasExerciseContext: true, activeConcept: concept
+      });
+      expect(turn.hasTeachingStage).toBe(false);
+      expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+    }
+  });
+
   it('does not treat a standalone quiz answer as a conversational follow-up', () => {
     const turn = understandStudentTurn({
       prompt: 'Ali', history: teachingHistory, hasExerciseContext: true, activeConcept: concept, expectedAnswer: 'Ali',
