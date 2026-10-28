@@ -56,8 +56,7 @@ function comparable(value = '') {
 }
 
 function recentConversation(history = [], activeConcept = '') {
-  const safeHistory = Array.isArray(history) ? history.filter(item => clean(item?.text)) : [];
-  const reversed = safeHistory.reverse();
+  const reversed = (Array.isArray(history) ? history.filter(item => clean(item?.text)) : []).reverse();
   const lastStudentTurn = clean(reversed.find(item => item?.role === 'user')?.text);
   const lastTutorMessage = reversed.find(item => item?.role === 'ai');
   const scopedConcept = clean(activeConcept);
