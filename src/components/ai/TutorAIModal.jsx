@@ -336,6 +336,13 @@ export default function TutorAIModal({
   }, [sessionKey, speechSupported]);
 
   useEffect(() => {
+    speechSessionRef.current?.cancel?.();
+    speechSessionRef.current = null;
+    setSpeechState(speechSupported ? 'idle' : 'unsupported');
+    setSpeechMessage('');
+  }, [requestContextKey, speechSupported]);
+
+  useEffect(() => {
     const write = getScopedConversationWrite(conversationState, sessionKey);
     if (write) {
       onMessagesChange?.(
