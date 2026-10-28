@@ -1286,7 +1286,12 @@ export async function getTutorResponse(options = {}) {
     expectedAnswer: pendingExpectedAnswers[0] || expected,
     acceptedAnswers: pendingExpectedAnswers.length ? pendingExpectedAnswers : acceptedAnswers,
     hasExerciseContext: Boolean(resolvedQuestionText || expected),
-    hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id)
+    hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
+    activeConcept: [
+      subjectContext.id || 'general',
+      topicContext.id || 'general',
+      normalizeText(resolvedQuestion?.id || '', '') || 'general'
+    ].join('::')
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const mathPedagogy = subjectContext.id === 'math' && conversationKey
