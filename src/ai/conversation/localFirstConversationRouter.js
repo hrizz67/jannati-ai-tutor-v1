@@ -137,6 +137,8 @@ function clearNonAnswerFeedbackMetadata(value = {}) {
     status: _status,
     success: _success,
     supportStage: _supportStage,
+    // Non-answer routes must never persist an underlying teaching state.
+    pedagogicalState: _pedagogicalState,
     ...safeValue
   } = value || {};
   return safeValue;
