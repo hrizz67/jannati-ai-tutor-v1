@@ -1037,7 +1037,7 @@ function buildContextualSections({
     expectedAnswer: revealAnswer ? expectedAnswer : '',
     acceptedAnswers: revealAnswer ? acceptedAnswers : [],
     learnerAnswer: learner,
-    isCorrect: isCorrect == null ? null : Boolean(isCorrect),
+    isCorrect: isCorrect == null ? null : !!isCorrect,
     attemptCount: Number(attemptCount) || 0,
     hintsUsed: Number(hintsUsed) || 0,
     explanationMode: normalizeText(explanationMode, ''),
@@ -1335,6 +1335,8 @@ export async function getTutorResponse(options = {}) {
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const microCheck = studentTurn.messageType === 'learning_response';
+  const tutorAttempts = microCheck ? 0 : Number(attemptCount) || 0;
+  const tutorHints = microCheck ? 0 : Number(hintsUsed) || 0;
   const feedbackQuestion = microCheck
     ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
     : resolvedQuestion;
@@ -1383,8 +1385,8 @@ export async function getTutorResponse(options = {}) {
           intent: resolvedIntent,
           locale: resolvedLocale,
           historyCount: Array.isArray(history) ? history.length : 0,
-          attemptCount: Number(attemptCount) || 0,
-          hintsUsed: Number(hintsUsed) || 0,
+          attemptCount: tutorAttempts,
+          hintsUsed: tutorHints,
           level: Number(studentProfile.level || adaptiveProfile?.level || 0),
           xp: Number(studentProfile.xp || adaptiveProfile?.xp || 0),
           streak: Number(studentProfile.streak || adaptiveProfile?.streak || 0),
@@ -1434,8 +1436,8 @@ export async function getTutorResponse(options = {}) {
     acceptedAnswers,
     learnerAnswer: answerText,
     isCorrect: resolvedCorrect,
-    attemptCount: microCheck ? 0 : Number(attemptCount) || 0,
-    hintsUsed: microCheck ? 0 : Number(hintsUsed) || 0,
+    attemptCount: tutorAttempts,
+    hintsUsed: tutorHints,
     question: feedbackQuestion,
     completionState: resolvedIntent === 'uasa_summary' || resolvedIntent === 'revision_plan',
     explicitAnswerRequest: /tunjuk(?:kan)?\s+(?:jawapan|jawapan betul)|show answer|jawapan sebenar/i.test(prompt)
@@ -1468,8 +1470,8 @@ export async function getTutorResponse(options = {}) {
     answer: expected,
     learnerAnswer: answerText,
     isCorrect: resolvedCorrect,
-    attemptCount: microCheck ? 0 : Number(attemptCount) || 0,
-    hintsUsed: microCheck ? 0 : Number(hintsUsed) || 0,
+    attemptCount: tutorAttempts,
+    hintsUsed: tutorHints,
     coachResponse,
     studyPlan,
     readiness,
