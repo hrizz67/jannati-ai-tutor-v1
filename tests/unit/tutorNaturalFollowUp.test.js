@@ -8,6 +8,7 @@ const teachingHistory = [
   {
     role: 'ai',
     text: 'Mari kita cuba satu langkah kecil.',
+    dialogueClassification: 'LOCAL_HANDLED',
     pedagogicalState: {
       currentConcept: concept,
       supportStage: 'concept_explanation',
@@ -42,6 +43,8 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
     ['apa langkah seterusnya?', 'recovery_first_step'],
     ['Then what?', 'recovery_first_step'],
     ["What's next?", 'recovery_first_step'],
+    ["What’s next?", 'recovery_first_step'],
+    ["What‘s next?", 'recovery_first_step'],
     ['وماذا بعد؟', 'recovery_first_step'],
     ['الخطوة التالية', 'recovery_first_step'],
     ['Apa maksudnya?', 'recovery_meaning'],
@@ -150,6 +153,76 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
       expect(turn.hasTeachingStage).toBe(false);
       expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
     }
+  });
+
+  it.each([
+    ['SAFETY_BLOCKED', 'child-privacy'],
+    ['UNSUPPORTED', 'local-scope-boundary'],
+    ['NEEDS_CLARIFICATION', 'local-dialogue-router'],
+    ['REMOTE_ELIGIBLE', 'local-safe-fallback'],
+    ['UNKNOWN', 'intelligent-teaching-engine']
+  ])('rejects forged or legacy %s predecessor teaching state', (classification, source) => {
+    const history = [
+      { role: 'user', text: 'Saya tak faham' },
+      {
+        role: 'ai', text: 'Tidak dapat sambung pelajaran.',
+        dialogueClassification: classification, source,
+        pedagogicalState: { currentConcept: concept, supportStage: 'concept_explanation' }
+      }
+    ];
+    for (const prompt of ['Lepas tu?', 'Apa maksudnya?', "What’s next?"]) {
+      const turn = understandStudentTurn({
+        prompt, history, hasExerciseContext: true, activeConcept: concept
+      });
+      expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+      expect(turn.hasTeachingStage).toBe(false);
+    }
+  });
+
+  it.each(['Lepas tu?', 'Apa maksudnya?'])('does not recover through unclassified legacy messages: %s', prompt => {
+    const history = teachingHistory.map(message => {
+      const { dialogueClassification: _classification, ...legacy } = message;
+      return legacy;
+    });
+    const turn = understandStudentTurn({ prompt, history, hasExerciseContext: true, activeConcept: concept });
+    expect(turn.hasTeachingStage).toBe(false);
+    expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+  });
+
+  it.each([
+    ['personal-data', 'Saya tak faham, nama penuh saya Ali bin Ahmad', 'SAFETY_BLOCKED'],
+    ['safety', 'Saya tak faham, saya nak bunuh diri', 'SAFETY_BLOCKED'],
+    ['unsupported', 'Saya tak faham politik', 'UNSUPPORTED']
+  ])('does not resume %s route in the real Tutor service', async (_label, firstPrompt, expectedClassification) => {
+    const first = await getTutorResponse({ ...base, history: [], prompt: firstPrompt });
+    expect(first.dialogueClassification).toBe(expectedClassification);
+    expect(first).not.toHaveProperty('pedagogicalState');
+    expect(first.remoteAttempted).toBe(false);
+    const history = [
+      { role: 'user', text: firstPrompt },
+      {
+        role: 'ai', text: first.text,
+        dialogueClassification: first.dialogueClassification,
+        source: first.source,
+        pedagogicalState: first.pedagogicalState || null
+      }
+    ];
+    for (const prompt of ['Lepas tu?', 'Apa maksudnya?']) {
+      const next = await getTutorResponse({ ...base, prompt, history });
+      expect(next.studentTurn.hasTeachingStage).toBe(false);
+      expect(next.studentTurn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+      expect(next.remoteAttempted).toBe(false);
+    }
+  });
+
+  it('treats iOS smart apostrophe as a real next-step request end to end', async () => {
+    const response = await getTutorResponse({ ...base, prompt: 'What’s next?' });
+    expect(response.studentTurn.intent).toBe('recovery_first_step');
+    expect(response.source).toBe('intelligent-teaching-engine');
+    expect(response.pedagogicalState?.supportStage).toBe('recovery_first_step');
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
+    expect(response.remoteAttempted).toBe(false);
   });
 
   it('does not treat a standalone quiz answer as a conversational follow-up', () => {
