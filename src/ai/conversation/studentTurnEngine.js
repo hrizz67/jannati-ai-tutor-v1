@@ -30,7 +30,8 @@ const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+b
 const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pelajaran)\s+\S|\b(?:belajar|cuba)\s+topik\s+(?:lain|baru)\b|\b(?:switch|change)\s+(?:to\s+)?(?:a\s+)?(?:new\s+)?topic\b|(?:غيّر\s+الموضوع|موضوع\s+جديد))/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
-const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|then(?: what)?|what(?:'s| is)? next|next step)[.!?？]*$/u;
+const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
+const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
 
 function clean(value = '') {
   return String(value ?? '')
@@ -51,11 +52,12 @@ function comparable(value = '') {
 function recentConversation(history = []) {
   const safeHistory = Array.isArray(history) ? history.filter(item => clean(item?.text)) : [];
   const lastStudentTurn = [...safeHistory].reverse().find(item => item?.role === 'user')?.text || '';
-  const lastTutorTurn = [...safeHistory].reverse().find(item => item?.role === 'ai')?.text || '';
+  const lastTutorMessage = [...safeHistory].reverse().find(item => item?.role === 'ai');
   return {
     lastStudentTurn: clean(lastStudentTurn),
-    lastTutorTurn: clean(lastTutorTurn),
-    hasHistory: Boolean(lastStudentTurn)
+    lastTutorTurn: clean(lastTutorMessage?.text),
+    hasHistory: Boolean(lastStudentTurn),
+    hasTeachingStage: Boolean(lastTutorMessage?.pedagogicalState?.currentConcept && lastTutorMessage?.pedagogicalState?.supportStage)
   };
 }
 
@@ -182,12 +184,23 @@ export function understandStudentTurn({
     });
   }
 
+  // Only resume a teaching step when there is a recent, scoped pedagogical response.
+  // A greeting or a stale ungrounded chat turn must not manufacture a teaching stage.
+  if (hasExerciseContext && conversation.hasHistory && conversation.hasTeachingStage && MEANING_FOLLOW_UP_PATTERN.test(lower)) {
+    return makeTurn('recovery_meaning', FOLLOW_UP_QUESTION, 0.99, {
+      ...conversation, isQuestion: true, referencesPreviousTurn: true
+    });
+  }
   const continuation = hasExerciseContext && conversation.hasHistory && CONTINUATION_PATTERN.test(lower);
   const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
     return makeTurn('direct_answer', 'answer_attempt', 0.96, { ...conversation, answerCandidate });
   }
-  if (continuation) return makeTurn(QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, { ...conversation, referencesPreviousTurn: true });
+  if (continuation) {
+    return makeTurn(conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, {
+      ...conversation, referencesPreviousTurn: true, isQuestion: true
+    });
+  }
 
   if (/\b(?:beri|bagi|minta|mahu|nak)?\s*(?:satu\s+)?(?:petunjuk|hint)\b/iu.test(lower) || /(?:أعطني\s+تلميح|تلميح)/u.test(lower)) return makeTurn('hint', 'help_request', 0.99, conversation);
   if (/\b(?:jawapan\s+saya\s+salah|kenapa\s+salah|silap\s+di\s+mana|where\s+did\s+i\s+go\s+wrong)\b/iu.test(lower)) return makeTurn('wrong_answer_coaching', 'help_request', 0.98, conversation);
