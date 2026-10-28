@@ -32,6 +32,11 @@ const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
 const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
 const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
+const RECOVERABLE_TEACHING_STAGES = new Set([
+  'concept_explanation', 'alternative_strategy', 'guided_small_step',
+  'verified_micro_example', 'evidence_guided_correction',
+  'recovery_meaning', 'recovery_first_step', 'example'
+]);
 
 function clean(value = '') {
   return String(value ?? '')
@@ -61,7 +66,7 @@ function recentConversation(history = [], activeConcept = '') {
       safeHistory.at(-1)?.role === 'ai' &&
       clean(activeConcept) &&
       lastTutorMessage?.pedagogicalState?.currentConcept === clean(activeConcept) &&
-      lastTutorMessage?.pedagogicalState?.supportStage
+      RECOVERABLE_TEACHING_STAGES.has(lastTutorMessage?.pedagogicalState?.supportStage)
     )
   };
 }
