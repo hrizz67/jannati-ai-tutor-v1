@@ -127,7 +127,7 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     );
     expect(effect).toContain("}, [open, requestContextKey, speechSupported]);");
     expect(effect).toContain("speechSessionRef.current?.cancel?.();");
-    expect(effect).toContain("setSpeechState(speechSupported ? 'idle' : 'unsupported');");
+    expect(effect).toContain("if (speechSupported) setSpeechState('idle');");
     expect(effect).toContain("setSpeechMessage('');");
   });
 
