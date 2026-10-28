@@ -2,173 +2,72 @@ import { loadKnowledge, peekKnowledge, primeKnowledgePack } from './loader/knowl
 import { sanitizeAiText } from '../../learningCopy.js';
 import { getStudentProfileSummary, getTopicProgress, getSubjectProgress, generateRevisionPlan } from '../../profile/index.js';
 import { getMistakeContext } from '../../mistakes/index.js';
+import {
+  asKnowledgeArray as asArray,
+  collectPrioritizedKnowledgeText as collectPrioritizedText,
+  dedupeKnowledgeText as dedupeText,
+  rotateKnowledgeList as rotateList,
+  selectKnowledgeText as selectString,
+  toKnowledgeText as toDisplayText
+} from './knowledgeText.js';
 
 const isDev = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
-const FIELD_PRIORITY = {
-  math: ['workedExamples', 'problemSolvingSteps', 'examples', 'extraExamples'],
-  sains: ['scientificFacts', 'whyQuestions', 'predictionQuestions', 'comparisonQuestions', 'realLifeApplications', 'investigationIdeas', 'observationPrompts', 'examples', 'extraExamples'],
-  arab: ['pronunciationGuide', 'readingSteps', 'letterBreakdown', 'listeningTips', 'pronunciationTips', 'readingPractice', 'speakingPractice', 'writingPractice', 'examples', 'extraExamples'],
-  english: ['wordMeaning', 'exampleSentences', 'examples', 'extraExamples'],
-  islam: ['dailyPractice', 'adabApplications', 'realLifeExamples', 'examples', 'extraExamples'],
-  pj: ['movementSteps', 'warmUpIdeas', 'fitnessActivities', 'gameApplications', 'dailyMovementIdeas', 'examples', 'extraExamples'],
-  pk: ['healthyHabits', 'dailyPractice', 'hygieneSteps', 'nutritionTips', 'realLifeScenarios', 'bodyCare', 'examples', 'extraExamples'],
-  default: ['examples', 'extraExamples']
-};
+const ROTATED_PACK_FIELDS = [
+  'workedExamples',
+  'problemSolvingSteps',
+  'scientificFacts',
+  'observationPrompts',
+  'comparisonPrompts',
+  'investigationIdeas',
+  'realLifeConnections',
+  'safetyNotes',
+  'misconceptions',
+  'evidenceQuestions',
+  'pronunciationTips',
+  'letterRecognitionTips',
+  'writingTips',
+  'vocabularyGroups',
+  'translationHints',
+  'readingPractice',
+  'listeningPractice',
+  'speakingPractice',
+  'writingPractice',
+  'commonPronunciationMistakes',
+  'dailyPractice',
+  'adabApplications',
+  'realLifeExamples',
+  'ayahOrHadithReference',
+  'reflectionQuestions',
+  'goodDeedsIdeas'
+];
 
 const SUBJECT_TONE = {
-  math: {
-    correct: 'Bagus! Mari kita kira langkah demi langkah.',
-    retry: 'Jom semak kiraan perlahan-lahan.',
-    excellent: 'Hebat! Kamu semakin cekap mengira.'
-  },
-  bm: {
-    correct: 'Bagus! Mari bina ayat yang lebih kemas.',
-    retry: 'Jom semak ayat dengan teliti.',
-    excellent: 'Hebat! Kamu semakin mahir berbahasa.'
-  },
-  english: {
-    correct: "Great! Let's practise the sentence together.",
-    retry: 'Take another careful look at the sentence.',
-    excellent: 'Excellent! You are getting better at English.'
-  },
-  sains: {
-    correct: 'Hebat! Mari fikir seperti seorang saintis.',
-    retry: 'Jom perhati semula dengan lebih teliti.',
-    excellent: 'Cemerlang! Kamu membuat pemerhatian yang baik.'
-  },
-  arab: {
-    correct: 'Bagus! Mari sebut huruf dengan betul.',
-    retry: 'Jom sebut semula dengan perlahan.',
-    excellent: 'Hebat! Sebutan kamu semakin baik.'
-  },
-  islam: {
-    correct: 'Alhamdulillah, mari kita fahami pengajaran ini.',
-    retry: 'Jom baca semula dengan tenang.',
-    excellent: 'Masya-Allah, kamu sangat tekun belajar.'
-  },
-  pj: {
-    correct: 'Bagus! Ingat keselamatan semasa bergerak.',
-    retry: 'Jom semak langkah pergerakan dengan selamat.',
-    excellent: 'Hebat! Kawalan badan kamu semakin baik.'
-  },
-  pk: {
-    correct: 'Bagus! Amalkan gaya hidup sihat.',
-    retry: 'Jom lihat semula pilihan yang paling sihat.',
-    excellent: 'Hebat! Kamu memahami penjagaan diri dengan baik.'
-  },
-  default: {
-    correct: 'Bagus! Kamu sedang belajar dengan baik.',
-    retry: 'Jom cuba semula dengan teliti.',
-    excellent: 'Hebat! Teruskan usaha kamu.'
-  }
+  math: { correct: 'Bagus! Mari kita kira langkah demi langkah.', retry: 'Jom semak kiraan perlahan-lahan.', excellent: 'Hebat! Kamu semakin cekap mengira.' },
+  bm: { correct: 'Bagus! Mari bina ayat yang lebih kemas.', retry: 'Jom semak ayat dengan teliti.', excellent: 'Hebat! Kamu semakin mahir berbahasa.' },
+  english: { correct: "Great! Let's practise the sentence together.", retry: 'Take another careful look at the sentence.', excellent: 'Excellent! You are getting better at English.' },
+  sains: { correct: 'Hebat! Mari fikir seperti seorang saintis.', retry: 'Jom perhati semula dengan lebih teliti.', excellent: 'Cemerlang! Kamu membuat pemerhatian yang baik.' },
+  arab: { correct: 'Bagus! Mari sebut huruf dengan betul.', retry: 'Jom sebut semula dengan perlahan.', excellent: 'Hebat! Sebutan kamu semakin baik.' },
+  islam: { correct: 'Alhamdulillah, mari kita fahami pengajaran ini.', retry: 'Jom baca semula dengan tenang.', excellent: 'Masya-Allah, kamu sangat tekun belajar.' },
+  pj: { correct: 'Bagus! Ingat keselamatan semasa bergerak.', retry: 'Jom semak langkah pergerakan dengan selamat.', excellent: 'Hebat! Kawalan badan kamu semakin baik.' },
+  pk: { correct: 'Bagus! Amalkan gaya hidup sihat.', retry: 'Jom lihat semula pilihan yang paling sihat.', excellent: 'Hebat! Kamu memahami penjagaan diri dengan baik.' },
+  default: { correct: 'Bagus! Kamu sedang belajar dengan baik.', retry: 'Jom cuba semula dengan teliti.', excellent: 'Hebat! Teruskan usaha kamu.' }
 };
-
-const lastSelectionMap = new Map();
 
 function logKnowledgeEvent(message, payload = {}) {
   if (!isDev) return;
   console.log('[knowledge-engine]', message, payload);
 }
 
-function asArray(value) {
-  return Array.isArray(value) ? value.filter(item => item !== null && item !== undefined && item !== '') : [];
-}
-
-function toDisplayText(value) {
-  if (value === null || value === undefined) return [];
-
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-    const text = sanitizeAiText(String(value));
-    return text ? [text] : [];
-  }
-
-  if (Array.isArray(value)) {
-    return value.flatMap(entry => toDisplayText(entry)).filter(Boolean);
-  }
-
-  if (typeof value === 'object') {
-    if (Array.isArray(value.steps) && value.steps.length) {
-      const stepText = value.steps.flatMap(step => toDisplayText(step)).filter(Boolean).join(' • ');
-      const parts = [
-        value.prompt || value.question || value.title || value.label || '',
-        stepText,
-        value.answer ? `Jawapan: ${value.answer}` : ''
-      ].map(item => sanitizeAiText(String(item || '').trim())).filter(Boolean);
-      if (parts.length) return [parts.join(' — ')];
-    }
-
-    const candidates = [
-      value.prompt,
-      value.question,
-      value.title,
-      value.label,
-      value.term,
-      value.word,
-      value.answer,
-      value.example,
-      value.text,
-      value.description
-    ];
-    const direct = candidates.map(item => sanitizeAiText(String(item || '').trim())).find(Boolean);
-    if (direct) return [direct];
-    return Object.values(value).flatMap(entry => toDisplayText(entry)).filter(Boolean);
-  }
-
-  const text = sanitizeAiText(String(value));
-  return text ? [text] : [];
-}
-
-function dedupeText(items = []) {
-  const seen = new Set();
-  const result = [];
-  for (const item of items) {
-    const text = sanitizeAiText(String(item || '').trim());
-    if (!text) continue;
-    const key = text.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    result.push(text);
-  }
-  return result;
-}
-
-function rotateList(items = [], key = '') {
-  const list = asArray(items);
-  if (list.length <= 1) return list.slice();
-
-  const state = lastSelectionMap.get(key) || { index: 0, last: '' };
-  const start = state.index % list.length;
-  const rotated = list.slice(start).concat(list.slice(0, start));
-  const first = sanitizeAiText(String(rotated[0] || '').trim());
-  lastSelectionMap.set(key, {
-    index: (start + 1) % list.length,
-    last: first
-  });
-  return rotated;
-}
-
-function selectString(items = [], key = '') {
-  return rotateList(items, key)[0] || '';
-}
-
-function getPriorityFields(subjectId) {
-  return FIELD_PRIORITY[subjectId] || FIELD_PRIORITY.default;
-}
-
 function getSubjectTone(subjectId = 'default') {
   return SUBJECT_TONE[subjectId] || SUBJECT_TONE.default;
 }
 
-function collectPrioritizedText(pack, subjectId) {
-  if (!pack) return [];
-  const values = [];
-  for (const field of getPriorityFields(subjectId)) {
-    values.push(...toDisplayText(pack[field]));
-  }
-  if (!values.length) values.push(...toDisplayText(pack.examples));
-  if (!values.length) values.push(...toDisplayText(pack.extraExamples));
-  return dedupeText(values);
+function collectRotatedPackFields(pack, subjectId, topicId, start = 0, end = ROTATED_PACK_FIELDS.length) {
+  return Object.fromEntries(ROTATED_PACK_FIELDS.slice(start, end).map(field => [
+    field,
+    rotateList(dedupeText(toDisplayText(pack[field])), `${subjectId}:${topicId}:${field}`)
+  ]));
 }
 
 function buildPackData(pack, subjectId, topicId, question = {}, result = {}, userAnswer = '', studentId = '', suppliedStudentProfile = null) {
@@ -203,7 +102,6 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
   const memoryTips = rotateList(dedupeText(toDisplayText(pack.memoryTips)), `${contextKey}:memoryTips`);
   const commonMistakes = rotateList(dedupeText(toDisplayText(pack.commonMistakes)), `${contextKey}:commonMistakes`);
   const followUpQuestions = rotateList(dedupeText(toDisplayText(pack.followUpQuestions)), `${contextKey}:followUpQuestions`);
-  const problemSolvingSteps = rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${contextKey}:problemSolvingSteps`);
   const pronunciationGuide = rotateList(dedupeText(toDisplayText(pack.pronunciationGuide)), `${subjectId}:${topicId}:pronunciationGuide`);
   const readingSteps = rotateList(dedupeText(toDisplayText(pack.readingSteps)), `${subjectId}:${topicId}:readingSteps`);
   const letterBreakdown = rotateList(dedupeText(toDisplayText(pack.letterBreakdown)), `${subjectId}:${topicId}:letterBreakdown`);
@@ -291,26 +189,7 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     practicePrompt: [subjectTone[topicStatus === 'mastered' ? 'excellent' : 'retry'] || subjectTone.default?.retry || '', practicePrompt, profileHint, mistakeHint].filter(Boolean).join(' ').trim() || practicePrompt,
     answerLine: questionAnswer ? `Jawapan: ${questionAnswer}` : '',
     correctAnswer: questionAnswer,
-    workedExamples: rotateList(dedupeText(toDisplayText(pack.workedExamples)), `${subjectId}:${topicId}:workedExamples`),
-    problemSolvingSteps: rotateList(dedupeText(toDisplayText(pack.problemSolvingSteps)), `${subjectId}:${topicId}:problemSolvingSteps`),
-    scientificFacts: rotateList(dedupeText(toDisplayText(pack.scientificFacts)), `${subjectId}:${topicId}:scientificFacts`),
-    observationPrompts: rotateList(dedupeText(toDisplayText(pack.observationPrompts)), `${subjectId}:${topicId}:observationPrompts`),
-    comparisonPrompts: rotateList(dedupeText(toDisplayText(pack.comparisonPrompts)), `${subjectId}:${topicId}:comparisonPrompts`),
-    investigationIdeas: rotateList(dedupeText(toDisplayText(pack.investigationIdeas)), `${subjectId}:${topicId}:investigationIdeas`),
-    realLifeConnections: rotateList(dedupeText(toDisplayText(pack.realLifeConnections)), `${subjectId}:${topicId}:realLifeConnections`),
-    safetyNotes: rotateList(dedupeText(toDisplayText(pack.safetyNotes)), `${subjectId}:${topicId}:safetyNotes`),
-    misconceptions: rotateList(dedupeText(toDisplayText(pack.misconceptions)), `${subjectId}:${topicId}:misconceptions`),
-    evidenceQuestions: rotateList(dedupeText(toDisplayText(pack.evidenceQuestions)), `${subjectId}:${topicId}:evidenceQuestions`),
-    pronunciationTips: rotateList(dedupeText(toDisplayText(pack.pronunciationTips)), `${subjectId}:${topicId}:pronunciationTips`),
-    letterRecognitionTips: rotateList(dedupeText(toDisplayText(pack.letterRecognitionTips)), `${subjectId}:${topicId}:letterRecognitionTips`),
-    writingTips: rotateList(dedupeText(toDisplayText(pack.writingTips)), `${subjectId}:${topicId}:writingTips`),
-    vocabularyGroups: rotateList(dedupeText(toDisplayText(pack.vocabularyGroups)), `${subjectId}:${topicId}:vocabularyGroups`),
-    translationHints: rotateList(dedupeText(toDisplayText(pack.translationHints)), `${subjectId}:${topicId}:translationHints`),
-    readingPractice: rotateList(dedupeText(toDisplayText(pack.readingPractice)), `${subjectId}:${topicId}:readingPractice`),
-    listeningPractice: rotateList(dedupeText(toDisplayText(pack.listeningPractice)), `${subjectId}:${topicId}:listeningPractice`),
-    speakingPractice: rotateList(dedupeText(toDisplayText(pack.speakingPractice)), `${subjectId}:${topicId}:speakingPractice`),
-    writingPractice: rotateList(dedupeText(toDisplayText(pack.writingPractice)), `${subjectId}:${topicId}:writingPractice`),
-    commonPronunciationMistakes: rotateList(dedupeText(toDisplayText(pack.commonPronunciationMistakes)), `${subjectId}:${topicId}:commonPronunciationMistakes`),
+    ...collectRotatedPackFields(pack, subjectId, topicId, 0, 20),
     pronunciationGuide,
     readingSteps,
     letterBreakdown,
@@ -321,12 +200,7 @@ function buildPackData(pack, subjectId, topicId, question = {}, result = {}, use
     predictionQuestions,
     comparisonQuestions,
     realLifeApplications,
-    dailyPractice: rotateList(dedupeText(toDisplayText(pack.dailyPractice)), `${subjectId}:${topicId}:dailyPractice`),
-    adabApplications: rotateList(dedupeText(toDisplayText(pack.adabApplications)), `${subjectId}:${topicId}:adabApplications`),
-    realLifeExamples: rotateList(dedupeText(toDisplayText(pack.realLifeExamples)), `${subjectId}:${topicId}:realLifeExamples`),
-    ayahOrHadithReference: rotateList(dedupeText(toDisplayText(pack.ayahOrHadithReference)), `${subjectId}:${topicId}:ayahOrHadithReference`),
-    reflectionQuestions: rotateList(dedupeText(toDisplayText(pack.reflectionQuestions)), `${subjectId}:${topicId}:reflectionQuestions`),
-    goodDeedsIdeas: rotateList(dedupeText(toDisplayText(pack.goodDeedsIdeas)), `${subjectId}:${topicId}:goodDeedsIdeas`),
+    ...collectRotatedPackFields(pack, subjectId, topicId, 20),
     userAnswer: sanitizeAiText(userAnswer || ''),
     learningProfile,
     packLoaded: true

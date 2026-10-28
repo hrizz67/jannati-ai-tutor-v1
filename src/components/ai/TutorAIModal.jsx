@@ -268,14 +268,16 @@ export default function TutorAIModal({
       currentLearningObjective
     }
   );
-  const normalizedQuestionText = normalizeText(questionText || questionContext.questionText, '');
-  const normalizedInstruction = normalizeText(instruction || questionContext.instruction, '');
-  const normalizedOptions = normalizeList(Array.isArray(options) && options.length ? options : questionContext.options);
-  const normalizedExpectedAnswer = normalizeText(expectedAnswer || questionContext.expectedAnswer || currentQuestion?.answer || currentQuestion?.correctAnswer || '', '');
-  const normalizedAcceptedAnswers = getAcceptedAnswers({ ...currentQuestion, acceptedAnswers });
-  const normalizedLearnerAnswer = normalizeText(learnerAnswer || answer || '', '');
-  const normalizedExplanationMode = normalizeText(explanationMode || questionContext.explanationMode, '');
-  const normalizedLearningObjective = normalizeText(currentLearningObjective || questionContext.currentLearningObjective, '');
+  const {
+    questionText: normalizedQuestionText,
+    instruction: normalizedInstruction,
+    options: normalizedOptions,
+    expectedAnswer: normalizedExpectedAnswer,
+    acceptedAnswers: normalizedAcceptedAnswers,
+    learnerAnswer: normalizedLearnerAnswer,
+    explanationMode: normalizedExplanationMode,
+    currentLearningObjective: normalizedLearningObjective
+  } = questionContext;
   const isCorrect = questionContext.isCorrect;
   const answerRevealPolicy = getAnswerRevealPolicy({
     status: feedback?.status,
