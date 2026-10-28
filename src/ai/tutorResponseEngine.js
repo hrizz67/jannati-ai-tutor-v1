@@ -1287,11 +1287,10 @@ export async function getTutorResponse(options = {}) {
     acceptedAnswers: pendingExpectedAnswers.length ? pendingExpectedAnswers : acceptedAnswers,
     hasExerciseContext: Boolean(resolvedQuestionText || expected),
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
-    activeConcept: [
-      subjectContext.id || 'general',
-      topicContext.id || 'general',
-      normalizeText(resolvedQuestion?.id || '', '') || 'general'
-    ].join('::')
+    // Never resume a previous question when its identity is ambiguous.
+    activeConcept: subjectContext.id && topicContext.id && normalizeText(resolvedQuestion?.id || '', '')
+      ? [subjectContext.id, topicContext.id, normalizeText(resolvedQuestion.id, '')].join('::')
+      : ''
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const mathPedagogy = subjectContext.id === 'math' && conversationKey
