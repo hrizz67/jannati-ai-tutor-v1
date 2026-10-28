@@ -168,7 +168,12 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
       intent: sanitized.studentTurn.intent,
       messageType: sanitized.studentTurn.messageType
     });
-    expect(response.text).toBe(sanitized.text);
+    // Authored check questions can vary between calls; compare routing,
+    // source and policy, not verbatim pedagogical copy.
+    expect(response.source).toBe(sanitized.source);
+    expect(response.dialogueClassification).toBe(sanitized.dialogueClassification);
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
     expect(response.remoteAttempted).toBe(false);
   });
 
