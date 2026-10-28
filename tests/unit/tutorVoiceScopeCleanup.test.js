@@ -121,7 +121,14 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     expect(source).toContain('const requestContextKey =');
     expect(source).toContain('::${activeSubject?.id');
     expect(source).toContain('::${activeTopic?.id');
-    expect(source).toMatch(/useEffect\(\(\) => \{\s*speechSessionRef\.current\?\.cancel\?\.\(\);\s*speechSessionRef\.current = null;\s*setSpeechState\(speechSupported \? 'idle' : 'unsupported'\);\s*setSpeechMessage\(''\);\s*\}, \[requestContextKey, speechSupported\]\)/);
+    const effect = source.slice(
+      source.indexOf("  useEffect(() => {\\n    if (!open)"),
+      source.indexOf("  useEffect(() => () =>")
+    );
+    expect(effect).toContain("}, [open, requestContextKey, speechSupported]);");
+    expect(effect).toContain("speechSessionRef.current?.cancel?.();");
+    expect(effect).toContain("setSpeechState(speechSupported ? 'idle' : 'unsupported');");
+    expect(effect).toContain("setSpeechMessage('');");
   });
 
   it('keeps the typed composer available even without browser Web Speech support', () => {
