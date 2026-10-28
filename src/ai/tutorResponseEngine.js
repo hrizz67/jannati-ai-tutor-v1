@@ -1037,7 +1037,7 @@ function buildContextualSections({
     expectedAnswer: revealAnswer ? expectedAnswer : '',
     acceptedAnswers: revealAnswer ? acceptedAnswers : [],
     learnerAnswer: learner,
-    isCorrect: isCorrect && !!isCorrect,
+    isCorrect,
     attemptCount: Number(attemptCount) || 0,
     hintsUsed: Number(hintsUsed) || 0,
     explanationMode: normalizeText(explanationMode, ''),
@@ -1335,8 +1335,8 @@ export async function getTutorResponse(options = {}) {
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const microCheck = studentTurn.messageType === 'learning_response';
-  const tutorAttempts = !microCheck && +attemptCount || 0;
-  const tutorHints = !microCheck && +hintsUsed || 0;
+  const tutorAttempts = +attemptCount * !microCheck || 0;
+  const tutorHints = +hintsUsed * !microCheck || 0;
   const feedbackQuestion = microCheck
     ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
     : resolvedQuestion;
