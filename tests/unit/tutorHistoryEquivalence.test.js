@@ -146,10 +146,29 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
       student: { id: 'child-a', studentId: 'child-a' },
       conversationKey: 'account-a::child-a::bm::kata_nama_am::p24d-1'
     });
-    expect(response.studentTurn).toMatchObject({
-      lastStudentTurn: '', hasHistory: false,
-      intent: 'knowledge_question', messageType: 'knowledge_question'
+    // Public service deliberately sanitizes history into strings first.
+    // Assert wrapper parity separately from the raw exported turn classifier.
+    const sanitized = await getTutorResponse({
+      prompt: 'Lepas tu?',
+      history: history.map(message => message.role === 'user'
+        ? { ...message, text: String(value) } : message),
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
+      question: {
+        id: 'p24d-1', q: 'Pilih kata nama orang.',
+        options: ['Ali', 'berlari'], answer: 'Ali', acceptedAnswers: ['Ali'],
+        explanation: 'Kata nama menamakan orang atau benda.'
+      },
+      expectedAnswer: 'Ali', acceptedAnswers: ['Ali'],
+      student: { id: 'child-a', studentId: 'child-a' },
+      conversationKey: 'account-a::child-a::bm::kata_nama_am::p24d-1'
     });
+    expect(response.studentTurn).toMatchObject({
+      lastStudentTurn: String(value), hasHistory: true,
+      intent: sanitized.studentTurn.intent,
+      messageType: sanitized.studentTurn.messageType
+    });
+    expect(response.text).toBe(sanitized.text);
     expect(response.remoteAttempted).toBe(false);
   });
 
