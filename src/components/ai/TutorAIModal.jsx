@@ -336,13 +336,6 @@ export default function TutorAIModal({
   }, [sessionKey, speechSupported]);
 
   useEffect(() => {
-    speechSessionRef.current?.cancel?.();
-    speechSessionRef.current = null;
-    setSpeechState(speechSupported ? 'idle' : 'unsupported');
-    setSpeechMessage('');
-  }, [requestContextKey, speechSupported]);
-
-  useEffect(() => {
     const write = getScopedConversationWrite(conversationState, sessionKey);
     if (write) {
       onMessagesChange?.(
@@ -385,13 +378,15 @@ export default function TutorAIModal({
     setStatus('idle');
     setError('');
     setActiveToolPanel('');
+    setSpeechState(speechSupported ? 'idle' : 'unsupported');
+    setSpeechMessage('');
     return () => {
       if (requestIdRef.current === started) requestIdRef.current += 1;
       speechSessionRef.current?.cancel?.();
       speechSessionRef.current = null;
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.timeEnd('TutorAI:open');
     };
-  }, [open, sessionKey, speechSupported]);
+  }, [open, requestContextKey, speechSupported]);
 
   useEffect(() => () => {
     speechSessionRef.current?.cancel?.();
