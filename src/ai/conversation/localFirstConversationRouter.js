@@ -139,6 +139,9 @@ function clearNonAnswerFeedbackMetadata(value = {}) {
     supportStage: _supportStage,
     // Non-answer routes must never persist an underlying teaching state.
     pedagogicalState: _pedagogicalState,
+    // Modal prefers quickActions over safe route quickReplies: discard stale actions.
+    quickActions: _quickActions,
+    suggestedActions: _suggestedActions,
     ...safeValue
   } = value || {};
   return safeValue;
