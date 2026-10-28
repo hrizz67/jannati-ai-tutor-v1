@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { understandStudentTurn } from '../../src/ai/conversation/studentTurnEngine.js';
+import { getTutorResponse } from '../../src/utils/tutorResponseService.js';
 
 // Reference implementation from main before PR #155. Keep this independent
 // of the optimized production implementation to detect behavior drift.
@@ -50,7 +51,8 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
     const concept = 'bm::kata_nama_am::p24d-1';
     const roles = ['user', 'ai', 'assistant', 'system', '', null];
     const texts = ['Saya tak faham', ' ', '', '\t\n', 'Petunjuknya ialah kata nama',
-      'Lepas tu?', 'What’s next?', 'الدليل هو الاسم', 'Mari belajar', null, undefined];
+      'Lepas tu?', 'What’s next?', 'الدليل هو الاسم', 'Mari belajar',
+      0, false, 0n, NaN, 1, true, 2n, Infinity, null, undefined];
     const stages = ['concept_explanation', 'recovery_first_step', 'recovery_meaning',
       'adult_support_referral', 'clarification', 'resolved', 'knowledge_safe_fallback', ''];
     const classes = ['LOCAL_HANDLED', 'SAFETY_BLOCKED', 'UNSUPPORTED',
@@ -80,7 +82,7 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
       }
       const activeConcept = concepts[random(concepts.length)];
       const expected = originalRecentConversation(history, activeConcept);
-      const before = JSON.stringify(history);
+      const before = structuredClone(history);
       const prompt = i % 3 === 0 ? 'Lepas tu?' : i % 3 === 1
         ? 'Apa maksudnya?' : 'Petunjuknya ialah kata nama';
       const actual = understandStudentTurn({
@@ -91,7 +93,7 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
         'pendingCheck', 'hasTeachingStage']) {
         expect(actual[key]).toEqual(expected[key]);
       }
-      expect(JSON.stringify(history)).toBe(before);
+      expect(history).toEqual(before);
       if (prompt === 'Apa maksudnya?' && expected.hasHistory && expected.hasTeachingStage) {
         expect(actual.intent).toBe('recovery_meaning');
       }
@@ -100,6 +102,55 @@ describe('P2.4-D unchanged semantics of optimized recentConversation', () => {
         expect(actual.messageType).toBe('learning_response');
       }
     }
+  });
+
+  it.each([
+    ['zero number', 0],
+    ['false boolean', false],
+    ['zero bigint', 0n],
+    ['NaN number', NaN]
+  ])('preserves legacy untyped falsey learner text: %s', async (_name, value) => {
+    const activeConcept = 'bm::kata_nama_am::p24d-1';
+    const history = [
+      { role: 'user', text: value },
+      { role: 'ai', text: 'Mari kita baca petunjuk.',
+        dialogueClassification: 'LOCAL_HANDLED',
+        pedagogicalState: {
+          currentConcept: activeConcept,
+          supportStage: 'concept_explanation',
+          pendingFollowUp: 'Apakah petunjuk utama?'
+        }
+      }
+    ];
+    const expected = originalRecentConversation(history, activeConcept);
+    const turn = understandStudentTurn({
+      prompt: 'Lepas tu?', history, activeConcept,
+      hasExerciseContext: true, expectedAnswer: 'Ali', acceptedAnswers: ['Ali']
+    });
+    expect(turn).toMatchObject(expected);
+    expect(turn).toMatchObject({
+      lastStudentTurn: '', hasHistory: false,
+      intent: 'knowledge_question', messageType: 'knowledge_question'
+    });
+
+    const response = await getTutorResponse({
+      prompt: 'Lepas tu?', history,
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
+      question: {
+        id: 'p24d-1', q: 'Pilih kata nama orang.',
+        options: ['Ali', 'berlari'], answer: 'Ali', acceptedAnswers: ['Ali'],
+        explanation: 'Kata nama menamakan orang atau benda.'
+      },
+      expectedAnswer: 'Ali', acceptedAnswers: ['Ali'],
+      student: { id: 'child-a', studentId: 'child-a' },
+      conversationKey: 'account-a::child-a::bm::kata_nama_am::p24d-1'
+    });
+    expect(response.studentTurn).toMatchObject({
+      lastStudentTurn: '', hasHistory: false,
+      intent: 'knowledge_question', messageType: 'knowledge_question'
+    });
+    expect(response.remoteAttempted).toBe(false);
   });
 
   it('does not mutate frozen history or revive teaching after interleaved turns', () => {
