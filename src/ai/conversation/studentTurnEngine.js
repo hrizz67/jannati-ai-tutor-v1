@@ -41,6 +41,7 @@ const RECOVERABLE_TEACHING_STAGES = new Set([
 function clean(value = '') {
   return String(value ?? '')
     .normalize('NFKC')
+    .replace(/[\u2018\u2019]/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -64,6 +65,9 @@ function recentConversation(history = [], activeConcept = '') {
     hasHistory: Boolean(lastStudentTurn),
     hasTeachingStage: Boolean(
       safeHistory.at(-1)?.role === 'ai' &&
+      lastTutorMessage?.dialogueClassification === 'LOCAL_HANDLED' &&
+      !lastTutorMessage?.privacySignal &&
+      !lastTutorMessage?.safetySignal &&
       clean(activeConcept) &&
       lastTutorMessage?.pedagogicalState?.currentConcept === clean(activeConcept) &&
       RECOVERABLE_TEACHING_STAGES.has(lastTutorMessage?.pedagogicalState?.supportStage)
