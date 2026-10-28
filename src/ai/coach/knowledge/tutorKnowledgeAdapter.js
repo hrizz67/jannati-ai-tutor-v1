@@ -15,13 +15,23 @@ function rotated(pack, field, key) {
   return rotateKnowledgeList(dedupeKnowledgeText(toKnowledgeText(pack[field])), key);
 }
 
-function buildTutorKnowledgeData(pack, subjectId, topicId, question = {}) {
+function buildTutorKnowledgeData(pack, subjectId, topicId, question = {}, studentId = '', suppliedStudentProfile = null) {
   const questionIdentity = question?.id || question?.questionId || question?.q || question?.question || 'current';
-  const studentId = 'default';
-  const contextKey = `${studentId}:${subjectId}:${topicId}:${questionIdentity}`;
-  const studentProfile = getStudentProfileSummary(studentId);
-  const topicStatus = getTopicProgress(studentId, subjectId, topicId, studentProfile)?.status || 'new';
-  const mistakeContext = getMistakeContext(studentProfile, subjectId, topicId);
+  const scopedStudentId = String(studentId || '').trim();
+  const hasScopedProfile = Boolean(
+    scopedStudentId &&
+    scopedStudentId !== 'default' &&
+    suppliedStudentProfile &&
+    typeof suppliedStudentProfile === 'object'
+  );
+  const contextKey = `${scopedStudentId || 'unscoped'}:${subjectId}:${topicId}:${questionIdentity}`;
+  const studentProfile = hasScopedProfile
+    ? getStudentProfileSummary(scopedStudentId, suppliedStudentProfile)
+    : null;
+  const topicStatus = studentProfile
+    ? getTopicProgress(scopedStudentId, subjectId, topicId, studentProfile)?.status || 'new'
+    : 'new';
+  const mistakeContext = studentProfile ? getMistakeContext(studentProfile, subjectId, topicId) : null;
   const teacherExplanation = selectKnowledgeText(dedupeKnowledgeText([
     ...asKnowledgeArray(pack.teacherExplanation),
     ...asKnowledgeArray(pack.explanations),
@@ -62,13 +72,13 @@ function buildTutorKnowledgeData(pack, subjectId, topicId, question = {}) {
   };
 }
 
-export async function fetchTutorKnowledgeData({ subjectId, topicId, question = {} } = {}) {
+export async function fetchTutorKnowledgeData({ subjectId, topicId, question = {}, studentId = '', studentProfile = null } = {}) {
   if (!subjectId || !topicId) return null;
   try {
     const pack = await loadKnowledge(subjectId, topicId);
     if (!pack?.subjectId) return null;
     primeKnowledgePack(subjectId, topicId, pack);
-    return buildTutorKnowledgeData(pack, subjectId, topicId, question);
+    return buildTutorKnowledgeData(pack, subjectId, topicId, question, studentId, studentProfile);
   } catch {
     return null;
   }

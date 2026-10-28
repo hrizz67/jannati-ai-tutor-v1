@@ -71,8 +71,16 @@ function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
   };
 }
 
-async function buildTutorKnowledgeResponse({ subjectId, topicId, question, result, userAnswer, context }) {
-  const knowledge = await fetchTutorKnowledgeData({ subjectId, topicId, question, result, userAnswer });
+async function buildTutorKnowledgeResponse({ subjectId, topicId, question, result, userAnswer, context, studentId, studentProfile }) {
+  const knowledge = await fetchTutorKnowledgeData({
+    subjectId,
+    topicId,
+    question,
+    result,
+    userAnswer,
+    studentId,
+    studentProfile
+  });
   if (!knowledge) return null;
   return {
     knowledge,
@@ -1247,6 +1255,10 @@ export async function getTutorResponse(options = {}) {
   } = options;
 
   const studentProfile = student || profile || adaptiveProfile || {};
+  const activeStudentId = normalizeText(
+    studentProfile?.childId || studentProfile?.studentId || studentProfile?.id,
+    ''
+  );
   const subjectContext = getSubjectContext(subject || {}, subjectId);
   const languagePresentation = getSubjectLanguagePresentation(subjectContext);
   const resolvedLocale = locale || languagePresentation.contentLocale;
@@ -1353,6 +1365,8 @@ export async function getTutorResponse(options = {}) {
           explanation: ''
         },
         userAnswer: answerText,
+        studentId: activeStudentId,
+        studentProfile: activeStudentId && activeStudentId !== 'default' ? studentProfile : null,
         context: {
           studentName,
           subject: subjectContext,
