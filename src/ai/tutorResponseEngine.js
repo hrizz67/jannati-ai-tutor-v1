@@ -1286,7 +1286,11 @@ export async function getTutorResponse(options = {}) {
     expectedAnswer: pendingExpectedAnswers[0] || expected,
     acceptedAnswers: pendingExpectedAnswers.length ? pendingExpectedAnswers : acceptedAnswers,
     hasExerciseContext: Boolean(resolvedQuestionText || expected),
-    hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id)
+    hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
+    // Never resume a previous question when its identity is ambiguous.
+    activeConcept: subjectContext.id && topicContext.id && normalizeText(resolvedQuestion?.id || '', '')
+      ? [subjectContext.id, topicContext.id, normalizeText(resolvedQuestion.id, '')].join('::')
+      : ''
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const mathPedagogy = subjectContext.id === 'math' && conversationKey
