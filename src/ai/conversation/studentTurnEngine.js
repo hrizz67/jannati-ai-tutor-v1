@@ -62,9 +62,9 @@ function recentConversation(history = [], activeConcept = '') {
   return {
     lastStudentTurn: clean(lastStudentTurn),
     lastTutorTurn: clean(lastTutorMessage?.text),
-    hasHistory: Boolean(lastStudentTurn),
-    pendingCheck: Boolean(lastTutorMessage?.pedagogicalState?.pendingFollowUp),
-    hasTeachingStage: Boolean(
+    hasHistory: !!lastStudentTurn,
+    pendingCheck: !!lastTutorMessage?.pedagogicalState?.pendingFollowUp,
+    hasTeachingStage: !!(
       safeHistory.at(-1)?.role === 'ai' &&
       lastTutorMessage?.dialogueClassification === 'LOCAL_HANDLED' &&
       !lastTutorMessage?.privacySignal &&
@@ -208,7 +208,7 @@ export function understandStudentTurn({
     });
   }
   const checkReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
-    /^(?:petunjuk(?:nya)?(?:\s+utama)?|(?:the\s+)?clue|الدليل)(?:\s+(?:ialah|adalah|is|هو))?\s+\S/iu.test(lower) && !/[?؟]/u.test(text);
+    /^(?:petunjuk(?:nya)?(?: utama)?|(?:the )?clue|الدليل)(?: (?:ialah|adalah|is|هو))? \S/iu.test(lower) && !/[?؟]/u.test(text);
   const continuation = hasExerciseContext && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || checkReply);
   const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
