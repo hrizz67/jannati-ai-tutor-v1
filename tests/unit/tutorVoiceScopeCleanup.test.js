@@ -114,6 +114,75 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     expect(h.notices).toEqual([]);
   });
 
+  it('keeps only the newest Q3 transcript after rapid Q1 to Q2 to Q3 cancellation', () => {
+    let current = 'account-a::child-a::bm::q1';
+    let draft = 'Saya ';
+    const updates = [];
+    const all = [];
+    function makeSession(contextKey) {
+      let callbacks;
+      const cancel = vi.fn();
+      const session = createTutorSpeechInputSession({
+        contextKey,
+        getCurrentContextKey: () => current,
+        getDraft: () => draft,
+        onDraftChange(value) { draft = value; updates.push(value); },
+        sessionFactory(config) {
+          callbacks = config;
+          return {
+            supported: true,
+            start: () => ({ status: 'listening' }),
+            stop: vi.fn(),
+            cancel
+          };
+        },
+        stopSpeaking: vi.fn()
+      });
+      const item = { session, cancel, get callbacks() { return callbacks; } };
+      all.push(item);
+      return item;
+    }
+
+    const q1 = makeSession(current);
+    q1.session.start();
+    current = 'account-a::child-a::bm::q2';
+    q1.session.cancel();
+    const q2 = makeSession(current);
+    q2.session.start();
+    current = 'account-a::child-a::bm::q3';
+    q2.session.cancel();
+    const q3 = makeSession(current);
+    q3.session.start();
+
+    q2.callbacks.onResult({ transcript: 'jawapan soalan dua' });
+    q1.callbacks.onResult({ transcript: 'jawapan soalan satu' });
+    q1.callbacks.onEmpty({ message: 'gagal' });
+    q2.callbacks.onError('permission-denied');
+    expect(updates).toEqual([]);
+
+    q3.callbacks.onResult({ transcript: 'soalan tiga' });
+    expect(updates).toEqual(['Saya soalan tiga']);
+    expect(draft).not.toContain('soalan satu');
+    expect(draft).not.toContain('soalan dua');
+    expect(all.map(item => item.cancel.mock.calls.length)).toEqual([1, 1, 0]);
+  });
+
+  it('does not reactivate a cancelled mic or overwrite typed fallback after late native callbacks', () => {
+    const h = harness();
+    h.session.start();
+    h.session.cancel();
+    expect(h.session.start()).toBeNull();
+    expect(h.session.getState()).toMatchObject({ status: 'listening' });
+    h.handlers.onChange({ status: 'completed', transcript: 'stale text' });
+    h.handlers.onResult({ transcript: 'stale text' });
+    h.handlers.onError('not-allowed');
+    expect(h.updates).toEqual([]);
+    expect(h.notices).toEqual([]);
+    expect(h.states).toEqual([]);
+    expect(h.getDraft()).toBe('Saya ');
+    expect(h.cancel).toHaveBeenCalledTimes(1);
+  });
+
   it('the Tutor modal actively cancels microphones on exact question/topic/child context changes', () => {
     const source = readFileSync(
       new URL('../../src/components/ai/TutorAIModal.jsx', import.meta.url), 'utf8'
