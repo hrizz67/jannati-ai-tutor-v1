@@ -1334,7 +1334,8 @@ export async function getTutorResponse(options = {}) {
   const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request';
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
-  const answerText = getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
+  const answerText = studentTurn.messageType === 'learning_response'
+    ? '' : getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
   const answerCheckQuestion = {
     ...resolvedQuestion,
     answer: expected || resolvedQuestion.answer,
@@ -1342,7 +1343,7 @@ export async function getTutorResponse(options = {}) {
       ? [...new Set([expected, ...acceptedAnswers])]
       : acceptedAnswers
   };
-  const resolvedCorrect = promptAnswer
+  const resolvedCorrect = studentTurn.messageType === 'learning_response' ? null : promptAnswer
     ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
     : typeof isCorrect === 'boolean'
       ? isCorrect
