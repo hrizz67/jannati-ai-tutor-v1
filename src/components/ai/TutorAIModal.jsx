@@ -378,7 +378,7 @@ export default function TutorAIModal({
     setStatus('idle');
     setError('');
     setActiveToolPanel('');
-    setSpeechState(speechSupported ? 'idle' : 'unsupported');
+    if (speechSupported) setSpeechState('idle');
     setSpeechMessage('');
     return () => {
       if (requestIdRef.current === started) requestIdRef.current += 1;
