@@ -58,6 +58,7 @@ function recentConversation(history = [], activeConcept = '') {
     lastTutorTurn: clean(lastTutorMessage?.text),
     hasHistory: Boolean(lastStudentTurn),
     hasTeachingStage: Boolean(
+      safeHistory.at(-1)?.role === 'ai' &&
       clean(activeConcept) &&
       lastTutorMessage?.pedagogicalState?.currentConcept === clean(activeConcept) &&
       lastTutorMessage?.pedagogicalState?.supportStage
