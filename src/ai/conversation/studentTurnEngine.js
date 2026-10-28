@@ -57,8 +57,10 @@ function comparable(value = '') {
 
 function recentConversation(history = [], activeConcept = '') {
   const safeHistory = Array.isArray(history) ? history.filter(item => clean(item?.text)) : [];
-  const lastStudentTurn = [...safeHistory].reverse().find(item => item?.role === 'user')?.text || '';
-  const lastTutorMessage = [...safeHistory].reverse().find(item => item?.role === 'ai');
+  const reversed = [...safeHistory].reverse();
+  const lastStudentTurn = reversed.find(item => item?.role === 'user')?.text || '';
+  const lastTutorMessage = reversed.find(item => item?.role === 'ai');
+  const scopedConcept = clean(activeConcept);
   return {
     lastStudentTurn: clean(lastStudentTurn),
     lastTutorTurn: clean(lastTutorMessage?.text),
@@ -69,8 +71,8 @@ function recentConversation(history = [], activeConcept = '') {
       lastTutorMessage?.dialogueClassification === 'LOCAL_HANDLED' &&
       !lastTutorMessage?.privacySignal &&
       !lastTutorMessage?.safetySignal &&
-      clean(activeConcept) &&
-      lastTutorMessage?.pedagogicalState?.currentConcept === clean(activeConcept) &&
+      scopedConcept &&
+      lastTutorMessage?.pedagogicalState?.currentConcept === scopedConcept &&
       RECOVERABLE_TEACHING_STAGES.has(lastTutorMessage?.pedagogicalState?.supportStage)
     )
   };
