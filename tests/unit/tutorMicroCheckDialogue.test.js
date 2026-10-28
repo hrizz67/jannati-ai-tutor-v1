@@ -103,6 +103,32 @@ describe('P2.4-C scoped ungraded micro-check responses', () => {
     expect(third.remoteAttempted).toBe(false);
   });
 
+  it.each([true, false])('does not inherit quiz correctness %s into an ungraded micro-check', async previousCorrect => {
+    const response = await getTutorResponse({
+      ...context,
+      prompt: 'Petunjuknya ialah kata nama',
+      history,
+      isCorrect: previousCorrect,
+      learnerAnswer: 'Ali',
+      studentAnswer: 'Ali',
+      question: { ...context.question, answerAttempt: 'Ali' },
+      attemptCount: 0
+    });
+    expect(response.studentTurn).toMatchObject({
+      intent: 'recovery_first_step',
+      messageType: 'learning_response',
+      answerCandidate: ''
+    });
+    expect(response.isCorrect).toBeNull();
+    expect(response.learnerAnswer).toBe('');
+    expect(response.learnerAnswerText).toBe('');
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
+    expect(response.answerRevealPolicy.canRevealAnswer).toBe(false);
+    expect(response.remoteAttempted).toBe(false);
+    for (const key of ['score', 'xp', 'coins', 'rewards']) expect(response).not.toHaveProperty(key);
+  });
+
   it('does not change the quiz answer classification when there is no micro-check', () => {
     const turn = understandStudentTurn({
       prompt: 'Ali', history: [], activeConcept: concept, hasExerciseContext: true,
