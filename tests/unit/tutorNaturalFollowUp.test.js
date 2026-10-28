@@ -51,7 +51,7 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
   ])('routes %s to %s when the last Tutor turn has a teaching stage', (prompt, intent) => {
     const turn = understandStudentTurn({
       prompt, history: teachingHistory, hasExerciseContext: true, hasLearningContext: true,
-      expectedAnswer: 'Ali', acceptedAnswers: ['Ali']
+      activeConcept: concept, expectedAnswer: 'Ali', acceptedAnswers: ['Ali']
     });
     expect(turn).toMatchObject({
       intent,
@@ -67,20 +67,32 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
       [{ role: 'ai', text: 'Hai. Mari belajar bersama.' }],
       [{ role: 'user', text: 'Hai' }, { role: 'ai', text: 'Hai. Mari belajar bersama.' }]
     ]) {
-      const meaning = understandStudentTurn({ prompt: 'Apa maksudnya?', history, hasExerciseContext: true });
+      const meaning = understandStudentTurn({ prompt: 'Apa maksudnya?', history, hasExerciseContext: true, activeConcept: concept });
       expect(meaning.intent).not.toBe('recovery_meaning');
-      const nextStep = understandStudentTurn({ prompt: 'Lepas tu?', history, hasExerciseContext: true });
+      const nextStep = understandStudentTurn({ prompt: 'Lepas tu?', history, hasExerciseContext: true, activeConcept: concept });
       expect(nextStep.intent).not.toBe('recovery_first_step');
     }
     const noExercise = understandStudentTurn({
-      prompt: 'Lepas tu?', history: teachingHistory, hasExerciseContext: false, hasLearningContext: false
+      prompt: 'Lepas tu?', history: teachingHistory, hasExerciseContext: false, hasLearningContext: false,
+      activeConcept: concept
     });
     expect(noExercise.intent).not.toBe('recovery_first_step');
   });
 
+  it('does not revive a stale pedagogical step after switching questions', () => {
+    const activeConcept = 'bm::kata_nama_am::different-question';
+    for (const prompt of ['Lepas tu?', 'Apa maksudnya?']) {
+      const turn = understandStudentTurn({
+        prompt, history: teachingHistory, hasExerciseContext: true, activeConcept
+      });
+      expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+      expect(turn.hasTeachingStage).toBe(false);
+    }
+  });
+
   it('does not treat a standalone quiz answer as a conversational follow-up', () => {
     const turn = understandStudentTurn({
-      prompt: 'Ali', history: teachingHistory, hasExerciseContext: true, expectedAnswer: 'Ali',
+      prompt: 'Ali', history: teachingHistory, hasExerciseContext: true, activeConcept: concept, expectedAnswer: 'Ali',
       acceptedAnswers: ['Ali']
     });
     expect(turn).toMatchObject({ intent: 'direct_answer', answerCandidate: 'Ali' });
