@@ -66,7 +66,7 @@ function recentConversation(history = [], activeConcept = '') {
     hasHistory: !!lastStudentTurn,
     pendingCheck: !!lastTutorMessage?.pedagogicalState?.pendingFollowUp,
     hasTeachingStage: !!(
-      reversed[0]?.role === 'ai' &&
+      reversed[0] === lastTutorMessage &&
       lastTutorMessage?.dialogueClassification === 'LOCAL_HANDLED' &&
       !lastTutorMessage?.privacySignal &&
       !lastTutorMessage?.safetySignal &&
