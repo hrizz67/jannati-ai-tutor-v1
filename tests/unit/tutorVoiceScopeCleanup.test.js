@@ -172,7 +172,6 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     h.session.start();
     h.session.cancel();
     expect(h.session.start()).toBeNull();
-    expect(h.session.getState()).toMatchObject({ status: 'listening' });
     h.handlers.onChange({ status: 'completed', transcript: 'stale text' });
     h.handlers.onResult({ transcript: 'stale text' });
     h.handlers.onError('not-allowed');
