@@ -111,8 +111,10 @@ describe('P2.4-C scoped ungraded micro-check responses', () => {
       isCorrect: previousCorrect,
       learnerAnswer: 'Ali',
       studentAnswer: 'Ali',
-      question: { ...context.question, answerAttempt: 'Ali' },
-      attemptCount: 0
+      question: { ...context.question, learnerAnswer: 'Ali', studentAnswer: 'Ali', answerAttempt: 'Ali' },
+      attemptCount: 4,
+      hintsUsed: 3,
+      explanationMode: 'show_answer'
     });
     expect(response.studentTurn).toMatchObject({
       intent: 'recovery_first_step',
@@ -122,6 +124,26 @@ describe('P2.4-C scoped ungraded micro-check responses', () => {
     expect(response.isCorrect).toBeNull();
     expect(response.learnerAnswer).toBe('');
     expect(response.learnerAnswerText).toBe('');
+    expect(response.contextUsed).toMatchObject({
+      learnerAnswer: '', isCorrect: null, supportStage: 'learning_response',
+      attemptCount: 0, hintsUsed: 0
+    });
+    expect(response.learningExperience).toMatchObject({
+      stage: 'learning_response', misconception: null, praise: '',
+      nextAction: '', revealAnswer: false
+    });
+    expect(response.learningExperience.answerRevealPolicy.canRevealAnswer).toBe(false);
+    expect(response.praise).toBe('');
+    expect(response.supportStage).toBe('recovery_first_step');
+    expect(response.misconception).toBeNull();
+    expect(response.contextUsed.misconceptionType).toBe('');
+    for (const value of [response.learnerAnswer, response.learnerAnswerText,
+      response.contextUsed.learnerAnswer, response.learningExperience.praise]) {
+      expect(value).not.toContain('Ali');
+    }
+    expect(JSON.stringify(response.learningExperience)).not.toMatch(
+      /incorrect_first|no_meaningful_attempt|Hampir betul|You are close/
+    );
     expect(response.expectedAnswer).toBe('');
     expect(response.acceptedAnswers).toEqual([]);
     expect(response.answerRevealPolicy.canRevealAnswer).toBe(false);
