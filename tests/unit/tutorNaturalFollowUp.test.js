@@ -90,6 +90,43 @@ describe('P2.4-A grounded natural multi-turn follow-ups', () => {
     }
   });
 
+  it('ignores a prior teaching state if a newer learner turn followed it without a Tutor reply', () => {
+    const staleHistory = [...teachingHistory, { role: 'user', text: 'Saya mahu tukar topik' }];
+    for (const prompt of ['Lepas tu?', 'Apa maksudnya?']) {
+      const turn = understandStudentTurn({
+        prompt, history: staleHistory, hasExerciseContext: true, activeConcept: concept
+      });
+      expect(turn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+      expect(turn.hasTeachingStage).toBe(false);
+    }
+  });
+
+  it.each(['Lepas tu?', 'Apa maksudnya?'])(
+    'fails closed on %s when the current question has no stable ID',
+    async prompt => {
+      const response = await getTutorResponse({
+        ...base,
+        question: { ...base.question, id: undefined },
+        prompt,
+        history: [
+          { role: 'user', text: 'Saya masih tak faham' },
+          {
+            role: 'ai', text: 'Cuba kita ulang.',
+            pedagogicalState: {
+              currentConcept: 'bm::kata_nama_am::general',
+              supportStage: 'concept_explanation',
+              misunderstandingCount: 1
+            }
+          }
+        ]
+      });
+      expect(response.studentTurn.intent).not.toMatch(/^recovery_(?:first_step|meaning)$/);
+      expect(response.studentTurn.hasTeachingStage).toBe(false);
+      expect(response.expectedAnswer).toBe('');
+      expect(response.remoteAttempted).toBe(false);
+    }
+  );
+
   it('does not treat a standalone quiz answer as a conversational follow-up', () => {
     const turn = understandStudentTurn({
       prompt: 'Ali', history: teachingHistory, hasExerciseContext: true, activeConcept: concept, expectedAnswer: 'Ali',
