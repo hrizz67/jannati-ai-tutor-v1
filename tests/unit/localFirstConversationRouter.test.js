@@ -328,6 +328,8 @@ describe('local-first deterministic routing', () => {
   ])('drops synthetic prior teaching progress for non-answer %s routes', classification => {
     const response = applyLocalFirstDialogueRoute({
       text: 'Mari belajar topik ini.',
+      quickActions: [{ actionId: 'show_old_hint', intent: 'hint', label: 'Beri petunjuk lama' }],
+      suggestedActions: ['Beri petunjuk lama'],
       pedagogicalState: {
         currentConcept: 'bm::kata_nama_am::q-1',
         supportStage: 'concept_explanation',
@@ -338,6 +340,8 @@ describe('local-first deterministic routing', () => {
       reason: classification === DIALOGUE_CLASSIFICATION.SAFETY_BLOCKED ? 'personal-data' : 'test-route'
     });
     expect(response).not.toHaveProperty('pedagogicalState');
+    expect(response).not.toHaveProperty('quickActions');
+    expect(response).not.toHaveProperty('suggestedActions');
     expect(response).not.toHaveProperty('isCorrect');
     expect(response.remoteAttempted).toBe(false);
   });
