@@ -118,7 +118,9 @@ describe('P2.5-B Tutor microphone context and manual fallback', () => {
     const source = readFileSync(
       new URL('../../src/components/ai/TutorAIModal.jsx', import.meta.url), 'utf8'
     );
-    expect(source).toMatch(/const requestContextKey = `${sessionKey}::${activeSubject/);
+    expect(source).toContain('const requestContextKey =');
+    expect(source).toContain('::${activeSubject?.id');
+    expect(source).toContain('::${activeTopic?.id');
     expect(source).toMatch(/useEffect\(\(\) => \{\s*speechSessionRef\.current\?\.cancel\?\.\(\);\s*speechSessionRef\.current = null;\s*setSpeechState\(speechSupported \? 'idle' : 'unsupported'\);\s*setSpeechMessage\(''\);\s*\}, \[requestContextKey, speechSupported\]\)/);
   });
 
