@@ -97,6 +97,7 @@ import {
   normalizeCommunicationResult,
   sanitizeCommunicationScoreHistory
 } from './utils/communicationResult.js';
+import { settleLogoutStep, signOutCurrentBrowserSession } from './utils/accountLogout.js';
 const CommunicationContentGate = React.lazy(() => import('./components/communication/CommunicationContentGate.jsx'));
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
@@ -1465,6 +1466,8 @@ export default function App() {
   const [cloudSyncInfo, setCloudSyncInfo] = useState({ revision: 0, serverUpdatedAt: '' });
   const [cloudHydratedAccountId, setCloudHydratedAccountId] = useState('');
   const [cloudOperationBusy, setCloudOperationBusy] = useState(false);
+  const [logoutStatus, setLogoutStatus] = useState('idle');
+  const logoutInFlightRef = useRef(false);
   const accountSyncSequenceRef = useRef(0);
   const refreshEntitlementRef = useRef(async () => {});
   const cloudMutationAtRef = useRef(0);
@@ -2365,6 +2368,7 @@ export default function App() {
       captureAccountSnapshot(previousAccountId);
     }
     clearAccountData();
+    clearTransientChildState();
     try {
       localStorage.removeItem(ACCOUNT_SCOPE_KEY);
       localStorage.setItem(ONBOARDING_KEY, 'done');
@@ -2398,7 +2402,17 @@ export default function App() {
     cloudReadPendingRef.current = 0;
     cloudWritePendingRef.current = false;
     setCloudOperationBusy(false);
+    setLogoutStatus('idle');
+    logoutInFlightRef.current = false;
     setShowAccountLogin(false);
+    setAdminRouteActive(false);
+    setPremiumSalesRouteActive(false);
+    setPublicInfoRoute('');
+    try {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    } catch {
+      // Route cleanup is best effort; authenticated state is already cleared.
+    }
     setScreen('login');
   }
 
@@ -4554,38 +4568,54 @@ export default function App() {
   }
 
   async function logoutAccount() {
+    if (logoutInFlightRef.current) return false;
     if (!accountUser?.id) {
       const currentChildId = activeChildId || readActiveChildId();
       if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
       captureGuestSnapshot();
       setShowAccountLogin(true);
-      return;
+      return true;
     }
+    logoutInFlightRef.current = true;
+    setLogoutStatus('pending');
     const exitingAccountId = accountUser.id;
-    const currentChildId = activeChildId || readActiveChildId();
-    if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
-    captureAccountSnapshot(exitingAccountId);
-    if (cloudSaveTimerRef.current) {
-      window.clearTimeout(cloudSaveTimerRef.current);
-      cloudSaveTimerRef.current = null;
-    }
-    const hasUnacknowledgedChanges = hasPendingCloudChanges(exitingAccountId);
-    if (hasUnacknowledgedChanges) {
-      const synced = await queueCloudLearningSave({ markMutation: false });
-      if (!synced && !window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?')) {
-        setRecoveryMessages(prev => [...prev, 'Log keluar dibatalkan supaya sync boleh dicuba semula.']);
-        return;
+    try {
+      const currentChildId = activeChildId || readActiveChildId();
+      if (currentChildId) captureChildSnapshot(currentChildId, { force: true });
+      captureAccountSnapshot(exitingAccountId);
+      if (cloudSaveTimerRef.current) {
+        window.clearTimeout(cloudSaveTimerRef.current);
+        cloudSaveTimerRef.current = null;
       }
-    }
-    accountSyncSequenceRef.current += 1;
-    if (supabase) {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        setRecoveryMessages(prev => [...prev, 'Log keluar tidak berjaya. Cuba lagi.']);
-        return;
+      const hasUnacknowledgedChanges = hasPendingCloudChanges(exitingAccountId);
+      if (hasUnacknowledgedChanges) {
+        const syncOutcome = await settleLogoutStep(
+          () => queueCloudLearningSave({ markMutation: false }),
+          { timeoutMs: 8000, timeoutCode: 'sync-timeout' }
+        );
+        const synced = syncOutcome.ok && syncOutcome.value === true;
+        if (!synced && !window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?')) {
+          setRecoveryMessages(prev => [...prev, 'Log keluar dibatalkan supaya sync boleh dicuba semula.']);
+          setLogoutStatus('idle');
+          return false;
+        }
       }
+      accountSyncSequenceRef.current += 1;
+      const signOutResult = await signOutCurrentBrowserSession(supabase?.auth, { timeoutMs: 8000 });
+      if (!signOutResult.ok) {
+        setLogoutStatus('error');
+        setRecoveryMessages(prev => [...prev, 'Log keluar tidak berjaya. Sesi masih aktif; cuba lagi.']);
+        return false;
+      }
+      resetSignedOutAccountState(exitingAccountId);
+      return true;
+    } catch {
+      setLogoutStatus('error');
+      setRecoveryMessages(prev => [...prev, 'Log keluar tidak berjaya. Sesi masih aktif; cuba lagi.']);
+      return false;
+    } finally {
+      if (logoutInFlightRef.current) logoutInFlightRef.current = false;
     }
-    resetSignedOutAccountState(exitingAccountId);
   }
 
   function exitLocalProfile() {
@@ -5430,7 +5460,7 @@ export default function App() {
   if (screen === 'learning') return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Pusat Belajar tidak dapat dipaparkan." message="Kembali ke Papan Utama dan cuba lagi." actionLabel="Papan Utama" onAction={() => setScreen('dashboard')} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Pusat Belajar sedang dimuat</h2><p>Sebentar ya.</p></div>}><LearningDashboard profile={profile} selectedSubject={selectedSubject} allSubjects={allSubjects} mode={learningMode} resume={resume} onModeChange={setLearningMode} onStartTopic={(topic, subject = selectedSubject) => startTopic(topic, subject)} onResume={startResume} onMarkMaterial={markLearningMaterial} onOpenAi={openTutorAi} onBack={() => setScreen('dashboard')} /></React.Suspense>{chatWidget}</ProductionErrorBoundary></BetaChrome>;
 
   if (screen === 'dashboard') {
-    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} onOpenPremium={openManualPremiumSales} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} syncInFlight={cloudOperationBusy} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
+    return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><ProductionErrorBoundary fallback={<EmptyState title="Papan Utama tidak dapat dipaparkan." message="Sila muat semula atau kembali ke skrin ini." actionLabel="Muat Semula" onAction={() => window.location.reload()} />}><React.Suspense fallback={<div className="card"><p className="eyebrow">Memuat</p><h2>Papan Utama sedang dimuat</h2><p>Sebentar ya.</p></div>}><HomeDashboard profile={profile} accessProfile={effectiveAccess} adaptiveProfile={adaptiveProfile} gamificationProfile={gamificationProfile} subjectList={subjectList} allSubjects={allSubjects} selectedSubject={selectedSubject} selectedSubjectId={selectedSubjectId} totalQuestions={totalQuestions} personality={homePersonality} resume={resume} dailyChallenge={buildDailyChallenge(narrativeBundle)} voiceGreetingText={narrativeBundle.greeting || homePersonality?.greeting || predictionGreeting} voiceMissionText={(narrativeBundle.dailyMission?.items || []).join('. ') || learningObservation?.memorySpeech || ''} adaptivePracticePreview={adaptivePracticePreview} adaptivePracticeCount={adaptivePracticeCount} predictionProfile={predictionProfile} predictionGreeting={predictionGreeting} studyPlan={studyPlan} onAdaptivePracticeCountChange={setAdaptivePracticeCount} onSelectSubject={handleSelectSubject} onStartTopic={startTopic} onStartAdaptiveLesson={startAdaptiveLesson} onStartAdaptivePractice={startAdaptivePractice} onStartBacaan={() => openPremiumScreen('reading', 'bacaan')} onStartMendengar={() => openPremiumScreen('listening', 'mendengar')} onStartBertutur={() => openPremiumScreen('speaking', 'bertutur')} onStartMenulis={() => openPremiumScreen('writing', 'menulis')} onOpenParent={() => openPremiumScreen('parent', 'parent')} onOpenUasa={() => openPremiumScreen('uasa', 'uasa')} onOpenAi={openTutorAi} onOpenLearning={(mode) => { setLearningMode(mode); setScreen('learning'); }} onOpenAdmin={openAdminPremium} onOpenPremium={openManualPremiumSales} isAdmin={Boolean(effectiveAccess.is_admin)} onReset={resetProfile} onExportBetaReport={exportBetaReport} onImportLearningData={importLearningData} onRecoverLearningData={recoverStoredLearningData} onSyncLearningData={syncLearningDataNow} onLoadLearningData={loadLearningDataNow} cloudSyncStatus={cloudSyncStatus} syncInFlight={cloudOperationBusy} cloudSyncRevision={cloudSyncInfo.revision} cloudSyncUpdatedAt={cloudSyncInfo.serverUpdatedAt} onResume={startResume} onRestartResume={restartResume} onCompleteDaily={completeDailyChallenge} onToggleFavourite={toggleFavourite} onLogout={logoutAccount} logoutStatus={logoutStatus} onExitLocalProfile={exitLocalProfile} hasAccountSession={Boolean(accountUser)} childProfiles={childProfiles} archivedChildren={archivedChildren} activeChildId={activeChildId} onSelectChild={handleSelectChild} onCreateChild={handleCreateChild} onRenameChild={handleRenameChild} onArchiveChild={handleArchiveChild} onRestoreArchivedChild={handleRestoreArchivedChild} onDeleteChild={handleDeleteChild} /></React.Suspense></ProductionErrorBoundary>{chatWidget}</BetaChrome>;
   }
 
   return <BetaChrome recoveryMessages={recoveryMessages} modalOpen={modalOpen} currentScreen={screen}><main className="app"><EmptyState title="Paparan tidak dijumpai." message="Kembali ke Papan Utama untuk meneruskan sesi." actionLabel="Kembali ke Papan Utama" onAction={() => setScreen('dashboard')} /></main></BetaChrome>;
