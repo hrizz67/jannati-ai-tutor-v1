@@ -160,6 +160,85 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     expect(announcer.getAttribute('aria-atomic')).toBe('true');
   });
 
+  it('restores the submitted draft after async failure when the composer was untouched', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    input.focus();
+    await setInputValue(input, 'Draf A');
+    await pressEnter(input);
+    expect(input.value).toBe('');
+
+    response.reject(new Error('offline'));
+    await flushEffects();
+
+    expect(input.value).toBe('Draf A');
+    expect(document.activeElement).toBe(input);
+    expect(document.querySelector('[data-tutor-announcement="true"]').textContent)
+      .toBe('Saya belum memahami soalan itu dengan tepat. Cuba tanya semula dengan ayat lain.');
+  });
+
+  it('preserves a replacement draft after the submitted request fails', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    await setInputValue(input, 'Draf A');
+    await pressEnter(input);
+    await setInputValue(input, 'Draf B');
+
+    response.reject(new Error('offline'));
+    await flushEffects();
+
+    expect(input.value).toBe('Draf B');
+  });
+
+  it('preserves a deliberate blank after a replacement draft is typed then deleted', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    await setInputValue(input, 'Draf A');
+    await pressEnter(input);
+    await setInputValue(input, 'Draf B');
+    await setInputValue(input, '');
+
+    response.reject(new Error('offline'));
+    await flushEffects();
+
+    expect(input.value).toBe('');
+  });
+
+  it('does not restore a submitted draft when its failed request is stale after a context switch', async () => {
+    const q1Response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValueOnce(q1Response.promise);
+    await renderTutor();
+
+    const q1Input = document.querySelector('input[aria-label="Tanya Janna"]');
+    await setInputValue(q1Input, 'Draf A untuk Q1');
+    await pressEnter(q1Input);
+
+    await renderTutor({
+      conversationKey: 'account-a::child-a::bm::kata-nama::session-a::q2',
+      question: {
+        id: 'q2',
+        q: 'Pilih kata nama am.',
+        instruction: 'Pilih jawapan yang betul.',
+        answer: 'sekolah'
+      }
+    });
+    q1Response.reject(new Error('stale offline failure'));
+    await flushEffects();
+
+    expect(document.querySelector('input[aria-label="Tanya Janna"]').value).toBe('');
+    expect(document.querySelector('[data-tutor-announcement="true"]').textContent).toBe('');
+    expect(document.querySelector('.chat-status-error')).toBeNull();
+  });
+
   it('does not announce hydrated history or duplicate visible loading and error status regions', async () => {
     const response = deferred();
     vi.mocked(getTutorResponse).mockReturnValue(response.promise);

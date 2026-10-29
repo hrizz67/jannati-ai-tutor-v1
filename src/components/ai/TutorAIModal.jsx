@@ -245,6 +245,7 @@ export default function TutorAIModal({
   const requestIdRef = useRef(0);
   const requestContextRef = useRef('');
   const inputDraftRef = useRef('');
+  const inputEditRevisionRef = useRef(0);
   const pendingAnnouncementRef = useRef(null);
   const speechSessionRef = useRef(null);
   const [conversationState, setConversationState] = useState(() => createScopedConversationState());
@@ -447,6 +448,7 @@ export default function TutorAIModal({
   async function sendMessage(rawText, intent = 'general', tutorAction = null) {
     const fromComposer = rawText === undefined;
     const submittedDraft = fromComposer ? inputDraftRef.current : '';
+    const submittedEditRevision = inputEditRevisionRef.current;
     const text = normalizeText(fromComposer ? input : rawText, '');
     if (!text || loading) return;
     speechSessionRef.current?.cancel?.();
@@ -545,7 +547,10 @@ export default function TutorAIModal({
       }
       setStatus('error');
       setError(message);
-      if (fromComposer) setInput(current => current || submittedDraft);
+      if (fromComposer && inputEditRevisionRef.current === submittedEditRevision) {
+        inputDraftRef.current = submittedDraft;
+        setInput(submittedDraft);
+      }
     } finally {
       if (requestIdRef.current === started && requestContextRef.current === startedContext) {
         setLoading(false);
@@ -605,6 +610,7 @@ export default function TutorAIModal({
       lang: languagePresentation.contentLocale,
       onDraftChange(nextDraft) {
         const boundedDraft = nextDraft.slice(0, 700);
+        inputEditRevisionRef.current += 1;
         inputDraftRef.current = boundedDraft;
         setInput(boundedDraft);
         window.requestAnimationFrame?.(() => inputRef.current?.focus?.());
@@ -796,7 +802,11 @@ export default function TutorAIModal({
           <input
             ref={inputRef}
             value={input}
-            onChange={event => setInput(event.target.value)}
+            onChange={event => {
+              inputEditRevisionRef.current += 1;
+              inputDraftRef.current = event.target.value;
+              setInput(event.target.value);
+            }}
             onKeyDown={event => {
               if (event.key === 'Enter') {
                 event.preventDefault();
