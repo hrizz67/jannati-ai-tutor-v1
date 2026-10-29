@@ -242,7 +242,10 @@ export default function TutorAIModal({
   const closeButtonRef = useRef(null);
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
-  const readerScrollRef = useRef({ contextKey: '', lastMessage: null, followNewReply: true, awaitingInitialMessage: true });
+  const readerScrollRef = useRef({
+    contextKey: '', lastMessage: null, followNewReply: true,
+    awaitingInitialMessage: true, userScrollIntent: false, programmaticTop: null
+  });
   const requestIdRef = useRef(0);
   const requestContextRef = useRef('');
   const inputDraftRef = useRef('');
@@ -259,6 +262,7 @@ export default function TutorAIModal({
   const [speechState, setSpeechState] = useState('idle');
   const [speechMessage, setSpeechMessage] = useState('');
   const [chatAnnouncement, setChatAnnouncement] = useState('');
+  const [unreadReply, setUnreadReply] = useState(false);
 
   const studentProfile = adaptiveProfile || profile || {};
   const studentName = getStudentDisplayName([profile, adaptiveProfile], '');
@@ -422,6 +426,9 @@ export default function TutorAIModal({
       reader.lastMessage = null;
       reader.followNewReply = true;
       reader.awaitingInitialMessage = true;
+      reader.userScrollIntent = false;
+      reader.programmaticTop = null;
+      setUnreadReply(false);
       return;
     }
     const latest = messages.at(-1) || null;
@@ -430,7 +437,10 @@ export default function TutorAIModal({
       reader.lastMessage = latest;
       reader.followNewReply = true;
       reader.awaitingInitialMessage = true;
+      reader.userScrollIntent = false;
+      reader.programmaticTop = 0;
       body.scrollTop = 0;
+      setUnreadReply(false);
       return;
     }
     if (latest === reader.lastMessage) return;
@@ -439,13 +449,27 @@ export default function TutorAIModal({
       reader.awaitingInitialMessage = false;
       return;
     }
-    if (latest?.role !== 'ai' || !reader.followNewReply) return;
+    if (latest?.role !== 'ai') return;
+    if (!reader.followNewReply) {
+      setUnreadReply(true);
+      return;
+    }
     const replies = body.querySelectorAll('.chat-bubble.ai:not(.chat-bubble-loading)');
     const reply = replies[replies.length - 1];
     if (!reply) return;
-    // Anchor at the START of a long reply, not at the bottom where the learner misses it.
-    body.scrollTop = Math.max(0, body.scrollTop + reply.getBoundingClientRect().top - body.getBoundingClientRect().top - 12);
-    reader.followNewReply = body.scrollHeight - body.clientHeight - body.scrollTop <= 48;
+    const viewport = body.getBoundingClientRect();
+    const bubble = reply.getBoundingClientRect();
+    const top = viewport.top + 12;
+    const bottom = viewport.bottom - 12;
+    if (bubble.top >= top && bubble.bottom <= bottom) return;
+    // A short, partly hidden reply needs only enough movement to become visible.
+    // A tall reply starts at its first line so the learner can read from the beginning.
+    const tall = bubble.height > bottom - top;
+    const delta = tall || bubble.top < top ? bubble.top - top : bubble.bottom - bottom;
+    if (!Number.isFinite(delta) || Math.abs(delta) < 1) return;
+    reader.userScrollIntent = false;
+    reader.programmaticTop = Math.max(0, body.scrollTop + delta);
+    body.scrollTop = reader.programmaticTop;
   }, [messages, open, requestContextKey]);
 
   useEffect(() => {
@@ -488,6 +512,8 @@ export default function TutorAIModal({
     const startedContext = requestContextKey;
     const nextHistory = [...messages, { role: 'user', text }];
     readerScrollRef.current.followNewReply = true;
+    readerScrollRef.current.userScrollIntent = false;
+    setUnreadReply(false);
     setMessages(nextHistory);
     if (fromComposer) {
       inputDraftRef.current = '';
@@ -732,9 +758,26 @@ export default function TutorAIModal({
           id="tutor-ai-body"
           ref={bodyRef}
           tabIndex="-1"
+          onTouchStart={() => { readerScrollRef.current.userScrollIntent = true; }}
+          onWheel={() => { readerScrollRef.current.userScrollIntent = true; }}
+          onPointerDown={event => {
+            if (event.target === event.currentTarget) readerScrollRef.current.userScrollIntent = true;
+          }}
+          onKeyDown={event => {
+            if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
+              readerScrollRef.current.userScrollIntent = true;
+            }
+          }}
           onScroll={event => {
             const body = event.currentTarget;
-            readerScrollRef.current.followNewReply = body.scrollHeight - body.clientHeight - body.scrollTop <= 48;
+            const reader = readerScrollRef.current;
+            // Safari can dispatch an asynchronous scroll event for a programmatic
+            // change. Only explicit reader gestures may change the follow policy.
+            if (reader.programmaticTop !== null && Math.abs(body.scrollTop - reader.programmaticTop) <= 1) return;
+            if (!reader.userScrollIntent) return;
+            const nearBottom = body.scrollHeight - body.clientHeight - body.scrollTop <= 48;
+            reader.followNewReply = nearBottom;
+            if (nearBottom) setUnreadReply(false);
           }}
         >
           {hasVisibleQuestionContext && (
@@ -825,6 +868,29 @@ export default function TutorAIModal({
             </section>
           )}
         </div>
+
+        {unreadReply && (
+          <button
+            type="button"
+            className="tutor-ai-new-reply-button"
+            onClick={() => {
+              const body = bodyRef.current;
+              const reader = readerScrollRef.current;
+              const replies = body?.querySelectorAll('.chat-bubble.ai:not(.chat-bubble-loading)');
+              const reply = replies?.[replies.length - 1];
+              if (!body || !reply) return;
+              reader.followNewReply = true;
+              reader.userScrollIntent = false;
+              const nextTop = Math.max(0, body.scrollTop
+                + reply.getBoundingClientRect().top - body.getBoundingClientRect().top - 12);
+              reader.programmaticTop = nextTop;
+              body.scrollTop = nextTop;
+              setUnreadReply(false);
+            }}
+          >
+            Balasan baharu ↓
+          </button>
+        )}
 
         <div className={`ai-chat-input ai-modal-footer${speechSupported ? '' : ' ai-chat-input-no-speech'}`} data-modal-footer="true">
           {speechSupported && (
