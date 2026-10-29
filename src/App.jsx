@@ -97,6 +97,7 @@ import {
   normalizeCommunicationResult,
   sanitizeCommunicationScoreHistory
 } from './utils/communicationResult.js';
+import { scoreWritingFillBlank, validateWritingFillBlankTask } from './utils/writingFillBlank.js';
 const CommunicationContentGate = React.lazy(() => import('./components/communication/CommunicationContentGate.jsx'));
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
@@ -7352,6 +7353,7 @@ function normalizeBertuturTranscript(value) {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
 }
 function scoreMenulis(task, answer, dictionary = [], mode = '') {
+  if (mode === 'blank') return scoreWritingFillBlank(task, answer);
   const normalizedAnswer = normalizeBacaanWord(answer);
   const expectedWords = splitBacaanWords(task.answer || '').map(word => word.text);
   const arrangeMode = mode === 'arrange';
@@ -7415,6 +7417,7 @@ function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, 
     ? safeArabicCoachText(safeTask?.prompt, 'Latihan Menulis tidak mempunyai tugas yang sah buat masa ini.')
     : typeof safeTask?.prompt === 'string' ? safeTask.prompt : 'Tiada tugas menulis tersedia buat masa ini.';
   const safeMode = safeTasks[mode] ? mode : (safeTasks.arrange ? 'arrange' : Object.keys(safeTasks)[0] || '');
+  const fillBlankContract = safeMode === 'blank' ? validateWritingFillBlankTask(safeTask) : null;
   const safeResult = result && typeof result === 'object' ? {
     score: Number(result.score) || 0,
     matched: Array.isArray(result.matched) ? result.matched : [],
@@ -7511,6 +7514,10 @@ function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, 
   function checkMenulis() {
     try {
       if (!safeTask) return;
+      if (safeMode === 'blank' && !fillBlankContract?.valid) {
+        setResult(scoreWritingFillBlank(safeTask, currentAnswer()));
+        return;
+      }
       if (!currentAnswer().trim()) {
         setResult({ status: 'empty', score: 0, matched: [], spellingIssues: [], grammarPetunjuks: [], explanation: '', message: 'Jawapan belum diterima.' });
         return;
@@ -7583,7 +7590,9 @@ function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, 
   }
 
   const availableWords = (Array.isArray(safeTask.words) ? safeTask.words : []).filter(word => !arranged.includes(word));
-  const resultWords = safeResult?.metricLabel === 'perkataan'
+  const resultWords = safeMode === 'blank'
+    ? (safeResult?.score === 100 && safeResult?.matched?.[0] ? [safeResult.matched[0]] : ['Perkataan sasaran'])
+    : safeResult?.metricLabel === 'perkataan'
     ? splitBacaanWords(safeTask.answer || '').map(word => word.text)
     : (safeTask?.keywords || []);
 
@@ -7652,14 +7661,19 @@ function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, 
             value={answer}
             onChange={event => setAnswer(event.target.value)}
             placeholder={mode === 'blank' ? 'Taip perkataan yang hilang' : 'Tulis jawapan kamu di sini'}
+            disabled={safeMode === 'blank' && !fillBlankContract?.valid}
           />
         )}
 
         <div className="actions">
-          <button onClick={checkMenulis}>Semak Tulisan</button>
+          <button onClick={checkMenulis} disabled={safeMode === 'blank' && !fillBlankContract?.valid}>Semak Tulisan</button>
           <button className="secondary" onClick={saveMenulis}>Tamatkan Sesi</button>
         </div>
       </section>
+
+      {safeMode === 'blank' && !fillBlankContract?.valid && (
+        <p className="autosave-note" role="status">Latihan isi tempat kosong ini belum tersedia. Pilih jenis soalan lain.</p>
+      )}
 
       {safeResult ? (
         <section className="card reading-result">

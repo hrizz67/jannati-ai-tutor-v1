@@ -238,6 +238,45 @@ const writingSeeds = {
   arab: ['اكتب عن فطورك.','كوّن جملة عن فصلك.','صف قطتك.','اكتب عن طريقك إلى المدرسة.','أكمل جملة عن النظافة.','اكتب عن لعبة في الحديقة.','صف طقس اليوم.','اكتب عن طعام صحي.','صف صديقك.','اكتب عن عطلتك.']
 };
 
+const writingFillBlankSeeds = {
+  bm: [
+    ['Saya makan ____ untuk sarapan.', ['nasi', 'roti', 'telur', 'buah', 'bijirin', 'bubur', 'mi']],
+    ['Saya belajar di dalam ____.', ['kelas', 'bilik darjah']],
+    ['Kucing saya suka ____.', ['tidur', 'bermain', 'makan']],
+    ['Saya pergi ke sekolah dengan ____.', ['bas', 'kereta', 'van', 'basikal']],
+    ['Saya membasuh tangan dengan ____.', ['sabun', 'air']],
+    ['Saya bermain ____ di taman.', ['bola']],
+    ['Cuaca hari ini ____.', ['cerah', 'panas', 'mendung', 'hujan']],
+    ['____ ialah makanan yang sihat.', ['buah', 'sayur']],
+    ['Rakan baik saya suka ____ saya.', ['membantu', 'menolong']],
+    ['Pada hujung minggu saya ____ buku.', ['membaca']]
+  ],
+  english: [
+    ['I eat ____ for breakfast.', ['rice', 'bread', 'eggs', 'fruit', 'cereal', 'noodles']],
+    ['I learn in the ____.', ['classroom', 'class']],
+    ['My cat likes to ____.', ['sleep', 'play', 'eat']],
+    ['I go to school by ____.', ['bus', 'car', 'van', 'bicycle', 'bike']],
+    ['I wash my hands with ____.', ['soap', 'water']],
+    ['I play ____ in the park.', ['ball']],
+    ['The weather today is ____.', ['sunny', 'hot', 'cloudy', 'rainy']],
+    ['____ is a healthy food.', ['fruit', 'vegetables']],
+    ['My best friend likes to ____ me.', ['help']],
+    ['At the weekend I ____ a book.', ['read']]
+  ],
+  arab: [
+    ['آكُلُ ____ في الفطور.', ['الأرز', 'الخبز', 'البيض', 'الفاكهة']],
+    ['أَتَعَلَّمُ في ____.', ['الفصل']],
+    ['قِطَّتي تُحِبُّ أن ____.', ['تنام', 'تلعب', 'تأكل']],
+    ['أَذْهَبُ إلى المدرسة بِـ ____.', ['الحافلة', 'السيارة', 'الدراجة']],
+    ['أَغْسِلُ يَدَيَّ بِـ ____.', ['الصابون', 'الماء']],
+    ['أَلْعَبُ ____ في الحديقة.', ['الكرة']],
+    ['الطَّقْسُ اليوم ____.', ['مشمس', 'حار', 'غائم', 'ممطر']],
+    ['____ طعامٌ صِحِّيٌّ.', ['الفاكهة', 'الخضروات']],
+    ['صديقي يُحِبُّ أن ____ني.', ['يساعد']],
+    ['في العطلة ____ كتابًا.', ['أقرأ']]
+  ]
+};
+
 function createWritingSet(id, seeds) {
   const language = id === 'bm' ? 'BM' : id === 'english' ? 'Bahasa Inggeris' : 'Bahasa Arab';
   const sessionItems = Array.from({ length: 50 }, (_, index) => {
@@ -247,7 +286,16 @@ function createWritingSet(id, seeds) {
     const words = clean.split(/\s+/).slice(0, 4);
     const keywords = clean.split(/\s+/).slice(0, 3);
     const task = (label) => ({ label, prompt: variation, words, keywords, answer: clean });
-    return { id: `${id}-${index + 1}`, title: `${language} Menulis ${index + 1}`, tasks: { arrange: task('Susun ayat'), blank: task('Isi tempat kosong'), short: task('Jawapan pendek'), build: task('Bina ayat'), paragraph: task('Perenggan mudah') } };
+    const [blankPrompt, acceptedTokens] = writingFillBlankSeeds[id][index % writingFillBlankSeeds[id].length];
+    const blankTask = {
+      label: 'Isi tempat kosong',
+      prompt: blankPrompt,
+      words: [],
+      keywords: [acceptedTokens[0]],
+      answer: acceptedTokens[0],
+      acceptedTokens
+    };
+    return { id: `${id}-${index + 1}`, title: `${language} Menulis ${index + 1}`, tasks: { arrange: task('Susun ayat'), blank: blankTask, short: task('Jawapan pendek'), build: task('Bina ayat'), paragraph: task('Perenggan mudah') } };
   });
   return { id, language, title: `${language} Menulis`, sessionItems };
 }
