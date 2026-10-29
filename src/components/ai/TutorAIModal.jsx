@@ -242,6 +242,7 @@ export default function TutorAIModal({
   const closeButtonRef = useRef(null);
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
+  const readerScrollRef = useRef({ contextKey: '', lastMessage: null, followNewReply: true, awaitingInitialMessage: true });
   const requestIdRef = useRef(0);
   const requestContextRef = useRef('');
   const inputDraftRef = useRef('');
@@ -415,9 +416,37 @@ export default function TutorAIModal({
 
   useEffect(() => {
     const body = bodyRef.current;
-    if (!body) return;
-    body.scrollTop = body.scrollHeight;
-  }, [messages, loading, activeToolPanel]);
+    const reader = readerScrollRef.current;
+    if (!open || !body) {
+      reader.contextKey = '';
+      reader.lastMessage = null;
+      reader.followNewReply = true;
+      reader.awaitingInitialMessage = true;
+      return;
+    }
+    const latest = messages.at(-1) || null;
+    if (reader.contextKey !== requestContextKey) {
+      reader.contextKey = requestContextKey;
+      reader.lastMessage = latest;
+      reader.followNewReply = true;
+      reader.awaitingInitialMessage = true;
+      body.scrollTop = 0;
+      return;
+    }
+    if (latest === reader.lastMessage) return;
+    reader.lastMessage = latest;
+    if (reader.awaitingInitialMessage) {
+      reader.awaitingInitialMessage = false;
+      return;
+    }
+    if (latest?.role !== 'ai' || !reader.followNewReply) return;
+    const replies = body.querySelectorAll('.chat-bubble.ai:not(.chat-bubble-loading)');
+    const reply = replies[replies.length - 1];
+    if (!reply) return;
+    // Anchor at the START of a long reply, not at the bottom where the learner misses it.
+    body.scrollTop = Math.max(0, body.scrollTop + reply.getBoundingClientRect().top - body.getBoundingClientRect().top - 12);
+    reader.followNewReply = body.scrollHeight - body.clientHeight - body.scrollTop <= 48;
+  }, [messages, open, requestContextKey]);
 
   useEffect(() => {
     const latestMessage = messages.at(-1);
@@ -458,6 +487,7 @@ export default function TutorAIModal({
     const started = ++requestIdRef.current;
     const startedContext = requestContextKey;
     const nextHistory = [...messages, { role: 'user', text }];
+    readerScrollRef.current.followNewReply = true;
     setMessages(nextHistory);
     if (fromComposer) {
       inputDraftRef.current = '';
@@ -697,7 +727,16 @@ export default function TutorAIModal({
           subjectId={activeSubject?.id}
         />
 
-        <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
+        <div
+          className="ai-chat-body"
+          id="tutor-ai-body"
+          ref={bodyRef}
+          tabIndex="-1"
+          onScroll={event => {
+            const body = event.currentTarget;
+            readerScrollRef.current.followNewReply = body.scrollHeight - body.clientHeight - body.scrollTop <= 48;
+          }}
+        >
           {hasVisibleQuestionContext && (
             <section className="ai-chat-context-card" aria-label="Konteks soalan semasa">
               <div className="ai-chat-context-grid">
