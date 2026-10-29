@@ -344,6 +344,225 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     expect(document.querySelector('.tutor-ai-mic-status')).toBeNull();
   });
 
+  it('anchors a long new Tutor response at its beginning without jumping to the bottom', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 1900 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+    const rectSpy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function () {
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 330, bottom: 850, height: 520 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
+      });
+    try {
+      body.scrollTop = 360;
+      await setInputValue(input, 'Cikgu, terangkan perlahan-lahan');
+      await pressEnter(input);
+      expect(body.scrollTop).toBe(360);
+      response.resolve({ shortText: 'Ini penerangan panjang yang mesti dibaca dari ayat pertama.' });
+      await flushEffects();
+      expect(body.scrollTop).toBe(578);
+      expect(body.scrollTop).not.toBe(body.scrollHeight);
+      expect(document.activeElement).not.toBe(body);
+    } finally {
+      rectSpy.mockRestore();
+    }
+  });
+
+  it('keeps a fully visible short reply in place without disturbing reading continuity', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    body.scrollTop = 360;
+    const spy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function () {
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 330, bottom: 415, height: 85 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
+      });
+    try {
+      await setInputValue(input, 'Apakah kata nama?');
+      await pressEnter(input);
+      response.resolve({ shortText: 'Kata nama ialah nama orang, tempat, benda atau haiwan.' });
+      await flushEffects();
+      expect(body.scrollTop).toBe(360);
+      expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('reveals only the hidden bottom of a partly visible short reply', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    body.scrollTop = 360;
+    const spy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function () {
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 350, bottom: 480, height: 130 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
+      });
+    try {
+      await setInputValue(input, 'Beri petunjuk');
+      await pressEnter(input);
+      response.resolve({ shortText: 'Cari perkataan yang menunjukkan tempat.' });
+      await flushEffects();
+      expect(body.scrollTop).toBe(392);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('ignores delayed programmatic scroll events after switching question context', async () => {
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+    body.scrollTop = 600;
+    await renderTutor({
+      conversationKey: 'account-a::child-a::bm::kata-nama::session-a::q2',
+      question: { id: 'q2', q: 'Pilih tempat.', answer: 'taman' }
+    });
+    expect(body.scrollTop).toBe(0);
+    await act(async () => body.dispatchEvent(new window.Event('scroll', { bubbles: true })));
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+  });
+
+  it('does not steal a manual scroll-up position while Tutor reply is pending', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+    await setInputValue(input, 'Tolong bagi contoh');
+    await pressEnter(input);
+    body.scrollTop = 120;
+    await act(async () => {
+      body.dispatchEvent(new window.Event('touchstart', { bubbles: true }));
+      body.dispatchEvent(new window.Event('scroll', { bubbles: true }));
+    });
+    response.resolve({ shortText: 'Balasan baru selepas murid scroll ke atas.' });
+    await flushEffects();
+    expect(body.scrollTop).toBe(120);
+    const notice = document.querySelector('.tutor-ai-new-reply-button');
+    expect(notice.textContent).toContain('Balasan baharu');
+    notice.focus();
+    expect(document.activeElement).toBe(notice);
+    await act(async () => notice.click());
+    const dialog = document.querySelector('[role="dialog"]');
+    const replies = document.querySelectorAll('#tutor-ai-body .chat-bubble.ai:not(.chat-bubble-loading)');
+    const latestReply = replies[replies.length - 1];
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    expect(document.activeElement).toBe(latestReply);
+    expect(latestReply.tabIndex).toBe(-1);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
+
+  it('keeps keyboard focus inside modal after a focused new-reply button unmounts', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    const dialog = document.querySelector('[role="dialog"]');
+    const closeButton = document.querySelector('button[aria-label="Tutup"]');
+    const outsideButton = opener;
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+
+    await setInputValue(input, 'Terangkan satu langkah');
+    await pressEnter(input);
+    await setInputValue(input, 'Draf baru yang belum dihantar');
+    body.scrollTop = 120;
+    await act(async () => {
+      body.dispatchEvent(new window.Event('touchstart', { bubbles: true }));
+      body.dispatchEvent(new window.Event('scroll', { bubbles: true }));
+    });
+    response.resolve({ shortText: 'Baca petunjuk pertama dahulu.' });
+    await flushEffects();
+
+    const button = document.querySelector('.tutor-ai-new-reply-button');
+    expect(button).not.toBeNull();
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    await act(async () => button.click());
+
+    const replies = document.querySelectorAll('#tutor-ai-body .chat-bubble.ai:not(.chat-bubble-loading)');
+    const lastReply = replies[replies.length - 1];
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    expect(document.activeElement).toBe(lastReply);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).not.toBe(document.body);
+    expect(input.value).toBe('Draf baru yang belum dihantar');
+
+    // JSDOM does not synthesize native Tab traversal. Verify the adjacent
+    // focusable target is in the modal, then the modal's last-control trap.
+    const nextFocusable = lastReply.querySelector('button:not([disabled])');
+    expect(nextFocusable).not.toBeNull();
+    nextFocusable.focus();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    const sendButton = dialog.querySelector('.ai-chat-input button:last-of-type');
+    expect(sendButton).not.toBeNull();
+    sendButton.focus();
+    await act(async () => {
+      window.dispatchEvent(new window.KeyboardEvent('keydown', {
+        key: 'Tab', bubbles: true, cancelable: true
+      }));
+    });
+    expect(document.activeElement).toBe(closeButton);
+    expect(document.activeElement).not.toBe(outsideButton);
+  });
+
+  it('does not jump when loading changes or Tutor tool panels are toggled', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    body.scrollTop = 175;
+    await act(async () => document.querySelector('.tutor-ai-tool-button[aria-expanded]')?.click());
+    expect(body.scrollTop).toBe(175);
+    await setInputValue(input, 'Saya perlukan petunjuk');
+    await pressEnter(input);
+    expect(body.scrollTop).toBe(175);
+    response.resolve({ shortText: 'Petunjuk ialah...' });
+    await flushEffects();
+  });
+
+  it('starts a new question context at the question, not the prior chat bottom', async () => {
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    body.scrollTop = 430;
+    await renderTutor({
+      conversationKey: 'account-a::child-a::bm::kata-nama::session-a::q2',
+      question: { id: 'q2', q: 'Cari kata nama bagi tempat.', answer: 'taman' }
+    });
+    expect(body.scrollTop).toBe(0);
+    expect(document.querySelector('.ai-chat-context-card').textContent).toContain('Cari kata nama bagi tempat.');
+  });
+
   it.each([
     ['bm', 'Bahasa Melayu', 'ms', 'Apakah kata nama?', 'Kata nama ialah nama benda.', 'ltr'],
     ['english', 'English', 'en', 'What is a noun?', 'A noun names a person, place or thing.', 'ltr'],
