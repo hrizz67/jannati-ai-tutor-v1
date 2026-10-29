@@ -758,14 +758,24 @@ export default function TutorAIModal({
           id="tutor-ai-body"
           ref={bodyRef}
           tabIndex="-1"
-          onTouchStart={() => { readerScrollRef.current.userScrollIntent = true; }}
-          onWheel={() => { readerScrollRef.current.userScrollIntent = true; }}
+          onTouchStart={() => {
+            readerScrollRef.current.userScrollIntent = true;
+            readerScrollRef.current.programmaticTop = null;
+          }}
+          onWheel={() => {
+            readerScrollRef.current.userScrollIntent = true;
+            readerScrollRef.current.programmaticTop = null;
+          }}
           onPointerDown={event => {
-            if (event.target === event.currentTarget) readerScrollRef.current.userScrollIntent = true;
+            if (event.target === event.currentTarget) {
+              readerScrollRef.current.userScrollIntent = true;
+              readerScrollRef.current.programmaticTop = null;
+            }
           }}
           onKeyDown={event => {
             if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
               readerScrollRef.current.userScrollIntent = true;
+              readerScrollRef.current.programmaticTop = null;
             }
           }}
           onScroll={event => {
