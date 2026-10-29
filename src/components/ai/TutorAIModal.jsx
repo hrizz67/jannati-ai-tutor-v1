@@ -153,7 +153,7 @@ function buildQuestionContext(question, answer, feedback, selectedTopic, selecte
 function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = false, tone = '', voiceLang = 'ms-MY', subjectId = '', source = '', onSuggestion = null }) {
   const safeText = normalizeText(text, '');
   return (
-    <article className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
+    <article tabIndex={role === 'ai' && !loading ? -1 : undefined} className={`chat-bubble ${role}${loading ? ' chat-bubble-loading' : ''}${tone ? ` guided-feedback-${tone}` : ''}`}>
       <SubjectLanguageText as="p" className="chat-bubble-text" text={safeText} subjectId={subjectId} teaching={role === 'ai'} />
       {role === 'ai' && source === 'generative-gateway' && (
         <small className="tutor-ai-source-label">Jawapan AI generatif · semak bersama guru</small>
@@ -895,6 +895,9 @@ export default function TutorAIModal({
                 + reply.getBoundingClientRect().top - body.getBoundingClientRect().top - 12);
               reader.programmaticTop = nextTop;
               body.scrollTop = nextTop;
+              // The activated button is about to unmount: move keyboard/screen-reader
+              // focus into the revealed reply before removing that button.
+              reply.focus({ preventScroll: true });
               setUnreadReply(false);
             }}
           >
