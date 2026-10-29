@@ -1,3 +1,5 @@
+import { buildSemanticCommunicationRubric } from '../utils/semanticCommunicationAssessment.js';
+
 /* Semantic communication banks. Each row changes the learning meaning, not just its title. */
 const bmListening = [
   ['Aina menyiram bunga merah di halaman.', 'Apakah yang disiram Aina?', ['Bunga merah','Pokok mangga','Rumput hijau'],'Bunga merah',['Aina','menyiram','bunga','merah'],'halaman','Di manakah Aina berada?',['halaman','di halaman']],
@@ -119,8 +121,9 @@ function createSpeakingPromptSet(id, seeds) {
   const language = id === 'bm' ? 'BM' : id === 'english' ? 'Bahasa Inggeris' : 'Bahasa Arab';
   const speechLang = id === 'bm' ? 'ms-MY' : id === 'english' ? 'en-US' : 'ar-SA';
   return { id, language, speechLang, title: `${language} Bertutur`, sessionItems: seeds.map((text, index) => {
-    const keywords = text.toLowerCase().split(/\s+/).slice(0, 3);
-    const prompt = label => ({ label, text, keywords });
+    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index });
+    const keywords = rubric.topicTerms;
+    const prompt = label => ({ label, text, keywords, rubric });
     return { id: `${id}-${index + 1}`, title: `${language} Bertutur ${index + 1}`, prompts: { intro: prompt('Bercakap'), describe: prompt('Huraikan'), answer: prompt('Jawab'), repeat: prompt('Ulang') } };
   }) };
 }
@@ -246,7 +249,8 @@ function createWritingSet(id, seeds) {
     const clean = variation.replace(/[.?!]/g, '');
     const words = clean.split(/\s+/).slice(0, 4);
     const keywords = clean.split(/\s+/).slice(0, 3);
-    const task = (label) => ({ label, prompt: variation, words, keywords, answer: clean });
+    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index % seeds.length });
+    const task = (label) => ({ label, prompt: variation, words, keywords: rubric.topicTerms, answer: clean, rubric });
     return { id: `${id}-${index + 1}`, title: `${language} Menulis ${index + 1}`, tasks: { arrange: task('Susun ayat'), blank: task('Isi tempat kosong'), short: task('Jawapan pendek'), build: task('Bina ayat'), paragraph: task('Perenggan mudah') } };
   });
   return { id, language, title: `${language} Menulis`, sessionItems };
