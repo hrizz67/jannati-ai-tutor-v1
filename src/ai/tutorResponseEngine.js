@@ -1352,7 +1352,9 @@ export async function getTutorResponse(options = {}) {
     ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
     : typeof isCorrect === 'boolean'
       ? isCorrect
-      : isAcceptedQuestionAnswer(answerText, answerCheckQuestion);
+      : answerText
+        ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
+        : null;
   if (promptAnswer && (!intent || intent === 'general' || intent === 'auto')) {
     resolvedIntent = resolvedCorrect ? 'correct_answer_reinforcement' : 'wrong_answer_coaching';
   }
