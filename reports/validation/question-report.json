@@ -1,6 +1,6 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-10-29T03:00:07.190Z",
+  "generatedAt": "2026-10-29T07:53:17.827Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
@@ -28,7 +28,7 @@
     "averageDiversityScore": 78,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 20,
-    "averageSelectionTimeMs": 2.022,
+    "averageSelectionTimeMs": 3.759,
     "stemDiversity": 100,
     "stemReuseRate": 0,
     "repeatedStems": 0,
