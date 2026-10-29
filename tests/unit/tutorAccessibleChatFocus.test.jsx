@@ -355,7 +355,11 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
     const rectSpy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
       .mockImplementation(function () {
-        return { top: this.id === 'tutor-ai-body' ? 100 : this.classList.contains('chat-bubble') && this.classList.contains('ai') ? 330 : 0 };
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 330, bottom: 850, height: 520 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
       });
     try {
       body.scrollTop = 360;
@@ -372,6 +376,74 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     }
   });
 
+  it('keeps a fully visible short reply in place without disturbing reading continuity', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    body.scrollTop = 360;
+    const spy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function () {
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 330, bottom: 415, height: 85 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
+      });
+    try {
+      await setInputValue(input, 'Apakah kata nama?');
+      await pressEnter(input);
+      response.resolve({ shortText: 'Kata nama ialah nama orang, tempat, benda atau haiwan.' });
+      await flushEffects();
+      expect(body.scrollTop).toBe(360);
+      expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('reveals only the hidden bottom of a partly visible short reply', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    body.scrollTop = 360;
+    const spy = vi.spyOn(window.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function () {
+        if (this.id === 'tutor-ai-body') return { top: 100, bottom: 460, height: 360 };
+        if (this.classList.contains('chat-bubble') && this.classList.contains('ai')) {
+          return { top: 350, bottom: 480, height: 130 };
+        }
+        return { top: 0, bottom: 0, height: 0 };
+      });
+    try {
+      await setInputValue(input, 'Beri petunjuk');
+      await pressEnter(input);
+      response.resolve({ shortText: 'Cari perkataan yang menunjukkan tempat.' });
+      await flushEffects();
+      expect(body.scrollTop).toBe(392);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('ignores delayed programmatic scroll events after switching question context', async () => {
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+    body.scrollTop = 600;
+    await renderTutor({
+      conversationKey: 'account-a::child-a::bm::kata-nama::session-a::q2',
+      question: { id: 'q2', q: 'Pilih tempat.', answer: 'taman' }
+    });
+    expect(body.scrollTop).toBe(0);
+    await act(async () => body.dispatchEvent(new window.Event('scroll', { bubbles: true })));
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+  });
+
   it('does not steal a manual scroll-up position while Tutor reply is pending', async () => {
     const response = deferred();
     vi.mocked(getTutorResponse).mockReturnValue(response.promise);
@@ -384,10 +456,17 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     await setInputValue(input, 'Tolong bagi contoh');
     await pressEnter(input);
     body.scrollTop = 120;
-    await act(async () => body.dispatchEvent(new window.Event('scroll', { bubbles: true })));
+    await act(async () => {
+      body.dispatchEvent(new window.Event('touchstart', { bubbles: true }));
+      body.dispatchEvent(new window.Event('scroll', { bubbles: true }));
+    });
     response.resolve({ shortText: 'Balasan baru selepas murid scroll ke atas.' });
     await flushEffects();
     expect(body.scrollTop).toBe(120);
+    const notice = document.querySelector('.tutor-ai-new-reply-button');
+    expect(notice.textContent).toContain('Balasan baharu');
+    await act(async () => notice.click());
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
   });
 
   it('does not jump when loading changes or Tutor tool panels are toggled', async () => {
