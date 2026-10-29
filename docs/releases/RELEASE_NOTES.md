@@ -1,44 +1,48 @@
-# Jannati AI Tutor 3.13.35 Release Notes
+# Jannati AI Tutor 3.13.36 Release Notes
 
 Status: stable
-Tag: v3.13.35
-Build date: 2026-10-24T11:21:03.435Z
+Tag: v3.13.36
+Build date: 2026-10-29T03:00:08.289Z
 
-## Registered-account Quiz STT opt-in preparation
+## Pre-launch production scope
 
-- Adds a production-build opt-in path for Quiz MediaRecorder transcription. It remains explicit rather than automatic; ordinary mobile Quiz behavior and editable manual typing remain available.
-- Uses a dedicated Quiz STT Worker that authenticates Supabase production sessions server-side and permits registered accounts without a UUID allowlist.
-- Preserves exact production CORS, per-account and global rate limits, a 1 MiB audio guard, the eight-second browser capture limit, and a server-side emergency kill switch.
-- Adds a strongly consistent Durable Object counter capped at 100 AI inference reservations per UTC day. The counter fails closed and stores only the UTC date and aggregate count.
-- Requires a fresh adult or lawful parent/guardian acknowledgement for every short recording. Audio is transient, the transcript remains editable, and Quiz never grades automatically from the transcript.
-- Does not change the existing Bacaan/Bertutur Worker, Supabase schema/RPC, rewards, XP, coins, Premium/payment, or any of the 4,530 question contracts.
+- Publishes the reviewed frontend to the official production URL for owner-only pre-launch testing with synthetic or disposable test data.
+- Does not run a database migration, database push, password reset, Worker deployment, or production-data change.
+- Gate A2 backup, encryption, and restore rehearsal remain **NOT RUN / NO-GO**. This release must not be represented as proof of database recovery readiness.
+- Wider pupil access, paid launch, Gate A2, v3.13.36 physical-device acceptance, and production Quiz STT activation remain on hold.
 
-## Activation boundary
+## Tutor AI improvements since v3.13.35
 
-- The dedicated production Quiz STT Worker configuration keeps `QUIZ_STT_PILOT_ENABLED=false` and diagnostics disabled; the reviewed Worker must first be deployed and verified in that OFF state.
-- This frontend release does **not** activate Quiz STT for all registered accounts. The query opt-in cannot bypass the server kill switch, authentication, access policy, rate limits, or quota.
-- Activation remains blocked until the live Cloudflare account is verified as Free with no paid billing path, the Worker passes an OFF-baseline and controlled security/quota test, and adult-consented physical tests pass on iPhone Safari and Android Chrome.
-- Guardian status is self-attested in the current UI; it is not an independently verified or auditable guardian relationship. Product/legal acceptance remains required before broad child use.
+- Adds privacy-bounded, local-first conversation memory with strict child, account, session, topic, and question isolation.
+- Adds deterministic misconception support, approved authored examples, adaptive teaching steps, grounded multilingual follow-ups, and ungraded micro-check dialogue.
+- Preserves canonical quiz scoring, protected-answer policy, Mathematics pedagogy, XP, coins, rewards, and speech integration.
+- Cancels stale microphone activity across Tutor context changes and rejects late transcripts from a previous learner or question.
+- Improves accessible chat announcements, composer focus, draft preservation, RTL/language semantics, and modal focus restoration.
+- Remote generative AI remains disabled; Tutor responses continue to use the reviewed local-first path with no new paid API.
 
-## Release readiness
+## Guardian and Quiz STT boundaries
 
-- Unit tests: 1,054 passed across 67 test files.
+- Adds reviewed guardian-consent controls and bounded authorization resources for any future Quiz STT activation.
+- The Quiz STT Worker remains disabled by its production kill switch. This frontend release does not deploy or activate the Worker.
+- The current frontend permits only an explicit pilot URL opt-in; authentication, current guardian consent, Worker access controls, rate limits, quota, and the server kill switch remain mandatory.
+- Physical iPhone Safari, Android Chrome, VoiceOver, TalkBack, microphone, and consent-flow acceptance remain **NOT RUN**.
+
+## Automated release evidence
+
+- Unit tests: 1,311 passed.
 - Validation: 0 errors, 0 warnings, 14,816 informational items.
 - Subjects: 8; topics: 84; questions: 4,530; curriculum coverage: 100%.
-- Tagged-production-equivalent bundle: initial JavaScript 869.22 / 900 kB, entry 304.52 / 350 kB, largest lazy chunk 459.49 / 480 kB, Tutor incremental runtime 107.85 / 125 kB.
-- Credential safety, build structure, speech/STT regressions, Worker tests, QA-preview isolation, release-pipeline audits, and the production Worker Wrangler dry-run pass.
+- Local release build: initial JavaScript 875.84 / 900 kB; entry 310.90 / 350 kB; largest chunk 459.49 / 480 kB; Tutor incremental runtime 115,714 / 125,000 bytes.
+- Build structure and credential safety pass; no service-role credential is present in JavaScript assets.
 
-## Physical acceptance status
+## Outstanding limitations
 
-- Quiz MediaRecorder-STT on iPhone Safari: **NOT RUN**.
-- Quiz MediaRecorder-STT on Android Chrome: **NOT RUN**.
-- VoiceOver and TalkBack: **NOT RUN**.
-- Five-question microphone lifecycle, latency, retry, quota display, and privacy-indicator clearance: **NOT RUN**.
-- Existing native Quiz speech and Bacaan/Bertutur physical regression for this release: **NOT RUN**.
-- Automated validation does not prove physical microphone reliability or authorize broad activation.
+- Issue #148 remains open because Gate A2 backup/restore evidence and physical-device acceptance are incomplete.
+- Cross-device production acceptance and live guardian-consent testing are not claimed by this release.
+- Automated checks do not prove real-device microphone, screen-reader, or production database recovery behavior.
 
-## Rollback reference
+## Rollback
 
-- Last stable production release before this patch: `v3.13.34` at source commit `9e5806af13a414ce7c999d495112c65024febdd1`.
-- GitHub Pages before this release: `5a6361fb73498925e2473857f8a35c361ccf7ce7`.
-- Frontend rollback must use the repository's immutable tagged deployment path. The Worker can be independently returned to its committed OFF state through the existing kill switch.
+- Last production release before this release: immutable tag `v3.13.35` at source commit `95ddf57fe7ad4c020878ea8055e9dcaf57019b38`.
+- Stop owner testing if a critical regression appears. Recover the frontend through the reviewed tag-based release path using the known-good `v3.13.35` source; never move or overwrite an existing tag.
+- There is no database rollback step for v3.13.36 because this release performs no database change. Gate A2 remains unresolved rather than being marked PASS.
