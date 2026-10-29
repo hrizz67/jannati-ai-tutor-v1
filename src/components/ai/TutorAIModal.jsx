@@ -179,18 +179,29 @@ function MessageBubble({ role = 'ai', text = '', suggestions = [], loading = fal
   );
 }
 
-export function TutorAINoticeStack({ status = 'idle', statusLabel = '' }) {
+export function TutorAINoticeStack({ status = 'idle', statusLabel = '', announcement = '', subjectId = '' }) {
   const showStatus = status === 'loading' || status === 'error' || status === 'fallback';
   return (
     <div className="tutor-ai-notice-stack" data-modal-region="notices">
       {showStatus && (
-        <div className={`chat-status chat-status-${status}`} aria-live="polite">
+        <div className={`chat-status chat-status-${status}`}>
           {statusLabel}
         </div>
       )}
       <p className="tutor-ai-disclosure">
         Tutor AI membantu pembelajaran dan boleh tersilap. Jangan kongsi maklumat peribadi; semak perkara penting bersama guru atau penjaga.
       </p>
+      <SubjectLanguageText
+        as="p"
+        className="interactive-screen-reader-only tutor-ai-announcement"
+        text={announcement}
+        subjectId={subjectId}
+        teaching
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-tutor-announcement="true"
+      />
     </div>
   );
 }
@@ -234,6 +245,8 @@ export default function TutorAIModal({
   const requestIdRef = useRef(0);
   const requestContextRef = useRef('');
   const inputDraftRef = useRef('');
+  const inputEditRevisionRef = useRef(0);
+  const pendingAnnouncementRef = useRef(null);
   const speechSessionRef = useRef(null);
   const [conversationState, setConversationState] = useState(() => createScopedConversationState());
   const [input, setInput] = useState('');
@@ -244,6 +257,7 @@ export default function TutorAIModal({
   const [pendingPedagogicalStep, setPendingPedagogicalStep] = useState(null);
   const [speechState, setSpeechState] = useState('idle');
   const [speechMessage, setSpeechMessage] = useState('');
+  const [chatAnnouncement, setChatAnnouncement] = useState('');
 
   const studentProfile = adaptiveProfile || profile || {};
   const studentName = getStudentDisplayName([profile, adaptiveProfile], '');
@@ -329,6 +343,8 @@ export default function TutorAIModal({
     setError('');
     setActiveToolPanel('');
     setPendingPedagogicalStep(null);
+    pendingAnnouncementRef.current = null;
+    setChatAnnouncement('');
     speechSessionRef.current?.cancel?.();
     speechSessionRef.current = null;
     setSpeechState(speechSupported ? 'idle' : 'unsupported');
@@ -350,6 +366,8 @@ export default function TutorAIModal({
       speechSessionRef.current?.cancel?.();
       speechSessionRef.current = null;
       setPendingPedagogicalStep(null);
+      pendingAnnouncementRef.current = null;
+      setChatAnnouncement('');
       setSpeechState(speechSupported ? 'idle' : 'unsupported');
       setSpeechMessage('');
       return undefined;
@@ -378,6 +396,8 @@ export default function TutorAIModal({
     setStatus('idle');
     setError('');
     setActiveToolPanel('');
+    pendingAnnouncementRef.current = null;
+    setChatAnnouncement('');
     if (speechSupported) setSpeechState('idle');
     setSpeechMessage('');
     return () => {
@@ -400,8 +420,11 @@ export default function TutorAIModal({
   }, [messages, loading, activeToolPanel]);
 
   useEffect(() => {
-    if (messages.length > 1 && !loading) bodyRef.current?.focus?.({ preventScroll: true });
-  }, [messages.length, loading]);
+    const latestMessage = messages.at(-1);
+    if (!latestMessage || latestMessage !== pendingAnnouncementRef.current) return;
+    pendingAnnouncementRef.current = null;
+    setChatAnnouncement(normalizeText(latestMessage.text, ''));
+  }, [messages]);
 
   useEffect(() => {
     if (!open || !(typeof import.meta !== 'undefined' && import.meta.env?.DEV)) return;
@@ -422,8 +445,11 @@ export default function TutorAIModal({
     }
   }, [open, normalizedQuestionText, normalizedInstruction, normalizedExpectedAnswer, normalizedLearningObjective, activeSubject?.id, activeTopic?.id]);
 
-  async function sendMessage(rawText = input, intent = 'general', tutorAction = null) {
-    const text = normalizeText(rawText, '');
+  async function sendMessage(rawText, intent = 'general', tutorAction = null) {
+    const fromComposer = rawText === undefined;
+    const submittedDraft = fromComposer ? inputDraftRef.current : '';
+    const submittedEditRevision = inputEditRevisionRef.current;
+    const text = normalizeText(fromComposer ? input : rawText, '');
     if (!text || loading) return;
     speechSessionRef.current?.cancel?.();
     speechSessionRef.current = null;
@@ -433,9 +459,16 @@ export default function TutorAIModal({
     const startedContext = requestContextKey;
     const nextHistory = [...messages, { role: 'user', text }];
     setMessages(nextHistory);
+    if (fromComposer) {
+      inputDraftRef.current = '';
+      setInput('');
+    }
     setLoading(true);
     setStatus('loading');
     setError('');
+    setChatAnnouncement(languagePresentation.teachingLanguage === 'en'
+      ? 'Tutor AI is typing...'
+      : 'Tutor AI sedang menaip...');
     try {
       if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) console.time('TutorAI:response');
       const response = await withTimeout(getTutorResponse({
@@ -479,10 +512,8 @@ export default function TutorAIModal({
       if (Object.prototype.hasOwnProperty.call(response || {}, 'pendingPedagogicalStep')) {
         setPendingPedagogicalStep(response.pendingPedagogicalStep || null);
       }
-      setMessages(prev => {
-        const nextText = normalizeText(response?.shortText || response?.text, fallbackMessage);
-        if (normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(nextText)) return prev;
-        return [...prev, {
+      const nextText = normalizeText(response?.shortText || response?.text, fallbackMessage);
+      const nextMessage = {
         role: 'ai',
         text: nextText,
         persistedText: removeStudentIdentityFromAssistantText(nextText, studentName),
@@ -497,19 +528,29 @@ export default function TutorAIModal({
             ? response.quickReplies
             : (response?.suggestedActions || response?.suggestions)
           )
-        }];
-      });
+      };
+      if (normalizeForDuplicate(nextHistory.at(-1)?.text) !== normalizeForDuplicate(nextText)) {
+        pendingAnnouncementRef.current = nextMessage;
+        setMessages([...nextHistory, nextMessage]);
+      } else {
+        setChatAnnouncement('');
+      }
       setStatus(response?.fallbackUsed ? 'fallback' : 'success');
       setError(response?.fallbackUsed ? fallbackMessage : '');
-      setInput('');
     } catch (err) {
       if (requestIdRef.current !== started || requestContextRef.current !== startedContext) return;
       const message = err?.code === 'TUTOR_RESPONSE_TIMEOUT' ? timeoutMessage : fallbackMessage;
-      setMessages(prev => normalizeForDuplicate(prev.at(-1)?.text) === normalizeForDuplicate(message)
-        ? prev
-        : [...prev, { role: 'ai', text: message, suggestions: [] }]);
+      if (normalizeForDuplicate(nextHistory.at(-1)?.text) !== normalizeForDuplicate(message)) {
+        const nextMessage = { role: 'ai', text: message, suggestions: [] };
+        pendingAnnouncementRef.current = nextMessage;
+        setMessages([...nextHistory, nextMessage]);
+      }
       setStatus('error');
       setError(message);
+      if (fromComposer && inputEditRevisionRef.current === submittedEditRevision) {
+        inputDraftRef.current = submittedDraft;
+        setInput(submittedDraft);
+      }
     } finally {
       if (requestIdRef.current === started && requestContextRef.current === startedContext) {
         setLoading(false);
@@ -569,6 +610,7 @@ export default function TutorAIModal({
       lang: languagePresentation.contentLocale,
       onDraftChange(nextDraft) {
         const boundedDraft = nextDraft.slice(0, 700);
+        inputEditRevisionRef.current += 1;
         inputDraftRef.current = boundedDraft;
         setInput(boundedDraft);
         window.requestAnimationFrame?.(() => inputRef.current?.focus?.());
@@ -648,7 +690,12 @@ export default function TutorAIModal({
           />
         </header>
 
-        <TutorAINoticeStack status={status} statusLabel={statusLabel} />
+        <TutorAINoticeStack
+          status={status}
+          statusLabel={statusLabel}
+          announcement={chatAnnouncement}
+          subjectId={activeSubject?.id}
+        />
 
         <div className="ai-chat-body" id="tutor-ai-body" ref={bodyRef} tabIndex="-1">
           {hasVisibleQuestionContext && (
@@ -755,7 +802,11 @@ export default function TutorAIModal({
           <input
             ref={inputRef}
             value={input}
-            onChange={event => setInput(event.target.value)}
+            onChange={event => {
+              inputEditRevisionRef.current += 1;
+              inputDraftRef.current = event.target.value;
+              setInput(event.target.value);
+            }}
             onKeyDown={event => {
               if (event.key === 'Enter') {
                 event.preventDefault();
@@ -764,6 +815,8 @@ export default function TutorAIModal({
             }}
             placeholder="Tanya Janna..."
             aria-label="Tanya Janna"
+            lang={languagePresentation.contentLanguage}
+            dir="auto"
             maxLength={700}
           />
           <button

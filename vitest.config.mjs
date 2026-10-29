@@ -8,7 +8,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['tests/unit/**/*.test.js'],
+    include: ['tests/unit/**/*.test.js', 'tests/unit/**/*.test.jsx'],
     maxWorkers: 2,
     reporters: ['default']
   }
