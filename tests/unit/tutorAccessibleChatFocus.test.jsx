@@ -465,8 +465,73 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     expect(body.scrollTop).toBe(120);
     const notice = document.querySelector('.tutor-ai-new-reply-button');
     expect(notice.textContent).toContain('Balasan baharu');
+    notice.focus();
+    expect(document.activeElement).toBe(notice);
     await act(async () => notice.click());
+    const dialog = document.querySelector('[role="dialog"]');
+    const replies = document.querySelectorAll('#tutor-ai-body .chat-bubble.ai:not(.chat-bubble-loading)');
+    const latestReply = replies[replies.length - 1];
     expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    expect(document.activeElement).toBe(latestReply);
+    expect(latestReply.tabIndex).toBe(-1);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
+
+  it('keeps keyboard focus inside modal after a focused new-reply button unmounts', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    const dialog = document.querySelector('[role="dialog"]');
+    const closeButton = document.querySelector('button[aria-label="Tutup"]');
+    const outsideButton = opener;
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+
+    await setInputValue(input, 'Terangkan satu langkah');
+    await pressEnter(input);
+    await setInputValue(input, 'Draf baru yang belum dihantar');
+    body.scrollTop = 120;
+    await act(async () => {
+      body.dispatchEvent(new window.Event('touchstart', { bubbles: true }));
+      body.dispatchEvent(new window.Event('scroll', { bubbles: true }));
+    });
+    response.resolve({ shortText: 'Baca petunjuk pertama dahulu.' });
+    await flushEffects();
+
+    const button = document.querySelector('.tutor-ai-new-reply-button');
+    expect(button).not.toBeNull();
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    await act(async () => button.click());
+
+    const replies = document.querySelectorAll('#tutor-ai-body .chat-bubble.ai:not(.chat-bubble-loading)');
+    const lastReply = replies[replies.length - 1];
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    expect(document.activeElement).toBe(lastReply);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).not.toBe(document.body);
+    expect(input.value).toBe('Draf baru yang belum dihantar');
+
+    // JSDOM does not synthesize native Tab traversal. Verify the adjacent
+    // focusable target is in the modal, then the modal's last-control trap.
+    const nextFocusable = lastReply.querySelector('button:not([disabled])');
+    expect(nextFocusable).not.toBeNull();
+    nextFocusable.focus();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    const sendButton = dialog.querySelector('.ai-chat-input button:last-of-type');
+    expect(sendButton).not.toBeNull();
+    sendButton.focus();
+    await act(async () => {
+      window.dispatchEvent(new window.KeyboardEvent('keydown', {
+        key: 'Tab', bubbles: true, cancelable: true
+      }));
+    });
+    expect(document.activeElement).toBe(closeButton);
+    expect(document.activeElement).not.toBe(outsideButton);
   });
 
   it('does not jump when loading changes or Tutor tool panels are toggled', async () => {
