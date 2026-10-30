@@ -121,7 +121,7 @@ function createSpeakingPromptSet(id, seeds) {
   const language = id === 'bm' ? 'BM' : id === 'english' ? 'Bahasa Inggeris' : 'Bahasa Arab';
   const speechLang = id === 'bm' ? 'ms-MY' : id === 'english' ? 'en-US' : 'ar-SA';
   return { id, language, speechLang, title: `${language} Bertutur`, sessionItems: seeds.map((text, index) => {
-    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index });
+    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index, mode: 'speaking' });
     const keywords = rubric.topicTerms;
     const prompt = label => ({ label, text, keywords, rubric });
     return { id: `${id}-${index + 1}`, title: `${language} Bertutur ${index + 1}`, prompts: { intro: prompt('Bercakap'), describe: prompt('Huraikan'), answer: prompt('Jawab'), repeat: prompt('Ulang') } };
@@ -249,7 +249,7 @@ function createWritingSet(id, seeds) {
     const clean = variation.replace(/[.?!]/g, '');
     const words = clean.split(/\s+/).slice(0, 4);
     const keywords = clean.split(/\s+/).slice(0, 3);
-    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index % seeds.length });
+    const rubric = buildSemanticCommunicationRubric(text, { language: id, seedIndex: index % seeds.length, mode: 'writing' });
     const task = (label) => ({ label, prompt: variation, words, keywords: rubric.topicTerms, answer: clean, rubric });
     return { id: `${id}-${index + 1}`, title: `${language} Menulis ${index + 1}`, tasks: { arrange: task('Susun ayat'), blank: task('Isi tempat kosong'), short: task('Jawapan pendek'), build: task('Bina ayat'), paragraph: task('Perenggan mudah') } };
   });

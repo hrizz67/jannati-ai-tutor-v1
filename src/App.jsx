@@ -96,7 +96,7 @@ import {
   normalizeCommunicationResult,
   sanitizeCommunicationScoreHistory
 } from './utils/communicationResult.js';
-import { assessSemanticCommunicationResponse } from './utils/semanticCommunicationAssessment.js';
+import { assessSemanticCommunicationResponse, getSemanticCommunicationRewardScore } from './utils/semanticCommunicationAssessment.js';
 const CommunicationContentGate = React.lazy(() => import('./components/communication/CommunicationContentGate.jsx'));
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
@@ -5216,7 +5216,7 @@ export default function App() {
   }
 
   function finishBertutur(result) {
-    const score = result?.score || 0;
+    const score = getSemanticCommunicationRewardScore(result);
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
     const reward = applyLearnerReward(profile, {
@@ -5244,7 +5244,7 @@ export default function App() {
   }
 
   function finishMenulis(result) {
-    const score = result?.score || 0;
+    const score = getSemanticCommunicationRewardScore(result);
     const today = todayKey();
     const memoryResult = { ...result, date: new Date().toISOString() };
     const reward = applyLearnerReward(profile, {
@@ -7292,7 +7292,10 @@ function BertuturCoach({ content, resume, onResumeChange, onClearResume, onBack,
       bestScore: Math.max(...completedScores),
       latestPercent: completedScores[completedScores.length - 1],
       matchedKeywords: Array.isArray(nextResult.matchedKeywords) ? nextResult.matchedKeywords.length : Array.isArray(nextResult.matched) ? nextResult.matched.length : 0,
-      totalKeywords: Number(nextResult.totalKeywords) || safeKeywords.length
+      totalKeywords: Number(nextResult.totalKeywords) || safeKeywords.length,
+      masteryEligible: nextResult.masteryEligible === true,
+      rewardEligible: nextResult.rewardEligible !== false,
+      assessmentBasis: nextResult.assessmentBasis || ''
     });
     onClearResume?.();
   }
@@ -7593,7 +7596,10 @@ function MenulisCoach({ content, resume, onResumeChange, onClearResume, onBack, 
       matchedKeywords: Array.isArray(nextResult.matched) ? nextResult.matched.length : 0,
       totalKeywords: Number(nextResult.totalKeywords) || safeTask?.keywords?.length || 0,
       spellingIssues: Array.isArray(nextResult.spellingIssues) ? nextResult.spellingIssues.length : 0,
-      grammarPetunjuks: Array.isArray(nextResult.grammarPetunjuks) ? nextResult.grammarPetunjuks : []
+      grammarPetunjuks: Array.isArray(nextResult.grammarPetunjuks) ? nextResult.grammarPetunjuks : [],
+      masteryEligible: nextResult.masteryEligible === true,
+      rewardEligible: nextResult.rewardEligible !== false,
+      assessmentBasis: nextResult.assessmentBasis || ''
     });
     onClearResume?.();
   }

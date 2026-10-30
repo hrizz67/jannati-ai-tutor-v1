@@ -16,42 +16,52 @@ const FUNCTION_WORDS = Object.freeze({
   arab: new Set(['انا', 'الى', 'في', 'من', 'هذا', 'هذه', 'و'])
 });
 
-const REVIEWED_SEMANTIC_CUES = Object.freeze({
+const NEGATION_WORDS = Object.freeze({
+  bm: new Set(['bukan', 'jangan', 'tidak', 'tak']),
+  english: new Set(['cannot', "can't", 'do not', "don't", 'never', 'no', 'not']),
+  arab: new Set(['لا', 'ولا', 'ليس', 'ليست', 'لن', 'ما'])
+});
+
+// These paired groups are a deliberately bounded, teacher-reviewed evidence
+// contract for the ten authored Year 2 themes shared by Menulis and the first
+// ten Bertutur prompts. They support formative feedback only; matching them is
+// not a claim that the app understands unrestricted natural-language meaning.
+const REVIEWED_TASK_EVIDENCE = Object.freeze({
   bm: [
-    ['makan', 'minum', 'nasi', 'roti', 'telur', 'susu', 'buah', 'bubur', 'bijirin', 'mi'],
-    ['belajar', 'bersih', 'guru', 'kelas', 'kerusi', 'meja', 'murid', 'papan'],
-    ['bulu', 'comel', 'kucing', 'makan', 'manja', 'tidur'],
-    ['bas', 'berjalan', 'kereta', 'sekolah', 'van'],
-    ['basuh', 'bersih', 'gosok', 'mandi', 'sapu', 'sabun'],
-    ['bermain', 'bola', 'gelongsor', 'kejar', 'taman'],
-    ['awan', 'cerah', 'hujan', 'mendung', 'panas', 'sejuk'],
-    ['buah', 'makan', 'sihat', 'sayur', 'susu'],
-    ['baik', 'berkongsi', 'kawan', 'membantu', 'rajin'],
-    ['bermain', 'keluarga', 'membaca', 'melawat', 'menolong']
+    [['makan', 'minum', 'bersarapan'], ['nasi', 'roti', 'telur', 'susu', 'buah', 'bubur', 'bijirin', 'mi', 'sarapan']],
+    [['belajar', 'duduk', 'menulis', 'membaca'], ['guru', 'kelas', 'kerusi', 'meja', 'murid', 'papan']],
+    [['ada', 'makan', 'tidur', 'bermain'], ['bulu', 'comel', 'kucing', 'manja']],
+    [['pergi', 'menaiki', 'berjalan', 'memandu'], ['bas', 'kereta', 'sekolah', 'van']],
+    [['basuh', 'gosok', 'mandi', 'sapu', 'membersihkan'], ['bersih', 'gigi', 'tangan', 'sabun']],
+    [['bermain', 'berlari', 'kejar'], ['bola', 'gelongsor', 'taman']],
+    [['hujan', 'cerah', 'mendung'], ['awan', 'panas', 'sejuk', 'cuaca']],
+    [['makan', 'minum', 'memilih'], ['buah', 'sihat', 'sayur', 'susu', 'makanan']],
+    [['berkongsi', 'membantu', 'bermain'], ['baik', 'kawan', 'rajin']],
+    [['bermain', 'membaca', 'melawat', 'menolong'], ['keluarga', 'hujung', 'minggu']]
   ],
   english: [
-    ['eat', 'drink', 'rice', 'bread', 'egg', 'milk', 'fruit', 'cereal', 'noodles'],
-    ['learn', 'clean', 'teacher', 'class', 'chair', 'desk', 'pupil', 'board'],
-    ['fur', 'cute', 'cat', 'eat', 'sleep', 'play'],
-    ['bus', 'walk', 'car', 'school', 'van'],
-    ['wash', 'clean', 'brush', 'bathe', 'soap'],
-    ['play', 'ball', 'slide', 'run', 'park'],
-    ['cloud', 'sunny', 'rain', 'cloudy', 'hot', 'cold'],
-    ['fruit', 'eat', 'healthy', 'vegetable', 'milk'],
-    ['kind', 'share', 'friend', 'help', 'helpful'],
-    ['play', 'family', 'read', 'visit', 'help']
+    [['eat', 'drink', 'have'], ['rice', 'bread', 'egg', 'milk', 'fruit', 'cereal', 'noodles', 'breakfast']],
+    [['learn', 'sit', 'write', 'read'], ['teacher', 'class', 'chair', 'desk', 'pupil', 'board']],
+    [['have', 'eat', 'sleep', 'play'], ['fur', 'cute', 'cat', 'pet']],
+    [['go', 'ride', 'walk', 'drive'], ['bus', 'car', 'school', 'van']],
+    [['wash', 'clean', 'brush', 'bathe'], ['hands', 'teeth', 'soap', 'clean']],
+    [['play', 'run', 'chase'], ['ball', 'slide', 'park']],
+    [['rain', 'shine'], ['cloud', 'sunny', 'cloudy', 'hot', 'cold', 'weather']],
+    [['eat', 'drink', 'choose'], ['fruit', 'healthy', 'vegetable', 'milk', 'food']],
+    [['share', 'help', 'play'], ['kind', 'friend', 'helpful']],
+    [['play', 'read', 'visit', 'help'], ['family', 'weekend']]
   ],
   arab: [
-    ['اكل', 'اشرب', 'خبز', 'الخبز', 'ارز', 'الارز', 'بيض', 'البيض', 'والبيض', 'حليب', 'فاكهة'],
-    ['اتعلم', 'نظيف', 'معلم', 'فصل', 'كرسي', 'مكتب', 'تلميذ'],
-    ['قطة', 'جميلة', 'تنام', 'تاكل', 'تلعب'],
-    ['حافلة', 'امشي', 'سيارة', 'مدرسة'],
-    ['اغسل', 'نظيف', 'اسنان', 'صابون'],
-    ['العب', 'كرة', 'حديقة', 'اجري'],
-    ['شمس', 'مطر', 'غائم', 'حار', 'بارد'],
-    ['فاكهة', 'خضروات', 'صحي', 'حليب'],
-    ['طيب', 'صديق', 'اساعد', 'اشارك'],
-    ['العب', 'اسرة', 'اقرا', 'ازور', 'اساعد']
+    [['اكل', 'اشرب', 'اتناول'], ['خبز', 'الخبز', 'ارز', 'الارز', 'بيض', 'البيض', 'والبيض', 'حليب', 'فاكهة', 'فطور']],
+    [['اتعلم', 'اجلس', 'اكتب', 'اقرا'], ['معلم', 'فصل', 'كرسي', 'مكتب', 'تلميذ']],
+    [['عندي', 'تاكل', 'تنام', 'تلعب'], ['قطة', 'جميلة', 'حيوان']],
+    [['اذهب', 'اركب', 'امشي'], ['حافلة', 'سيارة', 'مدرسة']],
+    [['اغسل', 'انظف', 'افرش'], ['نظيف', 'اسنان', 'يدين', 'صابون']],
+    [['العب', 'اجري'], ['كرة', 'حديقة', 'لعبة']],
+    [['تمطر', 'تشرق'], ['شمس', 'مطر', 'غائم', 'حار', 'بارد', 'طقس']],
+    [['اكل', 'اشرب', 'اختار'], ['فاكهة', 'خضروات', 'صحي', 'حليب', 'طعام']],
+    [['اساعد', 'اشارك', 'العب'], ['طيب', 'صديق']],
+    [['العب', 'اقرا', 'ازور', 'اساعد'], ['اسرة', 'عطلة']]
   ]
 });
 
@@ -76,21 +86,27 @@ function tokens(value = '') {
   return normalized ? normalized.split(' ') : [];
 }
 
-export function buildSemanticCommunicationRubric(prompt = '', { language = 'bm', seedIndex = -1 } = {}) {
+export function buildSemanticCommunicationRubric(prompt = '', { language = 'bm', seedIndex = -1, mode = 'writing' } = {}) {
   const key = languageKey(language);
   const promptTokens = tokens(prompt);
   const excluded = new Set([...(INSTRUCTION_WORDS[key] || []), ...(FUNCTION_WORDS[key] || [])]);
   const topicTerms = [...new Set(promptTokens.filter(token => !excluded.has(token) && !/^\d+$/u.test(token)))];
-  const reviewedCues = Number.isInteger(seedIndex) && seedIndex >= 0 && seedIndex < 10
-    ? REVIEWED_SEMANTIC_CUES[key]?.[seedIndex] || []
+  const reviewedGroups = Number.isInteger(seedIndex) && seedIndex >= 0 && seedIndex < 10
+    ? REVIEWED_TASK_EVIDENCE[key]?.[seedIndex] || []
     : [];
+  const evidenceGroups = reviewedGroups.map(group => [...new Set(group.map(normalize).filter(Boolean))]);
   return Object.freeze({
-    version: 1,
+    version: 2,
     language: key,
+    mode: mode === 'speaking' ? 'speaking' : 'writing',
     promptText: String(prompt || '').trim(),
     topicTerms: Object.freeze(topicTerms),
-    semanticCues: Object.freeze([...new Set(reviewedCues.map(normalize).filter(Boolean))]),
-    criteria: Object.freeze(['Menjawab tugasan', 'Idea sendiri', 'Respons lengkap'])
+    semanticCues: Object.freeze([...new Set(evidenceGroups.flat())]),
+    evidenceGroups: Object.freeze(evidenceGroups.map(group => Object.freeze(group))),
+    reviewStatus: evidenceGroups.length >= 2 ? 'teacher-reviewed' : 'safe-fallback',
+    assessmentBasis: 'bounded-formative-evidence',
+    semanticUnderstanding: false,
+    criteria: Object.freeze(['Berkaitan tugasan', 'Ada tindakan dan butiran', 'Ayat cukup jelas'])
   });
 }
 
@@ -101,7 +117,7 @@ function containsPhrase(responseText, phrase) {
 }
 
 export function assessSemanticCommunicationResponse({ prompt = '', rubric = null, response = '', language = 'bm' } = {}) {
-  const safeRubric = rubric?.version === 1 ? rubric : buildSemanticCommunicationRubric(prompt, { language });
+  const safeRubric = rubric?.version === 2 ? rubric : buildSemanticCommunicationRubric(prompt, { language });
   const key = languageKey(safeRubric.language || language);
   const responseText = String(response || '').trim();
   const responseTokens = tokens(responseText);
@@ -111,6 +127,10 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
   const novelContent = contentTokens.filter(token => !promptTokens.has(token));
   const matchedTopics = safeRubric.topicTerms.filter(term => containsPhrase(responseText, term));
   const matchedCues = safeRubric.semanticCues.filter(term => containsPhrase(responseText, term));
+  const matchedEvidenceGroups = (safeRubric.evidenceGroups || []).map(group => group.filter(term => containsPhrase(responseText, term)));
+  const reviewedEvidence = safeRubric.reviewStatus === 'teacher-reviewed' && matchedEvidenceGroups.length >= 2;
+  const hasRequiredEvidence = reviewedEvidence && matchedEvidenceGroups.every(group => group.length > 0);
+  const hasNegation = [...(NEGATION_WORDS[key] || [])].some(term => containsPhrase(responseText, term));
   const normalizedPrompt = normalize(safeRubric.promptText || prompt);
   const includesVerbatimInstruction = Boolean(normalizedPrompt) && normalize(responseText).includes(normalizedPrompt);
   const promptEcho = Boolean(responseTokens.length) && (
@@ -119,27 +139,30 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
     || (includesVerbatimInstruction && matchedCues.length < 2)
   );
   const relevant = !promptEcho && (matchedTopics.length > 0 || matchedCues.length > 0);
-  const hasOwnIdea = !promptEcho && novelContent.length >= 2 && (
-    safeRubric.semanticCues.length ? matchedCues.length >= 2 : matchedTopics.length > 0
-  );
-  const complete = !promptEcho && responseTokens.length >= 3 && novelContent.length >= 2;
-  const passedCriteria = [relevant, hasOwnIdea, complete];
+  const supportedMeaning = !promptEcho && !hasNegation && hasRequiredEvidence;
+  const minimumTokens = safeRubric.mode === 'speaking' ? 3 : 4;
+  const complete = supportedMeaning && responseTokens.length >= minimumTokens && novelContent.length >= 2;
+  const passedCriteria = [relevant, supportedMeaning, complete];
   const criteria = safeRubric.criteria.map((label, index) => ({
     id: ['relevance', 'own-idea', 'complete'][index],
     label,
     status: passedCriteria[index] ? 'correct' : 'missing'
   }));
-  const score = promptEcho ? 0 : passedCriteria.reduce((sum, passed, index) => sum + (passed ? [40, 40, 20][index] : 0), 0);
+  const score = promptEcho ? 0 : passedCriteria.reduce((sum, passed, index) => sum + (passed ? [30, 40, 30][index] : 0), 0);
+  const requiresTeacherReview = hasNegation || safeRubric.reviewStatus !== 'teacher-reviewed';
   const explanation = promptEcho
     ? 'Cuba jawab dengan idea kamu sendiri, bukan ulang arahan soalan.'
     : !relevant
       ? 'Cuba jawab perkara yang diminta dalam tugasan.'
-      : !hasOwnIdea
-        ? 'Tambah sekurang-kurangnya dua idea atau butiran yang sesuai.'
+      : requiresTeacherReview
+        ? 'Janna hanya boleh beri maklum balas terhad untuk jawapan ini. Minta guru atau orang dewasa menyemak maksudnya.'
+      : !supportedMeaning
+        ? 'Tambah satu tindakan dan satu butiran yang sesuai dengan tugasan.'
         : complete
-          ? 'Bagus. Jawapan kamu relevan, mempunyai idea sendiri dan cukup lengkap.'
+          ? 'Bagus. Jawapan kamu menunjukkan tindakan, butiran dan ayat yang jelas.'
           : 'Idea kamu sesuai. Lengkapkan respons dengan ayat yang lebih jelas.';
 
+  const masteryEligible = complete && !requiresTeacherReview;
   return {
     status: 'completed',
     score,
@@ -152,8 +175,19 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
     totalKeywords: criteria.length,
     metricLabel: 'kriteria',
     promptEcho,
+    requiresTeacherReview,
+    masteryEligible,
+    rewardEligible: masteryEligible,
+    assessmentBasis: safeRubric.assessmentBasis,
+    semanticUnderstanding: false,
     transcript: responseText,
     explanation,
     message: explanation
   };
+}
+
+export function getSemanticCommunicationRewardScore(result = {}) {
+  if (result?.rewardEligible === false) return 0;
+  const score = Number(result?.score);
+  return Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : 0;
 }
