@@ -643,6 +643,7 @@ const mutationOutboxSource = fs.readFileSync('src/services/cloudMutationOutbox.j
 const egressSource = fs.readFileSync('src/services/learningSyncEgress.js', 'utf8');
 const recoverySource = fs.readFileSync('src/services/cloudSnapshotRecovery.js', 'utf8');
 const dashboardSource = fs.readFileSync('src/dashboard/HomeDashboard.jsx', 'utf8');
+const accountLogoutSource = fs.readFileSync('src/utils/accountLogout.js', 'utf8');
 const legacySqlSource = fs.readFileSync('supabase/learning_data.sql', 'utf8');
 const integritySqlSource = fs.readFileSync('supabase/migrations/20260823090000_learning_data_integrity_v3.sql', 'utf8');
 assert.match(appSource, /cloudHydratedAccountId !== accountUser\.id/, 'Autosave must wait for account cloud hydration.');
@@ -737,7 +738,8 @@ assert.match(appSource, /function restoreAccountSnapshot[\s\S]{0,450}const previ
 assert.match(appSource, /function restoreChildSnapshot[\s\S]{0,1400}const previousSnapshot = readChildScopedData\([^;]*\)[\s\S]{0,2200}Object\.entries\(previousSnapshot\)/, 'A partial child restore must roll back instead of mixing two learner profiles.');
 assert.match(appSource, /Import terus ke akaun dinyahaktifkan sementara/, 'Raw imports must not directly overwrite an authenticated cloud account.');
 assert.match(appSource, /Reset akaun dinyahaktifkan/, 'Authenticated profile reset must fail closed.');
-assert.match(appSource, /hasUnacknowledgedChanges[\s\S]{0,600}queueCloudLearningSave\(\{ markMutation: false \}\)[\s\S]{0,500}Log keluar juga/, 'Logout must attempt pending sync and warn before leaving unacknowledged data.');
+assert.match(appSource, /executeAuthenticatedLogout\(\{[\s\S]{0,500}hasPendingChanges: hasPendingCloudChanges\(exitingAccountId\)[\s\S]{0,300}queueCloudLearningSave\(\{ markMutation: false \}\)[\s\S]{0,300}Log keluar juga/, 'Logout must pass pending sync and the explicit unsynced warning through the audited controller.');
+assert.match(accountLogoutSource, /if \(hasPendingChanges\)[\s\S]{0,500}syncPendingChanges[\s\S]{0,500}confirmUnsynced[\s\S]{0,300}unsynced-cancelled/, 'The logout controller must attempt pending sync and stop unless the user explicitly confirms unsynced logout.');
 assert.match(dashboardSource, /Arkib profil[\s\S]{0,500}Undo arkib/, 'The child switcher must offer recoverable archive and undo actions.');
 assert.match(integritySqlSource, /learning_revision bigint not null default 0/, 'The server must maintain a revision for optimistic concurrency.');
 assert.match(integritySqlSource, /for update;/, 'Revision checks and writes must lock the account row atomically.');

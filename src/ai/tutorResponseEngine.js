@@ -522,6 +522,43 @@ function getCategoryRule(question = {}, topic = {}) {
   };
 }
 
+const LEARNER_CHOICE_CATEGORY_WORDS = Object.freeze({
+  person: new Set(['ali', 'aiman', 'siti', 'farah', 'murid', 'guru', 'doktor']),
+  place: new Set(['padang', 'sekolah', 'hospital', 'kedai', 'pasar', 'taman', 'kelas']),
+  animal: new Set(['kucing', 'ayam', 'gajah', 'burung', 'ikan']),
+  object: new Set(['baju', 'buku', 'kasut', 'kerusi', 'meja', 'pensel', 'seluar', 'topi']),
+  verb: new Set(['berjalan', 'berlari', 'bermain', 'makan', 'membaca', 'menulis', 'tidur']),
+  adjective: new Set(['baik', 'besar', 'cantik', 'gembira', 'kecil', 'rajin', 'tinggi'])
+});
+
+const LEARNER_CHOICE_CATEGORY_LABELS = Object.freeze({
+  person: 'kata nama orang',
+  place: 'kata nama tempat',
+  animal: 'kata nama haiwan',
+  object: 'kata nama benda',
+  verb: 'kata kerja',
+  adjective: 'kata adjektif'
+});
+
+function inferLearnerChoiceCategory(value = '') {
+  const choice = normalizeForDialogue(value);
+  if (!choice || choice.split(' ').length !== 1) return '';
+  return Object.entries(LEARNER_CHOICE_CATEGORY_WORDS)
+    .find(([, words]) => words.has(choice))?.[0] || '';
+}
+
+function buildObservedCategoryCorrection(targetCategory = '', learnerAnswer = '') {
+  if (!learnerAnswer) return '';
+  const targetLabel = LEARNER_CHOICE_CATEGORY_LABELS[targetCategory] || '';
+  const observedCategory = inferLearnerChoiceCategory(learnerAnswer);
+  const observedLabel = LEARNER_CHOICE_CATEGORY_LABELS[observedCategory] || '';
+  if (targetLabel && observedLabel && observedCategory !== targetCategory) {
+    return `Kamu memilih ${observedLabel}, tetapi soalan meminta ${targetLabel}.`;
+  }
+  if (targetLabel) return `Jawapan itu belum menunjukkan ${targetLabel} yang diminta.`;
+  return 'Semak semula kategori perkataan yang diminta oleh soalan.';
+}
+
 function buildQuestionSpecificFallback({ questionText = '', instruction = '', expectedAnswer = '', acceptedAnswers = [], options = [], learnerAnswer = '', category = 'generic' } = {}) {
   const stem = questionText || 'soalan ini';
   const accepted = acceptedAnswers.length ? acceptedAnswers.join(' atau ') : expectedAnswer;
@@ -542,11 +579,26 @@ function extractBinaAyatTokens(text = '') {
   return { word: normalizeText(word, ''), name: normalizeText(name, '') };
 }
 
-function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = '', questionText = '', instruction = '', expectedAnswer = '' } = {}) {
+function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = '', questionText = '', instruction = '', expectedAnswer = '', category = 'generic' } = {}) {
   const subject = String(subjectId).toLowerCase();
   const topic = `${topicId} ${topicTitle}`.toLowerCase();
   const stem = normalizeText(questionText, 'soalan ini');
   if (subject === 'bm') {
+    if (category === 'person') return { hint: 'Cari perkataan yang menamakan orang.', steps: ['Kenal pasti bahawa soalan meminta kata nama orang.', 'Singkirkan perkataan yang menunjukkan tempat, benda, sifat atau perbuatan.', 'Semak pilihan dengan ayat semasa.'], example: 'Gunakan kategori orang yang diminta dalam soalan semasa.' };
+    if (category === 'place') return { hint: 'Cari perkataan yang menamakan tempat.', steps: ['Kenal pasti bahawa soalan meminta kata nama tempat.', 'Singkirkan perkataan yang menunjukkan orang, benda, sifat atau perbuatan.', 'Semak pilihan dengan ayat semasa.'], example: 'Gunakan kategori tempat yang diminta dalam soalan semasa.' };
+    if (category === 'animal') return { hint: 'Cari perkataan yang menamakan haiwan.', steps: ['Kenal pasti bahawa soalan meminta kata nama haiwan.', 'Singkirkan perkataan daripada kategori lain.', 'Semak pilihan dengan ayat semasa.'], example: 'Gunakan kategori haiwan yang diminta dalam soalan semasa.' };
+    if (category === 'object') {
+      const wornObject = /pakai|dipakai|pakaian/i.test(`${stem} ${instruction}`);
+      return {
+        hint: wornObject ? 'Cari kata nama benda yang dipakai seperti yang diterangkan dalam soalan.' : 'Cari perkataan yang menamakan benda.',
+        steps: wornObject
+          ? ['Kenal pasti bahawa soalan meminta benda yang dipakai.', 'Singkirkan nama orang, tempat dan perbuatan.', 'Semak kegunaan benda itu dengan ayat semasa.']
+          : ['Kenal pasti bahawa soalan meminta kata nama benda.', 'Singkirkan nama orang, tempat, sifat dan perbuatan.', 'Semak pilihan dengan ayat semasa.'],
+        example: wornObject ? 'Gunakan kategori benda yang dipakai, tanpa meneka jawapan.' : 'Gunakan kategori benda yang diminta dalam soalan semasa.'
+      };
+    }
+    if (category === 'verb') return { hint: 'Cari kata kerja yang menunjukkan perbuatan.', steps: ['Kenal pasti perbuatan yang berlaku dalam ayat.', 'Singkirkan nama orang, tempat dan benda.', 'Semak kata kerja itu dengan subjek ayat.'], example: 'Gunakan perbuatan yang disebut dalam soalan semasa.' };
+    if (category === 'adjective') return { hint: 'Cari kata adjektif yang menerangkan sifat atau keadaan.', steps: ['Kenal pasti sifat atau keadaan yang diterangkan.', 'Singkirkan nama dan perbuatan.', 'Semak kata adjektif itu dengan ayat semasa.'], example: 'Gunakan sifat atau keadaan daripada soalan semasa.' };
     if (/kata_nama_am|kata nama am/.test(topic)) return { hint: 'Bezakan nama umum dengan nama khas dalam ayat.', steps: ['Cari perkataan yang menamakan orang, haiwan, benda atau tempat.', 'Tentukan sama ada nama itu umum atau khusus.', 'Semak pilihan dengan maksud ayat.'], example: 'Gunakan nama benda atau tempat daripada ayat semasa.' };
     if (/kata_nama_khas|kata nama khas/.test(topic)) return { hint: 'Cari nama khusus dan semak penggunaan huruf besar.', steps: ['Kenal pasti nama orang, tempat atau benda tertentu.', 'Bezakan nama khusus daripada nama umum.', 'Semak huruf besar pada nama khas.'], example: 'Gunakan nama khusus yang terdapat dalam ayat.' };
     if (/kata_ganti_nama|kata ganti nama/.test(topic)) return { hint: 'Lihat siapa yang bercakap atau dirujuk sebelum memilih kata ganti nama.', steps: ['Kenal pasti orang dalam ayat.', 'Pilih kata ganti nama yang sepadan.', 'Baca semula ayat supaya maksudnya jelas.'], example: 'Gunakan kata ganti nama daripada ayat semasa.' };
@@ -658,7 +710,7 @@ function buildContextualSections({
         'Akhiri ayat dengan tanda noktah.'
       ]
     : [];
-  const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer });
+  const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, category: categoryRule.category });
   const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
   const answerRevealPolicy = guided?.answerRevealPolicy || getAnswerRevealPolicy({
@@ -723,9 +775,12 @@ function buildContextualSections({
   const commonMistake = answerSafeText([
     isBinaAyat && !isCorrect
       ? `${binaTokens.name ? `Nama “${binaTokens.name}” sudah ada. ` : ''}${binaTokens.word ? `Kata “${binaTokens.word}” sudah ada. ` : ''}Tambah objek, tempat atau tujuan, kemudian semak huruf besar dan tanda noktah.` :
-    coachKnowledge?.commonMistakes?.[0] ||
-    coachResponse?.commonMistakes?.[0] ||
-    categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : '',
+      (learner ? (
+        buildObservedCategoryCorrection(categoryRule.category, learner) ||
+        coachKnowledge?.commonMistakes?.[0] ||
+        coachResponse?.commonMistakes?.[0] ||
+        (categoryRule.category !== 'generic' ? categoryRule.commonMistakes?.[0] : '')
+      ) : ''),
     buildQuestionSpecificFallback({ questionText: resolvedQuestion, instruction: resolvedInstruction, options: resolvedOptions, learnerAnswer: learner, category: categoryRule.category })
   ], 'Semak semula perkara utama yang diminta oleh soalan.');
   const example = normalizeText(
@@ -1352,7 +1407,9 @@ export async function getTutorResponse(options = {}) {
     ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
     : typeof isCorrect === 'boolean'
       ? isCorrect
-      : isAcceptedQuestionAnswer(answerText, answerCheckQuestion);
+      : answerText
+        ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
+        : null;
   if (promptAnswer && (!intent || intent === 'general' || intent === 'auto')) {
     resolvedIntent = resolvedCorrect ? 'correct_answer_reinforcement' : 'wrong_answer_coaching';
   }
