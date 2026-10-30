@@ -1,8 +1,17 @@
+// Only the fill-blank scorer uses this normalization. Arabic hamza/maddah
+// distinguish authored words and must not disappear with optional vowel marks.
 function normalizeToken(value = '') {
-  return String(value || '')
-    .normalize('NFKD')
+  const raw = String(value || '');
+  const arabicScript = /\p{Script=Arabic}/u.test(raw);
+  const normalized = arabicScript
+    ? raw.normalize('NFD')
+      // Remove optional vowel/tanwin/shadda/sukun and superscript alef only.
+      // Keep U+0653..0655: maddah, hamza above and hamza below.
+      .replace(/[\u064B-\u0652\u0670]/gu, '')
+      .normalize('NFC')
+    : raw.normalize('NFKD').replace(/\p{M}/gu, '');
+  return normalized
     .toLowerCase()
-    .replace(/\p{M}/gu, '')
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
