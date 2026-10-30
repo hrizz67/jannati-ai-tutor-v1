@@ -39,6 +39,47 @@ const teachingHistory = [
   }
 ];
 
+const categoryFixtures = {
+  place: {
+    id: 'chrome-place-1',
+    q: 'Pilih kata nama tempat.',
+    instruction: 'Pilih perkataan yang menamakan tempat.',
+    options: ['padang', 'bermain', 'cantik'],
+    answer: 'padang',
+    acceptedAnswers: ['padang'],
+    explanation: 'Padang ialah kata nama tempat.'
+  },
+  verb: {
+    id: 'chrome-verb-1',
+    q: 'Pilih kata kerja dalam ayat: Siti bermain bola.',
+    instruction: 'Pilih perkataan yang menunjukkan perbuatan.',
+    options: ['bermain', 'Siti', 'bola'],
+    answer: 'bermain',
+    acceptedAnswers: ['bermain'],
+    explanation: 'Bermain ialah perbuatan.'
+  },
+  wornObject: {
+    id: 'chrome-object-1',
+    q: 'Pilih kata nama benda yang dipakai di kepala.',
+    instruction: 'Pilih benda yang dipakai.',
+    options: ['topi', 'Ali', 'berlari'],
+    answer: 'topi',
+    acceptedAnswers: ['topi'],
+    explanation: 'Topi ialah benda yang dipakai di kepala.'
+  }
+};
+
+function categoryContext(questionFixture, overrides = {}) {
+  return {
+    ...base,
+    question: questionFixture,
+    expectedAnswer: questionFixture.answer,
+    acceptedAnswers: questionFixture.acceptedAnswers,
+    conversationKey: `account-a::child-a::bm::kata_nama_am::${questionFixture.id}`,
+    ...overrides
+  };
+}
+
 describe('Chrome audit informal understanding and active-question grounding', () => {
   it.each(['tak paham', 'x faham', 'sy x paham', 'I dun understand', "I don't get it"]) (
     'recognises informal confusion without treating it as a quiz answer: %s',
@@ -119,5 +160,42 @@ describe('Chrome audit informal understanding and active-question grounding', ()
     expect(response.studentTurn.hasTeachingStage).toBe(false);
     expect(response.studentTurn.intent).toBe('question_help');
     expect(response.expectedAnswer).toBe('');
+  });
+
+  it.each([
+    ['place noun', categoryFixtures.place, /tempat/iu, /orang, haiwan, benda atau tempat/iu],
+    ['verb', categoryFixtures.verb, /kata kerja|perbuatan/iu, /orang, haiwan, benda atau tempat/iu],
+    ['worn object', categoryFixtures.wornObject, /benda.*dipakai|dipakai.*benda/iu, /nama orang/iu]
+  ])('renders active-question category guidance for %s without revealing the answer', async (_label, fixture, expected, rejected) => {
+    const response = await getTutorResponse(categoryContext(fixture, { prompt: 'Apa tu?' }));
+    const renderedGuidance = [response.text, response.sections?.hint, ...(response.sections?.steps || [])].join(' ');
+
+    expect(response.studentTurn.intent).toBe('question_help');
+    expect(renderedGuidance).toMatch(expected);
+    expect(renderedGuidance).not.toMatch(rejected);
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
+    expect(response.correctAnswer).toBe('');
+  });
+
+  it('uses a wrong-category correction only after an actual place-noun attempt', async () => {
+    const absent = await getTutorResponse(categoryContext(categoryFixtures.place, { prompt: 'Apa tu?' }));
+    const wrong = await getTutorResponse(categoryContext(categoryFixtures.place, { prompt: 'Saya jawab bermain' }));
+
+    expect(absent.sections.commonMistake).not.toMatch(/memilih kata kerja/iu);
+    expect(wrong.studentTurn).toMatchObject({ intent: 'direct_answer', answerCandidate: 'bermain' });
+    expect(wrong.sections.commonMistake).toMatch(/kata kerja/iu);
+    expect(wrong.text).toMatch(/tempat|kata kerja/iu);
+    expect(wrong.expectedAnswer).toBe('');
+  });
+
+  it('does not diagnose a person-category mistake before an object attempt exists', async () => {
+    const absent = await getTutorResponse(categoryContext(categoryFixtures.wornObject, { prompt: 'Dia tanya apa?' }));
+    const wrong = await getTutorResponse(categoryContext(categoryFixtures.wornObject, { prompt: 'Saya jawab Ali' }));
+
+    expect(absent.sections.commonMistake).not.toMatch(/memilih nama orang/iu);
+    expect(wrong.sections.commonMistake).toMatch(/nama orang/iu);
+    expect(wrong.sections.steps.join(' ')).toMatch(/benda.*dipakai|dipakai.*benda/iu);
+    expect(wrong.expectedAnswer).toBe('');
   });
 });
