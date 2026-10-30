@@ -97,7 +97,7 @@ import {
   normalizeCommunicationResult,
   sanitizeCommunicationScoreHistory
 } from './utils/communicationResult.js';
-import { settleLogoutStep, signOutCurrentBrowserSession } from './utils/accountLogout.js';
+import { clearAuthenticatedBrowserStorage, executeAuthenticatedLogout } from './utils/accountLogout.js';
 const CommunicationContentGate = React.lazy(() => import('./components/communication/CommunicationContentGate.jsx'));
 const HomeDashboard = React.lazy(() => import('./dashboard/HomeDashboard'));
 const AdminPremiumPage = React.lazy(() => import('./admin/AdminPremiumPage'));
@@ -910,16 +910,7 @@ function applyMergedCloudMetadata(payload = {}, activeChildId = '', preserveLoca
 }
 
 function clearAccountData() {
-  try {
-    const keys = [];
-    for (let index = 0; index < localStorage.length; index += 1) {
-      const key = localStorage.key(index);
-      if (isAccountDataKey(key)) keys.push(key);
-    }
-    keys.forEach(key => localStorage.removeItem(key));
-  } catch {
-    // Keep the current session usable when storage cleanup is unavailable.
-  }
+  return clearAuthenticatedBrowserStorage(localStorage, { isAccountDataKey });
 }
 
 function restoreAccountSnapshot(snapshot = {}, expectedAccountId = '') {
@@ -2367,10 +2358,12 @@ export default function App() {
     if (previousAccountId && activeScopedAccountId === previousAccountId) {
       captureAccountSnapshot(previousAccountId);
     }
-    clearAccountData();
+    const storageCleanup = clearAuthenticatedBrowserStorage(localStorage, {
+      isAccountDataKey,
+      accountScopeKey: ACCOUNT_SCOPE_KEY
+    });
     clearTransientChildState();
     try {
-      localStorage.removeItem(ACCOUNT_SCOPE_KEY);
       localStorage.setItem(ONBOARDING_KEY, 'done');
     } catch {
       // Ignore storage cleanup failures.
@@ -2414,6 +2407,7 @@ export default function App() {
       // Route cleanup is best effort; authenticated state is already cleared.
     }
     setScreen('login');
+    return storageCleanup;
   }
 
   useEffect(() => {
@@ -4587,27 +4581,27 @@ export default function App() {
         window.clearTimeout(cloudSaveTimerRef.current);
         cloudSaveTimerRef.current = null;
       }
-      const hasUnacknowledgedChanges = hasPendingCloudChanges(exitingAccountId);
-      if (hasUnacknowledgedChanges) {
-        const syncOutcome = await settleLogoutStep(
-          () => queueCloudLearningSave({ markMutation: false }),
-          { timeoutMs: 8000, timeoutCode: 'sync-timeout' }
-        );
-        const synced = syncOutcome.ok && syncOutcome.value === true;
-        if (!synced && !window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?')) {
-          setRecoveryMessages(prev => [...prev, 'Log keluar dibatalkan supaya sync boleh dicuba semula.']);
-          setLogoutStatus('idle');
-          return false;
-        }
-      }
-      accountSyncSequenceRef.current += 1;
-      const signOutResult = await signOutCurrentBrowserSession(supabase?.auth, { timeoutMs: 8000 });
-      if (!signOutResult.ok) {
-        setLogoutStatus('error');
-        setRecoveryMessages(prev => [...prev, 'Log keluar tidak berjaya. Sesi masih aktif; cuba lagi.']);
+      const logoutResult = await executeAuthenticatedLogout({
+        auth: supabase?.auth,
+        hasPendingChanges: hasPendingCloudChanges(exitingAccountId),
+        syncPendingChanges: () => queueCloudLearningSave({ markMutation: false }),
+        confirmUnsynced: () => window.confirm('Perubahan pembelajaran belum diakui server. Data kekal dalam backup akaun pada peranti ini. Log keluar juga?'),
+        invalidatePendingWork: () => { accountSyncSequenceRef.current += 1; },
+        clearAuthenticatedState: () => resetSignedOutAccountState(exitingAccountId),
+        timeoutMs: 8000
+      });
+      if (logoutResult.cancelled) {
+        setRecoveryMessages(prev => [...prev, 'Log keluar dibatalkan supaya sync boleh dicuba semula.']);
+        setLogoutStatus('idle');
         return false;
       }
-      resetSignedOutAccountState(exitingAccountId);
+      if (!logoutResult.ok) {
+        setLogoutStatus('error');
+        setRecoveryMessages(prev => [...prev, logoutResult.signedOut
+          ? 'Sesi akaun telah tamat, tetapi pembersihan data peranti belum lengkap. Muat semula aplikasi sebelum log masuk akaun lain.'
+          : 'Log keluar tidak berjaya. Sesi masih aktif; cuba lagi.']);
+        return false;
+      }
       return true;
     } catch {
       setLogoutStatus('error');
