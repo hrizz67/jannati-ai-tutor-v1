@@ -6,8 +6,8 @@ const subjectFixtures = [
   {
     label: 'BM', subject: { id: 'bm', title: 'Bahasa Melayu' }, topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
     question: 'Pilih kata nama orang.', options: ['Ali', 'berlari', 'cantik'], answer: 'Ali',
-    hint: 'Bezakan nama umum dengan nama khas dalam ayat.',
-    firstStep: 'Cari perkataan yang menamakan orang, haiwan, benda atau tempat.'
+    hint: 'Cari perkataan yang menamakan orang.',
+    firstStep: 'Kenal pasti bahawa soalan meminta kata nama orang.'
   },
   {
     label: 'English', subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
