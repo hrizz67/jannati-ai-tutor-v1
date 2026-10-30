@@ -1,48 +1,55 @@
-# Jannati AI Tutor 3.13.37 Release Notes
+# Jannati AI Tutor 3.13.38 Release Notes
 
 Status: stable
-Tag: v3.13.37
-Build date: 2026-10-29T07:53:20.197Z
+Target tag: v3.13.38 (not created)
+Build date: 2026-10-30T12:26:09.377Z
 
-## Pre-launch production scope
+## Owner-only pre-launch scope
 
-- Publishes the reviewed frontend to the official production URL for owner-only pre-launch testing with synthetic or disposable test data.
-- Does not run a database migration, database push, password reset, Worker deployment, or production-data change.
-- Gate A2 backup, encryption, and restore rehearsal remain **NOT RUN / NO-GO**. This release is not evidence of database recovery readiness.
-- Wider pupil access, paid launch, and real-child testing remain on hold under open issue #148.
+- This preparation contains the four merged P1 remediations from PRs #170, #171, #172, and #173.
+- It prepares only the static frontend for controlled owner testing with synthetic or disposable data.
+- It does not merge this preparation, create or move a tag, publish a GitHub release, deploy Pages, mutate a database, deploy or enable a Worker, or authorize real-child or paid use.
 
-## Tutor improvements since v3.13.36
+## Integrated P1 fixes
 
-- Adds reader-aware scrolling for new Tutor replies without moving fully visible short replies.
-- Brings partly hidden replies into view minimally and positions long replies at their first line.
-- Respects manual scroll-up and exposes an accessible `Balasan baharu ↓` action instead of forcing the reader away from earlier content.
-- Transfers keyboard focus to the newly revealed reply before that action disappears, preserves typed drafts, and keeps subsequent Tab navigation inside the modal.
-- Prevents delayed programmatic scroll events, context changes, and stale asynchronous replies from corrupting reader-follow state.
-- Preserves local-first Tutor behavior, privacy and scope isolation, canonical scoring, protected answers, Mathematics pedagogy, XP, coins, rewards, microphone safety, and nonduplicated screen-reader announcements.
+- **Tutor grounding and follow-ups (#170):** short learner phrases retain active-question context and receive grounded, age-appropriate guidance without weakening protected-answer controls.
+- **Logout and pending sync (#171):** logout clears session/account state safely while preserving pending learning-sync protection.
+- **Semantic communication scoring (#172):** natural accepted writing variants remain semantically graded while established scoring modes stay intact.
+- **Arabic fill blank (#173):** fill-blank grading is strict, hamza-sensitive, and whole-token based; semantic scoring for other writing modes is preserved.
 
 ## Security and feature boundaries
 
-- Remote generative AI remains disabled and no paid AI or new network path is introduced.
-- The Quiz STT Worker remains disabled by its production server kill switch. This frontend release does not deploy or activate it.
-- Existing guardian-consent controls remain in place and are not relaxed.
-- Physical iPhone Safari, Android Chrome, VoiceOver, TalkBack, microphone, and consent-flow acceptance remain **NOT RUN** until the tagged frontend is deployed for owner testing.
+- Quiz STT remains server-disabled by `QUIZ_STT_PILOT_ENABLED=false`; this frontend preparation does not deploy or activate its Worker.
+- Remote Tutor generative AI remains OFF because no deployment workflow injects `VITE_TUTOR_AI_REMOTE_ENABLED=true`; the gateway is fail-closed and local-first.
+- Browser build credential checks pass and no service-role credential is present in JavaScript assets.
+- Guardian-consent and child-privacy controls remain unchanged.
+- npm currently reports two high-severity advisories in the Node build toolchain (`vite` and transitive `source-map-js`). These packages are not shipped in the static browser artifact, but dependency remediation remains an explicit follow-up before wider rollout.
 
-## Automated release evidence
+## Automated evidence
 
-- Unit tests: 1,319 passed.
+- Unit tests: 86 / 86 files and 1,388 / 1,388 tests passed.
+- Focused four-P1 matrix: 5 / 5 files and 107 / 107 tests passed.
 - Validation: 0 errors, 0 warnings, 14,816 informational items.
 - Subjects: 8; topics: 84; questions: 4,530; curriculum coverage: 100%.
-- Local release build: initial JavaScript 875.84 / 900 kB; entry 310.90 / 350 kB; largest chunk 459.49 / 480 kB; Tutor incremental runtime 117,975 / 125,000 bytes.
-- Build structure and credential safety pass; no service-role credential is present in JavaScript assets.
+- Production bundle: initial JavaScript 887.36 / 900 kB; entry 323.17 / 350 kB; largest chunk 459.49 / 480 kB; Tutor incremental runtime 122,049 / 125,000 bytes.
+- Production build structure, Supabase configuration, release artifacts, credential safety, STT safety, and Tutor generative-gateway regression passed.
 
-## Outstanding limitations
+## Gates that remain on hold
 
-- Issue #148 remains open because Gate A2 backup/restore evidence and physical-device acceptance are incomplete.
-- Cross-device production acceptance and live guardian-consent testing are not claimed by this release.
-- Automated checks do not prove real-device scrolling, keyboard, microphone, screen-reader, or production database recovery behavior.
+- Gate A2 backup, encryption, restore rehearsal, and database rollback evidence remain **HOLD / NOT RUN** under issue #148.
+- Physical iPhone Safari, VoiceOver, Android Chrome, TalkBack, microphone, scrolling, focus, resize, and orientation acceptance remain **HOLD / NOT RUN** under issue #156.
+- Automated checks do not substitute for those physical-device or recovery gates.
+
+## Controlled deployment proposal after separate authorization
+
+1. Merge the exact reviewed release-prep SHA only after exact-head CI and owner review remain green.
+2. Reconfirm `v3.13.38` is unused and main equals the reviewed merge result.
+3. Create one immutable annotated tag and let the tag-only deployment workflow validate metadata, artifacts, production configuration, bundle limits, and credentials before Pages publication.
+4. Smoke-test the public entry hash and execute owner-only synthetic-data checks; stop on any regression.
+5. Keep issues #148 and #156 open and keep real-child and paid rollout blocked.
 
 ## Rollback
 
-- Previous immutable release: `v3.13.36` at source commit `8e565e293c3ecbca21d594f69baba7b1ec29a92d`.
-- Stop owner testing if a critical regression appears. Re-publish the known-good `v3.13.36` frontend through the reviewed tag-based Pages workflow or prepare a reviewed forward-fix; never move or overwrite an existing tag.
-- There is no database rollback step for v3.13.37 because this release performs no database change. Gate A2 remains unresolved rather than being marked PASS.
+- Current known production release: `v3.13.37`, source commit `fa8acb8ea293ac829916c6b3b545dacc0f968853`.
+- If owner-only testing finds a critical frontend regression, re-publish that immutable release through the reviewed tag-based Pages workflow or prepare a reviewed forward-fix. Never move or overwrite an existing tag.
+- No database rollback is implied because v3.13.38 preparation makes no database change.
