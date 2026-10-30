@@ -16,6 +16,12 @@ const FUNCTION_WORDS = Object.freeze({
   arab: new Set(['انا', 'الى', 'في', 'من', 'هذا', 'هذه', 'و'])
 });
 
+const REVIEWED_RESPONSE_SUPPORT_WORDS = Object.freeze({
+  bm: new Set(['ada', 'beberapa', 'dengan', 'dia', 'kami', 'ketika', 'kita', 'mereka', 'menulis', 'pagi', 'sedang', 'suka', 'telah', 'waktu']),
+  english: new Set(['also', 'have', 'he', 'her', 'his', 'it', 'morning', 'she', 'they', 'usually', 'we', 'with']),
+  arab: new Set(['الصباح', 'الفطور', 'على', 'مع', 'هو', 'هي', 'نحن'])
+});
+
 const NEGATION_WORDS = Object.freeze({
   bm: new Set(['bukan', 'jangan', 'tidak', 'tak']),
   english: new Set(['cannot', "can't", 'do not', "don't", 'never', 'no', 'not']),
@@ -116,6 +122,15 @@ function containsPhrase(responseText, phrase) {
   return Boolean(target) && source.includes(` ${target} `);
 }
 
+function isReviewedResponseToken(token, reviewedVocabulary, language) {
+  if (reviewedVocabulary.has(token)) return true;
+  if (language !== 'arab') return false;
+  const withoutConjunction = token.startsWith('و') ? token.slice(1) : token;
+  if (reviewedVocabulary.has(withoutConjunction)) return true;
+  const withoutArticle = withoutConjunction.startsWith('ال') ? withoutConjunction.slice(2) : withoutConjunction;
+  return reviewedVocabulary.has(withoutArticle);
+}
+
 export function assessSemanticCommunicationResponse({ prompt = '', rubric = null, response = '', language = 'bm' } = {}) {
   const safeRubric = rubric?.version === 2 ? rubric : buildSemanticCommunicationRubric(prompt, { language });
   const key = languageKey(safeRubric.language || language);
@@ -131,6 +146,14 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
   const reviewedEvidence = safeRubric.reviewStatus === 'teacher-reviewed' && matchedEvidenceGroups.length >= 2;
   const hasRequiredEvidence = reviewedEvidence && matchedEvidenceGroups.every(group => group.length > 0);
   const hasNegation = [...(NEGATION_WORDS[key] || [])].some(term => containsPhrase(responseText, term));
+  const reviewedVocabulary = new Set([
+    ...(safeRubric.evidenceGroups || []).flat(),
+    ...(safeRubric.topicTerms || []),
+    ...(INSTRUCTION_WORDS[key] || []),
+    ...(FUNCTION_WORDS[key] || []),
+    ...(REVIEWED_RESPONSE_SUPPORT_WORDS[key] || [])
+  ]);
+  const unreviewedTokens = responseTokens.filter(token => !/^\d+$/u.test(token) && !isReviewedResponseToken(token, reviewedVocabulary, key));
   const normalizedPrompt = normalize(safeRubric.promptText || prompt);
   const includesVerbatimInstruction = Boolean(normalizedPrompt) && normalize(responseText).includes(normalizedPrompt);
   const promptEcho = Boolean(responseTokens.length) && (
@@ -139,7 +162,7 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
     || (includesVerbatimInstruction && matchedCues.length < 2)
   );
   const relevant = !promptEcho && (matchedTopics.length > 0 || matchedCues.length > 0);
-  const supportedMeaning = !promptEcho && !hasNegation && hasRequiredEvidence;
+  const supportedMeaning = !promptEcho && !hasNegation && unreviewedTokens.length === 0 && hasRequiredEvidence;
   const minimumTokens = safeRubric.mode === 'speaking' ? 3 : 4;
   const complete = supportedMeaning && responseTokens.length >= minimumTokens && novelContent.length >= 2;
   const passedCriteria = [relevant, supportedMeaning, complete];
@@ -149,7 +172,7 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
     status: passedCriteria[index] ? 'correct' : 'missing'
   }));
   const score = promptEcho ? 0 : passedCriteria.reduce((sum, passed, index) => sum + (passed ? [30, 40, 30][index] : 0), 0);
-  const requiresTeacherReview = hasNegation || safeRubric.reviewStatus !== 'teacher-reviewed';
+  const requiresTeacherReview = hasNegation || unreviewedTokens.length > 0 || safeRubric.reviewStatus !== 'teacher-reviewed';
   const explanation = promptEcho
     ? 'Cuba jawab dengan idea kamu sendiri, bukan ulang arahan soalan.'
     : !relevant
@@ -175,6 +198,7 @@ export function assessSemanticCommunicationResponse({ prompt = '', rubric = null
     totalKeywords: criteria.length,
     metricLabel: 'kriteria',
     promptEcho,
+    unreviewedTokens,
     requiresTeacherReview,
     masteryEligible,
     rewardEligible: masteryEligible,

@@ -68,11 +68,16 @@ describe('semantic Menulis and Bertutur assessment', () => {
   it.each([
     'nasi roti batu',
     'nasi roti kereta',
-    'roti nasi kucing'
+    'roti nasi kucing',
+    'Saya makan nasi batu kereta',
+    'Saya makan nasi kucing'
   ])('does not pass a BM breakfast cue bag: %s', response => {
     const result = assess(writingTask('bm'), response, 'bm');
 
     expect(result.score).toBeLessThan(60);
+    expect(result.masteryEligible).toBe(false);
+    expect(result.rewardEligible).toBe(false);
+    expect(getSemanticCommunicationRewardScore(result)).toBe(0);
     expect(result.criteria.find(item => item.id === 'complete')).toMatchObject({ status: 'missing' });
   });
 
