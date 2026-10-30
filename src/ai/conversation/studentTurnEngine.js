@@ -30,8 +30,10 @@ const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+b
 const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pelajaran)\s+\S|\b(?:belajar|cuba)\s+topik\s+(?:lain|baru)\b|\b(?:switch|change)\s+(?:to\s+)?(?:a\s+)?(?:new\s+)?topic\b|(?:غيّر\s+الموضوع|موضوع\s+جديد))/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
-const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)|pastu|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
+const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
 const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
+const ACTIVE_QUESTION_REFERENCE_PATTERN = /^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$/iu;
+const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
 const RECOVERABLE_TEACHING_STAGES = new Set([
   'concept_explanation', 'alternative_strategy', 'guided_small_step',
   'verified_micro_example', 'evidence_guided_correction',
@@ -93,6 +95,15 @@ function extractAnswerCandidate(prompt = '', options = {}) {
 
   if (options.hasExerciseContext && !options.continuation && text.split(/\s+/).length <= 4 && text.length <= 60 && !/[?؟]/.test(prompt)) return text;
   return '';
+}
+
+function matchesAcceptedAnswer(text = '', expectedAnswer = '', acceptedAnswers = []) {
+  const candidate = comparable(text);
+  if (!candidate) return false;
+  return [expectedAnswer, ...(Array.isArray(acceptedAnswers) ? acceptedAnswers : [])]
+    .map(comparable)
+    .filter(Boolean)
+    .includes(candidate);
 }
 
 function makeTurn(intent, messageType, confidence, extras = {}) {
@@ -183,11 +194,31 @@ export function understandStudentTurn({
     });
   }
 
-  if (/\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|أنا\s+محتار)/iu.test(lower)) {
+  if (!matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers) && (
+    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|أنا\s+محتار)/iu.test(lower)
+    || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
+  )) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
       quickReplies: ['Terangkan cara lain', 'Beri contoh mudah', 'Bimbing langkah demi langkah']
+    });
+  }
+
+  if (ACTIVE_QUESTION_REFERENCE_PATTERN.test(lower)) {
+    if (hasExerciseContext) {
+      return makeTurn(QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, {
+        ...conversation,
+        isQuestion: true,
+        referencesPreviousTurn: conversation.hasHistory
+      });
+    }
+    return makeTurn('clarification_needed', 'ambiguous_request', 0.96, {
+      ...conversation,
+      isQuestion: true,
+      needsClarification: true,
+      clarifyingQuestion: 'Soalan yang mana satu? Buka latihan itu atau beritahu saya subjek dan topiknya.',
+      quickReplies: ['Buka latihan saya', 'Pilih subjek', 'Pilih topik']
     });
   }
 
