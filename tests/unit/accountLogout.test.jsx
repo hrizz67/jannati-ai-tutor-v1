@@ -23,6 +23,26 @@ function memoryStorage(entries = {}) {
   };
 }
 
+function MountedLogoutFlow({ auth, storage }) {
+  const [status, setStatus] = React.useState('idle');
+  const [screen, setScreen] = React.useState('dashboard');
+  const onLogout = async () => {
+    setStatus('pending');
+    const result = await executeAuthenticatedLogout({
+      auth,
+      clearAuthenticatedState: () => clearAuthenticatedBrowserStorage(storage, {
+        isAccountDataKey: key => key === 'jannati_child_profiles',
+        accountScopeKey: 'jannati_active_account_id'
+      })
+    });
+    setStatus(result.ok ? 'idle' : 'error');
+    if (result.ok) setScreen('login');
+  };
+  return screen === 'dashboard'
+    ? <AccountLogoutButton onLogout={onLogout} status={status} />
+    : <p data-testid="signed-out">Log masuk akaun</p>;
+}
+
 describe('authenticated account logout contract', () => {
   let container;
   let root;
@@ -88,6 +108,22 @@ describe('authenticated account logout contract', () => {
     expect(container.querySelector('[role="alert"]')?.textContent).toContain('Sesi masih aktif');
     await act(async () => container.querySelector('button').click());
     expect(onLogout).toHaveBeenCalledOnce();
+  });
+
+  it('completes the mounted dashboard-to-login flow without leaving stale child data for refresh', async () => {
+    const storage = memoryStorage({
+      jannati_active_account_id: 'account-a',
+      jannati_child_profiles: '[{"id":"child-a"}]'
+    });
+    const signOut = vi.fn().mockResolvedValue({ error: null });
+    await act(async () => root.render(<MountedLogoutFlow auth={{ signOut }} storage={storage} />));
+
+    await act(async () => container.querySelector('button').click());
+
+    expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
+    expect(container.querySelector('[data-testid="signed-out"]')?.textContent).toBe('Log masuk akaun');
+    expect(storage.getItem('jannati_active_account_id')).toBeNull();
+    expect(storage.getItem('jannati_child_profiles')).toBeNull();
   });
 
   it('runs pending sync, local session invalidation and verified cleanup in order', async () => {
