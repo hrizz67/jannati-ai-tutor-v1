@@ -26,6 +26,39 @@ describe('Menulis fill-blank contract', () => {
     expect(scoreWritingFillBlank(firstBlank(language), answer)).toMatchObject({ score: 100, correct: true });
   });
 
+  it('preserves Arabic consonantal hamza while allowing reviewed short vowel marks', () => {
+    const task = semanticWritingSets.find(set => set.id === 'arab').sessionItems[9].tasks.blank;
+    expect(task.acceptedTokens).toContain('أقرأ');
+
+    expect(scoreWritingFillBlank(task, 'أقرأ')).toMatchObject({ score: 100, correct: true });
+    expect(scoreWritingFillBlank(task, 'أَقْرَأُ')).toMatchObject({ score: 100, correct: true });
+    expect(scoreWritingFillBlank(task, 'أَقْرَأُ')).toMatchObject({ score: 100, correct: true });
+
+    for (const unreviewed of ['اقرا', 'أقرا', 'اقرأ', 'اَقْرَا', 'اقراء']) {
+      expect(scoreWritingFillBlank(task, unreviewed), unreviewed)
+        .toMatchObject({ score: 0, correct: false });
+    }
+  });
+
+  it.each([
+    ['إلى', 'الى', 'إِلَى'],
+    ['سأل', 'سال', 'سَأَلَ'],
+    ['ماء', 'ما', 'مَاء']
+  ])('rejects Arabic hamza or spelling omissions: %s vs %s', (accepted, rejected, vocalized) => {
+    const task = { prompt: 'الكلمة ____ مناسبة.', acceptedTokens: [accepted] };
+    expect(scoreWritingFillBlank(task, accepted).score).toBe(100);
+    expect(scoreWritingFillBlank(task, vocalized).score).toBe(100);
+    expect(scoreWritingFillBlank(task, rejected)).toMatchObject({ score: 0, correct: false });
+    expect(JSON.stringify(scoreWritingFillBlank(task, rejected))).not.toContain(accepted);
+  });
+
+  it('only accepts alternate Arabic spellings if explicitly authored', () => {
+    const task = { prompt: 'الكلمة ____ مناسبة.', acceptedTokens: ['أقرأ', 'اقرا'] };
+    expect(scoreWritingFillBlank(task, 'اقرا')).toMatchObject({ score: 100, correct: true });
+    expect(scoreWritingFillBlank(task, 'أقرأ')).toMatchObject({ score: 100, correct: true });
+    expect(scoreWritingFillBlank(task, 'اقرأ')).toMatchObject({ score: 0, correct: false });
+  });
+
   it('normalizes harmless spaces, case and punctuation around the submitted token', () => {
     expect(scoreWritingFillBlank(firstBlank('bm'), '  NASI. ')).toMatchObject({ score: 100, correct: true });
     expect(scoreWritingFillBlank(firstBlank('english'), ' RICE! ')).toMatchObject({ score: 100, correct: true });
