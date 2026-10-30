@@ -69,6 +69,24 @@ function PremiumFeatureBadge({ visible }) {
   return visible ? <small className="premium-feature-badge"><span aria-hidden="true">🔒</span> Premium</small> : null;
 }
 
+export function AccountLogoutButton({ onLogout, status = 'idle' }) {
+  const pending = status === 'pending';
+  return (
+    <>
+      <button
+        type="button"
+        className="secondary header-account-action"
+        onClick={onLogout}
+        disabled={pending}
+        aria-busy={pending ? 'true' : undefined}
+      >
+        {pending ? 'Sedang log keluar…' : 'Log keluar'}
+      </button>
+      {status === 'error' ? <p className="autosave-note" role="alert">Log keluar belum berjaya. Sesi masih aktif; cuba lagi.</p> : null}
+    </>
+  );
+}
+
 const subjectBadges = { bm: bmBadge, math: mathBadge, english: englishBadge, sains: sainsBadge, arab: arabBadge, islam: islamBadge, pj: pjBadge, pk: pkBadge };
 
 function SubjectBadge({ subjectId }) {
@@ -206,6 +224,7 @@ export default function HomeDashboard(props) {
     onCompleteDaily,
     onToggleFavourite,
     onLogout,
+    logoutStatus,
     onExitLocalProfile,
     hasAccountSession,
     childProfiles,
@@ -465,7 +484,7 @@ export default function HomeDashboard(props) {
                 <button type="button" className="secondary header-account-action" onClick={onOpenPremium}>{isPremiumAccount ? 'Perbaharui Premium' : 'Naik Taraf Premium'}</button>
                 {hasAccountSession && isAdmin ? <button type="button" className="secondary header-account-action" onClick={onOpenAdmin}>Konsol Admin</button> : null}
                 {hasAccountSession
-                  ? <button type="button" className="secondary header-account-action" onClick={onLogout}>Log keluar</button>
+                  ? <AccountLogoutButton onLogout={onLogout} status={logoutStatus} />
                   : <>
                     <button type="button" className="secondary header-account-action" onClick={onLogout}>Log masuk untuk Sync</button>
                     <button type="button" className="secondary header-account-action local-exit-action" onClick={onExitLocalProfile}>Keluar Free</button>
