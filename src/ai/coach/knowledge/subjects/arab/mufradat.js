@@ -223,7 +223,7 @@ export default createKnowledgePack({
   ],
   "pronunciationTips": [
     "Sebut كِتَابٌ dengan jelas.",
-    "Dengar bunyi مَدْرَسَةٌ dengan teliti.",
+    "مَدْرَسَةٌ اسمٌ لمكانٍ.",
     "Ulang sebutan Arab secara perlahan.",
     "Latih sebutan bersama guru.",
     "Perhatikan huruf yang hampir sama."
@@ -256,7 +256,7 @@ export default createKnowledgePack({
     "Pilih padanan yang paling tepat, bukan yang hampir sama sahaja."
   ],
   "readingPractice": [
-    "Baca contoh كِتَابٌ satu demi satu.",
+    "كِتَابٌ اسمٌ لشيءٍ.",
     "Padankan perkataan dengan maksud.",
     "Cari perkataan yang sama bentuk.",
     "Baca dari kanan ke kiri.",

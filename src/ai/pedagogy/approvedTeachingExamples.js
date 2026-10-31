@@ -15,8 +15,8 @@ export const APPROVED_TEACHING_EXAMPLES = Object.freeze({
   'bm::kata_nama_am': freezeEntry(['doktor', 'sekolah']),
   'english::nouns': freezeEntry(['doctor', 'school']),
   'arab::mufradat': freezeEntry([
-    'Baca contoh كِتَابٌ satu demi satu.',
-    'Dengar bunyi مَدْرَسَةٌ dengan teliti.'
+    'كِتَابٌ اسمٌ لشيءٍ.',
+    'مَدْرَسَةٌ اسمٌ لمكانٍ.'
   ])
 });
 

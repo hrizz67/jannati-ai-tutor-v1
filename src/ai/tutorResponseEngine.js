@@ -28,6 +28,11 @@ import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamp
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+const ANSWER_SAFE_HELP_INTENTS = new Set([
+  'hint', 'question_help', 'wrong_answer_coaching', 'example_request', 'alternative_explanation',
+  'misunderstanding', 'recovery_meaning', 'recovery_first_step', 'guided_without_answer'
+]);
+const ARABIC_NOUN = 'الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.';
 
 function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
   const asTextList = value => Array.isArray(value)
@@ -358,6 +363,16 @@ function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}
 
 function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   const text = String(prompt || '').toLocaleLowerCase('ms-MY');
+  const subjectId = String(subject?.id || '').toLowerCase();
+  if (/taman/.test(text) && /bermain/.test(text)) {
+    return '“Taman” ialah kata nama tempat (lokasi). “Bermain” ialah kata kerja (perbuatan).';
+  }
+  if (subjectId === 'english' && /common\s+noun|noun/.test(text)) {
+    return 'A common noun is a general name for a person, animal, place, or thing. Examples: teacher and school.';
+  }
+  if (subjectId === 'arab' && /(?:ما\s+معنى\s+الاسم|الاسم)/u.test(text)) {
+    return `${ARABIC_NOUN} مثل: مُعَلِّمٌ ومَدْرَسَةٌ.`;
+  }
   if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:kata nama am).*(?:kata nama khas)|(?:kata nama am).*(?:dan|dengan|berbanding).*(?:kata nama khas)/.test(text)) {
     return 'Kata nama am ialah nama umum, seperti guru, bandar dan kucing. Kata nama khas pula ialah nama khusus, seperti Cikgu Aina, Melaka dan Si Comel. Perbezaan utamanya ialah kata nama khas merujuk sesuatu yang tertentu dan biasanya bermula dengan huruf besar.';
   }
@@ -810,6 +825,21 @@ function buildContextualSections({
       })
     : { examples: [], provenance: null };
   const verifiedExamples = answerSafeList(reviewedExampleSelection.examples);
+  const topicPedagogy = subject?.id === 'bm' && !resolvedQuestion && /kata_nama_am|kata nama am/iu.test(`${topic?.id} ${topic?.title}`)
+    ? {
+        explanations: [topic?.note],
+        alternatives: [topic?.note],
+        steps: ['Pilih satu perkataan dan tanya apa yang dinamakan.'],
+        checks: ['Sebut satu nama benda?']
+      }
+    : subject?.id === 'arab' && topic?.id === 'mufradat'
+      ? {
+          explanations: [ARABIC_NOUN],
+          alternatives: [ARABIC_NOUN],
+          steps: ['اقرأ من اليمين ثم افهم المعنى.'],
+          checks: ['هل هي شخص أم مكان أم شيء؟']
+        }
+    : null;
   const pedagogicalContent = {
     grounded: Boolean(
       coachResponse?.ready ||
@@ -818,23 +848,20 @@ function buildContextualSections({
       topic?.note ||
       subjectGuidance
     ),
-    explanations: answerSafeList([
-      simpleExplanationText,
-      explanationText,
-      topic?.note,
-      currentLearningObjective
+    explanations: answerSafeList(topicPedagogy?.explanations || [
+      simpleExplanationText, explanationText, topic?.note, currentLearningObjective
     ]),
     examples: verifiedExamples,
     verifiedExamples,
     verifiedExampleProvenance: reviewedExampleSelection.provenance,
-    alternatives: answerSafeList([
+    alternatives: answerSafeList(topicPedagogy?.alternatives || [
       commonMistake,
       memoryTip,
       coachKnowledge?.memoryTips,
       coachResponse?.memoryTips
     ]),
-    steps: answerSafeList(steps),
-    checkQuestions: answerSafeList([
+    steps: answerSafeList(topicPedagogy?.steps || steps),
+    checkQuestions: answerSafeList(topicPedagogy?.checks || [
       coachKnowledge?.followUpQuestions,
       coachResponse?.followUpQuestions,
       guided?.guidingQuestion
@@ -1137,7 +1164,10 @@ function buildConversationalTeachingReply({
   const example = normalizeText(isCurrentContextTopic ? sections.example || '' : '', '');
   const firstStep = steps[0] || 'kenal pasti kata kunci atau maklumat penting';
   const learningAnchor = standaloneAnswer || topicNote || explanation;
-  const commonReplies = ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham'];
+  const dialogueLanguage = subject?.id === 'arab' ? 'ar' : subject?.id === 'english' ? 'en' : 'ms';
+  const commonReplies = dialogueLanguage === 'ms'
+    ? ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham']
+    : [];
   const sentence = (value, prefix = '') => {
     const safeValue = normalizeText(value, '').replace(/[.!?؟]+$/u, '');
     return safeValue ? `${prefix}${safeValue}.` : '';
@@ -1188,6 +1218,14 @@ function buildConversationalTeachingReply({
         studentTurn.quickReplies,
         false
       );
+    case 'guided_without_answer':
+      if (dialogueLanguage === 'en') {
+        return withReplies('Okay. I will guide one clue at a time without giving the answer.', [], true);
+      }
+      if (dialogueLanguage === 'ar') {
+        return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', [], true);
+      }
+      return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
     case 'understanding_confirmation':
       return withReplies(
         `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
@@ -1231,7 +1269,11 @@ function buildConversationalTeachingReply({
         [
           learningAnchor || `Soalan kamu berkaitan ${topicLabel}.`,
           !standaloneAnswer ? sentence(example, 'Contoh mudah: ') : '',
-          'Bahagian ini sudah jelas, atau kamu mahu saya tunjukkan satu contoh lagi?'
+          dialogueLanguage === 'en'
+            ? 'Is this clear, or would you like one more example?'
+            : dialogueLanguage === 'ar'
+              ? 'هل الفكرة واضحة، أم تريد مثالًا آخر؟'
+              : 'Bahagian ini sudah jelas, atau kamu mahu saya tunjukkan satu contoh lagi?'
         ].filter(Boolean).join(' '),
         commonReplies,
         Boolean(learningAnchor)
@@ -1334,18 +1376,21 @@ export async function getTutorResponse(options = {}) {
   const pendingExpectedAnswers = Array.isArray(pendingPedagogicalStep?.expectedAnswers)
     ? pendingPedagogicalStep.expectedAnswers
     : [];
+  const hasExerciseContext = Boolean(resolvedQuestionText || expected);
+  const questionIdentity = normalizeText(resolvedQuestion?.id || '', '');
+  const activeConcept = subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
+    ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
+    : '';
   const studentTurn = understandStudentTurn({
     prompt,
     intent,
     history,
     expectedAnswer: pendingExpectedAnswers[0] || expected,
     acceptedAnswers: pendingExpectedAnswers.length ? pendingExpectedAnswers : acceptedAnswers,
-    hasExerciseContext: Boolean(resolvedQuestionText || expected),
+    hasExerciseContext,
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
     // Never resume a previous question when its identity is ambiguous.
-    activeConcept: subjectContext.id && topicContext.id && normalizeText(resolvedQuestion?.id || '', '')
-      ? [subjectContext.id, topicContext.id, normalizeText(resolvedQuestion.id, '')].join('::')
-      : ''
+    activeConcept
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const mathPedagogy = subjectContext.id === 'math' && conversationKey
@@ -1390,12 +1435,13 @@ export async function getTutorResponse(options = {}) {
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const microCheck = studentTurn.messageType === 'learning_response';
-  const tutorAttempts = +attemptCount * !microCheck || 0;
-  const tutorHints = +hintsUsed * !microCheck || 0;
+  const answerSafeHelp = !promptAnswer && ANSWER_SAFE_HELP_INTENTS.has(resolvedIntent);
+  const tutorAttempts = +attemptCount * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
+  const tutorHints = +hintsUsed * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
   const feedbackQuestion = microCheck
     ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
     : resolvedQuestion;
-  const answerText = microCheck ? '' : getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
+  const answerText = microCheck || answerSafeHelp ? '' : getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
   const answerCheckQuestion = {
     ...resolvedQuestion,
     answer: expected || resolvedQuestion.answer,
@@ -1403,7 +1449,7 @@ export async function getTutorResponse(options = {}) {
       ? [...new Set([expected, ...acceptedAnswers])]
       : acceptedAnswers
   };
-  const resolvedCorrect = microCheck ? null : promptAnswer
+  const resolvedCorrect = microCheck || answerSafeHelp ? null : promptAnswer
     ? isAcceptedQuestionAnswer(answerText, answerCheckQuestion)
     : typeof isCorrect === 'boolean'
       ? isCorrect
@@ -1426,8 +1472,8 @@ export async function getTutorResponse(options = {}) {
         question: feedbackQuestion,
         result: {
           correct: resolvedCorrect,
-          status: !microCheck && typeof isCorrect === 'boolean'
-            ? (isCorrect ? 'correct' : 'wrong')
+          status: typeof resolvedCorrect === 'boolean'
+            ? (resolvedCorrect ? 'correct' : 'wrong')
             : undefined,
           explanation: ''
         },
@@ -1555,7 +1601,14 @@ export async function getTutorResponse(options = {}) {
     weakTopics: weakList,
     studyPlan
   });
-  const intelligentTeaching = buildIntelligentTeachingTurn({
+  const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
+    ? {
+        text: 'Jawapan kamu sebenarnya ditanda betul. Mari terangkan petunjuknya tanpa mendedahkan jawapan.',
+        quickReplies: [],
+        grounded: true
+      }
+    : null;
+  const intelligentTeaching = falsePremiseReply ? null : buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1574,7 +1627,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = falsePremiseReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies

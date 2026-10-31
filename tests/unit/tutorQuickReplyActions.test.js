@@ -139,14 +139,14 @@ describe('Tutor quick-reply click integration', () => {
       history: priorState(initialState.currentConcept, 1)
     });
 
-    expect(response.isCorrect).toBe(true);
+    expect(response.isCorrect).toBeNull();
     expect(response.source).toBe('intelligent-teaching-engine');
     expect(response.pedagogicalState).toMatchObject({
       signal: 'misunderstanding',
       misunderstandingCount: 2,
       strategyUsed: 'alternative-connection'
     });
-    expect(response.expectedAnswer).toBe('Ali');
+    expect(response.expectedAnswer).toBe('');
   });
 
   it.each([

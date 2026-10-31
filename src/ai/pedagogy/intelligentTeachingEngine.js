@@ -98,7 +98,7 @@ function safeQuestion(candidates = [], protectedAnswers = [], fallback = '') {
   const selected = selectAnswerSafeText(candidates, protectedAnswers, fallback);
   const statement = clean(selected, 180).split(/[?؟]/u)[0].replace(/[.!]+$/u, '');
   if (!statement || textContainsExpectedAnswer(statement, protectedAnswers)) return '';
-  return `${statement}?`;
+  return `${statement}${/[\p{Script=Arabic}]/u.test(statement) ? '؟' : '?'}`;
 }
 
 function resolveMisconception({ signal = '', guidedMisconception = null, learnerAnswer = '', options = [] } = {}) {
