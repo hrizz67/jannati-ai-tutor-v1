@@ -54,9 +54,7 @@ function wasLocalClarificationRequested(history = []) {
 }
 
 function getTeachingLanguage(options = {}) {
-  const locale = String(options.locale || '').toLowerCase();
-  if (locale.startsWith('ar')) return 'ar';
-  return options.languagePresentation?.teachingLanguage || (locale.startsWith('en') ? 'en' : 'ms');
+  return options.languagePresentation?.teachingLanguage || (String(options.locale || '').toLowerCase().startsWith('en') ? 'en' : 'ms');
 }
 
 function buildClarificationCopy(options = {}) {
@@ -99,17 +97,10 @@ function buildUncertainCopy(options = {}) {
 }
 
 function buildUnsupportedCopy(options = {}) {
-  const language = getTeachingLanguage(options);
-  if (language === 'en') {
+  if (getTeachingLanguage(options) === 'en') {
     return {
       text: 'I can help with your Year 2 lessons. Ask me about the current subject, question, or topic.',
       quickReplies: ['Explain this question', 'Give a hint', 'Give an easy example']
-    };
-  }
-  if (language === 'ar') {
-    return {
-      text: 'أساعدك في دروس السنة الثانية. اسأل عن المادة أو السؤال أو الموضوع الحالي.',
-      quickReplies: []
     };
   }
   return {

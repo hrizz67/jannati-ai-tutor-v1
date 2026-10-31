@@ -55,7 +55,9 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
       'concept_explanation', 'alternative_strategy', 'guided_small_step'
     ]);
     expect(turns[4].response.studentTurn).toMatchObject({ intent: 'recovery_first_step', referencesPreviousTurn: true });
-    expect(turns[4].response.text).toMatch(/langkah|cari|kenal pasti/iu);
+    expect(turns[4].response.text).toMatch(/jika.*menamakan.*kata nama/iu);
+    expect(turns[4].response.text).not.toBe(turns[3].response.text);
+    expect(turns.map(turn => turn.response.text).join(' ')).not.toMatch(/sekolah\s+Semakan/iu);
     expect(turns.slice(1).map(turn => turn.response.text).join(' ')).not.toMatch(/soalan meminta kata nama tempat|mana satu kata nama khas/iu);
     for (const { response } of turns) expectHelpInvariants(response);
   });
@@ -73,6 +75,7 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     expect(turns[2].response.studentTurn.intent).toBe('recovery_meaning');
     expect(turns[3].response.text).toMatch(/easy example.*(?:doctor|school)/iu);
     expect(turns[4].response.text).toMatch(/guide|clue|step/iu);
+    expect(turns.map(turn => turn.response.text).join(' ')).not.toMatch(/(?:school|doctor)\s+Small check:/iu);
     for (const { response } of turns) {
       expectHelpInvariants(response);
       expect(response.text).not.toMatch(/\b(?:saya|kamu|soalan|contoh|bahagian|belum|tiada|baca|petunjuk)\b/iu);
@@ -90,12 +93,15 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
 
     expect(turns[0].response.text).toMatch(/الاسم.*(?:شخص|حيوان|مكان|شيء)/u);
     expect(turns[2].response.studentTurn.intent).toBe('recovery_meaning');
+    expect(turns[2].response.text).toMatch(/الاسم.*(?:يسمّي|تسمّي|تدل).*?(?:إنسان|شخص).*حيوان.*مكان.*شيء/u);
+    expect(turns[2].response.text).not.toMatch(/اقرأ من اليمين/u);
     expect(turns[3].response.text).toMatch(/مثال.*(?:كِتَاب|مَدْرَسَة)/u);
     expect(turns[4].response.text).toMatch(/(?:أرشد|خطوة|تلميح)/u);
     for (const { response } of turns) {
       expectHelpInvariants(response);
       expect(response.text).toMatch(/[\p{Script=Arabic}]/u);
       expect(response.text).not.toMatch(/\b(?:saya|kamu|soalan|contoh|baca|dengar|boleh|mufradat|the|answer)\b/iu);
+      expect(response.text).not.toMatch(/[\p{Script=Arabic}]\s+سؤال صغير:/u);
       expect(getSubjectTextProps(response.text, 'arab', { teaching: true })).toEqual({ lang: 'ar', dir: 'rtl' });
     }
   });
@@ -262,23 +268,6 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
       expect(response.generativeUsed).toBe(false);
       for (const field of rewardFields) expect(response).not.toHaveProperty(field);
     }
-  });
-
-  it('keeps an unsupported request in the Arabic locale fail-closed and in Arabic', async () => {
-    const response = await getTutorResponse({
-      student,
-      subject: { id: 'arab', title: 'Bahasa Arab' },
-      topic: { id: 'mufradat', title: 'Mufradat' },
-      conversationKey: 'synthetic::arab::unsupported',
-      locale: 'ar-MY',
-      prompt: 'Boleh ajar saya hack akaun?'
-    });
-
-    expect(response.dialogueClassification).toBe('UNSUPPORTED');
-    expect(response.text).toMatch(/[\p{Script=Arabic}]/u);
-    expect(response.text).not.toMatch(/\b(?:saya|kamu|pelajaran|subjek|topik)\b/iu);
-    expect(response.remoteAttempted).toBe(false);
-    expect(response.generativeUsed).toBe(false);
   });
 
   it('does not reactivate a standalone teaching state after a topic switch', async () => {

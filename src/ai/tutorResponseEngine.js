@@ -829,13 +829,16 @@ function buildContextualSections({
     ? {
         explanations: [topic?.note],
         alternatives: [topic?.note],
-        steps: ['Pilih satu perkataan dan tanya apa yang dinamakan.'],
+        steps: [
+          'Pilih satu perkataan dan tanya apa yang dinamakan.',
+          'Jika perkataan menamakan orang, haiwan, benda atau tempat, itu kata nama.'
+        ],
         checks: ['Sebut satu nama benda?']
       }
     : subject?.id === 'arab' && topic?.id === 'mufradat'
       ? {
           explanations: [ARABIC_NOUN],
-          alternatives: [ARABIC_NOUN],
+          alternatives: ['الاسم يسمّي إنسانًا أو حيوانًا أو مكانًا أو شيئًا.'],
           steps: ['اقرأ من اليمين ثم افهم المعنى.'],
           checks: ['هل هي شخص أم مكان أم شيء؟']
         }
@@ -1079,7 +1082,7 @@ function buildContextualSections({
     summary,
     isHintIntent ? hint : '',
     !isHintIntent && intent === 'wrong_answer_coaching' ? commonMistake || whyCorrect : (!isHintIntent ? whyCorrect : ''),
-    steps[0] ? `Langkah pertama: ${steps[0]}.` : '',
+    steps[0] ? `Langkah pertama: ${steps[0].replace(/[.!?؟]+$/u, '')}.` : '',
     !isHintIntent && revealAnswer && example ? `Contoh mudah: ${example}.` : '',
     !isHintIntent && revealAnswer && memoryTip ? `Tip ingatan: ${memoryTip}.` : '',
     revealAnswer && expectedAnswer ? `Jawapan betul: ${expectedAnswer}.` : '',
