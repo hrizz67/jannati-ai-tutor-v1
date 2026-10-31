@@ -400,7 +400,9 @@ describe('canonical answer and response-policy regression', () => {
     });
 
     expect(response.source).toBe('intelligent-teaching-engine');
-    expect(response.isCorrect).toBe(true);
+    expect(response.isCorrect).toBeNull();
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
     expect(response.pedagogicalState).toMatchObject({
       signal: 'misunderstanding',
       misunderstandingCount: 1,
