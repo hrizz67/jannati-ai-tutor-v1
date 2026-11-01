@@ -297,6 +297,30 @@ describe('intelligent teaching progression', () => {
     expect(questionCount(result.reply.text)).toBe(1);
   });
 
+  it('filters a protected Arabic answer when teaching text adds an article or clitic', () => {
+    const result = buildIntelligentTeachingTurn(buildArgs({
+      subjectId: 'arab',
+      topicId: 'mufradat',
+      locale: 'ar-MY',
+      languagePresentation: { teachingLanguage: 'ar' },
+      expectedAnswer: 'مدرسة',
+      acceptedAnswers: ['مدرسة'],
+      options: ['مدرسة', 'كتاب'],
+      teachingContent: {
+        grounded: true,
+        explanations: ['هذه الْمَدْرَسَةُ مكان للتعلم.'],
+        examples: ['وَالْمَدْرَسَةُ قريبة.'],
+        verifiedExamples: ['بالمدرسة نتعلم.'],
+        alternatives: ['ابحث عن اسم مكان.'],
+        steps: ['اختر الكلمة التي تدل على مكان.'],
+        checkQuestions: ['هل الكلمة تدل على مكان']
+      }
+    }));
+    const exposed = String(result.reply.text).replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+    expect(exposed).not.toContain('مدرسة');
+    expect(result.reply.text).toContain('ابحث عن اسم مكان');
+  });
+
   it('uses a grounded safe fallback rather than inventing missing knowledge', () => {
     const result = buildIntelligentTeachingTurn(buildArgs({
       teachingContent: { grounded: false }

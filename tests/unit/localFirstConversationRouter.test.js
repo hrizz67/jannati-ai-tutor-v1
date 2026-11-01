@@ -84,6 +84,8 @@ describe('bounded tutor conversation memory', () => {
     ['named identifier', 'Nama saya Ali bin Ahmad'],
     ['English named identifier', 'My name is Alice Smith'],
     ['vocalized Arabic named identifier', 'اِسْمِي أَحْمَدُ'],
+    ['tatweel Arabic named identifier', 'اِسْـمِي أَحْمَدُ'],
+    ['hamza Arabic named identifier', 'إِسْمِي أَحْمَدُ'],
     ['address', 'Alamat saya di 12 Jalan Melur'],
     ['school', 'Sekolah saya SK Seri Damai']
   ])('never retains %s personal data verbatim', (_label, personalMessage) => {

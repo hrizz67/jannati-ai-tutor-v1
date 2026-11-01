@@ -237,6 +237,24 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     expect(response.expectedAnswer).toBe('');
   });
 
+  it('does not leak a protected Arabic noun when active teaching adds an article', async () => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: 'synthetic_place', title: 'مكان', note: 'هذه الْمَدْرَسَةُ مكان للتعلم.' },
+      question: { id: 'arabic-prefixed-answer', q: 'اختر الكلمة الصحيحة.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
+      expectedAnswer: 'مدرسة', acceptedAnswers: ['مدرسة'],
+      conversationKey: 'synthetic::arab::prefixed-answer', prompt: 'لا أفهم.'
+    });
+
+    const normalizedText = response.text.replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+    expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+    expect(normalizedText).not.toContain('مدرسة');
+    expect(response.expectedAnswer).toBe('');
+    expect(response.correctAnswer).toBe('');
+    expect(response.remoteAttempted).toBe(false);
+  });
+
   it.each([
     ['English', { id: 'english', title: 'English' }, 'en-MY', 'school', 'Why is my answer wrong?', /answer is correct/iu, /\b(?:jawapan|betul|petunjuk)\b/iu],
     ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'ar-MY', 'مَدْرَسَةٌ', 'لماذا إجابتي خاطئة؟', /إجابتك صحيحة/u, /\b(?:jawapan|betul|answer|correct)\b/iu]
@@ -307,7 +325,9 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     ['English', { id: 'english', title: 'English' }, 'My name is Alice Smith'],
     ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اسمي الكامل نور الهدى'],
     ['vocalized Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْمِي الْكَامِلُ نُورُ الْهُدَى'],
-    ['curriculum Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْمِي أَحْمَدُ']
+    ['curriculum Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْمِي أَحْمَدُ'],
+    ['tatweel Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْـمِي أَحْمَدُ'],
+    ['hamza Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'إِسْمِي أَحْمَدُ']
   ])('blocks and redacts synthetic %s personal-name disclosure', async (_label, subject, prompt) => {
     const response = await getTutorResponse({
       student, subject,

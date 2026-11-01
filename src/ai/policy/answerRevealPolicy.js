@@ -9,7 +9,13 @@ export const ANSWER_REVEAL_STAGES = Object.freeze({
   COMPLETED: 'completed'
 });
 
-const stripArabicMarks = value => String(value ?? '').replace(/[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+const stripArabicMarks = value => String(value ?? '')
+  .normalize('NFKC')
+  .replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+
+const ARABIC_NON_NOMINAL_ANSWERS = new Set([
+  'لا', 'نعم', 'من', 'ما', 'في', 'عن', 'على', 'الى', 'إلى', 'هل', 'لم', 'لن', 'ثم', 'او', 'أو'
+]);
 
 function normalizeAttemptCount(value) {
   const numeric = Number(value);
@@ -24,7 +30,12 @@ export function textContainsExpectedAnswer(text = '', answers = []) {
     .sort((left, right) => right.length - left.length)
     .some(answer => {
       const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const arabicPrefix = /\p{Script=Arabic}/u.test(answer) ? 'و?' : '';
+      const isArabic = /\p{Script=Arabic}/u.test(answer);
+      const arabicPrefix = isArabic
+        ? ARABIC_NON_NOMINAL_ANSWERS.has(answer)
+          ? '[وف]?'
+          : '[وف]?(?:ال|بال|كال|لل|ب|ك|ل)?'
+        : '';
       return new RegExp(`(^|[^\\p{L}\\p{N}])${arabicPrefix}${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(value);
     });
 }

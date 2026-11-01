@@ -34,7 +34,9 @@ export function cleanTutorGatewayText(value = '', maxLength = TUTOR_GATEWAY_LIMI
 }
 
 export function containsPotentialPersonalData(value = '') {
-  const text = cleanTutorGatewayText(value, 4000).replace(/[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+  const text = cleanTutorGatewayText(value, 4000)
+    .replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '')
+    .replace(/[أإآٱ]/gu, 'ا');
   return Boolean(text && PERSONAL_DATA_PATTERNS.some(pattern => pattern.test(text)));
 }
 

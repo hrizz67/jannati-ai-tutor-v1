@@ -54,6 +54,15 @@ describe('access and answer safety', () => {
     expect(textContainsExpectedAnswer('Cuba fikirkan haiwan itu.', ['ikan'])).toBe(false);
   });
 
+  it('detects protected Arabic nouns with attached clitics without matching short particles inside words', () => {
+    for (const text of ['هذه الْمَدْرَسَةُ جميلة', 'ذهبت إلى المدرسة', 'وَالْمَدْرَسَةُ قريبة', 'بالمدرسة']) {
+      expect(textContainsExpectedAnswer(text, ['مدرسة'])).toBe(true);
+    }
+    expect(textContainsExpectedAnswer('المنزل مكان جميل', ['من'])).toBe(false);
+    expect(textContainsExpectedAnswer('الاسم كلمة مفيدة', ['لا'])).toBe(false);
+    expect(textContainsExpectedAnswer('قلت لا', ['لا'])).toBe(true);
+  });
+
   it('accepts exact punctuation without weakening ordinary answers', () => {
     const question = { answer: '.', acceptedAnswers: ['.'] };
     expect(isAcceptedQuestionAnswer('.', question)).toBe(true);
