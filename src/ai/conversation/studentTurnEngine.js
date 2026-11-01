@@ -146,6 +146,10 @@ export function understandStudentTurn({
     return makeTurn(INTENT_ALIASES[explicitIntent], 'guided_action', 1, { ...conversation, referencesPreviousTurn });
   }
 
+  if (hasExerciseContext && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
+    return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
+  }
+
   if (SOCIAL_ONLY_PATTERN.test(text)) return makeTurn('general', 'social', 0.99, conversation);
 
   if (/\b(?:topik\s+lemah|lemah\s+saya|weak\s+topic)\b/iu.test(lower)) return makeTurn('weak_topic', 'progress_question', 0.98, conversation);
@@ -196,10 +200,10 @@ export function understandStudentTurn({
     });
   }
 
-  if (!matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers) && (
+  if (
     /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
     || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
-  )) {
+  ) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
@@ -207,7 +211,7 @@ export function understandStudentTurn({
     });
   }
 
-  if (!matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers) && NO_DIRECT_ANSWER_PATTERN.test(lower)) {
+  if (NO_DIRECT_ANSWER_PATTERN.test(lower)) {
     return makeTurn('guided_without_answer', 'help_request', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory

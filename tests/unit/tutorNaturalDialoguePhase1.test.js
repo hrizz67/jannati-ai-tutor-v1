@@ -222,6 +222,21 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     expect(response.text).not.toMatch(leakedVariant);
   });
 
+  it('does not suppress Arabic teaching when a short answer is only inside another word', async () => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: 'mufradat', title: 'Mufradat' },
+      question: { id: 'arabic-short-answer', q: 'أجب بنعم أو لا.', answer: 'لا', acceptedAnswers: ['لا'] },
+      expectedAnswer: 'لا', acceptedAnswers: ['لا'],
+      conversationKey: 'synthetic::arab::short-answer', prompt: 'ما معنى الاسم؟'
+    });
+
+    expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+    expect(response.text).toMatch(/الاسم.*(?:شخص|حيوان|مكان|شيء)/u);
+    expect(response.expectedAnswer).toBe('');
+  });
+
   it.each([
     ['English', { id: 'english', title: 'English' }, 'en-MY', 'school', 'Why is my answer wrong?', /answer is correct/iu, /\b(?:jawapan|betul|petunjuk)\b/iu],
     ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'ar-MY', 'مَدْرَسَةٌ', 'لماذا إجابتي خاطئة؟', /إجابتك صحيحة/u, /\b(?:jawapan|betul|answer|correct)\b/iu]
@@ -290,7 +305,9 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
 
   it.each([
     ['English', { id: 'english', title: 'English' }, 'My name is Alice Smith'],
-    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اسمي الكامل نور الهدى']
+    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اسمي الكامل نور الهدى'],
+    ['vocalized Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْمِي الْكَامِلُ نُورُ الْهُدَى'],
+    ['curriculum Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اِسْمِي أَحْمَدُ']
   ])('blocks and redacts synthetic %s personal-name disclosure', async (_label, subject, prompt) => {
     const response = await getTutorResponse({
       student, subject,
@@ -358,7 +375,10 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     ['informal confusion', { id: 'bm', title: 'Bahasa Melayu' }, 'x faham'],
     ['English no-answer policy', { id: 'english', title: 'English' }, "don't answer"],
     ['BM no-answer policy', { id: 'bm', title: 'Bahasa Melayu' }, 'jangan beri jawapan'],
-    ['Arabic no-answer policy', { id: 'arab', title: 'Bahasa Arab' }, 'لا تعطيني الجواب']
+    ['Arabic no-answer policy', { id: 'arab', title: 'Bahasa Arab' }, 'لا تعطيني الجواب'],
+    ['English greeting', { id: 'english', title: 'English' }, 'hello'],
+    ['BM learner state', { id: 'bm', title: 'Bahasa Melayu' }, 'penat'],
+    ['BM revision request', { id: 'bm', title: 'Bahasa Melayu' }, 'ulang kaji']
   ])('keeps an accepted answer authoritative when it resembles %s', async (_label, subject, answer) => {
     const response = await getTutorResponse({
       student,

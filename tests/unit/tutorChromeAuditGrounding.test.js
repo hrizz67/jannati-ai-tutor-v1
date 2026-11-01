@@ -109,8 +109,8 @@ describe('Chrome audit informal understanding and active-question grounding', ()
     expect(turn).toMatchObject({ intent: 'direct_answer', answerCandidate: 'tak paham' });
   });
 
-  it.each(["don't answer", 'jangan beri jawapan', 'لا تعطيني الجواب'])(
-    'keeps an accepted answer authoritative when it resembles a no-answer policy: %s',
+  it.each(["don't answer", 'jangan beri jawapan', 'لا تعطيني الجواب', 'hello', 'penat', 'ulang kaji'])(
+    'keeps an accepted answer authoritative before automatic intent routing: %s',
     prompt => {
       expect(understandStudentTurn({
         prompt,

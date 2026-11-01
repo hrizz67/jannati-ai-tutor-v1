@@ -23,9 +23,9 @@ export function textContainsExpectedAnswer(text = '', answers = []) {
     .filter(answer => answer && /[\p{L}\p{N}]/u.test(answer))
     .sort((left, right) => right.length - left.length)
     .some(answer => {
-      if (/\p{Script=Arabic}/u.test(answer)) return value.includes(answer);
       const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(value);
+      const arabicPrefix = /\p{Script=Arabic}/u.test(answer) ? 'و?' : '';
+      return new RegExp(`(^|[^\\p{L}\\p{N}])${arabicPrefix}${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(value);
     });
 }
 
