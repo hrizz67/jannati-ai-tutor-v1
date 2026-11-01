@@ -82,6 +82,10 @@ describe('bounded tutor conversation memory', () => {
     ['email', 'Email saya ali.murid@example.com'],
     ['phone', 'Nombor telefon saya 012-345 6789'],
     ['named identifier', 'Nama saya Ali bin Ahmad'],
+    ['English named identifier', 'My name is Alice Smith'],
+    ['vocalized Arabic named identifier', 'اِسْمِي أَحْمَدُ'],
+    ['tatweel Arabic named identifier', 'اِسْـمِي أَحْمَدُ'],
+    ['hamza Arabic named identifier', 'إِسْمِي أَحْمَدُ'],
     ['address', 'Alamat saya di 12 Jalan Melur'],
     ['school', 'Sekolah saya SK Seri Damai']
   ])('never retains %s personal data verbatim', (_label, personalMessage) => {
@@ -400,7 +404,9 @@ describe('canonical answer and response-policy regression', () => {
     });
 
     expect(response.source).toBe('intelligent-teaching-engine');
-    expect(response.isCorrect).toBe(true);
+    expect(response.isCorrect).toBeNull();
+    expect(response.expectedAnswer).toBe('');
+    expect(response.acceptedAnswers).toEqual([]);
     expect(response.pedagogicalState).toMatchObject({
       signal: 'misunderstanding',
       misunderstandingCount: 1,

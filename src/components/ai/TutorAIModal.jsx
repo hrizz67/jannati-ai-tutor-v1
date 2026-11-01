@@ -312,7 +312,7 @@ export default function TutorAIModal({
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
   const topicLabel = questionContext.topicLabel || activeTopic?.title || formatTopicName(activeTopic?.id);
   const languagePresentation = getSubjectLanguagePresentation(activeSubject);
-  const voiceLang = languagePresentation.teachingLocale;
+  const voiceLang = languagePresentation[activeSubject?.id === 'arab' ? 'contentLocale' : 'teachingLocale'];
   const speechSupported = useMemo(() => supportsSpeechRecognition(), []);
   const fallbackMessage = languagePresentation.teachingLanguage === 'en'
     ? 'I could not understand that question accurately. Please ask again using different words.'

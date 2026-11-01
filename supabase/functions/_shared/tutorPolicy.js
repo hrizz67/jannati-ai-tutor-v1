@@ -14,7 +14,8 @@ const PERSONAL_DATA_PATTERNS = [
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu,
   /\b(?:\+?6?01\d[-\s]?\d{3,4}[-\s]?\d{4}|\d{6}[-\s]?\d{2}[-\s]?\d{4})\b/u,
   /\b(?:nama\s+penuh|nama\s+saya|alamat\s+saya|sekolah\s+saya|nombor\s+telefon|no\.?\s*telefon|kad\s+pengenalan|kata\s+laluan|password|otp|pin\s+saya)\b/iu,
-  /\b(?:my\s+full\s+name|my\s+address|my\s+school|phone\s+number|identity\s+card|passport\s+number|my\s+password)\b/iu
+  /\b(?:my\s+(?:full\s+)?name(?:\s+is)?|my\s+address|my\s+school|phone\s+number|identity\s+card|passport\s+number|my\s+password)\b/iu,
+  /(?:اسمي(?:\s+الكامل)?|عنواني|مدرستي|رقم\s+(?:هاتفي|هويتي)|كلمة\s+المرور)/u
 ];
 
 const HIGH_RISK_PATTERNS = Object.freeze({
@@ -33,7 +34,9 @@ export function cleanTutorGatewayText(value = '', maxLength = TUTOR_GATEWAY_LIMI
 }
 
 export function containsPotentialPersonalData(value = '') {
-  const text = cleanTutorGatewayText(value, 4000);
+  const text = cleanTutorGatewayText(value, 4000)
+    .replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '')
+    .replace(/[أإآٱ]/gu, 'ا');
   return Boolean(text && PERSONAL_DATA_PATTERNS.some(pattern => pattern.test(text)));
 }
 

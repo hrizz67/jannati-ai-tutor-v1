@@ -297,6 +297,30 @@ describe('intelligent teaching progression', () => {
     expect(questionCount(result.reply.text)).toBe(1);
   });
 
+  it('filters a protected Arabic answer when teaching text adds an article or clitic', () => {
+    const result = buildIntelligentTeachingTurn(buildArgs({
+      subjectId: 'arab',
+      topicId: 'mufradat',
+      locale: 'ar-MY',
+      languagePresentation: { teachingLanguage: 'ar' },
+      expectedAnswer: 'مدرسة',
+      acceptedAnswers: ['مدرسة'],
+      options: ['مدرسة', 'كتاب'],
+      teachingContent: {
+        grounded: true,
+        explanations: ['هذه الْمَدْرَسَةُ مكان للتعلم.'],
+        examples: ['وَالْمَدْرَسَةُ قريبة.'],
+        verifiedExamples: ['بالمدرسة نتعلم.'],
+        alternatives: ['ابحث عن اسم مكان.'],
+        steps: ['اختر الكلمة التي تدل على مكان.'],
+        checkQuestions: ['هل الكلمة تدل على مكان']
+      }
+    }));
+    const exposed = String(result.reply.text).replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+    expect(exposed).not.toContain('مدرسة');
+    expect(result.reply.text).toContain('ابحث عن اسم مكان');
+  });
+
   it('uses a grounded safe fallback rather than inventing missing knowledge', () => {
     const result = buildIntelligentTeachingTurn(buildArgs({
       teachingContent: { grounded: false }
@@ -309,7 +333,15 @@ describe('intelligent teaching progression', () => {
   it.each([
     ['BM', { locale: 'ms-MY', subjectId: 'bm' }, 'Tak mengapa'],
     ['English', { locale: 'en-MY', subjectId: 'english', languagePresentation: { teachingLanguage: 'en' } }, 'That is okay'],
-    ['Arabic', { locale: 'ar-MY', subjectId: 'arabic' }, 'لا بأس']
+    ['Arabic', {
+      locale: 'ar-MY', subjectId: 'arab',
+      teachingContent: {
+        grounded: true,
+        explanations: ['الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.'],
+        examples: ['كِتَابٌ اسمٌ لشيءٍ.'], alternatives: ['ابحث عن اسم.'],
+        steps: ['اقرأ الكلمة وافهم معناها.'], checkQuestions: ['هل هي شخص أم مكان أم شيء']
+      }
+    }, 'لا بأس']
   ])('keeps %s teaching concise and age appropriate', (_label, language, expectedCopy) => {
     const result = buildIntelligentTeachingTurn(buildArgs(language));
     expect(result.reply.text).toContain(expectedCopy);

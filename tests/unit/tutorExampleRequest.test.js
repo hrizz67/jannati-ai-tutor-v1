@@ -29,7 +29,7 @@ const languageCases = [
     answer: 'قَلَمٌ',
     options: ['قَلَمٌ', 'كِتَابٌ', 'مَدْرَسَةٌ'],
     locale: 'ar-MY',
-    approved: ['Dengar bunyi مَدْرَسَةٌ dengan teliti.', 'Baca contoh كِتَابٌ satu demi satu.']
+    approved: ['مَدْرَسَةٌ اسمٌ لمكانٍ.', 'كِتَابٌ اسمٌ لشيءٍ.']
   }
 ];
 
@@ -171,14 +171,14 @@ describe('approved example-request teaching path', () => {
     expect(response.text).toContain('doktor');
     expect(response.text.toLocaleLowerCase('ms-MY')).not.toContain('sekolah');
     expect(response.expectedAnswer).toBe('');
-    expect(response.isCorrect).toBe(false);
+    expect(response.isCorrect).toBeNull();
   });
 
-  it('preserves canonical correctness without changing score or reward data', async () => {
+  it('does not inherit quiz correctness or change score and reward data', async () => {
     const response = await askForExample(languageCases[0], { isCorrect: true });
 
-    expect(response.isCorrect).toBe(true);
-    expect(response.expectedAnswer).toBe('Ali');
+    expect(response.isCorrect).toBeNull();
+    expect(response.expectedAnswer).toBe('');
     expect(response.pedagogicalState.misunderstandingCount).toBe(0);
     expect(response).not.toHaveProperty('xp');
     expect(response).not.toHaveProperty('coins');
