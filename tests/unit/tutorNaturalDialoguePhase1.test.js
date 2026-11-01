@@ -161,7 +161,7 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     const asks = await getTutorResponse({ ...base, prompt: 'Dia tanya apa?' });
     const premise = await getTutorResponse({ ...base, prompt: 'Kenapa jawapan saya salah?' });
     expect(asks.text).toMatch(/kata nama tempat|perkataan.*tempat/iu);
-    expect(premise.text).toMatch(/sebenarnya.*betul|ditanda betul/iu);
+    expect(premise.text).toMatch(/jawapan kamu.*betul|ditanda betul/iu);
     expect(premise.text).not.toMatch(/belum tepat|jawapan.*salah/iu);
     expectHelpInvariants(asks, question.answer);
     expectHelpInvariants(premise, question.answer);
@@ -181,6 +181,127 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     expect(response.text).toMatch(/taman.*kata nama tempat/iu);
     expect(response.text).toMatch(/bermain.*kata kerja/iu);
     expectHelpInvariants(response);
+  });
+
+  it('does not leak a protected answer through standalone classification help', async () => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
+      question: { id: 'protected-classification', q: 'Pilih kata nama tempat.', answer: 'taman', acceptedAnswers: ['taman'], options: ['taman', 'bermain'] },
+      expectedAnswer: 'taman',
+      acceptedAnswers: ['taman'],
+      conversationKey: 'synthetic::bm::protected-classification',
+      prompt: 'Adakah taman kata nama tempat atau bermain kata nama tempat?'
+    });
+
+    expect(['LOCAL_HANDLED', 'NEEDS_CLARIFICATION']).toContain(response.dialogueClassification);
+    expect(response.remoteAttempted).toBe(false);
+    expect(response.expectedAnswer || '').toBe('');
+    expect(response.correctAnswer || '').toBe('');
+    expect(response.text).not.toMatch(/\btaman\b/iu);
+  });
+
+  it.each([
+    ['English', { id: 'english', title: 'English' }, { id: 'nouns', title: 'Nouns' }, 'teacher', 'What is a common noun?', /\bteacher\b/iu],
+    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, { id: 'mufradat', title: 'Mufradat' }, 'مدرسة', 'ما معنى الاسم؟', /مَدْرَسَة/u]
+  ])('does not leak a protected %s answer through a diacritic or example variant', async (_label, subject, topic, answer, prompt, leakedVariant) => {
+    const response = await getTutorResponse({
+      student, subject, topic,
+      question: { id: `protected-${subject.id}`, q: 'Choose the answer.', answer, acceptedAnswers: [answer] },
+      expectedAnswer: answer,
+      acceptedAnswers: [answer],
+      conversationKey: `synthetic::${subject.id}::protected`,
+      prompt
+    });
+
+    expect(['LOCAL_HANDLED', 'NEEDS_CLARIFICATION']).toContain(response.dialogueClassification);
+    expect(response.remoteAttempted).toBe(false);
+    expect(response.expectedAnswer || '').toBe('');
+    expect(response.correctAnswer || '').toBe('');
+    expect(response.text).not.toMatch(leakedVariant);
+  });
+
+  it.each([
+    ['English', { id: 'english', title: 'English' }, 'en-MY', 'school', 'Why is my answer wrong?', /answer is correct/iu, /\b(?:jawapan|betul|petunjuk)\b/iu],
+    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'ar-MY', 'مَدْرَسَةٌ', 'لماذا إجابتي خاطئة؟', /إجابتك صحيحة/u, /\b(?:jawapan|betul|answer|correct)\b/iu]
+  ])('localizes false-premise correction for %s', async (_label, subject, locale, answer, prompt, expectedCopy, wrongLanguage) => {
+    const response = await getTutorResponse({
+      student,
+      subject,
+      topic: { id: 'nouns', title: 'Nouns' },
+      question: { id: `false-premise-${subject.id}`, q: 'Choose the noun.', answer, acceptedAnswers: [answer] },
+      expectedAnswer: answer,
+      acceptedAnswers: [answer],
+      learnerAnswer: answer,
+      isCorrect: true,
+      intent: 'wrong_answer_coaching',
+      locale,
+      conversationKey: `synthetic::${subject.id}::false-premise`,
+      prompt
+    });
+
+    expect(response.text).toMatch(expectedCopy);
+    expect(response.text).not.toMatch(wrongLanguage);
+    expectHelpInvariants(response, answer);
+  });
+
+  it('preserves authoritative wrong-answer evidence for reviewed misconception coaching', async () => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      topic: { id: 'kata_nama_khas', title: 'Kata Nama Khas' },
+      question: {
+        id: 'reviewed-misconception', q: 'Pilih kata nama khas.', instruction: 'Pilih nama khusus.',
+        options: ['Aina', 'murid'], answer: 'Aina', acceptedAnswers: ['Aina'],
+        misconceptionEvidence: [{
+          answer: 'murid', type: 'common_noun_vs_proper_noun', confidence: 0.9,
+          verified: true, source: 'reviewed-question',
+          evidence: 'The reviewed distractor is a common noun.',
+          childSafeLabel: 'Kamu memilih nama umum, tetapi soalan meminta nama khusus.'
+        }]
+      },
+      expectedAnswer: 'Aina', acceptedAnswers: ['Aina'], learnerAnswer: 'murid', isCorrect: false,
+      intent: 'wrong_answer_coaching', prompt: 'Kenapa jawapan saya salah?',
+      conversationKey: 'synthetic::bm::reviewed-misconception'
+    });
+
+    expect(response.learningExperience.misconception).toMatchObject({
+      type: 'common_noun_vs_proper_noun', supported: true, evidenceAnswer: 'murid'
+    });
+    expect(response.text).toMatch(/nama umum.*nama khusus/iu);
+    expectHelpInvariants(response, 'Aina');
+  });
+
+  it.each([
+    ['English', { id: 'english', title: 'English' }, { id: 'nouns', title: 'Nouns', note: 'A noun names a person, animal, place, or thing.' }, 'en-MY', 'Why is a school a noun?', /(?:reason|why|clue)/iu, /\b(?:mari|sebabnya|soalan|petunjuk|kamu)\b/iu],
+    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, { id: 'mufradat', title: 'Mufradat', note: 'Kosa kata asas.' }, 'ar-MY', 'لماذا هذا اسم؟', /(?:الاسم|سبب|دليل)/u, /\b(?:mari|sebabnya|soalan|petunjuk|kamu|kosa)\b/iu]
+  ])('keeps %s why-question teaching in the subject language', async (_label, subject, topic, locale, prompt, expectedCopy, wrongLanguage) => {
+    const response = await getTutorResponse({
+      student,
+      subject, topic, locale,
+      conversationKey: `synthetic::${subject.id}::why`, prompt
+    });
+
+    expect(response.text).toMatch(expectedCopy);
+    expect(response.text).not.toMatch(wrongLanguage);
+    expectHelpInvariants(response);
+  });
+
+  it.each([
+    ['English', { id: 'english', title: 'English' }, 'My name is Alice Smith'],
+    ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'اسمي الكامل نور الهدى']
+  ])('blocks and redacts synthetic %s personal-name disclosure', async (_label, subject, prompt) => {
+    const response = await getTutorResponse({
+      student, subject,
+      topic: { id: 'dialog', title: 'Dialog' },
+      conversationKey: `synthetic::${subject.id}::privacy`, prompt
+    });
+
+    expect(response.dialogueClassification).toBe('SAFETY_BLOCKED');
+    expect(response.dialogueRoutingReason).toBe('personal-data');
+    expect(response.text).not.toContain(prompt);
+    expect(response.remoteAttempted).toBe(false);
   });
 
   it('asks for safe clarification when context is absent or stale instead of inventing details', async () => {
@@ -229,22 +350,28 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
 
     expect(response.studentTurn.intent).toBe('example_request');
     expect(response.text).toMatch(/contoh mudah.*(?:doktor|sekolah)/iu);
+    expect(response.text).toMatch(/orang.*haiwan.*tempat.*benda/iu);
     expectHelpInvariants(response, 'taman');
   });
 
-  it('keeps an accepted answer authoritative even when it resembles informal confusion', async () => {
+  it.each([
+    ['informal confusion', { id: 'bm', title: 'Bahasa Melayu' }, 'x faham'],
+    ['English no-answer policy', { id: 'english', title: 'English' }, "don't answer"],
+    ['BM no-answer policy', { id: 'bm', title: 'Bahasa Melayu' }, 'jangan beri jawapan'],
+    ['Arabic no-answer policy', { id: 'arab', title: 'Bahasa Arab' }, 'لا تعطيني الجواب']
+  ])('keeps an accepted answer authoritative when it resembles %s', async (_label, subject, answer) => {
     const response = await getTutorResponse({
       student,
-      subject: { id: 'bm', title: 'Bahasa Melayu' },
+      subject,
       topic: { id: 'dialog', title: 'Dialog' },
-      question: { id: 'adversarial-answer', q: 'Salin frasa yang diberi.', answer: 'x faham', acceptedAnswers: ['x faham'] },
-      expectedAnswer: 'x faham',
-      acceptedAnswers: ['x faham'],
-      conversationKey: 'synthetic::bm::adversarial-answer',
-      prompt: 'x faham'
+      question: { id: 'adversarial-answer', q: 'Salin frasa yang diberi.', answer, acceptedAnswers: [answer] },
+      expectedAnswer: answer,
+      acceptedAnswers: [answer],
+      conversationKey: `synthetic::${subject.id}::adversarial-answer`,
+      prompt: answer
     });
 
-    expect(response.studentTurn).toMatchObject({ intent: 'direct_answer', answerCandidate: 'x faham' });
+    expect(response.studentTurn).toMatchObject({ intent: 'direct_answer', answerCandidate: answer });
     expect(response.isCorrect).toBe(true);
     for (const field of rewardFields) expect(response).not.toHaveProperty(field);
   });

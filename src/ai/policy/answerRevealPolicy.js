@@ -9,18 +9,21 @@ export const ANSWER_REVEAL_STAGES = Object.freeze({
   COMPLETED: 'completed'
 });
 
+const stripArabicMarks = value => String(value ?? '').replace(/[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+
 function normalizeAttemptCount(value) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? Math.max(0, Math.floor(numeric)) : 0;
 }
 
 export function textContainsExpectedAnswer(text = '', answers = []) {
-  const value = String(text ?? '');
+  const value = stripArabicMarks(text);
   return (Array.isArray(answers) ? answers : [answers])
-    .map(answer => String(answer ?? '').trim())
+    .map(answer => stripArabicMarks(answer).trim())
     .filter(answer => answer && /[\p{L}\p{N}]/u.test(answer))
     .sort((left, right) => right.length - left.length)
     .some(answer => {
+      if (/\p{Script=Arabic}/u.test(answer)) return value.includes(answer);
       const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(value);
     });

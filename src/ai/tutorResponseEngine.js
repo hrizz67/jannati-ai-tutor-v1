@@ -368,10 +368,10 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
     return '“Taman” ialah kata nama tempat (lokasi). “Bermain” ialah kata kerja (perbuatan).';
   }
   if (subjectId === 'english' && /common\s+noun|noun/.test(text)) {
-    return 'A common noun is a general name for a person, animal, place, or thing. Examples: teacher and school.';
+    return 'A common noun is a general name for a person, animal, place, or thing.';
   }
-  if (subjectId === 'arab' && /(?:ما\s+معنى\s+الاسم|الاسم)/u.test(text)) {
-    return `${ARABIC_NOUN} مثل: مُعَلِّمٌ ومَدْرَسَةٌ.`;
+  if (subjectId === 'arab' && /(?:ما\s+معنى\s+الاسم|الاسم|اسم)/u.test(text)) {
+    return ARABIC_NOUN;
   }
   if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:kata nama am).*(?:kata nama khas)|(?:kata nama am).*(?:dan|dengan|berbanding).*(?:kata nama khas)/.test(text)) {
     return 'Kata nama am ialah nama umum, seperti guru, bandar dan kucing. Kata nama khas pula ialah nama khusus, seperti Cikgu Aina, Melaka dan Si Comel. Perbezaan utamanya ialah kata nama khas merujuk sesuatu yang tertentu dan biasanya bermula dengan huruf besar.';
@@ -825,15 +825,15 @@ function buildContextualSections({
       })
     : { examples: [], provenance: null };
   const verifiedExamples = answerSafeList(reviewedExampleSelection.examples);
-  const topicPedagogy = subject?.id === 'bm' && !resolvedQuestion && /kata_nama_am|kata nama am/iu.test(`${topic?.id} ${topic?.title}`)
+  const isBmCommonNoun = subject?.id === 'bm' && /kata_nama_am|kata nama am/iu.test(`${topic?.id} ${topic?.title}`);
+  const topicPedagogy = isBmCommonNoun && !resolvedQuestion
     ? {
         explanations: [topic?.note],
         alternatives: [topic?.note],
         steps: [
           'Pilih satu perkataan dan tanya apa yang dinamakan.',
           'Jika perkataan menamakan orang, haiwan, benda atau tempat, itu kata nama.'
-        ],
-        checks: ['Sebut satu nama benda?']
+        ]
       }
     : subject?.id === 'arab' && topic?.id === 'mufradat'
       ? {
@@ -864,7 +864,7 @@ function buildContextualSections({
       coachResponse?.memoryTips
     ]),
     steps: answerSafeList(topicPedagogy?.steps || steps),
-    checkQuestions: answerSafeList(topicPedagogy?.checks || [
+    checkQuestions: answerSafeList(isBmCommonNoun ? ['Orang, haiwan, tempat atau benda?'] : topicPedagogy?.checks || [
       coachKnowledge?.followUpQuestions,
       coachResponse?.followUpQuestions,
       guided?.guidingQuestion
@@ -1282,13 +1282,12 @@ function buildConversationalTeachingReply({
         Boolean(learningAnchor)
       );
     case 'why_question':
+      if (dialogueLanguage !== 'ms') {
+        return withReplies(`${learningAnchor || questionText} ${dialogueLanguage === 'en' ? 'Which clue shows why?' : 'ما السبب؟'}`, [], Boolean(learningAnchor || questionText));
+      }
       return withReplies(
-        [
-          studentTurn.referencesPreviousTurn ? 'Baik, mari kita lihat sebabnya.' : `Mari kita fahami sebab untuk ${topicLabel}.`,
-          learningAnchor || `Sebabnya bergantung pada petunjuk dalam ${questionText || 'soalan ini'}.`,
-          `Cuba beritahu saya: petunjuk utama yang kamu nampak ialah apa?`
-        ].filter(Boolean).join(' '),
-        ['Beri contoh mudah', 'Terangkan sebab dengan cara lain', 'Petunjuk utama ialah...'],
+        `${learningAnchor || `Sebabnya ada pada petunjuk dalam ${questionText || 'soalan ini'}.`} Apakah petunjuk utamanya?`,
+        commonReplies,
         Boolean(learningAnchor || questionText)
       );
     case 'how_question':
@@ -1438,13 +1437,15 @@ export async function getTutorResponse(options = {}) {
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const microCheck = studentTurn.messageType === 'learning_response';
-  const answerSafeHelp = !promptAnswer && ANSWER_SAFE_HELP_INTENTS.has(resolvedIntent);
+  const priorAnswer = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
+  const answerSafeHelp = !promptAnswer && ANSWER_SAFE_HELP_INTENTS.has(resolvedIntent) &&
+    !(resolvedIntent === 'wrong_answer_coaching' && isCorrect === false && priorAnswer);
   const tutorAttempts = +attemptCount * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
   const tutorHints = +hintsUsed * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
   const feedbackQuestion = microCheck
     ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
     : resolvedQuestion;
-  const answerText = microCheck || answerSafeHelp ? '' : getLearnerAnswer(promptAnswer || learnerAnswer || studentAnswer, resolvedQuestion);
+  const answerText = microCheck || answerSafeHelp ? '' : getLearnerAnswer(promptAnswer || priorAnswer, resolvedQuestion);
   const answerCheckQuestion = {
     ...resolvedQuestion,
     answer: expected || resolvedQuestion.answer,
@@ -1590,9 +1591,12 @@ export async function getTutorResponse(options = {}) {
     guided,
     history
   });
-  const standaloneAnswer = ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
-    ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
-    : '';
+  const standaloneAnswer = selectAnswerSafeText(
+    ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
+      ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
+      : '',
+    [...pendingExpectedAnswers, expected, ...acceptedAnswers]
+  );
   const conversationalReply = buildConversationalTeachingReply({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     standaloneAnswer,
@@ -1606,7 +1610,11 @@ export async function getTutorResponse(options = {}) {
   });
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
-        text: 'Jawapan kamu sebenarnya ditanda betul. Mari terangkan petunjuknya tanpa mendedahkan jawapan.',
+        text: subjectContext.id === 'english'
+          ? 'Your answer is correct.'
+          : subjectContext.id === 'arab'
+            ? 'إجابتك صحيحة.'
+            : 'Jawapan kamu betul.',
         quickReplies: [],
         grounded: true
       }

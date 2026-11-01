@@ -35,7 +35,7 @@ const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*
 const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
 const ACTIVE_QUESTION_REFERENCE_PATTERN = /^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$/iu;
 const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
-const NO_DIRECT_ANSWER_PATTERN = /(?:\bjangan\b.{0,40}\bjawapan\b|\bdon['’]?t\b.{0,40}\banswer\b|لا\s+تعط(?:ي)?ني.{0,30}(?:الجواب|الإجابة))/iu;
+const NO_DIRECT_ANSWER_PATTERN = /(?:\bjangan\b.{0,40}\bjawapan\b|\bdon['’]?t\s+(?:give|tell|show)\b.{0,40}\banswer\b|لا\s+تعط(?:ي)?ني.{0,30}(?:الجواب|الإجابة))/iu;
 const RECOVERABLE_TEACHING_STAGES = new Set([
   'concept_explanation', 'alternative_strategy', 'guided_small_step',
   'verified_micro_example', 'evidence_guided_correction',
@@ -207,7 +207,7 @@ export function understandStudentTurn({
     });
   }
 
-  if (NO_DIRECT_ANSWER_PATTERN.test(lower)) {
+  if (!matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers) && NO_DIRECT_ANSWER_PATTERN.test(lower)) {
     return makeTurn('guided_without_answer', 'help_request', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory

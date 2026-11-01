@@ -109,6 +109,25 @@ describe('Chrome audit informal understanding and active-question grounding', ()
     expect(turn).toMatchObject({ intent: 'direct_answer', answerCandidate: 'tak paham' });
   });
 
+  it.each(["don't answer", 'jangan beri jawapan', 'لا تعطيني الجواب'])(
+    'keeps an accepted answer authoritative when it resembles a no-answer policy: %s',
+    prompt => {
+      expect(understandStudentTurn({
+        prompt,
+        expectedAnswer: prompt,
+        acceptedAnswers: [prompt],
+        hasExerciseContext: true
+      })).toMatchObject({ intent: 'direct_answer', answerCandidate: prompt });
+    }
+  );
+
+  it('does not misclassify an English why-question as a no-answer instruction', () => {
+    expect(understandStudentTurn({
+      prompt: "Why don't you answer the question?",
+      hasLearningContext: true
+    })).toMatchObject({ intent: 'why_question', messageType: 'knowledge_question' });
+  });
+
   it.each(['Dia tanya apa?', 'Apa tu?', 'What does the question ask?', 'ماذا يسأل؟']) (
     'grounds a deictic request in the active question without inventing a topic: %s',
     async prompt => {
