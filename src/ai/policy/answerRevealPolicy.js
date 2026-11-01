@@ -34,9 +34,7 @@ export function textContainsExpectedAnswer(text = '', answers = []) {
       const arabicPrefix = isArabic
         ? ARABIC_NON_NOMINAL_ANSWERS.has(answer)
           ? '[وف]?'
-          : answer.length > 3
-            ? '[وف]?(?:ال|بال|كال|لل|ب|ك|ل)?'
-            : '[وف]?(?:ال|بال|كال|لل)?'
+          : '[وف]?(?:ال|بال|كال|لل|ب|ك|ل)?'
         : '';
       return new RegExp(`(^|[^\\p{L}\\p{N}])${arabicPrefix}${escaped}($|[^\\p{L}\\p{N}])`, 'iu').test(value);
     });

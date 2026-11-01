@@ -316,7 +316,7 @@ export function buildIntelligentTeachingTurn({
   const steps = localizedCandidates(teachingContent.steps);
   const copy = copyFor(language);
   const checkQuestion = safeQuestion(
-    teachingContent.checkQuestions,
+    localizedCandidates(teachingContent.checkQuestions),
     protectedAnswers,
     language === 'en'
       ? 'What is the main clue in this question'

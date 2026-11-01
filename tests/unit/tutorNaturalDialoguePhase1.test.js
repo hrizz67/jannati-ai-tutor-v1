@@ -257,6 +257,27 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
   });
 
   it.each([
+    ['قلم', 'أكتب بقلم أزرق.'],
+    ['بيت', 'أنا ببيت جميل.']
+  ])('fails closed in Arabic when a short protected noun receives a one-letter clitic: %s', async (answer, note) => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: `synthetic_${answer}`, title: 'مفردات', note },
+      question: { id: `arabic-clitic-${answer}`, q: 'اختر الكلمة الصحيحة.', answer, acceptedAnswers: [answer] },
+      expectedAnswer: answer, acceptedAnswers: [answer],
+      conversationKey: `synthetic::arab::clitic-${answer}`, prompt: 'لا أفهم.'
+    });
+
+    const normalizedText = response.text.replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
+    expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+    expect(normalizedText).not.toContain(answer);
+    expect(response.text).not.toMatch(/\p{Script=Latin}/u);
+    expect(response.expectedAnswer).toBe('');
+    expect(response.remoteAttempted).toBe(false);
+  });
+
+  it.each([
     ['English', { id: 'english', title: 'English' }, 'en-MY', 'school', 'Why is my answer wrong?', /answer is correct/iu, /\b(?:jawapan|betul|petunjuk)\b/iu],
     ['Arabic', { id: 'arab', title: 'Bahasa Arab' }, 'ar-MY', 'مَدْرَسَةٌ', 'لماذا إجابتي خاطئة؟', /إجابتك صحيحة/u, /\b(?:jawapan|betul|answer|correct)\b/iu]
   ])('localizes false-premise correction for %s', async (_label, subject, locale, answer, prompt, expectedCopy, wrongLanguage) => {
