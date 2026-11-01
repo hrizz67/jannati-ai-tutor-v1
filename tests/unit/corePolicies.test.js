@@ -61,6 +61,9 @@ describe('access and answer safety', () => {
     expect(textContainsExpectedAnswer('المنزل مكان جميل', ['من'])).toBe(false);
     expect(textContainsExpectedAnswer('الاسم كلمة مفيدة', ['لا'])).toBe(false);
     expect(textContainsExpectedAnswer('قلت لا', ['لا'])).toBe(true);
+    expect(textContainsExpectedAnswer('كتاب مفيد', ['تاب'])).toBe(false);
+    expect(textContainsExpectedAnswer('بلد جميل', ['لد'])).toBe(false);
+    expect(textContainsExpectedAnswer('لعب الطفل', ['عب'])).toBe(false);
   });
 
   it('accepts exact punctuation without weakening ordinary answers', () => {

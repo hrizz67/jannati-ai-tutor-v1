@@ -333,7 +333,15 @@ describe('intelligent teaching progression', () => {
   it.each([
     ['BM', { locale: 'ms-MY', subjectId: 'bm' }, 'Tak mengapa'],
     ['English', { locale: 'en-MY', subjectId: 'english', languagePresentation: { teachingLanguage: 'en' } }, 'That is okay'],
-    ['Arabic', { locale: 'ar-MY', subjectId: 'arabic' }, 'لا بأس']
+    ['Arabic', {
+      locale: 'ar-MY', subjectId: 'arab',
+      teachingContent: {
+        grounded: true,
+        explanations: ['الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.'],
+        examples: ['كِتَابٌ اسمٌ لشيءٍ.'], alternatives: ['ابحث عن اسم.'],
+        steps: ['اقرأ الكلمة وافهم معناها.'], checkQuestions: ['هل هي شخص أم مكان أم شيء']
+      }
+    }, 'لا بأس']
   ])('keeps %s teaching concise and age appropriate', (_label, language, expectedCopy) => {
     const result = buildIntelligentTeachingTurn(buildArgs(language));
     expect(result.reply.text).toContain(expectedCopy);

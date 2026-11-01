@@ -91,16 +91,28 @@ describe('P2.4-B safe non-repetitive grounded follow-up support', () => {
   });
 
   it.each([
-    ['BM', 'bm', 'ms-MY', 'recovery_meaning', 'Idea utama:'],
-    ['English', 'english', 'en-MY', 'recovery_first_step', 'Do just one small step:'],
-    ['Arabic', 'arabic', 'ar-MY', 'recovery_meaning', 'الفكرة الأولى:']
-  ])('keeps %s follow-up copy localized while selecting fresh authored support', (_label, subjectId, locale, intent, label) => {
-    const first = makeTurn({ subjectId, locale, resolvedIntent: intent });
-    const second = makeTurn({ subjectId, locale, resolvedIntent: intent, history: [prior(first)] });
+    ['BM', 'bm', 'ms-MY', 'recovery_meaning', 'Idea utama:', contentPack],
+    ['English', 'english', 'en-MY', 'recovery_first_step', 'Do just one small step:', {
+      grounded: true, explanations: ['A noun names a person, animal, place or thing.'],
+      alternatives: ['Find the word that names something.'],
+      steps: ['Read the question and find its key word.', 'Check each choice before answering.'],
+      checkQuestions: ['What is the main clue in this question']
+    }],
+    ['Arabic', 'arab', 'ar-MY', 'recovery_meaning', 'الفكرة الأولى:', {
+      grounded: true, explanations: ['الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.'],
+      alternatives: ['ابحث عن الكلمة التي تسمّي شيئًا.'],
+      steps: ['اقرأ السؤال وحدد الكلمة المهمة.', 'راجع الخيارات قبل الإجابة.'],
+      checkQuestions: ['ما الدليل المهم في هذا السؤال']
+    }]
+  ])('keeps %s follow-up copy localized while selecting fresh authored support', (labelName, subjectId, locale, intent, label, teachingContent) => {
+    const first = makeTurn({ subjectId, locale, resolvedIntent: intent, teachingContent });
+    const second = makeTurn({ subjectId, locale, resolvedIntent: intent, teachingContent, history: [prior(first)] });
     expect(first.reply.text).toContain(label);
     expect(second.reply.text).toContain(label);
     expect(second.reply.text).not.toBe(first.reply.text);
     expect(second.reply.text).not.toContain('Jawapannya ialah Ali');
+    if (labelName === 'English') expect(`${first.reply.text} ${second.reply.text}`).not.toMatch(/\b(?:saya|kamu|soalan|jawapan)\b/iu);
+    if (labelName === 'Arabic') expect(`${first.reply.text} ${second.reply.text}`).not.toMatch(/\p{Script=Latin}/u);
   });
 
   it('does not alter the specialized Mathematics path', () => {

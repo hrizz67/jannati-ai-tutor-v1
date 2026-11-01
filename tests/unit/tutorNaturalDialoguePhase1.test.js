@@ -250,6 +250,7 @@ describe('P1 post-release Tutor natural dialogue remediation', () => {
     const normalizedText = response.text.replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
     expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
     expect(normalizedText).not.toContain('مدرسة');
+    expect(response.text).not.toMatch(/\p{Script=Latin}/u);
     expect(response.expectedAnswer).toBe('');
     expect(response.correctAnswer).toBe('');
     expect(response.remoteAttempted).toBe(false);

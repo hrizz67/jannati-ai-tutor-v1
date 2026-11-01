@@ -306,12 +306,14 @@ export function buildIntelligentTeachingTurn({
   const currentConcept = resolveConceptKey({ subjectId, topicId, questionId, topicLabel });
   const previousState = getPreviousState(history, currentConcept);
   const protectedAnswers = [expectedAnswer, ...(Array.isArray(acceptedAnswers) ? acceptedAnswers : [])].filter(Boolean);
-  const explanations = safeCandidates(teachingContent.explanations, protectedAnswers);
-  const examples = safeCandidates(teachingContent.examples, protectedAnswers);
-  const verifiedExamples = safeCandidates(teachingContent.verifiedExamples, protectedAnswers);
-  const alternatives = safeCandidates(teachingContent.alternatives, protectedAnswers);
-  const steps = safeCandidates(teachingContent.steps, protectedAnswers);
   const language = resolveLanguage({ locale, languagePresentation, subjectId });
+  const localizedCandidates = values => safeCandidates(values, protectedAnswers)
+    .filter(item => language !== 'ar' || !/\p{Script=Latin}/u.test(item));
+  const explanations = localizedCandidates(teachingContent.explanations);
+  const examples = localizedCandidates(teachingContent.examples);
+  const verifiedExamples = localizedCandidates(teachingContent.verifiedExamples);
+  const alternatives = localizedCandidates(teachingContent.alternatives);
+  const steps = localizedCandidates(teachingContent.steps);
   const copy = copyFor(language);
   const checkQuestion = safeQuestion(
     teachingContent.checkQuestions,
