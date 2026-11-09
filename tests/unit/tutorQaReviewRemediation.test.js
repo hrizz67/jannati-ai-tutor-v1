@@ -128,6 +128,12 @@ describe('PR #175 QA-review P1 remediation', () => {
     const switched = await getTutorResponse({
       ...bmBase,
       availableSubjects: [bmBase.subject, math],
+      history: [
+        { role: 'user', text: 'Bahagian ayat mana saya tengok dulu?' },
+        { role: 'ai', text: 'Kami bermain bola di ___.', questionId: 'qa-review-place' }
+      ],
+      currentLearningObjective: 'Kenal pasti kata_nama_am dalam Kami bermain bola.',
+      adaptiveRecommendation: { reason: 'qa-review-place' },
       prompt: 'Saya mahu belajar topik bahagi.'
     });
 
@@ -142,6 +148,8 @@ describe('PR #175 QA-review P1 remediation', () => {
     expect(switched.questionText).toBe('');
     expect(switched.contextUsed).toMatchObject({ hasQuestion: false, subjectId: 'math', topicId: 'bahagi' });
     expect(JSON.stringify(switched)).not.toMatch(/qa-review-place|Kami bermain bola|kata_nama_am/iu);
+    expect(switched.answerRevealPolicy.attemptCount).toBe(0);
+    expect(switched.studentTurn).toMatchObject({ lastStudentTurn: '', lastTutorTurn: '', hasHistory: false, hasTeachingStage: false });
     expect(switched.quickActions.every(action => action.subjectId === 'math' && action.topicId === 'bahagi' && !action.questionId)).toBe(true);
   });
 
@@ -190,8 +198,9 @@ describe('PR #175 QA-review P1 remediation', () => {
     expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
     expect(response.grounded).toBe(true);
     expect(response.text).toMatch(config.teaching || /kata nama tempat|perkataan|tempat|lokasi|petunjuk|ayat/iu);
-    if (config.locale === 'en-MY') expect(response.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk)\b/iu);
-    if (config.locale === 'ar-MY') expect(response.text).not.toMatch(/[A-Za-z]/u);
+    const uiCopy = [response.text, ...response.quickReplies, ...response.quickActions.map(action => action.label)].join(' ');
+    if (config.locale === 'en-MY') expect(uiCopy).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk)\b/iu);
+    if (config.locale === 'ar-MY') expect(uiCopy).not.toMatch(/[A-Za-z]/u);
     expectUngradedAnswerSafe(response, config.answer);
   });
 

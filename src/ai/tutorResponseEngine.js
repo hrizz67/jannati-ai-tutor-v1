@@ -515,9 +515,7 @@ function buildSuggestionList(intent, context = {}) {
         ];
       }
       return [
-        'Fokus pada kata kunci soalan ini.',
-        'Bandingkan soalan dengan jawapan kamu.',
-        'Gunakan penjelasan mudah untuk faham maksudnya.'
+        'Cari kata kunci.'
       ];
     case 'example_request':
       return [
@@ -1214,8 +1212,8 @@ function buildConversationalTeachingReply({
       }
       return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
     case 'question_help':
-      if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', [], true);
-      if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', [], true);
+      if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['One clue'], true);
+      if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['تلميح'], true);
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
@@ -1682,6 +1680,9 @@ export async function getTutorResponse(options = {}) {
       : `Saya akan bantu berdasarkan ${fallbackTopicLabel}.`
   );
   const revealGradedAnswer = gradedTurn && guided.answerRevealPolicy.canRevealAnswer;
+  if (switchedTopic) Object.assign(studentTurn, {
+    lastStudentTurn: '', lastTutorTurn: '', hasHistory: false, pendingCheck: false, hasTeachingStage: false
+  });
   const response = {
     text: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
     shortText: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
@@ -1707,17 +1708,17 @@ export async function getTutorResponse(options = {}) {
     isCorrect: gradedTurn ? resolvedCorrect : null,
     contextUsed: contextBundle.contextUsed,
     sections: contextBundle.sections,
-    recommendationKey: recommendation?.recommendedTopicId || null,
-    weakTopics: weakList,
-    strongTopics: strongList,
-    uasaSummary,
-    adaptiveRecommendation,
+    recommendationKey: switchedTopic ? null : recommendation?.recommendedTopicId || null,
+    weakTopics: switchedTopic ? [] : weakList,
+    strongTopics: switchedTopic ? [] : strongList,
+    uasaSummary: switchedTopic ? null : uasaSummary,
+    adaptiveRecommendation: switchedTopic ? null : adaptiveRecommendation,
     explanationMode: switchedTopic ? '' : explanationMode,
-    currentLearningObjective,
+    currentLearningObjective: switchedTopic ? '' : currentLearningObjective,
     learnerAnswerText: gradedTurn ? answerText : '',
-    tutorMode: guided.mode,
+    tutorMode: switchedTopic ? '' : guided.mode,
     supportStage: intelligentTeaching?.pedagogicalState?.supportStage || guided.stage,
-    answerRevealPolicy: guided.answerRevealPolicy,
+    answerRevealPolicy: switchedTopic ? getAnswerRevealPolicy({}) : guided.answerRevealPolicy,
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
