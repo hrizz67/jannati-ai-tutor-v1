@@ -663,11 +663,14 @@ function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = 
     const operation = /darab|×|x\s*\d|kali/i.test(`${topic} ${stem}`) ? 'darab' : /tolak|baki|beza/i.test(`${topic} ${stem}`) ? 'tolak' : /tambah|jumlah|lagi/i.test(`${topic} ${stem}`) ? 'tambah' : /bahagi/i.test(`${topic} ${stem}`) ? 'bahagi' : 'operasi';
     return { hint: `Kenal pasti operasi ${operation}${numbers.length ? ` dan susun nombor ${numbers.join(' dan ')}` : ''}.`, steps: [`Tulis nombor penting daripada soalan: ${numbers.join(', ') || 'nombor yang diberi'}.`, `Gunakan operasi ${operation} satu langkah pada satu masa.`, 'Semak unit dan anggaran jawapan.'], example: 'Gunakan nombor dalam soalan semasa, bukan contoh lain.' };
   }
-  if (subject === 'english') return {
-    hint: `Focus on the key word and the required ${topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form'}.`,
-    steps: ['Read the complete sentence and find the subject.', 'Identify the word form the question asks for.', 'Check the grammar and punctuation.'],
-    example: 'Use a word from the current sentence.'
-  };
+  if (subject === 'english') {
+    const form = category === 'place' ? 'place noun' : topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form';
+    return {
+      hint: `Find the ${form} clue.`,
+      steps: [/_+/.test(stem) ? `Check the word before the blank for a ${form}.` : `Find the ${form} in the sentence.`, 'Check it fits.'],
+      example: `Use a ${form}.`
+    };
+  }
   if (subject === 'sains') return { hint: `Fokus pada ciri atau proses untuk topik ${topicTitle || 'Sains'} dalam soalan ini.`, steps: ['Kenal pasti benda hidup atau bahan yang disebut.', 'Perhatikan ciri, fungsi atau perubahan yang diminta.', 'Padankan bukti dengan konsep Sains yang tepat.'], example: 'Gunakan pemerhatian daripada soalan semasa.' };
   if (subject === 'islam') return { hint: `Cari kata kunci yang menunjukkan konsep ${topicTitle || 'Pendidikan Islam'} dan pilih amalan atau fakta yang tepat.`, steps: ['Baca istilah penting dalam soalan.', 'Hubungkan istilah itu dengan pelajaran topik semasa.', 'Semak jawapan supaya tepat dan beradab.'], example: 'Gunakan contoh daripada topik semasa.' };
   if (subject === 'arab') return { hint: `Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.`, steps: ['Kenal pasti perkataan Arab yang diberi.', 'Padankan makna atau sebutan berdasarkan topik semasa.', 'Semak huruf dan baris jika ditunjukkan.'], example: 'Rujuk perkataan Arab dalam soalan semasa.' };
@@ -1212,8 +1215,8 @@ function buildConversationalTeachingReply({
       }
       return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
     case 'question_help':
-      if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['One clue'], true);
-      if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['تلميح'], true);
+      if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
+      if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);

@@ -12,8 +12,8 @@ const subjectFixtures = [
   {
     label: 'English', subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
     question: 'Choose the person noun.', options: ['teacher', 'runs', 'happy'], answer: 'teacher',
-    hint: 'Focus on the key word and the required noun.',
-    firstStep: 'Read the complete sentence and find the subject.'
+    hint: 'Find the noun clue.',
+    firstStep: 'Find the noun in the sentence.'
   },
   {
     label: 'Sains', subject: { id: 'sains', title: 'Sains' }, topic: { id: 'haiwan', title: 'Haiwan' },

@@ -204,6 +204,43 @@ describe('PR #175 QA-review P1 remediation', () => {
     expectUngradedAnswerSafe(response, config.answer);
   });
 
+  it.each([
+    {
+      label: 'English', subject: { id: 'english', title: 'English' },
+      topic: { id: 'nouns', title: 'Nouns', note: 'A place noun names a place.' },
+      question: { id: 'qa-en-step', q: 'We read at ___. Choose a place noun.', instruction: 'Choose a place noun.', answer: 'school', acceptedAnswers: ['school'] },
+      answer: 'school', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /place noun|place|blank|\bat\b/iu
+    },
+    {
+      label: 'Arabic', subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: 'mufradat', title: 'مفردات', note: 'اسم المكان يدل على مكان.' },
+      question: { id: 'qa-ar-step', q: 'نقرأ في ___. اختر اسم مكان.', instruction: 'اختر اسم مكان.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
+      answer: 'مدرسة', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /اسم مكان|مكان|في|الفراغ|خطوة/u
+    }
+  ])('advances the localized help action instead of repeating for $label', async config => {
+    const base = {
+      student, subject: config.subject, topic: config.topic, question: config.question,
+      expectedAnswer: config.answer, acceptedAnswers: [config.answer], locale: config.locale,
+      conversationKey: `synthetic::${config.subject.id}::localized-help-step`
+    };
+    const first = await getTutorResponse({ ...base, prompt: config.prompt });
+    const action = first.quickActions[0];
+    const second = await getTutorResponse({
+      ...base, prompt: action.label, intent: action.intent, tutorAction: action,
+      history: [
+        { role: 'user', text: config.prompt },
+        { role: 'ai', text: first.text, dialogueClassification: first.dialogueClassification, pedagogicalState: first.pedagogicalState }
+      ]
+    });
+
+    expect(action.intent).toBe('recovery_first_step');
+    expect(second.text).not.toBe(first.text);
+    expect(second.text).toMatch(config.teaching);
+    if (config.locale === 'en-MY') expect(second.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk)\b/iu);
+    if (config.locale === 'ar-MY') expect(second.text).not.toMatch(/[A-Za-z]/u);
+    expectUngradedAnswerSafe(second, config.answer);
+  });
+
   it('preserves reviewed misconception evidence without exporting stale grading metadata', async () => {
     const response = await getTutorResponse({
       student,
