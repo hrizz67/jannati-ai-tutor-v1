@@ -12,8 +12,8 @@ const subjectFixtures = [
   {
     label: 'English', subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
     question: 'Choose the person noun.', options: ['teacher', 'runs', 'happy'], answer: 'teacher',
-    hint: 'Find the noun clue.',
-    firstStep: 'Find the noun in the sentence.'
+    hint: 'Find the person noun clue.',
+    firstStep: 'Find the person noun in the sentence.'
   },
   {
     label: 'Sains', subject: { id: 'sains', title: 'Sains' }, topic: { id: 'haiwan', title: 'Haiwan' },
@@ -24,8 +24,8 @@ const subjectFixtures = [
   {
     label: 'Arabic', subject: { id: 'arab', title: 'Bahasa Arab' }, topic: { id: 'mufradat', title: 'Mufradat' },
     question: 'Pilih perkataan yang bermaksud buku.', options: ['كِتَابٌ', 'قَلَمٌ', 'مَدْرَسَةٌ'], answer: 'كِتَابٌ',
-    hint: 'Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.',
-    firstStep: 'Kenal pasti perkataan Arab yang diberi.'
+    hint: 'ابحث عن الكلمة المطلوبة.',
+    firstStep: 'حدّد الكلمة المطلوبة في السؤال.'
   },
   {
     label: 'Mathematics', subject: { id: 'math', title: 'Matematik' }, topic: { id: 'tambah', title: 'Tambah' },

@@ -61,9 +61,9 @@ function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
     : subjectId === 'sains' && questionText
       ? ` Perhatikan konsep sains dalam soalan semasa: ${questionText}`
       : subjectId === 'arab' && questionText
-        ? ` Kekalkan tulisan dan bunyi Arab daripada soalan ini: ${questionText}`
+        ? ` استخدم العربية في هذا السؤال: ${questionText}`
         : subjectId === 'english' && questionText
-          ? ` Gunakan perkataan atau ayat Inggeris dalam soalan ini: ${questionText}`
+          ? ` Use English from this question: ${questionText}`
           : '';
   const explanation = contextualPronoun || simpleExplanation || explanations[0] || '';
   return {
@@ -664,16 +664,19 @@ function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = 
     return { hint: `Kenal pasti operasi ${operation}${numbers.length ? ` dan susun nombor ${numbers.join(' dan ')}` : ''}.`, steps: [`Tulis nombor penting daripada soalan: ${numbers.join(', ') || 'nombor yang diberi'}.`, `Gunakan operasi ${operation} satu langkah pada satu masa.`, 'Semak unit dan anggaran jawapan.'], example: 'Gunakan nombor dalam soalan semasa, bukan contoh lain.' };
   }
   if (subject === 'english') {
-    const form = category === 'place' ? 'place noun' : topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form';
+    const form = /^(?:person|place)$/.test(category) ? `${category} noun` : topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form';
     return {
       hint: `Find the ${form} clue.`,
-      steps: [/_+/.test(stem) ? `Check the word before the blank for a ${form}.` : `Find the ${form} in the sentence.`, 'Check it fits.'],
+      steps: [/\S+\s+_+/.test(stem) ? `Check the word before the blank for a ${form}.` : `Find the ${form} in the sentence.`, 'Check it fits.'],
       example: `Use a ${form}.`
     };
   }
   if (subject === 'sains') return { hint: `Fokus pada ciri atau proses untuk topik ${topicTitle || 'Sains'} dalam soalan ini.`, steps: ['Kenal pasti benda hidup atau bahan yang disebut.', 'Perhatikan ciri, fungsi atau perubahan yang diminta.', 'Padankan bukti dengan konsep Sains yang tepat.'], example: 'Gunakan pemerhatian daripada soalan semasa.' };
   if (subject === 'islam') return { hint: `Cari kata kunci yang menunjukkan konsep ${topicTitle || 'Pendidikan Islam'} dan pilih amalan atau fakta yang tepat.`, steps: ['Baca istilah penting dalam soalan.', 'Hubungkan istilah itu dengan pelajaran topik semasa.', 'Semak jawapan supaya tepat dan beradab.'], example: 'Gunakan contoh daripada topik semasa.' };
-  if (subject === 'arab') return { hint: `Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.`, steps: ['Kenal pasti perkataan Arab yang diberi.', 'Padankan makna atau sebutan berdasarkan topik semasa.', 'Semak huruf dan baris jika ditunjukkan.'], example: 'Rujuk perkataan Arab dalam soalan semasa.' };
+  if (subject === 'arab') {
+    const form = category === 'place' ? 'اسم مكان' : category === 'person' ? 'اسم شخص' : 'الكلمة المطلوبة';
+    return { hint: `ابحث عن ${form}.`, steps: [`حدّد ${form} في السؤال.`, 'اقرأ الجملة كاملة.'], example: `استخدم ${form}.` };
+  }
   if (subject === 'pj' || subject === 'pk') return { hint: `Fokus pada tindakan, pergerakan atau amalan selamat untuk topik ${topicTitle || 'kesihatan'} dalam soalan ini.`, steps: ['Kenal pasti aktiviti atau situasi.', 'Pilih tindakan yang selamat dan sesuai.', 'Semak kesannya kepada pergerakan atau kesihatan.'], example: 'Gunakan situasi yang diberikan dalam soalan.' };
   return null;
 }
@@ -842,7 +845,7 @@ function buildContextualSections({
           'Jika perkataan menamakan orang, haiwan, benda atau tempat, itu kata nama.'
         ]
       }
-    : subject?.id === 'arab' && topic?.id === 'mufradat'
+    : subject?.id === 'arab' && topic?.id === 'mufradat' && !resolvedQuestion
       ? {
           explanations: [ARABIC_NOUN],
           alternatives: ['الاسم يسمّي إنسانًا أو حيوانًا أو مكانًا أو شيئًا.'],

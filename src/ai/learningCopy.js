@@ -172,10 +172,10 @@ export function detectLearningCategory(question = {}, topic = {}) {
     if (/nama benda/.test(text)) return 'object';
     return 'properNoun';
   }
-  if (/kata nama tempat|nama tempat|tempat/.test(text)) return 'place';
-  if (/kata nama haiwan|nama haiwan|haiwan/.test(text)) return 'animal';
-  if (/kata nama benda|nama benda|benda/.test(text)) return 'object';
-  if (/kata nama orang|nama orang|nama khas|tokoh|murid/.test(text)) return 'person';
+  if (/kata nama tempat|nama tempat|tempat|place noun|اسم مكان/.test(text)) return 'place';
+  if (/kata nama haiwan|nama haiwan|haiwan|animal noun|اسم حيوان/.test(text)) return 'animal';
+  if (/kata nama benda|nama benda|benda|(?:object|thing) noun|اسم شيء/.test(text)) return 'object';
+  if (/kata nama orang|nama orang|nama khas|tokoh|murid|person noun|اسم (?:شخص|إنسان)/.test(text)) return 'person';
   if (/kata nama/.test(text)) return 'name';
   return 'generic';
 }

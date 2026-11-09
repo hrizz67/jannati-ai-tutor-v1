@@ -209,13 +209,25 @@ describe('PR #175 QA-review P1 remediation', () => {
       label: 'English', subject: { id: 'english', title: 'English' },
       topic: { id: 'nouns', title: 'Nouns', note: 'A place noun names a place.' },
       question: { id: 'qa-en-step', q: 'We read at ___. Choose a place noun.', instruction: 'Choose a place noun.', answer: 'school', acceptedAnswers: ['school'] },
-      answer: 'school', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /place noun|place|blank|\bat\b/iu
+      answer: 'school', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /word before the blank.*place noun/iu
+    },
+    {
+      label: 'English person', subject: { id: 'english', title: 'English' },
+      topic: { id: 'nouns', title: 'Nouns', note: 'A person noun names a person.' },
+      question: { id: 'qa-en-person-step', q: '__ treats patients. Choose a person noun.', instruction: 'Choose a person noun.', answer: 'doctor', acceptedAnswers: ['doctor'] },
+      answer: 'doctor', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /find the person noun in the sentence/iu, reject: /word before the blank/iu
     },
     {
       label: 'Arabic', subject: { id: 'arab', title: 'Bahasa Arab' },
       topic: { id: 'mufradat', title: 'مفردات', note: 'اسم المكان يدل على مكان.' },
       question: { id: 'qa-ar-step', q: 'نقرأ في ___. اختر اسم مكان.', instruction: 'اختر اسم مكان.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
-      answer: 'مدرسة', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /اسم مكان|مكان|في|الفراغ|خطوة/u
+      answer: 'مدرسة', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /حدّد اسم مكان في السؤال/u
+    },
+    {
+      label: 'Arabic person', subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: 'mufradat', title: 'مفردات', note: 'اسم الشخص يدل على إنسان.' },
+      question: { id: 'qa-ar-person-step', q: '___ يعلّمنا. اختر اسم شخص.', instruction: 'اختر اسم شخص.', answer: 'معلّم', acceptedAnswers: ['معلّم'] },
+      answer: 'معلّم', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /حدّد اسم شخص في السؤال/u
     }
   ])('advances the localized help action instead of repeating for $label', async config => {
     const base = {
@@ -236,9 +248,26 @@ describe('PR #175 QA-review P1 remediation', () => {
     expect(action.intent).toBe('recovery_first_step');
     expect(second.text).not.toBe(first.text);
     expect(second.text).toMatch(config.teaching);
+    if (config.reject) expect(second.text).not.toMatch(config.reject);
     if (config.locale === 'en-MY') expect(second.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk)\b/iu);
     if (config.locale === 'ar-MY') expect(second.text).not.toMatch(/[A-Za-z]/u);
     expectUngradedAnswerSafe(second, config.answer);
+
+    const retry = second.quickActions.find(item => item.intent === 'misunderstanding');
+    expect(retry).toBeTruthy();
+    const third = await getTutorResponse({
+      ...base, prompt: retry.label, intent: retry.intent, tutorAction: retry,
+      history: [
+        { role: 'user', text: config.prompt },
+        { role: 'ai', text: first.text, dialogueClassification: first.dialogueClassification, pedagogicalState: first.pedagogicalState },
+        { role: 'user', text: action.label },
+        { role: 'ai', text: second.text, dialogueClassification: second.dialogueClassification, pedagogicalState: second.pedagogicalState }
+      ]
+    });
+    expect(third.text).not.toBe(second.text);
+    if (config.locale === 'en-MY') expect(third.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk|gunakan)\b/iu);
+    if (config.locale === 'ar-MY') expect(third.text).not.toMatch(/[A-Za-z]/u);
+    expectUngradedAnswerSafe(third, config.answer);
   });
 
   it('preserves reviewed misconception evidence without exporting stale grading metadata', async () => {
