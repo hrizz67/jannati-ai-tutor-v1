@@ -389,6 +389,16 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   return '';
 }
 
+function clearUngradedMetadata(response) {
+  const empty = { options: [], expectedAnswer: '', learnerAnswer: '', learnerAnswerText: '', acceptedAnswers: [], correctAnswer: '', isCorrect: null, praise: '' };
+  Object.assign(response, empty, { pedagogicalStepCorrect: null, mathQuestionContext: null });
+  if (response.contextUsed) Object.assign(response.contextUsed, empty);
+  if (response.sections) Object.assign(response.sections, empty);
+  if (response.learningExperience) response.learningExperience = { ...response.learningExperience, praise: '' };
+  if (response.pendingPedagogicalStep) response.pendingPedagogicalStep = { ...response.pendingPedagogicalStep, expectedAnswers: [] };
+  return response;
+}
+
 function rankRelevantSubjectTopic(prompt = '', subject = {}) {
   const promptText = normalizeForDialogue(prompt).replace(/_/g, ' ');
   if (!promptText || !Array.isArray(subject?.topics) || !subject.topics.length) return null;
@@ -999,78 +1009,56 @@ function buildContextualSections({
   const dialogueCandidates = intent === 'hint'
     ? revealAnswer && expectedAnswer
       ? [
-          `Selepas tiga cubaan, kita semak bersama. Jawapannya ialah ${expectedAnswer}. ${simpleExplanationText || 'Jawapan itu menepati kehendak soalan.'}`,
-          `Sekarang jawapan boleh dipaparkan: ${expectedAnswer}. Mari lihat sebabnya bersama-sama.`
+          `Selepas tiga cubaan, kita semak bersama. Jawapannya ialah ${expectedAnswer}. ${simpleExplanationText || 'Jawapan itu menepati kehendak soalan.'}`
         ]
       : answerRevealPolicy.stage === 'strong_hint'
         ? [
-            `Petunjuk lebih jelas: ${safeHintLead} ${guided?.guidingQuestion || `Mulakan dengan ${firstStep}.`}`,
-            `Mari kecilkan langkahnya. ${firstStep}. Kemudian semak semula jawapan kamu.`
+            `Petunjuk lebih jelas: ${safeHintLead} ${guided?.guidingQuestion || `Mulakan dengan ${firstStep}.`}`
           ]
         : [
-            `${safeHintLead} Cuba fikir dahulu sebelum memilih jawapan.`,
-            `Mari guna satu petunjuk: ${safeHintLead} Selepas itu, pilih jawapan yang paling sesuai.`
+            `${safeHintLead} Cuba fikir dahulu sebelum memilih jawapan.`
           ]
     : intent === 'wrong_answer_coaching'
       ? [
-          `${learnerLabel} Belum tepat, tetapi kita boleh baiki bersama. ${commonMistake || 'Semak semula maksud soalan.'}`,
-          `${learnerLabel} Mari semak satu perkara: ${guided?.guidingQuestion || firstStep}`,
-          `Tak mengapa, kita cuba cara lain. ${commonMistake || safeHintLead} Cuba jawab sekali lagi.`
+          `${learnerLabel} Belum tepat, tetapi kita boleh baiki bersama. ${commonMistake || 'Semak semula maksud soalan.'}`
         ]
       : intent === 'correct_answer_reinforcement'
         ? [
-            `${coachMessage} ${revealAnswer && expectedAnswer ? `Jawapan kamu, ${expectedAnswer}, tepat kerana ${simpleExplanationText || 'sepadan dengan kehendak soalan'}.` : 'Boleh terangkan kepada saya bagaimana kamu mendapat jawapan itu?'}`,
-            `Ya, betul. ${simpleExplanationText || 'Kamu sudah menggunakan petunjuk yang tepat.'} Sekarang cuba gunakan cara yang sama pada soalan seterusnya.`,
-            `Bagus, kamu sudah faham bahagian ini. ${revealAnswer && expectedAnswer ? `Jawapannya ialah ${expectedAnswer}.` : ''} Mari naik satu langkah.`
+            `${coachMessage} ${revealAnswer && expectedAnswer ? `Jawapan kamu, ${expectedAnswer}, tepat kerana ${simpleExplanationText || 'sepadan dengan kehendak soalan'}.` : 'Boleh terangkan kepada saya bagaimana kamu mendapat jawapan itu?'}`
           ]
         : intent === 'question_help'
           ? [
-              `${friendlyQuestionSummary} Mula dengan langkah kecil: ${firstStep}.`,
-              `Baik, kita pecahkan soalan ini. ${learnerLabel} Sekarang cari ${safeHintLead.toLocaleLowerCase('ms-MY')}`,
-              `Saya faham kamu perlukan penjelasan. Lihat dahulu ${resolvedInstruction || 'apa yang diminta oleh soalan'}; kemudian kita semak jawapan bersama.`
+              `${friendlyQuestionSummary} Mula dengan langkah kecil: ${firstStep}.`
             ]
           : [
-              `${friendlyQuestionSummary} Saya bantu satu langkah pada satu masa.`,
-              `Mari kita lihat bahagian yang paling penting dahulu: ${firstStep}.`,
-              `Baik, kita belajar melalui soalan ini. Cuba beritahu saya bahagian yang paling mengelirukan.`
+              `${friendlyQuestionSummary} Saya bantu satu langkah pada satu masa.`
             ];
   const englishDialogueCandidates = intent === 'hint'
     ? revealAnswer && expectedAnswer
       ? [
-          `After three attempts, let us check it together. The answer is ${expectedAnswer}. It matches what the question asks for.`,
-          `The answer can now be shown: ${expectedAnswer}. Let us look at the reason together.`
+          `After three attempts, let us check it together. The answer is ${expectedAnswer}. It matches what the question asks for.`
         ]
       : answerRevealPolicy.stage === 'strong_hint'
         ? [
-            `Here is a stronger clue: ${safeHintLead} ${guided?.guidingQuestion || `Start with this step: ${firstStep}.`}`,
-            `Let us make the task smaller. ${firstStep}. Then check your answer again.`
+            `Here is a stronger clue: ${safeHintLead} ${guided?.guidingQuestion || `Start with this step: ${firstStep}.`}`
           ]
         : [
-            `${safeHintLead} Think before choosing an answer.`,
-            `Let us use one clue: ${safeHintLead} Then choose the best answer.`
+            `${safeHintLead} Think before choosing an answer.`
           ]
     : intent === 'wrong_answer_coaching'
       ? [
-          `${learner ? `You answered “${learner}”. ` : ''}That is not correct yet, but we can improve it together. ${commonMistake}`,
-          `${learner ? `You answered “${learner}”. ` : ''}Now check this: ${guided?.guidingQuestion || firstStep}`,
-          `That is okay. Let us try another way. ${commonMistake || safeHintLead}`
+          `${learner ? `You answered “${learner}”. ` : ''}That is not correct yet, but we can improve it together. ${commonMistake}`
         ]
       : intent === 'correct_answer_reinforcement'
         ? [
-            `${coachMessage} ${revealAnswer && expectedAnswer ? `Your answer, ${expectedAnswer}, matches the question.` : 'Can you tell me how you found it?'}`,
-            'Yes, that is correct. Use the same clue for the next question.',
-            `Well done. ${revealAnswer && expectedAnswer ? `The answer is ${expectedAnswer}.` : ''} Let us take the next step.`
+            `${coachMessage} ${revealAnswer && expectedAnswer ? `Your answer, ${expectedAnswer}, matches the question.` : 'Can you tell me how you found it?'}`
           ]
         : intent === 'question_help'
           ? [
-              `Let us break this question into a smaller step. Start by doing this: ${firstStep}.`,
-              `First, check ${resolvedInstruction || 'what the question asks for'}. Then we will compare your answer.`,
-              `I understand that you need an explanation. ${safeHintLead}`
+              `Let us break this question into a smaller step. Start by doing this: ${firstStep}.`
             ]
           : [
-              'Let us understand this question together, one step at a time.',
-              `Start with the most important step: ${firstStep}.`,
-              'Tell me which part of the question is confusing.'
+              'Let us understand this question together, one step at a time.'
             ];
   const shortText = sanitizeTutorText(pickFreshDialogue(isEnglishSubject ? englishDialogueCandidates : dialogueCandidates, history));
 
@@ -1225,6 +1213,12 @@ function buildConversationalTeachingReply({
         return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', [], true);
       }
       return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
+    case 'question_help':
+      if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', [], true);
+      if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', [], true);
+      return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
+        ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
+        : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
     case 'understanding_confirmation':
       return withReplies(
         `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
@@ -1391,6 +1385,8 @@ export async function getTutorResponse(options = {}) {
     activeConcept
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
+  const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
+  const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
   const mathPedagogy = subjectContext.id === 'math' && conversationKey
     ? await import('./pedagogy/mathPedagogicalTurn.js')
     : null;
@@ -1415,14 +1411,14 @@ export async function getTutorResponse(options = {}) {
         options: resolvedOptions,
         locale: resolvedLocale,
         languagePresentation,
-        attemptCount,
+        attemptCount: gradedTurn ? attemptCount : Math.min(+attemptCount, 2),
         hintsUsed,
-        isOriginalCorrect: isCorrect === true,
+        isOriginalCorrect: gradedTurn && isCorrect === true,
         explanationMode,
         mathQuestionContext
       })
     : null;
-  if (pedagogicalResponse) return pedagogicalResponse;
+  if (pedagogicalResponse) return gradedTurn ? pedagogicalResponse : clearUngradedMetadata(pedagogicalResponse);
   const relevantLearningContext = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
     .includes(resolvedIntent)
       ? findRelevantLearningContext(prompt, availableSubjects, subjectContext)
@@ -1431,7 +1427,7 @@ export async function getTutorResponse(options = {}) {
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
   const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
-  const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
+  const switchedTopic = Boolean(studentTurn.newTopicRequest && relevantLearningContext);
   const microCheck = studentTurn.messageType === 'learning_response';
   const priorAnswer = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
   const answerSafeHelp = !promptAnswer && !(resolvedIntent === 'wrong_answer_coaching' && isCorrect === false && priorAnswer);
@@ -1586,6 +1582,11 @@ export async function getTutorResponse(options = {}) {
     guided,
     history
   });
+  if (switchedTopic) {
+    const switched = { subject: conversationalSubject.title, topic: conversationalTopic?.title || '', subjectId: conversationalSubject.id, topicId: conversationalTopic?.id || '' };
+    contextBundle.contextUsed = { ...switched, hasQuestion: false };
+    contextBundle.sections = { ...switched, pedagogicalContent: { grounded: true } };
+  }
   const standaloneAnswer = selectAnswerSafeText(
     ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
       ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
@@ -1614,7 +1615,12 @@ export async function getTutorResponse(options = {}) {
         grounded: true
       }
     : null;
-  const intelligentTeaching = falsePremiseReply ? null : buildIntelligentTeachingTurn({
+  const correctReason = selectAnswerSafeText([topicContext.note, resolvedInstruction], [expected, ...acceptedAnswers], '✓');
+  const correctExplanationReply = resolvedIntent === 'correct_answer_reinforcement' && !promptAnswer && isCorrect === true ? {
+    text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
+    quickReplies: [], grounded: true
+  } : null;
+  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1633,7 +1639,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = falsePremiseReply || intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies
@@ -1644,11 +1650,11 @@ export async function getTutorResponse(options = {}) {
     questionText: resolvedQuestionText
   });
   const quickActions = suggestions.map(suggestion => resolveTutorQuickReplyAction(suggestion, {
-    hasExerciseContext: hasQuestionContext,
-    conversationKey,
-    questionId: normalizeText(resolvedQuestion?.id || '', ''),
-    subjectId: subjectContext.id,
-    topicId: topicContext.id
+    hasExerciseContext: switchedTopic ? false : hasQuestionContext,
+    conversationKey: switchedTopic ? '' : conversationKey,
+    questionId: switchedTopic ? '' : normalizeText(resolvedQuestion?.id || '', ''),
+    subjectId: conversationalSubject.id,
+    topicId: conversationalTopic?.id || ''
   })).filter(Boolean);
 
   const recommendation = buildRecommendation(studentProfile || {}, subjectContext || {});
@@ -1675,15 +1681,8 @@ export async function getTutorResponse(options = {}) {
       ? `Mari kita lihat soalan ini bersama-sama.`
       : `Saya akan bantu berdasarkan ${fallbackTopicLabel}.`
   );
-  const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
   const revealGradedAnswer = gradedTurn && guided.answerRevealPolicy.canRevealAnswer;
-  if (!gradedTurn) {
-    const emptyMetadata = { options: [], acceptedAnswers: [] };
-    Object.assign(contextBundle.contextUsed, emptyMetadata, { expectedAnswer: '', learnerAnswer: '', isCorrect: null });
-    Object.assign(contextBundle.sections, emptyMetadata, { correctAnswer: '' });
-  }
-
-  return {
+  const response = {
     text: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
     shortText: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.shortText || fallbackText || DEFAULT_FALLBACK,
     intent: resolvedIntent,
@@ -1697,9 +1696,9 @@ export async function getTutorResponse(options = {}) {
     studentName,
     subject: conversationalSubject.title,
     topic: conversationalTopic?.title || fallbackTopicLabel,
-    questionId: normalizeText(resolvedQuestion?.id || '', ''),
-    questionText: resolvedQuestionText,
-    instruction: resolvedInstruction,
+    questionId: switchedTopic ? '' : normalizeText(resolvedQuestion?.id || '', ''),
+    questionText: switchedTopic ? '' : resolvedQuestionText,
+    instruction: switchedTopic ? '' : resolvedInstruction,
     options: gradedTurn ? resolvedOptions : [],
     expectedAnswer: revealGradedAnswer ? expected : '',
     learnerAnswer: gradedTurn ? answerText : '',
@@ -1713,31 +1712,32 @@ export async function getTutorResponse(options = {}) {
     strongTopics: strongList,
     uasaSummary,
     adaptiveRecommendation,
-    explanationMode,
+    explanationMode: switchedTopic ? '' : explanationMode,
     currentLearningObjective,
     learnerAnswerText: gradedTurn ? answerText : '',
     tutorMode: guided.mode,
     supportStage: intelligentTeaching?.pedagogicalState?.supportStage || guided.stage,
     answerRevealPolicy: guided.answerRevealPolicy,
     locale: resolvedLocale,
-    languagePresentation,
+    languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: intelligentTeaching?.pedagogicalState || null,
-    guidingQuestion: guided.guidingQuestion,
+    pedagogicalState: switchedTopic ? null : intelligentTeaching?.pedagogicalState || null,
+    guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
       : guided.quickReplies?.length ? guided.quickReplies : suggestions,
-    nextAction: guided.nextAction,
+    nextAction: switchedTopic ? '' : guided.nextAction,
     praise: gradedTurn ? guided.praise : '',
-    learningExperience: guided,
+    learningExperience: switchedTopic ? null : guided,
     studentTurn,
     conversationStage: studentTurn.messageType,
     referencesPreviousTurn: Boolean(studentTurn.referencesPreviousTurn),
     needsClarification: Boolean(studentTurn.needsClarification),
     grounded: effectiveConversationalReply ? Boolean(effectiveConversationalReply.grounded) : Boolean(contextBundle?.contextUsed?.hasCoachData),
     needsGenerativeTutor: Boolean(effectiveConversationalReply && !effectiveConversationalReply.grounded),
-    mathQuestionContext
+    mathQuestionContext: switchedTopic ? null : mathQuestionContext
   };
+  return gradedTurn ? response : clearUngradedMetadata(response);
 }
 
 export default {

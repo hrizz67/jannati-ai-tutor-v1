@@ -9,6 +9,7 @@ const bmQuestion = {
   id: 'qa-review-place',
   q: 'Kami bermain bola di ___. Pilih kata nama tempat.',
   instruction: 'Pilih perkataan yang menamakan tempat.',
+  options: ['taman', 'bermain'],
   answer: 'taman',
   acceptedAnswers: ['taman']
 };
@@ -39,10 +40,11 @@ function expectUngradedAnswerSafe(response, answer) {
   expect(response.learnerAnswerText || '').toBe('');
   expect(response.isCorrect ?? null).toBeNull();
   expect(response.praise).toBe('');
-  expect(response.contextUsed).toMatchObject({
+  expect(response.learningExperience?.praise || '').toBe('');
+  if (response.contextUsed) expect(response.contextUsed).toMatchObject({
     expectedAnswer: '', acceptedAnswers: [], learnerAnswer: '', isCorrect: null
   });
-  expect(response.sections).toMatchObject({ correctAnswer: '', acceptedAnswers: [] });
+  if (response.sections) expect(response.sections).toMatchObject({ correctAnswer: '', acceptedAnswers: [] });
   const publicSurface = {
     text: response.text,
     shortText: response.shortText,
@@ -56,7 +58,10 @@ function expectUngradedAnswerSafe(response, answer) {
     acceptedAnswers: response.acceptedAnswers,
     learnerAnswer: response.learnerAnswer,
     learnerAnswerText: response.learnerAnswerText,
-    contextUsed: response.contextUsed
+    contextUsed: response.contextUsed,
+    learningExperience: response.learningExperience,
+    pendingPedagogicalStep: response.pendingPedagogicalStep,
+    mathQuestionContext: response.mathQuestionContext
   };
   expect(textContainsExpectedAnswer(JSON.stringify(publicSurface), [answer])).toBe(false);
   for (const field of rewardFields) expect(response).not.toHaveProperty(field);
@@ -133,6 +138,11 @@ describe('PR #175 QA-review P1 remediation', () => {
     }
     expect(switched.studentTurn.newTopicRequest).toBe(true);
     expect(switched.subject).toBe('Matematik');
+    expect(switched.questionId).toBe('');
+    expect(switched.questionText).toBe('');
+    expect(switched.contextUsed).toMatchObject({ hasQuestion: false, subjectId: 'math', topicId: 'bahagi' });
+    expect(JSON.stringify(switched)).not.toMatch(/qa-review-place|Kami bermain bola|kata_nama_am/iu);
+    expect(switched.quickActions.every(action => action.subjectId === 'math' && action.topicId === 'bahagi' && !action.questionId)).toBe(true);
   });
 
   it.each([
@@ -150,7 +160,7 @@ describe('PR #175 QA-review P1 remediation', () => {
       topic: { id: 'nouns', title: 'Nouns', note: 'A place noun names a place.' },
       question: { id: 'qa-en', q: 'We read at ___. Choose a place noun.', instruction: 'Choose a place noun.', answer: 'school', acceptedAnswers: ['school'] },
       answer: 'school', learnerAnswer: 'play', isCorrect: false, attemptCount: 2,
-      prompt: 'Which part should I check first?', locale: 'en-MY'
+      prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /place noun|question asks|smaller step|check/iu
     },
     {
       label: 'Arabic no prior result',
@@ -158,7 +168,7 @@ describe('PR #175 QA-review P1 remediation', () => {
       topic: { id: 'mufradat', title: 'مفردات', note: 'اسم المكان يدل على مكان.' },
       question: { id: 'qa-ar', q: 'نقرأ في ___. اختر اسم مكان.', instruction: 'اختر اسم مكان.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
       answer: 'مدرسة', learnerAnswer: '', isCorrect: null, attemptCount: 0,
-      prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY'
+      prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /اسم مكان|السؤال|خطوة|اختر/u
     }
   ])('clears protected metadata on ungraded guidance: $label', async config => {
     const response = await getTutorResponse({
@@ -177,6 +187,11 @@ describe('PR #175 QA-review P1 remediation', () => {
     });
 
     expect(response.studentTurn.messageType).not.toBe('answer_attempt');
+    expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+    expect(response.grounded).toBe(true);
+    expect(response.text).toMatch(config.teaching || /kata nama tempat|perkataan|tempat|lokasi|petunjuk|ayat/iu);
+    if (config.locale === 'en-MY') expect(response.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk)\b/iu);
+    if (config.locale === 'ar-MY') expect(response.text).not.toMatch(/[A-Za-z]/u);
     expectUngradedAnswerSafe(response, config.answer);
   });
 
@@ -212,7 +227,7 @@ describe('PR #175 QA-review P1 remediation', () => {
   ])('keeps third-turn %s guidance answer-safe while retaining stronger support', async (intent, prompt) => {
     const response = await getTutorResponse({
       ...bmBase,
-      learnerAnswer: 'padang',
+      learnerAnswer: 'bermain',
       isCorrect: false,
       attemptCount: 3,
       intent,
@@ -249,7 +264,32 @@ describe('PR #175 QA-review P1 remediation', () => {
       prompt: 'Terangkan kenapa jawapan saya betul.'
     });
 
-    expect(response.text).toMatch(/betul|tepat|jawapan/iu);
+    expect(response.text).toMatch(/jawapan kamu betul.*kata nama tempat.*lokasi/iu);
+    expect(response.text).not.toMatch(/pilih atau taip satu jawapan|jawab soalan kecil/iu);
     expectUngradedAnswerSafe(response, bmQuestion.answer);
+  });
+
+  it('keeps third-attempt deterministic Mathematics help ungraded and answer-safe', async () => {
+    const response = await getTutorResponse({
+      student, subject: { id: 'math', title: 'Matematik' }, topic: { id: 'tambah', title: 'Tambah' },
+      question: { id: 'math-help', q: '23 + 14 = ?', options: ['35', '37', '39'], answer: '37', acceptedAnswers: ['37'] },
+      expectedAnswer: '37', acceptedAnswers: ['37'], attemptCount: 3, prompt: 'Beri petunjuk',
+      conversationKey: 'synthetic::math::tambah::math-help'
+    });
+
+    expect(response.answerRevealPolicy).toMatchObject({ canRevealAnswer: false });
+    expect(response.pendingPedagogicalStep?.expectedAnswers || []).toEqual([]);
+    expectUngradedAnswerSafe(response, '37');
+  });
+
+  it('does not serialize raw Mathematics answer context on ungraded help', async () => {
+    const response = await getTutorResponse({
+      student, subject: { id: 'math', title: 'Matematik' }, topic: { id: 'bahagi', title: 'Bahagi' },
+      question: { id: 'math-context', q: '12 ÷ 3 = ?', answer: '4', acceptedAnswers: ['4'] },
+      expectedAnswer: '4', acceptedAnswers: ['4'], attemptCount: 3, prompt: 'Bahagian mana saya tengok dulu?'
+    });
+
+    expect(response.mathQuestionContext).toBeNull();
+    expectUngradedAnswerSafe(response, '4');
   });
 });
