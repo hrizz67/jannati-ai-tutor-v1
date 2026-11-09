@@ -10,7 +10,8 @@ const languageCases = [
     topic: { id: 'kata_nama_am', title: 'Kata Nama Am' },
     answer: 'Ali',
     options: ['Ali', 'berlari', 'cantik'],
-    approved: ['sekolah', 'doktor']
+    question: 'Pilih kata nama orang.',
+    approved: ['doktor']
   },
   {
     language: 'English',
@@ -19,7 +20,8 @@ const languageCases = [
     topic: { id: 'nouns', title: 'Nouns' },
     answer: 'teacher',
     options: ['teacher', 'runs', 'happy'],
-    approved: ['school', 'doctor']
+    question: 'Choose a person noun.',
+    approved: ['doctor']
   },
   {
     language: 'Arabic',
@@ -29,7 +31,8 @@ const languageCases = [
     answer: 'قَلَمٌ',
     options: ['قَلَمٌ', 'كِتَابٌ', 'مَدْرَسَةٌ'],
     locale: 'ar-MY',
-    approved: ['مَدْرَسَةٌ اسمٌ لمكانٍ.', 'كِتَابٌ اسمٌ لشيءٍ.']
+    question: 'اختر اسم شيء.',
+    approved: ['كِتَابٌ اسمٌ لشيءٍ.']
   }
 ];
 
@@ -57,7 +60,8 @@ async function askForExample(config, overrides = {}) {
     topic: config.topic,
     question: {
       id: questionId,
-      q: 'Pilih jawapan yang betul.',
+      q: config.question,
+      instruction: config.question,
       options: config.options,
       answer: expectedAnswer,
       acceptedAnswers: [expectedAnswer]
@@ -89,7 +93,7 @@ describe('approved example-request teaching path', () => {
     expect((response.text.match(/[?؟]/g) || []).length).toBeLessThanOrEqual(1);
   });
 
-  it('preserves the prior confusion count and selects a fresh example', async () => {
+  it('preserves the prior confusion count without switching noun category', async () => {
     const config = languageCases[0];
     const confused = await getTutorResponse({
       student: { id: 'child-a', name: 'Murid' },
@@ -113,11 +117,11 @@ describe('approved example-request teaching path', () => {
 
     expect(confused.pedagogicalState.misunderstandingCount).toBe(1);
     expect(confused.text).toContain(config.approved[0]);
-    expect(response.text).toContain(config.approved[1]);
+    expect(response.text).toContain('Tiada contoh baharu diluluskan');
     expect(response.pedagogicalState).toMatchObject({
       signal: 'example_request',
       misunderstandingCount: 1,
-      supportStage: 'example'
+      supportStage: 'example_unavailable'
     });
   });
 
@@ -134,11 +138,10 @@ describe('approved example-request teaching path', () => {
     });
 
     expect(first.text).toContain(config.approved[0]);
-    expect(second.text).toContain(config.approved[1]);
+    expect(second.text).toContain('Tiada contoh baharu diluluskan');
     expect(second.text).not.toBe(first.text);
     expect(third.text).toContain('Tiada contoh baharu diluluskan');
     expect(third.text).not.toContain(config.approved[0]);
-    expect(third.text).not.toContain(config.approved[1]);
     expect(third.quickReplies).not.toContain('Beri contoh mudah');
     expect([first, second, third].map(item => item.pedagogicalState.misunderstandingCount)).toEqual([0, 0, 0]);
   });

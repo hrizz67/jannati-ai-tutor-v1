@@ -13,7 +13,7 @@ const subjectFixtures = [
     label: 'English', subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
     question: 'Choose the person noun.', options: ['teacher', 'runs', 'happy'], answer: 'teacher',
     hint: 'Find the person noun clue.',
-    firstStep: 'Find the person noun in the sentence.'
+    firstStep: 'Find the person noun clue.'
   },
   {
     label: 'Sains', subject: { id: 'sains', title: 'Sains' }, topic: { id: 'haiwan', title: 'Haiwan' },

@@ -208,26 +208,26 @@ describe('PR #175 QA-review P1 remediation', () => {
     {
       label: 'English', subject: { id: 'english', title: 'English' },
       topic: { id: 'nouns', title: 'Nouns', note: 'A place noun names a place.' },
-      question: { id: 'qa-en-step', q: 'We read at ___. Choose a place noun.', instruction: 'Choose a place noun.', answer: 'school', acceptedAnswers: ['school'] },
-      answer: 'school', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /word before the blank.*place noun/iu
+      question: { id: 'qa-en-step', q: 'We read at ___.', instruction: 'Choose a place noun.', answer: 'school', acceptedAnswers: ['school'] },
+      answer: 'school', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /use “at” as a clue for a place noun/iu, rejectExample: /doctor/iu
     },
     {
       label: 'English person', subject: { id: 'english', title: 'English' },
-      topic: { id: 'nouns', title: 'Nouns', note: 'A person noun names a person.' },
+      topic: { id: 'nouns', title: 'Nouns', note: 'A stale place noun note must not own this question.' },
       question: { id: 'qa-en-person-step', q: '__ treats patients. Choose a person noun.', instruction: 'Choose a person noun.', answer: 'doctor', acceptedAnswers: ['doctor'] },
-      answer: 'doctor', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /find the person noun in the sentence/iu, reject: /word before the blank/iu
+      answer: 'doctor', prompt: 'Which part should I check first?', locale: 'en-MY', teaching: /use “treats patients” as a clue for a person noun/iu, reject: /word before the blank/iu, rejectExample: /school/iu
     },
     {
       label: 'Arabic', subject: { id: 'arab', title: 'Bahasa Arab' },
       topic: { id: 'mufradat', title: 'مفردات', note: 'اسم المكان يدل على مكان.' },
-      question: { id: 'qa-ar-step', q: 'نقرأ في ___. اختر اسم مكان.', instruction: 'اختر اسم مكان.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
-      answer: 'مدرسة', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /حدّد اسم مكان في السؤال/u
+      question: { id: 'qa-ar-step', q: 'نقرأ في ___.', instruction: 'اختر اسم مكان.', answer: 'مدرسة', acceptedAnswers: ['مدرسة'] },
+      answer: 'مدرسة', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /«في» دليل على اسم مكان/u, rejectExample: /كِتَاب|كتاب/u
     },
     {
       label: 'Arabic person', subject: { id: 'arab', title: 'Bahasa Arab' },
-      topic: { id: 'mufradat', title: 'مفردات', note: 'اسم الشخص يدل على إنسان.' },
+      topic: { id: 'mufradat', title: 'مفردات', note: 'ملاحظة قديمة عن اسم مكان.' },
       question: { id: 'qa-ar-person-step', q: '___ يعلّمنا. اختر اسم شخص.', instruction: 'اختر اسم شخص.', answer: 'معلّم', acceptedAnswers: ['معلّم'] },
-      answer: 'معلّم', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /حدّد اسم شخص في السؤال/u
+      answer: 'معلّم', prompt: 'كيف أفهم هذا السؤال؟', locale: 'ar-MY', teaching: /«يعلّمنا» دليل على اسم شخص/u, rejectExample: /كِتَاب|كتاب|مَدْرَسَة|مدرسة/u
     }
   ])('advances the localized help action instead of repeating for $label', async config => {
     const base = {
@@ -265,9 +265,27 @@ describe('PR #175 QA-review P1 remediation', () => {
       ]
     });
     expect(third.text).not.toBe(second.text);
+    if (config.rejectExample) expect(third.text).not.toMatch(config.rejectExample);
     if (config.locale === 'en-MY') expect(third.text).not.toMatch(/\b(?:mari|soalan|jawapan|langkah|petunjuk|gunakan)\b/iu);
     if (config.locale === 'ar-MY') expect(third.text).not.toMatch(/[A-Za-z]/u);
     expectUngradedAnswerSafe(third, config.answer);
+  });
+
+  it('removes mode metadata when it collides with a protected common answer', async () => {
+    const response = await getTutorResponse({
+      student,
+      subject: { id: 'english', title: 'English' },
+      topic: { id: 'nouns', title: 'Nouns' },
+      question: { id: 'qa-en-person', q: '__ helps us learn.', instruction: 'Choose a person noun.', answer: 'teacher', acceptedAnswers: ['teacher'] },
+      expectedAnswer: 'teacher', acceptedAnswers: ['teacher'], learnerAnswer: 'teacher', isCorrect: true,
+      locale: 'en-MY', conversationKey: 'synthetic::english::protected-person',
+      prompt: 'Which clue should I use?'
+    });
+
+    expect(response).toMatchObject({ tutorMode: '' });
+    expect(response.contextUsed?.tutorMode || '').toBe('');
+    expect(response.learningExperience?.mode || '').toBe('');
+    expectUngradedAnswerSafe(response, 'teacher');
   });
 
   it('preserves reviewed misconception evidence without exporting stale grading metadata', async () => {

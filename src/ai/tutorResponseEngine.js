@@ -390,11 +390,11 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
 }
 
 function clearUngradedMetadata(response) {
-  const empty = { options: [], expectedAnswer: '', learnerAnswer: '', learnerAnswerText: '', acceptedAnswers: [], correctAnswer: '', isCorrect: null, praise: '' };
+  const empty = { options: [], expectedAnswer: '', learnerAnswer: '', learnerAnswerText: '', acceptedAnswers: [], correctAnswer: '', isCorrect: null, praise: '', tutorMode: '' };
   Object.assign(response, empty, { pedagogicalStepCorrect: null, mathQuestionContext: null });
   if (response.contextUsed) Object.assign(response.contextUsed, empty);
   if (response.sections) Object.assign(response.sections, empty);
-  if (response.learningExperience) response.learningExperience = { ...response.learningExperience, praise: '' };
+  if (response.learningExperience) response.learningExperience = { ...response.learningExperience, mode: '', praise: '' };
   if (response.pendingPedagogicalStep) response.pendingPedagogicalStep = { ...response.pendingPedagogicalStep, expectedAnswers: [] };
   return response;
 }
@@ -455,7 +455,7 @@ function findRelevantLearningContext(prompt = '', availableSubjects = [], prefer
 }
 
 function buildSuggestionList(intent, context = {}) {
-  const generic = ['Cuba tanya dengan soalan yang lebih khusus.', 'Klik petunjuk jika perlukan bantuan.', 'Semak jawapan dan cuba lagi.'];
+  const generic = ['Tanya lebih khusus.', 'Klik petunjuk.', 'Cuba lagi.'];
   if (context.subject?.id === 'math' && /\+|tambah|jumlah/i.test(context.questionText || '')) {
     return [
       'Kenal pasti nombor yang hendak ditambah.',
@@ -598,10 +598,12 @@ function extractBinaAyatTokens(text = '') {
   return { word: normalizeText(word, ''), name: normalizeText(name, '') };
 }
 
-function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = '', questionText = '', instruction = '', expectedAnswer = '', category = 'generic' } = {}) {
+function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = '', questionText = '', instruction = '', category = 'generic' } = {}) {
   const subject = String(subjectId).toLowerCase();
   const topic = `${topicId} ${topicTitle}`.toLowerCase();
   const stem = normalizeText(questionText, 'soalan ini');
+  const clueMatch = stem.match(/(?:([^\s.,!?؟]+)\s+)?_+\s*([^.!?؟]*)/u);
+  const blankClue = (clueMatch?.[1] || clueMatch?.[2] || '').trim();
   if (subject === 'bm') {
     if (category === 'person') return { hint: 'Cari perkataan yang menamakan orang.', steps: ['Kenal pasti bahawa soalan meminta kata nama orang.', 'Singkirkan perkataan yang menunjukkan tempat, benda, sifat atau perbuatan.', 'Semak pilihan dengan ayat semasa.'], example: 'Gunakan kategori orang yang diminta dalam soalan semasa.' };
     if (category === 'place') return { hint: 'Cari perkataan yang menamakan tempat.', steps: ['Kenal pasti bahawa soalan meminta kata nama tempat.', 'Singkirkan perkataan yang menunjukkan orang, benda, sifat atau perbuatan.', 'Semak pilihan dengan ayat semasa.'], example: 'Gunakan kategori tempat yang diminta dalam soalan semasa.' };
@@ -667,15 +669,14 @@ function buildCrossSubjectGuidance({ subjectId = '', topicId = '', topicTitle = 
     const form = /^(?:person|place)$/.test(category) ? `${category} noun` : topic.includes('verb') ? 'verb' : topic.includes('noun') ? 'noun' : topic.includes('adjective') ? 'adjective' : 'language form';
     return {
       hint: `Find the ${form} clue.`,
-      steps: [/\S+\s+_+/.test(stem) ? `Check the word before the blank for a ${form}.` : `Find the ${form} in the sentence.`, 'Check it fits.'],
-      example: `Use a ${form}.`
+      steps: [blankClue ? `Use “${blankClue}” as a clue for a ${form}.` : `Find the ${form} clue.`]
     };
   }
   if (subject === 'sains') return { hint: `Fokus pada ciri atau proses untuk topik ${topicTitle || 'Sains'} dalam soalan ini.`, steps: ['Kenal pasti benda hidup atau bahan yang disebut.', 'Perhatikan ciri, fungsi atau perubahan yang diminta.', 'Padankan bukti dengan konsep Sains yang tepat.'], example: 'Gunakan pemerhatian daripada soalan semasa.' };
   if (subject === 'islam') return { hint: `Cari kata kunci yang menunjukkan konsep ${topicTitle || 'Pendidikan Islam'} dan pilih amalan atau fakta yang tepat.`, steps: ['Baca istilah penting dalam soalan.', 'Hubungkan istilah itu dengan pelajaran topik semasa.', 'Semak jawapan supaya tepat dan beradab.'], example: 'Gunakan contoh daripada topik semasa.' };
   if (subject === 'arab') {
     const form = category === 'place' ? 'اسم مكان' : category === 'person' ? 'اسم شخص' : 'الكلمة المطلوبة';
-    return { hint: `ابحث عن ${form}.`, steps: [`حدّد ${form} في السؤال.`, 'اقرأ الجملة كاملة.'], example: `استخدم ${form}.` };
+    return { hint: `ابحث عن ${form}.`, steps: [blankClue ? `«${blankClue}» دليل على ${form}.` : `حدّد ${form} في السؤال.`] };
   }
   if (subject === 'pj' || subject === 'pk') return { hint: `Fokus pada tindakan, pergerakan atau amalan selamat untuk topik ${topicTitle || 'kesihatan'} dalam soalan ini.`, steps: ['Kenal pasti aktiviti atau situasi.', 'Pilih tindakan yang selamat dan sesuai.', 'Semak kesannya kepada pergerakan atau kesihatan.'], example: 'Gunakan situasi yang diberikan dalam soalan.' };
   return null;
@@ -735,7 +736,7 @@ function buildContextualSections({
         'Akhiri ayat dengan tanda noktah.'
       ]
     : [];
-  const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, expectedAnswer, category: categoryRule.category });
+  const subjectGuidance = buildCrossSubjectGuidance({ subjectId: subject?.id, topicId: topic?.id, topicTitle: topic?.title, questionText: resolvedQuestion, instruction: resolvedInstruction, category: categoryRule.category });
   const acceptedAnswers = getAcceptedAnswers(question);
   const learner = getLearnerAnswer(learnerAnswer, question);
   const answerRevealPolicy = guided?.answerRevealPolicy || getAnswerRevealPolicy({
@@ -831,7 +832,8 @@ function buildContextualSections({
     ? selectApprovedTeachingExamples({
         subjectId: subject?.id,
         topicId: topic?.id,
-        candidates: knowledgeExampleCandidates
+      candidates: knowledgeExampleCandidates,
+      category: resolvedQuestion ? categoryRule.category : ''
       })
     : { examples: [], provenance: null };
   const verifiedExamples = answerSafeList(reviewedExampleSelection.examples);
