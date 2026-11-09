@@ -118,7 +118,7 @@ describe('Tutor quick-reply click integration', () => {
       history: priorState(initialState.currentConcept, 3, 'guided_small_step')
     });
 
-    expect(response.isCorrect).toBe(true);
+    expect(response.isCorrect).toBeNull();
     expect(response.pedagogicalState).toMatchObject({
       signal: 'resolved',
       misunderstandingCount: 0,

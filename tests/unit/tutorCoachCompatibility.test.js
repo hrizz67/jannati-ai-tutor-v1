@@ -102,13 +102,14 @@ describe('Tutor-visible Coach V3 compatibility contract', () => {
     expect(response).not.toHaveProperty('rewards');
   });
 
-  it.each(subjectFixtures)('keeps guided praise as the Tutor-visible praise for $label', async fixture => {
+  it.each(subjectFixtures)('keeps guided praise for a genuine graded submission in $label', async fixture => {
     const response = await requestTutor(fixture, {
       prompt: fixture.answer,
-      intent: 'correct_answer_reinforcement',
+      intent: 'auto',
       isCorrect: true
     });
 
+    expect(response.studentTurn).toMatchObject({ messageType: 'answer_attempt', answerCandidate: fixture.answer });
     expect(response.praise).toBeTruthy();
     expect(response.sections.coachMessage).toBe(response.praise);
     expect(response.isCorrect).toBe(true);

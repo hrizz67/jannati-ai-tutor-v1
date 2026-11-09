@@ -28,10 +28,6 @@ import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamp
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
-const ANSWER_SAFE_HELP_INTENTS = new Set([
-  'hint', 'question_help', 'wrong_answer_coaching', 'example_request', 'alternative_explanation',
-  'misunderstanding', 'recovery_meaning', 'recovery_first_step', 'guided_without_answer'
-]);
 const ARABIC_NOUN = 'الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.';
 
 function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
@@ -376,17 +372,17 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:kata nama am).*(?:kata nama khas)|(?:kata nama am).*(?:dan|dengan|berbanding).*(?:kata nama khas)/.test(text)) {
     return 'Kata nama am ialah nama umum, seperti guru, bandar dan kucing. Kata nama khas pula ialah nama khusus, seperti Cikgu Aina, Melaka dan Si Comel. Perbezaan utamanya ialah kata nama khas merujuk sesuatu yang tertentu dan biasanya bermula dengan huruf besar.';
   }
-  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:tambah).*(?:tolak)|(?:tambah).*(?:dan|dengan|berbanding).*(?:tolak)/.test(text)) {
+  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*\btambah\b.*\btolak\b|\btambah\b.*(?:dan|dengan|berbanding).*\btolak\b/.test(text)) {
     return 'Tambah menggabungkan beberapa nilai untuk mendapatkan jumlah keseluruhan. Tolak pula mengeluarkan atau membandingkan nilai untuk mencari baki atau beza.';
   }
-  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*(?:darab).*(?:bahagi)|(?:darab).*(?:dan|dengan|berbanding).*(?:bahagi)/.test(text)) {
+  if (/(?:apa\s+beza|perbezaan|bezakan|bandingkan).*\bdarab\b.*\bbahagi\b|\bdarab\b.*(?:dan|dengan|berbanding).*\bbahagi\b/.test(text)) {
     return 'Darab membina jumlah daripada kumpulan yang sama banyak. Bahagi pula memisahkan jumlah kepada kumpulan yang sama banyak atau mencari bilangan dalam setiap kumpulan.';
   }
   if (/kata nama am/.test(text)) return 'Kata nama am ialah nama umum bagi orang, haiwan, benda atau tempat. Contohnya guru, kucing, buku dan sekolah.';
   if (/kata nama khas/.test(text)) return 'Kata nama khas ialah nama khusus bagi orang, tempat atau benda. Biasanya huruf pertama ditulis dengan huruf besar.';
   if (/kata kerja/.test(text)) return 'Kata kerja ialah perkataan yang menunjukkan perbuatan atau keadaan. Contohnya makan, berlari, tidur dan duduk.';
   if (/kata adjektif|kata sifat/.test(text)) return 'Kata adjektif menerangkan sifat atau keadaan orang, haiwan, benda atau tempat. Contohnya cantik, tinggi, rajin dan sejuk.';
-  if (/bahagi|hasil bahagi/.test(text)) return 'Bahagi bermaksud memisahkan sesuatu sama rata kepada beberapa kumpulan. Contohnya, 12 ÷ 3 bermaksud 12 objek dibahagi kepada 3 kumpulan, jadi setiap kumpulan mendapat 4 objek.';
+  if (/\bbahagi\b|pembahagian/.test(text)) return 'Bahagi bermaksud memisahkan sesuatu sama rata kepada beberapa kumpulan. Contohnya, 12 ÷ 3 bermaksud 12 objek dibahagi kepada 3 kumpulan, jadi setiap kumpulan mendapat 4 objek.';
   if (/tambah|penambahan/.test(text)) return 'Tambah bermaksud menggabungkan dua atau lebih nilai untuk mendapatkan jumlah keseluruhan. Contohnya, 3 + 2 = 5.';
   if (/tolak|penolakan/.test(text)) return 'Tolak bermaksud mencari baki atau beza selepas sebahagian nilai dikeluarkan. Contohnya, 7 − 3 = 4.';
   if (/darab|pendaraban/.test(text)) return 'Darab ialah penambahan berulang bagi kumpulan yang sama banyak. Contohnya, 3 × 4 bermaksud tambah 4 sebanyak 3 kali: 4 + 4 + 4 = 12.';
@@ -1433,14 +1429,13 @@ export async function getTutorResponse(options = {}) {
       : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
-  const usesCurrentConversationContext = studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request';
+  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const microCheck = studentTurn.messageType === 'learning_response';
   const priorAnswer = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
-  const answerSafeHelp = !promptAnswer && ANSWER_SAFE_HELP_INTENTS.has(resolvedIntent) &&
-    !(resolvedIntent === 'wrong_answer_coaching' && isCorrect === false && priorAnswer);
-  const tutorAttempts = +attemptCount * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
+  const answerSafeHelp = !promptAnswer && !(resolvedIntent === 'wrong_answer_coaching' && isCorrect === false && priorAnswer);
+  const tutorAttempts = Math.min(+attemptCount, promptAnswer ? Infinity : 2) * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
   const tutorHints = +hintsUsed * !microCheck * (resolvedIntent !== 'guided_without_answer') || 0;
   const feedbackQuestion = microCheck
     ? { ...resolvedQuestion, learnerAnswer: '', studentAnswer: '', answerAttempt: '' }
@@ -1680,6 +1675,13 @@ export async function getTutorResponse(options = {}) {
       ? `Mari kita lihat soalan ini bersama-sama.`
       : `Saya akan bantu berdasarkan ${fallbackTopicLabel}.`
   );
+  const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
+  const revealGradedAnswer = gradedTurn && guided.answerRevealPolicy.canRevealAnswer;
+  if (!gradedTurn) {
+    const emptyMetadata = { options: [], acceptedAnswers: [] };
+    Object.assign(contextBundle.contextUsed, emptyMetadata, { expectedAnswer: '', learnerAnswer: '', isCorrect: null });
+    Object.assign(contextBundle.sections, emptyMetadata, { correctAnswer: '' });
+  }
 
   return {
     text: effectiveConversationalReply?.text || standaloneAnswer || contextBundle.text || fallbackText || DEFAULT_FALLBACK,
@@ -1698,12 +1700,12 @@ export async function getTutorResponse(options = {}) {
     questionId: normalizeText(resolvedQuestion?.id || '', ''),
     questionText: resolvedQuestionText,
     instruction: resolvedInstruction,
-    options: resolvedOptions,
-    expectedAnswer: guided.answerRevealPolicy.canRevealAnswer ? expected : '',
-    learnerAnswer: answerText,
-    acceptedAnswers: guided.answerRevealPolicy.canRevealAnswer ? acceptedAnswers : [],
-    correctAnswer: guided.answerRevealPolicy.canRevealAnswer ? expected : '',
-    isCorrect: resolvedCorrect,
+    options: gradedTurn ? resolvedOptions : [],
+    expectedAnswer: revealGradedAnswer ? expected : '',
+    learnerAnswer: gradedTurn ? answerText : '',
+    acceptedAnswers: revealGradedAnswer ? acceptedAnswers : [],
+    correctAnswer: revealGradedAnswer ? expected : '',
+    isCorrect: gradedTurn ? resolvedCorrect : null,
     contextUsed: contextBundle.contextUsed,
     sections: contextBundle.sections,
     recommendationKey: recommendation?.recommendedTopicId || null,
@@ -1713,7 +1715,7 @@ export async function getTutorResponse(options = {}) {
     adaptiveRecommendation,
     explanationMode,
     currentLearningObjective,
-    learnerAnswerText: answerText,
+    learnerAnswerText: gradedTurn ? answerText : '',
     tutorMode: guided.mode,
     supportStage: intelligentTeaching?.pedagogicalState?.supportStage || guided.stage,
     answerRevealPolicy: guided.answerRevealPolicy,
@@ -1726,7 +1728,7 @@ export async function getTutorResponse(options = {}) {
       ? effectiveConversationalReply.quickReplies
       : guided.quickReplies?.length ? guided.quickReplies : suggestions,
     nextAction: guided.nextAction,
-    praise: guided.praise,
+    praise: gradedTurn ? guided.praise : '',
     learningExperience: guided,
     studentTurn,
     conversationStage: studentTurn.messageType,
