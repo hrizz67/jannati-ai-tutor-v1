@@ -2,6 +2,7 @@ import {
   containsPotentialPersonalData,
   detectTutorSafetyRisk
 } from '../../../supabase/functions/_shared/tutorPolicy.js';
+import { sanitizeTeachingAnchor } from './teachingAnchor.js';
 
 const DEFAULT_MAX_SCOPES = 24;
 const DEFAULT_MAX_TURNS = 12;
@@ -83,9 +84,10 @@ export function sanitizeTutorPedagogicalState(value = {}) {
     currentConcept: cleanText(value.currentConcept, 240),
     pendingFollowUp: containsPotentialPersonalData(pendingFollowUp) ? '' : pendingFollowUp,
     signal: cleanText(value.signal, 40),
-    misconceptionType: cleanText(value.misconceptionType, 80)
+    misconceptionType: cleanText(value.misconceptionType, 80),
+    teachingAnchor: sanitizeTeachingAnchor(value.teachingAnchor)
   };
-  return Object.values(state).some(item => item !== '' && item !== 0) ? state : null;
+  return Object.values(state).some(item => item !== null && item !== '' && item !== 0) ? state : null;
 }
 
 export function sanitizeTutorConversationMessage(value = {}) {
@@ -125,7 +127,12 @@ export function sanitizeTutorConversationMessage(value = {}) {
 function cloneMessages(messages = []) {
   return messages.map(message => ({
     ...message,
-    pedagogicalState: message.pedagogicalState ? { ...message.pedagogicalState } : null,
+    pedagogicalState: message.pedagogicalState ? {
+      ...message.pedagogicalState,
+      teachingAnchor: message.pedagogicalState.teachingAnchor
+        ? { ...message.pedagogicalState.teachingAnchor }
+        : null
+    } : null,
     suggestions: message.suggestions.map(item => typeof item === 'string' ? item : { ...item })
   }));
 }

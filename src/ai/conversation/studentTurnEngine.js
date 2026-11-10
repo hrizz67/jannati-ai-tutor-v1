@@ -37,6 +37,7 @@ const ACTIVE_QUESTION_REFERENCE_PATTERN = /(?:^(?:(?:dia|soalan\s+(?:ini|tu|itu)
 const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
 const NO_DIRECT_ANSWER_PATTERN = /(?:\b(?:jangan\b.{0,40}|tanpa\s+)\bjawapan\b|\bdon['’]?t\s+(?:give|tell|show)\b.{0,40}\banswer\b|لا\s+تعط(?:ي)?ني.{0,30}(?:الجواب|الإجابة))/iu;
 const RECOVERABLE_TEACHING_STAGES = new Set([
+  'concept_introduction',
   'concept_explanation', 'alternative_strategy', 'guided_small_step',
   'verified_micro_example', 'evidence_guided_correction',
   'recovery_meaning', 'recovery_first_step', 'example'
@@ -207,6 +208,7 @@ export function understandStudentTurn({
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
+      requestsExample: /\b(?:contoh|example)\b|مثال/u.test(lower),
       quickReplies: ['Terangkan cara lain', 'Beri contoh mudah', 'Bimbing langkah demi langkah']
     });
   }

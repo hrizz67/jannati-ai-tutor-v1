@@ -26,6 +26,12 @@ import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 import { buildIntelligentTeachingTurn, getLocalizedTeachingReplies } from './pedagogy/intelligentTeachingEngine.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
+import {
+  attachTeachingAnchorState,
+  getTeachingAnchorContext,
+  getTeachingAnchorNoAnswerLead,
+  resolveTeachingAnchorTurn
+} from './conversation/teachingAnchor.js';
 
 const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
 const ARABIC_NOUN = 'الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.';
@@ -1152,7 +1158,6 @@ function buildConversationalTeachingReply({
   const topicNote = normalizeText(topic?.note || '', '');
   const explanation = normalizeText(topicNote || (isCurrentContextTopic ? sections.whyCorrect || sections.learningObjective : ''), '');
   const example = normalizeText(isCurrentContextTopic ? sections.example || '' : '', '');
-  const firstStep = steps[0] || 'kenal pasti kata kunci atau maklumat penting';
   const learningAnchor = standaloneAnswer || topicNote || explanation;
   const dialogueLanguage = subject?.id === 'arab' ? 'ar' : subject?.id === 'english' ? 'en' : 'ms';
   const commonReplies = getLocalizedTeachingReplies(dialogueLanguage);
@@ -1207,13 +1212,11 @@ function buildConversationalTeachingReply({
         false
       );
     case 'guided_without_answer':
-      if (dialogueLanguage === 'en') {
-        return withReplies('Okay. I will guide one clue at a time without giving the answer.', commonReplies, true);
-      }
-      if (dialogueLanguage === 'ar') {
-        return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', commonReplies, true);
-      }
-      return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
+      return withReplies(
+        getTeachingAnchorNoAnswerLead(dialogueLanguage),
+        dialogueLanguage === 'ms' ? [] : commonReplies,
+        true
+      );
     case 'question_help':
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
@@ -1224,26 +1227,6 @@ function buildConversationalTeachingReply({
       return withReplies(
         `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
         studentTurn.quickReplies
-      );
-    case 'misunderstanding':
-      return withReplies(
-        [
-          'Tak mengapa. Kita cuba cara yang lebih mudah.',
-          learningAnchor || `Kita kembali kepada idea paling asas bagi ${topicLabel}.`,
-          sentence(example, 'Contoh mudah: '),
-          `${sentence(firstStep, 'Mula dengan satu perkara sahaja: ')} Bahagian mana masih mengelirukan?`
-        ].filter(Boolean).join(' '),
-        studentTurn.quickReplies
-      );
-    case 'alternative_explanation':
-      return withReplies(
-        [
-          'Baik, kita lihat dengan cara lain.',
-          learningAnchor || `Bayangkan ${topicLabel} sebagai satu tugas yang dibuat langkah demi langkah.`,
-          sentence(example, 'Contoh mudah: '),
-          sentence(firstStep, 'Sekarang cuba langkah pertama: ')
-        ].filter(Boolean).join(' '),
-        ['Bimbing langkah demi langkah', 'Beri contoh lain', 'Saya sudah faham']
       );
     case 'comparison_question':
       return withReplies(
@@ -1371,9 +1354,14 @@ export async function getTutorResponse(options = {}) {
     : [];
   const hasExerciseContext = Boolean(resolvedQuestionText || expected);
   const questionIdentity = normalizeText(resolvedQuestion?.id || '', '');
-  const activeConcept = subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
-    ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
-    : '';
+  const anchorContext = getTeachingAnchorContext({
+    history, conversationKey, subjectId: subjectContext.id,
+    topicId: topicContext.id, questionId: questionIdentity
+  });
+  const activeConcept = anchorContext.currentConcept ||
+    (subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
+      ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
+      : '');
   const studentTurn = understandStudentTurn({
     prompt,
     intent,
@@ -1594,6 +1582,14 @@ export async function getTutorResponse(options = {}) {
       : '',
     [...pendingExpectedAnswers, expected, ...acceptedAnswers]
   );
+  const { directTeachingAnchor, teachingAnchor } = resolveTeachingAnchorTurn({
+    scope: anchorContext.scope,
+    priorTeachingAnchor: anchorContext.teachingAnchor,
+    prompt,
+    subjectId: subjectContext.id,
+    standaloneAnswer,
+    newTopicRequest: studentTurn.newTopicRequest
+  });
   const conversationalReply = buildConversationalTeachingReply({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     standaloneAnswer,
@@ -1637,6 +1633,7 @@ export async function getTutorResponse(options = {}) {
     answerAttempted: Boolean(promptAnswer),
     guidedMisconception: guided.misconception,
     teachingContent: contextBundle.sections.pedagogicalContent,
+    teachingAnchor,
     locale: resolvedLocale,
     languagePresentation
   });
@@ -1725,7 +1722,9 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: switchedTopic ? null : intelligentTeaching?.pedagogicalState || null,
+    pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
+      intelligentTeaching?.pedagogicalState, directTeachingAnchor, teachingAnchor
+    ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
