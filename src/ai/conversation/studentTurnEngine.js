@@ -133,7 +133,7 @@ export function understandStudentTurn({
   hasExerciseContext = false,
   hasLearningContext = false,
   activeConcept = '',
-  teachingCheck = null
+  teachingCheckAnswer = ''
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
@@ -152,15 +152,12 @@ export function understandStudentTurn({
     return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
   }
 
-  const checkOptions = Array.isArray(teachingCheck?.options) ? teachingCheck.options : [];
-  const teachingCheckReply = conversation.hasTeachingStage && conversation.pendingCheck &&
-    checkOptions.some(option => comparable(option) === comparable(text)) && !/[?؟]/u.test(text);
-  if (teachingCheckReply) {
-    const teachingCheckCorrect = matchesAcceptedAnswer(text, '', teachingCheck.acceptedAnswers);
-    return makeTurn(teachingCheckCorrect ? 'understanding_confirmation' : 'recovery_first_step', 'learning_response', 1, {
+  if (conversation.hasTeachingStage && conversation.pendingCheck &&
+    matchesAcceptedAnswer(text, teachingCheckAnswer)) {
+    return makeTurn('understanding_confirmation', 'learning_response', 1, {
       ...conversation,
       referencesPreviousTurn: true,
-      teachingCheckCorrect
+      teachingCheckCorrect: true
     });
   }
 

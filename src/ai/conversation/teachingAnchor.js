@@ -21,10 +21,8 @@ const CURRICULUM_ANCHORS = Object.freeze({
       'Perkataan “kucing” menamakan haiwan atau perbuatan'
     ]),
     check: Object.freeze({
-      acceptedAnswers: Object.freeze(['haiwan']),
-      options: Object.freeze(['haiwan', 'perbuatan']),
-      correctFeedback: 'Betul. “Kucing” menamakan haiwan, jadi perkataan itu ialah kata nama am.',
-      reason: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.'
+      answer: 'haiwan',
+      explanation: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.'
     })
   })
 });
@@ -99,7 +97,12 @@ export function findTeachingAnchor(history = [], scope = {}) {
 export function getTeachingAnchorContext({ history = [], conversationKey = '', subjectId = '', topicId = '', questionId = '' } = {}) {
   const scope = { conversationKey, subjectId, topicId, questionId };
   const teachingAnchor = findTeachingAnchor(history, scope);
-  return { scope, teachingAnchor, currentConcept: getTeachingAnchorConceptKey(teachingAnchor) };
+  return {
+    scope,
+    teachingAnchor,
+    currentConcept: getTeachingAnchorConceptKey(teachingAnchor),
+    teachingCheckAnswer: getTeachingAnchorContent(teachingAnchor)?.check?.answer || ''
+  };
 }
 
 export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = null, prompt = '', subjectId = '', standaloneAnswer = '', newTopicRequest = false } = {}) {
@@ -118,25 +121,21 @@ export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = nu
 export function getTeachingAnchorContent(value = {}) {
   const anchor = sanitizeTeachingAnchor(value);
   const content = anchor ? CURRICULUM_ANCHORS[anchor.conceptId] : null;
-  return content ? {
-    grounded: true,
-    explanations: [...content.explanations],
-    examples: [...content.examples],
-    verifiedExamples: [...content.examples],
-    alternatives: [...content.alternatives],
-    steps: [...content.steps],
-    checkQuestions: [...content.checkQuestions]
-  } : null;
+  return content ? { grounded: true, ...content, verifiedExamples: content.examples } : null;
 }
 
-export function getTeachingAnchorCheck(value = {}) {
-  const anchor = sanitizeTeachingAnchor(value);
-  const check = anchor ? CURRICULUM_ANCHORS[anchor.conceptId]?.check : null;
-  return check ? {
-    acceptedAnswers: [...check.acceptedAnswers],
-    options: [...check.options],
-    correctFeedback: check.correctFeedback,
-    reason: check.reason
+export function buildTeachingAnchorReply(value = {}, studentTurn = {}) {
+  const check = getTeachingAnchorContent(value)?.check;
+  const text = studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect
+    ? `Betul. ${check?.explanation || ''} Cuba beri satu lagi kata nama am dengan ayat kamu sendiri.`
+    : studentTurn.intent === 'why_question' && check
+      ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
+      : '';
+  return text ? {
+    text,
+    quickReplies: [],
+    grounded: true,
+    pedagogicalState: createTeachingAnchorState(value)
   } : null;
 }
 
@@ -163,7 +162,7 @@ export function createTeachingAnchorState(value = {}) {
 }
 
 export function attachTeachingAnchorState(pedagogicalState = null, directTeachingAnchor = null, teachingAnchor = null) {
-  if (!pedagogicalState) return createTeachingAnchorState(directTeachingAnchor || teachingAnchor);
+  if (!pedagogicalState) return createTeachingAnchorState(directTeachingAnchor);
   return teachingAnchor ? { ...pedagogicalState, teachingAnchor } : pedagogicalState;
 }
 
