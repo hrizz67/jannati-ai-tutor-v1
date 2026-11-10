@@ -205,6 +205,8 @@ function copyFor(language) {
   };
 }
 
+export const getLocalizedTeachingReplies = language => copyFor(language).quickReplies;
+
 function buildAdultSupportReply(copy, previousState = null, adultQuestion = '') {
   if (previousState?.supportStage === 'adult_support_referral') {
     return {

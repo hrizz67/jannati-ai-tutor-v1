@@ -201,7 +201,7 @@ export function understandStudentTurn({
   }
 
   if (
-    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
+    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\b(?:still\s+)?(?:don'?t|do\s+not)\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
     || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
   ) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {

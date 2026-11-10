@@ -271,6 +271,76 @@ describe('PR #175 QA-review P1 remediation', () => {
     expectUngradedAnswerSafe(third, config.answer);
   });
 
+  it.each([
+    {
+      label: 'English person', subject: { id: 'english', title: 'English' },
+      topic: { id: 'nouns', title: 'Nouns', note: 'A stale place noun note must not own this question.' },
+      question: { id: 'qa-en-free', q: '__ treats patients.', instruction: 'Choose a person noun.', answer: 'doctor', acceptedAnswers: ['doctor'] },
+      answer: 'doctor', locale: 'en-MY', prompts: ['I do not understand.', 'I still do not understand.', 'Explain another way.', "Don't tell me the answer."],
+      required: /person noun|treats patients|without giving the answer/iu,
+      rejected: /place noun|\b(?:mari|soalan|jawapan|langkah|petunjuk|gunakan)\b/iu,
+      reply: /^(?:Show one small step|Give an easy example|I understand now)$/u
+    },
+    {
+      label: 'Arabic person', subject: { id: 'arab', title: 'Bahasa Arab' },
+      topic: { id: 'mufradat', title: 'مفردات', note: 'ملاحظة قديمة عن اسم مكان.' },
+      question: { id: 'qa-ar-free', q: '___ يعلّمنا.', instruction: 'اختر اسم شخص.', answer: 'معلّم', acceptedAnswers: ['معلّم'] },
+      answer: 'معلّم', locale: 'ar-MY', prompts: ['لا أفهم.', 'ما زلت لا أفهم', 'اشرح مرة أخرى', 'لا تعطيني الجواب مباشرة'],
+      required: /اسم شخص|يعلّمنا|من دون إعطاء الجواب/u,
+      rejected: /اسم مكان|[A-Za-z]/u,
+      reply: /^(?:اشرح خطوة واحدة|أعطني مثالًا سهلًا|فهمت الآن)$/u
+    }
+  ])('keeps free-typed repeated help localized and owned by the active category: $label', async config => {
+    const base = {
+      student, subject: config.subject, topic: config.topic, question: config.question,
+      expectedAnswer: config.answer, acceptedAnswers: [config.answer], locale: config.locale,
+      conversationKey: `synthetic::${config.subject.id}::free-help`
+    };
+    let history = [];
+    const responses = [];
+    for (const prompt of config.prompts) {
+      const response = await getTutorResponse({ ...base, prompt, history });
+      responses.push(response);
+      history = [...history,
+        { role: 'user', text: prompt },
+        { role: 'ai', text: response.text, dialogueClassification: response.dialogueClassification, pedagogicalState: response.pedagogicalState }
+      ];
+    }
+
+    for (const response of responses) {
+      expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+      expect(response.text).not.toMatch(config.rejected);
+      expect(response.quickReplies).toHaveLength(3);
+      expect(response.quickReplies.every(reply => config.reply.test(reply))).toBe(true);
+      expectUngradedAnswerSafe(response, config.answer);
+    }
+    expect(responses.map(response => response.text).join(' ')).toMatch(config.required);
+    expect(new Set(responses.slice(0, 3).map(response => response.text)).size).toBe(3);
+  });
+
+  it('keeps repeated BM confusion grammatical and category-correct', async () => {
+    const base = {
+      student, subject: bmBase.subject,
+      topic: { id: 'kata_nama_am', title: 'Kata Nama Am', note: 'Kata nama orang menamakan manusia.' },
+      question: { id: 'qa-bm-free', q: '___ merawat pesakit.', instruction: 'Pilih kata nama orang.', answer: 'doktor', acceptedAnswers: ['doktor'] },
+      expectedAnswer: 'doktor', acceptedAnswers: ['doktor'], locale: 'ms-MY', conversationKey: 'synthetic::bm::free-help'
+    };
+    let history = [];
+    const texts = [];
+    for (const prompt of ['Saya tak faham.', 'tak paham', 'x faham']) {
+      const response = await getTutorResponse({ ...base, prompt, history });
+      texts.push(response.text);
+      expect(response.text).toMatch(/kata nama orang|perkataan yang menamakan orang/iu);
+      expect(response.text).not.toMatch(/cara lain\.\s*doktor(?:\.|$)/iu);
+      expectUngradedAnswerSafe(response, 'doktor');
+      history = [...history,
+        { role: 'user', text: prompt },
+        { role: 'ai', text: response.text, dialogueClassification: response.dialogueClassification, pedagogicalState: response.pedagogicalState }
+      ];
+    }
+    expect(new Set(texts).size).toBe(3);
+  });
+
   it('removes mode metadata when it collides with a protected common answer', async () => {
     const response = await getTutorResponse({
       student,

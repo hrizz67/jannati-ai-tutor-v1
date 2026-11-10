@@ -23,7 +23,7 @@ import { understandStudentTurn } from './conversation/studentTurnEngine.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
-import { buildIntelligentTeachingTurn } from './pedagogy/intelligentTeachingEngine.js';
+import { buildIntelligentTeachingTurn, getLocalizedTeachingReplies } from './pedagogy/intelligentTeachingEngine.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 
@@ -455,7 +455,6 @@ function findRelevantLearningContext(prompt = '', availableSubjects = [], prefer
 }
 
 function buildSuggestionList(intent, context = {}) {
-  const generic = ['Tanya lebih khusus.', 'Klik petunjuk.', 'Cuba lagi.'];
   if (context.subject?.id === 'math' && /\+|tambah|jumlah/i.test(context.questionText || '')) {
     return [
       'Kenal pasti nombor yang hendak ditambah.',
@@ -524,7 +523,7 @@ function buildSuggestionList(intent, context = {}) {
         'Cuba jawab dengan gaya yang sama.'
       ];
     default:
-      return context.questionText ? ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.', 'Semak jawapan dengan maksud soalan.'] : generic;
+      return context.questionText ? ['Baca soalan perlahan-lahan.', 'Cari kata kunci penting.', 'Semak jawapan dengan maksud soalan.'] : [];
   }
 }
 
@@ -855,6 +854,7 @@ function buildContextualSections({
           checks: ['هل هي شخص أم مكان أم شيء؟']
         }
     : null;
+  const activeTeaching = resolvedQuestion && subjectGuidance;
   const pedagogicalContent = {
     grounded: Boolean(
       coachResponse?.ready ||
@@ -863,18 +863,15 @@ function buildContextualSections({
       topic?.note ||
       subjectGuidance
     ),
-    explanations: answerSafeList(topicPedagogy?.explanations || [
-      simpleExplanationText, explanationText, topic?.note, currentLearningObjective
-    ]),
+    explanations: answerSafeList(topicPedagogy?.explanations || (activeTeaching
+      ? [subjectGuidance.hint, simpleExplanationText, explanationText, currentLearningObjective]
+      : [simpleExplanationText, explanationText, topic?.note, currentLearningObjective])),
     examples: verifiedExamples,
     verifiedExamples,
     verifiedExampleProvenance: reviewedExampleSelection.provenance,
-    alternatives: answerSafeList(topicPedagogy?.alternatives || [
-      commonMistake,
-      memoryTip,
-      coachKnowledge?.memoryTips,
-      coachResponse?.memoryTips
-    ]),
+    alternatives: answerSafeList(topicPedagogy?.alternatives || (activeTeaching
+      ? subjectGuidance.steps
+      : [commonMistake, memoryTip, coachKnowledge?.memoryTips, coachResponse?.memoryTips])),
     steps: answerSafeList(topicPedagogy?.steps || steps),
     checkQuestions: answerSafeList(isBmCommonNoun ? ['Orang, haiwan, tempat atau benda?'] : topicPedagogy?.checks || [
       coachKnowledge?.followUpQuestions,
@@ -1158,9 +1155,7 @@ function buildConversationalTeachingReply({
   const firstStep = steps[0] || 'kenal pasti kata kunci atau maklumat penting';
   const learningAnchor = standaloneAnswer || topicNote || explanation;
   const dialogueLanguage = subject?.id === 'arab' ? 'ar' : subject?.id === 'english' ? 'en' : 'ms';
-  const commonReplies = dialogueLanguage === 'ms'
-    ? ['Beri contoh mudah', 'Terangkan cara lain', 'Saya sudah faham']
-    : [];
+  const commonReplies = getLocalizedTeachingReplies(dialogueLanguage);
   const sentence = (value, prefix = '') => {
     const safeValue = normalizeText(value, '').replace(/[.!?؟]+$/u, '');
     return safeValue ? `${prefix}${safeValue}.` : '';
@@ -1213,10 +1208,10 @@ function buildConversationalTeachingReply({
       );
     case 'guided_without_answer':
       if (dialogueLanguage === 'en') {
-        return withReplies('Okay. I will guide one clue at a time without giving the answer.', [], true);
+        return withReplies('Okay. I will guide one clue at a time without giving the answer.', commonReplies, true);
       }
       if (dialogueLanguage === 'ar') {
-        return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', [], true);
+        return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', commonReplies, true);
       }
       return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
     case 'question_help':
