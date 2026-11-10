@@ -90,6 +90,28 @@ assert.match(releasePreparationWorkflow, /if:\s*github\.ref == 'refs\/heads\/mai
 assert.match(releasePreparationWorkflow, /persist-credentials:\s*false/, 'Secure release preparation checkout must not persist Git credentials.');
 assert.match(releasePreparationWorkflow, /\$GITHUB_SHA[^\n]*\$EXPECTED_SHA|\$EXPECTED_SHA[^\n]*\$GITHUB_SHA/, 'Secure release preparation must bind the run to the requested exact main SHA.');
 assert.match(releasePreparationWorkflow, /npm run release -- "\$TARGET_VERSION"/, 'Secure release preparation must use the canonical release command.');
+// The canonical release command validates before building. Suppress STT endpoints and
+// opt-in flags at the process boundary, not merely in the tested application code.
+const preparationStart = releasePreparationWorkflow.indexOf('      - name: Run canonical production release preparation');
+const preparationEnd = releasePreparationWorkflow.indexOf('      - name: Verify release artifacts and production bundle', preparationStart);
+assert.ok(preparationStart >= 0 && preparationEnd > preparationStart, 'Release-preparation canonical step must have stable boundaries.');
+const canonicalPreparationStep = releasePreparationWorkflow.slice(preparationStart, preparationEnd);
+assert.doesNotMatch(
+  canonicalPreparationStep,
+  /^\s*VITE_(?:QUIZ_)?STT_ENDPOINT\s*:/m,
+  'Canonical release preparation must not inject STT endpoints into unit tests and validation.'
+);
+assert.doesNotMatch(
+  canonicalPreparationStep,
+  /^\s*VITE_QUIZ_MOBILE_STT_PILOT_ENABLED\s*:/m,
+  'Canonical release preparation must not activate the Quiz STT pilot during validation.'
+);
+assert.match(
+  canonicalPreparationStep,
+  /env -u VITE_STT_ENDPOINT -u VITE_QUIZ_STT_ENDPOINT -u VITE_QUIZ_MOBILE_STT_PILOT_ENABLED npm run release -- "\$TARGET_VERSION"/,
+  'Canonical release preparation must explicitly remove inherited STT settings before running validation.'
+);
+
 assert.match(releasePreparationWorkflow, /npm run release:check -- --artifacts/, 'Secure release preparation must verify generated release artifacts.');
 assert.match(releasePreparationWorkflow, /npm run release:build-check/, 'Secure release preparation must verify real production browser configuration.');
 assert.match(releasePreparationWorkflow, /secrets\.VITE_SUPABASE_URL/, 'Secure release preparation must source the production URL from GitHub Secrets.');
