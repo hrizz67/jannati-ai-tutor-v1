@@ -869,7 +869,7 @@ function buildContextualSections({
     examples: verifiedExamples,
     verifiedExamples,
     verifiedExampleProvenance: reviewedExampleSelection.provenance,
-    alternatives: answerSafeList(topicPedagogy?.alternatives || (activeTeaching
+    alternatives: answerSafeList(topicPedagogy?.alternatives || (activeTeaching || isEnglishSubject
       ? subjectGuidance.steps
       : [commonMistake, memoryTip, coachKnowledge?.memoryTips, coachResponse?.memoryTips])),
     steps: answerSafeList(topicPedagogy?.steps || steps),

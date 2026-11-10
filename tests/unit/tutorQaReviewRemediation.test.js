@@ -318,6 +318,37 @@ describe('PR #175 QA-review P1 remediation', () => {
     expect(new Set(responses.slice(0, 3).map(response => response.text)).size).toBe(3);
   });
 
+  it('keeps a five-turn English topic conversation English-only without an optional topic note', async () => {
+    const base = {
+      student, subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
+      locale: 'en-MY', conversationKey: 'synthetic::english::no-note'
+    };
+    let history = [];
+    const responses = [];
+    for (const prompt of [
+      'What is a common noun?', 'I do not understand.', 'What does that mean?',
+      'Can you explain another way?', "Don't give me the answer directly."
+    ]) {
+      const response = await getTutorResponse({ ...base, prompt, history });
+      responses.push(response);
+      history = [...history,
+        { role: 'user', text: prompt },
+        { role: 'ai', text: response.text, dialogueClassification: response.dialogueClassification, pedagogicalState: response.pedagogicalState }
+      ];
+    }
+
+    for (const response of responses) {
+      const publicSurface = JSON.stringify({ text: response.text, quickReplies: response.quickReplies, quickActions: response.quickActions });
+      expect(response.dialogueClassification).toBe('LOCAL_HANDLED');
+      expect(publicSurface).not.toMatch(/\b(?:baca|soalan|jawapan|langkah|petunjuk|gunakan|mari|faham|contoh mudah)\b/iu);
+      expect(publicSurface).not.toMatch(/\p{Script=Arabic}/u);
+      expect(response).toMatchObject({ expectedAnswer: '', correctAnswer: '', acceptedAnswers: [], isCorrect: null });
+      for (const field of rewardFields) expect(response).not.toHaveProperty(field);
+    }
+    expect(responses[2].text).toMatch(/noun clue/iu);
+    expect(responses[3].text).toMatch(/look at it another way.*noun clue/iu);
+  });
+
   it('keeps repeated BM confusion grammatical and category-correct', async () => {
     const base = {
       student, subject: bmBase.subject,
