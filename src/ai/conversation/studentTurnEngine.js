@@ -32,7 +32,7 @@ const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pe
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
 const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
-const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
+const MEANING_FOLLOW_UP_PATTERN = /^(?:(?:yang\s+(?:tadi|itu)\s+)?maksud(?:nya)?\s+apa|apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
 const ACTIVE_QUESTION_REFERENCE_PATTERN = /(?:^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|(?:how\s+do\s+i\s+understand|كيف\s+أفهم)\s+(?:this|هذا)\s+(?:question|السؤال)|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$|\bbahagian\b.{0,30}\bmana\b|\byang\s+mana\b|\bapa\s+petunjuk(?:nya)?\b|\b(?:which|what)\s+(?:part|clue)\b|(?:أي|ما)\s+(?:جزء|دليل))/iu;
 const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
 const NO_DIRECT_ANSWER_PATTERN = /(?:\b(?:jangan\b.{0,40}|tanpa\s+)\bjawapan\b|\bdon['’]?t\s+(?:give|tell|show)\b.{0,40}\banswer\b|لا\s+تعط(?:ي)?ني.{0,30}(?:الجواب|الإجابة))/iu;
@@ -132,7 +132,8 @@ export function understandStudentTurn({
   acceptedAnswers = [],
   hasExerciseContext = false,
   hasLearningContext = false,
-  activeConcept = ''
+  activeConcept = '',
+  teachingCheck = null
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
@@ -149,6 +150,18 @@ export function understandStudentTurn({
 
   if (hasExerciseContext && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
     return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
+  }
+
+  const checkOptions = Array.isArray(teachingCheck?.options) ? teachingCheck.options : [];
+  const teachingCheckReply = conversation.hasTeachingStage && conversation.pendingCheck &&
+    checkOptions.some(option => comparable(option) === comparable(text)) && !/[?؟]/u.test(text);
+  if (teachingCheckReply) {
+    const teachingCheckCorrect = matchesAcceptedAnswer(text, '', teachingCheck.acceptedAnswers);
+    return makeTurn(teachingCheckCorrect ? 'understanding_confirmation' : 'recovery_first_step', 'learning_response', 1, {
+      ...conversation,
+      referencesPreviousTurn: true,
+      teachingCheckCorrect
+    });
   }
 
   if (SOCIAL_ONLY_PATTERN.test(text)) return makeTurn('general', 'social', 0.99, conversation);
@@ -259,16 +272,16 @@ export function understandStudentTurn({
       ...conversation, isQuestion: true, referencesPreviousTurn: true
     });
   }
-  const checkReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
+  const clueReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
     /^(?:petunjuk(?:nya)?(?: utama)?|(?:the )?clue|الدليل)(?: (?:ialah|adalah|is|هو))? \S/iu.test(lower) && !/[?؟]/u.test(text);
-  const continuation = (hasExerciseContext || hasLearningContext) && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || checkReply);
+  const continuation = (hasExerciseContext || hasLearningContext) && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || clueReply);
   const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
     return makeTurn('direct_answer', 'answer_attempt', 0.96, { ...conversation, answerCandidate });
   }
   if (continuation) {
-    return makeTurn(conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP, checkReply ? 'learning_response' : FOLLOW_UP_QUESTION, 0.99, {
-      ...conversation, referencesPreviousTurn: true, isQuestion: !checkReply
+    return makeTurn(conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP, clueReply ? 'learning_response' : FOLLOW_UP_QUESTION, 0.99, {
+      ...conversation, referencesPreviousTurn: true, isQuestion: !clueReply
     });
   }
 

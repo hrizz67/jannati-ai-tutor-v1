@@ -329,15 +329,20 @@ export function buildIntelligentTeachingTurn({
   const alternatives = localizedCandidates(activeTeachingContent.alternatives);
   const steps = localizedCandidates(activeTeachingContent.steps);
   const copy = copyFor(language);
+  const checkCandidates = localizedCandidates(activeTeachingContent.checkQuestions);
+  const selectedCheck = scopedTeachingAnchor
+    ? selectTeachingAnchorCandidate(checkCandidates, history, currentConcept, scopedTeachingAnchor, false)
+    : checkCandidates[0];
   const checkQuestion = safeQuestion(
-    localizedCandidates(activeTeachingContent.checkQuestions),
+    selectedCheck ? [selectedCheck] : [],
     protectedAnswers,
-    language === 'en'
+    scopedTeachingAnchor ? '' : language === 'en'
       ? 'What is the main clue in this question'
       : language === 'ar'
         ? 'ما الدليل المهم في هذا السؤال'
         : 'Apakah petunjuk utama dalam soalan ini'
   );
+  const checkPrompt = checkQuestion ? `${copy.checkLead} ${checkQuestion}` : '';
   const recoveryQuestion = safeQuestion([copy.recoveryQuestion], protectedAnswers, copy.recoveryQuestion);
   const adultQuestion = safeQuestion([copy.adultQuestion], protectedAnswers, copy.adultQuestion);
   const misconception = resolveMisconception({ signal, guidedMisconception, learnerAnswer, options });
@@ -370,7 +375,7 @@ export function buildIntelligentTeachingTurn({
       previousState,
       currentConcept,
       text: hasExample
-        ? clean([asSentence(`${copy.exampleLead} ${approvedExample}`), `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
+        ? clean([asSentence(`${copy.exampleLead} ${approvedExample}`), checkPrompt].filter(Boolean).join(' '), 700)
         : copy.noExample,
       quickReplies: hasExample ? copy.quickReplies : [copy.quickReplies[0], copy.quickReplies[2]],
       strategyUsed: hasExample ? TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE : TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
@@ -421,7 +426,7 @@ export function buildIntelligentTeachingTurn({
       text: clean([
         protectsAnswer ? getTeachingAnchorNoAnswerLead(language) : '',
         asSentence(`${supportLead} ${groundedSupport}`),
-        `${copy.checkLead} ${checkQuestion}`
+        checkPrompt
       ].filter(Boolean).join(' '), 700),
       quickReplies: protectsAnswer ? copy.quickReplies : copy.recoveryCheckReplies,
       strategyUsed: asksForMeaning ? TEACHING_STRATEGY.ALTERNATIVE_CONNECTION : TEACHING_STRATEGY.ONE_SMALL_STEP,
@@ -461,16 +466,16 @@ export function buildIntelligentTeachingTurn({
     supportStage = 'concept_explanation';
     const safeConcept = unused(explanations) || unused(alternatives) || unused(steps);
     const safeExample = unused(examples);
-    textParts = [copy.reassurance, safeConcept ? asSentence(`${copy.conceptLead} ${safeConcept}`) : '', safeExample ? asSentence(`${copy.exampleLead} ${safeExample}`) : '', `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.reassurance, safeConcept ? asSentence(`${copy.conceptLead} ${safeConcept}`) : '', safeExample ? asSentence(`${copy.exampleLead} ${safeExample}`) : '', checkPrompt];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 2) {
     strategyUsed = TEACHING_STRATEGY.ALTERNATIVE_CONNECTION;
     supportStage = 'alternative_strategy';
     const requestedExample = studentTurn.requestsExample ? unused(examples) : '';
-    textParts = [copy.alternativeLead, asSentence(requestedExample ? `${copy.exampleLead} ${requestedExample}` : unused(alternatives) || unused(examples) || unused(steps)), `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.alternativeLead, asSentence(requestedExample ? `${copy.exampleLead} ${requestedExample}` : unused(alternatives) || unused(examples) || unused(steps)), checkPrompt];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 3) {
     strategyUsed = TEACHING_STRATEGY.ONE_SMALL_STEP;
     supportStage = 'guided_small_step';
-    textParts = [copy.stepLead, asSentence(unused(steps) || unused(alternatives) || unused(examples)), `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.stepLead, asSentence(unused(steps) || unused(alternatives) || unused(examples)), checkPrompt];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 4) {
     const firstExample = normalize(examples[0]);
     const distinctVerifiedExample = verifiedExamples.find(item => normalize(item) !== firstExample);

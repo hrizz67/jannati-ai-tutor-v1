@@ -29,6 +29,8 @@ import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActi
 import {
   attachTeachingAnchorState,
   getTeachingAnchorContext,
+  getTeachingAnchorCheck,
+  getTeachingAnchorContent,
   getTeachingAnchorNoAnswerLead,
   resolveTeachingAnchorTurn
 } from './conversation/teachingAnchor.js';
@@ -1146,6 +1148,8 @@ function buildConversationalTeachingReply({
   subject = null,
   topic = null,
   questionText = '',
+  teachingAnchor = null,
+  teachingCheck = null,
   weakTopics = [],
   studyPlan = null
 } = {}) {
@@ -1158,7 +1162,8 @@ function buildConversationalTeachingReply({
   const topicNote = normalizeText(topic?.note || '', '');
   const explanation = normalizeText(topicNote || (isCurrentContextTopic ? sections.whyCorrect || sections.learningObjective : ''), '');
   const example = normalizeText(isCurrentContextTopic ? sections.example || '' : '', '');
-  const learningAnchor = standaloneAnswer || topicNote || explanation;
+  const anchorContent = getTeachingAnchorContent(teachingAnchor);
+  const learningAnchor = standaloneAnswer || topicNote || explanation || anchorContent?.explanations?.[0] || '';
   const dialogueLanguage = subject?.id === 'arab' ? 'ar' : subject?.id === 'english' ? 'en' : 'ms';
   const commonReplies = getLocalizedTeachingReplies(dialogueLanguage);
   const sentence = (value, prefix = '') => {
@@ -1224,6 +1229,9 @@ function buildConversationalTeachingReply({
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
     case 'understanding_confirmation':
+      if (studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect && teachingCheck?.correctFeedback) {
+        return withReplies(`${teachingCheck.correctFeedback} Cuba beri satu lagi kata nama am dengan ayat kamu sendiri.`, studentTurn.quickReplies, true);
+      }
       return withReplies(
         `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
         studentTurn.quickReplies
@@ -1256,6 +1264,7 @@ function buildConversationalTeachingReply({
         Boolean(learningAnchor)
       );
     case 'why_question':
+      if (teachingCheck?.reason) return withReplies(`${teachingCheck.reason} Itulah petunjuk yang kita gunakan.`, commonReplies, true);
       if (dialogueLanguage !== 'ms') {
         return withReplies(`${learningAnchor || questionText} ${dialogueLanguage === 'en' ? 'Which clue shows why?' : 'ما السبب؟'}`, [], Boolean(learningAnchor || questionText));
       }
@@ -1362,6 +1371,7 @@ export async function getTutorResponse(options = {}) {
     (subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
       ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
       : '');
+  const teachingCheck = getTeachingAnchorCheck(anchorContext.teachingAnchor);
   const studentTurn = understandStudentTurn({
     prompt,
     intent,
@@ -1371,7 +1381,8 @@ export async function getTutorResponse(options = {}) {
     hasExerciseContext,
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
     // Never resume a previous question when its identity is ambiguous.
-    activeConcept
+    activeConcept,
+    teachingCheck
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
@@ -1598,6 +1609,8 @@ export async function getTutorResponse(options = {}) {
     subject: conversationalSubject,
     topic: conversationalTopic,
     questionText: resolvedQuestionText,
+    teachingAnchor,
+    teachingCheck,
     weakTopics: weakList,
     studyPlan
   });
@@ -1723,7 +1736,9 @@ export async function getTutorResponse(options = {}) {
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
     pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
-      intelligentTeaching?.pedagogicalState, directTeachingAnchor, teachingAnchor
+      intelligentTeaching?.pedagogicalState,
+      directTeachingAnchor,
+      studentTurn.referencesPreviousTurn ? teachingAnchor : null
     ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length

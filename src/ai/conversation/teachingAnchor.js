@@ -19,7 +19,13 @@ const CURRICULUM_ANCHORS = Object.freeze({
     ]),
     checkQuestions: Object.freeze([
       'Perkataan “kucing” menamakan haiwan atau perbuatan'
-    ])
+    ]),
+    check: Object.freeze({
+      acceptedAnswers: Object.freeze(['haiwan']),
+      options: Object.freeze(['haiwan', 'perbuatan']),
+      correctFeedback: 'Betul. “Kucing” menamakan haiwan, jadi perkataan itu ialah kata nama am.',
+      reason: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.'
+    })
   })
 });
 
@@ -82,12 +88,10 @@ export function findTeachingAnchor(history = [], scope = {}) {
   const messages = Array.isArray(history) ? history.slice(-MAX_ANCHOR_HISTORY) : [];
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
-    if (
-      message?.role !== 'ai' || message?.dialogueClassification !== 'LOCAL_HANDLED' ||
-      message?.privacySignal || message?.safetySignal
-    ) continue;
+    if (message?.role !== 'ai') continue;
+    if (message?.dialogueClassification !== 'LOCAL_HANDLED' || message?.privacySignal || message?.safetySignal) return null;
     const anchor = sanitizeTeachingAnchor(message?.pedagogicalState?.teachingAnchor);
-    if (anchor && matchesScope(anchor, scope)) return anchor;
+    return anchor && matchesScope(anchor, scope) ? anchor : null;
   }
   return null;
 }
@@ -125,6 +129,17 @@ export function getTeachingAnchorContent(value = {}) {
   } : null;
 }
 
+export function getTeachingAnchorCheck(value = {}) {
+  const anchor = sanitizeTeachingAnchor(value);
+  const check = anchor ? CURRICULUM_ANCHORS[anchor.conceptId]?.check : null;
+  return check ? {
+    acceptedAnswers: [...check.acceptedAnswers],
+    options: [...check.options],
+    correctFeedback: check.correctFeedback,
+    reason: check.reason
+  } : null;
+}
+
 export function getTeachingAnchorConceptKey(value = {}) {
   const anchor = sanitizeTeachingAnchor(value);
   return anchor
@@ -148,7 +163,7 @@ export function createTeachingAnchorState(value = {}) {
 }
 
 export function attachTeachingAnchorState(pedagogicalState = null, directTeachingAnchor = null, teachingAnchor = null) {
-  if (!pedagogicalState) return createTeachingAnchorState(directTeachingAnchor);
+  if (!pedagogicalState) return createTeachingAnchorState(directTeachingAnchor || teachingAnchor);
   return teachingAnchor ? { ...pedagogicalState, teachingAnchor } : pedagogicalState;
 }
 
@@ -158,7 +173,7 @@ export function getTeachingAnchorNoAnswerLead(language = 'ms') {
   return 'Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.';
 }
 
-export function selectTeachingAnchorCandidate(candidates = [], history = [], currentConcept = '', teachingAnchor = null) {
+export function selectTeachingAnchorCandidate(candidates = [], history = [], currentConcept = '', teachingAnchor = null, reuseFirst = true) {
   if (!teachingAnchor) return candidates[0] || '';
   const used = (Array.isArray(history) ? history : [])
     .filter(item => item?.role === 'ai' && item?.pedagogicalState?.currentConcept === currentConcept)
@@ -166,5 +181,5 @@ export function selectTeachingAnchorCandidate(candidates = [], history = [], cur
   return candidates.find(candidate => {
     const normalized = String(candidate).toLocaleLowerCase('ms-MY').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
     return !used.some(text => text.includes(normalized));
-  }) || candidates[0] || '';
+  }) || (reuseFirst ? candidates[0] : '') || '';
 }

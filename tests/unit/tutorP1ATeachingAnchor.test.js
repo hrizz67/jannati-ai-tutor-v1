@@ -20,14 +20,7 @@ function appendTurn(history, prompt, response) {
   ].slice(-12);
 }
 
-async function runAuditTranscript(base = {}) {
-  const prompts = [
-    'Apa itu kata nama am?',
-    'Saya tak faham.',
-    'Tak paham. Cikgu bagi contoh lain.',
-    'Pastu camna? Jangan bagi jawapan terus.',
-    'Apa tu? X faham.'
-  ];
+async function runTranscript(prompts, base = {}) {
   let history = [];
   const turns = [];
   for (const prompt of prompts) {
@@ -43,6 +36,16 @@ async function runAuditTranscript(base = {}) {
     history = appendTurn(history, prompt, response);
   }
   return { turns, history };
+}
+
+async function runAuditTranscript(base = {}) {
+  return runTranscript([
+    'Apa itu kata nama am?',
+    'Saya tak faham.',
+    'Tak paham. Cikgu bagi contoh lain.',
+    'Pastu camna? Jangan bagi jawapan terus.',
+    'Apa tu? X faham.'
+  ], base);
 }
 
 function expectUngradedSafe(response) {
@@ -192,5 +195,52 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
       conceptId: 'common_noun'
     });
     expect(JSON.stringify(state)).not.toMatch(/nama penuh|transcript|mesej yang tidak patut/iu);
+  });
+
+  it('understands a learner answer to its own conceptual check without grading the quiz', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      'haiwan',
+      'Kenapa?',
+      'Saya masih tak faham.'
+    ]);
+
+    expect(turns[1].response.text).toMatch(/kucing.*haiwan atau perbuatan/iu);
+    expect(turns[2].response.text).toMatch(/betul|tepat/iu);
+    expect(turns[2].response.text).toMatch(/kucing.*haiwan|kata nama am/iu);
+    expect(turns[2].response.intent).toBe('understanding_confirmation');
+    expect(turns[3].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
+    expect(turns[4].response.text).toMatch(/kata nama am|nama umum|orang|haiwan|tempat|benda/iu);
+    expect(turns[4].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
+    for (const { response } of turns.slice(2)) expectUngradedSafe(response);
+  });
+
+  it('grounds a natural deictic meaning follow-up in the active teaching anchor', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Yang tadi maksudnya apa?'
+    ]);
+
+    expect(turns[1].response.intent).toBe('recovery_meaning');
+    expect(turns[1].response.text).toMatch(/kata nama am|nama umum|orang|haiwan|tempat|benda/iu);
+    expect(turns[1].response.text).not.toMatch(/belum pasti bahagian|nyatakan nama subjek/iu);
+    expectUngradedSafe(turns[1].response);
+  });
+
+  it.each([
+    'Apa itu kata kerja?',
+    'Saya mahu belajar kata kerja'
+  ])('does not resurrect a stale anchor after a same-session concept switch: %s', async switchPrompt => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      switchPrompt,
+      'Saya tak faham.'
+    ]);
+
+    expect(turns[1].response.text).toMatch(/kata kerja|kemahiran atau soalan/iu);
+    expect(turns[2].response.text).not.toMatch(/kata nama am|nama umum|kucing.*haiwan/iu);
+    expect(turns[2].response.pedagogicalState?.teachingAnchor || null).toBeNull();
+    expectUngradedSafe(turns[2].response);
   });
 });
