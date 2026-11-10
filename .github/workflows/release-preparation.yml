@@ -1,0 +1,193 @@
+name: Prepare release artifacts securely
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact semantic version without the v prefix
+        required: true
+        type: string
+      expected_sha:
+        description: Exact trusted main commit to prepare
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-preparation-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  prepare-release:
+    name: Validate and prepare release patch
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout exact trusted main source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Verify immutable source and requested version
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          TARGET_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ ! "$TARGET_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Target version must be an exact stable semantic version."
+            exit 1
+          fi
+          if [[ ! "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]] || [ "$GITHUB_SHA" != "$EXPECTED_SHA" ]; then
+            echo "The requested source does not match the exact trusted main commit."
+            exit 1
+          fi
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$GITHUB_REF" = "refs/heads/main"
+          git diff --exit-code
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run canonical production release preparation
+        shell: bash
+        env:
+          TARGET_VERSION: ${{ inputs.version }}
+          VITE_BUILD_REVISION: ${{ github.sha }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
+          VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
+          VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
+          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+          VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "Required production browser configuration is unavailable."
+            exit 1
+          fi
+          npm run release -- "$TARGET_VERSION"
+
+      - name: Verify release artifacts and production bundle
+        run: |
+          npm run release:check -- --artifacts
+          npm run release:build-check
+
+      - name: Audit tracked release diff
+        id: release-diff
+        shell: bash
+        env:
+          TARGET_VERSION: ${{ inputs.version }}
+        run: |
+          mapfile -t changed_paths < <(git diff --name-only)
+          if [ "${#changed_paths[@]}" -eq 0 ]; then
+            echo "Canonical release preparation produced no tracked changes."
+            exit 1
+          fi
+
+          allowed_paths=(
+            README.md
+            dist/index.html
+            docs/releases/CHANGELOG.md
+            docs/releases/HEALTH.md
+            docs/releases/RELEASE_NOTES.md
+            docs/releases/VERSION.json
+            package-lock.json
+            package.json
+            reports/validation/curriculum-report.json
+            reports/validation/metadata-report.json
+            reports/validation/question-report.json
+            reports/validation/storage-report.json
+            reports/validation/summary.json
+            reports/validation/summary.md
+            reports/validation/validation-summary.md
+            validation-summary.md
+          )
+
+          for changed_path in "${changed_paths[@]}"; do
+            permitted=false
+            for allowed_path in "${allowed_paths[@]}"; do
+              if [ "$changed_path" = "$allowed_path" ]; then
+                permitted=true
+                break
+              fi
+            done
+            if [ "$permitted" != true ]; then
+              echo "Unexpected tracked release output: $changed_path"
+              exit 1
+            fi
+          done
+
+          node -e '
+            const expected = process.env.TARGET_VERSION;
+            const pkg = require("./package.json");
+            const lock = require("./package-lock.json");
+            const version = require("./docs/releases/VERSION.json");
+            if (pkg.version !== expected || lock.version !== expected || lock.packages?.[""]?.version !== expected || version.version !== expected) {
+              throw new Error("Generated release versions are not aligned.");
+            }
+          '
+
+          git diff --check
+          if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "Release preparation produced unexpected untracked files."
+            git ls-files --others --exclude-standard
+            exit 1
+          fi
+
+          patch_path="release-prep-v${TARGET_VERSION}.patch"
+          manifest_path="release-prep-v${TARGET_VERSION}.manifest.txt"
+          git diff --binary --full-index > "$patch_path"
+
+          if grep -Eq 'sb_secret_[A-Za-z0-9_-]+|sb_publishable_[A-Za-z0-9_-]{12,}|SUPABASE_SERVICE_ROLE_KEY|postgres(ql)?://[^[:space:]]+' "$patch_path"; then
+            echo "Release patch contains forbidden credential material."
+            exit 1
+          fi
+
+          {
+            echo "source_sha=$GITHUB_SHA"
+            echo "version=$TARGET_VERSION"
+            echo "patch_sha256=$(sha256sum "$patch_path" | cut -d' ' -f1)"
+            echo "changed_paths=${#changed_paths[@]}"
+            git diff --stat
+          } > "$manifest_path"
+
+          echo "patch_path=$patch_path" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=$manifest_path" >> "$GITHUB_OUTPUT"
+
+      - name: Upload credential-free release patch
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-prep-v${{ inputs.version }}-${{ github.sha }}
+          path: |
+            ${{ steps.release-diff.outputs.patch_path }}
+            ${{ steps.release-diff.outputs.manifest_path }}
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Record non-deploying preparation summary
+        shell: bash
+        env:
+          TARGET_VERSION: ${{ inputs.version }}
+        run: |
+          {
+            echo "## Secure release preparation"
+            echo ""
+            echo "- Source: \`$GITHUB_SHA\`"
+            echo "- Version: \`$TARGET_VERSION\`"
+            echo "- Deployment: not performed"
+            echo "- Tag or release creation: not performed"
+            echo "- Remote Tutor AI: disabled"
+            echo "- Quiz MediaRecorder-STT automatic activation: disabled"
+          } >> "$GITHUB_STEP_SUMMARY"
