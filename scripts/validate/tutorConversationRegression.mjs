@@ -257,7 +257,7 @@ const startedMathStep = await askMath('Beri saya petunjuk', null, { intent: 'hin
 assert.equal(startedMathStep.source, 'deterministic-math-pedagogy');
 assert.equal(startedMathStep.pedagogicalStepState, 'created');
 assert.equal(startedMathStep.pendingPedagogicalStep?.conversationKey, mathScopeA);
-assert.deepEqual(startedMathStep.pendingPedagogicalStep?.expectedAnswers.slice(0, 2), ['12', 'dua belas']);
+assert.deepEqual(startedMathStep.pendingPedagogicalStep?.expectedAnswers, [], 'Ungraded help must not serialize intermediate answers.');
 assert.match(startedMathStep.text, /4 \+ 8/);
 assert.doesNotMatch(startedMathStep.text, /\b62\b/, 'Langkah awal tidak boleh membocorkan jawapan asal.');
 
@@ -318,7 +318,7 @@ const simpleAdditionOverrides = {
 };
 const simpleAdditionStart = await askMath('Beri saya petunjuk', null, { ...simpleAdditionOverrides, intent: 'hint' });
 assert.match(simpleAdditionStart.text, /3 \+ 4/);
-assert.ok(simpleAdditionStart.pendingPedagogicalStep?.expectedAnswers.includes('7'));
+assert.deepEqual(simpleAdditionStart.pendingPedagogicalStep?.expectedAnswers, []);
 const simpleAdditionTens = await askMath('7', simpleAdditionStart.pendingPedagogicalStep, simpleAdditionOverrides);
 assert.equal(simpleAdditionTens.pedagogicalStepCorrect, true);
 assert.match(simpleAdditionTens.text, /2 puluh \+ 1 puluh/i);
@@ -389,7 +389,7 @@ assert.equal(hundredsHint.source, 'deterministic-math-pedagogy');
 assert.equal(hundredsHint.studentTurn.messageType, 'guided_action', 'Klik quick action mesti kekal sebagai guided_action.');
 assert.match(hundredsHint.text, /120 ada 1 ratus.*30 ada 3 puluh/i);
 assert.match(hundredsHint.text, /2 puluh \+ 3 puluh = berapa puluh/i);
-assert.ok(hundredsHint.pendingPedagogicalStep?.expectedAnswers.includes('5'));
+assert.deepEqual(hundredsHint.pendingPedagogicalStep?.expectedAnswers, []);
 assert.doesNotMatch(hundredsHint.text, /\b150\b/, 'Petunjuk awal tidak boleh membocorkan jawapan asal 150.');
 assert.equal(hundredsHint.answerRevealPolicy.canRevealAnswer, false);
 assert.ok(hundredsHint.quickActions.every(action => action.source === 'tutor_quick_action'));
@@ -397,7 +397,7 @@ assert.ok(hundredsHint.quickActions.every(action => action.source === 'tutor_qui
 const identifyAction = hundredsHint.quickActions.find(action => action.actionId === 'identify_operands');
 const identifyResponse = await clickMathAction(identifyAction, hundredsHint.pendingPedagogicalStep, hundredsOverrides);
 assert.match(identifyResponse.text, /nombor yang hendak ditambah ialah 120 dan 30/i);
-assert.ok(identifyResponse.pendingPedagogicalStep?.expectedAnswers.includes('5'));
+assert.deepEqual(identifyResponse.pendingPedagogicalStep?.expectedAnswers, []);
 assert.doesNotMatch(identifyResponse.text, /menerangkan satu topik|mencadangkan pelajaran|membantu latihan/i);
 
 const methodAction = hundredsHint.quickActions.find(action => action.actionId === 'explain_place_value_method');
@@ -418,7 +418,7 @@ assert.equal(analogousExample.pedagogicalStepState, 'example_created');
 assert.match(analogousExample.text, /20 \+ 10/i);
 assert.match(analogousExample.text, /berapa puluh semuanya/i);
 assert.equal(analogousExample.pendingPedagogicalStep?.concept, 'analogous_example_tens');
-assert.ok(analogousExample.pendingPedagogicalStep?.expectedAnswers.includes('3'));
+assert.deepEqual(analogousExample.pendingPedagogicalStep?.expectedAnswers, []);
 assert.doesNotMatch(analogousExample.text, /\b150\b/, 'Contoh analogi tidak boleh membocorkan jawapan asal.');
 
 const completedExample = await askMath('3', analogousExample.pendingPedagogicalStep, hundredsOverrides);
@@ -431,7 +431,7 @@ assert.equal(comparedExample.studentTurn.messageType, 'guided_action');
 assert.equal(comparedExample.pedagogicalStepState, 'created');
 assert.match(comparedExample.text, /dalam 20 \+ 10.*dalam 120 \+ 30/i);
 assert.match(comparedExample.text, /2 puluh \+ 3 puluh = berapa puluh/i);
-assert.ok(comparedExample.pendingPedagogicalStep?.expectedAnswers.includes('5'));
+assert.deepEqual(comparedExample.pendingPedagogicalStep?.expectedAnswers, []);
 assert.doesNotMatch(comparedExample.text, /kamu jawab.*bimbing saya membandingkan.*belum tepat/i);
 assert.doesNotMatch(comparedExample.text, /\b150\b/, 'Perbandingan contoh tidak boleh membocorkan jawapan asal.');
 
@@ -513,7 +513,7 @@ const subtractionStart = await askMath('Terangkan soalan ini', null, {
 });
 assert.equal(subtractionStart.source, 'deterministic-math-pedagogy');
 assert.match(subtractionStart.text, /pinjam 1 puluh/i);
-assert.ok(subtractionStart.pendingPedagogicalStep.expectedAnswers.includes('10'));
+assert.deepEqual(subtractionStart.pendingPedagogicalStep.expectedAnswers, []);
 
 const placeValueQuestion = { id: 'math-place-34', subjectId: 'math', topicId: 'nilai_tempat', q: '34 mempunyai berapa puluh dan berapa sa?', answer: '3 puluh dan 4 sa', acceptedAnswers: ['3 puluh dan 4 sa'] };
 const placeValueStart = await askMath('Beri saya petunjuk', null, {

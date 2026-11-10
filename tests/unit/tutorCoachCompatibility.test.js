@@ -12,8 +12,8 @@ const subjectFixtures = [
   {
     label: 'English', subject: { id: 'english', title: 'English' }, topic: { id: 'nouns', title: 'Nouns' },
     question: 'Choose the person noun.', options: ['teacher', 'runs', 'happy'], answer: 'teacher',
-    hint: 'Focus on the key word and the required noun.',
-    firstStep: 'Read the complete sentence and find the subject.'
+    hint: 'Find the person noun clue.',
+    firstStep: 'Find the person noun clue.'
   },
   {
     label: 'Sains', subject: { id: 'sains', title: 'Sains' }, topic: { id: 'haiwan', title: 'Haiwan' },
@@ -24,8 +24,8 @@ const subjectFixtures = [
   {
     label: 'Arabic', subject: { id: 'arab', title: 'Bahasa Arab' }, topic: { id: 'mufradat', title: 'Mufradat' },
     question: 'Pilih perkataan yang bermaksud buku.', options: ['كِتَابٌ', 'قَلَمٌ', 'مَدْرَسَةٌ'], answer: 'كِتَابٌ',
-    hint: 'Baca perkataan Arab dari kanan ke kiri dan cari makna atau bentuk yang diminta dalam soalan.',
-    firstStep: 'Kenal pasti perkataan Arab yang diberi.'
+    hint: 'ابحث عن الكلمة المطلوبة.',
+    firstStep: 'حدّد الكلمة المطلوبة في السؤال.'
   },
   {
     label: 'Mathematics', subject: { id: 'math', title: 'Matematik' }, topic: { id: 'tambah', title: 'Tambah' },
@@ -102,13 +102,14 @@ describe('Tutor-visible Coach V3 compatibility contract', () => {
     expect(response).not.toHaveProperty('rewards');
   });
 
-  it.each(subjectFixtures)('keeps guided praise as the Tutor-visible praise for $label', async fixture => {
+  it.each(subjectFixtures)('keeps guided praise for a genuine graded submission in $label', async fixture => {
     const response = await requestTutor(fixture, {
       prompt: fixture.answer,
-      intent: 'correct_answer_reinforcement',
+      intent: 'auto',
       isCorrect: true
     });
 
+    expect(response.studentTurn).toMatchObject({ messageType: 'answer_attempt', answerCandidate: fixture.answer });
     expect(response.praise).toBeTruthy();
     expect(response.sections.coachMessage).toBe(response.praise);
     expect(response.isCorrect).toBe(true);

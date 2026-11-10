@@ -249,7 +249,7 @@ async function main() {
       },
       expect: response => {
         assert(response.source === 'deterministic-math-pedagogy', `Safe addition stem must reach deterministic Math: ${stem}`, issues);
-        assert(response.pendingPedagogicalStep?.expectedAnswers?.includes('5'), `Safe addition stem must produce intermediate answer 5: ${stem}`, issues);
+        assert(response.pendingPedagogicalStep?.expectedAnswers?.length === 0, `Ungraded Math help must not serialize intermediate answers: ${stem}`, issues);
         assert(!/\b150\b/.test(response.text), `Safe addition stem must not reveal 150: ${stem}`, issues);
       }
     };
@@ -426,7 +426,7 @@ async function main() {
         assert(response.mathQuestionContext?.source === 'structured_metadata', 'Structured 36 + 22 must prove metadata-first resolution.', issues);
         assert(response.mathQuestionContext?.operands?.join(',') === '36,22', 'Structured 36 + 22 must retain authored operands.', issues);
         assert(/6 \+ 2/.test(response.text), 'Structured 36 + 22 hint must begin with the ones step.', issues);
-        assert(response.pendingPedagogicalStep?.expectedAnswers?.includes('8'), 'Structured 36 + 22 hint must expect intermediate answer 8.', issues);
+        assert(response.pendingPedagogicalStep?.expectedAnswers?.length === 0, 'Structured Math help must not serialize intermediate answers.', issues);
         assert(!/\b58\b/.test(response.text), 'Structured 36 + 22 hint must not reveal the final answer.', issues);
       }
     },
@@ -807,7 +807,7 @@ async function main() {
   assert(/4 puluh \+ 2 puluh \+ 1 puluh/i.test(groundedContinuation.text), '48 + 27 continuation must advance to the carried-tens scaffold.', issues);
   assert(groundedContinuation.text !== groundedHint.text, 'Continuation must not repeat the previous grounded hint.', issues);
   assert(!groundedContinuation.text.includes('75'), 'Continuation must not reveal the protected final answer 75.', issues);
-  assert(groundedContinuation.pendingPedagogicalStep?.expectedAnswers?.includes('7'), '48 + 27 continuation must use the existing scoped pending-step mechanism for the tens scaffold.', issues);
+  assert(groundedContinuation.pendingPedagogicalStep?.expectedAnswers?.length === 0, 'Ungraded continuation must not serialize the intermediate answer.', issues);
   assert(groundedContinuation.pendingPedagogicalStep?.attempts === 0, 'Continuation must not count as a wrong Tutor-step attempt.', issues);
   assert(groundedContinuation.answerRevealPolicy?.attemptCount === 0, 'Grounded continuation must not increment quiz attempts.', issues);
 

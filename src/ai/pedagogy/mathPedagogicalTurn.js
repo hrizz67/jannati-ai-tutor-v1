@@ -697,14 +697,14 @@ function handleGroundedPendingTurn({ canonical, context, pendingStep, prompt, st
       quickReplies: ['Saya mahu cuba', 'Terangkan langkah ini', 'Saya tak faham']
     };
   }
-  const correct = isAcceptedQuestionAnswer(prompt, {
-    answer: pendingStep.expectedAnswers[0],
-    acceptedAnswers: pendingStep.expectedAnswers
-  });
+  const [left, right] = canonical.operands;
+  const pendingAnswers = pendingStep.expectedAnswers?.length
+    ? pendingStep.expectedAnswers
+    : numberAnswers(Math.floor(left / 10) + Math.floor(right / 10) + Math.floor((left % 10 + right % 10) / 10), 'puluh');
+  const correct = isAcceptedQuestionAnswer(prompt, { answer: pendingAnswers[0], acceptedAnswers: pendingAnswers });
   const answerLike = correct || studentTurn.messageType === 'answer_attempt' || looksLikeStepAnswer(prompt);
   if (!answerLike) return null;
   if (correct) {
-    const [left, right] = canonical.operands;
     return {
       handled: true,
       mode: 'grounded_complex',
@@ -1004,10 +1004,10 @@ function handleAnalogousExampleTurn({ plan, context, prompt, studentTurn, pendin
       quickReplies: ['Saya mahu cuba lagi', 'Bimbing saya membandingkan', 'Kenapa langkah ini?']
     };
   }
-  const correct = isAcceptedQuestionAnswer(prompt, {
-    answer: pendingStep.expectedAnswers[0],
-    acceptedAnswers: pendingStep.expectedAnswers
-  });
+  const pendingAnswers = pendingStep.expectedAnswers?.length
+    ? pendingStep.expectedAnswers
+    : unique([...numberAnswers(example.totalTens, 'puluh'), String(example.totalTens * 10)]);
+  const correct = isAcceptedQuestionAnswer(prompt, { answer: pendingAnswers[0], acceptedAnswers: pendingAnswers });
   const answerLike = correct || studentTurn.messageType === 'answer_attempt' || looksLikeStepAnswer(prompt);
   if (!answerLike) return null;
   if (correct) {

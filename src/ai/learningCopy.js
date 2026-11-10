@@ -143,6 +143,11 @@ export function detectLearningCategory(question = {}, topic = {}) {
   // incidental word in the stem, hint, or stale explanation text. This was
   // causing Math questions to receive BM prompts such as "nama tempat".
   if (subjectId === 'math') return 'generic';
+  const requested = normalize([question?.instruction, question?.q, question?.question].filter(Boolean).join(' '));
+  if (/kata nama orang|nama orang|person noun|اسم (?:شخص|إنسان)/.test(requested)) return 'person';
+  if (/kata nama tempat|nama tempat|place noun|اسم مكان/.test(requested)) return 'place';
+  if (/kata nama haiwan|nama haiwan|animal noun|اسم حيوان/.test(requested)) return 'animal';
+  if (/kata nama benda|nama benda|(?:object|thing) noun|اسم شيء/.test(requested)) return 'object';
   const text = normalize([
     topic?.id,
     topic?.title,
@@ -151,6 +156,7 @@ export function detectLearningCategory(question = {}, topic = {}) {
     question?.uasa,
     question?.dskp,
     question?.q,
+    question?.instruction,
     question?.hint,
     question?.explanation
   ].filter(Boolean).join(' '));
@@ -172,10 +178,10 @@ export function detectLearningCategory(question = {}, topic = {}) {
     if (/nama benda/.test(text)) return 'object';
     return 'properNoun';
   }
-  if (/kata nama tempat|nama tempat|tempat/.test(text)) return 'place';
-  if (/kata nama haiwan|nama haiwan|haiwan/.test(text)) return 'animal';
-  if (/kata nama benda|nama benda|benda/.test(text)) return 'object';
-  if (/kata nama orang|nama orang|nama khas|tokoh|murid/.test(text)) return 'person';
+  if (/kata nama tempat|nama tempat|tempat|place noun|اسم مكان/.test(text)) return 'place';
+  if (/kata nama haiwan|nama haiwan|haiwan|animal noun|اسم حيوان/.test(text)) return 'animal';
+  if (/kata nama benda|nama benda|benda|(?:object|thing) noun|اسم شيء/.test(text)) return 'object';
+  if (/kata nama orang|nama orang|nama khas|tokoh|murid|person noun|اسم (?:شخص|إنسان)/.test(text)) return 'person';
   if (/kata nama/.test(text)) return 'name';
   return 'generic';
 }

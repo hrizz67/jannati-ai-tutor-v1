@@ -14,6 +14,7 @@ const INTENT_ALIASES = Object.freeze({
   misunderstanding: 'misunderstanding',
   recovery_meaning: 'recovery_meaning',
   recovery_first_step: 'recovery_first_step',
+  guided_without_answer: 'guided_without_answer',
   adult_support_acknowledgement: 'adult_support_acknowledgement',
   learning_recommendation: 'learning_recommendation',
   weak_topic: 'weak_topic',
@@ -32,8 +33,9 @@ const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
 const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية)[.!?؟]*$/iu;
 const MEANING_FOLLOW_UP_PATTERN = /^(?:apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا))[.!?؟]*$/iu;
-const ACTIVE_QUESTION_REFERENCE_PATTERN = /^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$/iu;
+const ACTIVE_QUESTION_REFERENCE_PATTERN = /(?:^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|(?:how\s+do\s+i\s+understand|كيف\s+أفهم)\s+(?:this|هذا)\s+(?:question|السؤال)|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$|\bbahagian\b.{0,30}\bmana\b|\byang\s+mana\b|\bapa\s+petunjuk(?:nya)?\b|\b(?:which|what)\s+(?:part|clue)\b|(?:أي|ما)\s+(?:جزء|دليل))/iu;
 const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
+const NO_DIRECT_ANSWER_PATTERN = /(?:\b(?:jangan\b.{0,40}|tanpa\s+)\bjawapan\b|\bdon['’]?t\s+(?:give|tell|show)\b.{0,40}\banswer\b|لا\s+تعط(?:ي)?ني.{0,30}(?:الجواب|الإجابة))/iu;
 const RECOVERABLE_TEACHING_STAGES = new Set([
   'concept_explanation', 'alternative_strategy', 'guided_small_step',
   'verified_micro_example', 'evidence_guided_correction',
@@ -144,6 +146,10 @@ export function understandStudentTurn({
     return makeTurn(INTENT_ALIASES[explicitIntent], 'guided_action', 1, { ...conversation, referencesPreviousTurn });
   }
 
+  if (hasExerciseContext && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
+    return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
+  }
+
   if (SOCIAL_ONLY_PATTERN.test(text)) return makeTurn('general', 'social', 0.99, conversation);
 
   if (/\b(?:topik\s+lemah|lemah\s+saya|weak\s+topic)\b/iu.test(lower)) return makeTurn('weak_topic', 'progress_question', 0.98, conversation);
@@ -194,10 +200,10 @@ export function understandStudentTurn({
     });
   }
 
-  if (!matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers) && (
-    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfused\b|\bdon'?t\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|أنا\s+محتار)/iu.test(lower)
+  if (
+    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\b(?:still\s+)?(?:don'?t|do\s+not)\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
     || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
-  )) {
+  ) {
     return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
       ...conversation,
       referencesPreviousTurn: conversation.hasHistory,
@@ -205,12 +211,24 @@ export function understandStudentTurn({
     });
   }
 
+  if (NO_DIRECT_ANSWER_PATTERN.test(lower)) {
+    return makeTurn('guided_without_answer', 'help_request', 0.99, {
+      ...conversation,
+      referencesPreviousTurn: hasExerciseContext || conversation.hasHistory
+    });
+  }
+
   if (ACTIVE_QUESTION_REFERENCE_PATTERN.test(lower)) {
+    if ((hasExerciseContext || hasLearningContext) && conversation.hasTeachingStage && MEANING_FOLLOW_UP_PATTERN.test(lower)) {
+      return makeTurn('recovery_meaning', FOLLOW_UP_QUESTION, 0.99, {
+        ...conversation, isQuestion: true, referencesPreviousTurn: true
+      });
+    }
     if (hasExerciseContext) {
       return makeTurn(QUESTION_HELP, FOLLOW_UP_QUESTION, 0.99, {
         ...conversation,
         isQuestion: true,
-        referencesPreviousTurn: conversation.hasHistory
+        referencesPreviousTurn: true
       });
     }
     return makeTurn('clarification_needed', 'ambiguous_request', 0.96, {
@@ -234,14 +252,14 @@ export function understandStudentTurn({
 
   // Only resume a teaching step when there is a recent, scoped pedagogical response.
   // A greeting or a stale ungrounded chat turn must not manufacture a teaching stage.
-  if (hasExerciseContext && conversation.hasHistory && conversation.hasTeachingStage && MEANING_FOLLOW_UP_PATTERN.test(lower)) {
+  if ((hasExerciseContext || hasLearningContext) && conversation.hasHistory && conversation.hasTeachingStage && MEANING_FOLLOW_UP_PATTERN.test(lower)) {
     return makeTurn('recovery_meaning', FOLLOW_UP_QUESTION, 0.99, {
       ...conversation, isQuestion: true, referencesPreviousTurn: true
     });
   }
   const checkReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
     /^(?:petunjuk(?:nya)?(?: utama)?|(?:the )?clue|الدليل)(?: (?:ialah|adalah|is|هو))? \S/iu.test(lower) && !/[?؟]/u.test(text);
-  const continuation = hasExerciseContext && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || checkReply);
+  const continuation = (hasExerciseContext || hasLearningContext) && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || checkReply);
   const answerCandidate = extractAnswerCandidate(text, { expectedAnswer, acceptedAnswers, hasExerciseContext, continuation });
   if (answerCandidate) {
     return makeTurn('direct_answer', 'answer_attempt', 0.96, { ...conversation, answerCandidate });

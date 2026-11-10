@@ -15,8 +15,8 @@ export const APPROVED_TEACHING_EXAMPLES = Object.freeze({
   'bm::kata_nama_am': freezeEntry(['doktor', 'sekolah']),
   'english::nouns': freezeEntry(['doctor', 'school']),
   'arab::mufradat': freezeEntry([
-    'Baca contoh كِتَابٌ satu demi satu.',
-    'Dengar bunyi مَدْرَسَةٌ dengan teliti.'
+    'كِتَابٌ اسمٌ لشيءٍ.',
+    'مَدْرَسَةٌ اسمٌ لمكانٍ.'
   ])
 });
 
@@ -34,18 +34,20 @@ function keyFor(subjectId = '', topicId = '') {
   return `${subject}::${clean(topicId).toLocaleLowerCase('en-US')}`;
 }
 
-export function selectApprovedTeachingExamples({ subjectId = '', topicId = '', candidates = [] } = {}) {
+export function selectApprovedTeachingExamples({ subjectId = '', topicId = '', candidates = [], category = '' } = {}) {
   const approval = APPROVED_TEACHING_EXAMPLES[keyFor(subjectId, topicId)];
   if (!approval || approval.status !== 'approved-for-adaptive-teaching') {
     return { examples: [], provenance: null };
   }
 
   const approved = new Set(approval.examples.map(clean));
+  const expectedIndex = category ? category === 'place' ? 1 : category === (subjectId === 'arab' ? 'object' : 'person') ? 0 : -1 : null;
   const seen = new Set();
   const examples = [];
   for (const candidate of Array.isArray(candidates) ? candidates : []) {
     const value = clean(candidate);
     if (!value || !approved.has(value) || seen.has(value)) continue;
+    if (expectedIndex !== null && approval.examples.indexOf(value) !== expectedIndex) continue;
     seen.add(value);
     examples.push(value);
   }

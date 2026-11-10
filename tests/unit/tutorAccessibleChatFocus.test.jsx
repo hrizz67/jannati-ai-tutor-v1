@@ -32,7 +32,7 @@ vi.mock('../../src/ai/speech/speechEngine.js', () => ({
 }));
 
 vi.mock('../../src/components/VoiceButton.jsx', () => ({
-  default: ({ label = 'Dengar' }) => <button type="button">{label}</button>
+  default: ({ label = 'Dengar', lang = 'ms-MY' }) => <button type="button" data-voice-lang={lang}>{label}</button>
 }));
 
 vi.mock('../../src/components/JannaAvatar.jsx', () => ({
@@ -564,10 +564,10 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
   });
 
   it.each([
-    ['bm', 'Bahasa Melayu', 'ms', 'Apakah kata nama?', 'Kata nama ialah nama benda.', 'ltr'],
-    ['english', 'English', 'en', 'What is a noun?', 'A noun names a person, place or thing.', 'ltr'],
-    ['arab', 'Bahasa Arab', 'ar', 'مَا هَذَا؟', 'هَذَا كِتَابٌ', 'rtl']
-  ])('uses accessible composer and announcement language semantics for %s', async (subjectId, title, language, questionText, reply, direction) => {
+    ['bm', 'Bahasa Melayu', 'ms', 'ms-MY', 'Apakah kata nama?', 'Kata nama ialah nama benda.', 'ltr'],
+    ['english', 'English', 'en', 'en-GB', 'What is a noun?', 'A noun names a person, place or thing.', 'ltr'],
+    ['arab', 'Bahasa Arab', 'ar', 'ar-SA', 'مَا هَذَا؟', 'هَذَا كِتَابٌ', 'rtl']
+  ])('uses accessible composer, speech and announcement language semantics for %s', async (subjectId, title, language, voiceLocale, questionText, reply, direction) => {
     vi.mocked(getTutorResponse).mockResolvedValue({ shortText: reply });
     await renderTutor({
       conversationKey: `account-a::child-a::${subjectId}::topic::session-a::q1`,
@@ -593,5 +593,6 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     expect(announcer.textContent).toBe(reply);
     expect(announcer.getAttribute('lang')).toBe(language);
     expect(announcer.getAttribute('dir')).toBe(direction);
+    expect(document.querySelector('[data-voice-lang]')?.getAttribute('data-voice-lang')).toBe(voiceLocale);
   });
 });

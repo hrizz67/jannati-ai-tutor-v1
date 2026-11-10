@@ -92,8 +92,8 @@ assert.equal(englishFirst.expectedAnswer, '');
 assert.doesNotMatch(englishFirst.shortText, /jawapan|cuba|soalan|petunjuk/i, 'Bimbingan English tidak boleh kembali kepada salinan generik Bahasa Melayu.');
 assert.equal(englishSecond.supportStage, 'strong_hint');
 assert.notEqual(englishSecond.shortText, englishFirst.shortText, 'Cubaan kedua mesti memberi petunjuk yang lebih kuat.');
-assert.equal(englishThird.expectedAnswer, 'walks');
-assert.match(englishThird.shortText, /answer is walks/i);
+assert.equal(englishThird.expectedAnswer, '');
+assert.doesNotMatch(englishThird.shortText, /walks/i, 'Ungraded Tutor guidance must not expose the protected answer.');
 
 const arabicTutor = await getTutorResponse({
   student: { id: 'student-test', name: 'Alya' },

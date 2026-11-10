@@ -34,6 +34,10 @@ function clean(value = '', maxLength = 320) {
     .slice(0, maxLength);
 }
 
+function asSentence(value = '') {
+  return clean(value, 300).replace(/([^.!?؟])$/u, '$1.');
+}
+
 function normalize(value = '') {
   return clean(value)
     .toLocaleLowerCase('ms-MY')
@@ -98,7 +102,7 @@ function safeQuestion(candidates = [], protectedAnswers = [], fallback = '') {
   const selected = selectAnswerSafeText(candidates, protectedAnswers, fallback);
   const statement = clean(selected, 180).split(/[?؟]/u)[0].replace(/[.!]+$/u, '');
   if (!statement || textContainsExpectedAnswer(statement, protectedAnswers)) return '';
-  return `${statement}?`;
+  return `${statement}${/[\p{Script=Arabic}]/u.test(statement) ? '؟' : '?'}`;
 }
 
 function resolveMisconception({ signal = '', guidedMisconception = null, learnerAnswer = '', options = [] } = {}) {
@@ -201,6 +205,8 @@ function copyFor(language) {
   };
 }
 
+export const getLocalizedTeachingReplies = language => copyFor(language).quickReplies;
+
 function buildAdultSupportReply(copy, previousState = null, adultQuestion = '') {
   if (previousState?.supportStage === 'adult_support_referral') {
     return {
@@ -302,15 +308,17 @@ export function buildIntelligentTeachingTurn({
   const currentConcept = resolveConceptKey({ subjectId, topicId, questionId, topicLabel });
   const previousState = getPreviousState(history, currentConcept);
   const protectedAnswers = [expectedAnswer, ...(Array.isArray(acceptedAnswers) ? acceptedAnswers : [])].filter(Boolean);
-  const explanations = safeCandidates(teachingContent.explanations, protectedAnswers);
-  const examples = safeCandidates(teachingContent.examples, protectedAnswers);
-  const verifiedExamples = safeCandidates(teachingContent.verifiedExamples, protectedAnswers);
-  const alternatives = safeCandidates(teachingContent.alternatives, protectedAnswers);
-  const steps = safeCandidates(teachingContent.steps, protectedAnswers);
   const language = resolveLanguage({ locale, languagePresentation, subjectId });
+  const localizedCandidates = values => safeCandidates(values, protectedAnswers)
+    .filter(item => language !== 'ar' || !/\p{Script=Latin}/u.test(item));
+  const explanations = localizedCandidates(teachingContent.explanations);
+  const examples = localizedCandidates(teachingContent.examples);
+  const verifiedExamples = localizedCandidates(teachingContent.verifiedExamples);
+  const alternatives = localizedCandidates(teachingContent.alternatives);
+  const steps = localizedCandidates(teachingContent.steps);
   const copy = copyFor(language);
   const checkQuestion = safeQuestion(
-    teachingContent.checkQuestions,
+    localizedCandidates(teachingContent.checkQuestions),
     protectedAnswers,
     language === 'en'
       ? 'What is the main clue in this question'
@@ -350,7 +358,7 @@ export function buildIntelligentTeachingTurn({
       previousState,
       currentConcept,
       text: hasExample
-        ? clean([`${copy.exampleLead} ${approvedExample}`, `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
+        ? clean([asSentence(`${copy.exampleLead} ${approvedExample}`), `${copy.checkLead} ${checkQuestion}`].join(' '), 700)
         : copy.noExample,
       quickReplies: hasExample ? copy.quickReplies : [copy.quickReplies[0], copy.quickReplies[2]],
       strategyUsed: hasExample ? TEACHING_STRATEGY.VERIFIED_MICRO_EXAMPLE : TEACHING_STRATEGY.KNOWLEDGE_SAFE_FALLBACK,
@@ -397,7 +405,7 @@ export function buildIntelligentTeachingTurn({
       signal,
       previousState,
       currentConcept,
-      text: clean([supportLead, groundedSupport, `${copy.checkLead} ${checkQuestion}`].filter(Boolean).join(' '), 700),
+      text: clean([asSentence(`${supportLead} ${groundedSupport}`), `${copy.checkLead} ${checkQuestion}`].filter(Boolean).join(' '), 700),
       quickReplies: copy.recoveryCheckReplies,
       strategyUsed: asksForMeaning ? TEACHING_STRATEGY.ALTERNATIVE_CONNECTION : TEACHING_STRATEGY.ONE_SMALL_STEP,
       supportStage: asksForMeaning ? 'recovery_meaning' : 'recovery_first_step',
@@ -432,15 +440,15 @@ export function buildIntelligentTeachingTurn({
     strategyUsed = TEACHING_STRATEGY.CONCEPT_AND_EXAMPLE;
     supportStage = 'concept_explanation';
     const safeConcept = explanations[0] || alternatives[0] || steps[0];
-    textParts = [copy.reassurance, safeConcept ? `${copy.conceptLead} ${safeConcept}` : '', examples[0] ? `${copy.exampleLead} ${examples[0]}` : '', `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.reassurance, safeConcept ? asSentence(`${copy.conceptLead} ${safeConcept}`) : '', examples[0] ? asSentence(`${copy.exampleLead} ${examples[0]}`) : '', `${copy.checkLead} ${checkQuestion}`];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 2) {
     strategyUsed = TEACHING_STRATEGY.ALTERNATIVE_CONNECTION;
     supportStage = 'alternative_strategy';
-    textParts = [copy.alternativeLead, alternatives[0] || examples[1] || steps[0], `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.alternativeLead, asSentence(alternatives[0] || examples[1] || steps[0]), `${copy.checkLead} ${checkQuestion}`];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 3) {
     strategyUsed = TEACHING_STRATEGY.ONE_SMALL_STEP;
     supportStage = 'guided_small_step';
-    textParts = [copy.stepLead, steps[0] || alternatives[0] || examples[0], `${copy.checkLead} ${checkQuestion}`];
+    textParts = [copy.stepLead, asSentence(steps[0] || alternatives[0] || examples[0]), `${copy.checkLead} ${checkQuestion}`];
   } else if (signal === TEACHING_SIGNAL.MISUNDERSTANDING && strategyCount === 4) {
     const firstExample = normalize(examples[0]);
     const distinctVerifiedExample = verifiedExamples.find(item => normalize(item) !== firstExample);
