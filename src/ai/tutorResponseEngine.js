@@ -26,8 +26,15 @@ import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 import { buildIntelligentTeachingTurn, getLocalizedTeachingReplies } from './pedagogy/intelligentTeachingEngine.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
+import {
+  attachTeachingAnchorState,
+  buildTeachingAnchorReply,
+  getTeachingAnchorContext,
+  getTeachingAnchorNoAnswerLead,
+  resolveTeachingAnchorTurn
+} from './conversation/teachingAnchor.js';
 
-const DEFAULT_FALLBACK = 'Saya akan bantu berdasarkan soalan yang sedang kamu jawab.';
+const DEFAULT_FALLBACK = 'Saya akan bantu soalan semasa.';
 const ARABIC_NOUN = 'الاسم كلمة تدل على شخص أو حيوان أو مكان أو شيء.';
 
 function buildTutorExplanation({ subjectId, topicId, knowledge, context }) {
@@ -1152,7 +1159,6 @@ function buildConversationalTeachingReply({
   const topicNote = normalizeText(topic?.note || '', '');
   const explanation = normalizeText(topicNote || (isCurrentContextTopic ? sections.whyCorrect || sections.learningObjective : ''), '');
   const example = normalizeText(isCurrentContextTopic ? sections.example || '' : '', '');
-  const firstStep = steps[0] || 'kenal pasti kata kunci atau maklumat penting';
   const learningAnchor = standaloneAnswer || topicNote || explanation;
   const dialogueLanguage = subject?.id === 'arab' ? 'ar' : subject?.id === 'english' ? 'en' : 'ms';
   const commonReplies = getLocalizedTeachingReplies(dialogueLanguage);
@@ -1180,7 +1186,7 @@ function buildConversationalTeachingReply({
         );
       }
       return withReplies(
-        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Saya mahu pastikan saya faham dengan betul. Kamu mahu saya menerangkan satu topik, mencadangkan pelajaran, atau membantu latihan?`,
+        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Topik?`,
         ['Terangkan satu topik', 'Cadangkan apa untuk belajar', 'Bantu latihan saya'],
         false
       );
@@ -1207,13 +1213,11 @@ function buildConversationalTeachingReply({
         false
       );
     case 'guided_without_answer':
-      if (dialogueLanguage === 'en') {
-        return withReplies('Okay. I will guide one clue at a time without giving the answer.', commonReplies, true);
-      }
-      if (dialogueLanguage === 'ar') {
-        return withReplies('حسنًا. سأرشدك بتلميح واحد من دون إعطاء الجواب.', commonReplies, true);
-      }
-      return withReplies('Baik. Saya akan bimbing satu petunjuk pada satu masa tanpa memberi jawapan terus.', [], true);
+      return withReplies(
+        getTeachingAnchorNoAnswerLead(dialogueLanguage),
+        dialogueLanguage === 'ms' ? [] : commonReplies,
+        true
+      );
     case 'question_help':
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
@@ -1222,28 +1226,8 @@ function buildConversationalTeachingReply({
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
     case 'understanding_confirmation':
       return withReplies(
-        `Bagus. Untuk pastikan kamu benar-benar faham ${topicLabel}, cuba terangkan idea utama dengan ayat kamu sendiri.`,
+        'Bagus. Cuba terangkan idea utama dengan ayat kamu sendiri.',
         studentTurn.quickReplies
-      );
-    case 'misunderstanding':
-      return withReplies(
-        [
-          'Tak mengapa. Kita cuba cara yang lebih mudah.',
-          learningAnchor || `Kita kembali kepada idea paling asas bagi ${topicLabel}.`,
-          sentence(example, 'Contoh mudah: '),
-          `${sentence(firstStep, 'Mula dengan satu perkara sahaja: ')} Bahagian mana masih mengelirukan?`
-        ].filter(Boolean).join(' '),
-        studentTurn.quickReplies
-      );
-    case 'alternative_explanation':
-      return withReplies(
-        [
-          'Baik, kita lihat dengan cara lain.',
-          learningAnchor || `Bayangkan ${topicLabel} sebagai satu tugas yang dibuat langkah demi langkah.`,
-          sentence(example, 'Contoh mudah: '),
-          sentence(firstStep, 'Sekarang cuba langkah pertama: ')
-        ].filter(Boolean).join(' '),
-        ['Bimbing langkah demi langkah', 'Beri contoh lain', 'Saya sudah faham']
       );
     case 'comparison_question':
       return withReplies(
@@ -1277,7 +1261,7 @@ function buildConversationalTeachingReply({
         return withReplies(`${learningAnchor || questionText} ${dialogueLanguage === 'en' ? 'Which clue shows why?' : 'ما السبب؟'}`, [], Boolean(learningAnchor || questionText));
       }
       return withReplies(
-        `${learningAnchor || `Sebabnya ada pada petunjuk dalam ${questionText || 'soalan ini'}.`} Apakah petunjuk utamanya?`,
+        `${learningAnchor || 'Sebabnya ada pada petunjuk soalan.'} Apakah petunjuknya?`,
         commonReplies,
         Boolean(learningAnchor || questionText)
       );
@@ -1371,9 +1355,14 @@ export async function getTutorResponse(options = {}) {
     : [];
   const hasExerciseContext = Boolean(resolvedQuestionText || expected);
   const questionIdentity = normalizeText(resolvedQuestion?.id || '', '');
-  const activeConcept = subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
-    ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
-    : '';
+  const anchorContext = getTeachingAnchorContext({
+    history, conversationKey, subjectId: subjectContext.id,
+    topicId: topicContext.id, questionId: questionIdentity, prompt
+  });
+  const activeConcept = anchorContext.currentConcept ||
+    (subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
+      ? [subjectContext.id, topicContext.id, questionIdentity || 'general'].join('::')
+      : '');
   const studentTurn = understandStudentTurn({
     prompt,
     intent,
@@ -1383,7 +1372,8 @@ export async function getTutorResponse(options = {}) {
     hasExerciseContext,
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
     // Never resume a previous question when its identity is ambiguous.
-    activeConcept
+    activeConcept,
+    teachingCheckResult: anchorContext.teachingCheckResult
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
@@ -1588,14 +1578,24 @@ export async function getTutorResponse(options = {}) {
     contextBundle.contextUsed = { ...switched, hasQuestion: false };
     contextBundle.sections = { ...switched, pedagogicalContent: { grounded: true } };
   }
+  const protectedTutorAnswers = [...pendingExpectedAnswers, expected, ...acceptedAnswers];
   const standaloneAnswer = selectAnswerSafeText(
     ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
       ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
       : '',
-    [...pendingExpectedAnswers, expected, ...acceptedAnswers]
+    protectedTutorAnswers
   );
-  const conversationalReply = buildConversationalTeachingReply({
-    studentTurn: { ...studentTurn, intent: resolvedIntent },
+  const { directTeachingAnchor, teachingAnchor } = resolveTeachingAnchorTurn({
+    scope: anchorContext.scope,
+    priorTeachingAnchor: anchorContext.teachingAnchor,
+    prompt,
+    subjectId: subjectContext.id,
+    standaloneAnswer,
+    newTopicRequest: studentTurn.newTopicRequest
+  });
+  const resolvedStudentTurn = { ...studentTurn, intent: resolvedIntent };
+  const conversationalReply = buildTeachingAnchorReply(teachingAnchor, resolvedStudentTurn, protectedTutorAnswers) || buildConversationalTeachingReply({
+    studentTurn: resolvedStudentTurn,
     standaloneAnswer,
     contextBundle,
     studentName,
@@ -1637,6 +1637,7 @@ export async function getTutorResponse(options = {}) {
     answerAttempted: Boolean(promptAnswer),
     guidedMisconception: guided.misconception,
     teachingContent: contextBundle.sections.pedagogicalContent,
+    teachingAnchor,
     locale: resolvedLocale,
     languagePresentation
   });
@@ -1725,7 +1726,11 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: switchedTopic ? null : intelligentTeaching?.pedagogicalState || null,
+    pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
+      intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
+      directTeachingAnchor,
+      teachingAnchor
+    ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
