@@ -363,7 +363,7 @@ function inferIntent({ intent = '', prompt = '', isCorrect, question = {} } = {}
   return 'general';
 }
 
-function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
+function buildStandaloneTutorAnswer(prompt = '', subject = {}, hasExerciseContext = false) {
   const text = String(prompt || '').toLocaleLowerCase('ms-MY');
   const subjectId = String(subject?.id || '').toLowerCase();
   if (/taman/.test(text) && /bermain/.test(text)) {
@@ -371,6 +371,10 @@ function buildStandaloneTutorAnswer(prompt = '', subject = {}) {
   }
   if (subjectId === 'english' && /common\s+noun|noun/.test(text)) {
     return 'A common noun is a general name for a person, animal, place, or thing.';
+  }
+  const arabicPlain = text.normalize('NFKD').replace(/[\u064b-\u065f\u0670]/gu, '');
+  if (subjectId === 'arab' && !hasExerciseContext && /ما\s+معنى\s+كتاب(?:\s|[؟?]|$)/u.test(arabicPlain)) {
+    return 'كِتَابٌ شيءٌ له صفحات نقرأ فيها ونتعلّم منها.';
   }
   if (subjectId === 'arab' && /(?:ما\s+معنى\s+الاسم|الاسم|اسم)/u.test(text)) {
     return ARABIC_NOUN;
@@ -1178,6 +1182,18 @@ function buildConversationalTeachingReply({
       return withReplies(recommendation.text, recommendation.quickReplies, recommendation.grounded);
     }
     case 'general':
+      if (dialogueLanguage === 'en') return withReplies(
+        studentTurn.messageType === 'social'
+          ? 'Hello! I can explain a Year 2 topic, give an example, or guide you through a question. What shall we learn?'
+          : 'I am listening. Which topic would you like to continue?',
+        commonReplies, Boolean(subject?.id)
+      );
+      if (dialogueLanguage === 'ar') return withReplies(
+        studentTurn.messageType === 'social'
+          ? 'مرحبًا! أستطيع شرح درس، أو إعطاء مثال، أو مساعدتك في سؤال. ماذا تريد أن نتعلّم؟'
+          : 'أنا أستمع إليك. أي درس تريد أن نتابع؟',
+        commonReplies, Boolean(subject?.id)
+      );
       if (studentTurn.messageType === 'social') {
         return withReplies(
           `${studentName && studentName !== 'Murid' ? `Hai ${studentName}. ` : 'Hai. '}Saya boleh mencadangkan pelajaran hari ini, menerangkan sesuatu topik, atau membimbing kamu menjawab soalan. Kamu mahu mula dengan yang mana?`,
@@ -1191,6 +1207,8 @@ function buildConversationalTeachingReply({
         false
       );
     case 'tutor_identity':
+      if (dialogueLanguage === 'en') return withReplies('I am Janna, your learning tutor. I can explain a topic and guide you one step at a time.', commonReplies, true);
+      if (dialogueLanguage === 'ar') return withReplies('أنا جنّة، معلّمتك المساعدة. أشرح الدرس وأرشدك خطوة خطوة.', commonReplies, true);
       return withReplies(
         `Saya Janna, Tutor AI kamu. Saya boleh berbual tentang pembelajaran, menerangkan topik Tahun 2, memberi contoh dan membimbing latihan langkah demi langkah. Apa yang kamu mahu belajar sekarang?`,
         studentTurn.quickReplies,
@@ -1207,6 +1225,8 @@ function buildConversationalTeachingReply({
       return withReplies(stateReply, studentTurn.quickReplies, true);
     }
     case 'clarification_needed':
+      if (dialogueLanguage === 'en') return withReplies('Would you like the meaning, an example, or the first step?', commonReplies, false);
+      if (dialogueLanguage === 'ar') return withReplies('هل تريد المعنى، أم مثالًا، أم الخطوة الأولى؟', commonReplies, false);
       return withReplies(
         studentTurn.clarifyingQuestion || 'Bahagian mana yang kamu mahu saya terangkan: maksud, langkah, atau contoh?',
         studentTurn.quickReplies,
@@ -1225,11 +1245,15 @@ function buildConversationalTeachingReply({
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
     case 'understanding_confirmation':
+      if (dialogueLanguage === 'en') return withReplies('Good. Can you explain the idea in your own words?', commonReplies, true);
+      if (dialogueLanguage === 'ar') return withReplies('جيد. هل تستطيع شرح الفكرة بكلماتك؟', commonReplies, true);
       return withReplies(
         'Bagus. Cuba terangkan idea utama dengan ayat kamu sendiri.',
         studentTurn.quickReplies
       );
     case 'comparison_question':
+      if (dialogueLanguage === 'en' && !standaloneAnswer) return withReplies('Which two ideas would you like to compare?', commonReplies, false);
+      if (dialogueLanguage === 'ar' && !standaloneAnswer) return withReplies('ما الشيئان اللذان تريد المقارنة بينهما؟', commonReplies, false);
       return withReplies(
         standaloneAnswer || `Saya boleh bantu membandingkan konsep dalam ${topicLabel}. Nyatakan dua perkara yang kamu mahu bezakan.`,
         standaloneAnswer ? commonReplies : ['Bandingkan maksud', 'Bandingkan contoh', 'Bandingkan cara guna'],
@@ -1237,6 +1261,8 @@ function buildConversationalTeachingReply({
       );
     case 'knowledge_question':
       if (!learningAnchor) {
+        if (dialogueLanguage === 'en') return withReplies('Which Year 2 topic do you mean? Tell me the subject or lesson.', commonReplies, false);
+        if (dialogueLanguage === 'ar') return withReplies('أي درس تقصد؟ اذكر المادة أو موضوع الدرس.', commonReplies, false);
         return withReplies(
           'Saya belum pasti konsep yang kamu maksud dalam pelajaran semasa. Nyatakan nama subjek atau topik supaya saya boleh mengajar dengan tepat.',
           ['Nyatakan subjek', 'Nyatakan nama topik', 'Kembali kepada soalan semasa'],
@@ -1267,6 +1293,8 @@ function buildConversationalTeachingReply({
       );
     case 'how_question':
       if (!learningAnchor && !steps.length) {
+        if (dialogueLanguage === 'en') return withReplies('I can guide you one step at a time. Which question or skill should we start with?', commonReplies, false);
+        if (dialogueLanguage === 'ar') return withReplies('أستطيع مساعدتك خطوة خطوة. بأي سؤال أو مهارة نبدأ؟', commonReplies, false);
         return withReplies(
           'Saya boleh bimbing langkah demi langkah. Apakah kemahiran atau soalan yang kamu mahu pelajari?',
           ['Terangkan soalan semasa', 'Beri contoh mudah', 'Nyatakan nama topik'],
@@ -1275,11 +1303,11 @@ function buildConversationalTeachingReply({
       }
       return withReplies(
         [
-          learningAnchor ? `${learningAnchor}` : `Mari belajar cara membuat ${topicLabel}.`,
-          ...(standaloneAnswer ? [] : steps.map((step, index) => sentence(step, `Langkah ${index + 1}: `))),
-          `Cuba buat langkah pertama dahulu. Apa yang kamu dapat?`
+          learningAnchor || (dialogueLanguage === 'en' ? `Let us learn about ${topicLabel}.` : dialogueLanguage === 'ar' ? 'لنبدأ خطوة خطوة.' : `Mari belajar cara membuat ${topicLabel}.`),
+          ...(standaloneAnswer ? [] : steps.map((step, index) => sentence(step, dialogueLanguage === 'en' ? `Step ${index + 1}: ` : dialogueLanguage === 'ar' ? `الخطوة ${index + 1}: ` : `Langkah ${index + 1}: `))),
+          dialogueLanguage === 'en' ? 'Try the first step. What did you find?' : dialogueLanguage === 'ar' ? 'جرّب الخطوة الأولى. ماذا وجدت؟' : 'Cuba buat langkah pertama dahulu. Apa yang kamu dapat?'
         ].filter(Boolean).join(' '),
-        ['Bimbing langkah pertama', 'Beri contoh mudah', 'Saya mahu cuba sendiri']
+        dialogueLanguage === 'ms' ? ['Bimbing langkah pertama', 'Beri contoh mudah', 'Saya mahu cuba sendiri'] : commonReplies
       );
     default:
       return null;
@@ -1581,7 +1609,7 @@ export async function getTutorResponse(options = {}) {
   const protectedTutorAnswers = [...pendingExpectedAnswers, expected, ...acceptedAnswers];
   const standaloneAnswer = selectAnswerSafeText(
     ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
-      ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
+      ? buildStandaloneTutorAnswer(prompt, conversationalSubject, hasExerciseContext)
       : '',
     protectedTutorAnswers
   );

@@ -75,6 +75,38 @@ const CURRICULUM_ANCHORS = Object.freeze({
       explanation: '“Berlari” menunjukkan perbuatan, jadi itu kata kerja.',
       correction: '“Kucing” nama; “berlari” perbuatan.'
     })
+  }),
+  english_common_noun: Object.freeze({
+    explanations: Object.freeze(['A common noun is a general name for a person, animal, place, or thing.']),
+    examples: Object.freeze([
+      'In “The cat runs”, “cat” names an animal.',
+      'In “We read at school”, “school” names a place.'
+    ]),
+    alternatives: Object.freeze(['Use a noun clue: ask whether the word names a person, animal, place, or thing rather than an action.']),
+    steps: Object.freeze(['Find the word naming a person, animal, place, or thing.', 'Try the word “cat”: what does it name?']),
+    checkQuestions: Object.freeze(['Does “cat” name an animal or an action']),
+    check: Object.freeze({
+      answers: Object.freeze(['animal']),
+      distractors: Object.freeze(['action']),
+      explanation: '“Cat” names an animal, so it is a common noun.',
+      correction: '“Cat” names an animal, not an action.'
+    })
+  }),
+  arab_book: Object.freeze({
+    explanations: Object.freeze(['كِتَابٌ شيءٌ له صفحات نقرأ فيها ونتعلّم منها.']),
+    examples: Object.freeze([
+      'هذا كِتَابُ المدرسة، نقرأ صفحاته لنتعلّم.',
+      'أفتح كتابًا وأقرأ كلمةً جديدة.'
+    ]),
+    alternatives: Object.freeze(['فكّر في شيءٍ له صفحات تقرؤها.']),
+    steps: Object.freeze(['تخيّل صفحات تقرأ فيها الكلمات.', 'اختر شيئًا نقرأ صفحاته لنتعلّم.']),
+    checkQuestions: Object.freeze(['هل نقرأ صفحات الكتاب أم نأكلها']),
+    check: Object.freeze({
+      answers: Object.freeze(['نقرأ']),
+      distractors: Object.freeze(['نأكل']),
+      explanation: 'نقرأ صفحات الكتاب لنتعلّم كلمات جديدة.',
+      correction: 'الكتاب للقراءة والتعلّم، لا للأكل.'
+    })
   })
 });
 
@@ -159,7 +191,12 @@ export function getTeachingAnchorContext({ history = [], conversationKey = '', s
 export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = null, prompt = '', subjectId = '', standaloneAnswer = '', newTopicRequest = false } = {}) {
   const text = String(prompt).toLocaleLowerCase('ms-MY');
   const comparisonRequest = /kata nama khas|(?:apa\s+)?beza|perbezaan|bandingkan/.test(text);
-  const conceptId = subjectId === 'bm' && comparisonRequest && /kata nama am/.test(text) && /kata kerja/.test(text)
+  const arabicPlain = text.normalize('NFKD').replace(/[\u064b-\u065f\u0670]/gu, '');
+  const conceptId = subjectId === 'english' && standaloneAnswer && /\bcommon\s+noun\b/.test(text)
+    ? 'english_common_noun'
+    : subjectId === 'arab' && standaloneAnswer && /ما\s+معنى\s+كتاب(?:\s|[؟?]|$)/u.test(arabicPlain)
+    ? 'arab_book'
+    : subjectId === 'bm' && comparisonRequest && /kata nama am/.test(text) && /kata kerja/.test(text)
     ? 'common_noun_vs_verb'
     : standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata nama am/.test(text)
     ? 'common_noun'
@@ -198,16 +235,22 @@ export function buildTeachingAnchorReply(value = {}, studentTurn = {}, protected
   const check = content?.check;
   const checkQuestion = content?.checkQuestions?.[0] || '';
   const safeCheckQuestion = selectAnswerSafeText([checkQuestion], protectedAnswers);
+  const language = sanitizeTeachingAnchor(value)?.subjectId;
+  const copy = language === 'english'
+    ? { ready: 'Okay. When ready, choose:', right: 'Correct.', wrong: 'Not quite.', again: 'Try again:', more: 'Try another example in your own words.', why: 'That is the clue we used.' }
+    : language === 'arab'
+      ? { ready: 'حسنًا. عندما تكون مستعدًا، اختر:', right: 'صحيح.', wrong: 'ليس صحيحًا بعد.', again: 'حاول مرة أخرى:', more: 'اذكر مثالًا آخر بكلماتك.', why: 'هذا هو الدليل الذي استخدمناه.' }
+      : { ready: 'Baik. Bila sedia, pilih:', right: 'Betul.', wrong: 'Belum tepat.', again: 'Cuba lagi:', more: 'Cuba beri satu contoh lain dengan ayat kamu sendiri.', why: 'Itulah petunjuk yang kita gunakan.' };
   const rawText = studentTurn.intent === 'comparison_question'
     ? content?.explanations?.[0] || ''
     : studentTurn.messageType === 'learning_response'
     ? studentTurn.intent === 'teaching_check_clarification'
-      ? safeCheckQuestion ? `Baik. Bila sedia, pilih: ${safeCheckQuestion}.` : content?.alternatives?.[0] || ''
+      ? safeCheckQuestion ? `${copy.ready} ${safeCheckQuestion}.` : content?.alternatives?.[0] || ''
       : studentTurn.teachingCheckCorrect
-      ? `Betul. ${check?.explanation || ''} Cuba beri satu contoh lain dengan ayat kamu sendiri.`
-      : `Belum tepat. ${check?.correction || ''} Cuba lagi: ${safeCheckQuestion}.`
+      ? `${copy.right} ${check?.explanation || ''} ${copy.more}`
+      : `${copy.wrong} ${check?.correction || ''} ${copy.again} ${safeCheckQuestion}.`
     : studentTurn.intent === 'why_question' && check
-      ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
+      ? `${check.explanation} ${copy.why}`
       : '';
   const text = rawText ? selectAnswerSafeText(
     [rawText, content?.explanations?.[0], content?.alternatives?.[0], content?.steps?.[0]],
