@@ -64,6 +64,7 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     const texts = turns.map(turn => turn.response.text);
 
     expect(texts[0]).toMatch(/kata nama am.*nama umum/iu);
+    expect(texts[0]).toMatch(/jelas|contoh lagi/iu);
     expect(turns[0].response.pedagogicalState?.teachingAnchor).toMatchObject({
       type: 'curriculum_concept',
       subjectId: 'bm',

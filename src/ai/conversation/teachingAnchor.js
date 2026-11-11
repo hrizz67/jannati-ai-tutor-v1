@@ -209,10 +209,10 @@ export function buildTeachingAnchorReply(value = {}, studentTurn = {}, protected
     : studentTurn.intent === 'why_question' && check
       ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
       : '';
-  const text = selectAnswerSafeText(
+  const text = rawText ? selectAnswerSafeText(
     [rawText, content?.explanations?.[0], content?.alternatives?.[0], content?.steps?.[0]],
     protectedAnswers
-  );
+  ) : '';
   const pedagogicalState = createTeachingAnchorState(value);
   if (pedagogicalState && studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect !== true) {
     pedagogicalState.pendingFollowUp = safeCheckQuestion;
