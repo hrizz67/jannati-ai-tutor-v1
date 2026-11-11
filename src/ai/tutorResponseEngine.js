@@ -23,7 +23,6 @@ import { understandStudentTurn } from './conversation/studentTurnEngine.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
-import { buildIntelligentTeachingTurn, getLocalizedTeachingReplies } from './pedagogy/intelligentTeachingEngine.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 import {
@@ -1148,7 +1147,8 @@ function buildConversationalTeachingReply({
   topic = null,
   questionText = '',
   weakTopics = [],
-  studyPlan = null
+  studyPlan = null,
+  getLocalizedTeachingReplies
 } = {}) {
   if (!studentTurn) return null;
   const sections = contextBundle?.sections || {};
@@ -1594,6 +1594,7 @@ export async function getTutorResponse(options = {}) {
     newTopicRequest: studentTurn.newTopicRequest
   });
   const resolvedStudentTurn = { ...studentTurn, intent: resolvedIntent };
+  const teachingEngine = await import('./pedagogy/intelligentTeachingEngine.js');
   const conversationalReply = buildTeachingAnchorReply(teachingAnchor, resolvedStudentTurn, protectedTutorAnswers) || buildConversationalTeachingReply({
     studentTurn: resolvedStudentTurn,
     standaloneAnswer,
@@ -1603,7 +1604,8 @@ export async function getTutorResponse(options = {}) {
     topic: conversationalTopic,
     questionText: resolvedQuestionText,
     weakTopics: weakList,
-    studyPlan
+    studyPlan,
+    getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
@@ -1621,7 +1623,7 @@ export async function getTutorResponse(options = {}) {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
     quickReplies: [], grounded: true
   } : null;
-  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : buildIntelligentTeachingTurn({
+  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
