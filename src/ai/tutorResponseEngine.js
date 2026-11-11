@@ -1578,11 +1578,12 @@ export async function getTutorResponse(options = {}) {
     contextBundle.contextUsed = { ...switched, hasQuestion: false };
     contextBundle.sections = { ...switched, pedagogicalContent: { grounded: true } };
   }
+  const protectedTutorAnswers = [...pendingExpectedAnswers, expected, ...acceptedAnswers];
   const standaloneAnswer = selectAnswerSafeText(
     ['general', 'knowledge_question', 'comparison_question', 'why_question', 'how_question'].includes(resolvedIntent)
       ? buildStandaloneTutorAnswer(prompt, conversationalSubject)
       : '',
-    [...pendingExpectedAnswers, expected, ...acceptedAnswers]
+    protectedTutorAnswers
   );
   const { directTeachingAnchor, teachingAnchor } = resolveTeachingAnchorTurn({
     scope: anchorContext.scope,
@@ -1593,7 +1594,7 @@ export async function getTutorResponse(options = {}) {
     newTopicRequest: studentTurn.newTopicRequest
   });
   const resolvedStudentTurn = { ...studentTurn, intent: resolvedIntent };
-  const conversationalReply = buildTeachingAnchorReply(teachingAnchor, resolvedStudentTurn) || buildConversationalTeachingReply({
+  const conversationalReply = buildTeachingAnchorReply(teachingAnchor, resolvedStudentTurn, protectedTutorAnswers) || buildConversationalTeachingReply({
     studentTurn: resolvedStudentTurn,
     standaloneAnswer,
     contextBundle,

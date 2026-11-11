@@ -1,3 +1,5 @@
+import { selectAnswerSafeText } from '../policy/answerRevealPolicy.js';
+
 const ANCHOR_VERSION = 1;
 const MAX_ANCHOR_HISTORY = 12;
 const BM_NOUN_VERB_COMPARISON = 'Kata nama am menamakan orang, haiwan, tempat atau benda. Kata kerja menunjukkan perbuatan atau keadaan. Bezanya: nama berbanding perbuatan atau keadaan.';
@@ -191,24 +193,29 @@ export function evaluateTeachingAnchorCheck(value = {}, prompt = '') {
   return accepted >= 0 ? !negated : negated;
 }
 
-export function buildTeachingAnchorReply(value = {}, studentTurn = {}) {
+export function buildTeachingAnchorReply(value = {}, studentTurn = {}, protectedAnswers = []) {
   const content = getTeachingAnchorContent(value);
   const check = content?.check;
   const checkQuestion = content?.checkQuestions?.[0] || '';
-  const text = studentTurn.intent === 'comparison_question'
+  const safeCheckQuestion = selectAnswerSafeText([checkQuestion], protectedAnswers);
+  const rawText = studentTurn.intent === 'comparison_question'
     ? content?.explanations?.[0] || ''
     : studentTurn.messageType === 'learning_response'
     ? studentTurn.intent === 'teaching_check_clarification'
-      ? `Baik. Bila sedia, pilih: ${checkQuestion}.`
+      ? safeCheckQuestion ? `Baik. Bila sedia, pilih: ${safeCheckQuestion}.` : content?.alternatives?.[0] || ''
       : studentTurn.teachingCheckCorrect
       ? `Betul. ${check?.explanation || ''} Cuba beri satu contoh lain dengan ayat kamu sendiri.`
-      : `Belum tepat. ${check?.correction || ''} Cuba lagi: ${checkQuestion}.`
+      : `Belum tepat. ${check?.correction || ''} Cuba lagi: ${safeCheckQuestion}.`
     : studentTurn.intent === 'why_question' && check
       ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
       : '';
+  const text = selectAnswerSafeText(
+    [rawText, content?.explanations?.[0], content?.alternatives?.[0], content?.steps?.[0]],
+    protectedAnswers
+  );
   const pedagogicalState = createTeachingAnchorState(value);
   if (pedagogicalState && studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect !== true) {
-    pedagogicalState.pendingFollowUp = checkQuestion;
+    pedagogicalState.pendingFollowUp = safeCheckQuestion;
   }
   return text ? {
     text,

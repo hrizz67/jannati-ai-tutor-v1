@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getTutorResponse } from '../../src/utils/tutorResponseService.js';
 import { sanitizeTutorPedagogicalState } from '../../src/ai/conversation/boundedConversationMemory.js';
+import { buildTeachingAnchorReply, createTeachingAnchor } from '../../src/ai/conversation/teachingAnchor.js';
 
 const student = { id: 'synthetic-child', studentId: 'synthetic-child' };
 const bmSubject = { id: 'bm', title: 'Bahasa Melayu' };
@@ -331,6 +332,49 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     expect(turns[2].response.text).toMatch(/betul|tepat/iu);
     expect(turns[2].response.text).not.toMatch(/jawapan.*salah|cuba semula/iu);
     expectUngradedSafe(turns[2].response);
+  });
+
+  it('does not leak an active-quiz answer through comparison-anchor explanations', async () => {
+    const { turns } = await runTranscript([
+      'Apa beza kata nama am dan kata kerja?',
+      'Kenapa?'
+    ], {
+      topic: { id: 'kata_kerja', title: 'Kata Kerja' },
+      question: {
+        id: 'verb-q1',
+        q: 'Adik sedang ___. Pilih kata kerja.',
+        options: ['berlari', 'adik'],
+        answer: 'berlari',
+        acceptedAnswers: ['berlari']
+      },
+      expectedAnswer: 'berlari',
+      acceptedAnswers: ['berlari']
+    });
+
+    expect(turns[0].response.text).not.toMatch(/\bberlari\b/iu);
+    expect(turns[1].response.text).not.toMatch(/\bberlari\b/iu);
+    expect(JSON.stringify(turns[1].response)).not.toMatch(/\bberlari\b/iu);
+    expect(turns[1].response.text).toMatch(/kata nama am|kata kerja|nama|perbuatan|keadaan/iu);
+    for (const { response } of turns) expectUngradedSafe(response);
+  });
+
+  it.each([
+    { intent: 'why_question', messageType: 'follow_up_question' },
+    { intent: 'teaching_check_response', messageType: 'learning_response', teachingCheckCorrect: true },
+    { intent: 'teaching_check_response', messageType: 'learning_response', teachingCheckCorrect: false },
+    { intent: 'teaching_check_clarification', messageType: 'learning_response' }
+  ])('filters protected answers from direct comparison-anchor replies: $intent/$messageType', studentTurn => {
+    const anchor = createTeachingAnchor({
+      conversationKey: 'synthetic::protected::direct',
+      subjectId: 'bm',
+      topicId: 'kata_kerja',
+      questionId: 'verb-q1',
+      conceptId: 'common_noun_vs_verb'
+    });
+    const reply = buildTeachingAnchorReply(anchor, studentTurn, ['berlari']);
+
+    expect(JSON.stringify(reply)).not.toMatch(/\bberlari\b/iu);
+    expect(reply?.text).toMatch(/kata nama am|kata kerja|nama|perbuatan|keadaan/iu);
   });
 
   it.each(['entah', 'Cikgu tunggu sekejap', 'Saya mahu berhenti', 'tidur dulu'])(
