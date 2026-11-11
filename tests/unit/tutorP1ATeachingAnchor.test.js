@@ -282,17 +282,30 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     for (const { response } of turns.slice(2)) expectUngradedSafe(response);
   });
 
-  it('does not create a single-concept anchor for a comparison request', async () => {
+  it('teaches both concepts and keeps a scoped comparison anchor', async () => {
     const { turns } = await runTranscript([
       'Apa itu kata nama am?',
       'Apa beza kata nama am dan kata kerja?',
-      'Saya tak faham.'
+      'Saya tak faham.',
+      'berlari',
+      'Kenapa?'
     ]);
 
-    expect(turns[1].response.pedagogicalState?.teachingAnchor || null).toBeNull();
-    expect(turns[2].response.pedagogicalState?.teachingAnchor || null).toBeNull();
+    expect(turns[1].response.text).toMatch(/kata nama am.*(?:menamakan|nama).*(?:kata kerja|perbuatan|keadaan)/iu);
+    expect(turns[1].response.text).toMatch(/beza|perbezaan/iu);
+    expect(turns[1].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun_vs_verb');
+    expect(turns[2].response.text).toMatch(/kata nama am|nama orang|nama haiwan|nama tempat|nama benda/iu);
+    expect(turns[2].response.text).toMatch(/kata kerja|perbuatan|keadaan/iu);
+    expect(turns[2].response.text).not.toMatch(/saya boleh membantu pelajaran tahun 2|nyatakan nama subjek/iu);
+    expect(turns[2].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun_vs_verb');
     expect(turns[2].response.text).not.toMatch(/baca soalan|pilih atau taip satu jawapan/iu);
-    expectUngradedSafe(turns[2].response);
+    expect(turns[3].response.intent).toBe('teaching_check_response');
+    expect(turns[3].response.text).toMatch(/^betul.*berlari/iu);
+    expect(turns[3].response.text).toMatch(/kata kerja|perbuatan/iu);
+    expect(turns[4].response.text).toMatch(/berlari/iu);
+    expect(turns[4].response.text).toMatch(/kata kerja|perbuatan/iu);
+    expect(turns.slice(1).every(turn => turn.response.pedagogicalState?.teachingAnchor?.conceptId === 'common_noun_vs_verb')).toBe(true);
+    for (const { response } of turns.slice(1)) expectUngradedSafe(response);
   });
 
   it('keeps Tutor conceptual-check feedback ungraded inside an active quiz', async () => {

@@ -1,5 +1,6 @@
 const ANCHOR_VERSION = 1;
 const MAX_ANCHOR_HISTORY = 12;
+const BM_NOUN_VERB_COMPARISON = 'Kata nama am menamakan orang, haiwan, tempat atau benda. Kata kerja menunjukkan perbuatan atau keadaan. Bezanya: nama berbanding perbuatan atau keadaan.';
 
 const CURRICULUM_ANCHORS = Object.freeze({
   common_noun: Object.freeze({
@@ -50,6 +51,27 @@ const CURRICULUM_ANCHORS = Object.freeze({
       distractors: Object.freeze(['benda']),
       explanation: '“Berlari” ialah kata kerja kerana perkataan itu menunjukkan perbuatan.',
       correction: '“Berlari” menunjukkan perbuatan, bukan benda.'
+    })
+  }),
+  common_noun_vs_verb: Object.freeze({
+    explanations: Object.freeze([BM_NOUN_VERB_COMPARISON]),
+    examples: Object.freeze([
+      '“Kucing” ialah kata nama am; “berlari” ialah kata kerja.'
+    ]),
+    alternatives: Object.freeze([
+      'Tanya: adakah perkataan itu nama atau perbuatan?'
+    ]),
+    steps: Object.freeze([
+      'Cari nama, kemudian cari perbuatan atau keadaan.'
+    ]),
+    checkQuestions: Object.freeze([
+      'Yang manakah kata kerja: “kucing” atau “berlari”'
+    ]),
+    check: Object.freeze({
+      answers: Object.freeze(['berlari']),
+      distractors: Object.freeze(['kucing']),
+      explanation: '“Berlari” menunjukkan perbuatan, jadi itu kata kerja.',
+      correction: '“Kucing” nama; “berlari” perbuatan.'
     })
   })
 });
@@ -135,7 +157,9 @@ export function getTeachingAnchorContext({ history = [], conversationKey = '', s
 export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = null, prompt = '', subjectId = '', standaloneAnswer = '', newTopicRequest = false } = {}) {
   const text = String(prompt).toLocaleLowerCase('ms-MY');
   const comparisonRequest = /kata nama khas|(?:apa\s+)?beza|perbezaan|bandingkan/.test(text);
-  const conceptId = standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata nama am/.test(text)
+  const conceptId = subjectId === 'bm' && comparisonRequest && /kata nama am/.test(text) && /kata kerja/.test(text)
+    ? 'common_noun_vs_verb'
+    : standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata nama am/.test(text)
     ? 'common_noun'
     : standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata kerja/.test(text) ? 'verb' : '';
   const directTeachingAnchor = conceptId ? createTeachingAnchor({ ...scope, conceptId }) : null;
@@ -171,7 +195,9 @@ export function buildTeachingAnchorReply(value = {}, studentTurn = {}) {
   const content = getTeachingAnchorContent(value);
   const check = content?.check;
   const checkQuestion = content?.checkQuestions?.[0] || '';
-  const text = studentTurn.messageType === 'learning_response'
+  const text = studentTurn.intent === 'comparison_question'
+    ? content?.explanations?.[0] || ''
+    : studentTurn.messageType === 'learning_response'
     ? studentTurn.intent === 'teaching_check_clarification'
       ? `Baik. Bila sedia, pilih: ${checkQuestion}.`
       : studentTurn.teachingCheckCorrect
