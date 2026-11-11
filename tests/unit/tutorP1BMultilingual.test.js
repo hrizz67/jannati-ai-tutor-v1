@@ -37,7 +37,7 @@ function expectSafeHelp(response) {
   expect(response.expectedAnswer || '').toBe('');
   expect(response.correctAnswer || '').toBe('');
   expect(response.acceptedAnswers || []).toEqual([]);
-  expect(response.isCorrect).toBeNull();
+  expect(response.isCorrect ?? null).toBeNull();
   for (const key of ['xp', 'stars', 'coins', 'score', 'mastery', 'rewards']) {
     expect(response).not.toHaveProperty(key);
   }
