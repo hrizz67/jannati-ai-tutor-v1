@@ -49,13 +49,11 @@ async function runAuditTranscript(base = {}) {
 }
 
 function expectUngradedSafe(response) {
-  expect(response).toMatchObject({
-    expectedAnswer: '',
-    correctAnswer: '',
-    acceptedAnswers: [],
-    learnerAnswer: '',
-    isCorrect: null
-  });
+  expect(['', undefined]).toContain(response.expectedAnswer);
+  expect(['', undefined]).toContain(response.correctAnswer);
+  expect([[], undefined]).toContainEqual(response.acceptedAnswers);
+  expect(['', undefined]).toContain(response.learnerAnswer);
+  expect([null, undefined]).toContain(response.isCorrect);
   for (const field of rewardFields) expect(response).not.toHaveProperty(field);
 }
 
@@ -266,6 +264,118 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     expect(turns[2].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
     expect(turns[3].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
     expect(turns[3].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
+    for (const { response } of turns.slice(2)) expectUngradedSafe(response);
+  });
+
+  it('does not praise a negated accepted word in a conceptual-check response', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      'bukan haiwan',
+      'Kenapa?'
+    ]);
+
+    expect(turns[2].response.intent).toBe('teaching_check_response');
+    expect(turns[2].response.text).toMatch(/belum tepat|cuba lagi/iu);
+    expect(turns[2].response.text).not.toMatch(/^betul/iu);
+    expect(turns[3].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
+    for (const { response } of turns.slice(2)) expectUngradedSafe(response);
+  });
+
+  it('does not create a single-concept anchor for a comparison request', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Apa beza kata nama am dan kata kerja?',
+      'Saya tak faham.'
+    ]);
+
+    expect(turns[1].response.pedagogicalState?.teachingAnchor || null).toBeNull();
+    expect(turns[2].response.pedagogicalState?.teachingAnchor || null).toBeNull();
+    expect(turns[2].response.text).not.toMatch(/baca soalan|pilih atau taip satu jawapan/iu);
+    expectUngradedSafe(turns[2].response);
+  });
+
+  it('keeps Tutor conceptual-check feedback ungraded inside an active quiz', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      'haiwan'
+    ], {
+      topic: { id: 'kata_nama_tempat', title: 'Kata Nama Tempat' },
+      question: {
+        id: 'place-q2',
+        q: 'Kami bermain bola di ___. Pilih kata nama tempat.',
+        instruction: 'Pilih perkataan yang menamakan tempat.',
+        options: ['taman', 'bermain'],
+        answer: 'taman',
+        acceptedAnswers: ['taman']
+      },
+      expectedAnswer: 'taman',
+      acceptedAnswers: ['taman']
+    });
+
+    expect(turns[2].response.intent).toBe('teaching_check_response');
+    expect(turns[2].response.text).toMatch(/betul|tepat/iu);
+    expect(turns[2].response.text).not.toMatch(/jawapan.*salah|cuba semula/iu);
+    expectUngradedSafe(turns[2].response);
+  });
+
+  it.each(['entah', 'Cikgu tunggu sekejap', 'Saya mahu berhenti', 'tidur dulu'])(
+    'does not grade an unrelated short utterance as a wrong conceptual answer: %s',
+    async learnerReply => {
+      const { turns } = await runTranscript([
+        'Apa itu kata nama am?',
+        'Saya tak faham.',
+        learnerReply
+      ]);
+
+      expect(turns[2].response.intent).toBe('teaching_check_clarification');
+      expect(turns[2].response.text).not.toMatch(/belum tepat.*kucing|kucing.*bukan perbuatan/iu);
+      expect(turns[2].response.pedagogicalState?.pendingFollowUp).toMatch(/haiwan.*perbuatan/iu);
+      expectUngradedSafe(turns[2].response);
+    }
+  );
+
+  it('accepts a natural seven-word conceptual answer', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      'Saya fikir jawapan itu ialah haiwan cikgu'
+    ]);
+
+    expect(turns[2].response.intent).toBe('teaching_check_response');
+    expect(turns[2].response.text).toMatch(/^betul/iu);
+    expectUngradedSafe(turns[2].response);
+  });
+
+  it.each([
+    ['haiwan dan perbuatan', 'teaching_check_clarification'],
+    ['bukan perbuatan', 'teaching_check_response']
+  ])('handles contradiction or negated distractor without false praise: %s', async (learnerReply, expectedIntent) => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      learnerReply
+    ]);
+
+    expect(turns[2].response.intent).toBe(expectedIntent);
+    if (expectedIntent === 'teaching_check_response') expect(turns[2].response.text).toMatch(/^betul/iu);
+    else expect(turns[2].response.text).not.toMatch(/^betul|belum tepat/iu);
+    expectUngradedSafe(turns[2].response);
+  });
+
+  it('keeps the conceptual check pending for a wrong-then-correct retry', async () => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      'perbuatan',
+      'haiwan'
+    ]);
+
+    expect(turns[2].response.text).toMatch(/belum tepat|cuba lagi/iu);
+    expect(turns[2].response.pedagogicalState?.pendingFollowUp).toMatch(/haiwan.*perbuatan/iu);
+    expect(turns[3].response.intent).toBe('teaching_check_response');
+    expect(turns[3].response.text).toMatch(/^betul/iu);
     for (const { response } of turns.slice(2)) expectUngradedSafe(response);
   });
 });

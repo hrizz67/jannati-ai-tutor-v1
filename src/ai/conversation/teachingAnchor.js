@@ -22,6 +22,7 @@ const CURRICULUM_ANCHORS = Object.freeze({
     ]),
     check: Object.freeze({
       answers: Object.freeze(['haiwan', 'binatang']),
+      distractors: Object.freeze(['perbuatan']),
       explanation: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.',
       correction: '“Kucing” menamakan haiwan, bukan perbuatan.'
     })
@@ -46,6 +47,7 @@ const CURRICULUM_ANCHORS = Object.freeze({
     ]),
     check: Object.freeze({
       answers: Object.freeze(['perbuatan']),
+      distractors: Object.freeze(['benda']),
       explanation: '“Berlari” ialah kata kerja kerana perkataan itu menunjukkan perbuatan.',
       correction: '“Berlari” menunjukkan perbuatan, bukan benda.'
     })
@@ -126,20 +128,20 @@ export function getTeachingAnchorContext({ history = [], conversationKey = '', s
     scope,
     teachingAnchor,
     currentConcept: getTeachingAnchorConceptKey(teachingAnchor),
-    teachingCheckResult: evaluateTeachingAnchorCheck(teachingAnchor, prompt)
+    teachingCheckResult: teachingAnchor ? evaluateTeachingAnchorCheck(teachingAnchor, prompt) : undefined
   };
 }
 
 export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = null, prompt = '', subjectId = '', standaloneAnswer = '', newTopicRequest = false } = {}) {
   const text = String(prompt).toLocaleLowerCase('ms-MY');
-  const conceptId = standaloneAnswer && subjectId === 'bm' && /kata nama am/.test(text) &&
-    !/kata nama khas|(?:apa\s+)?beza|perbezaan|bandingkan/.test(text)
+  const comparisonRequest = /kata nama khas|(?:apa\s+)?beza|perbezaan|bandingkan/.test(text);
+  const conceptId = standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata nama am/.test(text)
     ? 'common_noun'
-    : standaloneAnswer && subjectId === 'bm' && /kata kerja/.test(text) ? 'verb' : '';
+    : standaloneAnswer && subjectId === 'bm' && !comparisonRequest && /kata kerja/.test(text) ? 'verb' : '';
   const directTeachingAnchor = conceptId ? createTeachingAnchor({ ...scope, conceptId }) : null;
   return {
     directTeachingAnchor,
-    teachingAnchor: directTeachingAnchor || (!newTopicRequest ? priorTeachingAnchor : null)
+    teachingAnchor: directTeachingAnchor || (!newTopicRequest && !comparisonRequest ? priorTeachingAnchor : null)
   };
 }
 
@@ -153,25 +155,40 @@ export function evaluateTeachingAnchorCheck(value = {}, prompt = '') {
   const check = getTeachingAnchorContent(value)?.check;
   const text = String(prompt).normalize('NFKC').toLocaleLowerCase('ms-MY')
     .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-  if (!check || !text || text.split(/\s+/).length > 6 || /[?؟]/u.test(prompt)) return null;
+  if (!check || !text || text.split(/\s+/).length > 12 || /[?؟]/u.test(prompt)) return null;
   const words = text.split(/\s+/);
-  return check.answers.some(answer => words.includes(answer));
+  const position = choices => words.findIndex(word => choices.includes(word));
+  const accepted = position(check.answers);
+  const rejected = position(check.distractors || []);
+  if (accepted >= 0 && rejected >= 0) return null;
+  const index = accepted >= 0 ? accepted : rejected;
+  if (index < 0) return null;
+  const negated = /^(?:bukan(?:lah)?|tidak|tak|x)$/u.test(words[index - 1] || '');
+  return accepted >= 0 ? !negated : negated;
 }
 
 export function buildTeachingAnchorReply(value = {}, studentTurn = {}) {
-  const check = getTeachingAnchorContent(value)?.check;
+  const content = getTeachingAnchorContent(value);
+  const check = content?.check;
+  const checkQuestion = content?.checkQuestions?.[0] || '';
   const text = studentTurn.messageType === 'learning_response'
-    ? studentTurn.teachingCheckCorrect
+    ? studentTurn.intent === 'teaching_check_clarification'
+      ? `Baik. Bila sedia, pilih: ${checkQuestion}.`
+      : studentTurn.teachingCheckCorrect
       ? `Betul. ${check?.explanation || ''} Cuba beri satu contoh lain dengan ayat kamu sendiri.`
-      : `Belum tepat. ${check?.correction || ''} Cuba lagi.`
+      : `Belum tepat. ${check?.correction || ''} Cuba lagi: ${checkQuestion}.`
     : studentTurn.intent === 'why_question' && check
       ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
       : '';
+  const pedagogicalState = createTeachingAnchorState(value);
+  if (pedagogicalState && studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect !== true) {
+    pedagogicalState.pendingFollowUp = checkQuestion;
+  }
   return text ? {
     text,
     quickReplies: [],
     grounded: true,
-    pedagogicalState: createTeachingAnchorState(value)
+    pedagogicalState
   } : null;
 }
 

@@ -1186,7 +1186,7 @@ function buildConversationalTeachingReply({
         );
       }
       return withReplies(
-        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Kamu mahu belajar satu topik atau bantu latihan?`,
+        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Topik?`,
         ['Terangkan satu topik', 'Cadangkan apa untuk belajar', 'Bantu latihan saya'],
         false
       );

@@ -133,12 +133,13 @@ export function understandStudentTurn({
   hasExerciseContext = false,
   hasLearningContext = false,
   activeConcept = '',
-  teachingCheckResult = null
+  teachingCheckResult = undefined
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
   const explicitIntent = clean(intent).toLowerCase();
   const conversation = recentConversation(history, activeConcept);
+  const pendingTeachingCheck = teachingCheckResult !== undefined && conversation.hasTeachingStage && conversation.pendingCheck;
   const referencesPreviousTurn = conversation.hasHistory && (
     /^(?:(?:kenapa|mengapa|bagaimana|macam\s*mana|why|how|لماذا|كيف)(?:\s+(?:ini|itu|tadi|pula))?|apa\s+maksudnya|what\s+does\s+that\s+mean)\s*[?؟]?$/iu.test(text) ||
     /^(?:yang\s+itu|yang\s+tadi|lagi|cara\s+lain|that\s+one|the\s+previous\s+one|again|مرة\s+أخرى|ذلك|السابق)\b/iu.test(text)
@@ -148,7 +149,7 @@ export function understandStudentTurn({
     return makeTurn(INTENT_ALIASES[explicitIntent], 'guided_action', 1, { ...conversation, referencesPreviousTurn });
   }
 
-  if (hasExerciseContext && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
+  if (hasExerciseContext && !pendingTeachingCheck && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
     return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
   }
 
@@ -206,12 +207,14 @@ export function understandStudentTurn({
     /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\b(?:still\s+)?(?:don'?t|do\s+not)\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
     || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
   ) {
-    return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
-      ...conversation,
-      referencesPreviousTurn: conversation.hasHistory,
-      requestsExample: /\b(?:contoh|example)\b|مثال/u.test(lower),
-      quickReplies: ['Terangkan cara lain', 'Beri contoh mudah', 'Bimbing langkah demi langkah']
-    });
+    if (!conversation.hasHistory || activeConcept || hasExerciseContext) {
+      return makeTurn('misunderstanding', 'understanding_signal', 0.99, {
+        ...conversation,
+        referencesPreviousTurn: conversation.hasHistory,
+        requestsExample: /\b(?:contoh|example)\b|مثال/u.test(lower),
+        quickReplies: ['Terangkan cara lain', 'Beri contoh mudah', 'Bimbing langkah demi langkah']
+      });
+    }
   }
 
   if (NO_DIRECT_ANSWER_PATTERN.test(lower)) {
@@ -260,6 +263,14 @@ export function understandStudentTurn({
       ...conversation, isQuestion: true, referencesPreviousTurn: true
     });
   }
+  if (pendingTeachingCheck && !QUESTION_PATTERN.test(text)) {
+    return makeTurn(
+      typeof teachingCheckResult === 'boolean' ? 'teaching_check_response' : 'teaching_check_clarification',
+      'learning_response',
+      1,
+      { ...conversation, referencesPreviousTurn: true, teachingCheckCorrect: teachingCheckResult }
+    );
+  }
   const clueReply = hasExerciseContext && conversation.hasTeachingStage && conversation.pendingCheck &&
     /^(?:petunjuk(?:nya)?(?: utama)?|(?:the )?clue|الدليل)(?: (?:ialah|adalah|is|هو))? \S/iu.test(lower) && !/[?؟]/u.test(text);
   const continuation = (hasExerciseContext || hasLearningContext) && conversation.hasHistory && (CONTINUATION_PATTERN.test(lower) || clueReply);
@@ -297,12 +308,6 @@ export function understandStudentTurn({
     return makeTurn(QUESTION_HELP, 'help_request', 0.93, { ...conversation, isQuestion: /[?؟]/.test(text) });
   }
   if (QUESTION_PATTERN.test(text)) return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.82, { ...conversation, isQuestion: true, referencesPreviousTurn });
-
-  if (conversation.hasTeachingStage && conversation.pendingCheck && typeof teachingCheckResult === 'boolean') {
-    return makeTurn('teaching_check_response', 'learning_response', 1, {
-      ...conversation, referencesPreviousTurn: true, teachingCheckCorrect: teachingCheckResult
-    });
-  }
 
   if (/^(?:ini|itu|yang\s+ini|yang\s+itu|tolong|bantu|entah|tak\s+tahu|tidak\s+tahu)$/iu.test(lower)) {
     const clarifyingQuestion = hasLearningContext
