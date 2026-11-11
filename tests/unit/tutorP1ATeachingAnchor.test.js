@@ -209,7 +209,7 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     expect(turns[1].response.text).toMatch(/kucing.*haiwan atau perbuatan/iu);
     expect(turns[2].response.text).toMatch(/betul|tepat/iu);
     expect(turns[2].response.text).toMatch(/kucing.*haiwan|kata nama am/iu);
-    expect(turns[2].response.intent).toBe('understanding_confirmation');
+    expect(turns[2].response.intent).toBe('teaching_check_response');
     expect(turns[3].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
     expect(turns[4].response.text).toMatch(/kata nama am|nama umum|orang|haiwan|tempat|benda/iu);
     expect(turns[4].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
@@ -239,8 +239,33 @@ describe('P1-A scoped multi-turn teaching anchor', () => {
     ]);
 
     expect(turns[1].response.text).toMatch(/kata kerja|kemahiran atau soalan/iu);
+    expect(turns[1].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('verb');
+    expect(turns[2].response.text).toMatch(/kata kerja|perbuatan|keadaan/iu);
     expect(turns[2].response.text).not.toMatch(/kata nama am|nama umum|kucing.*haiwan/iu);
-    expect(turns[2].response.pedagogicalState?.teachingAnchor || null).toBeNull();
+    expect(turns[2].response.text).not.toMatch(/baca soalan|pilih atau taip satu jawapan/iu);
+    expect(turns[2].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('verb');
     expectUngradedSafe(turns[2].response);
+  });
+
+  it.each([
+    ['binatang', true],
+    ['Kucing ialah haiwan', true],
+    ['haiwan cikgu', true],
+    ['perbuatan', false]
+  ])('handles a natural conceptual-check response without losing context: %s', async (learnerReply, correct) => {
+    const { turns } = await runTranscript([
+      'Apa itu kata nama am?',
+      'Saya tak faham.',
+      learnerReply,
+      'Kenapa?'
+    ]);
+
+    expect(turns[2].response.intent).toBe('teaching_check_response');
+    expect(turns[2].response.text).toMatch(correct ? /betul|tepat/iu : /belum tepat|cuba lagi/iu);
+    expect(turns[2].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
+    expect(turns[2].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
+    expect(turns[3].response.text).toMatch(/kucing|haiwan|kata nama am/iu);
+    expect(turns[3].response.pedagogicalState?.teachingAnchor?.conceptId).toBe('common_noun');
+    for (const { response } of turns.slice(2)) expectUngradedSafe(response);
   });
 });

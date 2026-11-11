@@ -133,7 +133,7 @@ export function understandStudentTurn({
   hasExerciseContext = false,
   hasLearningContext = false,
   activeConcept = '',
-  teachingCheckAnswer = ''
+  teachingCheckResult = null
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
@@ -150,15 +150,6 @@ export function understandStudentTurn({
 
   if (hasExerciseContext && matchesAcceptedAnswer(text, expectedAnswer, acceptedAnswers)) {
     return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
-  }
-
-  if (conversation.hasTeachingStage && conversation.pendingCheck &&
-    matchesAcceptedAnswer(text, teachingCheckAnswer)) {
-    return makeTurn('understanding_confirmation', 'learning_response', 1, {
-      ...conversation,
-      referencesPreviousTurn: true,
-      teachingCheckCorrect: true
-    });
   }
 
   if (SOCIAL_ONLY_PATTERN.test(text)) return makeTurn('general', 'social', 0.99, conversation);
@@ -306,6 +297,12 @@ export function understandStudentTurn({
     return makeTurn(QUESTION_HELP, 'help_request', 0.93, { ...conversation, isQuestion: /[?؟]/.test(text) });
   }
   if (QUESTION_PATTERN.test(text)) return makeTurn(KNOWLEDGE_QUESTION, KNOWLEDGE_QUESTION, 0.82, { ...conversation, isQuestion: true, referencesPreviousTurn });
+
+  if (conversation.hasTeachingStage && conversation.pendingCheck && typeof teachingCheckResult === 'boolean') {
+    return makeTurn('teaching_check_response', 'learning_response', 1, {
+      ...conversation, referencesPreviousTurn: true, teachingCheckCorrect: teachingCheckResult
+    });
+  }
 
   if (/^(?:ini|itu|yang\s+ini|yang\s+itu|tolong|bantu|entah|tak\s+tahu|tidak\s+tahu)$/iu.test(lower)) {
     const clarifyingQuestion = hasLearningContext

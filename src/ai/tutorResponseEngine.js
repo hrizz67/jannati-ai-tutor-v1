@@ -1186,7 +1186,7 @@ function buildConversationalTeachingReply({
         );
       }
       return withReplies(
-        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Saya mahu pastikan saya faham dengan betul. Kamu mahu saya menerangkan satu topik, mencadangkan pelajaran, atau membantu latihan?`,
+        `${studentName && studentName !== 'Murid' ? `${studentName}, ` : ''}baik, saya dengar. Kamu mahu belajar satu topik atau bantu latihan?`,
         ['Terangkan satu topik', 'Cadangkan apa untuk belajar', 'Bantu latihan saya'],
         false
       );
@@ -1357,7 +1357,7 @@ export async function getTutorResponse(options = {}) {
   const questionIdentity = normalizeText(resolvedQuestion?.id || '', '');
   const anchorContext = getTeachingAnchorContext({
     history, conversationKey, subjectId: subjectContext.id,
-    topicId: topicContext.id, questionId: questionIdentity
+    topicId: topicContext.id, questionId: questionIdentity, prompt
   });
   const activeConcept = anchorContext.currentConcept ||
     (subjectContext.id && topicContext.id && (questionIdentity || !hasExerciseContext)
@@ -1373,7 +1373,7 @@ export async function getTutorResponse(options = {}) {
     hasLearningContext: Boolean(resolvedQuestionText || resolvedInstruction || topicContext.id || subjectContext.id),
     // Never resume a previous question when its identity is ambiguous.
     activeConcept,
-    teachingCheckAnswer: anchorContext.teachingCheckAnswer
+    teachingCheckResult: anchorContext.teachingCheckResult
   });
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);

@@ -21,8 +21,33 @@ const CURRICULUM_ANCHORS = Object.freeze({
       'Perkataan “kucing” menamakan haiwan atau perbuatan'
     ]),
     check: Object.freeze({
-      answer: 'haiwan',
-      explanation: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.'
+      answers: Object.freeze(['haiwan', 'binatang']),
+      explanation: '“Kucing” ialah kata nama am kerana perkataan itu menamakan haiwan secara umum.',
+      correction: '“Kucing” menamakan haiwan, bukan perbuatan.'
+    })
+  }),
+  verb: Object.freeze({
+    explanations: Object.freeze([
+      'Kata kerja ialah perkataan yang menunjukkan perbuatan atau keadaan.'
+    ]),
+    examples: Object.freeze([
+      'Dalam ayat “Adik berlari di padang”, “berlari” ialah kata kerja.',
+      'Dalam ayat “Ibu duduk di kerusi”, “duduk” menunjukkan keadaan.'
+    ]),
+    alternatives: Object.freeze([
+      'Tanya diri: apakah perbuatan atau keadaan dalam ayat itu?'
+    ]),
+    steps: Object.freeze([
+      'Cari perkataan yang menunjukkan perbuatan atau keadaan.',
+      'Cuba bayangkan perkara yang dibuat oleh orang atau haiwan dalam ayat.'
+    ]),
+    checkQuestions: Object.freeze([
+      'Perkataan “berlari” menunjukkan perbuatan atau benda'
+    ]),
+    check: Object.freeze({
+      answers: Object.freeze(['perbuatan']),
+      explanation: '“Berlari” ialah kata kerja kerana perkataan itu menunjukkan perbuatan.',
+      correction: '“Berlari” menunjukkan perbuatan, bukan benda.'
     })
   })
 });
@@ -94,14 +119,14 @@ export function findTeachingAnchor(history = [], scope = {}) {
   return null;
 }
 
-export function getTeachingAnchorContext({ history = [], conversationKey = '', subjectId = '', topicId = '', questionId = '' } = {}) {
+export function getTeachingAnchorContext({ history = [], conversationKey = '', subjectId = '', topicId = '', questionId = '', prompt = '' } = {}) {
   const scope = { conversationKey, subjectId, topicId, questionId };
   const teachingAnchor = findTeachingAnchor(history, scope);
   return {
     scope,
     teachingAnchor,
     currentConcept: getTeachingAnchorConceptKey(teachingAnchor),
-    teachingCheckAnswer: getTeachingAnchorContent(teachingAnchor)?.check?.answer || ''
+    teachingCheckResult: evaluateTeachingAnchorCheck(teachingAnchor, prompt)
   };
 }
 
@@ -110,7 +135,7 @@ export function resolveTeachingAnchorTurn({ scope = {}, priorTeachingAnchor = nu
   const conceptId = standaloneAnswer && subjectId === 'bm' && /kata nama am/.test(text) &&
     !/kata nama khas|(?:apa\s+)?beza|perbezaan|bandingkan/.test(text)
     ? 'common_noun'
-    : '';
+    : standaloneAnswer && subjectId === 'bm' && /kata kerja/.test(text) ? 'verb' : '';
   const directTeachingAnchor = conceptId ? createTeachingAnchor({ ...scope, conceptId }) : null;
   return {
     directTeachingAnchor,
@@ -124,10 +149,21 @@ export function getTeachingAnchorContent(value = {}) {
   return content ? { grounded: true, ...content, verifiedExamples: content.examples } : null;
 }
 
+export function evaluateTeachingAnchorCheck(value = {}, prompt = '') {
+  const check = getTeachingAnchorContent(value)?.check;
+  const text = String(prompt).normalize('NFKC').toLocaleLowerCase('ms-MY')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  if (!check || !text || text.split(/\s+/).length > 6 || /[?؟]/u.test(prompt)) return null;
+  const words = text.split(/\s+/);
+  return check.answers.some(answer => words.includes(answer));
+}
+
 export function buildTeachingAnchorReply(value = {}, studentTurn = {}) {
   const check = getTeachingAnchorContent(value)?.check;
-  const text = studentTurn.messageType === 'learning_response' && studentTurn.teachingCheckCorrect
-    ? `Betul. ${check?.explanation || ''} Cuba beri satu lagi kata nama am dengan ayat kamu sendiri.`
+  const text = studentTurn.messageType === 'learning_response'
+    ? studentTurn.teachingCheckCorrect
+      ? `Betul. ${check?.explanation || ''} Cuba beri satu contoh lain dengan ayat kamu sendiri.`
+      : `Belum tepat. ${check?.correction || ''} Cuba lagi.`
     : studentTurn.intent === 'why_question' && check
       ? `${check.explanation} Itulah petunjuk yang kita gunakan.`
       : '';
