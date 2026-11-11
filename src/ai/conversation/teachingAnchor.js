@@ -82,7 +82,7 @@ const CURRICULUM_ANCHORS = Object.freeze({
       'In “The cat runs”, “cat” names an animal.',
       'In “We read at school”, “school” names a place.'
     ]),
-    alternatives: Object.freeze(['Ask whether the word names a person, animal, place, or thing rather than an action.']),
+    alternatives: Object.freeze(['Use a noun clue: ask whether the word names a person, animal, place, or thing rather than an action.']),
     steps: Object.freeze(['Find the word naming a person, animal, place, or thing.', 'Try the word “cat”: what does it name?']),
     checkQuestions: Object.freeze(['Does “cat” name an animal or an action']),
     check: Object.freeze({
