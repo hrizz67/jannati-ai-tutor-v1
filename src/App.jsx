@@ -24,6 +24,8 @@ import QuizSpeechConsent from './components/speech/QuizSpeechConsent.jsx';
 import CommunicationContentErrorFallback from './components/communication/CommunicationContentErrorFallback.jsx';
 import { renderSubjectQuestionText } from './components/SubjectLanguageText.jsx';
 const TutorAIModal = React.lazy(() => import('./components/ai/TutorAIModal.jsx'));
+// Tutor context must follow the currently selected dashboard subject, not a stale quiz.
+import { resolveTutorChatSubject } from './utils/tutorChatSubject.js';
 const DeferredIconGlyph = React.lazy(() => import('./components/IconGlyph.jsx'));
 function IconGlyph(props) {
   return <React.Suspense fallback={null}><DeferredIconGlyph {...props} /></React.Suspense>;
@@ -5301,9 +5303,9 @@ export default function App() {
   const tutorHasExerciseContext = screen === 'quiz';
   const tutorQuestion = tutorHasExerciseContext ? currentQuestion() : null;
   const tutorSubjectId = tutorQuestion?.subjectId || activeTopic?.subjectId || '';
-  const chatSubject = activeSubject?.id === 'adaptive'
-    ? allSubjects.find(item => item.id === tutorSubjectId) || selectedSubject || activeSubject
-    : activeSubject || selectedSubject;
+  const chatSubject = resolveTutorChatSubject({
+    screen, selectedSubjectId, selectedSubject, activeSubject, allSubjects, tutorSubjectId
+  });
   const tutorHasTopicContext = ['quiz', 'learning', 'finish'].includes(screen);
   const chatTopic = !tutorHasTopicContext
     ? null
