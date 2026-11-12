@@ -1,0 +1,102 @@
+name: Owner-only v3.13.41 strict production deploy gate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/owner-v31341-tag-dispatch.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-only-tag-v31341
+  cancel-in-progress: false
+
+jobs:
+  validate-tag-and-dispatch:
+    name: Validate 900k production bundle, tag and dispatch existing deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+      VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed on wrong version, tag or release status
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(node -p 'require("./package.json").version')" = "3.13.41"
+          test -n "$VITE_SUPABASE_URL"
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY"
+          if git ls-remote --exit-code --tags origin refs/tags/v3.13.41 >/dev/null 2>&1; then
+            echo "v3.13.41 already exists; never overwrite tags." >&2
+            exit 1
+          fi
+          grep -q 'OWNER-ONLY PRELAUNCH' docs/releases/RELEASE_NOTES.md
+          grep -q 'v3.13.41' docs/releases/VERSION.json
+          grep -q "workflow_dispatch:" .github/workflows/deploy.yml
+
+      - name: Use Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check generated release metadata and tag alignment
+        run: npm run release:check -- --tag v3.13.41 --artifacts
+
+      - name: Run full validation without production STT endpoints
+        run: npm run validate
+
+      - name: Build with EXACT production STT/pilot settings and strict 900k gate
+        env:
+          VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
+          VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
+          VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
+          VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build
+          npm run release:build-check
+          echo "EXACT_PRODUCTION_900K_PASS ${GITHUB_SHA}"
+
+      - name: Create immutable annotated tag and owner-only prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git -c user.name="jannati-release" -c user.email="jannati-release@users.noreply.github.com" \
+            tag -a v3.13.41 -m "Jannati AI Tutor v3.13.41: owner-only bundle-budget fix"
+          git push origin refs/tags/v3.13.41
+          gh release create v3.13.41 --verify-tag --title "v3.13.41 — owner-only Chrome QA" \
+            --prerelease --notes-file docs/releases/RELEASE_NOTES.md
+          echo "OWNER_ONLY_TAG_PASS ${GITHUB_SHA}"
+
+      - name: Dispatch existing tagged production workflow after all source gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run deploy.yml --ref v3.13.41
+          echo "DEPLOY_DISPATCH_SENT ref=v3.13.41 sha=${GITHUB_SHA}"
+
+      - name: Preserve testing-only authorization boundary
+        run: |
+          echo "Owner-only browser testing. No child pilot, payment, Gate A2, Worker or database mutation."
