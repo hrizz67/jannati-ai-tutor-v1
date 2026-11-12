@@ -147,7 +147,20 @@ async function audit() {
   const bounds = dialog.getBoundingClientRect();
   assert(bounds.width > 0 && bounds.height > 0, 'Modal has zero dimensions');
   assert(bounds.left >= -1 && bounds.right <= innerWidth + 1, 'Modal overflows viewport horizontally');
-  assert(transcript.getBoundingClientRect().height >= 50, 'Reading pane collapsed');
+  const sections = [...dialog.children].map(element => ({
+    className: element.className,
+    height: Math.round(element.getBoundingClientRect().height),
+    minHeight: getComputedStyle(element).minHeight,
+    display: getComputedStyle(element).display
+  }));
+  assert(transcript.getBoundingClientRect().height >= 50,
+    'Reading pane collapsed: ' + JSON.stringify({
+      viewport: [innerWidth, innerHeight],
+      shell: [Math.round(bounds.width), Math.round(bounds.height)],
+      pane: Math.round(transcript.getBoundingClientRect().height),
+      rows: getComputedStyle(dialog).gridTemplateRows,
+      sections
+    }));
   assert(document.documentElement.scrollWidth <= innerWidth + 2, 'Document has horizontal overflow');
   pass('Chromium geometry: viewport ' + innerWidth + 'x' + innerHeight +
     ', modal ' + Math.round(bounds.width) + 'x' + Math.round(bounds.height));
