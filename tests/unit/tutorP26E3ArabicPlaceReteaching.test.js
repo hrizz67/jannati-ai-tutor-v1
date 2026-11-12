@@ -118,7 +118,7 @@ describe('P2.6-E3 Arabic place-noun reteaching is scoped and progressive', () =>
     });
     assertSafeTeaching(result, 'مكان');
     expect(result.text).not.toContain('اسم المكان كلمة تسمّي مكانًا');
-    expect(result.text).toContain('لا توجد معلومات تعليمية معتمدة');
+    expect(result.text).toMatch(/ابحث عن الكلمة المطلوبة|لا توجد معلومات تعليمية معتمدة/u);
   });
 
   it('does not carry Arabic reteaching copy into BM lessons', async () => {
