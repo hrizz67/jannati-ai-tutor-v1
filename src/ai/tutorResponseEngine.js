@@ -1845,6 +1845,7 @@ export async function getTutorResponse(options = {}) {
     topicId: topicContext.id,
     topicLabel: fallbackTopicLabel,
     questionId: normalizeText(resolvedQuestion?.id || '', ''),
+    questionText: resolvedQuestionText,
     learnerAnswer: answerText,
     options: resolvedOptions,
     expectedAnswer: expected,
