@@ -67,7 +67,7 @@ describe('P2.6-E2 begins Arabic teaching, never repeats a teaching menu', () => 
     });
     assertSafeUngraded(result);
     expect(result.text).toContain(noted.note);
-    expect(result.text).toContain('اشرح الفكرة بكلماتك');
+    expect(result.text).toContain('أن تشرح الفكرة بكلماتك');
   });
 
   it('never teaches an answer-unsafe Arabic topic note', async () => {
