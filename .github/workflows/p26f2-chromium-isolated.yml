@@ -6,6 +6,7 @@ on:
       - qa/p26f2-chromium-synthetic-accessibility
       - fix/p26f2-short-viewport-chat-layout
       - qa/p26f3-exact-css-viewport-reflow
+      - qa/p26f4-assistive-device-readiness
 
 permissions:
   contents: read

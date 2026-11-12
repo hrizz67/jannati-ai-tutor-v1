@@ -15,6 +15,7 @@ const cases = [
   { name: 'actual-css-320x480-short', width: 320, height: 480 },
   { name: 'actual-css-640x480-landscape', width: 640, height: 480 },
   { name: 'actual-css-1280x800', width: 1280, height: 800 },
+  { name: '200pct-text-reflow-320x640', width: 320, height: 640, rootFontScale: '200%' },
   // Reflow proxy: 640 CSS-wide layout reduced to half available CSS width,
   // plus larger root text. NOT a claim that native browser zoom was tested.
   { name: 'reflow-proxy-200pct-text-320x800', width: 320, height: 800, rootFontScale: '200%' }
@@ -102,13 +103,19 @@ async function inspect(client, testCase) {
     media: 'screen',
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }]
   });
+  let injected;
   if (testCase.rootFontScale) {
-    await client.call('Page.addScriptToEvaluateOnNewDocument', {
+    injected = await client.call('Page.addScriptToEvaluateOnNewDocument', {
       source: 'document.addEventListener("DOMContentLoaded",function(){document.documentElement.style.fontSize='
         + JSON.stringify(testCase.rootFontScale) + ';},{once:true});'
     });
   }
   await client.call('Page.navigate', { url: fixture });
+  if (injected?.identifier) {
+    await client.call('Page.removeScriptToEvaluateOnNewDocument', {
+      identifier: injected.identifier
+    });
+  }
   let last;
   for (let n = 0; n < 80; n++) {
     const raw = await client.call('Runtime.evaluate', {
@@ -118,7 +125,8 @@ async function inspect(client, testCase) {
         + 'width:innerWidth,height:innerHeight,'
         + 'rootFontSize:getComputedStyle(document.documentElement).fontSize,'
         + 'scrollWidth:document.documentElement.scrollWidth,'
-        + 'devicePixelRatio:devicePixelRatio }; })()',
+        + 'devicePixelRatio:devicePixelRatio,'
+        + 'reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches }; })()',
       returnByValue: true,
       awaitPromise: false
     });
@@ -131,6 +139,8 @@ async function inspect(client, testCase) {
     testCase.name + ' CDP viewport mismatch: ' + JSON.stringify(last));
   assert(last.scrollWidth <= last.width + 2,
     testCase.name + ' document horizontal overflow: ' + JSON.stringify(last));
+  assert(last.reducedMotion === true,
+    testCase.name + ' requested reduced-motion media emulation is missing: ' + JSON.stringify(last));
   if (testCase.rootFontScale) {
     assert(Number.parseFloat(last.rootFontSize) >= 30,
       testCase.name + ' root text did not scale 200%: ' + JSON.stringify(last));

@@ -139,7 +139,14 @@ async function audit() {
       { key: 'Tab', bubbles: true, cancelable: true }));
     assert(document.activeElement?.getAttribute('aria-label') === 'Tutup',
       subject.id + ': forward Tab trap did not wrap to close');
-    pass(subject.id + ': region, scroll, focus, live announcement, language and targets');
+    // Reverse keyboard sequence must remain within the same dialog.
+    window.dispatchEvent(new KeyboardEvent('keydown',
+      { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }));
+    assert(document.activeElement === finalControl,
+      subject.id + ': reverse Shift+Tab trap did not wrap to final control');
+    assert(dialog.contains(document.activeElement),
+      subject.id + ': Shift+Tab escaped the modal');
+    pass(subject.id + ': region, scroll, bidirectional focus, live announcement, language and targets');
   }
 
   // Geometric check in the real browser renderer (not JSDOM).
@@ -165,9 +172,12 @@ async function audit() {
   pass('Chromium geometry: viewport ' + innerWidth + 'x' + innerHeight +
     ', modal ' + Math.round(bounds.width) + 'x' + Math.round(bounds.height));
 
-  flushSync(() => root.render(null));
-  await wait(20);
-  assert(document.activeElement === opener, 'Closing Tutor did not restore opener focus');
+  // Exercise the actual Escape dismissal path, not a test-only unmount.
+  window.dispatchEvent(new KeyboardEvent('keydown',
+    { key: 'Escape', bubbles: true, cancelable: true }));
+  await wait(30);
+  assert(!document.querySelector('[role="dialog"]'), 'Escape did not close Tutor modal');
+  assert(document.activeElement === opener, 'Escape did not restore opener focus');
   assert(externalRequests === 0, 'External network request was attempted');
   pass('Focus restoration and zero external application requests');
   output.dataset.browserSmoke = 'pass';
