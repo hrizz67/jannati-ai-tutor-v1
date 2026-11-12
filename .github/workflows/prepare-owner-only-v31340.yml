@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
-      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci-placeholder
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
       VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
       VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
     steps:
@@ -48,6 +48,12 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci
+
+      - name: Verify required production build environment is configured
+        shell: bash
+        run: |
+          test -n "$VITE_SUPABASE_URL" || { echo "Production Supabase URL secret absent" >&2; exit 1; }
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY" || { echo "Production publishable-key secret absent" >&2; exit 1; }
 
       - name: Generate v3.13.40 using existing full 10-stage release pipeline
         run: npm run release -- 3.13.40
