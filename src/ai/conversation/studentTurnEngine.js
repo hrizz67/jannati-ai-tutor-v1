@@ -32,7 +32,7 @@ const LEARNING_RECOMMENDATION_PATTERN = /(?:\b(?:hari\s*(?:ini|ni)|sekarang)\b.{
 const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S|\bi\s+(?:want|would\s+like)\s+to\s+(?:learn|study)\s+(?:about\s+)?\S)/iu;
 const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pelajaran)\s+\S|\b(?:belajar|cuba)\s+topik\s+(?:lain|baru)\b|\b(?:switch|change)\s+(?:to\s+)?(?:a\s+)?(?:new\s+)?topic\b|(?:غيّر\s+الموضوع|موضوع\s+جديد))/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
-const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
+const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|pening|seronok|gembira|teruja)\b/iu;
 const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|kemudian|(?:(?:yang|langkah) )?seterusnya|apa\s+langkah\s+seterusnya|then(?: what)?|what(?:'s| is)? next|next step|what\s+should\s+i\s+do\s+next|وماذا\s+بعد|الخطوة\s+التالية|تابع\s+من\s+الكلمة\s+السابقة|can\s+we\s+continue\s+from\s+(?:the\s+)?[\w\s-]{1,60})[.!?؟]*$/iu;
 const MEANING_FOLLOW_UP_PATTERN = /^(?:(?:yang\s+(?:tadi|itu)\s+)?maksud(?:nya)?\s+apa|apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا)|أريد\s+معنى\s+الكلمة)[.!?؟]*$/iu;
 const ACTIVE_QUESTION_REFERENCE_PATTERN = /(?:^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|(?:how\s+do\s+i\s+understand|كيف\s+أفهم)\s+(?:this|هذا)\s+(?:question|السؤال)|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$|\bbahagian\b.{0,30}\bmana\b|\byang\s+mana\b|\bapa\s+petunjuk(?:nya)?\b|\b(?:which|what)\s+(?:part|clue)\b|(?:أي|ما)\s+(?:جزء|دليل))/iu;
@@ -183,7 +183,7 @@ export function understandStudentTurn({
       ? 'tired'
       : /bosan/.test(lower)
         ? 'bored'
-        : /takut|risau|sedih/.test(lower)
+        : /takut|risau|sedih|pening/.test(lower)
           ? 'worried'
           : 'positive';
     return makeTurn('learner_state', 'emotional_signal', 0.98, {
@@ -212,7 +212,7 @@ export function understandStudentTurn({
   }
 
   if (
-    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+tahu\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\b(?:still\s+)?(?:don'?t|do\s+not)\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
+    /\b(?:tak|tidak|belum|masih\s+tak|masih\s+tidak)\s+faham\b|\b(?:tak|tidak)\s+(?:tahu|tau)\b|\bkeliru\b|\bconfus(?:ed|ing)\b|\b(?:still\s+)?(?:don'?t|do\s+not)\s+understand\b|\bi\s+don'?t\s+get\s+it\b|(?:لا\s+أفهم|لم\s+أفهم|ما\s+فهمت|أنا\s+محتار)/iu.test(lower)
     || INFORMAL_MISUNDERSTANDING_PATTERN.test(lower)
   ) {
     if (!conversation.hasHistory || activeConcept || hasExerciseContext) {
@@ -252,6 +252,29 @@ export function understandStudentTurn({
       clarifyingQuestion: 'Soalan yang mana satu? Buka latihan itu atau beritahu saya subjek dan topiknya.',
       quickReplies: ['Buka latihan saya', 'Pilih subjek', 'Pilih topik']
     });
+  }
+
+  // Short, informal requests are not candidate quiz answers. Preserve an
+  // explicit exact accepted-answer match above, then resolve classroom speech
+  // before the generic <=4-word answer-candidate fallback.
+  if (/^(?:sambung(?:\s+balik)?|continue(?:\s+please)?)[.!?؟]*$/iu.test(lower)) {
+    return makeTurn(
+      hasExerciseContext || hasLearningContext
+        ? (conversation.hasTeachingStage ? 'recovery_first_step' : QUESTION_HELP)
+        : 'clarification_needed',
+      FOLLOW_UP_QUESTION,
+      0.99,
+      { ...conversation, isQuestion: true, referencesPreviousTurn: conversation.hasHistory,
+        needsClarification: !(hasExerciseContext || hasLearningContext) }
+    );
+  }
+  if (/^(?:boleh\s+)?(?:cakap|terangkan|jelaskan)\s+(?:lebih\s+)?(?:senang|mudah)(?:\s+(?:sikit|sedikit|lagi))?[.!?؟]*$/iu.test(lower)) {
+    return makeTurn(
+      hasExerciseContext || hasLearningContext ? 'alternative_explanation' : 'clarification_needed',
+      FOLLOW_UP_QUESTION, 0.98,
+      { ...conversation, isQuestion: true, referencesPreviousTurn: hasExerciseContext || conversation.hasHistory,
+        needsClarification: !(hasExerciseContext || hasLearningContext) }
+    );
   }
 
   if (/^(?:yang\s+tadi|yang\s+itu)[.!?？]*$/iu.test(lower)) {

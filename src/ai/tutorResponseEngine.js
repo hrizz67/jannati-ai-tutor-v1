@@ -1139,6 +1139,8 @@ function buildContextualSections({
     options: resolvedOptions,
     subject: subjectLabel,
     topic: topicLabel,
+    // Non-answer, active-question category used by locally grounded help.
+    activeQuestionCategory: categoryRule.category,
     pedagogicalContent
   };
 
@@ -1276,6 +1278,15 @@ function buildConversationalTeachingReply({
     case 'question_help':
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
+      // An explicit target in the active BM question outranks incidental words
+      // in its stem, a learner's false premise, or stale topic metadata.
+      if (/kata\s+nama(?:\s+am)?\s+(?:bagi|untuk)\s+(?:orang|manusia|tempat|lokasi|haiwan|binatang|benda|objek)\b/iu.test(questionText)) {
+        const targetLabel = LEARNER_CHOICE_CATEGORY_LABELS[sections.activeQuestionCategory] || '';
+        const safeClue = normalizeText(sections.hint || '', '');
+        if (targetLabel && safeClue) return withReplies(
+          `Soalan ini meminta kamu mencari ${targetLabel}. ${safeClue}`, [], true
+        );
+      }
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
@@ -1693,6 +1704,21 @@ export async function getTutorResponse(options = {}) {
     studyPlan,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
+  // Correct a learner's category misconception using the *active question*,
+  // not a stale place-noun topic or the learner's own incorrect premise.
+  // Only ungraded BM how-questions with an explicitly requested object target
+  // qualify. Filter against protected answer variants before using the text.
+  const activeBmCategory = contextBundle.sections?.activeQuestionCategory || '';
+  const requestedObject = /kata\s+nama(?:\s+am)?\s+(?:bagi|untuk)\s+(?:benda|objek)\b/iu.test(resolvedQuestionText);
+  const falsePlacePremise = subjectContext.id === 'bm' && requestedObject &&
+    activeBmCategory === 'object' && resolvedIntent === 'how_question' &&
+    studentTurn.messageType !== 'answer_attempt' && /(?:nama|kata\s+nama)\s+tempat\b/iu.test(prompt);
+  const correctionText = falsePlacePremise ? selectAnswerSafeText([
+    'Soalan ini meminta kata nama benda, bukan kata nama tempat. Cari perkataan yang menamakan benda dalam ayat.'
+  ], protectedTutorAnswers, '') : '';
+  const bmCategoryCorrectionReply = correctionText
+    ? { text: correctionText, quickReplies: ['Beri petunjuk', 'Bimbing langkah pertama'], grounded: true }
+    : null;
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
         text: subjectContext.id === 'english'
@@ -1709,7 +1735,7 @@ export async function getTutorResponse(options = {}) {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
     quickReplies: [], grounded: true
   } : null;
-  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
+  const intelligentTeaching = bmCategoryCorrectionReply || falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1729,7 +1755,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = bmCategoryCorrectionReply || falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies

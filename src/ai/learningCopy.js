@@ -143,7 +143,19 @@ export function detectLearningCategory(question = {}, topic = {}) {
   // incidental word in the stem, hint, or stale explanation text. This was
   // causing Math questions to receive BM prompts such as "nama tempat".
   if (subjectId === 'math') return 'generic';
+  // The active question owns the requested category. Phrases such as
+  // "kata nama am bagi benda" must win over incidental "di ruang tamu" or a
+  // stale place-noun hint in topic metadata. Do not infer the answer word.
   const requested = normalize([question?.instruction, question?.q, question?.question].filter(Boolean).join(' '));
+  if (subjectId === 'bm') {
+    const activeTarget = requested.match(/\b(?:kata\s+nama(?:\s+am)?)\s+(?:bagi|untuk)\s+(orang|manusia|tempat|lokasi|haiwan|binatang|benda|objek)\b/u)?.[1];
+    if (activeTarget) {
+      if (['orang', 'manusia'].includes(activeTarget)) return 'person';
+      if (['tempat', 'lokasi'].includes(activeTarget)) return 'place';
+      if (['haiwan', 'binatang'].includes(activeTarget)) return 'animal';
+      if (['benda', 'objek'].includes(activeTarget)) return 'object';
+    }
+  }
   if (/kata nama orang|nama orang|person noun|اسم (?:شخص|إنسان)/.test(requested)) return 'person';
   if (/kata nama tempat|nama tempat|place noun|اسم مكان/.test(requested)) return 'place';
   if (/kata nama haiwan|nama haiwan|animal noun|اسم حيوان/.test(requested)) return 'animal';
