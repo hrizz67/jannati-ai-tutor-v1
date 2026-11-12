@@ -320,9 +320,13 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
     // Keep the public Arabic response and actions in Arabic. Only name a topic
     // when its grounded display label actually uses Arabic; do not transliterate
     // or invent a lesson for an unknown/Latin-only catalog entry.
-    const arabicTopic = [focus.label, topic?.title].find(value =>
-      /\p{Script=Arabic}/u.test(String(value || '')) && !/\p{Script=Latin}/u.test(String(value || ''))
-    ) || '';
+    const validArabicLabel = value =>
+      /\p{Script=Arabic}/u.test(String(value || '')) && !/\p{Script=Latin}/u.test(String(value || ''));
+    // If a weak topic is selected from evidence, never relabel that other
+    // topic using the currently selected topic's (possibly unrelated) title.
+    const arabicTopic = focus.basedOnProgress
+      ? (validArabicLabel(focus.label) ? focus.label : '')
+      : [focus.label, topic?.title].find(validArabicLabel) || '';
     const plan = `خطة قصيرة: نفهم فكرة واحدة، ثم نرى مثالًا، ثم نجرب ${focusCount} أسئلة قصيرة.`;
     if (arabicTopic) {
       const lead = focus.basedOnProgress
