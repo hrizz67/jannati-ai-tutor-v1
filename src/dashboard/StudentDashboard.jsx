@@ -35,7 +35,8 @@ export default function StudentDashboard({
   const topStrong = analytics.hasEvidence ? analytics.strongTopics.slice(0, 5) : adaptiveStrongTopics.slice(0, 5);
   const summaryAccuracy = clampPercent(analytics.accuracy ?? overallAccuracy);
   const summaryStreak = analytics.currentStreak ?? adaptiveProfile.streak ?? 0;
-  const summaryBestStreak = analytics.bestStreak || streakBest || getAdaptiveBestStreak(adaptiveProfile);
+  // Canonical zero is a valid streak value; never resurrect a stale cached best streak.
+  const summaryBestStreak = analytics.bestStreak ?? streakBest ?? getAdaptiveBestStreak(adaptiveProfile);
 
   const adaptiveSnapshot = React.useMemo(() => {
     const focus = adaptiveRecommendationFocus || topWeak[0] || null;
