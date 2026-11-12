@@ -35,6 +35,10 @@ const CONTINUATION_PATTERN = /^(?:(?:se)?lepas (?:tu|itu)(?:\s+(?:camna|macam\s*
 const MEANING_FOLLOW_UP_PATTERN = /^(?:(?:yang\s+(?:tadi|itu)\s+)?maksud(?:nya)?\s+apa|apa\s+maksud(?:nya|\s+(?:itu|tadi))|maksudnya|what\s+does\s+(?:that|it)\s+mean|ما\s+معنى\s+(?:ذلك|هذا)|ماذا\s+يعني\s+(?:ذلك|هذا)|أريد\s+معنى\s+الكلمة)[.!?؟]*$/iu;
 const ACTIVE_QUESTION_REFERENCE_PATTERN = /(?:^(?:(?:dia|soalan\s+(?:ini|tu|itu))\s+tanya\s+apa|apa\s+(?:tu|itu)|what\s+(?:is\s+this|does\s+(?:it|the\s+question)\s+(?:ask|mean))|(?:how\s+do\s+i\s+understand|كيف\s+أفهم)\s+(?:this|هذا)\s+(?:question|السؤال)|ماذا\s+(?:يسأل|يعني\s+هذا))[.!?؟]*$|\bbahagian\b.{0,30}\bmana\b|\byang\s+mana\b|\bapa\s+petunjuk(?:nya)?\b|\b(?:which|what)\s+(?:part|clue)\b|(?:أي|ما)\s+(?:جزء|دليل))/iu;
 const INFORMAL_MISUNDERSTANDING_PATTERN = /(?:\b(?:tak|x)\s*(?:faham|paham)\b|\b(?:saya|sy|aku)?\s*x\s*(?:faham|paham)\b|\bi\s+(?:dun|dont|don['’]?t)\s+(?:understand|get\s+it)\b)/iu;
+// Limited to stand-alone confirmations; avoid interpreting explanatory sentences as confirmation.
+const UNDERSTOOD_CONFIRMATION_PATTERN = /^(?:i (?:understand(?: now)?|get it(?: now)?)|now i understand|i see(?: now)?|فهمت(?: الآن)?|الآن فهمت|أنا فهمت|لقد فهمت)[.!?؟]*$/iu;
+// An explicit request to explain a previously wrong answer is not a general "why" question.
+const ARABIC_WRONG_ANSWER_HELP_PATTERN = /^(?:(?:لماذا\s+(?:إجابتي|جوابي)\s+(?:خاطئة|خطأ|غلط))|(?:أين\s+أخطأت\s+في\s+إجابتي)|(?:ما\s+الخطأ\s+في\s+إجابتي))[.!?؟]*$/u;
 const NO_DIRECT_ANSWER_PATTERN = /(?:\b(?:jangan\b.{0,40}|tanpa\s+)\bjawapan\b|\b(?:don['’]?t|do\s+not)\s+(?:give|tell|show)\b.{0,40}\banswer\b|لا\s+تعط[\u064b-\u065f]*(?:يني|ي|ني)?[^؟]{0,30}(?:الجواب|الإجابة))/iu;
 const RECOVERABLE_TEACHING_STAGES = new Set([
   'concept_introduction',
@@ -137,6 +141,8 @@ export function understandStudentTurn({
 } = {}) {
   const text = clean(prompt);
   const lower = text.toLocaleLowerCase('ms-MY');
+  // Strip Arabic vowel marks only for recognizing pedagogical signals, never for grading answers.
+  const signalText = lower.replace(/[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
   const explicitIntent = clean(intent).toLowerCase();
   const conversation = recentConversation(history, activeConcept);
   const pendingTeachingCheck = teachingCheckResult !== undefined && conversation.hasTeachingStage && conversation.pendingCheck;
@@ -196,7 +202,7 @@ export function understandStudentTurn({
     });
   }
 
-  if (/^(?:saya\s+)?(?:dah|sudah|telah)?\s*faham\b|^(?:ok|baik),?\s*(?:saya\s+)?faham\b/iu.test(lower)) {
+  if (/^(?:saya\s+)?(?:dah|sudah|telah)?\s*faham\b|^(?:ok|baik),?\s*(?:saya\s+)?faham\b/iu.test(lower) || UNDERSTOOD_CONFIRMATION_PATTERN.test(signalText)) {
     return makeTurn('understanding_confirmation', 'understanding_signal', 0.98, {
       ...conversation,
       quickReplies: ['Cuba soalan latihan', 'Terangkan semula dengan ayat saya']
@@ -285,7 +291,7 @@ export function understandStudentTurn({
   }
 
   if (/\b(?:beri|bagi|minta|mahu|nak)?\s*(?:satu\s+)?(?:petunjuk|hint)\b/iu.test(lower) || /(?:أعطني\s+تلميح|تلميح)/u.test(lower)) return makeTurn('hint', 'help_request', 0.99, conversation);
-  if (/\b(?:jawapan\s+saya\s+salah|kenapa\s+salah|silap\s+di\s+mana|where\s+did\s+i\s+go\s+wrong)\b/iu.test(lower)) return makeTurn('wrong_answer_coaching', 'help_request', 0.98, conversation);
+  if (/\b(?:jawapan\s+saya\s+salah|kenapa\s+salah|silap\s+di\s+mana|where\s+did\s+i\s+go\s+wrong)\b/iu.test(lower) || ARABIC_WRONG_ANSWER_HELP_PATTERN.test(signalText)) return makeTurn('wrong_answer_coaching', 'help_request', 0.98, conversation);
   if (/\b(?:contoh|example)(?:\s+lagi|\s+mudah|\s+lain)?\b/iu.test(lower) || /(?:أعطني\s+مثال|مثال\s+آخر)/u.test(lower) || /^(?:lagi|satu\s+lagi)$/iu.test(lower)) {
     return makeTurn('example_request', KNOWLEDGE_QUESTION, 0.97, { ...conversation, isQuestion: true, referencesPreviousTurn });
   }
