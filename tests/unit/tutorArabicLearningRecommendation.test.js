@@ -62,6 +62,21 @@ describe('P2.6-B2 Arabic learning-recommendation locale and grounding', () => {
     safeUnscored(response);
   });
 
+  it('does not relabel an unrelated Latin-only weak topic using the active Arabic topic name', async () => {
+    const response = await getTutorResponse({
+      student, subject, topic, prompt: 'ماذا أتعلم اليوم؟',
+      locale: 'ar-MY',
+      weakTopics: [{ subjectId: 'arab', topicId: 'english_catalog', title: 'Vocabulary' }],
+      conversationKey: 'synthetic::p26b2::unmatched-weak'
+    });
+    expect(response.studentTurn.intent).toBe('learning_recommendation');
+    expect(response.text).toMatch(/درس أساسي في اللغة العربية/u);
+    expect(response.text).not.toMatch(/بناءً على تدريباتك/u);
+    expect(response.text).not.toMatch(/مفردات/u);
+    expect(response.text).not.toMatch(/[A-Za-z]/u);
+    safeUnscored(response);
+  });
+
   it('gives a safe Arabic fallback when no approved Arabic topic title is available', async () => {
     const response = await getTutorResponse({
       student, subject: { id: 'arab', title: 'Bahasa Arab' }, topic: { id: 'english_catalog', title: 'Vocabulary' },
