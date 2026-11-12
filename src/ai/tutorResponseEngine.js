@@ -1276,9 +1276,24 @@ function buildConversationalTeachingReply({
     case 'question_help':
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
-      return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
-        ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
-        : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
+      // Refer to “di” only when that exact location clue exists in the question stem.
+      // A generic “kata nama tempat” instruction is not evidence of “di ___”.
+      if (/\bdi\s+_+/iu.test(questionText)) {
+        return withReplies(
+          'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.',
+          [], true
+        );
+      }
+      if (/kata nama tempat/iu.test(questionText)) {
+        return withReplies(
+          'Soalan meminta kata nama tempat. Cari perkataan yang menamakan lokasi, bukan perbuatan.',
+          [], true
+        );
+      }
+      return withReplies(
+        `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`,
+        [], true
+      );
     case 'understanding_confirmation':
       if (dialogueLanguage === 'en') return withReplies('Good. Can you explain the idea in your own words?', commonReplies, true);
       if (dialogueLanguage === 'ar') return withReplies('جيد. هل تستطيع شرح الفكرة بكلماتك؟', commonReplies, true);
