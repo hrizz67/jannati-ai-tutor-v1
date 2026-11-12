@@ -24,6 +24,7 @@ import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedA
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
 import { selectApprovedTeachingExamples } from './pedagogy/approvedTeachingExamples.js';
+import { isArabicPlaceNounInstruction } from './pedagogy/arabicPlaceNounInstruction.js';
 import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActions.js';
 import {
   attachTeachingAnchorState,
@@ -1185,6 +1186,7 @@ function buildConversationalTeachingReply({
   subject = null,
   topic = null,
   questionText = '',
+  questionId = '',
   weakTopics = [],
   studyPlan = null,
   protectedAnswers = [],
@@ -1376,7 +1378,7 @@ function buildConversationalTeachingReply({
         // A command to begin explaining is not another request for a menu.
         // Teach only from an actual visible Arabic exercise clue or the
         // supplied Arabic topic note; never improvise answer examples.
-        const placeClueIsVisible = /اسم\s+(?:ال)?مكان/u.test(questionText);
+        const placeClueIsVisible = Boolean(questionId) && isArabicPlaceNounInstruction(questionText);
         const safeTopicNote = selectAnswerSafeText(topicNote, protectedAnswers, '');
         const arabicTopicNote = /\p{Script=Arabic}/u.test(safeTopicNote) &&
           !/\p{Script=Latin}/u.test(safeTopicNote) ? safeTopicNote : '';
@@ -1800,6 +1802,7 @@ export async function getTutorResponse(options = {}) {
     subject: conversationalSubject,
     topic: conversationalTopic,
     questionText: resolvedQuestionText,
+    questionId: normalizeText(resolvedQuestion?.id || '', ''),
     weakTopics: weakList,
     studyPlan,
     protectedAnswers: protectedTutorAnswers,
