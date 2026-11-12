@@ -316,6 +316,30 @@ function buildLearningRecommendationReply({ studentName = '', subject = null, to
   const nameLead = studentName && studentName !== 'Murid' ? `${studentName}, ` : '';
   const focusCount = Math.max(2, Math.min(5, Number(studyPlan?.focusCount) || 3));
   const shortPlan = `Pelan kita: fahami satu idea, lihat satu contoh, kemudian cuba ${focusCount} soalan ringkas.`;
+  if (subject?.id === 'arab') {
+    // Keep the public Arabic response and actions in Arabic. Only name a topic
+    // when its grounded display label actually uses Arabic; do not transliterate
+    // or invent a lesson for an unknown/Latin-only catalog entry.
+    const arabicTopic = [focus.label, topic?.title].find(value =>
+      /\p{Script=Arabic}/u.test(String(value || '')) && !/\p{Script=Latin}/u.test(String(value || ''))
+    ) || '';
+    const plan = `خطة قصيرة: نفهم فكرة واحدة، ثم نرى مثالًا، ثم نجرب ${focusCount} أسئلة قصيرة.`;
+    if (arabicTopic) {
+      const lead = focus.basedOnProgress
+        ? `بناءً على تدريباتك، يمكننا مراجعة درس «${arabicTopic}» في اللغة العربية.`
+        : `ليس لدي تدريبات كافية لأحدد الدرس الأصعب بدقة. أقترح أن نبدأ اليوم بدرس «${arabicTopic}» في اللغة العربية.`;
+      return {
+        text: `${lead} ${plan} هل نبدأ بالشرح أم بالتدريب؟`,
+        quickReplies: ['ابدأ بالشرح', 'أعطني مثالًا سهلًا', 'ابدأ بالتدريب'],
+        grounded: true
+      };
+    }
+    return {
+      text: `يمكننا أن نبدأ اليوم بدرس أساسي في اللغة العربية. ${plan} هل تريد أن أختار درسًا أم تختار أنت؟`,
+      quickReplies: ['اختر لي درسًا', 'ابدأ بتدريب قصير', 'أعطني مثالًا'],
+      grounded: Boolean(subject?.id)
+    };
+  }
 
   if (focus.label) {
     const opening = focus.basedOnProgress
