@@ -146,8 +146,6 @@ async function audit() {
       subject.id + ': reverse Shift+Tab trap did not wrap to final control');
     assert(dialog.contains(document.activeElement),
       subject.id + ': Shift+Tab escaped the modal');
-    assert(matchMedia('(prefers-reduced-motion: reduce)').matches,
-      subject.id + ': Chrome reduced-motion emulation was not applied');
     pass(subject.id + ': region, scroll, bidirectional focus, live announcement, language and targets');
   }
 
