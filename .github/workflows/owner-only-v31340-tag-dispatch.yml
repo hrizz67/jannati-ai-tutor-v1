@@ -1,0 +1,95 @@
+name: Owner-only v3.13.40 tagged deployment gate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/owner-only-v31340-tag-dispatch.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-only-tag-v31340
+  cancel-in-progress: false
+
+jobs:
+  validate-and-tag:
+    name: Verify v3.13.40 then dispatch existing tagged deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci-placeholder
+      VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+      VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+    steps:
+      - name: Checkout merged main without release bypass
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check tag uniqueness, owner-only version and immutable main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(node -p 'require("./package.json").version')" = "3.13.40"
+          if git ls-remote --exit-code --tags origin refs/tags/v3.13.40 >/dev/null 2>&1; then
+            echo "Tag v3.13.40 already exists; will not overwrite." >&2
+            exit 1
+          fi
+          grep -q 'OWNER-ONLY PRELAUNCH' docs/releases/RELEASE_NOTES.md
+          grep -q 'v3.13.40' docs/releases/VERSION.json
+          grep -q "workflow_dispatch:" .github/workflows/deploy.yml
+          echo "TAG_GATE_VERSION_PASS ${GITHUB_SHA}"
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate metadata and generated release artifacts
+        run: npm run release:check -- --tag v3.13.40 --artifacts
+
+      - name: Validate the full candidate before creating production tag
+        run: npm run validate
+
+      - name: Rebuild and verify protected production assets
+        shell: bash
+        run: |
+          npm run build
+          npm run build:structure-check
+
+      - name: Create immutable annotated tag on checked main and publish prerelease notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git -c user.name="jannati-release" -c user.email="jannati-release@users.noreply.github.com" \
+            tag -a v3.13.40 -m "Jannati AI Tutor v3.13.40 — owner-only Chrome and device acceptance"
+          git push origin refs/tags/v3.13.40
+          gh release create v3.13.40 --verify-tag --title "v3.13.40 — owner-only accessibility QA" \
+            --prerelease --notes-file docs/releases/RELEASE_NOTES.md
+          echo "TAG_CREATED_AND_PRERELEASE_PREPARED ${GITHUB_SHA}"
+
+      - name: Dispatch pre-existing tagged production pipeline on the exact tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run deploy.yml --ref v3.13.40
+          echo "DEPLOY_DISPATCH_SENT ref=v3.13.40 sha=${GITHUB_SHA}"
+
+      - name: Owner-only rollout boundary
+        run: |
+          echo "OWNER-ONLY test release. Real child, paid rollout, Gate A2, remote generative AI and Quiz STT Worker remain HOLD/OFF."
+          echo "Only deploy.yml, with its own tag/version, build, production environment and smoke gates, may publish GitHub Pages."
