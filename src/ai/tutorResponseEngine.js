@@ -1286,7 +1286,7 @@ function buildConversationalTeachingReply({
       }
       if (/kata nama tempat/iu.test(questionText)) {
         return withReplies(
-          'Soalan meminta kata nama tempat. Baca setiap pilihan dan kenal pasti perkataan yang menamakan lokasi, bukan perbuatan.',
+          'Soalan meminta kata nama tempat. Cari perkataan yang menamakan lokasi, bukan perbuatan.',
           [], true
         );
       }
