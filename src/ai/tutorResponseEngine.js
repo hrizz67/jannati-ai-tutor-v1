@@ -1275,6 +1275,19 @@ function buildConversationalTeachingReply({
         true
       );
     case 'question_help':
+      if (dialogueLanguage === 'ms' && studentTurn.scopedNextStepAfterUnderstanding) {
+        // After a confirmed understanding turn on this exact exercise, ask for
+        // the learner's next attempt rather than replaying the first clue.
+        const nextStep = /kata nama tempat|\bdi\s+_+/iu.test(questionText)
+          ? 'Bagus, sekarang giliran kamu cuba! Pilih satu perkataan yang menamakan tempat. Beritahu saya pilihan kamu dan sebabnya.'
+          : 'Bagus, sekarang cuba langkah seterusnya sendiri. Beritahu saya pilihan atau langkah kamu, kemudian kita semak bersama.';
+        return withReplies(
+          selectAnswerSafeText([nextStep,
+            'Sekarang cuba jawab sendiri. Ceritakan cara kamu memilih supaya kita boleh semak bersama.'
+          ], protectedAnswers, 'Sekarang cuba satu langkah sendiri dan beritahu saya cara kamu memilih.'),
+          [], true
+        );
+      }
       if (dialogueLanguage === 'en' && studentTurn.namedTopicExplainRequest) {
         // Give the learner an actual explanation only from the selected, approved topic.
         // If its note is missing or protected-answer unsafe, ask rather than invent.
@@ -1360,11 +1373,31 @@ function buildConversationalTeachingReply({
       );
     case 'how_question':
       if (studentTurn.teachingStartRequest && dialogueLanguage === 'ar') {
-        return withReplies(
-          'حسنًا، لنبدأ بخطوة صغيرة. هل تريد أن نشرح معنى كلمة من الدرس، أم نرى مثالًا سهلًا أولًا؟',
-          ['اشرح معنى كلمة', 'أعطني مثالًا سهلًا', 'ابدأ بخطوة صغيرة'],
-          Boolean(topic?.id)
-        );
+        // A command to begin explaining is not another request for a menu.
+        // Teach only from an actual visible Arabic exercise clue or the
+        // supplied Arabic topic note; never improvise answer examples.
+        const placeClueIsVisible = /اسم\s+(?:ال)?مكان/u.test(questionText);
+        const safeTopicNote = selectAnswerSafeText(topicNote, protectedAnswers, '');
+        const arabicTopicNote = /\p{Script=Arabic}/u.test(safeTopicNote) &&
+          !/\p{Script=Latin}/u.test(safeTopicNote) ? safeTopicNote : '';
+        const teachingStartText = selectAnswerSafeText([
+          placeClueIsVisible
+            ? 'لنبدأ بمعنى المطلوب: اسم المكان كلمة تدل على مكان. ابحث عن كلمة تشير إلى مكان، ثم أخبرني لماذا اخترتها.'
+            : '',
+          arabicTopicNote
+            ? `${sentence(arabicTopicNote)} الآن حاول أن تشرح الفكرة بكلماتك.`
+            : '',
+          questionText
+            ? 'لنبدأ بقراءة تعليمات السؤال. انتبه إلى الكلمات التي توضّح ما يجب عليك فعله، ثم قل لي ما الذي يطلبه السؤال.'
+            : ''
+        ], protectedAnswers, '');
+        return teachingStartText
+          ? withReplies(teachingStartText,
+              ['لم أفهم', 'اشرح مرة أخرى', 'أعطني تلميحًا'], true)
+          : withReplies(
+              'ليس لدي شرح مؤكد لهذا الدرس الآن. اكتب تعليمات السؤال أو اسم المهارة لنبدأ من معلومة واضحة.',
+              ['اشرح مرة أخرى', 'أعطني تلميحًا'], true
+            );
       }
       if (studentTurn.newTopicRequest && dialogueLanguage === 'en') {
         return topic?.id && topic?.title
@@ -1504,6 +1537,23 @@ export async function getTutorResponse(options = {}) {
   if (approvedEnglishTopic && studentTurn.messageType !== 'answer_attempt') {
     Object.assign(studentTurn, { namedTopicExplainRequest: true, newTopicRequest: true });
   }
+  // A next-step request must follow an actual locally handled, question-scoped
+  // understanding confirmation. Conversation text alone is not enough: verify
+  // the immediately preceding teaching-state scope and the active question ID.
+  const priorTutorTurn = Array.isArray(history) ? history.at(-1) : null;
+  const priorLearnerTurn = Array.isArray(history) ? history.at(-2) : null;
+  const isBmNextStepRequest = /^(?:pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|(?:se)?lepas\s+(?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|apa\s+langkah\s+seterusnya|langkah\s+seterusnya|seterusnya)[.!?]*$/iu.test(String(prompt).trim());
+  const scopedResolution = Boolean(
+    subjectContext.id === 'bm' && hasExerciseContext && questionIdentity &&
+    studentTurn.intent === 'question_help' && isBmNextStepRequest &&
+    priorTutorTurn?.role === 'ai' &&
+    priorTutorTurn.dialogueClassification === 'LOCAL_HANDLED' &&
+    priorTutorTurn?.pedagogicalState?.supportStage === 'resolved' &&
+    activeConcept && priorTutorTurn?.pedagogicalState?.currentConcept === activeConcept &&
+    priorLearnerTurn?.role === 'user' &&
+    /^(?:saya\s+)?(?:(?:dah|sudah|telah)\s+)?faham[.!?]*$/iu.test(String(priorLearnerTurn.text || '').trim())
+  );
+  if (scopedResolution) studentTurn.scopedNextStepAfterUnderstanding = true;
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
@@ -1555,7 +1605,13 @@ export async function getTutorResponse(options = {}) {
         : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
-  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
+  // The explicit Arabic "begin explaining" request operates on the currently
+  // selected lesson even without an earlier conversation message. Otherwise
+  // the reviewed topic note is silently discarded before the teaching reply.
+  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (
+    studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request' ||
+    (subjectContext.id === 'arab' && studentTurn.teachingStartRequest && Boolean(topicContext.id))
+  );
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   // Even an unmatched explicit English topic request must leave the old question
   // behind. Never reuse its answer, pedagogical state or display metadata.
