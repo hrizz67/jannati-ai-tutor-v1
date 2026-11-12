@@ -1187,6 +1187,7 @@ function buildConversationalTeachingReply({
   questionText = '',
   weakTopics = [],
   studyPlan = null,
+  protectedAnswers = [],
   getLocalizedTeachingReplies
 } = {}) {
   if (!studentTurn) return null;
@@ -1328,11 +1329,31 @@ function buildConversationalTeachingReply({
       );
     case 'how_question':
       if (studentTurn.teachingStartRequest && dialogueLanguage === 'ar') {
-        return withReplies(
-          'حسنًا، لنبدأ بخطوة صغيرة. هل تريد أن نشرح معنى كلمة من الدرس، أم نرى مثالًا سهلًا أولًا؟',
-          ['اشرح معنى كلمة', 'أعطني مثالًا سهلًا', 'ابدأ بخطوة صغيرة'],
-          Boolean(topic?.id)
-        );
+        // A command to begin explaining is not another request for a menu.
+        // Teach only from an actual visible Arabic exercise clue or the
+        // supplied Arabic topic note; never improvise answer examples.
+        const placeClueIsVisible = /اسم\s+(?:ال)?مكان/u.test(questionText);
+        const safeTopicNote = selectAnswerSafeText(topicNote, protectedAnswers, '');
+        const arabicTopicNote = /\p{Script=Arabic}/u.test(safeTopicNote) &&
+          !/\p{Script=Latin}/u.test(safeTopicNote) ? safeTopicNote : '';
+        const teachingStartText = selectAnswerSafeText([
+          placeClueIsVisible
+            ? 'لنبدأ بمعنى المطلوب: اسم المكان كلمة تدل على مكان. ابحث عن كلمة تشير إلى مكان، ثم أخبرني لماذا اخترتها.'
+            : '',
+          arabicTopicNote
+            ? `${sentence(arabicTopicNote)} الآن حاول أن تشرح الفكرة بكلماتك.`
+            : '',
+          questionText
+            ? 'لنبدأ بقراءة تعليمات السؤال. انتبه إلى الكلمات التي توضّح ما يجب عليك فعله، ثم قل لي ما الذي يطلبه السؤال.'
+            : ''
+        ], protectedAnswers, '');
+        return teachingStartText
+          ? withReplies(teachingStartText,
+              ['لم أفهم', 'اشرح مرة أخرى', 'أعطني تلميحًا'], true)
+          : withReplies(
+              'ليس لدي شرح مؤكد لهذا الدرس الآن. اكتب تعليمات السؤال أو اسم المهارة لنبدأ من معلومة واضحة.',
+              ['اشرح مرة أخرى', 'أعطني تلميحًا'], true
+            );
       }
       if (studentTurn.newTopicRequest && dialogueLanguage === 'en') {
         return topic?.id && topic?.title
@@ -1507,7 +1528,13 @@ export async function getTutorResponse(options = {}) {
       : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
-  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
+  // The explicit Arabic "begin explaining" request operates on the currently
+  // selected lesson even without an earlier conversation message. Otherwise
+  // the reviewed topic note is silently discarded before the teaching reply.
+  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (
+    studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request' ||
+    (subjectContext.id === 'arab' && studentTurn.teachingStartRequest && Boolean(topicContext.id))
+  );
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   // Even an unmatched explicit English topic request must leave the old question
   // behind. Never reuse its answer, pedagogical state or display metadata.
@@ -1698,6 +1725,7 @@ export async function getTutorResponse(options = {}) {
     questionText: resolvedQuestionText,
     weakTopics: weakList,
     studyPlan,
+    protectedAnswers: protectedTutorAnswers,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
