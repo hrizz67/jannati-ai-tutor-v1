@@ -125,7 +125,8 @@ async function inspect(client, testCase) {
         + 'width:innerWidth,height:innerHeight,'
         + 'rootFontSize:getComputedStyle(document.documentElement).fontSize,'
         + 'scrollWidth:document.documentElement.scrollWidth,'
-        + 'devicePixelRatio:devicePixelRatio }; })()',
+        + 'devicePixelRatio:devicePixelRatio,'
+        + 'reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches }; })()',
       returnByValue: true,
       awaitPromise: false
     });
@@ -138,6 +139,8 @@ async function inspect(client, testCase) {
     testCase.name + ' CDP viewport mismatch: ' + JSON.stringify(last));
   assert(last.scrollWidth <= last.width + 2,
     testCase.name + ' document horizontal overflow: ' + JSON.stringify(last));
+  assert(last.reducedMotion === true,
+    testCase.name + ' requested reduced-motion media emulation is missing: ' + JSON.stringify(last));
   if (testCase.rootFontScale) {
     assert(Number.parseFloat(last.rootFontSize) >= 30,
       testCase.name + ' root text did not scale 200%: ' + JSON.stringify(last));
