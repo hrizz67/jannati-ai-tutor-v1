@@ -86,14 +86,14 @@ function resolveConceptKey({ subjectId = '', topicId = '', questionId = '', topi
 
 // A narrow, question-evidenced Arabic scaffold. Never infer the noun category
 // from a topic title, previous free-text chat or an answer-key value.
-function buildArabicPlaceNounReteaching({ subjectId = '', questionId = '', questionText = '', resolvedIntent = '' } = {}) {
+function buildArabicPlaceNounReteaching({ subjectId = '', questionId = '', questionText = '', resolvedIntent = '', protectedAnswers = [] } = {}) {
   if (subjectId !== 'arab' || !questionId ||
     !['misunderstanding', 'alternative_explanation'].includes(resolvedIntent)) return null;
   const visibleInstruction = clean(questionText, 180)
     .normalize('NFKD').replace(/[\u064b-\u065f\u0670]/gu, '')
     .replace(/[.!?؟]+$/u, '').trim();
   if (!/^(?:اختر|حدد|عين)\s+اسم\s+(?:ال)?مكان$/u.test(visibleInstruction)) return null;
-  return {
+  const scaffold = {
     grounded: true,
     explanations: ['اسم المكان كلمة تسمّي مكانًا. نبحث عن اسم مكان، لا عن كلمة تدل على عمل.'],
     alternatives: ['فكّر في معنى الكلمة: هل تسمّي مكانًا، أم تصف عملًا؟'],
@@ -104,6 +104,20 @@ function buildArabicPlaceNounReteaching({ subjectId = '', questionId = '', quest
     examples: [],
     verifiedExamples: []
   };
+  // Arabic inflection/diacritics can evade a plain accepted-answer string
+  // check (e.g. answer "مكان" inside "مكانًا"). Treat *the entire* scaffold
+  // as unavailable when any protected key overlaps its normalized wording.
+  const normalizedArabic = value => clean(value, 700).normalize('NFKD')
+    .replace(/[\u064b-\u065f\u0670]/gu, '').normalize('NFKC');
+  const candidateText = normalizedArabic([
+    ...scaffold.explanations, ...scaffold.alternatives,
+    ...scaffold.steps, ...scaffold.checkQuestions
+  ].join(' '));
+  if (protectedAnswers.some(answer => {
+    const key = normalizedArabic(answer);
+    return key && candidateText.includes(key);
+  })) return null;
+  return scaffold;
 }
 
 function getPreviousState(history = [], currentConcept = '') {
@@ -344,7 +358,7 @@ export function buildIntelligentTeachingTurn({
   const language = resolveLanguage({ locale, languagePresentation, subjectId });
   const anchoredContent = getTeachingAnchorContent(scopedTeachingAnchor);
   const visibleArabicReteaching = buildArabicPlaceNounReteaching({
-    subjectId, questionId, questionText, resolvedIntent
+    subjectId, questionId, questionText, resolvedIntent, protectedAnswers
   });
   const activeTeachingContent = anchoredContent || visibleArabicReteaching || teachingContent;
   const localizedCandidates = values => safeCandidates(values, protectedAnswers)
