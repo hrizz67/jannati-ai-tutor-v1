@@ -1,4 +1,5 @@
 import { selectAnswerSafeText, textContainsExpectedAnswer } from '../policy/answerRevealPolicy.js';
+import { isArabicPlaceNounInstruction } from './arabicPlaceNounInstruction.js';
 import {
   getTeachingAnchorConceptKey,
   getTeachingAnchorContent,
@@ -89,10 +90,7 @@ function resolveConceptKey({ subjectId = '', topicId = '', questionId = '', topi
 function buildArabicPlaceNounReteaching({ subjectId = '', questionId = '', questionText = '', resolvedIntent = '', protectedAnswers = [] } = {}) {
   if (subjectId !== 'arab' || !questionId ||
     !['misunderstanding', 'alternative_explanation'].includes(resolvedIntent)) return null;
-  const visibleInstruction = clean(questionText, 180)
-    .normalize('NFKD').replace(/[\u064b-\u065f\u0670]/gu, '')
-    .replace(/[.!?؟]+$/u, '').trim();
-  if (!/^(?:اختر|حدد|عين)\s+اسم\s+(?:ال)?مكان$/u.test(visibleInstruction)) return null;
+  if (!isArabicPlaceNounInstruction(questionText)) return null;
   const scaffold = {
     grounded: true,
     explanations: ['اسم المكان كلمة تسمّي مكانًا. نبحث عن اسم مكان، لا عن كلمة تدل على عمل.'],
