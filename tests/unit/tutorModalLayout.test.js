@@ -117,4 +117,11 @@ describe('Tutor AI modal layout-state contract', () => {
     expect(protectedMarkup).not.toContain('RAHSIA-42');
     expect(revealAllowedMarkup).toContain('RAHSIA-42');
   });
+  it('keeps each Tutor learning tool at least 44px tall, including the narrow mobile override', () => {
+    const styles = readFileSync(new URL('../../src/styles/style.css', import.meta.url), 'utf8');
+    const declaredHeights = [...styles.matchAll(/\.tutor-ai-tool-button\s*\{[^}]*min-height:\s*(\d+)px/gs)]
+      .map(match => Number(match[1]));
+    expect(declaredHeights).toEqual([44, 44]);
+  });
+
 });

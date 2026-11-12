@@ -1,0 +1,83 @@
+name: Owner-only device QA artifact (NO DEPLOY)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/owner-device-qa-artifact.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-device-qa-artifact-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  package-isolated-preview:
+    name: Build immutable backend-disabled QA preview ZIP
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VITE_BUILD_REVISION: ${{ github.sha }}
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Confirm immutable main revision and backend isolation
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$VITE_BUILD_REVISION"
+          if test -n "${VITE_SUPABASE_URL:-}" || test -n "${VITE_SUPABASE_PUBLISHABLE_KEY:-}" \
+            || test -n "${VITE_STT_ENDPOINT:-}" || test -n "${VITE_QUIZ_STT_ENDPOINT:-}"; then
+            echo "Unexpected backend environment supplied to owner QA build" >&2
+            exit 1
+          fi
+
+      - name: Use Node.js 24 and locked dependencies
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build isolated QA artifact without backend
+        shell: bash
+        run: |
+          env -u VITE_SUPABASE_URL -u VITE_SUPABASE_PUBLISHABLE_KEY \
+            -u VITE_STT_ENDPOINT -u VITE_QUIZ_STT_ENDPOINT \
+            npm run build:qa-preview
+
+      - name: Verify packaged manifest is exact SHA and all backends disabled
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFile } from 'node:fs/promises';
+          const manifest = JSON.parse(await readFile('qa-preview-site/qa-preview-manifest.json', 'utf8'));
+          assert.equal(manifest.revision, process.env.VITE_BUILD_REVISION);
+          assert.deepEqual(manifest.backend, {
+            supabaseConfigured: false, sttConfigured: false, cloudWritesEnabled: false
+          });
+          assert.deepEqual(manifest.qa, {
+            exactIdHarnessEnabled: false, r3aEnabled: false, r3bEnabled: false
+          });
+          console.log('OWNER_DEVICE_QA_BACKEND_OFF PASS: ' + manifest.revision);
+          NODE
+
+      - name: Upload 7-day private immutable device QA artifact (NO hosting/deployment)
+        uses: actions/upload-artifact@v7
+        with:
+          name: jannati-owner-device-qa-${{ github.sha }}
+          path: qa-preview-site/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Confirm no deployment happened
+        run: echo "ARTIFACT_ONLY: No tag, Pages deploy, Cloudflare deploy, Supabase, Worker or STT action."

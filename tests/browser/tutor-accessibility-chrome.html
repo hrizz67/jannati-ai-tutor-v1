@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Jannati Tutor isolated Chrome accessibility smoke</title>
+    <style>
+      /* Keep the audit output outside the visual acceptance surface. */
+      #results { display: none; }
+    </style>
+  </head>
+  <body>
+    <button id="qa-opener" type="button">Buka Tutor Sintetik</button>
+    <div id="qa-host"></div>
+    <pre id="results" data-browser-smoke="pending">BROWSER_SMOKE_PENDING</pre>
+    <script type="module" src="./tutorAccessibilityChrome.jsx"></script>
+  </body>
+</html>
