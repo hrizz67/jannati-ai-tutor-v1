@@ -774,8 +774,12 @@ function buildContextualSections({
     question?.simpleExplanation ||
     ''
   );
+  // An authored active-question Islam clue is more useful than a general
+  // subject lead. answerSafeText still rejects any premature answer leak.
+  const islamQuestionHint = subject?.id === 'islam' && resolvedQuestion ? question?.hint : '';
   const hintText = answerSafeText([
     binaHint,
+    islamQuestionHint,
     subjectGuidance?.hint,
     guided?.hint,
     coachResponse?.hint?.hint,
