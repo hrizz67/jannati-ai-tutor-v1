@@ -80,4 +80,5 @@ jobs:
           if-no-files-found: error
 
       - name: Confirm no deployment happened
-        run: echo "ARTIFACT_ONLY: No tag, Pages deploy, Cloudflare deploy, Supabase, Worker or STT action."
+        run: |
+          echo "ARTIFACT_ONLY: No tag, Pages deploy, Cloudflare deploy, Supabase, Worker or STT action."
