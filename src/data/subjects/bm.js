@@ -3127,17 +3127,20 @@ const rawBMSSubject = {
       "questions": [
         {
           "id": "BM-KATA_KERJA-001",
-          "q": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Apakah kata kerja dalam ayat ini?",
-          "answer": "menyanyi",
+          "q": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Nyatakan dua kata kerja dalam ayat ini.",
+          "answer": "menyanyi dan mengemas",
           "accepted": [
-            "menyanyi"
+            "menyanyi dan mengemas",
+            "mengemas dan menyanyi",
+            "menyanyi, mengemas",
+            "mengemas, menyanyi"
           ],
-          "hint": "Cari perkataan yang menunjukkan perbuatan.",
-          "explanation": "menyanyi ialah perbuatan yang dilakukan oleh adik.",
+          "hint": "Cari dua perbuatan yang dilakukan oleh adik. Baca bahagian sebelum dan selepas perkataan sambil.",
+          "explanation": "Kata kerja dalam ayat ini ialah menyanyi dan mengemas kerana kedua-duanya menunjukkan perbuatan adik.",
           "difficulty": "mudah",
           "uasa": "UASA",
           "dskp": "KSSR Tahun 2",
-          "question": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Apakah kata kerja dalam ayat ini?"
+          "question": "Di rumah, adik menyanyi lagu kegemaran sambil mengemas mainan. Nyatakan dua kata kerja dalam ayat ini."
         },
         {
           "id": "BM-KATA_KERJA-002",
