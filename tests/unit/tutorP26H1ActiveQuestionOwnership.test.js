@@ -85,7 +85,7 @@ describe('P2.6-H1 real Chrome active-question noun-category ownership', () => {
     const response = await getTutorResponse({ ...base, prompt: 'Cikgu, saya pening.' });
     expect(response.studentTurn.intent).toBe('learner_state');
     expect(response.text).toMatch(/perlahan-lahan|tak mengapa|bimbing|berehat/iu);
-    expect(response.text).not.toMatch(/cari\\s+(?:perkataan\\s+yang\\s+menamakan\\s+)?tempat/iu);
+    expect(response.text).not.toMatch(/cari\s+(?:perkataan\s+yang\s+menamakan\s+)?tempat/iu);
     expect(response.isCorrect).toBeNull();
     expect(response.expectedAnswer || '').toBe('');
     expect(response.remoteAttempted).toBe(false);
