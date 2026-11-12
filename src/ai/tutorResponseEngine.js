@@ -440,7 +440,10 @@ function clearUngradedMetadata(response) {
 function rankRelevantSubjectTopic(prompt = '', subject = {}) {
   const promptText = normalizeForDialogue(prompt).replace(/_/g, ' ');
   if (!promptText || !Array.isArray(subject?.topics) || !subject.topics.length) return null;
-  const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how']);
+  // Generic request words and connectors must not supply positive topic evidence.
+  // Otherwise "astronomy and galaxies" can falsely match a noun topic note
+  // merely because its approved description contains "and".
+  const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how', 'and', 'about', 'want', 'would', 'like', 'learn', 'study', 'please', 'topic', 'lesson']);
   const promptTokens = promptText.split(/\s+/).filter(token => token.length >= 3 && !ignored.has(token));
   let bestTopic = null;
   let bestScore = 0;
@@ -1324,6 +1327,19 @@ function buildConversationalTeachingReply({
         Boolean(learningAnchor || questionText)
       );
     case 'how_question':
+      if (studentTurn.newTopicRequest && dialogueLanguage === 'en') {
+        return topic?.id && topic?.title
+          ? withReplies(
+              `We can learn about ${topic.title}. Would you like a short explanation, an example, or a practice question first?`,
+              ['Explain this topic', 'Show an example', 'Try a short practice'],
+              true
+            )
+          : withReplies(
+              'Which English topic would you like to learn? Tell me the topic name and I will help you start.',
+              ['Choose an English topic', 'Explain a topic', 'Start a short practice'],
+              false
+            );
+      }
       if (!learningAnchor && !steps.length) {
         if (dialogueLanguage === 'en') return withReplies('I can guide you one step at a time. Which question or skill should we start with?', commonReplies, false);
         if (dialogueLanguage === 'ar') return withReplies('أستطيع مساعدتك خطوة خطوة. بأي سؤال أو مهارة نبدأ؟', commonReplies, false);
@@ -1470,15 +1486,25 @@ export async function getTutorResponse(options = {}) {
       })
     : null;
   if (pedagogicalResponse) return gradedTurn ? pedagogicalResponse : clearUngradedMetadata(pedagogicalResponse);
+  // A requested topic is a fresh scope. A previously active English topic may
+  // be used as a candidate only if its name matches the learner's actual words.
+  const preferredLearningSubject = studentTurn.newTopicRequest && subjectContext.id === 'english' && topicContext.id
+    ? { ...subjectContext, topics: [
+        ...subjectContext.topics,
+        ...(subjectContext.topics.some(item => item?.id === topicContext.id) ? [] : [topicContext])
+      ] }
+    : subjectContext;
   const relevantLearningContext = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
     .includes(resolvedIntent)
-      ? findRelevantLearningContext(prompt, availableSubjects, subjectContext)
+      ? findRelevantLearningContext(prompt, availableSubjects, preferredLearningSubject)
       : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
   const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
-  const switchedTopic = Boolean(studentTurn.newTopicRequest && relevantLearningContext);
+  // Even an unmatched explicit English topic request must leave the old question
+  // behind. Never reuse its answer, pedagogical state or display metadata.
+  const switchedTopic = Boolean(studentTurn.newTopicRequest && (relevantLearningContext || subjectContext.id === 'english'));
   const microCheck = studentTurn.messageType === 'learning_response';
   const priorAnswer = getLearnerAnswer(learnerAnswer || studentAnswer, resolvedQuestion);
   const answerSafeHelp = !promptAnswer && !(resolvedIntent === 'wrong_answer_coaching' && isCorrect === false && priorAnswer);
@@ -1762,7 +1788,7 @@ export async function getTutorResponse(options = {}) {
     error: null,
     studentName,
     subject: conversationalSubject.title,
-    topic: conversationalTopic?.title || fallbackTopicLabel,
+    topic: switchedTopic ? (conversationalTopic?.title || '') : (conversationalTopic?.title || fallbackTopicLabel),
     questionId: switchedTopic ? '' : normalizeText(resolvedQuestion?.id || '', ''),
     questionText: switchedTopic ? '' : resolvedQuestionText,
     instruction: switchedTopic ? '' : resolvedInstruction,

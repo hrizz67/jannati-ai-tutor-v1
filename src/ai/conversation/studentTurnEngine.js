@@ -29,7 +29,7 @@ const SOCIAL_ONLY_PATTERN = /^(?:(?:hai|hello|hi|salam|assalamualaikum|selamat\s
 // Arabic school-day learning recommendations must be routed before generic knowledge questions.
 const ARABIC_LEARNING_RECOMMENDATION_PATTERN = /^(?:ماذا\s+(?:أتعلم|أدرس)\s+(?:اليوم|الآن)|ما\s+الذي\s+(?:أتعلمه|أدرسه)\s+اليوم|بماذا\s+أبدأ\s+(?:اليوم|في\s+الدراسة))[.!?؟]*$/u;
 const LEARNING_RECOMMENDATION_PATTERN = /(?:\b(?:hari\s*(?:ini|ni)|sekarang)\b.{0,35}\b(?:belajar|ulang\s*kaji)\b|\b(?:belajar|ulang\s*kaji)\b.{0,25}\b(?:apa|mana)\b|\b(?:apa|mana)\b.{0,30}\b(?:patut|perlu|mahu|nak|boleh)?\s*(?:saya\s+)?(?:belajar|ulang\s*kaji)\b|\b(?:cadang(?:an|kan)?|saran(?:an|kan)?|pilih)\b.{0,30}\b(?:topik|pelajaran|belajar)\b|\b(?:mula|mulakan|jom)\b.{0,20}\b(?:sesi|latihan)\s+(?:ringkas|hari\s*(?:ini|ni))\b|\bwhat\s+should\s+i\s+(?:learn|study)\b|\bchoose\s+(?:a\s+)?topic\b)/iu;
-const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S)/iu;
+const NAMED_LEARNING_REQUEST_PATTERN = /(?:\b(?:saya\s+)?(?:nak|mahu|hendak)\s+belajar\s+\S|\bjom\s+belajar\s+\S|\bmula(?:kan)?\s+(?:belajar|topik)\s+\S|\bi\s+(?:want|would\s+like)\s+to\s+(?:learn|study)\s+(?:about\s+)?\S)/iu;
 const TOPIC_CHANGE_PATTERN = /(?:\b(?:tukar|ubah|pindah)\s+(?:ke\s+)?(?:topik|pelajaran)\s+\S|\b(?:belajar|cuba)\s+topik\s+(?:lain|baru)\b|\b(?:switch|change)\s+(?:to\s+)?(?:a\s+)?(?:new\s+)?topic\b|(?:غيّر\s+الموضوع|موضوع\s+جديد))/iu;
 const TUTOR_IDENTITY_PATTERN = /\b(?:siapa\s+(?:awak|kamu|cikgu)|awak\s+(?:siapa|boleh\s+buat\s+apa)|apa\s+yang\s+(?:awak|cikgu)\s+boleh\s+(?:buat|bantu))\b/iu;
 const LEARNER_STATE_PATTERN = /\b(?:saya\s+)?(?:penat|letih|bosan|takut|risau|sedih|seronok|gembira|teruja)\b/iu;
