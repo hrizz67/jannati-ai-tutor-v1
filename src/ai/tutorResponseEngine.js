@@ -1693,17 +1693,33 @@ export async function getTutorResponse(options = {}) {
     studyPlan,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
-  const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
-    ? {
-        text: subjectContext.id === 'english'
-          ? 'Your answer is correct.'
-          : subjectContext.id === 'arab'
-            ? 'إجابتك صحيحة.'
-            : 'Jawapan kamu betul.',
-        quickReplies: [],
-        grounded: true
-      }
-    : null;
+  // A child asking "why was my answer wrong?" does not prove that an answer
+  // was submitted or graded. Rely only on feedback for this active exercise,
+  // not an unrelated chat turn or an unverified correctness flag alone.
+  const hasVerifiedAnswerFeedback = hasExerciseContext &&
+    Boolean(priorAnswer) && typeof isCorrect === 'boolean';
+  const arabicUnverifiedWrongAnswerReply = subjectContext.id === 'arab' &&
+    resolvedIntent === 'wrong_answer_coaching' && !gradedTurn &&
+    !hasVerifiedAnswerFeedback
+      ? {
+          text: 'لا أرى إجابة سابقة تم تصحيحها لهذا السؤال. إن كنت قد أجبت، أخبرني بما اخترته لنراجعه معًا خطوة خطوة.',
+          quickReplies: ['اشرح السؤال', 'أعطني تلميحًا'],
+          grounded: true
+        }
+      : null;
+  const falsePremiseReply = arabicUnverifiedWrongAnswerReply || (
+    resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
+      ? {
+          text: subjectContext.id === 'english'
+            ? 'Your answer is correct.'
+            : subjectContext.id === 'arab'
+              ? 'إجابتك صحيحة.'
+              : 'Jawapan kamu betul.',
+          quickReplies: [],
+          grounded: true
+        }
+      : null
+  );
   const correctReason = selectAnswerSafeText([topicContext.note, resolvedInstruction], [expected, ...acceptedAnswers], '✓');
   const correctExplanationReply = resolvedIntent === 'correct_answer_reinforcement' && !promptAnswer && isCorrect === true ? {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
