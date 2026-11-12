@@ -1,0 +1,86 @@
+name: Prepare owner-only v3.13.41 bundle-fix release (no deploy)
+
+on:
+  push:
+    branches:
+      - fix/p26g-defer-serviceworker-init
+    paths:
+      - .github/workflows/prepare-owner-v31341.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-owner-v31341
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Generate canonical release metadata and preserve bundle budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+      VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+    steps:
+      - name: Checkout candidate without modifying main
+        uses: actions/checkout@v7
+        with:
+          ref: fix/p26g-defer-serviceworker-init
+          fetch-depth: 0
+
+      - name: Verify existing release and controlled baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "fix/p26g-defer-serviceworker-init"
+          git merge-base --is-ancestor 107ee4890aeb01b8a001fb1f93b32c9ad7a587eb HEAD
+          test "$(node -p 'require("./package.json").version')" = "3.13.40"
+          test -n "$VITE_SUPABASE_URL"
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY"
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate v3.13.41 through canonical full release pipeline
+        run: npm run release -- 3.13.41
+
+      - name: Verify matching generated release artifacts
+        run: npm run release:check -- --tag v3.13.41 --artifacts
+
+      - name: Explain immutable v3.13.40 NO-GO and corrected build
+        shell: bash
+        run: |
+          cat >> docs/releases/RELEASE_NOTES.md <<'EOF'
+
+          ## Owner-only rollout and previous tag incident
+          - v3.13.40 was TAGGED but its production deploy was stopped **before GitHub Pages publication**: initial JavaScript was 900.19 kB against the unchanged strict 900 kB budget. That tag is preserved and not overwritten.
+          - v3.13.41 defers the version-scoped service-worker registration module until the already-established window load event. Service-worker behavior and registration failure fallback are retained; this reduces initial loading overhead without relaxing budgets.
+          - An isolated exact production-flag build of the remediation candidate passed the 900 kB budget at **899.75 kB**. The tagged deployment must independently recheck its bundle budget and all original release gates.
+          - OWNER-ONLY PRELAUNCH: Chrome/phone QA with synthetic data only. No child pilots, paid users, Gate A2 or release safety waiver.
+          - Remote generative AI and automatic Quiz STT remain OFF. No Worker, backend schema, database or authentication changes.
+          - Native 200% browser zoom, iOS Safari/VoiceOver, Android Chrome/TalkBack acceptance remain NOT RUN until owner testing.
+          EOF
+
+      - name: Commit canonical release files and remove temporary preparer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add package.json package-lock.json README.md docs/releases/
+          git rm .github/workflows/prepare-owner-v31341.yml
+          git diff --cached --name-only
+          git -c user.name="jannati-release-prep" -c user.email="jannati-release-prep@users.noreply.github.com" \
+            commit -m "release: prepare v3.13.41 owner-only production bundle fix"
+          git push origin HEAD:refs/heads/fix/p26g-defer-serviceworker-init
+
+      - name: No deployment performed
+        run: |
+          echo "PREP_ONLY: no tag, GitHub Pages publication, remote AI/Worker deployment or student rollout."
