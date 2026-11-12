@@ -17,7 +17,7 @@ const FUNCTION_WORDS = Object.freeze({
 });
 
 const REVIEWED_RESPONSE_SUPPORT_WORDS = Object.freeze({
-  bm: new Set(['ada', 'beberapa', 'dengan', 'dia', 'kami', 'ketika', 'kita', 'mereka', 'menulis', 'pagi', 'sedang', 'suka', 'telah', 'waktu']),
+  bm: new Set(['ada', 'beberapa', 'bersama', 'dengan', 'dia', 'kami', 'ketika', 'kita', 'mereka', 'menulis', 'pagi', 'sedang', 'suka', 'telah', 'waktu']),
   english: new Set(['also', 'have', 'he', 'her', 'his', 'it', 'morning', 'she', 'they', 'usually', 'we', 'with']),
   arab: new Set(['الصباح', 'الفطور', 'على', 'مع', 'هو', 'هي', 'نحن'])
 });
@@ -34,7 +34,7 @@ const NEGATION_WORDS = Object.freeze({
 // not a claim that the app understands unrestricted natural-language meaning.
 const REVIEWED_TASK_EVIDENCE = Object.freeze({
   bm: [
-    [['makan', 'minum', 'bersarapan'], ['nasi', 'roti', 'telur', 'susu', 'buah', 'bubur', 'bijirin', 'mi', 'sarapan']],
+    [['makan', 'minum', 'bersarapan', 'menikmati'], ['nasi', 'roti', 'telur', 'susu', 'buah', 'bubur', 'bijirin', 'mi', 'sarapan']],
     [['belajar', 'duduk', 'menulis', 'membaca'], ['guru', 'kelas', 'kerusi', 'meja', 'murid', 'papan']],
     [['ada', 'makan', 'tidur', 'bermain'], ['bulu', 'comel', 'kucing', 'manja']],
     [['pergi', 'menaiki', 'berjalan', 'memandu'], ['bas', 'kereta', 'sekolah', 'van']],

@@ -111,6 +111,38 @@ describe('semantic Menulis and Bertutur assessment', () => {
     expect(result.assessmentBasis).toBe('bounded-formative-evidence');
   });
 
+  it.each([
+    ['Menulis', 'writing'],
+    ['Bertutur', 'speaking']
+  ])('accepts a natural %s breakfast sentence with reviewed synonyms', (_label, mode) => {
+    const task = mode === 'writing' ? writingTask('bm') : speakingPrompt('bm');
+    const result = assess(task, 'Pada waktu pagi, saya menikmati roti bersama susu.', 'bm');
+
+    expect(result).toMatchObject({
+      score: 100,
+      promptEcho: false,
+      unreviewedTokens: [],
+      requiresTeacherReview: false,
+      masteryEligible: true,
+      rewardEligible: true,
+      semanticUnderstanding: false
+    });
+    expect(getSemanticCommunicationRewardScore(result)).toBe(100);
+  });
+
+  it.each([
+    'Saya menikmati roti bersama batu.',
+    'Saya menikmati kereta bersama bola.',
+    'Saya tidak menikmati roti bersama susu.'
+  ])('does not grant mastery for unsupported or negated breakfast meaning: %s', response => {
+    const result = assess(writingTask('bm'), response, 'bm');
+
+    expect(result.score).toBeLessThan(60);
+    expect(result.masteryEligible).toBe(false);
+    expect(result.rewardEligible).toBe(false);
+    expect(getSemanticCommunicationRewardScore(result)).toBe(0);
+  });
+
   it('allows a short but grounded oral response without applying the writing-length rule', () => {
     const result = assess(speakingPrompt('bm'), 'Saya makan nasi.', 'bm');
 
