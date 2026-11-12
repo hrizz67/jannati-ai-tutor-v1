@@ -118,6 +118,14 @@ async function probe(scenario) {
       text: String(response.text || '').slice(0, 300)
     };
     records.push(report);
+    if (response.isCorrect !== null && response.isCorrect !== undefined) {
+      console.log('P26C_UNEXPECTED_GRADE=' + JSON.stringify({
+        ...report, isCorrect: response.isCorrect,
+        answerCandidate: response.studentTurn?.answerCandidate ?? '',
+        expectedAnswerExposed: Boolean(response.expectedAnswer || response.correctAnswer),
+        protectedAnswerExposed: Boolean(priorAnswer && String(response.text || '').includes(priorAnswer))
+      }));
+    }
 
     // These scripted utterances ask for teaching, not a quiz answer.
     // The user-facing public API must remain ungraded, local and answer-safe.
