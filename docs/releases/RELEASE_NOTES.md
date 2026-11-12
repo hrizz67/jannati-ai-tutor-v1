@@ -1,8 +1,8 @@
-# Jannati AI Tutor 3.13.39 Release Notes
+# Jannati AI Tutor 3.13.40 Release Notes
 
 Status: stable
-Tag: v3.13.39
-Build date: 2026-11-10T11:03:59.743Z
+Tag: v3.13.40
+Build date: 2026-11-12T15:20:46.730Z
 
 ## Release Readiness
 
@@ -37,13 +37,9 @@ Build date: 2026-11-10T11:03:59.743Z
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
 
-## Owner-only prelaunch restrictions
-
-- This release is for owner-controlled synthetic-data testing only.
-- Includes Tutor natural-dialogue improvements from PR #175.
-- Chrome production regressions must be retested after deployment.
-- No real-child access or paid rollout is authorised.
-- Gate A2 #148 and physical acceptance #156 remain HOLD.
-- Remote generative AI and Quiz STT Worker remain OFF.
-- Microphone/audio acceptance remains SKIPPED_AUDIO.
-- No Worker or database deployment is included.
+## Owner-only controlled Chrome and physical-device acceptance
+- Version 3.13.40 contains reviewed Tutor keyboard, reading-pane and mobile touch-target remediation integrated in PR #215.
+- Chromium synthetic tests for narrow viewport, Tab/Shift+Tab/Escape and 200%-text reflow have passed, but this does NOT replace physical-device, native zoom or VoiceOver/TalkBack evidence.
+- This release remains **OWNER-ONLY PRELAUNCH**. No real-child account, classroom pilot, payment, or Gate A2 is authorized.
+- Remote generative AI and automatic Quiz STT remain OFF; no Supabase schema, Worker, or database changes are included.
+- Preserve all test data as synthetic and review production browser regressions before broader rollout.
