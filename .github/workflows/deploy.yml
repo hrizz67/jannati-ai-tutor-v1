@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,6 +16,7 @@ concurrency:
 jobs:
   validate-build-deploy:
     name: Validate, build, deploy, and smoke test
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -36,6 +38,7 @@ jobs:
 
       - name: Verify production environment
         env:
+          VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
           VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
           VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
           VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
@@ -55,6 +58,7 @@ jobs:
 
       - name: Build production application
         env:
+          VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
           VITE_STT_ENDPOINT: https://jannati-ai-tutor-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/transcribe
           VITE_QUIZ_STT_ENDPOINT: https://jannati-ai-tutor-quiz-stt.jannati-ai-tutor-stt-hrizz67.workers.dev/v1/quiz/transcribe
           VITE_QUIZ_MOBILE_STT_PILOT_ENABLED: 'true'
