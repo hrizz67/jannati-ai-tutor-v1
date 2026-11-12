@@ -5,6 +5,7 @@ on:
     branches:
       - qa/p26f2-chromium-synthetic-accessibility
       - fix/p26f2-short-viewport-chat-layout
+      - qa/p26f3-exact-css-viewport-reflow
 
 permissions:
   contents: read
@@ -96,6 +97,13 @@ jobs:
             grep -o 'CHROMIUM_TUTOR_QA_PASS[^<]*' "/tmp/p26f2-${name}.html" | head -1
             rm -rf "$tempdir"
           done
+
+      - name: CDP-exact CSS viewport and text reflow checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium)" \
+            node scripts/validate/p26f3ChromiumViewport.mjs
 
       - name: Preserve synthetic-only browser evidence
         if: always()
