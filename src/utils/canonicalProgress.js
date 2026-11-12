@@ -69,7 +69,9 @@ export function createCanonicalProgress(input = {}) {
     wrong: totals.wrong + subject.wrong,
     studySeconds: totals.studySeconds + subject.studySeconds
   }), { attempts: 0, correct: 0, wrong: 0, studySeconds: 0 });
-  const totalAttempts = firstNumber(source.totalQuestions, source.totals?.questionsAnswered, historyTotals.attempts, subjectTotals.attempts) ?? 0;
+  // An empty or count-free history has no attempt evidence; it must not mask
+  // real subject/topic attempts with an inferred zero.
+  const totalAttempts = firstNumber(source.totalQuestions, source.totals?.questionsAnswered, historyTotals.attempts || null, subjectTotals.attempts) ?? 0;
   const totalCorrect = firstNumber(source.correctQuestions, source.totalCorrect, source.totals?.correct, historyTotals.correct || null, subjectTotals.correct) ?? 0;
   const totalWrong = firstNumber(source.incorrectQuestions, source.totalWrong, source.totals?.wrong, historyTotals.wrong || null, subjectTotals.wrong, Math.max(0, totalAttempts - totalCorrect)) ?? 0;
   return {
