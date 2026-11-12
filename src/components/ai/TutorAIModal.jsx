@@ -759,7 +759,13 @@ export default function TutorAIModal({
           className="ai-chat-body"
           id="tutor-ai-body"
           ref={bodyRef}
-          tabIndex="-1"
+          role="region"
+          aria-label={languagePresentation.teachingLanguage === 'en'
+            ? 'Tutor AI conversation history'
+            : languagePresentation.teachingLanguage === 'ar'
+              ? 'سجل محادثة المعلّم الذكي'
+              : 'Sejarah perbualan Tutor AI'}
+          tabIndex={0}
           onTouchStart={() => {
             readerScrollRef.current.userScrollIntent = true;
             readerScrollRef.current.programmaticTop = null;
