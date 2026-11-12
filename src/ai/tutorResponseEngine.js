@@ -1187,6 +1187,7 @@ function buildConversationalTeachingReply({
   questionText = '',
   weakTopics = [],
   studyPlan = null,
+  protectedAnswers = [],
   getLocalizedTeachingReplies
 } = {}) {
   if (!studentTurn) return null;
@@ -1274,6 +1275,19 @@ function buildConversationalTeachingReply({
         true
       );
     case 'question_help':
+      if (dialogueLanguage === 'ms' && studentTurn.scopedNextStepAfterUnderstanding) {
+        // After a confirmed understanding turn on this exact exercise, ask for
+        // the learner's next attempt rather than replaying the first clue.
+        const nextStep = /kata nama tempat|\bdi\s+_+/iu.test(questionText)
+          ? 'Bagus, sekarang giliran kamu cuba! Pilih satu perkataan yang menamakan tempat. Beritahu saya pilihan kamu dan sebabnya.'
+          : 'Bagus, sekarang cuba langkah seterusnya sendiri. Beritahu saya pilihan atau langkah kamu, kemudian kita semak bersama.';
+        return withReplies(
+          selectAnswerSafeText([nextStep,
+            'Sekarang cuba jawab sendiri. Ceritakan cara kamu memilih supaya kita boleh semak bersama.'
+          ], protectedAnswers, 'Sekarang cuba satu langkah sendiri dan beritahu saya cara kamu memilih.'),
+          [], true
+        );
+      }
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
@@ -1451,6 +1465,23 @@ export async function getTutorResponse(options = {}) {
     activeConcept,
     teachingCheckResult: anchorContext.teachingCheckResult
   });
+  // A next-step request must follow an actual locally handled, question-scoped
+  // understanding confirmation. Conversation text alone is not enough: verify
+  // the immediately preceding teaching-state scope and the active question ID.
+  const priorTutorTurn = Array.isArray(history) ? history.at(-1) : null;
+  const priorLearnerTurn = Array.isArray(history) ? history.at(-2) : null;
+  const isBmNextStepRequest = /^(?:pastu(?:\s+(?:camna|macam\s*mana|bagaimana))?|(?:se)?lepas\s+(?:tu|itu)(?:\s+(?:camna|macam\s*mana|bagaimana))?|apa\s+langkah\s+seterusnya|langkah\s+seterusnya|seterusnya)[.!?]*$/iu.test(String(prompt).trim());
+  const scopedResolution = Boolean(
+    subjectContext.id === 'bm' && hasExerciseContext && questionIdentity &&
+    studentTurn.intent === 'question_help' && isBmNextStepRequest &&
+    priorTutorTurn?.role === 'ai' &&
+    priorTutorTurn.dialogueClassification === 'LOCAL_HANDLED' &&
+    priorTutorTurn?.pedagogicalState?.supportStage === 'resolved' &&
+    activeConcept && priorTutorTurn?.pedagogicalState?.currentConcept === activeConcept &&
+    priorLearnerTurn?.role === 'user' &&
+    /^(?:saya\s+)?(?:(?:dah|sudah|telah)\s+)?faham[.!?]*$/iu.test(String(priorLearnerTurn.text || '').trim())
+  );
+  if (scopedResolution) studentTurn.scopedNextStepAfterUnderstanding = true;
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
@@ -1691,6 +1722,7 @@ export async function getTutorResponse(options = {}) {
     questionText: resolvedQuestionText,
     weakTopics: weakList,
     studyPlan,
+    protectedAnswers: protectedTutorAnswers,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
