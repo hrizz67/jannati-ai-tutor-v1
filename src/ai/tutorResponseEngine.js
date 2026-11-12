@@ -440,7 +440,10 @@ function clearUngradedMetadata(response) {
 function rankRelevantSubjectTopic(prompt = '', subject = {}) {
   const promptText = normalizeForDialogue(prompt).replace(/_/g, ' ');
   if (!promptText || !Array.isArray(subject?.topics) || !subject.topics.length) return null;
-  const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how']);
+  // Generic request words and connectors must not supply positive topic evidence.
+  // Otherwise "astronomy and galaxies" can falsely match a noun topic note
+  // merely because its approved description contains "and".
+  const ignored = new Set(['apa', 'apakah', 'itu', 'ialah', 'adalah', 'kenapa', 'mengapa', 'bagaimana', 'macam', 'mana', 'boleh', 'ajar', 'saya', 'tentang', 'dan', 'atau', 'yang', 'the', 'what', 'why', 'how', 'and', 'about', 'want', 'would', 'like', 'learn', 'study', 'please', 'topic', 'lesson']);
   const promptTokens = promptText.split(/\s+/).filter(token => token.length >= 3 && !ignored.has(token));
   let bestTopic = null;
   let bestScore = 0;
