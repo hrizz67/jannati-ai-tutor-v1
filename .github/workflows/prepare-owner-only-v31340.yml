@@ -1,0 +1,84 @@
+name: Prepare owner-only v3.13.40 release (no deploy)
+
+on:
+  push:
+    branches:
+      - release/owner-only-v3.13.40
+    paths:
+      - .github/workflows/prepare-owner-only-v31340.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-owner-v31340
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Validate and generate versioned release artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci-placeholder
+      VITE_TUTOR_AI_REMOTE_ENABLED: 'false'
+      VITE_QUIZ_MOBILE_STT_AUTO_ENABLED: 'false'
+    steps:
+      - name: Checkout exact release candidate branch
+        uses: actions/checkout@v7
+        with:
+          ref: release/owner-only-v3.13.40
+          fetch-depth: 0
+
+      - name: Verify controlled base and version target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "release/owner-only-v3.13.40"
+          git merge-base --is-ancestor f16a1a2da7c572b93517d674ce3455d21df7923f HEAD
+          test "$(node -p 'require("./package.json").version')" = "3.13.39"
+          test "$(git status --porcelain | wc -l)" -eq 0
+
+      - name: Install Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate v3.13.40 using existing full 10-stage release pipeline
+        run: npm run release -- 3.13.40
+
+      - name: Verify full release metadata and generated artifacts
+        run: npm run release:check -- --tag v3.13.40 --artifacts
+
+      - name: Enforce owner-only release notes
+        shell: bash
+        run: |
+          cat >> docs/releases/RELEASE_NOTES.md <<'EOF'
+
+          ## Owner-only controlled Chrome and physical-device acceptance
+          - Version 3.13.40 contains reviewed Tutor keyboard, reading-pane and mobile touch-target remediation integrated in PR #215.
+          - Chromium synthetic tests for narrow viewport, Tab/Shift+Tab/Escape and 200%-text reflow have passed, but this does NOT replace physical-device, native zoom or VoiceOver/TalkBack evidence.
+          - This release remains **OWNER-ONLY PRELAUNCH**. No real-child account, classroom pilot, payment, or Gate A2 is authorized.
+          - Remote generative AI and automatic Quiz STT remain OFF; no Supabase schema, Worker, or database changes are included.
+          - Preserve all test data as synthetic and review production browser regressions before broader rollout.
+          EOF
+
+      - name: Commit reproducible release files and remove one-time preparer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add package.json package-lock.json README.md docs/releases/
+          git rm .github/workflows/prepare-owner-only-v31340.yml
+          git diff --cached --name-only
+          git -c user.name="jannati-release-prep" -c user.email="jannati-release-prep@users.noreply.github.com" \
+            commit -m "release: prepare v3.13.40 owner-only Chrome acceptance"
+          git push origin HEAD:refs/heads/release/owner-only-v3.13.40
+
+      - name: Confirm no deployment
+        run: |
+          echo "RELEASE_PREP_ONLY: no tag, production deployment, STT activation, or student rollout."
