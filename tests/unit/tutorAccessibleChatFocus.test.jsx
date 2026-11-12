@@ -595,4 +595,59 @@ describe('P2.5-C1 mounted Tutor accessibility and focus reliability', () => {
     expect(announcer.getAttribute('dir')).toBe(direction);
     expect(document.querySelector('[data-voice-lang]')?.getAttribute('data-voice-lang')).toBe(voiceLocale);
   });
+  it.each([
+    ['bm', 'Bahasa Melayu', 'Sejarah perbualan Tutor AI'],
+    ['english', 'English', 'Tutor AI conversation history'],
+    ['arab', 'Bahasa Arab', 'سجل محادثة المعلّم الذكي']
+  ])('exposes a tab-reachable, language-labelled scrollable history region for %s', async (id, title, name) => {
+    await renderTutor({ selectedSubject: { id, title } });
+    const body = document.querySelector('#tutor-ai-body');
+    const dialog = document.querySelector('[role="dialog"]');
+    expect(body.getAttribute('role')).toBe('region');
+    expect(body.getAttribute('aria-label')).toBe(name);
+    expect(body.tabIndex).toBe(0);
+    expect(body.closest('[role="dialog"]')).toBe(dialog);
+    expect(body.hasAttribute('aria-live')).toBe(false);
+    // The existing live announcer remains the only ordinary polite region.
+    expect(document.querySelectorAll('[aria-live="polite"]')).toHaveLength(1);
+    body.focus();
+    expect(document.activeElement).toBe(body);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
+
+  it('respects a keyboard reader scrolling the focussed history instead of moving to a new reply', async () => {
+    const response = deferred();
+    vi.mocked(getTutorResponse).mockReturnValue(response.promise);
+    await renderTutor();
+    const body = document.querySelector('#tutor-ai-body');
+    const input = document.querySelector('input[aria-label="Tanya Janna"]');
+    Object.defineProperty(body, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 360 });
+
+    await setInputValue(input, 'Bantu saya faham');
+    await pressEnter(input);
+    body.focus();
+    body.scrollTop = 190;
+    await act(async () => {
+      body.dispatchEvent(new window.KeyboardEvent('keydown', {
+        key: 'PageUp', bubbles: true, cancelable: true
+      }));
+      body.dispatchEvent(new window.Event('scroll', { bubbles: true }));
+    });
+    response.resolve({ shortText: 'Mari semak satu petunjuk yang penting dahulu.' });
+    await flushEffects();
+
+    expect(document.activeElement).toBe(body);
+    expect(body.scrollTop).toBe(190);
+    const unread = document.querySelector('.tutor-ai-new-reply-button');
+    expect(unread).not.toBeNull();
+    expect(unread.textContent).toContain('Balasan baharu');
+
+    await act(async () => unread.click());
+    expect(document.querySelector('.tutor-ai-new-reply-button')).toBeNull();
+    const replies = body.querySelectorAll('.chat-bubble.ai:not(.chat-bubble-loading)');
+    expect(document.activeElement).toBe(replies[replies.length - 1]);
+    expect(document.querySelector('[role="dialog"]').contains(document.activeElement)).toBe(true);
+  });
+
 });
