@@ -1528,7 +1528,13 @@ export async function getTutorResponse(options = {}) {
       : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
-  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
+  // The explicit Arabic "begin explaining" request operates on the currently
+  // selected lesson even without an earlier conversation message. Otherwise
+  // the reviewed topic note is silently discarded before the teaching reply.
+  const usesCurrentConversationContext = !studentTurn.newTopicRequest && (
+    studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request' ||
+    (subjectContext.id === 'arab' && studentTurn.teachingStartRequest && Boolean(topicContext.id))
+  );
   const conversationalTopic = relevantSubjectTopic || (usesCurrentConversationContext ? topicContext : null);
   // Even an unmatched explicit English topic request must leave the old question
   // behind. Never reuse its answer, pedagogical state or display metadata.
