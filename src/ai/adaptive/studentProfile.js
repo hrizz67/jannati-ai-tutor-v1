@@ -1,6 +1,6 @@
 export const PROFILE_VERSION = 1;
 
-export const SUBJECT_KEYS = ['bm', 'math', 'english', 'sains', 'islam', 'arab', 'pj'];
+export const SUBJECT_KEYS = ['bm', 'math', 'english', 'sains', 'islam', 'arab', 'pj', 'pk'];
 
 function buildSubjectState() {
   return SUBJECT_KEYS.reduce((state, subjectId) => {
