@@ -123,8 +123,18 @@ async function audit() {
     await wait(30);
     assert(transcript.scrollTop > 0, subject.id + ': keyboard-focusable scroll region could not scroll');
 
-    const send = composerSend;
-    send.focus();
+    // Empty composer intentionally disables Send; it is not a valid Tab stop.
+    // Find the final *enabled and visible* control, matching modalRuntime.js.
+    const tabbables = [...dialog.querySelectorAll(
+      'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'
+    )].filter(element => {
+      const style = getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden';
+    });
+    const finalControl = tabbables.at(-1);
+    assert(finalControl, subject.id + ': no final keyboard focusable control');
+    finalControl.focus();
+    assert(document.activeElement === finalControl, subject.id + ': focus did not reach final control');
     window.dispatchEvent(new KeyboardEvent('keydown',
       { key: 'Tab', bubbles: true, cancelable: true }));
     assert(document.activeElement?.getAttribute('aria-label') === 'Tutup',
