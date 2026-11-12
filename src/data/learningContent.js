@@ -304,6 +304,60 @@ const BM_TEXTBOOK_GUIDANCE = {
   uasa_kbat: { focus: 'Gabungkan kemahiran pemahaman, kosa kata, tatabahasa dan penulisan dalam pentaksiran PBD.', activity: 'Jawab soalan pelbagai bentuk, tandakan bukti dan jelaskan alasan apabila diminta.', check: 'Boleh menjawab berdasarkan rangsangan serta menyemak ketepatan bahasa.' }
 };
 
+
+const ARAB_TEXTBOOK_GUIDANCE = {
+  huruf_hijaiyah: {
+    focus: 'Perhatikan bentuk huruf hijaiyah, bilangan serta kedudukan titik, dan baris fathah, kasrah serta dammah.',
+    activity: 'Pilih tiga huruf yang hampir sama bentuknya, bandingkan titik dan baris, kemudian baca dan padankan dengan kad huruf.',
+    check: 'Boleh membezakan huruf melalui bentuk dan titik serta membaca dari kanan ke kiri.'
+  },
+  mufradat: {
+    focus: 'Kenal perkataan Arab asas melalui sebutan dan maksud Bahasa Melayu, termasuk هَذَا dan هَذِهِ mengikut konteks.',
+    activity: 'Cari tiga perkataan objek sekolah atau rumah, padankan tulisan Arab dengan gambar dan maksud, kemudian sebut dengan jelas.',
+    check: 'Boleh memadankan perkataan Arab dengan makna yang tepat tanpa bergantung pada bunyi semata-mata.'
+  },
+  nombor_arab: {
+    focus: 'Baca angka dan perkataan nombor Arab ١ hingga ٢٠ serta bezakan urutan sebelum dan selepas.',
+    activity: 'Susun kad nombor Arab mengikut urutan, baca setiap nombor dan padankan dengan bilangan objek.',
+    check: 'Boleh membaca simbol nombor Arab dan melengkapkan urutan yang hilang.'
+  },
+  warna_arab: {
+    focus: 'Kenal sebutan dan tulisan nama warna asas Arab serta maksud warna dalam situasi harian.',
+    activity: 'Lihat objek berwarna, pilih perkataan warna Arab yang sepadan dan sebut warna itu sebelum menyalinnya.',
+    check: 'Boleh memadankan warna objek dengan perkataan Arab tanpa meneka daripada susunan pilihan.'
+  },
+  keluarga: {
+    focus: 'Bezakan perkataan ahli keluarga lelaki dan perempuan serta bentuk milikan seperti perkataan yang membawa maksud ahli keluarga saya.',
+    activity: 'Lukis carta keluarga ringkas dan labelkan ahli keluarga menggunakan kosa kata Arab yang telah dipelajari.',
+    check: 'Boleh memilih istilah keluarga yang tepat mengikut jantina dan maksud milikan.'
+  },
+  haiwan_arab: {
+    focus: 'Kenal nama haiwan biasa dalam tulisan dan sebutan Arab serta padanan maksud dalam Bahasa Melayu.',
+    activity: 'Padankan gambar haiwan dengan kad perkataan Arab, kemudian salin dua nama haiwan dengan bentuk huruf yang betul.',
+    check: 'Boleh membaca dan menulis sekurang-kurangnya dua nama haiwan Arab yang dipelajari.'
+  },
+  anggota_badan: {
+    focus: 'Kenal nama anggota badan Arab dan bezakan perkataan khusus seperti kaki, tapak kaki dan jantung serta bentuk milikan.',
+    activity: 'Labelkan gambar badan dengan perkataan Arab, kemudian bandingkan bentuk asas dan contoh milikan seperti رَأْسِي atau يَدِي.',
+    check: 'Boleh memadankan anggota badan yang tepat dan mengenal makna bentuk milikan saya.'
+  },
+  ayat_mudah_arab: {
+    focus: 'Baca ayat mudah Arab tentang diri, sekolah, rumah dan benda mengikut susunan dari kanan ke kiri.',
+    activity: 'Susun kad perkataan menjadi ayat ringkas, baca ayat itu dan padankan dengan maksud Melayu berdasarkan keseluruhan ayat.',
+    check: 'Boleh membaca satu ayat lengkap dan menerangkan maksudnya tanpa hanya meneka satu perkataan.'
+  },
+  hiwar: {
+    focus: 'Fahami ungkapan salam, perkenalan, khabar dan jawapan sopan dalam perbualan Arab yang ringkas.',
+    activity: 'Lakukan dialog dua orang secara bergilir; seorang bertanya dan seorang menjawab menggunakan ungkapan yang sesuai.',
+    check: 'Boleh memilih jawapan dialog yang bersesuaian dengan soalan dan situasi.'
+  },
+  kefahaman_arab: {
+    focus: 'Cari maklumat tersurat dalam ayat Arab ringkas dan kenal perkataan atau frasa yang menyokong jawapan.',
+    activity: 'Baca satu ayat, gariskan perkataan yang menjelaskan orang, benda atau tempat, kemudian jawab soalan berdasarkan ayat.',
+    check: 'Boleh menunjukkan bukti perkataan dalam ayat sebelum memberi jawapan.'
+  }
+};
+
 export function getLearningContent(subjectId, topic) {
   const content = subjectId === 'bm'
     ? BM_CONTENT[topic?.id]
@@ -315,7 +369,9 @@ export function getLearningContent(subjectId, topic) {
     ? (BM_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti yang disediakan.', check: 'Semak kefahaman selepas selesai membaca.' })
     : subjectId === 'math'
       ? (MATH_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Fahami konsep matematik dan hubungkan dengan perwakilan konkrit, gambar serta simbol.', activity: 'Teroka contoh, tunjukkan langkah dan lengkapkan latihan secara berperingkat.', check: 'Semak jawapan menggunakan kaedah kedua atau bahan maujud.' })
-      : { focus: 'Ikuti fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti buku teks.', check: 'Semak kefahaman selepas selesai membaca.' };
+      : subjectId === 'arab'
+        ? (ARAB_TEXTBOOK_GUIDANCE[topic?.id] || { focus: 'Pilih satu topik Bahasa Arab yang dipelajari dan kenal perkataan atau ayat utamanya.', activity: 'Baca contoh topik, sebut perkataan dengan jelas dan buat satu latihan padanan atau bacaan ringkas.', check: 'Boleh menerangkan satu maksud perkataan atau ayat yang benar-benar dipelajari.' })
+        : { focus: 'Ikuti fokus topik dalam bab yang berkaitan.', activity: 'Baca contoh dan lengkapkan aktiviti buku teks.', check: 'Semak kefahaman selepas selesai membaca.' };
   return {
     ...(content || {}),
     source,
