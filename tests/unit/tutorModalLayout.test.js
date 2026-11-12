@@ -69,6 +69,39 @@ describe('Tutor AI modal layout-state contract', () => {
     expect(directChildClasses(renderRegions('loading'), 'ai-modal-shell').at(-1)).toBe('ai-chat-input ai-modal-footer');
   });
 
+  it('does not show a redundant expected-answer card after a correct response', () => {
+    const props = {
+      open: true,
+      selectedSubject: { id: 'bm', title: 'Bahasa Melayu' },
+      selectedTopic: { id: 'kata_nama', title: 'Kata Nama' },
+      question: { id: 'p1c-book', q: 'Pilih kata nama benda.', answer: 'buku' },
+      expectedAnswer: 'buku',
+      learnerAnswer: 'buku',
+      feedback: { status: 'correct', correct: true },
+      attemptCount: 1,
+      onTutup: () => {}
+    };
+    const markup = renderToStaticMarkup(React.createElement(TutorAIModal, props));
+    expect(markup).not.toContain('Jawapan dijangka');
+    expect(markup).not.toContain('buku');
+  });
+
+  it('still allows an answer-key card after three incorrect attempts', () => {
+    const props = {
+      open: true,
+      selectedSubject: { id: 'bm', title: 'Bahasa Melayu' },
+      selectedTopic: { id: 'kata_nama', title: 'Kata Nama' },
+      question: { id: 'p1c-book-reveal', q: 'Pilih kata nama benda.', answer: 'buku' },
+      expectedAnswer: 'buku',
+      feedback: { status: 'incorrect' },
+      attemptCount: 3,
+      onTutup: () => {}
+    };
+    const markup = renderToStaticMarkup(React.createElement(TutorAIModal, props));
+    expect(markup).toContain('Jawapan dijangka');
+    expect(markup).toContain('buku');
+  });
+
   it('does not reveal the expected answer before the policy threshold', () => {
     const props = {
       open: true,

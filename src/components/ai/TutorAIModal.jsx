@@ -306,7 +306,9 @@ export default function TutorAIModal({
     explanationMode: normalizedExplanationMode,
     explicitAnswerRequest: normalizedExplanationMode === 'show_answer'
   });
-  const revealExpectedAnswer = answerRevealPolicy.canRevealAnswer;
+  // A correctly graded response needs feedback, not a redundant answer-key card.
+  // Preserve the existing policy for explicit/allowed reveal after incorrect attempts.
+  const revealExpectedAnswer = answerRevealPolicy.canRevealAnswer && !isCorrect;
   const hasExerciseContext = Boolean(normalizedQuestionText || normalizedInstruction || normalizedExpectedAnswer || normalizedOptions.length);
   const hasVisibleQuestionContext = Boolean(normalizedInstruction || normalizedQuestionText || (normalizedExpectedAnswer && revealExpectedAnswer));
   const subjectLabel = activeSubject?.title || formatSubjectName(activeSubject?.id);
