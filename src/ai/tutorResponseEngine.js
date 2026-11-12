@@ -1327,6 +1327,13 @@ function buildConversationalTeachingReply({
         Boolean(learningAnchor || questionText)
       );
     case 'how_question':
+      if (studentTurn.teachingStartRequest && dialogueLanguage === 'ar') {
+        return withReplies(
+          'حسنًا، لنبدأ بخطوة صغيرة. هل تريد أن نشرح معنى كلمة من الدرس، أم نرى مثالًا سهلًا أولًا؟',
+          ['اشرح معنى كلمة', 'أعطني مثالًا سهلًا', 'ابدأ بخطوة صغيرة'],
+          Boolean(topic?.id)
+        );
+      }
       if (studentTurn.newTopicRequest && dialogueLanguage === 'en') {
         return topic?.id && topic?.title
           ? withReplies(
