@@ -29,7 +29,7 @@ const base = {
   conversationKey: 'synthetic-p26h1::bm::kata_nama_am::p26h1-chrome-benda'
 };
 
-const blockedCategory = /kata\s+nama\s+tempat|menamakan\s+tempat|nama\s+tempat|cari\s+.*\btempat\b|\bاسم\s+شخص\b|\bhijaiyah\b/iu;
+const blockedCategory = /kata\s+nama\s+tempat|menamakan\s+tempat|nama\s+tempat|cari\s+(?:perkataan\s+yang\s+menamakan\s+|kata\s+nama\s+)?tempat\b|\bاسم\s+شخص\b|\bhijaiyah\b/iu;
 const protectedAnswerDisclosure = /(?:jawapan(?:nya)?\s+(?:ialah|adalah|:)|jawapan\s+betul\s*:)\s*[“"']?buku\b/iu;
 
 function expectSafeGroundedObject(response) {
@@ -75,11 +75,20 @@ describe('P2.6-H1 real Chrome active-question noun-category ownership', () => {
     'Bahagian mana dalam ayat ni saya kena tengok?',
     'Tak tau la.',
     'Boleh cakap senang sikit?',
-    'Cikgu, saya pening.',
     'Sambung balik.'
   ])('maintains benda-category guidance for active Chrome question: %s', async prompt => {
     const response = await getTutorResponse({ ...base, prompt, history: [] });
     expectSafeGroundedObject(response);
+  });
+
+  it('supports a stressed child without grading emotional text as an answer', async () => {
+    const response = await getTutorResponse({ ...base, prompt: 'Cikgu, saya pening.' });
+    expect(response.studentTurn.intent).toBe('learner_state');
+    expect(response.text).toMatch(/perlahan-lahan|tak mengapa|bimbing|berehat/iu);
+    expect(response.text).not.toMatch(/cari\\s+(?:perkataan\\s+yang\\s+menamakan\\s+)?tempat/iu);
+    expect(response.isCorrect).toBeNull();
+    expect(response.expectedAnswer || '').toBe('');
+    expect(response.remoteAttempted).toBe(false);
   });
 
   it('never adopts a child\'s false place-category premise as the target of the active object question', async () => {
@@ -111,7 +120,7 @@ describe('P2.6-H1 real Chrome active-question noun-category ownership', () => {
       const response = await getTutorResponse({ ...base, prompt, history });
       expect(response.questionId).toBe(actualChromeQuestion.id);
       expect(response.text).not.toMatch(/cari\s+perkataan\s+yang\s+menamakan\s+tempat|soalan\s+meminta\s+kata\s+nama\s+tempat/iu);
-      expect(response.expectedAnswer).toBe('');
+      expect(response.expectedAnswer || '').toBe('');
       expect(response.isCorrect).toBeNull();
       history = buildBoundedDialogueContext([
         ...history,
