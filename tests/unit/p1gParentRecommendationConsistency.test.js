@@ -50,16 +50,21 @@ describe('P1-G parent recommendation consistency', () => {
     expect(buildRecommendationKey({ hasEvidence: true, masteryPercent: 95 })).toBe('increase_difficulty');
   });
 
-  it('does not recommend revision when a weak but never-attempted topic has no evidence', () => {
+  it('does not treat a weak but never-attempted topic as an evidenced revision target', () => {
+    const strongTopics = Object.fromEntries(
+      Array.from({ length: 8 }, (_, i) => [`strong_${i + 1}`, topic(95)])
+    );
     const progress = createCanonicalProgress({
-      totalQuestions: 3,
-      correctQuestions: 3,
+      totalQuestions: 8,
+      correctQuestions: 8,
       topics: {
-        bm: { kata_nama_am: topic(95, 3), kata_kerja: topic(10, 0) }
+        math: strongTopics,
+        bm: { kata_kerja: topic(10, 0) }
       }
     });
     const analytics = getCanonicalAnalytics({ canonicalProgress: progress });
+    expect(analytics.masteryPercent).toBeGreaterThanOrEqual(85);
     expect(analytics.weakTopics).toEqual([]);
-    expect(buildRecommendationKey(analytics)).toBe('normal_practice');
+    expect(buildRecommendationKey(analytics)).toBe('increase_difficulty');
   });
 });
