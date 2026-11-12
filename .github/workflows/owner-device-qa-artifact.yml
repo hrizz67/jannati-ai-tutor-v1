@@ -32,7 +32,6 @@ jobs:
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$VITE_BUILD_REVISION"
-          test "$(git branch -r --contains HEAD | grep -c origin/main)" -ge 0
           if test -n "${VITE_SUPABASE_URL:-}" || test -n "${VITE_SUPABASE_PUBLISHABLE_KEY:-}" \
             || test -n "${VITE_STT_ENDPOINT:-}" || test -n "${VITE_QUIZ_STT_ENDPOINT:-}"; then
             echo "Unexpected backend environment supplied to owner QA build" >&2
