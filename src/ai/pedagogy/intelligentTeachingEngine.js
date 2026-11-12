@@ -84,6 +84,42 @@ function resolveConceptKey({ subjectId = '', topicId = '', questionId = '', topi
   return clean([subjectId || 'general', topicId || topicLabel || 'general', questionId || 'general'].join('::'), 240);
 }
 
+// A narrow, question-evidenced Arabic scaffold. Never infer the noun category
+// from a topic title, previous free-text chat or an answer-key value.
+function buildArabicPlaceNounReteaching({ subjectId = '', questionId = '', questionText = '', resolvedIntent = '', protectedAnswers = [] } = {}) {
+  if (subjectId !== 'arab' || !questionId ||
+    !['misunderstanding', 'alternative_explanation'].includes(resolvedIntent)) return null;
+  const visibleInstruction = clean(questionText, 180)
+    .normalize('NFKD').replace(/[\u064b-\u065f\u0670]/gu, '')
+    .replace(/[.!?؟]+$/u, '').trim();
+  if (!/^(?:اختر|حدد|عين)\s+اسم\s+(?:ال)?مكان$/u.test(visibleInstruction)) return null;
+  const scaffold = {
+    grounded: true,
+    explanations: ['اسم المكان كلمة تسمّي مكانًا. نبحث عن اسم مكان، لا عن كلمة تدل على عمل.'],
+    alternatives: ['فكّر في معنى الكلمة: هل تسمّي مكانًا، أم تصف عملًا؟'],
+    steps: ['اقرأ الكلمات واحدةً واحدةً، ثم حدّد الكلمة التي تشير إلى مكان.'],
+    checkQuestions: ['هل الكلمة التي تفكر فيها تسمّي مكانًا أم عملًا'],
+    // Never fabricate an example; unverified examples must not override
+    // the existing capped adult-support escalation policy.
+    examples: [],
+    verifiedExamples: []
+  };
+  // Arabic inflection/diacritics can evade a plain accepted-answer string
+  // check (e.g. answer "مكان" inside "مكانًا"). Treat *the entire* scaffold
+  // as unavailable when any protected key overlaps its normalized wording.
+  const normalizedArabic = value => clean(value, 700).normalize('NFKD')
+    .replace(/[\u064b-\u065f\u0670]/gu, '').normalize('NFKC');
+  const candidateText = normalizedArabic([
+    ...scaffold.explanations, ...scaffold.alternatives,
+    ...scaffold.steps, ...scaffold.checkQuestions
+  ].join(' '));
+  if (protectedAnswers.some(answer => {
+    const key = normalizedArabic(answer);
+    return key && candidateText.includes(key);
+  })) return null;
+  return scaffold;
+}
+
 function getPreviousState(history = [], currentConcept = '') {
   return [...(Array.isArray(history) ? history : [])]
     .reverse()
@@ -297,6 +333,7 @@ export function buildIntelligentTeachingTurn({
   topicId = '',
   topicLabel = '',
   questionId = '',
+  questionText = '',
   learnerAnswer = '',
   options = [],
   expectedAnswer = '',
@@ -320,7 +357,10 @@ export function buildIntelligentTeachingTurn({
   const protectedAnswers = [expectedAnswer, ...(Array.isArray(acceptedAnswers) ? acceptedAnswers : [])].filter(Boolean);
   const language = resolveLanguage({ locale, languagePresentation, subjectId });
   const anchoredContent = getTeachingAnchorContent(scopedTeachingAnchor);
-  const activeTeachingContent = anchoredContent || teachingContent;
+  const visibleArabicReteaching = buildArabicPlaceNounReteaching({
+    subjectId, questionId, questionText, resolvedIntent, protectedAnswers
+  });
+  const activeTeachingContent = anchoredContent || visibleArabicReteaching || teachingContent;
   const localizedCandidates = values => safeCandidates(values, protectedAnswers)
     .filter(item => language !== 'ar' || !/\p{Script=Latin}/u.test(item));
   const explanations = localizedCandidates(activeTeachingContent.explanations);
