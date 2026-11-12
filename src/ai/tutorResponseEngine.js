@@ -1286,7 +1286,9 @@ function buildConversationalTeachingReply({
             )
           : withReplies(
               'I do not have a clear explanation for that topic yet. Would you like to choose another topic?',
-              ['Choose another topic'], false
+              // This is a completed local clarification about missing/unsafe
+              // approved content, not a request for generative tutoring.
+              ['Choose another topic'], true
             );
       }
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
