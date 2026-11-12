@@ -760,9 +760,9 @@ export default function TutorAIModal({
           id="tutor-ai-body"
           ref={bodyRef}
           role="region"
-          aria-label={languagePresentation.teachingLanguage === 'en'
+          aria-label={languagePresentation.contentLanguage === 'en'
             ? 'Tutor AI conversation history'
-            : languagePresentation.teachingLanguage === 'ar'
+            : languagePresentation.contentLanguage === 'ar'
               ? 'سجل محادثة المعلّم الذكي'
               : 'Sejarah perbualan Tutor AI'}
           tabIndex={0}
