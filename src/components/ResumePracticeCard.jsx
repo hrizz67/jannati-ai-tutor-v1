@@ -4,11 +4,16 @@ import ganjaranBadge from '../assets/icons/3d/ganjaran-badge.webp';
 import targetBadge from '../assets/icons/3d/target-badge.webp';
 import { formatResumeTitle, formatSubjectName, formatTopicName, isCrossSubjectTarget } from '../utils/displayFormatter';
 
+const COMMUNICATION_RESUME_MODES = new Set(['reading', 'listening', 'speaking', 'writing']);
+
 export default function ResumePracticeCard({ resume, selectedSubjectId, onResume, onRestartResume, resumeTitle, crossSubjectLabel = 'Sambung lintas subjek' }) {
   if (!resume || resume.completed) return null;
   const progress = Number.isInteger(resume.currentIndex) ? resume.currentIndex : Number.isInteger(resume.questionIndex) ? resume.questionIndex : null;
-  const subjectLabel = formatSubjectName(resume.metadata?.subjectTitle || resume.subjectId || 'Mod aktif');
-  const topicLabel = formatTopicName(resume.metadata?.topicTitle || resume.topicId || '', { subjectId: resume.subjectId });
+  // The scoped IDs own the resume identity; stored metadata may describe an older activity.
+  const subjectLabel = formatSubjectName(resume.subjectId || 'Mod aktif');
+  const topicLabel = COMMUNICATION_RESUME_MODES.has(resume.mode)
+    ? ''
+    : formatTopicName(resume.topicId || '', { subjectId: resume.subjectId });
   const crossSubject = isCrossSubjectTarget(selectedSubjectId, resume.subjectId);
   return (
     <section className="card resume-card">

@@ -482,7 +482,9 @@ export function formatFriendlyDate(value, now = new Date()) {
 }
 
 export function formatResumeTitle(resume = {}) {
-  return formatModeName(resume?.metadata?.displayTitle || resume?.mode || 'quiz');
+  // An explicit known mode is canonical; a stale displayTitle must not override it.
+  const mode = normalizeKey(resume?.mode);
+  return formatModeName(MODE_LABELS[mode] ? mode : resume?.metadata?.displayTitle || mode || 'quiz');
 }
 
 export function formatRecommendationCta(input = {}) {
