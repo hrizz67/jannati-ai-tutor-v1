@@ -23,8 +23,8 @@ async function confirmedHistory(context = base) {
   ]);
 }
 
-function assertSafeUngraded(result) {
-  expect(result.dialogueClassification).toBe('LOCAL_HANDLED');
+function assertSafeUngraded(result, expectedRoute = 'LOCAL_HANDLED') {
+  expect(result.dialogueClassification).toBe(expectedRoute);
   expect(result.remoteAttempted).toBe(false);
   expect(result.generativeUsed).toBe(false);
   expect(result.isCorrect ?? null).toBeNull();
@@ -55,7 +55,8 @@ describe('P2.6-E1 question-scoped BM continuation after understanding', () => {
 
   it('never treats an unscoped continuation without history as a completed teaching step', async () => {
     const result = await getTutorResponse({ ...base, prompt: 'Pastu camna?', history: [] });
-    assertSafeUngraded(result);
+    // No prior scope/teaching state: asking for clarification is safer.
+    assertSafeUngraded(result, 'NEEDS_CLARIFICATION');
     expect(result.studentTurn.scopedNextStepAfterUnderstanding).not.toBe(true);
     expect(result.text).not.toContain('sekarang giliran kamu cuba');
   });
