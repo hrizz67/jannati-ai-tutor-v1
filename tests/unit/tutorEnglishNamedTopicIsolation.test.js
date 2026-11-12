@@ -34,11 +34,13 @@ function assertNoOldQuestion(response) {
   expect(response.questionText).toBe('');
   expect(response.instruction).toBe('');
   expect(response.options).toEqual([]);
-  expect(response.expectedAnswer).toBe('');
-  expect(response.correctAnswer).toBe('');
-  expect(response.acceptedAnswers).toEqual([]);
-  expect(response.isCorrect).toBeNull();
-  expect(response.pedagogicalState).toBeNull();
+  // The local-first clarification route intentionally removes non-answer
+  // metadata. Both omitted fields and explicitly empty values are safe.
+  expect(response.expectedAnswer ?? '').toBe('');
+  expect(response.correctAnswer ?? '').toBe('');
+  expect(response.acceptedAnswers ?? []).toEqual([]);
+  expect(response.isCorrect ?? null).toBeNull();
+  expect(response.pedagogicalState ?? null).toBeNull();
   expect(response.text).not.toMatch(/jumping|action word|pick the verb|look for an action/iu);
   expect(response.remoteAttempted).toBe(false);
   expect(response.generativeUsed).toBe(false);
