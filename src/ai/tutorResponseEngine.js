@@ -1187,6 +1187,7 @@ function buildConversationalTeachingReply({
   questionText = '',
   weakTopics = [],
   studyPlan = null,
+  protectedAnswers = [],
   getLocalizedTeachingReplies
 } = {}) {
   if (!studentTurn) return null;
@@ -1274,6 +1275,20 @@ function buildConversationalTeachingReply({
         true
       );
     case 'question_help':
+      if (dialogueLanguage === 'en' && studentTurn.namedTopicExplainRequest) {
+        // Give the learner an actual explanation only from the selected, approved topic.
+        // If its note is missing or protected-answer unsafe, ask rather than invent.
+        const safeNote = selectAnswerSafeText(topicNote, protectedAnswers, '');
+        return safeNote
+          ? withReplies(
+              `${sentence(safeNote)} Can you think of one example?`,
+              ['Show an example', 'I will try', 'Explain again'], true
+            )
+          : withReplies(
+              'I do not have a clear explanation for that topic yet. Would you like to choose another topic?',
+              ['Choose another topic'], false
+            );
+      }
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
@@ -1451,6 +1466,20 @@ export async function getTutorResponse(options = {}) {
     activeConcept,
     teachingCheckResult: anchorContext.teachingCheckResult
   });
+  // Exact named English explanation request with no active exercise: match only
+  // against the current/available subject's own topic titles, never old Q&A text.
+  const englishExplanationMatch = !hasExerciseContext && !questionIdentity && subjectContext.id === 'english'
+    ? String(prompt).trim().match(/^(?:(?:can|could)\s+you\s+|please\s+)?explain\s+(?:the\s+)?([a-z][a-z\s-]{0,50})\s*[?.!]*$/iu)
+    : null;
+  const requestedEnglishTopic = normalizeForDialogue(englishExplanationMatch?.[1] || '');
+  const approvedEnglishTopic = requestedEnglishTopic
+    ? [topicContext, ...subjectContext.topics.map(item => getTopicContext(item, item?.id))].find(
+        item => item?.id && normalizeForDialogue(item.title) === requestedEnglishTopic
+      )
+    : null;
+  if (approvedEnglishTopic && studentTurn.messageType !== 'answer_attempt') {
+    Object.assign(studentTurn, { namedTopicExplainRequest: true, newTopicRequest: true });
+  }
   let resolvedIntent = studentTurn.intent || inferIntent({ intent, prompt, isCorrect, question: resolvedQuestion });
   const promptAnswer = studentTurn.answerCandidate || extractPromptAnswer(prompt);
   const gradedTurn = studentTurn.messageType === 'answer_attempt' && !!promptAnswer;
@@ -1494,10 +1523,12 @@ export async function getTutorResponse(options = {}) {
         ...(subjectContext.topics.some(item => item?.id === topicContext.id) ? [] : [topicContext])
       ] }
     : subjectContext;
-  const relevantLearningContext = ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
-    .includes(resolvedIntent)
-      ? findRelevantLearningContext(prompt, availableSubjects, preferredLearningSubject)
-      : null;
+  const relevantLearningContext = studentTurn.namedTopicExplainRequest
+    ? { subject: subjectContext, topic: approvedEnglishTopic }
+    : ['knowledge_question', 'comparison_question', 'why_question', 'how_question']
+      .includes(resolvedIntent)
+        ? findRelevantLearningContext(prompt, availableSubjects, preferredLearningSubject)
+        : null;
   const relevantSubjectTopic = relevantLearningContext?.topic || null;
   const conversationalSubject = relevantLearningContext?.subject || subjectContext;
   const usesCurrentConversationContext = !studentTurn.newTopicRequest && (studentTurn.referencesPreviousTurn || resolvedIntent === 'example_request');
@@ -1691,6 +1722,7 @@ export async function getTutorResponse(options = {}) {
     questionText: resolvedQuestionText,
     weakTopics: weakList,
     studyPlan,
+    protectedAnswers: protectedTutorAnswers,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
