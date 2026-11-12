@@ -12,11 +12,16 @@ function explicitHistoryTotals(history) {
     const attempts = firstNumber(item.attempts, item.total, item.totalQuestions);
     const correct = firstNumber(item.correct, item.correctCount, item.totalCorrect);
     const wrong = firstNumber(item.wrong, item.incorrect, item.incorrectCount, item.totalWrong);
-    if (attempts !== null) totals.attempts += Math.max(0, attempts);
+    if (attempts !== null) {
+      const counted = Math.max(0, attempts);
+      totals.attempts += counted;
+      if (correct !== null) totals.correctCoveredAttempts += counted;
+      if (wrong !== null) totals.wrongCoveredAttempts += counted;
+    }
     if (correct !== null) totals.correct += Math.max(0, correct);
     if (wrong !== null) totals.wrong += Math.max(0, wrong);
     return totals;
-  }, { attempts: 0, correct: 0, wrong: 0 });
+  }, { attempts: 0, correct: 0, wrong: 0, correctCoveredAttempts: 0, wrongCoveredAttempts: 0 });
 }
 
 function getSubjectStudySeconds(record = {}, topicRecords = []) {
@@ -72,8 +77,14 @@ export function createCanonicalProgress(input = {}) {
   // An empty or count-free history has no attempt evidence; it must not mask
   // real subject/topic attempts with an inferred zero.
   const totalAttempts = firstNumber(source.totalQuestions, source.totals?.questionsAnswered, historyTotals.attempts || null, subjectTotals.attempts) ?? 0;
-  const totalCorrect = firstNumber(source.correctQuestions, source.totalCorrect, source.totals?.correct, historyTotals.correct || null, subjectTotals.correct) ?? 0;
-  const totalWrong = firstNumber(source.incorrectQuestions, source.totalWrong, source.totals?.wrong, historyTotals.wrong || null, subjectTotals.wrong, Math.max(0, totalAttempts - totalCorrect)) ?? 0;
+  // A counted zero is evidence only when every counted history attempt has
+  // the corresponding correct/wrong count; otherwise keep the subject fallback.
+  const historyCorrect = historyTotals.correct > 0 || (historyTotals.attempts > 0 && historyTotals.correctCoveredAttempts === historyTotals.attempts)
+    ? historyTotals.correct : null;
+  const historyWrong = historyTotals.wrong > 0 || (historyTotals.attempts > 0 && historyTotals.wrongCoveredAttempts === historyTotals.attempts)
+    ? historyTotals.wrong : null;
+  const totalCorrect = firstNumber(source.correctQuestions, source.totalCorrect, source.totals?.correct, historyCorrect, subjectTotals.correct) ?? 0;
+  const totalWrong = firstNumber(source.incorrectQuestions, source.totalWrong, source.totals?.wrong, historyWrong, subjectTotals.wrong, Math.max(0, totalAttempts - totalCorrect)) ?? 0;
   return {
     version: 1,
     global: {
