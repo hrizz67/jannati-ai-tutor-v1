@@ -142,6 +142,23 @@ async function probe(scenario) {
       expect(response.questionId ?? '').toBe('');
       expect(response.questionText ?? '').toBe('');
     }
+    // Pedagogical acceptance, not just safety: finish the child's requested
+    // next action and start a lesson directly from a visible approved clue.
+    if (scenario.id === 'bm-active-question-five-turns' && index === 4) {
+      expect(response.studentTurn.scopedNextStepAfterUnderstanding).toBe(true);
+      expect(response.text).toContain('sekarang giliran kamu cuba');
+      expect(response.text).not.toBe(records[0].text);
+      expect(response.text).not.toContain('di sebelum tempat kosong');
+    }
+    if (scenario.id === 'ar-study-plan-and-coaching-five-turns' && index === 1) {
+      expect(response.text).toContain('اسم المكان كلمة تدل على مكان');
+      expect(response.text).not.toContain('هل تريد أن نشرح');
+      expect(response.text).not.toContain('مدرسة');
+    }
+    if (scenario.id === 'en-switch-to-approved-topic-five-turns' && index === 1) {
+      expect(response.text).toContain('Nouns name');
+      expect(response.text).not.toContain('First, check the instruction');
+    }
     history = buildBoundedDialogueContext([...history,
       { role: 'user', text: step.prompt },
       {
