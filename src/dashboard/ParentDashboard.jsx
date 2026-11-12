@@ -71,8 +71,11 @@ function resolveInitialSubjectId(profile = null, subjects = []) {
   return subjects[0]?.id || 'bm';
 }
 
-function buildRecommendationKey(analytics) {
+export function buildRecommendationKey(analytics) {
   if (!analytics?.hasEvidence) return null;
+  // A high overall average must not override a current, evidenced weak topic.
+  // getCanonicalAnalytics() includes only attempted topics in weakTopics.
+  if (Array.isArray(analytics.weakTopics) && analytics.weakTopics.length > 0) return 'review';
   if (analytics.masteryPercent < 60) return 'review';
   if (analytics.masteryPercent >= 85) return 'increase_difficulty';
   return 'normal_practice';
