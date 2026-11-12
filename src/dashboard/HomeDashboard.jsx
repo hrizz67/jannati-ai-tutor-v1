@@ -179,6 +179,7 @@ export default function HomeDashboard(props) {
     profile,
     accessProfile,
     adaptiveProfile,
+    canonicalProgress = null,
     subjectList,
     allSubjects,
     selectedSubject,
@@ -285,7 +286,10 @@ export default function HomeDashboard(props) {
   const personalityMotivation = personality?.motivation || `Hari ini kita akan belajar ${welcomeTopic}. Jom mulakan!`;
   const personalityMood = personality?.emotion?.label || 'happy';
   const curriculumCoverage = aiMemory.curriculumCoverage || buildCurriculumCoverage(profile, adaptiveSubjects);
-  const canonicalAnalytics = useMemo(() => getCanonicalAnalytics({ profile, adaptiveProfile: adaptiveStore, selectedSubject }), [profile, adaptiveStore, selectedSubject]);
+  // Parent and Home use the same App-owned progress snapshot. Keep the selected
+  // subject scope separate from the lifetime totals shown in global stat cards.
+  const canonicalAnalytics = useMemo(() => getCanonicalAnalytics({ canonicalProgress, profile, adaptiveProfile: adaptiveStore, selectedSubject }), [canonicalProgress, profile, adaptiveStore, selectedSubject]);
+  const overallCanonicalAnalytics = useMemo(() => getCanonicalAnalytics({ canonicalProgress, profile, adaptiveProfile: adaptiveStore }), [canonicalProgress, profile, adaptiveStore]);
   const canonicalGamification = useMemo(() => createCanonicalGamification({
     profile,
     adaptiveProfile: adaptiveStore,
@@ -389,10 +393,10 @@ export default function HomeDashboard(props) {
     statsCards: [
       { label: 'XP', value: canonicalGamification.globalXp, icon: <GameBadge src={ganjaranBadge} /> },
       { label: 'Tahap', value: canonicalGamification.globalLevel, icon: <GameBadge src={uasaBadge} /> },
-      { label: 'Soalan', value: adaptiveStore.totalQuestions || 0, icon: <GameBadge src={bukuTeksBadge} /> },
-      { label: 'Ketepatan', value: `${clampPercent(studentData.overallAccuracy)}%`, icon: <GameBadge src={targetBadge} /> },
-      { label: 'Masa Belajar', value: formatDuration(adaptiveStore.studyMinutes || 0, { unit: 'minutes' }), icon: <GameBadge src={clockBadge} /> },
-      { label: 'Streak', value: canonicalGamification.currentStreak, icon: <GameBadge src={fireBadge} /> }
+      { label: 'Soalan', value: overallCanonicalAnalytics.totalQuestions, icon: <GameBadge src={bukuTeksBadge} /> },
+      { label: 'Ketepatan', value: `${clampPercent(overallCanonicalAnalytics.accuracy)}%`, icon: <GameBadge src={targetBadge} /> },
+      { label: 'Masa Belajar', value: formatDuration(overallCanonicalAnalytics.studyMinutes, { unit: 'minutes' }), icon: <GameBadge src={clockBadge} /> },
+      { label: 'Streak', value: overallCanonicalAnalytics.currentStreak, icon: <GameBadge src={fireBadge} /> }
     ],
     studentCore,
     masterySummary,
