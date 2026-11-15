@@ -72,13 +72,13 @@ describe('P2.6-H4 integrated BM/EN/AR active-question ownership', () => {
     const first = await getTutorResponse({ ...bm, prompt: 'Dia tanya apa?', history });
     checkSafe(first, 'buku');
     expect(first.text).toMatch(/benda/iu);
-    expect(first.text).not.toMatch(/cari\\s+perkataan\\s+yang\\s+menamakan\\s+tempat/iu);
+    expect(first.text).not.toMatch(/cari\s+perkataan\s+yang\s+menamakan\s+tempat/iu);
     history = withHistory(history, 'Dia tanya apa?', first);
 
     const second = await getTutorResponse({ ...en, prompt: 'Can you explain nouns?', history });
     checkSafe(second, 'fish');
     expect(second.text).toMatch(/noun is a naming word/iu);
-    expect(second.text).not.toMatch(/verb is an action word|\\bsoalan\\b/iu);
+    expect(second.text).not.toMatch(/verb is an action word|\bsoalan\b/iu);
     expect(second.questionId).toBe(en.question.id);
     history = withHistory(history, 'Can you explain nouns?', second);
 
@@ -86,7 +86,7 @@ describe('P2.6-H4 integrated BM/EN/AR active-question ownership', () => {
     checkSafe(third, 'buku');
     expect(third.text).toMatch(/معنى كلمة عربية/u);
     expect(third.text).not.toMatch(/اسم شخص/u);
-    expect(third.text).not.toMatch(/\\p{Script=Latin}/u);
+    expect(third.text).not.toMatch(/\p{Script=Latin}/u);
     expect(third.questionId).toBe(ar.question.id);
   });
 
@@ -154,6 +154,6 @@ describe('P2.6-H4 integrated BM/EN/AR active-question ownership', () => {
     checkSafe(switched, 'padang');
     expect(switched.questionId).toBe('h4-bm-place-new');
     expect(switched.text).toMatch(/tempat/iu);
-    expect(switched.text).not.toMatch(/cari\\s+(?:kata\\s+nama\\s+)?benda/iu);
+    expect(switched.text).not.toMatch(/cari\s+(?:kata\s+nama\s+)?benda/iu);
   });
 });
