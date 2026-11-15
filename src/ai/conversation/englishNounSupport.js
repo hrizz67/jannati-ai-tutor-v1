@@ -10,7 +10,7 @@ const NOUN_NEXT_PATTERN = /^(?:okay,?\s*)?(?:what\s+(?:do\s+i\s+do|should\s+i\s+
 
 export function resolveEnglishNounSupport({ prompt = '', subjectId = '', hasExerciseContext = false,
   questionId = '', newTopicRequest = false, isAnswerAttempt = false, anchorActive = false,
-  topicTitle = '', topicId = '' } = {}) {
+  } = {}) {
   if (subjectId !== 'english' || !hasExerciseContext || !questionId ||
       newTopicRequest || isAnswerAttempt) return null;
 
@@ -25,44 +25,44 @@ export function resolveEnglishNounSupport({ prompt = '', subjectId = '', hasExer
   if (explicitNoun) return {
     stage: 'noun_concept_explanation',
     candidates: [
-      'A noun is a naming word. It names a person, animal, place, or thing. In this exercise, read the clues in the sentence and think about what kind of name is needed. Which clue can you find?'
+      'A noun is a naming word. It names a person, animal, place, or thing. Read the sentence. What clue shows which kind of noun is needed?'
     ],
     quickReplies: ['I do not understand', 'Which clue should I look at?', 'Give me an example']
   };
   if (NOUN_SIMPLE_PATTERN.test(learnerText)) return {
     stage: 'noun_simple_explanation',
     candidates: [
-      'A noun is a word that names someone or something. It can name a person, an animal, a place, or a thing. Let us look at one clue in the exercise.'
+      'A noun is a word that names someone or something: a person, an animal, a place, or a thing. Look for one clue in the question.'
     ],
     quickReplies: ['Which clue should I look at?', 'Give me an example']
   };
-  if (NOUN_CLUE_PATTERN.test(learnerText) || /^(?:which|what)\s+clue\s+should\s+i\s+look\s+at[.!?]*$/iu.test(learnerText)) return {
+  if (NOUN_CLUE_PATTERN.test(learnerText)) return {
     stage: 'noun_clue',
     candidates: [
-      'Look at the words near the blank. Ask: is the sentence describing a person, an animal, a place, or a thing? Look for a naming word that matches the clues; you do not need to guess the answer yet.'
+      'Look near the blank. Does the sentence need a person, animal, place, or thing? Find a naming word that fits the clue. You do not need to guess yet.'
     ],
     quickReplies: ['Give me an example', 'I will try']
   };
   if (NOUN_EXAMPLE_PATTERN.test(learnerText)) return {
     stage: 'noun_example',
     candidates: [
-      'For example, a teacher is a noun because it names a person. Can you find a naming word in your question?',
-      'For example, a pencil is a noun because it names a thing. Can you find a naming word in your question?',
-      'For example, a park is a noun because it names a place. Can you find a naming word in your question?'
+      'For example, a teacher is a noun because it names a person. Find a naming word in your question.',
+      'For example, a pencil is a noun because it names a thing. Find a naming word in your question.',
+      'For example, a park is a noun because it names a place. Find a naming word in your question.'
     ],
     quickReplies: ['Why is that a noun?', 'What should I do next?']
   };
   if (NOUN_WHY_PATTERN.test(learnerText)) return {
     stage: 'noun_reason',
     candidates: [
-      'It is a noun when it names a person, an animal, a place, or a thing. Ask yourself what the word names, then check the clues in the sentence.'
+      'A noun names a person, animal, place, or thing. Ask what the word names, then check the clue.'
     ],
     quickReplies: ['What should I do next?', 'I will try']
   };
   if (NOUN_NEXT_PATTERN.test(learnerText)) return {
     stage: 'noun_next_step',
     candidates: [
-      'Now read the sentence again. Find the clue that tells you what kind of thing is needed. Then choose a naming word that fits the clue. You can try it yourself.'
+      'Now read the sentence again. Find the clue, then choose a naming word that fits. Try it yourself.'
     ],
     quickReplies: ['I will try', 'Give me a clue']
   };
