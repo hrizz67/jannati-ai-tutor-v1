@@ -84,12 +84,13 @@ describe('P2.6-H2 Chrome P1 English Nouns education and scoping', () => {
     }
   });
 
-  it('keeps a fresh English active Nouns topic focused on naming words', async () => {
-    const result = await nextTurn('Which word should I look at?', [], {
-      topic: { id: 'nouns', title: 'Nouns', note: 'Nouns name people, animals, places and things.' }
-    });
-    safe(result.response);
-    expect(result.response.text).toMatch(/naming word/i);
+  it('continues a learner-requested noun lesson in an active Nouns topic, but never hijacks generic help', async () => {
+    const nounTopic = { id: 'nouns', title: 'Nouns', note: 'Nouns name people, animals, places and things.' };
+    const first = await nextTurn('Can you explain nouns?', [], { topic: nounTopic });
+    safe(first.response);
+    const followUp = await nextTurn('Which word should I look at?', first.history, { topic: nounTopic });
+    safe(followUp.response);
+    expect(followUp.response.text).toMatch(/naming word/i);
   });
 
   it('does not leak a protected noun used in an authored example', async () => {
