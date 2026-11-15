@@ -20,6 +20,7 @@ import {
   sanitizeTutorText
 } from './guidedLearning/index.js';
 import { understandStudentTurn } from './conversation/studentTurnEngine.js';
+import { resolveEnglishNounSupport } from './conversation/englishNounSupport.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
@@ -28,6 +29,7 @@ import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActi
 import {
   attachTeachingAnchorState,
   buildTeachingAnchorReply,
+  createTeachingAnchor,
   getTeachingAnchorContext,
   getTeachingAnchorNoAnswerLead,
   resolveTeachingAnchorTurn
@@ -1693,6 +1695,42 @@ export async function getTutorResponse(options = {}) {
     studyPlan,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
+  // An active, scoped English noun teaching request must retain its concept
+  // across follow-up questions. Never let an unrelated verb/topic hint from
+  // pedagogicalContent override this verified local curriculum explanation.
+  const englishNounCandidate = resolveEnglishNounSupport({
+    prompt,
+    subjectId: subjectContext.id,
+    hasExerciseContext,
+    questionId: questionIdentity,
+    newTopicRequest: Boolean(studentTurn.newTopicRequest),
+    isAnswerAttempt: gradedTurn,
+    anchorActive: anchorContext.teachingAnchor?.conceptId === 'english_common_noun',
+    topicId: topicContext.id,
+    topicTitle: topicContext.title
+  });
+  const englishNounSafeText = englishNounCandidate
+    ? selectAnswerSafeText(englishNounCandidate.candidates, protectedTutorAnswers, '')
+    : '';
+  const englishNounReply = englishNounSafeText
+    ? { text: sanitizeTutorText(englishNounSafeText), quickReplies: englishNounCandidate.quickReplies, grounded: true }
+    : null;
+  const englishNounAnchor = englishNounReply && conversationKey
+    ? createTeachingAnchor({
+        conversationKey, subjectId: subjectContext.id, topicId: topicContext.id,
+        questionId: questionIdentity, conceptId: 'english_common_noun'
+      })
+    : null;
+  if (englishNounReply) {
+    Object.assign(contextBundle.sections, {
+      hint: englishNounSafeText,
+      steps: [],
+      pedagogicalContent: {
+        grounded: true, explanations: [englishNounSafeText],
+        examples: [], verifiedExamples: [], alternatives: [], steps: [], checkQuestions: []
+      }
+    });
+  }
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
         text: subjectContext.id === 'english'
@@ -1709,7 +1747,7 @@ export async function getTutorResponse(options = {}) {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
     quickReplies: [], grounded: true
   } : null;
-  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
+  const intelligentTeaching = englishNounReply || falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1729,7 +1767,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = englishNounReply || falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies
@@ -1814,11 +1852,20 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
-      intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
-      directTeachingAnchor,
-      teachingAnchor
-    ),
+    pedagogicalState: switchedTopic ? null : englishNounReply
+      ? attachTeachingAnchorState({
+          currentConcept: [subjectContext.id, topicContext.id, questionIdentity].join('::'),
+          supportStage: englishNounCandidate.stage,
+          signal: 'authored_noun_support',
+          strategyUsed: 'english_noun_scoped',
+          misunderstandingCount: 0,
+          pendingFollowUp: ''
+        }, englishNounAnchor, englishNounAnchor)
+      : attachTeachingAnchorState(
+          intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
+          directTeachingAnchor,
+          teachingAnchor
+        ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
