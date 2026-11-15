@@ -4,7 +4,7 @@
 const NOUN_EXPLANATION_PATTERN = /^(?:(?:can|could)\s+you\s+|please\s+)?(?:explain|teach\s+me(?:\s+about)?)\s+(?:the\s+)?(?:common\s+)?nouns?[.!?]*$|^what\s+(?:is\s+a|are)\s+(?:common\s+)?nouns?[.!?]*$/iu;
 const NOUN_CLUE_PATTERN = /^(?:which|what)\s+(?:word|part|clue)\s+(?:should\s+i\s+look\s+at|do\s+i\s+look\s+for|is\s+important)[.!?]*$/iu;
 const NOUN_SIMPLE_PATTERN = /^(?:(?:i\s+)?(?:don['’]?t\s+understand|do\s+not\s+understand)|what\s+does\s+(?:that|it)\s+mean)[.!?]*$/iu;
-const NOUN_EXAMPLE_PATTERN = /^(?:(?:can|could)\s+you\s+)?(?:give\s+me|show\s+me)(?:\s+(?:one|a|another|simple))?\s+examples?[.!?]*$/iu;
+const NOUN_EXAMPLE_PATTERN = /^(?:(?:can|could)\s+you\s+)?(?:give\s+me|show\s+me)(?:\s+(?:one|a|another))?(?:\s+simple)?\s+examples?[.!?]*$/iu;
 const NOUN_WHY_PATTERN = /^why\s+is\s+(?:that|it|this)\s+a\s+noun[.!?]*$/iu;
 const NOUN_NEXT_PATTERN = /^(?:okay,?\s*)?(?:what\s+(?:do\s+i\s+do|should\s+i\s+do)\s+next|what(?:'s|\s+is)\s+next)[.!?]*$/iu;
 
