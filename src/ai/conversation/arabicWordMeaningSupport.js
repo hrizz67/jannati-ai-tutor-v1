@@ -8,7 +8,7 @@ function normalizeArabic(value = '') {
 
 const BEGIN_TEACHING = /^(?:(?:ابدأ|لنبدأ)\s+(?:بالشرح|بالتفسير)|اشرح\s+لي)[.!?؟]*$/u;
 const MISUNDERSTANDING = /^(?:(?:لا|لم)\s+أفهم|ما\s+فهمت|أنا\s+محتار)[.!?؟]*$/u;
-const HINT = /^(?:(?:أعطني|اعطني|اريد|أريد)\s+تلميحًا?|تلميحًا?)[.!?؟]*$/u;
+const HINT = /^(?:(?:أعطني|اعطني|اريد|أريد)\s+تلميح(?:ا)?|تلميح(?:ا)?)[.!?؟]*$/u;
 const UNDERSTOOD = /^(?:(?:فهمت(?:\s+الآن)?|الآن\s+فهمت))[.!?؟]*$/u;
 const WRONG_PREMISE = /^لماذا\s+(?:إجابتي|جوابي)\s+(?:خاطئة|خطأ|غلط)[.!?؟]*$/u;
 const WORD_MEANING = /(?:\b(?:perkataan|kalimah)\s+arab\b[^.!?؟]{0,100}\b(?:bermaksud|maksud|makna)\b|(?:ما\s+معنى|معنى\s+الكلمة)|\b(?:arabic\s+word)\b[^.!?؟]{0,100}\bmeans\b)/iu;
