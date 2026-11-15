@@ -16,9 +16,11 @@ export function resolveEnglishNounSupport({ prompt = '', subjectId = '', hasExer
 
   const learnerText = String(prompt || '').trim();
   const explicitNoun = NOUN_EXPLANATION_PATTERN.test(learnerText);
-  const currentNounTopic = /\bnouns?\b/iu.test(String(topicTitle)) ||
-    /^(?:nouns?|common[_-]?nouns?)$/iu.test(String(topicId));
-  if (!explicitNoun && !anchorActive && !currentNounTopic) return null;
+  // The current broad Nouns topic is not permission to replace more
+  // specific person/place/animal guidance. The learner must explicitly ask
+  // for nouns first; only its authenticated question-scoped anchor may
+  // continue that mini-lesson on later turns.
+  if (!explicitNoun && !anchorActive) return null;
 
   if (explicitNoun) return {
     stage: 'noun_concept_explanation',
