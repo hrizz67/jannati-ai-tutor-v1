@@ -41,8 +41,14 @@ const ar = {
   locale: 'ar-MY', conversationKey: 'synthetic::h4::arabic'
 };
 
-function checkSafe(reply, answer = '') {
-  expect(reply.dialogueClassification).toBe('LOCAL_HANDLED');
+function checkSafe(reply, answer = '', { allowClarification = false } = {}) {
+  if (allowClarification) {
+    // A vague unanchored question may appropriately ask for clarification.
+    // It must remain local and must not invent a noun/verb lesson.
+    expect(['LOCAL_HANDLED', 'NEEDS_CLARIFICATION']).toContain(reply.dialogueClassification);
+  } else {
+    expect(reply.dialogueClassification).toBe('LOCAL_HANDLED');
+  }
   expect(reply.remoteAttempted).toBe(false);
   expect(reply.generativeUsed).toBe(false);
   expect(reply.isCorrect ?? null).toBeNull();
@@ -108,7 +114,8 @@ describe('P2.6-H4 integrated BM/EN/AR active-question ownership', () => {
 
   it('ungraded turns do not use literal accepted answers from another subject', async () => {
     const e = await getTutorResponse({ ...en, prompt: 'Which word should I look at?' });
-    checkSafe(e, 'fish');
+    checkSafe(e, 'fish', { allowClarification: true });
+    expect(e.text).not.toMatch(/verb is an action word|pick the verb/iu);
     expect(e.questionId).toBe(en.question.id);
 
     const a = await getTutorResponse({ ...ar, prompt: 'لماذا إجابتي خاطئة؟' });
