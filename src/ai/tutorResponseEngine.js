@@ -756,7 +756,13 @@ function buildContextualSections({
   guided = null,
   history = []
 }) {
-  const categoryRule = getCategoryRule(question, topic);
+  // The selected subject is authoritative even when an authored exercise
+  // does not redundantly carry subjectId. Otherwise category detection can
+  // fall back to an unrelated stale topic note ("tempat" before "benda").
+  const categoryRule = getCategoryRule({
+    ...question,
+    subjectId: subject?.id || question?.subjectId || ''
+  }, topic);
   const isEnglishSubject = subject?.id === 'english';
   const subjectLabel = subject?.id === 'english' ? 'Bahasa Inggeris' : (subject?.title || formatSubjectName(subject?.id));
   const resolvedQuestion = questionText || getQuestionText(question);
