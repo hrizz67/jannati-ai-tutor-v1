@@ -2,7 +2,7 @@
 // may authorize this bounded, local teaching scaffold. No generated examples
 // and no inference from unrelated topic notes or prior quiz answers.
 function normalizeArabic(value = '') {
-  return String(value || '').normalize('NFKD')
+  return String(value || '').normalize('NFC')
     .replace(/[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '');
 }
 
