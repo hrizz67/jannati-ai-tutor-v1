@@ -161,6 +161,17 @@ export function understandStudentTurn({
     return makeTurn('direct_answer', 'answer_attempt', 1, { ...conversation, answerCandidate: text });
   }
 
+  // Asking to begin an Arabic explanation is a teaching command, not a
+  // short free-text quiz answer. Exact authored accepted answers were checked
+  // immediately above and retain precedence.
+  if ((hasExerciseContext || hasLearningContext) &&
+      /^(?:(?:ابدأ|لنبدأ)\s+(?:بالشرح|بالتفسير))[.!?؟]*$/u.test(signalText)) {
+    return makeTurn('how_question', 'help_request', 0.99, {
+      ...conversation, teachingStartRequest: true, referencesPreviousTurn: conversation.hasHistory,
+      isQuestion: true
+    });
+  }
+
   if (SOCIAL_ONLY_PATTERN.test(text)) return makeTurn('general', 'social', 0.99, conversation);
 
   if (/\b(?:topik\s+lemah|lemah\s+saya|weak\s+topic)\b/iu.test(lower)) return makeTurn('weak_topic', 'progress_question', 0.98, conversation);
