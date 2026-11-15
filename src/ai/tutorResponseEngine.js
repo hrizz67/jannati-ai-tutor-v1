@@ -20,6 +20,7 @@ import {
   sanitizeTutorText
 } from './guidedLearning/index.js';
 import { understandStudentTurn } from './conversation/studentTurnEngine.js';
+import { resolveArabicWordMeaningSupport } from './conversation/arabicWordMeaningSupport.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
@@ -1693,6 +1694,36 @@ export async function getTutorResponse(options = {}) {
     studyPlan,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
+  // The actual Arabic exercise asks for the *meaning of a word*. Topic hints
+  // about اسم شخص, or a generic Malay hint fallback, must never replace the
+  // visible question when a learner requests direct teaching or a clue.
+  const arabicMeaningCandidate = resolveArabicWordMeaningSupport({
+    prompt, subjectId: subjectContext.id, questionId: questionIdentity,
+    questionText: resolvedQuestionText, instruction: resolvedInstruction,
+    hasExerciseContext, isAnswerAttempt: gradedTurn,
+    newTopicRequest: Boolean(studentTurn.newTopicRequest),
+    hasVerifiedAnswerFeedback: Boolean(priorAnswer) && typeof isCorrect === 'boolean'
+  });
+  const arabicMeaningText = arabicMeaningCandidate
+    ? selectAnswerSafeText(arabicMeaningCandidate.candidates, protectedTutorAnswers, '')
+    : '';
+  const arabicMeaningReply = arabicMeaningText
+    ? {
+        text: sanitizeTutorText(arabicMeaningText),
+        quickReplies: arabicMeaningCandidate.quickReplies,
+        grounded: true
+      }
+    : null;
+  if (arabicMeaningReply) {
+    Object.assign(contextBundle.sections, {
+      hint: arabicMeaningText,
+      steps: [],
+      pedagogicalContent: {
+        grounded: true, explanations: [arabicMeaningText],
+        examples: [], verifiedExamples: [], alternatives: [], steps: [], checkQuestions: []
+      }
+    });
+  }
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
         text: subjectContext.id === 'english'
@@ -1709,7 +1740,7 @@ export async function getTutorResponse(options = {}) {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
     quickReplies: [], grounded: true
   } : null;
-  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
+  const intelligentTeaching = arabicMeaningReply || falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1729,7 +1760,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = arabicMeaningReply || falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies
@@ -1814,11 +1845,20 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
-      intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
-      directTeachingAnchor,
-      teachingAnchor
-    ),
+    pedagogicalState: switchedTopic ? null : arabicMeaningReply
+      ? {
+          currentConcept: [subjectContext.id, topicContext.id, questionIdentity].join('::'),
+          supportStage: arabicMeaningCandidate.stage,
+          signal: 'authored_word_meaning',
+          strategyUsed: 'arabic_word_meaning_scoped',
+          misunderstandingCount: 0,
+          pendingFollowUp: ''
+        }
+      : attachTeachingAnchorState(
+          intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
+          directTeachingAnchor,
+          teachingAnchor
+        ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
