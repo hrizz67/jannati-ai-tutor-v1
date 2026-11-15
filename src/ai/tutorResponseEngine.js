@@ -1723,9 +1723,7 @@ export async function getTutorResponse(options = {}) {
     questionId: questionIdentity,
     newTopicRequest: Boolean(studentTurn.newTopicRequest),
     isAnswerAttempt: gradedTurn,
-    anchorActive: anchorContext.teachingAnchor?.conceptId === 'english_common_noun',
-    topicId: topicContext.id,
-    topicTitle: topicContext.title
+    anchorActive: anchorContext.teachingAnchor?.conceptId === 'english_common_noun'
   });
   const englishNounSafeText = englishNounCandidate
     ? selectAnswerSafeText(englishNounCandidate.candidates, protectedTutorAnswers, '')
