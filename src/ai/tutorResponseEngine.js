@@ -1739,16 +1739,6 @@ export async function getTutorResponse(options = {}) {
         questionId: questionIdentity, conceptId: 'english_common_noun'
       })
     : null;
-  if (englishNounReply) {
-    Object.assign(contextBundle.sections, {
-      hint: englishNounSafeText,
-      steps: [],
-      pedagogicalContent: {
-        grounded: true, explanations: [englishNounSafeText],
-        examples: [], verifiedExamples: [], alternatives: [], steps: [], checkQuestions: []
-      }
-    });
-  }
   // The actual Arabic exercise asks for the *meaning of a word*. Topic hints
   // about اسم شخص, or a generic Malay hint fallback, must never replace the
   // visible question when a learner requests direct teaching or a clue.
@@ -1769,12 +1759,16 @@ export async function getTutorResponse(options = {}) {
         grounded: true
       }
     : null;
-  if (arabicMeaningReply) {
+  // Both scoped lesson engines update the same safe teaching fields. Keep
+  // one path to avoid duplicate runtime code and stale metadata.
+  const scopedLessonText = englishNounReply ? englishNounSafeText
+    : arabicMeaningReply ? arabicMeaningText : '';
+  if (scopedLessonText) {
     Object.assign(contextBundle.sections, {
-      hint: arabicMeaningText,
+      hint: scopedLessonText,
       steps: [],
       pedagogicalContent: {
-        grounded: true, explanations: [arabicMeaningText],
+        grounded: true, explanations: [scopedLessonText],
         examples: [], verifiedExamples: [], alternatives: [], steps: [], checkQuestions: []
       }
     });
