@@ -1,6 +1,6 @@
 {
   "validator": "questions",
-  "generatedAt": "2026-11-10T11:03:58.115Z",
+  "generatedAt": "2026-11-16T13:55:22.841Z",
   "status": "pass",
   "totals": {
     "subjects": 8,
@@ -18,7 +18,7 @@
   "diversityDiagnostics": {
     "repeatedTemplates": 0,
     "repeatedNumberPatterns": 0,
-    "repeatedAnswerPatterns": 2248,
+    "repeatedAnswerPatterns": 2247,
     "repeatedContexts": 0,
     "repeatedDistractors": 0,
     "repeatedAnswerPositions": 21042,
@@ -28,7 +28,7 @@
     "averageDiversityScore": 78,
     "duplicatePercent": 0,
     "diagnosticRepeatPercent": 20,
-    "averageSelectionTimeMs": 3.545,
+    "averageSelectionTimeMs": 2.07,
     "stemDiversity": 100,
     "stemReuseRate": 0,
     "repeatedStems": 0,
