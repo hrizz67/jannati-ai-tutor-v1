@@ -1,0 +1,76 @@
+name: Owner-only v3.13.42 immutable tag gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-only-tag-v31342
+  cancel-in-progress: false
+
+jobs:
+  tag-and-dispatch:
+    name: Verify exact release, create annotated tag, dispatch existing deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: 9214c7d289a17ce9419e8a448b0a67c0d5b0e7f3
+      RELEASE_TAG: v3.13.42
+    steps:
+      - name: Checkout exact reviewed release commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 0
+
+      - name: Fail closed on source, version or existing tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(node -p 'require("./package.json").version')" = "3.13.42"
+          test "$(node -p 'require("./docs/releases/VERSION.json").tag')" = "$RELEASE_TAG"
+          grep -q 'Remote generative Tutor AI and automatic Quiz STT Worker invocation remain disabled' docs/releases/RELEASE_NOTES.md
+          if git ls-remote --exit-code --tags origin "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "$RELEASE_TAG already exists; the immutable tag will not be moved." >&2
+            exit 1
+          fi
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify release metadata and generated artifacts
+        run: npm run release:check -- --tag "$RELEASE_TAG" --artifacts
+
+      - name: Create and push immutable annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          git -c user.name="jannati-release" -c user.email="jannati-release@users.noreply.github.com" \
+            tag -a "$RELEASE_TAG" "$RELEASE_SHA" -m "Jannati AI Tutor $RELEASE_TAG — owner-only H5 Chrome acceptance"
+          test "$(git cat-file -t "$RELEASE_TAG")" = "tag"
+          test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$RELEASE_SHA"
+          git push origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
+
+      - name: Dispatch existing tagged deployment workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run deploy.yml --ref "$RELEASE_TAG"
+          echo "Deploy dispatch sent for $RELEASE_TAG at $RELEASE_SHA."
+
+      - name: Preserve owner-only safety boundary
+        run: |
+          echo "Owner-only synthetic testing. Remote Tutor AI OFF. Quiz STT auto OFF."
+          echo "No real-child or paid rollout. Gate A2 #148 and physical acceptance #156 remain HOLD."
