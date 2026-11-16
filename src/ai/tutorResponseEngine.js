@@ -20,6 +20,8 @@ import {
   sanitizeTutorText
 } from './guidedLearning/index.js';
 import { understandStudentTurn } from './conversation/studentTurnEngine.js';
+import { resolveEnglishNounSupport } from './conversation/englishNounSupport.js';
+import { resolveArabicWordMeaningSupport } from './conversation/arabicWordMeaningSupport.js';
 import { getAcceptedAnswers, isAcceptedQuestionAnswer } from '../utils/acceptedAnswers.js';
 import { getAnswerRevealPolicy, selectAnswerSafeText } from './policy/answerRevealPolicy.js';
 import { getSubjectLanguagePresentation } from './voice/voiceConfig.js';
@@ -28,6 +30,7 @@ import { resolveTutorQuickReplyAction } from './conversation/tutorQuickReplyActi
 import {
   attachTeachingAnchorState,
   buildTeachingAnchorReply,
+  createTeachingAnchor,
   getTeachingAnchorContext,
   getTeachingAnchorNoAnswerLead,
   resolveTeachingAnchorTurn
@@ -753,7 +756,13 @@ function buildContextualSections({
   guided = null,
   history = []
 }) {
-  const categoryRule = getCategoryRule(question, topic);
+  // The selected subject is authoritative even when an authored exercise
+  // does not redundantly carry subjectId. Otherwise category detection can
+  // fall back to an unrelated stale topic note ("tempat" before "benda").
+  const categoryRule = getCategoryRule({
+    ...question,
+    subjectId: subject?.id || question?.subjectId || ''
+  }, topic);
   const isEnglishSubject = subject?.id === 'english';
   const subjectLabel = subject?.id === 'english' ? 'Bahasa Inggeris' : (subject?.title || formatSubjectName(subject?.id));
   const resolvedQuestion = questionText || getQuestionText(question);
@@ -1139,6 +1148,8 @@ function buildContextualSections({
     options: resolvedOptions,
     subject: subjectLabel,
     topic: topicLabel,
+    // Non-answer, active-question category used by locally grounded help.
+    activeQuestionCategory: categoryRule.category,
     pedagogicalContent
   };
 
@@ -1276,6 +1287,15 @@ function buildConversationalTeachingReply({
     case 'question_help':
       if (dialogueLanguage === 'en') return withReplies('First, check the instruction. Then find the important clue in the sentence.', ['The first step'], true);
       if (dialogueLanguage === 'ar') return withReplies('ابدأ بتعليمات السؤال، ثم ابحث عن الدليل المهم في الجملة.', ['الخطوة الأولى'], true);
+      // An explicit target in the active BM question outranks incidental words
+      // in its stem, a learner's false premise, or stale topic metadata.
+      if (/kata\s+nama(?:\s+am)?\s+(?:bagi|untuk)\s+(?:orang|manusia|tempat|lokasi|haiwan|binatang|benda|objek)\b/iu.test(questionText)) {
+        const targetLabel = LEARNER_CHOICE_CATEGORY_LABELS[sections.activeQuestionCategory] || '';
+        const safeClue = normalizeText(sections.hint || '', '');
+        if (targetLabel && safeClue) return withReplies(
+          `Soalan ini meminta kamu mencari ${targetLabel}. ${safeClue}`, [], true
+        );
+      }
       return withReplies(/\bdi\s+_+|kata nama tempat/iu.test(questionText)
         ? 'Lihat perkataan “di” sebelum tempat kosong. Petunjuk itu menunjukkan ayat memerlukan nama tempat.'
         : `Lihat arahan dahulu, kemudian cari petunjuk penting dalam ${questionText ? 'ayat' : 'soalan'}.`, [], true);
@@ -1693,6 +1713,79 @@ export async function getTutorResponse(options = {}) {
     studyPlan,
     getLocalizedTeachingReplies: teachingEngine.getLocalizedTeachingReplies
   });
+  // An active, scoped English noun teaching request must retain its concept
+  // across follow-up questions. Never let an unrelated verb/topic hint from
+  // pedagogicalContent override this verified local curriculum explanation.
+  const englishNounCandidate = resolveEnglishNounSupport({
+    prompt,
+    subjectId: subjectContext.id,
+    hasExerciseContext,
+    questionId: questionIdentity,
+    newTopicRequest: Boolean(studentTurn.newTopicRequest),
+    isAnswerAttempt: gradedTurn,
+    anchorActive: anchorContext.teachingAnchor?.conceptId === 'english_common_noun'
+  });
+  const englishNounSafeText = englishNounCandidate
+    ? selectAnswerSafeText(englishNounCandidate.candidates, protectedTutorAnswers, '')
+    : '';
+  const englishNounReply = englishNounSafeText
+    ? { text: sanitizeTutorText(englishNounSafeText), quickReplies: englishNounCandidate.quickReplies, grounded: true }
+    : null;
+  const englishNounAnchor = englishNounReply && conversationKey
+    ? createTeachingAnchor({
+        conversationKey, subjectId: subjectContext.id, topicId: topicContext.id,
+        questionId: questionIdentity, conceptId: 'english_common_noun'
+      })
+    : null;
+  // The actual Arabic exercise asks for the *meaning of a word*. Topic hints
+  // about اسم شخص, or a generic Malay hint fallback, must never replace the
+  // visible question when a learner requests direct teaching or a clue.
+  const arabicMeaningCandidate = resolveArabicWordMeaningSupport({
+    prompt, subjectId: subjectContext.id, questionId: questionIdentity,
+    questionText: resolvedQuestionText, instruction: resolvedInstruction,
+    hasExerciseContext, isAnswerAttempt: gradedTurn,
+    newTopicRequest: Boolean(studentTurn.newTopicRequest),
+    hasVerifiedAnswerFeedback: Boolean(priorAnswer) && typeof isCorrect === 'boolean'
+  });
+  const arabicMeaningText = arabicMeaningCandidate
+    ? selectAnswerSafeText(arabicMeaningCandidate.candidates, protectedTutorAnswers, '')
+    : '';
+  const arabicMeaningReply = arabicMeaningText
+    ? {
+        text: sanitizeTutorText(arabicMeaningText),
+        quickReplies: arabicMeaningCandidate.quickReplies,
+        grounded: true
+      }
+    : null;
+  // Both scoped lesson engines update the same safe teaching fields. Keep
+  // one path to avoid duplicate runtime code and stale metadata.
+  const scopedLessonText = englishNounReply ? englishNounSafeText
+    : arabicMeaningReply ? arabicMeaningText : '';
+  if (scopedLessonText) {
+    Object.assign(contextBundle.sections, {
+      hint: scopedLessonText,
+      steps: [],
+      pedagogicalContent: {
+        grounded: true, explanations: [scopedLessonText],
+        examples: [], verifiedExamples: [], alternatives: [], steps: [], checkQuestions: []
+      }
+    });
+  }
+  // Correct a learner's category misconception using the *active question*,
+  // not a stale place-noun topic or the learner's own incorrect premise.
+  // Only ungraded BM how-questions with an explicitly requested object target
+  // qualify. Filter against protected answer variants before using the text.
+  const activeBmCategory = contextBundle.sections?.activeQuestionCategory || '';
+  const requestedObject = /kata\s+nama(?:\s+am)?\s+(?:bagi|untuk)\s+(?:benda|objek)\b/iu.test(resolvedQuestionText);
+  const falsePlacePremise = subjectContext.id === 'bm' && requestedObject &&
+    activeBmCategory === 'object' && resolvedIntent === 'how_question' &&
+    studentTurn.messageType !== 'answer_attempt' && /(?:nama|kata\s+nama)\s+tempat\b/iu.test(prompt);
+  const correctionText = falsePlacePremise ? selectAnswerSafeText([
+    'Soalan ini meminta kata nama benda, bukan kata nama tempat. Cari perkataan yang menamakan benda dalam ayat.'
+  ], protectedTutorAnswers, '') : '';
+  const bmCategoryCorrectionReply = correctionText
+    ? { text: correctionText, quickReplies: ['Beri petunjuk', 'Bimbing langkah pertama'], grounded: true }
+    : null;
   const falsePremiseReply = resolvedIntent === 'wrong_answer_coaching' && !promptAnswer && isCorrect === true
     ? {
         text: subjectContext.id === 'english'
@@ -1709,7 +1802,7 @@ export async function getTutorResponse(options = {}) {
     text: `${subjectContext.id === 'english' ? 'Your answer is correct. The clue is: ' : subjectContext.id === 'arab' ? 'إجابتك صحيحة. الدليل هو: ' : 'Jawapan kamu betul. Petunjuknya: '}${correctReason}`,
     quickReplies: [], grounded: true
   } : null;
-  const intelligentTeaching = falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
+  const intelligentTeaching = bmCategoryCorrectionReply || englishNounReply || arabicMeaningReply || falsePremiseReply || correctExplanationReply ? null : teachingEngine.buildIntelligentTeachingTurn({
     studentTurn: { ...studentTurn, intent: resolvedIntent },
     resolvedIntent,
     history,
@@ -1729,7 +1822,7 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation
   });
-  const effectiveConversationalReply = falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
+  const effectiveConversationalReply = bmCategoryCorrectionReply || englishNounReply || arabicMeaningReply || falsePremiseReply || correctExplanationReply || intelligentTeaching?.reply || conversationalReply;
 
   const suggestions = effectiveConversationalReply?.quickReplies?.length
     ? effectiveConversationalReply.quickReplies
@@ -1814,11 +1907,31 @@ export async function getTutorResponse(options = {}) {
     locale: resolvedLocale,
     languagePresentation: switchedTopic ? getSubjectLanguagePresentation(conversationalSubject) : languagePresentation,
     misconception: intelligentTeaching?.misconception || (guided.misconception?.supported === true ? guided.misconception : null),
-    pedagogicalState: switchedTopic ? null : attachTeachingAnchorState(
-      intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
-      directTeachingAnchor,
-      teachingAnchor
-    ),
+    // Only one locale/subject-scoped authored support state can own this
+    // response. The ordinary teaching anchor remains unchanged otherwise.
+    pedagogicalState: switchedTopic ? null : englishNounReply
+      ? attachTeachingAnchorState({
+          currentConcept: [subjectContext.id, topicContext.id, questionIdentity].join('::'),
+          supportStage: englishNounCandidate.stage,
+          signal: 'authored_noun_support',
+          strategyUsed: 'english_noun_scoped',
+          misunderstandingCount: 0,
+          pendingFollowUp: ''
+        }, englishNounAnchor, englishNounAnchor)
+      : arabicMeaningReply
+        ? {
+            currentConcept: [subjectContext.id, topicContext.id, questionIdentity].join('::'),
+            supportStage: arabicMeaningCandidate.stage,
+            signal: 'authored_word_meaning',
+            strategyUsed: 'arabic_word_meaning_scoped',
+            misunderstandingCount: 0,
+            pendingFollowUp: ''
+          }
+        : attachTeachingAnchorState(
+            intelligentTeaching?.pedagogicalState || conversationalReply?.pedagogicalState,
+            directTeachingAnchor,
+            teachingAnchor
+          ),
     guidingQuestion: switchedTopic ? '' : guided.guidingQuestion,
     quickReplies: effectiveConversationalReply?.quickReplies?.length
       ? effectiveConversationalReply.quickReplies
