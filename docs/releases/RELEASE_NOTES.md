@@ -1,8 +1,21 @@
-# Jannati AI Tutor 3.13.41 Release Notes
+# Jannati AI Tutor 3.13.42 Release Notes
 
 Status: stable
-Tag: v3.13.41
-Build date: 2026-11-12T15:39:56.582Z
+Tag: v3.13.42
+Build date: 2026-11-16T13:55:23.957Z
+
+## Owner-only scope
+
+- This release is for controlled owner-only testing with synthetic data. It does not authorize a real-child pilot or paid rollout.
+- Gate A2 #148 and physical-device acceptance #156 remain on hold; microphone and live-audio acceptance remain pending.
+- Remote generative Tutor AI and automatic Quiz STT Worker invocation remain disabled. No Worker, database-schema, Supabase-data, or authentication change is included.
+
+## Release highlights
+
+- Integrates the reviewed P2.6-H4 multilingual Tutor work from PR #224 for Bahasa Melayu, English, and Bahasa Arab follow-up teaching.
+- Preserves active-question ownership, protected-answer handling, question-context isolation, and Tutor-only reward invariants.
+- Includes the merged accessibility and owner-only QA artifact improvements from PRs #215 and #216.
+- Educational Chrome acceptance is deliberately assessed after deployment and is not implied by automated CI success.
 
 ## Release Readiness
 
@@ -36,11 +49,4 @@ Build date: 2026-11-12T15:39:56.582Z
 
 - Large JavaScript chunks remain a performance improvement target.
 - Real-device Safari, microphone, audio, RTL, and accessibility checks remain part of manual acceptance.
-
-## Owner-only rollout and previous tag incident
-- v3.13.40 was TAGGED but its production deploy was stopped **before GitHub Pages publication**: initial JavaScript was 900.19 kB against the unchanged strict 900 kB budget. That tag is preserved and not overwritten.
-- v3.13.41 defers the version-scoped service-worker registration module until the already-established window load event. Service-worker behavior and registration failure fallback are retained; this reduces initial loading overhead without relaxing budgets.
-- An isolated exact production-flag build of the remediation candidate passed the 900 kB budget at **899.75 kB**. The tagged deployment must independently recheck its bundle budget and all original release gates.
-- OWNER-ONLY PRELAUNCH: Chrome/phone QA with synthetic data only. No child pilots, paid users, Gate A2 or release safety waiver.
-- Remote generative AI and automatic Quiz STT remain OFF. No Worker, backend schema, database or authentication changes.
-- Native 200% browser zoom, iOS Safari/VoiceOver, Android Chrome/TalkBack acceptance remain NOT RUN until owner testing.
+- Owner-only Chrome H5 acceptance for BM, English, and Arabic remains a separate post-deployment gate.

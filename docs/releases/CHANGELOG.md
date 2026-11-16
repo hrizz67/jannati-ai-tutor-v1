@@ -1,6 +1,13 @@
 # Changelog
 
-## 3.13.41 - 2026-11-12
+## 3.13.42 - 2026-11-16
+
+### P2.6-H4 Tutor integration
+
+- Integrates PR #224 multilingual Tutor follow-up teaching for controlled owner-only browser testing.
+- Retains active-question ownership, question-context isolation, protected-answer rules, and Tutor reward invariants.
+- Keeps remote generative Tutor AI and automatic Quiz STT Worker invocation disabled.
+- Treats BM, English, and Arabic Chrome H5 acceptance as a separate post-deployment decision.
 
 ### Release controls
 
