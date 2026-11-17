@@ -52,7 +52,7 @@ export function planYearScopedProgressKey(selection = {}) {
   });
   if (legacy(bank)) return legacyOrFuture;
   const identity = scopedIdentity(selection);
-  return scopeParts(['m1', 'account-progress', identity.accountId, identity.childId, legacyOrFuture]);
+  return `${scopeParts(['m1', 'account-progress', identity.accountId, identity.childId])}::${legacyOrFuture}`;
 }
 
 /**
